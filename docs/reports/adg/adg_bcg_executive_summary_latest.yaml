@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: 07032026_0812
-  generated_at_utc: '2026-07-03T12:27:58+00:00'
-  snapshot_ts: '2026-07-03T12:25:29.907040+00:00'
-  commit_sha: de43c8ceaa2b87e911f6929c1a349f033082b7e1
-  repo_state_hash: 4ad42c10e9401859
+  run_id: '07032026_2302'
+  generated_at_utc: '2026-07-04T03:20:29+00:00'
+  snapshot_ts: '2026-07-04T03:17:28.818732+00:00'
+  commit_sha: 07a44be3be27f286caa6f331208529b620372273
+  repo_state_hash: b3db2e96e5c43428
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
   degradation_reasons: []
@@ -23,17 +23,17 @@ plain_english_context:
     caveats: []
 patient_size:
   status: present
-  total_python_files: 12312
-  production_python_files: 7070
-  test_python_files: 5242
+  total_python_files: 28926
+  production_python_files: 23683
+  test_python_files: 5243
   agentic_core:
-    file_count: 2889
+    file_count: 2891
     largest_layers:
     - layer: L5_safety
       file_count: 472
       executive_read: Large core layer; treat as control-plane blast-radius context.
     - layer: L6_system_learning
-      file_count: 366
+      file_count: 368
       executive_read: Large core layer; treat as control-plane blast-radius context.
     - layer: L2_execution
       file_count: 285
@@ -45,7 +45,7 @@ patient_size:
       file_count: 224
       executive_read: Large core layer; treat as control-plane blast-radius context.
   apps:
-    total_files: 1468
+    total_files: 1471
     app_breakdown:
     - app: apps_rg
       file_count: 592
@@ -72,7 +72,7 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_eval
-      file_count: 45
+      file_count: 48
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_architect
@@ -80,10 +80,10 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
   tests:
-    total_files: 5242
+    total_files: 5243
     folder_breakdown:
     - folder: tests/unit
-      file_count: 3077
+      file_count: 3078
     - folder: tests/e2e
       file_count: 62
     - folder: tests/regression
@@ -102,7 +102,7 @@ patient_size:
       file_count: 2032
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: '2026-07-03T12:25:29.907040+00:00'
+  snapshot_ts: '2026-07-04T03:17:28.818732+00:00'
 executive_decision:
   verdict: REPORT_INCONSISTENT
   recommendation: Treat report inconsistency as a decision-quality caveat, not the
@@ -160,7 +160,7 @@ prioritization_model:
   - Every suppressed signal records why it was suppressed.
 bcg_gate_adapter:
   artifact_kind: adg_bcg_gate_adapter
-  generated_at_utc: '2026-07-03T12:27:43+00:00'
+  generated_at_utc: '2026-07-04T03:20:10+00:00'
   policy:
     kpi_watchlist_rule: KPI/watchlist rows are not burn-down work unless a future
       plan gives them an owner, target, and retirement condition.
@@ -173,44 +173,44 @@ bcg_gate_adapter:
     - clear
   policy_version: 2026-06-28.high_signal_burndown_v1
   priority_rows:
-  - band: P0
-    baseline_count: null
-    classification: blocked
-    delta_vs_baseline: null
-    enforcement: block
-    gate_class: CoreImportsAppsGate
-    gate_id: 13_core_imports_apps
+  - band: P1
+    baseline_count: 0
+    classification: regressed
+    delta_vs_baseline: 3
+    enforcement: ratchet
+    gate_class: NewOrphansDeltaGate
+    gate_id: H1_new_orphans_delta_ratchet
     is_burndown_work: true
     is_kpi_or_watchlist: false
-    materiality: core_app_boundary
-    next_step: 'BLOCKER (P0): clear the zero-tolerance condition before merge. Do
-      NOT re-baseline a P0 block.'
+    materiality: architecture_backlog
+    next_step: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
     raw_gate:
-      band: P0
-      baseline_count: null
-      classification: blocked
+      band: P1
+      baseline_count: 0
+      classification: regressed
       dispatch: in-process
-      enforcement: block
+      enforcement: ratchet
       exit_code: 1
-      gate_class: CoreImportsAppsGate
-      gate_id: 13_core_imports_apps
-      handler: ops_scripts.ci.adg_gates.gate_p0_core_imports_apps
-      owner: adg_gates
+      gate_class: NewOrphansDeltaGate
+      gate_id: H1_new_orphans_delta_ratchet
+      handler: ops_scripts/ci/check_w6_new_orphans_delta.py
+      owner: wiring_ci
       source: sql
       status: fail
       stderr_tail: []
-      violation_count: 5
+      violation_count: 3
     reported_for_priority_queue: true
-    rows: 5
+    rows: 3
     section: fix_now
     section_label: Fix now
-    signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked
-      (exit 1).'
+    signal: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub:
+      +3 vs baseline 0.'
     status: fail
-    sub: block
+    sub: regr
     verdict: FIX
   - band: P0
-    baseline_count: 1605
+    baseline_count: 1608
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -223,7 +223,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P0
-      baseline_count: 1605
+      baseline_count: 1608
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -235,13 +235,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 1605
+      violation_count: 1608
     reported_for_priority_queue: true
-    rows: 1605
+    rows: 1608
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty edges).
-      Sub: 1605 at floor (baseline 1605); no new debt.'
+      Sub: 1608 at floor (baseline 1608); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -354,7 +354,7 @@ bcg_gate_adapter:
     sub: inventory
     verdict: TRACK
   - band: P1
-    baseline_count: 2059
+    baseline_count: 2061
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -367,7 +367,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P1
-      baseline_count: 2059
+      baseline_count: 2061
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -379,13 +379,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 2059
+      violation_count: 2061
     reported_for_priority_queue: true
-    rows: 2059
+    rows: 2061
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: writes_to edges without sibling emits_side_effect on same source.
-      Sub: 2059 at floor (baseline 2059); no new debt.'
+      Sub: 2061 at floor (baseline 2061); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -498,7 +498,7 @@ bcg_gate_adapter:
     sub: floor
     verdict: TRACK
   - band: P1
-    baseline_count: 684
+    baseline_count: 685
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -511,7 +511,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P1
-      baseline_count: 684
+      baseline_count: 685
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -523,13 +523,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 684
+      violation_count: 685
     reported_for_priority_queue: true
-    rows: 684
+    rows: 685
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Actionable taint surfaces without output schema binding. Sub:
-      684 at floor (baseline 684); no new debt.'
+      685 at floor (baseline 685); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -678,7 +678,7 @@ bcg_gate_adapter:
     sub: floor
     verdict: TRACK
   - band: P2
-    baseline_count: 994
+    baseline_count: 995
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -691,7 +691,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P2
-      baseline_count: 994
+      baseline_count: 995
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -703,13 +703,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 994
+      violation_count: 995
     reported_for_priority_queue: true
-    rows: 994
+    rows: 995
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-      Sub: 994 at floor (baseline 994); no new debt.'
+      Sub: 995 at floor (baseline 995); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -786,7 +786,7 @@ bcg_gate_adapter:
     sub: advis
     verdict: TRACK
   - band: P3
-    baseline_count: 10780
+    baseline_count: 10788
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -799,7 +799,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 10780
+      baseline_count: 10788
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -811,18 +811,18 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 10780
+      violation_count: 10788
     reported_for_priority_queue: false
-    rows: 10780
+    rows: 10788
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10780 at floor
-      (baseline 10780); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10788 at floor
+      (baseline 10788); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
   - band: P3
-    baseline_count: 1185
+    baseline_count: 1187
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -835,7 +835,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 1185
+      baseline_count: 1187
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -847,18 +847,18 @@ bcg_gate_adapter:
       source: disk
       status: pass
       stderr_tail: []
-      violation_count: 1185
+      violation_count: 1187
     reported_for_priority_queue: false
-    rows: 1185
+    rows: 1187
     section: kpi_watchlist
     section_label: KPI / watchlist
     signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub:
-      1185 at floor (baseline 1185); no new debt.'
+      1187 at floor (baseline 1187); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
   - band: P3
-    baseline_count: 468
+    baseline_count: 469
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -871,7 +871,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 468
+      baseline_count: 469
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -883,13 +883,13 @@ bcg_gate_adapter:
       source: disk
       status: pass
       stderr_tail: []
-      violation_count: 468
+      violation_count: 469
     reported_for_priority_queue: false
-    rows: 468
+    rows: 469
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 468
-      at floor (baseline 468); no new debt.'
+    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469
+      at floor (baseline 469); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -935,10 +935,10 @@ bcg_gate_adapter:
         rows clear.
       gate_count: 15
       label: Burn down / owned backlog
-      row_count: 11417
+      row_count: 11424
       rows:
       - band: P0
-        baseline_count: 1605
+        baseline_count: 1608
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -951,7 +951,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id003
           band: P0
-          baseline_count: 1605
+          baseline_count: 1608
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -963,13 +963,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 1605
+          violation_count: 1608
         reported_for_priority_queue: true
-        rows: 1605
+        rows: 1608
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty
-          edges). Sub: 1605 at floor (baseline 1605); no new debt.'
+          edges). Sub: 1608 at floor (baseline 1608); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -1082,7 +1082,7 @@ bcg_gate_adapter:
         sub: inventory
         verdict: TRACK
       - band: P1
-        baseline_count: 2059
+        baseline_count: 2061
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -1095,7 +1095,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id007
           band: P1
-          baseline_count: 2059
+          baseline_count: 2061
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -1107,13 +1107,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 2059
+          violation_count: 2061
         reported_for_priority_queue: true
-        rows: 2059
+        rows: 2061
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: writes_to edges without sibling emits_side_effect on same
-          source. Sub: 2059 at floor (baseline 2059); no new debt.'
+          source. Sub: 2061 at floor (baseline 2061); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -1226,7 +1226,7 @@ bcg_gate_adapter:
         sub: floor
         verdict: TRACK
       - band: P1
-        baseline_count: 684
+        baseline_count: 685
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -1239,7 +1239,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id011
           band: P1
-          baseline_count: 684
+          baseline_count: 685
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -1251,13 +1251,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 684
+          violation_count: 685
         reported_for_priority_queue: true
-        rows: 684
+        rows: 685
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: Actionable taint surfaces without output schema binding.
-          Sub: 684 at floor (baseline 684); no new debt.'
+          Sub: 685 at floor (baseline 685); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -1406,7 +1406,7 @@ bcg_gate_adapter:
         sub: floor
         verdict: TRACK
       - band: P2
-        baseline_count: 994
+        baseline_count: 995
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -1419,7 +1419,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id016
           band: P2
-          baseline_count: 994
+          baseline_count: 995
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -1431,13 +1431,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 994
+          violation_count: 995
         reported_for_priority_queue: true
-        rows: 994
+        rows: 995
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-          Sub: 994 at floor (baseline 994); no new debt.'
+          Sub: 995 at floor (baseline 995); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -1523,13 +1523,48 @@ bcg_gate_adapter:
         classification: pass
         delta_vs_baseline: null
         enforcement: block
+        gate_class: CoreImportsAppsGate
+        gate_id: 13_core_imports_apps
+        is_burndown_work: false
+        is_kpi_or_watchlist: false
+        materiality: core_app_boundary
+        next_step: None — gate clean (zero rows).
+        raw_gate: &id024
+          band: P0
+          baseline_count: null
+          classification: pass
+          dispatch: in-process
+          enforcement: block
+          exit_code: 0
+          gate_class: CoreImportsAppsGate
+          gate_id: 13_core_imports_apps
+          handler: ops_scripts.ci.adg_gates.gate_p0_core_imports_apps
+          owner: adg_gates
+          source: sql
+          status: pass
+          stderr_tail: []
+          violation_count: 0
+        reported_for_priority_queue: false
+        rows: 0
+        section: clear
+        section_label: Clear
+        signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: No
+          rows.'
+        status: pass
+        sub: —
+        verdict: CLEAR
+      - band: P0
+        baseline_count: null
+        classification: pass
+        delta_vs_baseline: null
+        enforcement: block
         gate_class: CapabilityEgressGate
         gate_id: 4_capability_egress
         is_burndown_work: false
         is_kpi_or_watchlist: false
         materiality: provider_model_path
         next_step: None — gate clean (zero rows).
-        raw_gate: &id024
+        raw_gate: &id025
           band: P0
           baseline_count: null
           classification: pass
@@ -1564,7 +1599,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: provider_model_path
         next_step: None — gate clean (zero rows).
-        raw_gate: &id025
+        raw_gate: &id026
           band: P0
           baseline_count: null
           classification: pass
@@ -1599,7 +1634,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id026
+        raw_gate: &id027
           band: P0
           baseline_count: null
           classification: pass
@@ -1634,7 +1669,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id027
+        raw_gate: &id028
           band: P0
           baseline_count: null
           classification: pass
@@ -1669,7 +1704,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id028
+        raw_gate: &id029
           band: P0
           baseline_count: null
           classification: pass
@@ -1704,7 +1739,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id029
+        raw_gate: &id030
           band: P0
           baseline_count: null
           classification: pass
@@ -1739,7 +1774,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id030
+        raw_gate: &id031
           band: P0
           baseline_count: null
           classification: pass
@@ -1774,7 +1809,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id031
+        raw_gate: &id032
           band: P0
           baseline_count: null
           classification: pass
@@ -1809,7 +1844,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id032
+        raw_gate: &id033
           band: P0
           baseline_count: 0
           classification: pass
@@ -1844,7 +1879,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id033
+        raw_gate: &id034
           band: P0
           baseline_count: null
           classification: pass
@@ -1878,7 +1913,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id034
+        raw_gate: &id035
           band: P1
           baseline_count: null
           classification: pass
@@ -1913,7 +1948,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id035
+        raw_gate: &id036
           band: P1
           baseline_count: null
           classification: pass
@@ -1948,7 +1983,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id036
+        raw_gate: &id037
           band: P1
           baseline_count: null
           classification: pass
@@ -1983,7 +2018,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id037
+        raw_gate: &id038
           band: P1
           baseline_count: null
           classification: pass
@@ -2018,7 +2053,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id038
+        raw_gate: &id039
           band: P1
           baseline_count: null
           classification: pass
@@ -2053,7 +2088,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id039
+        raw_gate: &id040
           band: P1
           baseline_count: 0
           classification: pass
@@ -2088,7 +2123,7 @@ bcg_gate_adapter:
         is_kpi_or_watchlist: false
         materiality: architecture_backlog
         next_step: None — gate clean (zero rows).
-        raw_gate: &id040
+        raw_gate: &id041
           band: P1
           baseline_count: 0
           classification: pass
@@ -2108,41 +2143,6 @@ bcg_gate_adapter:
         section: clear
         section_label: Clear
         signal: 'Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub:
-          No rows.'
-        status: pass
-        sub: —
-        verdict: CLEAR
-      - band: P1
-        baseline_count: 0
-        classification: pass
-        delta_vs_baseline: 0
-        enforcement: ratchet
-        gate_class: NewOrphansDeltaGate
-        gate_id: H1_new_orphans_delta_ratchet
-        is_burndown_work: false
-        is_kpi_or_watchlist: false
-        materiality: architecture_backlog
-        next_step: None — gate clean (zero rows).
-        raw_gate: &id041
-          band: P1
-          baseline_count: 0
-          classification: pass
-          dispatch: in-process
-          enforcement: ratchet
-          exit_code: 0
-          gate_class: NewOrphansDeltaGate
-          gate_id: H1_new_orphans_delta_ratchet
-          handler: ops_scripts/ci/check_w6_new_orphans_delta.py
-          owner: wiring_ci
-          source: sql
-          status: pass
-          stderr_tail: []
-          violation_count: 0
-        reported_for_priority_queue: false
-        rows: 0
-        section: clear
-        section_label: Clear
-        signal: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub:
           No rows.'
         status: pass
         sub: —
@@ -2467,50 +2467,50 @@ bcg_gate_adapter:
         only rows that should stop green ADG.
       gate_count: 1
       label: Fix now
-      row_count: 5
+      row_count: 3
       rows:
-      - band: P0
-        baseline_count: null
-        classification: blocked
-        delta_vs_baseline: null
-        enforcement: block
-        gate_class: CoreImportsAppsGate
-        gate_id: 13_core_imports_apps
+      - band: P1
+        baseline_count: 0
+        classification: regressed
+        delta_vs_baseline: 3
+        enforcement: ratchet
+        gate_class: NewOrphansDeltaGate
+        gate_id: H1_new_orphans_delta_ratchet
         is_burndown_work: true
         is_kpi_or_watchlist: false
-        materiality: core_app_boundary
-        next_step: 'BLOCKER (P0): clear the zero-tolerance condition before merge.
-          Do NOT re-baseline a P0 block.'
+        materiality: architecture_backlog
+        next_step: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+          via the gate''s `--regenerate-baseline` if intentional/approved debt.'
         raw_gate: &id002
-          band: P0
-          baseline_count: null
-          classification: blocked
+          band: P1
+          baseline_count: 0
+          classification: regressed
           dispatch: in-process
-          enforcement: block
+          enforcement: ratchet
           exit_code: 1
-          gate_class: CoreImportsAppsGate
-          gate_id: 13_core_imports_apps
-          handler: ops_scripts.ci.adg_gates.gate_p0_core_imports_apps
-          owner: adg_gates
+          gate_class: NewOrphansDeltaGate
+          gate_id: H1_new_orphans_delta_ratchet
+          handler: ops_scripts/ci/check_w6_new_orphans_delta.py
+          owner: wiring_ci
           source: sql
           status: fail
           stderr_tail: []
-          violation_count: 5
+          violation_count: 3
         reported_for_priority_queue: true
-        rows: 5
+        rows: 3
         section: fix_now
         section_label: Fix now
-        signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run
-          blocked (exit 1).'
+        signal: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub:
+          +3 vs baseline 0.'
         status: fail
-        sub: block
+        sub: regr
         verdict: FIX
     kpi_watchlist:
       description: Trend and hygiene signals. Report separately; do not treat as burn-down
         work without an owner and target.
       gate_count: 5
       label: KPI / watchlist
-      row_count: 12541
+      row_count: 12552
       rows:
       - band: P2
         baseline_count: null
@@ -2548,7 +2548,7 @@ bcg_gate_adapter:
         sub: advis
         verdict: TRACK
       - band: P3
-        baseline_count: 10780
+        baseline_count: 10788
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2561,7 +2561,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id019
           band: P3
-          baseline_count: 10780
+          baseline_count: 10788
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2573,18 +2573,18 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 10780
+          violation_count: 10788
         reported_for_priority_queue: false
-        rows: 10780
+        rows: 10788
         section: kpi_watchlist
         section_label: KPI / watchlist
-        signal: 'Counts: Unused import edges in production modules. Sub: 10780 at
-          floor (baseline 10780); no new debt.'
+        signal: 'Counts: Unused import edges in production modules. Sub: 10788 at
+          floor (baseline 10788); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
       - band: P3
-        baseline_count: 1185
+        baseline_count: 1187
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2597,7 +2597,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id020
           band: P3
-          baseline_count: 1185
+          baseline_count: 1187
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2609,18 +2609,18 @@ bcg_gate_adapter:
           source: disk
           status: pass
           stderr_tail: []
-          violation_count: 1185
+          violation_count: 1187
         reported_for_priority_queue: false
-        rows: 1185
+        rows: 1187
         section: kpi_watchlist
         section_label: KPI / watchlist
         signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling.
-          Sub: 1185 at floor (baseline 1185); no new debt.'
+          Sub: 1187 at floor (baseline 1187); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
       - band: P3
-        baseline_count: 468
+        baseline_count: 469
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2633,7 +2633,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id021
           band: P3
-          baseline_count: 468
+          baseline_count: 469
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2645,13 +2645,13 @@ bcg_gate_adapter:
           source: disk
           status: pass
           stderr_tail: []
-          violation_count: 468
+          violation_count: 469
         reported_for_priority_queue: false
-        rows: 468
+        rows: 469
         section: kpi_watchlist
         section_label: KPI / watchlist
         signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub:
-          468 at floor (baseline 468); no new debt.'
+          469 at floor (baseline 469); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -2693,24 +2693,24 @@ bcg_gate_adapter:
   source:
     burndown_schema_version: '2.2'
     overall_exit_code: 1
-    snapshot: adg_indexed_07032026_0812.sqlite
-    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-audit-and-burndown\artifacts\adg\adg_indexed_07032026_0812.sqlite
-    timestamp: '2026-07-03T12:25:29.907040+00:00'
+    snapshot: adg_indexed_07032026_2302.sqlite
+    snapshot_path: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_07032026_2302.sqlite
+    timestamp: '2026-07-04T03:17:28.818732+00:00'
   summary:
     burn_down_gates: 15
-    burn_down_rows: 11417
+    burn_down_rows: 11424
     clear_gates: 28
     fix_now_gates: 1
-    fix_now_rows: 5
+    fix_now_rows: 3
     kpi_watchlist_gates: 5
-    kpi_watchlist_rows: 12541
+    kpi_watchlist_rows: 12552
     priority_queue_gate_count: 16
-    priority_queue_row_count: 11422
+    priority_queue_row_count: 11427
     report_only_gate_count: 5
-    report_only_row_count: 12541
+    report_only_row_count: 12552
     total_gates: 49
     work_section_gate_count: 16
-    work_section_row_count: 11422
+    work_section_row_count: 11427
 kpi_scorecard: &id001
   status: present
   executive_read: 'P0 is split into three ledgers: foundation blockers, audit inventory,
@@ -2734,8 +2734,8 @@ kpi_scorecard: &id001
       or changed code.
   - id: p0_live_gate_drivers
     kpi: P0 live gate drivers
-    value: 1
-    display_value: '1'
+    value: 0
+    display_value: '0'
     meaning: Current red P0 gates that can drive today's work order.
     action_rule: Can drive priority when the gate is FIX/red and decision-linked.
   p0_p3_audit_inventory:
@@ -2746,7 +2746,7 @@ kpi_scorecard: &id001
     audit_net_display: '4'
     foundation_blockers: 201
     foundation_blockers_display: '201'
-    live_gate_drivers: 1
+    live_gate_drivers: 0
     action_role: Stop-the-line only if foundation blockers are present; otherwise
       audit net is evidence to map.
   - band: P1
@@ -2756,24 +2756,24 @@ kpi_scorecard: &id001
     audit_net_display: '3'
     foundation_blockers: null
     foundation_blockers_display: n/a
-    live_gate_drivers: 0
+    live_gate_drivers: 1
     action_role: Severity inventory to map to a failing gate, hotspot, changed code,
       or owner.
   - band: P2
-    audit_gross: 747
+    audit_gross: 748
     guardian_exempted: 716
-    audit_net: 31
-    audit_net_display: '31'
+    audit_net: 32
+    audit_net_display: '32'
     foundation_blockers: null
     foundation_blockers_display: n/a
     live_gate_drivers: 0
     action_role: Severity inventory to map to a failing gate, hotspot, changed code,
       or owner.
   - band: P3
-    audit_gross: 19262
+    audit_gross: 19265
     guardian_exempted: 87
-    audit_net: 19175
-    audit_net_display: 19,175
+    audit_net: 19178
+    audit_net_display: 19,178
     foundation_blockers: null
     foundation_blockers_display: n/a
     live_gate_drivers: 0
@@ -2784,33 +2784,16 @@ kpi_scorecard: &id001
     audit inventory.'
 p0_p3_reconciliation: *id001
 p0_action_queue_summary:
-  p0_fix_count: 1
+  p0_fix_count: 0
   p0_wave_count: 3
-  total_p0_rows: 4
+  total_p0_rows: 3
   top_scopes:
-  - 13_core_imports_apps
   - agentic_core/L1_cognition/__init__.py
   - agentic_core/L1_cognition/apps_research_c0_binding.py
-  metric: '1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py,
-    agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more'
+  - agentic_core/L1_cognition/apps_research_l1_binding.py
+  metric: '3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py,
+    agentic_core/L1_cognition/apps_research_l1_binding.py'
   rows:
-  - action_kind: fix_gate
-    file_path: null
-    gate_id: 13_core_imports_apps
-    ordering_reason: fix_block_p0_violations_asc
-    plan_hint: immediate_session
-    rank: 1
-    scoped_tests: []
-    signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked
-      (exit 1).'
-    sort_band: P0
-    sort_bucket: 0
-    source_artifact: gate_results
-    source_digest: cef76ec5aaa58d0b393e3d323851ff01ce814d677ca19d29911d43fa880e2c86
-    source_id: null
-    symbol: null
-    verdict_cluster: FIX
-    violation_count: 5
   - action_kind: p0_wave_file
     file_path: agentic_core/L1_cognition/__init__.py
     gate_id: null
@@ -2822,7 +2805,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5
+    source_digest: 76f1de54b09dc588df3b667c9317aa89d1c148b8a3a1bef7d0e162909420ec62
     source_id: agentic_core/L1_cognition/__init__.py
     symbol: null
     verdict_cluster: P0_WAVE
@@ -2838,7 +2821,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5
+    source_digest: 76f1de54b09dc588df3b667c9317aa89d1c148b8a3a1bef7d0e162909420ec62
     source_id: agentic_core/L1_cognition/apps_research_c0_binding.py
     symbol: null
     verdict_cluster: P0_WAVE
@@ -2854,7 +2837,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 3b7235592e2fc8c607b28bc6f2f9fc3f451a33cae7dad34795863b78532909c5
+    source_digest: 76f1de54b09dc588df3b667c9317aa89d1c148b8a3a1bef7d0e162909420ec62
     source_id: agentic_core/L1_cognition/apps_research_l1_binding.py
     symbol: null
     verdict_cluster: P0_WAVE
@@ -2876,32 +2859,32 @@ gate_mece_summary:
     action_type: decision_gate
     decision: repair_reporting
   fix_now:
-  - band: P0
-    baseline_count: null
-    classification: blocked
-    delta_vs_baseline: null
-    enforcement: block
-    gate_class: CoreImportsAppsGate
-    gate_id: 13_core_imports_apps
+  - band: P1
+    baseline_count: 0
+    classification: regressed
+    delta_vs_baseline: 3
+    enforcement: ratchet
+    gate_class: NewOrphansDeltaGate
+    gate_id: H1_new_orphans_delta_ratchet
     is_burndown_work: true
     is_kpi_or_watchlist: false
-    materiality: core_app_boundary
-    next_step: 'BLOCKER (P0): clear the zero-tolerance condition before merge. Do
-      NOT re-baseline a P0 block.'
+    materiality: architecture_backlog
+    next_step: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
     raw_gate: *id002
     reported_for_priority_queue: true
-    rows: 5
+    rows: 3
     section: fix_now
     section_label: Fix now
-    signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run blocked
-      (exit 1).'
+    signal: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub:
+      +3 vs baseline 0.'
     status: fail
-    sub: block
+    sub: regr
     verdict: FIX
     bucket: FIX_NOW
   burn_down_after_green:
   - band: P0
-    baseline_count: 1605
+    baseline_count: 1608
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2914,11 +2897,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id003
     reported_for_priority_queue: true
-    rows: 1605
+    rows: 1608
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty edges).
-      Sub: 1605 at floor (baseline 1605); no new debt.'
+      Sub: 1608 at floor (baseline 1608); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -2993,7 +2976,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P1
-    baseline_count: 2059
+    baseline_count: 2061
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3006,11 +2989,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id007
     reported_for_priority_queue: true
-    rows: 2059
+    rows: 2061
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: writes_to edges without sibling emits_side_effect on same source.
-      Sub: 2059 at floor (baseline 2059); no new debt.'
+      Sub: 2061 at floor (baseline 2061); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -3085,7 +3068,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P1
-    baseline_count: 684
+    baseline_count: 685
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3098,11 +3081,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id011
     reported_for_priority_queue: true
-    rows: 684
+    rows: 685
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Actionable taint surfaces without output schema binding. Sub:
-      684 at floor (baseline 684); no new debt.'
+      685 at floor (baseline 685); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -3200,7 +3183,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P2
-    baseline_count: 994
+    baseline_count: 995
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3213,11 +3196,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id016
     reported_for_priority_queue: true
-    rows: 994
+    rows: 995
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-      Sub: 994 at floor (baseline 994); no new debt.'
+      Sub: 995 at floor (baseline 995); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -3269,7 +3252,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 10780
+    baseline_count: 10788
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3282,17 +3265,17 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id019
     reported_for_priority_queue: false
-    rows: 10780
+    rows: 10788
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10780 at floor
-      (baseline 10780); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10788 at floor
+      (baseline 10788); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 1185
+    baseline_count: 1187
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3305,17 +3288,17 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id020
     reported_for_priority_queue: false
-    rows: 1185
+    rows: 1187
     section: kpi_watchlist
     section_label: KPI / watchlist
     signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub:
-      1185 at floor (baseline 1185); no new debt.'
+      1187 at floor (baseline 1187); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 468
+    baseline_count: 469
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3328,11 +3311,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id021
     reported_for_priority_queue: false
-    rows: 468
+    rows: 469
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 468
-      at floor (baseline 468); no new debt.'
+    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469
+      at floor (baseline 469); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -3381,20 +3364,20 @@ gate_mece_summary:
       hotspot, or changed code.
     bucket: SEVERITY_INVENTORY
   - band: P2
-    gross: 747
+    gross: 748
     guardian: 716
-    non_exempt: 31
-    audit_net: 31
+    non_exempt: 32
+    audit_net: 32
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
     bucket: SEVERITY_INVENTORY
   - band: P3
-    gross: 19262
+    gross: 19265
     guardian: 87
-    non_exempt: 19175
-    audit_net: 19175
+    non_exempt: 19178
+    audit_net: 19178
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
@@ -3428,13 +3411,34 @@ gate_mece_summary:
     classification: pass
     delta_vs_baseline: null
     enforcement: block
+    gate_class: CoreImportsAppsGate
+    gate_id: 13_core_imports_apps
+    is_burndown_work: false
+    is_kpi_or_watchlist: false
+    materiality: core_app_boundary
+    next_step: None — gate clean (zero rows).
+    raw_gate: *id024
+    reported_for_priority_queue: false
+    rows: 0
+    section: clear
+    section_label: Clear
+    signal: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: No rows.'
+    status: pass
+    sub: —
+    verdict: CLEAR
+    bucket: CLEAR
+  - band: P0
+    baseline_count: null
+    classification: pass
+    delta_vs_baseline: null
+    enforcement: block
     gate_class: CapabilityEgressGate
     gate_id: 4_capability_egress
     is_burndown_work: false
     is_kpi_or_watchlist: false
     materiality: provider_model_path
     next_step: None — gate clean (zero rows).
-    raw_gate: *id024
+    raw_gate: *id025
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3456,7 +3460,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: provider_model_path
     next_step: None — gate clean (zero rows).
-    raw_gate: *id025
+    raw_gate: *id026
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3478,7 +3482,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id026
+    raw_gate: *id027
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3500,7 +3504,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id027
+    raw_gate: *id028
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3522,7 +3526,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id028
+    raw_gate: *id029
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3544,7 +3548,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id029
+    raw_gate: *id030
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3566,7 +3570,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id030
+    raw_gate: *id031
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3588,7 +3592,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id031
+    raw_gate: *id032
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3610,7 +3614,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id032
+    raw_gate: *id033
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3631,7 +3635,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id033
+    raw_gate: *id034
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3652,7 +3656,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id034
+    raw_gate: *id035
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3674,7 +3678,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id035
+    raw_gate: *id036
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3696,7 +3700,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id036
+    raw_gate: *id037
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3718,7 +3722,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id037
+    raw_gate: *id038
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3740,7 +3744,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id038
+    raw_gate: *id039
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3762,7 +3766,7 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id039
+    raw_gate: *id040
     reported_for_priority_queue: false
     rows: 0
     section: clear
@@ -3784,34 +3788,12 @@ gate_mece_summary:
     is_kpi_or_watchlist: false
     materiality: architecture_backlog
     next_step: None — gate clean (zero rows).
-    raw_gate: *id040
-    reported_for_priority_queue: false
-    rows: 0
-    section: clear
-    section_label: Clear
-    signal: 'Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub: No rows.'
-    status: pass
-    sub: —
-    verdict: CLEAR
-    bucket: CLEAR
-  - band: P1
-    baseline_count: 0
-    classification: pass
-    delta_vs_baseline: 0
-    enforcement: ratchet
-    gate_class: NewOrphansDeltaGate
-    gate_id: H1_new_orphans_delta_ratchet
-    is_burndown_work: false
-    is_kpi_or_watchlist: false
-    materiality: architecture_backlog
-    next_step: None — gate clean (zero rows).
     raw_gate: *id041
     reported_for_priority_queue: false
     rows: 0
     section: clear
     section_label: Clear
-    signal: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub:
-      No rows.'
+    signal: 'Counts: Graph watchlist items newly FAIL/WARN vs prior run. Sub: No rows.'
     status: pass
     sub: —
     verdict: CLEAR
@@ -4497,29 +4479,29 @@ lens_1_health_gates:
     plain_meaning: Current blocker or regression requiring action before decision-grade
       green.
   red_gates:
-  - gate_id: 13_core_imports_apps
-    band: P0
-    enforcement: block
-    total_records: 5
-    baseline_records: null
-    regression_delta: 0
-    record_type: 'Counts: Core Imports Apps (auto-derived from gate_class) Sub: Run
-      blocked (exit 1).'
+  - gate_id: H1_new_orphans_delta_ratchet
+    band: P1
+    enforcement: ratchet
+    total_records: 3
+    baseline_records: 0
+    regression_delta: 3
+    record_type: 'Counts: Modules newly fan_in=0 vs prior snapshot (new orphans).
+      Sub: +3 vs baseline 0.'
     executive_read: Current red gate. Treat as blocker, but inspect delta to distinguish
       tiny ratchet creep from structural failure.
-    next_action: 'BLOCKER (P0): clear the zero-tolerance condition before merge. Do
-      NOT re-baseline a P0 block.'
+    next_action: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
     done_condition: Gate leaves the adapter FIX section.
   managed_debt:
-    ratchet_floor_records: 10652
+    ratchet_floor_records: 10659
     open_non_ratchet_records: 765
     top_ratchets:
     - gate_id: C3_silent_writes_ratchet
-      records: 2059
+      records: 2061
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: S2_uwg_bypass_ratchet
-      records: 1605
+      records: 1608
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: G_REACH_l0_reachability
@@ -4527,7 +4509,7 @@ lens_1_health_gates:
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: I2_replay_surface_gaps_ratchet
-      records: 994
+      records: 995
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: E1_trace_stub_module
@@ -4536,22 +4518,22 @@ lens_1_health_gates:
       after_green_action: Burn down after FIX rows clear.
   kpi_watchlist:
     gate_count: 5
-    row_count: 12541
+    row_count: 12552
     top_signals:
     - gate_id: S4_unused_imports_ratchet
-      records: 10780
+      records: 10788
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
         to a plan wave. No action needed to pass CI.'
     - gate_id: Q2_cyclomatic_complexity_ratchet
-      records: 1185
+      records: 1187
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
         to a plan wave. No action needed to pass CI.'
     - gate_id: M1_module_loc_ratchet
-      records: 468
+      records: 469
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
@@ -4571,11 +4553,11 @@ lens_1_health_gates:
   key_interpretation: A blocked ADG run is not automatically a platform crisis; regression
     delta and graph/test linkage determine urgency.
   action_impact_rows:
-  - signal: 13_core_imports_apps
+  - signal: H1_new_orphans_delta_ratchet
     impact: Current red gate. Treat as blocker, but inspect delta to distinguish tiny
       ratchet creep from structural failure.
-    recommended_action: 'BLOCKER (P0): clear the zero-tolerance condition before merge.
-      Do NOT re-baseline a P0 block.'
+    recommended_action: 'Regression +3 over baseline 0: fix the new findings, or re-baseline
+      via the gate''s `--regenerate-baseline` if intentional/approved debt.'
 lens_2_runtime_proof_observability:
   status: present_failing
   why_it_matters: Runtime proof separates a real observed failure from a blind spot;
@@ -4656,7 +4638,7 @@ lens_4_testing_control_gaps:
     scanned_tests_root: tests
     folders:
     - folder: tests/unit
-      file_count: 3183
+      file_count: 3184
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -5796,7 +5778,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 157
       criticality_score: 217.0
@@ -5811,6 +5793,108 @@ lens_4_testing_control_gaps:
     source_signals:
     - mv_hotspot_coverage_risk
   - rank: 2
+    production_scope: agentic_core/L5_safety/utils/location_healer_util.py
+    layer: L5_safety
+    app_or_domain: agentic_core
+    current_tests_found:
+      unit:
+      - tests/system_learning/unit/test_ml_compatibility.py
+      - tests/system_learning/unit/test_ml_end_to_end_envelope.py
+      - tests/system_learning/unit/test_ml_write_envelope.py
+      - tests/system_learning/unit/test_runtime_antipattern_enforcement.py
+      - tests/system_learning/unit/test_runtime_state_digest.py
+      - tests/system_learning/unit/test_runtime_state_digest_advanced.py
+      - tests/system_learning/unit/test_stage_barrier_enforcement.py
+      - tests/unit/agentic_core/L1_cognition/test_package_exports.py
+      - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
+      - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
+      - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
+      - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
+      - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
+      - tests/unit/agentic_core/L5_safety/test_exceptions.py
+      - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_violation_event.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_emitter.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_recorder.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_vigilance_dispatcher.py
+      - tests/unit/agentic_core/cache/test_cache_key_builders.py
+      - tests/unit/agentic_core/cache/test_redis_mcp.py
+      - tests/unit/agentic_core/config/test_colors_config.py
+      - tests/unit/agentic_core/config/test_config_loader.py
+      - tests/unit/agentic_core/config/test_rag_config.py
+      - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
+      - tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py
+      - tests/unit/apps_shared/config/test_titanium_search_tool_config.py
+      - tests/unit/apps_shared/enforcement/test_CircuitbreakerStrategy.py
+      - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
+      - tests/unit/apps_shared/enforcement/test_execution_strategy.py
+      - tests/unit/conftest.py
+      - tests/unit/tools/generate/test_materialized_views_phase_a.py
+      e2e:
+      - tests/e2e/agentic_core/test_user_flow_e2e.py
+      - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
+      regression: []
+      integration:
+      - tests/infrastructure/config/test_integration_config.py
+      - tests/infrastructure/config/test_integration_layer.py
+      - tests/integration/agentic_core/L2_execution/enforcement/test_uwg_hard_block.py
+      - tests/integration/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py
+      - tests/integration/agentic_core/L2_execution/types/test_instruction_packet.py
+      - tests/integration/agentic_core/L2_execution/types/test_l5_certification.py
+      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope.py
+      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py
+      - tests/integration/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_integration.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_simple.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_structural_cst.py
+      - tests/integration/agentic_core/L5_safety/core/test_location_healer_facade.py
+      - tests/integration/agentic_core/L5_safety/core/test_to_smart_snake_case.py
+      - tests/integration/agentic_core/L5_safety/enforcement/test_guardrail_enforcement.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_blueprint_module_eviction.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_heal_depth_violation_exhaustive.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
+      - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
+      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
+      smoke:
+      - tests/smoke/dependencies/test_new_dependencies_smoke.py
+      golden:
+      - tests/system_learning/unit/test_offline_replay_golden.py
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown:
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
+      - tests/ci/test_test_coverage_mapper.py
+      - tests/conftest.py
+      - tests/runtime_gates/test_layer_invocation_map.py
+    missing_test_scope:
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 142
+      criticality_score: 193.0
+      combined_risk_score: 235.0
+      violation_count: 17
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
+    trigger: current action queue overlap
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 3
     production_scope: agentic_core/L5_safety/reasoning/root_hygiene_healer.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -5914,7 +5998,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 108
       criticality_score: 144.0
@@ -5928,7 +6012,7 @@ lens_4_testing_control_gaps:
       run.
     source_signals:
     - mv_hotspot_coverage_risk
-  - rank: 3
+  - rank: 4
     production_scope: agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -6032,7 +6116,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 116
       criticality_score: 140.0
@@ -6046,7 +6130,7 @@ lens_4_testing_control_gaps:
       run.
     source_signals:
     - mv_hotspot_coverage_risk
-  - rank: 4
+  - rank: 5
     production_scope: agentic_core/L5_safety/reasoning/location_validator.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -6150,7 +6234,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 126
       criticality_score: 141.0
@@ -6164,7 +6248,7 @@ lens_4_testing_control_gaps:
       run.
     source_signals:
     - mv_hotspot_coverage_risk
-  - rank: 5
+  - rank: 6
     production_scope: agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -6268,7 +6352,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 112
       criticality_score: 121.0
@@ -6282,7 +6366,7 @@ lens_4_testing_control_gaps:
       run.
     source_signals:
     - mv_hotspot_coverage_risk
-  - rank: 6
+  - rank: 7
     production_scope: agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -6386,7 +6470,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 99
       criticality_score: 108.0
@@ -6400,7 +6484,7 @@ lens_4_testing_control_gaps:
       run.
     source_signals:
     - mv_hotspot_coverage_risk
-  - rank: 7
+  - rank: 8
     production_scope: agentic_core/L5_safety/reasoning/SystemArchitectAgent.py
     layer: L5_safety
     app_or_domain: agentic_core
@@ -6504,404 +6588,12 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 105
       criticality_score: 111.0
       combined_risk_score: 117.0
       violation_count: 2
-    reasoned_implication: This production scope has structural or coverage risk; missing
-      mapped tests make fixes harder to prove.
-    recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
-    trigger: current action queue overlap
-    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
-      run.
-    source_signals:
-    - mv_hotspot_coverage_risk
-  - rank: 8
-    production_scope: agentic_core/L0_routing/__init__.py
-    layer: L0_routing
-    app_or_domain: agentic_core
-    current_tests_found:
-      unit:
-      - tests/system_learning/unit/test_ml_compatibility.py
-      - tests/system_learning/unit/test_ml_end_to_end_envelope.py
-      - tests/system_learning/unit/test_ml_write_envelope.py
-      - tests/system_learning/unit/test_runtime_antipattern_enforcement.py
-      - tests/system_learning/unit/test_runtime_state_digest.py
-      - tests/system_learning/unit/test_runtime_state_digest_advanced.py
-      - tests/system_learning/unit/test_stage_barrier_enforcement.py
-      - tests/unit/L0_routing/test_path_router_features.py
-      - tests/unit/L0_routing/test_r3_grounding_gate.py
-      - tests/unit/L0_routing/test_route_reason_codes.py
-      - tests/unit/L0_routing/test_routing_telemetry_feature_vector.py
-      - tests/unit/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_adapter.py
-      - tests/unit/agentic_core/L0_routing/c0_retrieval/test_candidate_pool.py
-      - tests/unit/agentic_core/L0_routing/c0_retrieval/test_final_contract.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_registry_wave_c2.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_threshold_wave_c1.py
-      - tests/unit/agentic_core/L0_routing/config/test_max_model_len_ssot.py
-      - tests/unit/agentic_core/L0_routing/config/test_routing_calibration.py
-      - tests/unit/agentic_core/L0_routing/doctrine/test_terminal_routes.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_boundary_contracts_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_deterministic_replay_guard_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_execution_gateway_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_policy_hash_enforcer_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_routing_contract_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_safety_enforcement_seam_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_safety_reasoning_seam_behavior.py
-      - tests/unit/agentic_core/L0_routing/enforcement/test_safety_validators_seam_behavior.py
-      - tests/unit/agentic_core/L0_routing/intake/test_envelope.py
-      - tests/unit/agentic_core/L0_routing/intake/test_origin_labels.py
-      - tests/unit/agentic_core/L0_routing/intake/test_reason_codes.py
-      - tests/unit/agentic_core/L0_routing/intake/test_receipts.py
-      - tests/unit/agentic_core/L0_routing/intake/test_stages.py
-      - tests/unit/agentic_core/L0_routing/intake/test_validated_request.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_assembly_e2e_10slot.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_assembly_pa3_security.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_assembly_stage_eq3.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_exemplar_bank.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_exemplar_embedding.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_history_compressor.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_idempotency_nonce.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_l0_path_agentic_closed_loop.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_namespace_bandit.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_namespace_bandit_closed_loop.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_path_router.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_provider_adapters.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_provider_golden_matrix.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_r5_reason_calibration.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_route_gates_v9_invariants.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_spine_adapter_10slot_wiring.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_synthesis_slot.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_v15_route_selector.py
-      - tests/unit/agentic_core/L0_routing/test_app_domain_resolver.py
-      - tests/unit/agentic_core/L0_routing/test_composition_root_evidence_resolver.py
-      - tests/unit/agentic_core/L0_routing/test_u0_intake_validator.py
-      - tests/unit/agentic_core/L0_routing/test_v12_route_extensions.py
-      - tests/unit/agentic_core/L0_routing/test_v15_bridge.py
-      - tests/unit/agentic_core/L0_routing/test_v15_route_contract.py
-      - tests/unit/agentic_core/L0_routing/types/test_crypto_trust_types_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_determinism_contracts_types_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_governance_types_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_guardian_enforcement_exceptions_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_l0_instruction_packet_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_p1_routing_protocol_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_route_contract_v15.py
-      - tests/unit/agentic_core/L0_routing/types/test_routing_contracts_types_behavior.py
-      - tests/unit/agentic_core/L0_routing/types/test_shadow_routing_types.py
-      - tests/unit/agentic_core/L0_routing/utils/test_adg_risk_signal.py
-      - tests/unit/agentic_core/L0_routing/utils/test_clock_provider_behavior.py
-      - tests/unit/agentic_core/L0_routing/utils/test_core_integrity_util.py
-      - tests/unit/agentic_core/L0_routing/utils/test_elevator_shaft_seam.py
-      - tests/unit/agentic_core/L0_routing/utils/test_path_util.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_u0_to_l1_planning_bridge.py
-      - tests/unit/agentic_core/L1_cognition/test_package_exports.py
-      - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
-      - tests/unit/agentic_core/L2_execution/enforcement/test_provider_local_vllm.py
-      - tests/unit/agentic_core/L2_execution/healers/test_cost_demotion_wave6.py
-      - tests/unit/agentic_core/L2_execution/healers/test_healing_router_wave2.py
-      - tests/unit/agentic_core/L2_execution/types/test_capability_token_types.py
-      - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
-      - tests/unit/agentic_core/L3_orchestration/doctrine/test_contracts_l3_7.py
-      - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
-      - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_apps_qwen_gateway.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_apps_qwen_telemetry.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_config.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_engines.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_gateway.py
-      - tests/unit/agentic_core/L3_orchestration/reasoning/test_coverage_signal_consumer.py
-      - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
-      - tests/unit/agentic_core/L4_state/cache/test_gptcache_wired.py
-      - tests/unit/agentic_core/L4_state/enforcement/test_elevator_shaft_consistency_enforcer_behavior.py
-      - tests/unit/agentic_core/L5_safety/enforcement/test_registry_verification_enforcer_behavior.py
-      - tests/unit/agentic_core/L5_safety/identity/test_principal_verifier.py
-      - tests/unit/agentic_core/L5_safety/identity/test_runtime_entry_sweep.py
-      - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_violation_event.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_emitter.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_recorder.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_vigilance_dispatcher.py
-      - tests/unit/agentic_core/adg/artifact/test_edge_authority.py
-      - tests/unit/agentic_core/adg/artifact/test_multi_writer_severity.py
-      - tests/unit/agentic_core/adg/artifact/test_three_bucket_authority.py
-      - tests/unit/agentic_core/adg/contracts/test_schema_util.py
-      - tests/unit/agentic_core/adg/extraction/test_static_scanner.py
-      - tests/unit/agentic_core/adg/test_severity_bands_surface_override.py
-      - tests/unit/agentic_core/cache/test_cache_key_builders.py
-      - tests/unit/agentic_core/cache/test_redis_mcp.py
-      - tests/unit/agentic_core/config/test_colors_config.py
-      - tests/unit/agentic_core/config/test_config_loader.py
-      - tests/unit/agentic_core/config/test_rag_config.py
-      - tests/unit/agentic_core/evaluation/judges/test_qwen_judge_provider.py
-      - tests/unit/agentic_core/interfaces/test_interfaces_hardening.py
-      - tests/unit/agentic_core/knowledge/retrieval/test_qwen_pass_factories.py
-      - tests/unit/agentic_core/prompt_governance/contracts/test_lifecycle_contracts.py
-      - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
-      - tests/unit/agentic_core/runtime/config/test_model_tier_config_adg.py
-      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
-      - tests/unit/apps/apps_lic/engines/test_subject_line_variant_selector.py
-      - tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py
-      - tests/unit/apps_rg/test_apps_research_delegation_removed.py
-      - tests/unit/apps_rg/test_briefing_grounding_vocabulary_split.py
-      - tests/unit/apps_rg/test_briefing_mandatory_no_apps_research.py
-      - tests/unit/apps_rg/test_graph_skills_w10_ag_pipeline.py
-      - tests/unit/apps_rg/test_section_evidence_w6a_quarantine.py
-      - tests/unit/apps_rg/test_section_evidence_w6d_proof_boundary.py
-      - tests/unit/apps_shared/config/test_titanium_search_tool_config.py
-      - tests/unit/apps_shared/enforcement/test_CircuitbreakerStrategy.py
-      - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
-      - tests/unit/apps_shared/enforcement/test_execution_strategy.py
-      - tests/unit/apps_shared/proof/conftest.py
-      - tests/unit/conftest.py
-      - tests/unit/governance_scripts/test_pre_write_gate_core_guard.py
-      - tests/unit/governance_scripts/test_ssot_folder_check.py
-      - tests/unit/ops_scripts/ci/adg_gates/test_core_imports_apps_gate.py
-      - tests/unit/ops_scripts/ci/test_audit_gates.py
-      - tests/unit/ops_scripts/ci/test_check_apps_spine_delegation.py
-      - tests/unit/ops_scripts/ci/test_check_dangling_imports.py
-      - tests/unit/ops_scripts/ci/test_check_dead_folder_detector.py
-      - tests/unit/ops_scripts/ci/test_check_expected_wiring_disabled.py
-      - tests/unit/ops_scripts/ci/test_check_graph_reach.py
-      - tests/unit/ops_scripts/ci/test_check_graph_reach_archival.py
-      - tests/unit/ops_scripts/ci/test_check_router_calibration_evidence.py
-      - tests/unit/ops_scripts/hooks/governance/test_post_agent_plan_evidence_gate.py
-      - tests/unit/ops_scripts/maintenance/test_validate_migration_guardian.py
-      - tests/unit/runtime/contracts/test_routing_features.py
-      - tests/unit/runtime_contracts/test_w6_posture_gate_verdict_refs.py
-      - tests/unit/runtime_contracts/test_w7_replay_determinism.py
-      - tests/unit/tools/adg/test_adg_wiring_gap_check.py
-      - tests/unit/tools/adg/test_causal_chain_and_selection.py
-      - tests/unit/tools/adg/test_graph_acceleration.py
-      - tests/unit/tools/adg/test_runtime_hardening.py
-      - tests/unit/tools/adg/test_runtime_query.py
-      - tests/unit/tools/decisions/test_heuristic_scorer.py
-      - tests/unit/tools/generate/test_adg_graph_watchlist_builder.py
-      - tests/unit/tools/generate/test_infra_wiring_views.py
-      - tests/unit/tools/generate/test_materialized_views_phase_a.py
-      - tests/unit/tools/generate/test_materialized_views_phase_c.py
-      - tests/unit/tools/generate/test_materialized_views_phase_d.py
-      - tests/unit/tools/ingestion/test_qwen_context_gateway.py
-      - tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py
-      - tests/unit/tools_adg/test_p0_wave_plan.py
-      e2e:
-      - tests/_apps_contract/test_app_domain_e2e_proof.py
-      - tests/_archived_obsolete/integration/test_coverage_signal_consumer_e2e.py
-      - tests/_archived_obsolete/smoke/runtime/test_prompt_lifecycle_e2e.py
-      - tests/e2e/agentic_core/test_user_flow_e2e.py
-      - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
-      - tests/e2e/data/test_prompt_lifecycle_edge_cases_e2e.py
-      regression: []
-      integration:
-      - tests/infrastructure/config/test_integration_config.py
-      - tests/infrastructure/config/test_integration_layer.py
-      - tests/integration/agentic_core/L0_routing/test_windows_path_integration.py
-      - tests/integration/agentic_core/L2_execution/enforcement/test_uwg_hard_block.py
-      - tests/integration/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py
-      - tests/integration/agentic_core/L2_execution/types/test_instruction_packet.py
-      - tests/integration/agentic_core/L2_execution/types/test_l5_certification.py
-      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope.py
-      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py
-      - tests/integration/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_integration.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_simple.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_structural_cst.py
-      - tests/integration/agentic_core/L5_safety/core/test_location_healer_facade.py
-      - tests/integration/agentic_core/L5_safety/core/test_to_smart_snake_case.py
-      - tests/integration/agentic_core/L5_safety/enforcement/test_guardrail_enforcement.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_blueprint_module_eviction.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_heal_depth_violation_exhaustive.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
-      - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
-      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
-      - tests/integration/cache/test_l0_d2_semantic_cache_live.py
-      - tests/integration/retrieval_layers/test_adg_integration.py
-      smoke:
-      - tests/smoke/dependencies/test_new_dependencies_smoke.py
-      golden:
-      - tests/system_learning/unit/test_offline_replay_golden.py
-      contract:
-      - tests/_apps_contract/test_app_domain_runtime_resolution.py
-      - tests/_apps_contract/test_apps_research_ag9_spine.py
-      - tests/_apps_contract/test_apps_rg_binding_import_ssot.py
-      - tests/_apps_contract/test_apps_rg_effective_output_contract_resolves_from_u0_package.py
-      - tests/_apps_contract/test_apps_rg_l1_binding.py
-      - tests/_apps_contract/test_apps_rg_l1_route_authority_advisory.py
-      - tests/_apps_contract/test_e2_llm_judge_calibration.py
-      - tests/_apps_contract/test_w1_app_eval_exit_wiring.py
-      - tests/_apps_contract/test_w1_core_r1b_cache_wiring.py
-      - tests/_apps_contract/test_w1_qna_spine_migration.py
-      - tests/_apps_contract/test_w2_r1b_semantic_cache.py
-      - tests/_apps_contract/test_w2_route_contract_graph_policy.py
-      - tests/_apps_contract/test_w3_c03_adapter_registry.py
-      - tests/_apps_contract/test_w3_graph_traverse_policy.py
-      - tests/_apps_contract/test_w3_l0_adapter_thin_boundary.py
-      - tests/_apps_contract/test_w3_l0_package_driven_routing.py
-      - tests/_apps_contract/test_w4_adapter_registry.py
-      - tests/_apps_contract/test_w4_graph_rag_execution.py
-      - tests/_apps_contract/test_w6_core_consumption_flow.py
-      - tests/_archived_obsolete/unit_min_deps/test_leaf_domain_contract.py
-      - tests/_core_contract/test_spine_u0_through_exit_gates.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_contracts.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_evidence_contract.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_route_contract.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_spec_contracts.py
-      - tests/agentic_core/L0_routing/enforcement/test_boundary_contracts.py
-      - tests/agentic_core/L0_routing/enforcement/test_crypto_trust_contracts.py
-      - tests/agentic_core/L0_routing/enforcement/test_governance_contracts.py
-      - tests/agentic_core/L0_routing/enforcement/test_routing_contract.py
-      - tests/agentic_core/L0_routing/intake/test_doctrine_contracts.py
-      - tests/agentic_core/L0_routing/test_boundary_contracts.py
-      - tests/agentic_core/L0_routing/test_crypto_trust_contracts.py
-      fixture: []
-      mock_only: []
-      unknown:
-      - tests/_archived_obsolete/agentic_core/L0_routing/enforcement/test_boot_sequence.py
-      - tests/_archived_obsolete/agentic_core/L0_routing/test_boot_sequence.py
-      - tests/_archived_obsolete/agentic_core/L5_safety/identity/conftest.py
-      - tests/_archived_obsolete/performance/test_hardened_vllm.py
-      - tests/agentic_core/L0_routing/c0_retrieval/_factories.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/conftest.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_adg_graphrag_boundaries.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_contradictions.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_edge_cases.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_gates.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_negative.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_otel.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_pipeline.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_sample_query.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_security.py
-      - tests/agentic_core/L0_routing/c0_retrieval/c0_3_enhanced/test_stress.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_branch_completeness.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_c0_hardening.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_c0_policy_rectification.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_candidate_pool_and_hydration.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_contradiction_gap.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_detailed_spec_gaps.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_dispatcher.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_edge_cases.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_events.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_failure_modes.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_failure_modes_complete.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_gates.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_gates_complete.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_graph_traverse.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_injection.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_invariants.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_invariants_complete.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_pipeline_end_to_end.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_plan.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_preflight.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_refine_loop.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_relations_and_tactics.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_schema_complete.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_shape.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_verdicts.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_weak_support_refinement.py
-      - tests/agentic_core/L0_routing/config/test_fallback_chains_loader.py
-      - tests/agentic_core/L0_routing/config/test_fallback_chains_loader_v15.py
-      - tests/agentic_core/L0_routing/config/test_model_catalog.py
-      - tests/agentic_core/L0_routing/config/test_model_registry.py
-      - tests/agentic_core/L0_routing/config/test_path_constants.py
-      - tests/agentic_core/L0_routing/config/test_routing_calibration.py
-      - tests/agentic_core/L0_routing/config/test_structure_blueprint_data.py
-      - tests/agentic_core/L0_routing/doctrine/test_l0_doctrine.py
-      - tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_edge_cases.py
-      - tests/agentic_core/L0_routing/doctrine/test_l0_doctrine_hardening.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_authority_binder.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_classifier_shaper.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_isolation_checker.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_policy_chokepoint.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_registry_validator.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_sovereign_egress.py
-      - tests/agentic_core/L0_routing/enforcement/governance/test_triage_selector.py
-      - tests/agentic_core/L0_routing/enforcement/test_apps_taxonomy_guard.py
-      - tests/agentic_core/L0_routing/enforcement/test_boot_sequence_enforcer.py
-      - tests/agentic_core/L0_routing/enforcement/test_deterministic_replay_guard.py
-      - tests/agentic_core/L0_routing/enforcement/test_execution_gateway.py
-      - tests/agentic_core/L0_routing/enforcement/test_mutation_prohibition.py
-      - tests/agentic_core/L0_routing/enforcement/test_policy_hash_enforcer.py
-      - tests/agentic_core/L0_routing/enforcement/test_runtime_guard.py
-      - tests/agentic_core/L0_routing/intake/test_01_1_transport_envelope.py
-      - tests/agentic_core/L0_routing/intake/test_01_2_identity_baseline.py
-      - tests/agentic_core/L0_routing/intake/test_01_3_quota_dedupe.py
-      - tests/agentic_core/L0_routing/intake/test_01_4_schema_origin_security.py
-      - tests/agentic_core/L0_routing/intake/test_01_5_correlation_replay.py
-      - tests/agentic_core/L0_routing/intake/test_01_6_handoff.py
-      - tests/agentic_core/L0_routing/intake/test_e1_transport.py
-      - tests/agentic_core/L0_routing/intake/test_e2_identity.py
-      - tests/agentic_core/L0_routing/intake/test_e3_quota.py
-      - tests/agentic_core/L0_routing/intake/test_e4_schema.py
-      - tests/agentic_core/L0_routing/intake/test_e5_normalize.py
-      - tests/agentic_core/L0_routing/intake/test_edge_cases.py
-      - tests/agentic_core/L0_routing/intake/test_hardening.py
-      - tests/agentic_core/L0_routing/intake/test_invariants.py
-      - tests/agentic_core/L0_routing/intake/test_pipeline_examples.py
-      - tests/agentic_core/L0_routing/intake/test_reason_codes_and_verdicts.py
-      - tests/agentic_core/L0_routing/reasoning/test_RootCustomsAgent.py
-      - tests/agentic_core/L0_routing/reasoning/test_SSOTFolderCleanupAgent.py
-      - tests/agentic_core/L0_routing/reasoning/test_agentic_router.py
-      - tests/agentic_core/L0_routing/reasoning/test_assembly_stage.py
-      - tests/agentic_core/L0_routing/reasoning/test_capacity_aware_router.py
-      - tests/agentic_core/L0_routing/reasoning/test_capacity_snapshot.py
-      - tests/agentic_core/L0_routing/reasoning/test_cold_start_safeguard.py
-      - tests/agentic_core/L0_routing/reasoning/test_route_gates.py
-      - tests/agentic_core/L0_routing/test_composition_root.py
-      - tests/agentic_core/L0_routing/test_composition_root_run_scenario.py
-      - tests/agentic_core/L0_routing/test_model_registry.py
-      - tests/agentic_core/L0_routing/test_path_constants.py
-      - tests/agentic_core/L0_routing/test_routing_calibration.py
-      - tests/agentic_core/L3_orchestration/doctrine/test_w1_step_c0_policy_inheritance.py
-      - tests/agentic_core/runtime/c0/test_c0_3_graph_rag_executor.py
-      - tests/agentic_core/runtime/entrypoints/test_w4_otel_c0_policy_tracing.py
-      - tests/agentic_core/test_l5_cert_ref_w1.py
-      - tests/agentic_core/test_l5_cert_ref_w2.py
-      - tests/agentic_core/test_p3_w2_hotspot_behavior.py
-      - tests/apps_exec/test_prompt_lifecycle_pipeline.py
-      - tests/apps_lic/test_w2_apps_rg_proof_bridge.py
-      - tests/apps_qna/test_w2_reranker_and_graded.py
-      - tests/apps_qna/test_w3_architecture_synth.py
-      - tests/ci/test_check_query_progress_bar.py
-      - tests/ci/test_test_coverage_mapper.py
-      - tests/conftest.py
-      - tests/governance/test_core_addition_receipt_schema.py
-      - tests/governance/test_no_app_specific_literals_in_core.py
-      - tests/guardian/_assertions.py
-      - tests/guardian/conftest.py
-      - tests/guardian/test_guardian_c0_sovereignty.py
-      - tests/guardian/test_guardian_change_package_activation.py
-      - tests/guardian/test_guardian_cross_layer_mutation.py
-      - tests/guardian/test_guardian_escalation_determinism.py
-      - tests/guardian/test_guardian_gateway_bypass.py
-      - tests/guardian/test_l4_state_write_sovereignty.py
-      - tests/helpers/assertions.py
-      - tests/helpers/repo_builder.py
-      - tests/proof/test_wave_bridges.py
-      - tests/runtime/test_c0_preflight_wireup.py
-      - tests/runtime/test_consensus_veto.py
-      - tests/runtime/test_l0_route_selector_wireup.py
-      - tests/runtime/test_otel_emitter_adapter.py
-      - tests/runtime/test_u0_intake_pipeline_wireup.py
-    missing_test_scope:
-    - regression
-    risk:
-      priority_band: P1_URGENT
-      risk_band: CRITICAL
-      coverage_band: ABSENT
-      coverage_pct: '-1.0'
-      fan_in: 0
-      fan_out: 108
-      criticality_score: 111.0
-      combined_risk_score: 114.0
-      violation_count: 1
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
     recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
@@ -7014,7 +6706,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 109
       criticality_score: 112.0
@@ -7132,7 +6824,7 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
       fan_out: 101
       criticality_score: 104.0
@@ -7147,8 +6839,8 @@ lens_4_testing_control_gaps:
     source_signals:
     - mv_hotspot_coverage_risk
   - rank: 11
-    production_scope: agentic_core/L0_routing/config/__init__.py
-    layer: L0_routing
+    production_scope: agentic_core/L5_safety/utils/cst_transformers_types_util.py
+    layer: L5_safety
     app_or_domain: agentic_core
     current_tests_found:
       unit:
@@ -7159,26 +6851,13 @@ lens_4_testing_control_gaps:
       - tests/system_learning/unit/test_runtime_state_digest.py
       - tests/system_learning/unit/test_runtime_state_digest_advanced.py
       - tests/system_learning/unit/test_stage_barrier_enforcement.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_registry_wave_c2.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_threshold_wave_c1.py
-      - tests/unit/agentic_core/L0_routing/config/test_max_model_len_ssot.py
-      - tests/unit/agentic_core/L0_routing/config/test_routing_calibration.py
-      - tests/unit/agentic_core/L0_routing/test_composition_root_evidence_resolver.py
-      - tests/unit/agentic_core/L0_routing/test_v12_route_extensions.py
       - tests/unit/agentic_core/L1_cognition/test_package_exports.py
       - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
-      - tests/unit/agentic_core/L2_execution/enforcement/test_provider_local_vllm.py
-      - tests/unit/agentic_core/L2_execution/healers/test_cost_demotion_wave6.py
-      - tests/unit/agentic_core/L2_execution/healers/test_healing_router_wave2.py
       - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_apps_qwen_gateway.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_apps_qwen_telemetry.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_config.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_engines.py
-      - tests/unit/agentic_core/L3_orchestration/inference/qwen_vllm/test_gateway.py
       - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
+      - tests/unit/agentic_core/L5_safety/test_exceptions.py
       - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
@@ -7191,11 +6870,8 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/config/test_colors_config.py
       - tests/unit/agentic_core/config/test_config_loader.py
       - tests/unit/agentic_core/config/test_rag_config.py
-      - tests/unit/agentic_core/evaluation/judges/test_qwen_judge_provider.py
-      - tests/unit/agentic_core/interfaces/test_interfaces_hardening.py
-      - tests/unit/agentic_core/knowledge/retrieval/test_qwen_pass_factories.py
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/runtime/config/test_model_tier_config_adg.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -7205,8 +6881,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
       - tests/unit/apps_shared/enforcement/test_execution_strategy.py
       - tests/unit/conftest.py
-      - tests/unit/ops_scripts/ci/test_audit_gates.py
-      - tests/unit/tools/ingestion/test_qwen_context_gateway.py
+      - tests/unit/tools/generate/test_materialized_views_phase_a.py
       e2e:
       - tests/e2e/agentic_core/test_user_flow_e2e.py
       - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
@@ -7237,45 +6912,25 @@ lens_4_testing_control_gaps:
       - tests/smoke/dependencies/test_new_dependencies_smoke.py
       golden:
       - tests/system_learning/unit/test_offline_replay_golden.py
-      contract:
-      - tests/_apps_contract/test_e2_llm_judge_calibration.py
-      - tests/_apps_contract/test_w3_l0_package_driven_routing.py
-      - tests/_archived_obsolete/unit_min_deps/test_leaf_domain_contract.py
+      contract: []
       fixture: []
       mock_only: []
       unknown:
-      - tests/_archived_obsolete/performance/test_hardened_vllm.py
-      - tests/agentic_core/L0_routing/config/test_fallback_chains_loader.py
-      - tests/agentic_core/L0_routing/config/test_fallback_chains_loader_v15.py
-      - tests/agentic_core/L0_routing/config/test_model_catalog.py
-      - tests/agentic_core/L0_routing/config/test_model_registry.py
-      - tests/agentic_core/L0_routing/config/test_path_constants.py
-      - tests/agentic_core/L0_routing/config/test_routing_calibration.py
-      - tests/agentic_core/L0_routing/config/test_structure_blueprint_data.py
-      - tests/agentic_core/L0_routing/enforcement/test_mutation_prohibition.py
-      - tests/agentic_core/L0_routing/test_composition_root.py
-      - tests/agentic_core/L0_routing/test_composition_root_run_scenario.py
-      - tests/agentic_core/L0_routing/test_model_registry.py
-      - tests/agentic_core/L0_routing/test_path_constants.py
-      - tests/agentic_core/L0_routing/test_routing_calibration.py
-      - tests/apps_qna/test_w3_architecture_synth.py
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
       - tests/ci/test_test_coverage_mapper.py
       - tests/conftest.py
-      - tests/guardian/conftest.py
-      - tests/helpers/assertions.py
-      - tests/helpers/repo_builder.py
-      - tests/runtime/test_consensus_veto.py
+      - tests/runtime_gates/test_layer_invocation_map.py
     missing_test_scope:
     - regression
     risk:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
-      fan_out: 123
-      criticality_score: 123.0
-      combined_risk_score: 365.0
+      fan_out: 143
+      criticality_score: 143.0
+      combined_risk_score: 143.0
       violation_count: 0
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
@@ -7286,213 +6941,7 @@ lens_4_testing_control_gaps:
     source_signals:
     - mv_hotspot_coverage_risk
   - rank: 12
-    production_scope: agentic_core/L1_cognition/__init__.py
-    layer: L1_cognition
-    app_or_domain: agentic_core
-    current_tests_found:
-      unit:
-      - tests/_archived_obsolete/legacy_tree/unit/windsurf/scripts/test_post_cursor_agent_adr_registry_capture.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/reasoning/test_react_determinism.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/reasoning/test_react_policy_boundary.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/reasoning/test_react_prompt_provenance.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/reasoning/test_thought_engine_agent.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/types/test_action_request_types.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/types/test_cache_types.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/types/test_client_types.py
-      - tests/_archived_obsolete/unit/tools/mcp/test_vector_db_adapter.py
-      - tests/system_learning/unit/test_ml_compatibility.py
-      - tests/system_learning/unit/test_ml_end_to_end_envelope.py
-      - tests/system_learning/unit/test_ml_write_envelope.py
-      - tests/system_learning/unit/test_runtime_antipattern_enforcement.py
-      - tests/system_learning/unit/test_runtime_state_digest.py
-      - tests/system_learning/unit/test_runtime_state_digest_advanced.py
-      - tests/system_learning/unit/test_stage_barrier_enforcement.py
-      - tests/unit/L1_cognition/test_routing_feature_producer.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_registry_wave_c2.py
-      - tests/unit/agentic_core/L0_routing/config/test_consensus_threshold_wave_c1.py
-      - tests/unit/agentic_core/L0_routing/reasoning/test_path_router.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_c0_anti_bypass.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_c0_bug_regressions.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_c0_edge_cases.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_c0_graph_traverse.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_c0_otel_contract.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_contract.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_preflight.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_refine.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_safety.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_shape_and_scan.py
-      - tests/unit/agentic_core/L1_cognition/c0_context/test_types.py
-      - tests/unit/agentic_core/L1_cognition/config/test_graphrag_config_behavior.py
-      - tests/unit/agentic_core/L1_cognition/enforcement/test_plan_semantic_validators.py
-      - tests/unit/agentic_core/L1_cognition/enforcement/test_planner_budget.py
-      - tests/unit/agentic_core/L1_cognition/enforcement/test_planner_overhead_metric.py
-      - tests/unit/agentic_core/L1_cognition/planning/conftest.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_edge_cases_runtime.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_edge_cases_validation.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_intent_frame.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_negative_boundaries.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_pipeline_end_to_end.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_repair_rules_coverage.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_replay_determinism.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_stage_contracts.py
-      - tests/unit/agentic_core/L1_cognition/planning/test_u0_to_l1_planning_bridge.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/ml_decision_support/features/test_grounding_need_features.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_abstain_planner.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_evaluator_optimizer.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_plan_bundle_loader.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_prompt_envelope.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_retrieval_grader.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_retrieval_mode_bandit.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_retrieval_reflexion.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_retrieval_router.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_retrieval_router_closed_loop.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_semantic_retriever_bge.py
-      - tests/unit/agentic_core/L1_cognition/reasoning/test_thought_redactor.py
-      - tests/unit/agentic_core/L1_cognition/test_l1_branch_matrix_golden.py
-      - tests/unit/agentic_core/L1_cognition/test_l1_v4_edge_cases.py
-      - tests/unit/agentic_core/L1_cognition/test_l1_v5_audit_coverage.py
-      - tests/unit/agentic_core/L1_cognition/test_l1_v5_doctrine.py
-      - tests/unit/agentic_core/L1_cognition/test_l1_v5_hardening.py
-      - tests/unit/agentic_core/L1_cognition/test_package_driven_l1_binding.py
-      - tests/unit/agentic_core/L1_cognition/test_package_exports.py
-      - tests/unit/agentic_core/L1_cognition/test_plan_bundle.py
-      - tests/unit/agentic_core/L1_cognition/test_plan_contract_v2.py
-      - tests/unit/agentic_core/L1_cognition/test_plan_contract_v4_fields.py
-      - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
-      - tests/unit/agentic_core/L1_cognition/types/test_plan_bundle_types.py
-      - tests/unit/agentic_core/L1_cognition/types/test_plan_contract_types.py
-      - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
-      - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
-      - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
-      - tests/unit/agentic_core/L3_orchestration/reasoning/test_coverage_signal_consumer.py
-      - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
-      - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
-      - tests/unit/agentic_core/L6_observability/utils/engines/test_violation_event.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_emitter.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_recorder.py
-      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_vigilance_dispatcher.py
-      - tests/unit/agentic_core/adg/contracts/test_schema_util.py
-      - tests/unit/agentic_core/cache/test_cache_key_builders.py
-      - tests/unit/agentic_core/cache/test_redis_mcp.py
-      - tests/unit/agentic_core/config/test_colors_config.py
-      - tests/unit/agentic_core/config/test_config_loader.py
-      - tests/unit/agentic_core/config/test_rag_config.py
-      - tests/unit/agentic_core/embeddings/test_bge_runtime.py
-      - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/runtime/contracts/test_clarify_and_replan.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
-      - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
-      - tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py
-      - tests/unit/apps_shared/config/test_titanium_search_tool_config.py
-      - tests/unit/apps_shared/enforcement/test_CircuitbreakerStrategy.py
-      - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
-      - tests/unit/apps_shared/enforcement/test_execution_strategy.py
-      - tests/unit/conftest.py
-      - tests/unit/governance_scripts/test_pre_write_gate_core_guard.py
-      - tests/unit/ops_scripts/ci/test_check_apps_spine_delegation.py
-      - tests/unit/ops_scripts/ci/test_infra_wiring_scan.py
-      - tests/unit/tools/decisions/test_heuristic_scorer.py
-      - tests/unit/tools/generate/test_infra_wiring_views.py
-      - tests/unit/tools/generate/test_materialized_views_phase_a.py
-      - tests/unit/tools/generate/test_materialized_views_phase_b.py
-      - tests/unit/tools/generate/test_materialized_views_phase_c.py
-      - tests/unit/tools/generate/test_materialized_views_phase_d.py
-      - tests/unit/tools/ledgers/test_hook_helpers.py
-      - tests/unit/tools/ledgers/test_router_helper.py
-      - tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py
-      e2e:
-      - tests/_archived_obsolete/integration/test_coverage_signal_consumer_e2e.py
-      - tests/e2e/agentic_core/test_user_flow_e2e.py
-      - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
-      regression: []
-      integration:
-      - tests/infrastructure/config/test_integration_config.py
-      - tests/infrastructure/config/test_integration_layer.py
-      - tests/integration/agentic_core/L2_execution/enforcement/test_uwg_hard_block.py
-      - tests/integration/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py
-      - tests/integration/agentic_core/L2_execution/types/test_instruction_packet.py
-      - tests/integration/agentic_core/L2_execution/types/test_l5_certification.py
-      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope.py
-      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py
-      - tests/integration/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_integration.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_simple.py
-      - tests/integration/agentic_core/L5_safety/core/test_code_healer_structural_cst.py
-      - tests/integration/agentic_core/L5_safety/core/test_location_healer_facade.py
-      - tests/integration/agentic_core/L5_safety/core/test_to_smart_snake_case.py
-      - tests/integration/agentic_core/L5_safety/enforcement/test_guardrail_enforcement.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_blueprint_module_eviction.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_heal_depth_violation_exhaustive.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
-      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
-      - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
-      - tests/integration/retrieval_layers/test_adg_integration.py
-      smoke:
-      - tests/smoke/dependencies/test_new_dependencies_smoke.py
-      golden:
-      - tests/system_learning/unit/test_offline_replay_golden.py
-      contract:
-      - tests/_apps_contract/test_apps_research_ag9_spine.py
-      - tests/_apps_contract/test_apps_rg_binding_import_ssot.py
-      - tests/_apps_contract/test_w13_final_99_proof_bundle.py
-      - tests/_apps_contract/test_w1_qna_spine_migration.py
-      - tests/_apps_contract/test_w1b_w2b_core_boundary_repair.py
-      - tests/_apps_contract/test_w3_l0_package_driven_routing.py
-      - tests/_apps_contract/test_w4_c0_namespace_hygiene.py
-      - tests/_apps_contract/test_w6_core_consumption_flow.py
-      - tests/_archived_obsolete/unit/agentic_core/L1_cognition/test_plan_contract_v2_vendor_extensions.py
-      - tests/_core_contract/test_spine_u0_through_exit_gates.py
-      fixture: []
-      mock_only: []
-      unknown:
-      - tests/_archived_obsolete/agentic_core/L1_cognition/enforcement/test_consensus_validator.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/enforcement/test_plan_semantic_validators.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/enforcement/test_reasoning_chokepoint.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/enforcement/test_spiffe_validator.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/enforcement/test_truth_keeper_validator.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_constitutional_rules_engine.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_intent_parser.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_knowledge_orchestrator.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_meta_client.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_reasoning_evaluation.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_reasoning_knowledge.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_reasoning_plan.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_reranking_engine.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_safety_evaluator.py
-      - tests/_archived_obsolete/agentic_core/L1_cognition/reasoning/test_search_fusion_engine.py
-      - tests/agentic_core/L0_routing/c0_retrieval/test_c0_policy_rectification.py
-      - tests/agentic_core/runtime/entrypoints/test_w4_otel_c0_policy_tracing.py
-      - tests/agentic_core/test_p3_w2_hotspot_behavior.py
-      - tests/apps_qna/test_w3_architecture_synth.py
-      - tests/apps_research/test_w2_l1_planning_hints.py
-      - tests/ci/test_test_coverage_mapper.py
-      - tests/conftest.py
-      - tests/proof/test_wave_bridges.py
-    missing_test_scope:
-    - regression
-    risk:
-      priority_band: P1_URGENT
-      risk_band: CRITICAL
-      coverage_band: ABSENT
-      coverage_pct: '-1.0'
-      fan_in: 0
-      fan_out: 113
-      criticality_score: 113.0
-      combined_risk_score: 115.0
-      violation_count: 0
-    reasoned_implication: This production scope has structural or coverage risk; missing
-      mapped tests make fixes harder to prove.
-    recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
-    trigger: current action queue overlap
-    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
-      run.
-    source_signals:
-    - mv_hotspot_coverage_risk
-  - rank: 13
-    production_scope: agentic_core/L5_safety/contracts/registry.py
+    production_scope: agentic_core/L5_safety/utils/register_all_validators_util.py
     layer: L5_safety
     app_or_domain: agentic_core
     current_tests_found:
@@ -7504,19 +6953,13 @@ lens_4_testing_control_gaps:
       - tests/system_learning/unit/test_runtime_state_digest.py
       - tests/system_learning/unit/test_runtime_state_digest_advanced.py
       - tests/system_learning/unit/test_stage_barrier_enforcement.py
-      - tests/unit/L6_observability/shadow_eval/test_06_1_ingest.py
       - tests/unit/agentic_core/L1_cognition/test_package_exports.py
       - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
       - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
       - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
-      - tests/unit/agentic_core/L5_safety/contracts/test_l5_certification_contracts.py
-      - tests/unit/agentic_core/L5_safety/contracts/test_verify.py
-      - tests/unit/agentic_core/L5_safety/test_egress_certifier.py
       - tests/unit/agentic_core/L5_safety/test_exceptions.py
-      - tests/unit/agentic_core/L5_safety/test_l5_contracts.py
-      - tests/unit/agentic_core/L5_safety/test_l5_packet_producer.py
       - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
@@ -7530,6 +6973,7 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/config/test_config_loader.py
       - tests/unit/agentic_core/config/test_rag_config.py
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -7539,7 +6983,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
       - tests/unit/apps_shared/enforcement/test_execution_strategy.py
       - tests/unit/conftest.py
-      - tests/unit/tools/reports/test_adg_action_queue.py
+      - tests/unit/tools/generate/test_materialized_views_phase_a.py
       e2e:
       - tests/e2e/agentic_core/test_user_flow_e2e.py
       - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
@@ -7565,25 +7009,18 @@ lens_4_testing_control_gaps:
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
       - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
+      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
       smoke:
-      - tests/agentic_core/L5_safety/contracts/test_contracts_smoke.py
       - tests/smoke/dependencies/test_new_dependencies_smoke.py
       golden:
       - tests/system_learning/unit/test_offline_replay_golden.py
-      contract:
-      - tests/_apps_contract/test_w6_core_consumption_flow.py
-      - tests/agentic_core/L5_safety/contracts/test_contracts_stress.py
-      - tests/agentic_core/L5_safety/contracts/test_doctrine_alignment.py
-      - tests/agentic_core/L5_safety/contracts/test_l5_contracts_exhaustive.py
-      - tests/agentic_core/L5_safety/contracts/test_status_enums.py
+      contract: []
       fixture: []
       mock_only: []
       unknown:
-      - tests/agentic_core/test_l5_cert_ref_w1.py
-      - tests/agentic_core/test_l5_cert_ref_w4.py
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
       - tests/ci/test_test_coverage_mapper.py
       - tests/conftest.py
-      - tests/governance/test_l5_cross_child_certification.py
       - tests/runtime_gates/test_layer_invocation_map.py
     missing_test_scope:
     - regression
@@ -7591,11 +7028,113 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
-      fan_out: 810
-      criticality_score: 810.0
-      combined_risk_score: 822.0
+      fan_out: 93
+      criticality_score: 102.0
+      combined_risk_score: 108.0
+      violation_count: 3
+    reasoned_implication: This production scope has structural or coverage risk; missing
+      mapped tests make fixes harder to prove.
+    recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
+    trigger: current action queue overlap
+    done_condition: Mapped tests exist in the missing scopes and pass with the ADG
+      run.
+    source_signals:
+    - mv_hotspot_coverage_risk
+  - rank: 13
+    production_scope: agentic_core/L5_safety/utils/unified_cst_healer_util.py
+    layer: L5_safety
+    app_or_domain: agentic_core
+    current_tests_found:
+      unit:
+      - tests/system_learning/unit/test_ml_compatibility.py
+      - tests/system_learning/unit/test_ml_end_to_end_envelope.py
+      - tests/system_learning/unit/test_ml_write_envelope.py
+      - tests/system_learning/unit/test_runtime_antipattern_enforcement.py
+      - tests/system_learning/unit/test_runtime_state_digest.py
+      - tests/system_learning/unit/test_runtime_state_digest_advanced.py
+      - tests/system_learning/unit/test_stage_barrier_enforcement.py
+      - tests/unit/agentic_core/L1_cognition/test_package_exports.py
+      - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
+      - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
+      - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
+      - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
+      - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
+      - tests/unit/agentic_core/L5_safety/test_exceptions.py
+      - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_dpo_pair_generator.py
+      - tests/unit/agentic_core/L6_observability/utils/engines/test_violation_event.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_emitter.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_telemetry_recorder.py
+      - tests/unit/agentic_core/L6_observability/utils/telemetry/test_vigilance_dispatcher.py
+      - tests/unit/agentic_core/cache/test_cache_key_builders.py
+      - tests/unit/agentic_core/cache/test_redis_mcp.py
+      - tests/unit/agentic_core/config/test_colors_config.py
+      - tests/unit/agentic_core/config/test_config_loader.py
+      - tests/unit/agentic_core/config/test_rag_config.py
+      - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
+      - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
+      - tests/unit/apps_rg/enforcement/test_hardened_anthropic_executor_setup.py
+      - tests/unit/apps_shared/config/test_titanium_search_tool_config.py
+      - tests/unit/apps_shared/enforcement/test_CircuitbreakerStrategy.py
+      - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
+      - tests/unit/apps_shared/enforcement/test_execution_strategy.py
+      - tests/unit/conftest.py
+      - tests/unit/tools/generate/test_materialized_views_phase_a.py
+      e2e:
+      - tests/e2e/agentic_core/test_user_flow_e2e.py
+      - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
+      regression: []
+      integration:
+      - tests/infrastructure/config/test_integration_config.py
+      - tests/infrastructure/config/test_integration_layer.py
+      - tests/integration/agentic_core/L2_execution/enforcement/test_uwg_hard_block.py
+      - tests/integration/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py
+      - tests/integration/agentic_core/L2_execution/types/test_instruction_packet.py
+      - tests/integration/agentic_core/L2_execution/types/test_l5_certification.py
+      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope.py
+      - tests/integration/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py
+      - tests/integration/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_integration.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_cst_simple.py
+      - tests/integration/agentic_core/L5_safety/core/test_code_healer_structural_cst.py
+      - tests/integration/agentic_core/L5_safety/core/test_location_healer_facade.py
+      - tests/integration/agentic_core/L5_safety/core/test_to_smart_snake_case.py
+      - tests/integration/agentic_core/L5_safety/enforcement/test_guardrail_enforcement.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_blueprint_module_eviction.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_heal_depth_violation_exhaustive.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
+      - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
+      - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
+      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
+      smoke:
+      - tests/smoke/dependencies/test_new_dependencies_smoke.py
+      golden:
+      - tests/system_learning/unit/test_offline_replay_golden.py
+      contract: []
+      fixture: []
+      mock_only: []
+      unknown:
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
+      - tests/ci/test_test_coverage_mapper.py
+      - tests/conftest.py
+      - tests/runtime_gates/test_layer_invocation_map.py
+    missing_test_scope:
+    - regression
+    risk:
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: unknown
+      fan_in: 0
+      fan_out: 99
+      criticality_score: 99.0
+      combined_risk_score: 99.0
       violation_count: 0
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
@@ -7606,7 +7145,7 @@ lens_4_testing_control_gaps:
     source_signals:
     - mv_hotspot_coverage_risk
   - rank: 14
-    production_scope: agentic_core/L5_safety/reasoning/StructuralValidatorAgent.py
+    production_scope: agentic_core/L5_safety/utils/location_utils_util.py
     layer: L5_safety
     app_or_domain: agentic_core
     current_tests_found:
@@ -7620,24 +7159,10 @@ lens_4_testing_control_gaps:
       - tests/system_learning/unit/test_stage_barrier_enforcement.py
       - tests/unit/agentic_core/L1_cognition/test_package_exports.py
       - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
-      - tests/unit/agentic_core/L2_execution/writers/test_patch_envelope.py
       - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
       - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
-      - tests/unit/agentic_core/L5_safety/enforcement/test_registry_verification_enforcer_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_NamingAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_ResourceManagerAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_StructureEnforcerAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_SystemArchitectAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_architecture_governor_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_code_healer_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_cognitive_and_location_validator_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_file_classification_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_gravity_and_ssot_reconciler_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_hitl_calibration.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_root_hygiene_healer.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_structure_enforcer_hierarchy.py
       - tests/unit/agentic_core/L5_safety/test_exceptions.py
       - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
@@ -7652,8 +7177,7 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/config/test_config_loader.py
       - tests/unit/agentic_core/config/test_rag_config.py
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
-      - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -7663,9 +7187,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
       - tests/unit/apps_shared/enforcement/test_execution_strategy.py
       - tests/unit/conftest.py
-      - tests/unit/tools/adg/test_graph_acceleration.py
       - tests/unit/tools/generate/test_materialized_views_phase_a.py
-      - tests/unit/tools/reports/test_adg_review_template.py
       e2e:
       - tests/e2e/agentic_core/test_user_flow_e2e.py
       - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
@@ -7691,6 +7213,7 @@ lens_4_testing_control_gaps:
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
       - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
+      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
       smoke:
       - tests/smoke/dependencies/test_new_dependencies_smoke.py
       golden:
@@ -7699,7 +7222,7 @@ lens_4_testing_control_gaps:
       fixture: []
       mock_only: []
       unknown:
-      - tests/agentic_core/L5_safety/reasoning/test_FileClassificationAgent.py
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
       - tests/ci/test_test_coverage_mapper.py
       - tests/conftest.py
       - tests/runtime_gates/test_layer_invocation_map.py
@@ -7709,12 +7232,12 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
-      fan_out: 94
-      criticality_score: 94.0
-      combined_risk_score: 100.0
-      violation_count: 0
+      fan_out: 91
+      criticality_score: 97.0
+      combined_risk_score: 104.0
+      violation_count: 2
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
     recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
@@ -7724,7 +7247,7 @@ lens_4_testing_control_gaps:
     source_signals:
     - mv_hotspot_coverage_risk
   - rank: 15
-    production_scope: agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py
+    production_scope: agentic_core/L5_safety/utils/subprocess_security_util.py
     layer: L5_safety
     app_or_domain: agentic_core
     current_tests_found:
@@ -7738,24 +7261,10 @@ lens_4_testing_control_gaps:
       - tests/system_learning/unit/test_stage_barrier_enforcement.py
       - tests/unit/agentic_core/L1_cognition/test_package_exports.py
       - tests/unit/agentic_core/L1_cognition/types/test_execution_phase_types_adg.py
-      - tests/unit/agentic_core/L2_execution/writers/test_patch_envelope.py
       - tests/unit/agentic_core/L3_orchestration/core/test_orchestrator_state_retry.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_execution_orchestrator.py
       - tests/unit/agentic_core/L3_orchestration/engines/test_manager_routing.py
       - tests/unit/agentic_core/L3_orchestration/types/test_execution_phase_signal_types_adg.py
-      - tests/unit/agentic_core/L5_safety/enforcement/test_registry_verification_enforcer_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_NamingAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_ResourceManagerAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_StructureEnforcerAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_SystemArchitectAgent.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_architecture_governor_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_code_healer_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_cognitive_and_location_validator_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_file_classification_agent_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_gravity_and_ssot_reconciler_behavior.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_hitl_calibration.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_root_hygiene_healer.py
-      - tests/unit/agentic_core/L5_safety/reasoning/test_structure_enforcer_hierarchy.py
       - tests/unit/agentic_core/L5_safety/test_exceptions.py
       - tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py
       - tests/unit/agentic_core/L6_observability/utils/engines/test_detection_signal.py
@@ -7770,8 +7279,7 @@ lens_4_testing_control_gaps:
       - tests/unit/agentic_core/config/test_config_loader.py
       - tests/unit/agentic_core/config/test_rag_config.py
       - tests/unit/agentic_core/prompt_governance/registry/test_prompt_version_store.py
-      - tests/unit/agentic_core/prompt_governance/templates/test_template_rendering_e2e.py
-      - tests/unit/agentic_core/prompt_governance/templates/test_wiring_gap_e2e.py
+      - tests/unit/agentic_core/test_p43_critical_infra_handlers.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness.py
       - tests/unit/agentic_core/utils/workflow_engines/test_completeness_metrics.py
       - tests/unit/agentic_core/utils/workflow_engines/test_late_chunking.py
@@ -7781,9 +7289,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_shared/enforcement/test_FewshotregistryStrategy.py
       - tests/unit/apps_shared/enforcement/test_execution_strategy.py
       - tests/unit/conftest.py
-      - tests/unit/tools/adg/test_graph_acceleration.py
       - tests/unit/tools/generate/test_materialized_views_phase_a.py
-      - tests/unit/tools/reports/test_adg_review_template.py
       e2e:
       - tests/e2e/agentic_core/test_user_flow_e2e.py
       - tests/e2e/data/test_governance_safety_infrastructure_e2e.py
@@ -7809,6 +7315,7 @@ lens_4_testing_control_gaps:
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_depth_violation.py
       - tests/integration/agentic_core/L5_safety/reasoning/test_hierarchy_agent_phantom_dir_edge_cases.py
       - tests/integration/agentic_core/interfaces/test_replay_key_determinism.py
+      - tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py
       smoke:
       - tests/smoke/dependencies/test_new_dependencies_smoke.py
       golden:
@@ -7817,7 +7324,7 @@ lens_4_testing_control_gaps:
       fixture: []
       mock_only: []
       unknown:
-      - tests/agentic_core/L5_safety/reasoning/test_FileClassificationAgent.py
+      - tests/agentic_core/L5_safety/utils/test_location_healer_util.py
       - tests/ci/test_test_coverage_mapper.py
       - tests/conftest.py
       - tests/runtime_gates/test_layer_invocation_map.py
@@ -7827,12 +7334,12 @@ lens_4_testing_control_gaps:
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: '-1.0'
+      coverage_pct: unknown
       fan_in: 0
-      fan_out: 90
-      criticality_score: 93.0
-      combined_risk_score: 101.0
-      violation_count: 1
+      fan_out: 84
+      criticality_score: 96.0
+      combined_risk_score: 109.0
+      violation_count: 4
     reasoned_implication: This production scope has structural or coverage risk; missing
       mapped tests make fixes harder to prove.
     recommended_test_investment: Add mapped tests/regression coverage for agentic_core.
@@ -7845,6 +7352,9 @@ lens_4_testing_control_gaps:
   - signal: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
     impact: Fix confidence improves when this scope has mapped tests.
     recommended_action: Add mapped tests/regression coverage for agentic_core.
+  - signal: agentic_core/L5_safety/utils/location_healer_util.py
+    impact: Fix confidence improves when this scope has mapped tests.
+    recommended_action: Add mapped tests/regression coverage for agentic_core.
   - signal: agentic_core/L5_safety/reasoning/root_hygiene_healer.py
     impact: Fix confidence improves when this scope has mapped tests.
     recommended_action: Add mapped tests/regression coverage for agentic_core.
@@ -7852,9 +7362,6 @@ lens_4_testing_control_gaps:
     impact: Fix confidence improves when this scope has mapped tests.
     recommended_action: Add mapped tests/regression coverage for agentic_core.
   - signal: agentic_core/L5_safety/reasoning/location_validator.py
-    impact: Fix confidence improves when this scope has mapped tests.
-    recommended_action: Add mapped tests/regression coverage for agentic_core.
-  - signal: agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py
     impact: Fix confidence improves when this scope has mapped tests.
     recommended_action: Add mapped tests/regression coverage for agentic_core.
   testing_rules:
@@ -7886,7 +7393,7 @@ lens_5_graphdb_mv_decision_impact:
   decision_impact_rows:
   - signal: mv_actionable_surface_without_schema
     signal_type: materialized_view
-    row_count: 786
+    row_count: 787
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7896,7 +7403,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_agent_specialization_overlap
     signal_type: materialized_view
-    row_count: 3034
+    row_count: 3036
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7956,7 +7463,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_debt_concentration_hotspots
     signal_type: materialized_view
-    row_count: 4907
+    row_count: 4909
     decision_role: used_for_testing
     used_inline: true
     why_or_why_not: Translates structural risk into concrete test-placement decisions.
@@ -7965,7 +7472,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_dependency_cone_risk
     signal_type: materialized_view
-    row_count: 11848
+    row_count: 11854
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `cone_risk_score`); a
@@ -7976,7 +7483,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_determinism_provenance_drift
     signal_type: materialized_view
-    row_count: 6608
+    row_count: 6613
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8005,7 +7512,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_exemptions_near_critical_paths
     signal_type: materialized_view
-    row_count: 3180
+    row_count: 3181
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8106,7 +7613,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_high_fan_in_out_with_defects
     signal_type: materialized_view
-    row_count: 10926
+    row_count: 10930
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8116,7 +7623,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hitl_reclearance_gaps
     signal_type: materialized_view
-    row_count: 2003
+    row_count: 2005
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8126,7 +7633,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_centrality
     signal_type: materialized_view
-    row_count: 11848
+    row_count: 11854
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `betweenness_approx`);
@@ -8137,7 +7644,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_coverage_risk
     signal_type: materialized_view
-    row_count: 4428
+    row_count: 4433
     decision_role: used_now
     used_inline: true
     why_or_why_not: Linked to a current FIX/action signal, so it changes immediate
@@ -8186,7 +7693,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_modified_area_regressions
     signal_type: materialized_view
-    row_count: 4927
+    row_count: 4929
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8226,7 +7733,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_newly_introduced_critical_paths
     signal_type: materialized_view
-    row_count: 8530
+    row_count: 8533
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `criticality_score`);
@@ -8247,7 +7754,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_path_criticality_rollup
     signal_type: materialized_view
-    row_count: 11848
+    row_count: 11854
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8277,7 +7784,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_repeated_p3_near_critical_paths
     signal_type: materialized_view
-    row_count: 1449
+    row_count: 1450
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8287,7 +7794,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_replay_surface_gaps
     signal_type: materialized_view
-    row_count: 994
+    row_count: 995
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8318,7 +7825,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_snapshot_integrity_anomalies
     signal_type: materialized_view
-    row_count: 400970
+    row_count: 401196
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8348,7 +7855,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_task_contract_gaps
     signal_type: materialized_view
-    row_count: 1033
+    row_count: 1034
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8378,7 +7885,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_unknown_taxonomy_and_orphans
     signal_type: materialized_view
-    row_count: 6608
+    row_count: 6613
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8398,7 +7905,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_write_sovereignty_paths
     signal_type: materialized_view
-    row_count: 1169
+    row_count: 1173
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8448,7 +7955,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: graphdb_projection
     signal_type: graphdb_report
-    row_count: 625585
+    row_count: 625826
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Parsed P7 structural context; promoted only when it overlaps a
@@ -8501,7 +8008,7 @@ lens_5_graphdb_mv_decision_impact:
     layer: L_TOOLS
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint,
       newly_introduced
-    centrality: 2.1878
+    centrality: 2.1867
     blast_radius: 84.0
     reverse_dependency: 84.0
     dependency_cone: 84.0
@@ -8515,7 +8022,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/base_agents/SovereignBaseAgent.py
     layer: L_SHARED
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.8098
+    centrality: 0.8094
     blast_radius: 175.93
     reverse_dependency: 91.0
     dependency_cone: 91.0
@@ -8528,7 +8035,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L2_execution/utils/write_gateway.py
     layer: L2
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.7437
+    centrality: 0.7433
     blast_radius: 160.09
     reverse_dependency: 81.0
     dependency_cone: 81.0
@@ -8541,7 +8048,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/runtime/contracts/lifecycle_trace_contract.py
     layer: L_RUNTIME
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone
-    centrality: 87.727
+    centrality: 87.6826
     blast_radius: 3239.46
     reverse_dependency: 1770.0
     dependency_cone: 1770.0
@@ -8555,7 +8062,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L0_routing/config/path_constants.py
     layer: L0
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone
-    centrality: 1.6271
+    centrality: 1.6263
     blast_radius: 588.34
     reverse_dependency: 370.0
     dependency_cone: 370.0
@@ -8571,7 +8078,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: betweenness_approx
       rows_used: 25
-      total_rows: 11848
+      total_rows: 11854
     mv_graph_reverse_dependency_hotspots:
       available: true
       queried: true
@@ -8589,7 +8096,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: cone_risk_score
       rows_used: 25
-      total_rows: 11848
+      total_rows: 11854
     mv_graph_chokepoint_bridges:
       available: true
       queried: true
@@ -8607,7 +8114,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: criticality_score
       rows_used: 25
-      total_rows: 8530
+      total_rows: 8533
   action_impact_rows:
   - signal: mv_debt_concentration_hotspots
     impact: Translates structural risk into concrete test-placement decisions.
@@ -8632,29 +8139,31 @@ canonical_next_best_actions:
   - rank: 1
     priority: 1
     action_type: fix_blocker
-    action: Stop core importing apps
-    move: Stop core importing apps
-    scope: 13_core_imports_apps
-    why_now: Core importing apps breaks the core/app boundary and directly weakens
-      provider-agnostic core.
-    why_it_matters: Core importing apps breaks the core/app boundary and directly
-      weakens provider-agnostic core.
-    business_reason: Core importing apps breaks the core/app boundary and directly
-      weakens provider-agnostic core.
-    evidence: 'ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core`
-      imports `apps_*`.'
-    technical_reason: 'ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core`
-      imports `apps_*`.'
-    next_step: Move app-specific bindings behind an adapter or app-owned wiring surface;
-      core should keep only generic contracts.
-    why_this_rank: Move app-specific bindings behind an adapter or app-owned wiring
-      surface; core should keep only generic contracts.
+    action: Address H1_new_orphans_delta_ratchet
+    move: Address H1_new_orphans_delta_ratchet
+    scope: H1_new_orphans_delta_ratchet
+    why_now: This gate still carries decision-grade risk and should be reviewed on
+      its own terms.
+    why_it_matters: This gate still carries decision-grade risk and should be reviewed
+      on its own terms.
+    business_reason: This gate still carries decision-grade risk and should be reviewed
+      on its own terms.
+    evidence: 'ADG `07032026_2302`: `H1_new_orphans_delta_ratchet` found 3 H1_new_orphans_delta_ratchet,
+      +3 above baseline 0. Breakout unavailable.'
+    technical_reason: 'ADG `07032026_2302`: `H1_new_orphans_delta_ratchet` found 3
+      H1_new_orphans_delta_ratchet, +3 above baseline 0. Breakout unavailable.'
+    next_step: Review the Modules newly fan_in=0 vs prior snapshot (new orphans).
+      evidence. Investigate evidence before changing code; the current choices are
+      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    why_this_rank: Review the Modules newly fan_in=0 vs prior snapshot (new orphans).
+      evidence. Investigate evidence before changing code; the current choices are
+      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
     decision: fix_blocker
     evidence_used:
-    - signal_name: 13_core_imports_apps
+    - signal_name: H1_new_orphans_delta_ratchet
       signal_type: gate
-      decision_effect: Core importing apps breaks the core/app boundary and directly
-        weakens provider-agnostic core.
+      decision_effect: This gate still carries decision-grade risk and should be reviewed
+        on its own terms.
     testing_requirement: Add mapped tests when touched scope overlaps a hotspot.
     done_condition: Rerun ADG and confirm the gate returns to green or is explicitly
       waived.
@@ -8691,7 +8200,7 @@ canonical_next_best_actions:
     affected_layers: []
     change_breakout: []
     diagram: null
-    work: Stop core importing apps
+    work: Address H1_new_orphans_delta_ratchet
   - rank: 2
     priority: 2
     action_type: add_tests
@@ -8775,8 +8284,8 @@ canonical_next_best_actions:
     why_now: Accepted baseline debt should fall after red gates are clear.
     why_it_matters: Accepted baseline debt should fall after red gates are clear.
     business_reason: Accepted baseline debt should fall after red gates are clear.
-    evidence: 2,059 floor-row(s) remain on the ratchet gate.
-    technical_reason: 2,059 floor-row(s) remain on the ratchet gate.
+    evidence: 2,061 floor-row(s) remain on the ratchet gate.
+    technical_reason: 2,061 floor-row(s) remain on the ratchet gate.
     next_step: Burn down the ratchet after the current red gates clear.
     why_this_rank: Burn down the ratchet after the current red gates clear.
     decision: burn_down_ratchet
@@ -8834,7 +8343,7 @@ after_green_plan:
   - order: 1
     work_class: ratchet_burndown
     scope: C3_silent_writes_ratchet
-    records: 2059
+    records: 2061
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -8843,7 +8352,7 @@ after_green_plan:
   - order: 2
     work_class: ratchet_burndown
     scope: S2_uwg_bypass_ratchet
-    records: 1605
+    records: 1608
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -8861,7 +8370,7 @@ after_green_plan:
   - order: 4
     work_class: ratchet_burndown
     scope: I2_replay_surface_gaps_ratchet
-    records: 994
+    records: 995
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -8880,7 +8389,7 @@ artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: artifacts/adg/adg_gate_results_20260703_122529.json
+    path: artifacts/adg/adg_gate_results_20260704_031728.json
     exists: true
     loaded: true
     stale: false
@@ -8890,7 +8399,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: bcg_adapter
-    path: artifacts/adg/adg_bcg_adapter_07032026_0812.json
+    path: artifacts/adg/adg_bcg_adapter_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8902,7 +8411,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: action_queue
-    path: artifacts/adg/adg_action_queue_07032026_0812.json
+    path: artifacts/adg/adg_action_queue_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8912,7 +8421,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: artifacts/adg/adg_review_template_07032026_0812.json
+    path: artifacts/adg/adg_review_template_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8922,7 +8431,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_table
-    path: artifacts/adg/adg_burndown_table_07032026_0812.json
+    path: artifacts/adg/adg_burndown_table_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8944,7 +8453,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: artifacts/adg/adg_indexed_07032026_0812.sqlite
+    path: artifacts/adg/adg_indexed_07032026_2302.sqlite
     exists: true
     loaded: false
     stale: false
@@ -8955,7 +8464,7 @@ artifact_usage_matrix:
     rationale: Existing non-JSON artifact or SQLite snapshot mapped to a decision
       lens.
   - artifact_key: generation_manifest
-    path: artifacts/adg/adg_generation_manifest_07032026_0812.json
+    path: artifacts/adg/adg_generation_manifest_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8965,7 +8474,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: structural_outputs
-    path: artifacts/adg/adg_structural_outputs_07032026_0812.json
+    path: artifacts/adg/adg_structural_outputs_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8975,7 +8484,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: refactor_accelerator
-    path: artifacts/adg/adg_refactor_accelerator_07032026_0812.json
+    path: artifacts/adg/adg_refactor_accelerator_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8985,7 +8494,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_queries
-    path: artifacts/adg/adg_graphdb_queries_07032026_0812.json
+    path: artifacts/adg/adg_graphdb_queries_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -8995,7 +8504,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: runtime_spine
-    path: artifacts/adg/adg_runtime_spine_07032026_0812.json
+    path: artifacts/adg/adg_runtime_spine_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9005,7 +8514,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_projection
-    path: artifacts/adg/adg_graphdb_projection_07032026_0812.json
+    path: artifacts/adg/adg_graphdb_projection_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9017,7 +8526,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_metadata
-    path: artifacts/adg/adg_graphdb_metadata_07032026_0812.json
+    path: artifacts/adg/adg_graphdb_metadata_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9029,7 +8538,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_index
-    path: artifacts/adg/adg_graphdb_index_07032026_0812.json
+    path: artifacts/adg/adg_graphdb_index_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9053,7 +8562,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: p0_wave_plan
-    path: artifacts/adg/issues/p0_remediation_wave_plan_07032026_0812.json
+    path: artifacts/adg/issues/p0_remediation_wave_plan_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9063,7 +8572,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: dead_code_report
-    path: artifacts/adg/dead_code_zone_control_report_07032026_0812.json
+    path: artifacts/adg/dead_code_zone_control_report_07032026_2302.json
     exists: true
     loaded: true
     stale: false
@@ -9087,7 +8596,7 @@ mv_usefulness_audit:
     deprecate_candidates: 8
   rows:
   - mv_name: mv_actionable_surface_without_schema
-    row_count: 786
+    row_count: 787
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9096,7 +8605,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_agent_specialization_overlap
-    row_count: 3034
+    row_count: 3036
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9150,14 +8659,14 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_debt_concentration_hotspots
-    row_count: 4907
+    row_count: 4909
     category: testing_driver
     decision_impact: Translates structural risk into concrete test-placement decisions.
     recommendation: keep
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_dependency_cone_risk
-    row_count: 11848
+    row_count: 11854
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `cone_risk_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9166,7 +8675,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_determinism_provenance_drift
-    row_count: 6608
+    row_count: 6613
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9191,7 +8700,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_exemptions_near_critical_paths
-    row_count: 3180
+    row_count: 3181
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9278,7 +8787,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_high_fan_in_out_with_defects
-    row_count: 10926
+    row_count: 10930
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9287,7 +8796,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_hitl_reclearance_gaps
-    row_count: 2003
+    row_count: 2005
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9296,7 +8805,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_hotspot_centrality
-    row_count: 11848
+    row_count: 11854
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `betweenness_approx`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9305,7 +8814,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_hotspot_coverage_risk
-    row_count: 4428
+    row_count: 4433
     category: decision_driver
     decision_impact: Linked to a current FIX/action signal, so it changes immediate
       work order.
@@ -9347,7 +8856,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_modified_area_regressions
-    row_count: 4927
+    row_count: 4929
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9383,7 +8892,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_newly_introduced_critical_paths
-    row_count: 8530
+    row_count: 8533
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `criticality_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9401,7 +8910,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_path_criticality_rollup
-    row_count: 11848
+    row_count: 11854
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9428,7 +8937,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_repeated_p3_near_critical_paths
-    row_count: 1449
+    row_count: 1450
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9437,7 +8946,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_replay_surface_gaps
-    row_count: 994
+    row_count: 995
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9464,7 +8973,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_snapshot_integrity_anomalies
-    row_count: 400970
+    row_count: 401196
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9491,7 +9000,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_task_contract_gaps
-    row_count: 1033
+    row_count: 1034
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9518,7 +9027,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_unknown_taxonomy_and_orphans
-    row_count: 6608
+    row_count: 6613
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9536,7 +9045,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_write_sovereignty_paths
-    row_count: 1169
+    row_count: 1173
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9565,14 +9074,14 @@ dead_code_report:
         decision_options: []
         diagram: null
         done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-        evidence: 13 resolved dead-import overlay row(s) point at this file.
+        evidence: 19 resolved dead-import overlay row(s) point at this file.
         move: Remove confirmed dead imports
         next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
           clears.
         priority: 1
         rank: 1
-        scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
-        technical_reason: 13 resolved dead-import overlay row(s) point at this file.
+        scope: artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
+        technical_reason: 19 resolved dead-import overlay row(s) point at this file.
         why_it_matters: This is high-confidence cleanup because the completed ADG
           resolved it as dead import traffic.
         why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9589,14 +9098,14 @@ dead_code_report:
         decision_options: []
         diagram: null
         done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-        evidence: 12 resolved dead-import overlay row(s) point at this file.
+        evidence: 14 resolved dead-import overlay row(s) point at this file.
         move: Remove confirmed dead imports
         next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
           clears.
         priority: 2
         rank: 2
-        scope: tests/unit/apps_exec/services/test_brief_assembler_service.py
-        technical_reason: 12 resolved dead-import overlay row(s) point at this file.
+        scope: artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
+        technical_reason: 14 resolved dead-import overlay row(s) point at this file.
         why_it_matters: This is high-confidence cleanup because the completed ADG
           resolved it as dead import traffic.
         why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9613,14 +9122,14 @@ dead_code_report:
         decision_options: []
         diagram: null
         done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-        evidence: 11 resolved dead-import overlay row(s) point at this file.
+        evidence: 13 resolved dead-import overlay row(s) point at this file.
         move: Remove confirmed dead imports
         next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
           clears.
         priority: 3
         rank: 3
-        scope: tests/apps_eval/test_eval_to_bus_roundtrip_micro.py
-        technical_reason: 11 resolved dead-import overlay row(s) point at this file.
+        scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
+        technical_reason: 13 resolved dead-import overlay row(s) point at this file.
         why_it_matters: This is high-confidence cleanup because the completed ADG
           resolved it as dead import traffic.
         why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9704,9 +9213,9 @@ dead_code_report:
       status_label: Deletion status
       table_limit: 6
       technical_read:
-      - 'ADG source: artifacts/adg/adg_indexed_07032026_0812.sqlite (snapshot 07032026_0812)'
-      - 'Dead code candidates: 913'
-      - 'Dead imports: 913'
+      - 'ADG source: artifacts/adg/adg_indexed_07032026_2302.sqlite (snapshot 07032026_2302)'
+      - 'Dead code candidates: 949'
+      - 'Dead imports: 949'
       - 'Unresolved imports: 483'
       - 'First-party low-confidence ratio: 1.56%'
       - 'Inferred-symbol ratio: 10.14%'
@@ -9732,14 +9241,14 @@ dead_code_report:
       decision_options: []
       diagram: null
       done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-      evidence: 13 resolved dead-import overlay row(s) point at this file.
+      evidence: 19 resolved dead-import overlay row(s) point at this file.
       move: Remove confirmed dead imports
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       priority: 1
       rank: 1
-      scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
-      technical_reason: 13 resolved dead-import overlay row(s) point at this file.
+      scope: artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
+      technical_reason: 19 resolved dead-import overlay row(s) point at this file.
       why_it_matters: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9756,14 +9265,14 @@ dead_code_report:
       decision_options: []
       diagram: null
       done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-      evidence: 12 resolved dead-import overlay row(s) point at this file.
+      evidence: 14 resolved dead-import overlay row(s) point at this file.
       move: Remove confirmed dead imports
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       priority: 2
       rank: 2
-      scope: tests/unit/apps_exec/services/test_brief_assembler_service.py
-      technical_reason: 12 resolved dead-import overlay row(s) point at this file.
+      scope: artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
+      technical_reason: 14 resolved dead-import overlay row(s) point at this file.
       why_it_matters: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9780,14 +9289,14 @@ dead_code_report:
       decision_options: []
       diagram: null
       done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-      evidence: 11 resolved dead-import overlay row(s) point at this file.
+      evidence: 13 resolved dead-import overlay row(s) point at this file.
       move: Remove confirmed dead imports
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       priority: 3
       rank: 3
-      scope: tests/apps_eval/test_eval_to_bus_roundtrip_micro.py
-      technical_reason: 11 resolved dead-import overlay row(s) point at this file.
+      scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
+      technical_reason: 13 resolved dead-import overlay row(s) point at this file.
       why_it_matters: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
@@ -9866,12 +9375,12 @@ dead_code_report:
     status: present
     summary:
       cleanup_candidate_count: 0
-      dead_code_candidates: 913
-      dead_imports: 913
+      dead_code_candidates: 949
+      dead_imports: 949
       executive_read: ADG found confirmed dead-code targets; remove the most certain
         ones first, then clean up uncertainty and noisy diagnostics.
-      first_party_low_confidence_ratio: 1.5600271309066245
-      inferred_symbol_ratio: 10.143146491886847
+      first_party_low_confidence_ratio: 1.5587181721367025
+      inferred_symbol_ratio: 10.138301260179245
       unresolved_imports: 483
       why_this_order:
       - Confirmed dead code is the highest-confidence waste and should be removed
@@ -9902,6 +9411,10 @@ dead_code_report:
       L_TEST: 412
       L_TOOLS: 83
     dead_code_hotspots:
+    - - artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
+      - 19
+    - - artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
+      - 14
     - - tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
       - 13
     - - tests/unit/apps_exec/services/test_brief_assembler_service.py
@@ -9917,15 +9430,15 @@ dead_code_report:
     - - tests/unit/apps_exec/services/test_document_ingestion_service.py
       - 9
     - - agentic_core/L3_orchestration/enforcement/mission_runner.py
-      - 8
-    - - agentic_core/L4_state/utils/memory/case_library.py
-      - 8
-    - - tests/apps_eval/test_eval_types.py
       - 8
     source: dead_import_overlay
-    total_dead_code_candidates: 913
+    total_dead_code_candidates: 949
   dead_imports:
     dead_import_hotspots:
+    - - artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
+      - 19
+    - - artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
+      - 14
     - - tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
       - 13
     - - tests/unit/apps_exec/services/test_brief_assembler_service.py
@@ -9941,10 +9454,6 @@ dead_code_report:
     - - tests/unit/apps_exec/services/test_document_ingestion_service.py
       - 9
     - - agentic_core/L3_orchestration/enforcement/mission_runner.py
-      - 8
-    - - agentic_core/L4_state/utils/memory/case_library.py
-      - 8
-    - - tests/apps_eval/test_eval_types.py
       - 8
     dead_imports_by_confidence: {}
     dead_imports_by_domain: {}
@@ -9956,15 +9465,15 @@ dead_code_report:
     overlay_dead_imports_by_severity: {}
     source_counts:
       legacy_dead_import_edges: 0
-      overlay_dead_import_resolved: 913
-    total_dead_imports: 913
+      overlay_dead_import_resolved: 949
+    total_dead_imports: 949
   errors: []
   executive_readiness:
     executive_metrics:
-      dead_code_count: 913
-      dead_import_count: 913
-      first_party_low_confidence_ratio: 1.5600271309066245
-      inferred_symbol_ratio: 10.143146491886847
+      dead_code_count: 949
+      dead_import_count: 949
+      first_party_low_confidence_ratio: 1.5587181721367025
+      inferred_symbol_ratio: 10.138301260179245
       l4_unresolved_import_count: 0
       low_confidence_count: 483
       unresolved_import_count: 483
@@ -9995,11 +9504,11 @@ dead_code_report:
       L_TEST: 289
       L_TOOLS: 2352
       L_UNKNOWN: 216
-    inferred_symbol_ratio: 10.143146491886847
+    inferred_symbol_ratio: 10.138301260179245
     total_inferred_symbols: 17828
-    total_symbols: 175764
+    total_symbols: 175848
   low_confidence_zones:
-    first_party_low_confidence_ratio: 1.5600271309066245
+    first_party_low_confidence_ratio: 1.5587181721367025
     governance_low_confidence_ratio: 0.0
     low_conf_by_entity_type:
       symbol: 483
@@ -10013,8 +9522,8 @@ dead_code_report:
       - 483
     total_low_confidence: 483
   source:
-    adg_snapshot: artifacts/adg/adg_indexed_07032026_0812.sqlite
-    adg_snapshot_ts: 07032026_0812
+    adg_snapshot: artifacts/adg/adg_indexed_07032026_2302.sqlite
+    adg_snapshot_ts: '07032026_2302'
     dead_code_signal_sources:
     - overlay_violations.category=dead_import_resolved
     - mv_dead_import_hotspots_overlay
@@ -10022,14 +9531,14 @@ dead_code_report:
     - edges.relation_type=dead_code_candidate
   status: PASS
   summary:
-    adg_snapshot: artifacts/adg/adg_indexed_07032026_0812.sqlite
-    adg_snapshot_ts: 07032026_0812
+    adg_snapshot: artifacts/adg/adg_indexed_07032026_2302.sqlite
+    adg_snapshot_ts: '07032026_2302'
     executive_ready: true
-    first_party_low_confidence_ratio: 1.5600271309066245
-    inferred_symbol_ratio: 10.143146491886847
+    first_party_low_confidence_ratio: 1.5587181721367025
+    inferred_symbol_ratio: 10.138301260179245
     l4_unresolved_imports: 0
-    total_dead_code_candidates: 913
-    total_dead_imports: 913
+    total_dead_code_candidates: 949
+    total_dead_imports: 949
     total_low_confidence: 483
     total_unresolved_imports: 483
   unresolved_imports:
@@ -10076,11 +9585,11 @@ deprecation_deletion_plan:
     - Low-confidence and inferred-symbol noise should be reduced before taking more
       aggressive action.
     - Low-value diagnostics are cheap to deprecate once the evidence layer is cleaner.
-    dead_code_candidates: 913
-    dead_imports: 913
+    dead_code_candidates: 949
+    dead_imports: 949
     unresolved_imports: 483
-    first_party_low_confidence_ratio: 1.5600271309066245
-    inferred_symbol_ratio: 10.143146491886847
+    first_party_low_confidence_ratio: 1.5587181721367025
+    inferred_symbol_ratio: 10.138301260179245
     cleanup_candidate_count: 19
   brief:
     title: BCG Deletion Brief
@@ -10089,9 +9598,9 @@ deprecation_deletion_plan:
     business_read: ADG found confirmed dead-code targets; remove the most certain
       ones first, then clean up uncertainty and noisy diagnostics.
     technical_read:
-    - 'ADG source: artifacts/adg/adg_indexed_07032026_0812.sqlite (snapshot 07032026_0812)'
-    - 'Dead code candidates: 913'
-    - 'Dead imports: 913'
+    - 'ADG source: artifacts/adg/adg_indexed_07032026_2302.sqlite (snapshot 07032026_2302)'
+    - 'Dead code candidates: 949'
+    - 'Dead imports: 949'
     - 'Unresolved imports: 483'
     - 'First-party low-confidence ratio: 1.56%'
     - 'Inferred-symbol ratio: 10.14%'
@@ -10109,14 +9618,14 @@ deprecation_deletion_plan:
         it as dead import traffic.
       business_reason: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
-      evidence: 13 resolved dead-import overlay row(s) point at this file.
-      technical_reason: 13 resolved dead-import overlay row(s) point at this file.
+      evidence: 19 resolved dead-import overlay row(s) point at this file.
+      technical_reason: 19 resolved dead-import overlay row(s) point at this file.
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
         signal clears.
       decision: remove_imports
-      scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
+      scope: artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
       affected_system: ''
       affected_layers: []
       change_breakout: []
@@ -10133,14 +9642,14 @@ deprecation_deletion_plan:
         it as dead import traffic.
       business_reason: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
-      evidence: 12 resolved dead-import overlay row(s) point at this file.
-      technical_reason: 12 resolved dead-import overlay row(s) point at this file.
+      evidence: 14 resolved dead-import overlay row(s) point at this file.
+      technical_reason: 14 resolved dead-import overlay row(s) point at this file.
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
         signal clears.
       decision: remove_imports
-      scope: tests/unit/apps_exec/services/test_brief_assembler_service.py
+      scope: artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
       affected_system: ''
       affected_layers: []
       change_breakout: []
@@ -10157,14 +9666,14 @@ deprecation_deletion_plan:
         it as dead import traffic.
       business_reason: This is high-confidence cleanup because the completed ADG resolved
         it as dead import traffic.
-      evidence: 11 resolved dead-import overlay row(s) point at this file.
-      technical_reason: 11 resolved dead-import overlay row(s) point at this file.
+      evidence: 13 resolved dead-import overlay row(s) point at this file.
+      technical_reason: 13 resolved dead-import overlay row(s) point at this file.
       next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
         clears.
       why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import
         signal clears.
       decision: remove_imports
-      scope: tests/apps_eval/test_eval_to_bus_roundtrip_micro.py
+      scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
       affected_system: ''
       affected_layers: []
       change_breakout: []
@@ -10264,14 +9773,14 @@ deprecation_deletion_plan:
       it as dead import traffic.
     business_reason: This is high-confidence cleanup because the completed ADG resolved
       it as dead import traffic.
-    evidence: 13 resolved dead-import overlay row(s) point at this file.
-    technical_reason: 13 resolved dead-import overlay row(s) point at this file.
+    evidence: 19 resolved dead-import overlay row(s) point at this file.
+    technical_reason: 19 resolved dead-import overlay row(s) point at this file.
     next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     decision: remove_imports
-    scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
+    scope: artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -10288,14 +9797,14 @@ deprecation_deletion_plan:
       it as dead import traffic.
     business_reason: This is high-confidence cleanup because the completed ADG resolved
       it as dead import traffic.
-    evidence: 12 resolved dead-import overlay row(s) point at this file.
-    technical_reason: 12 resolved dead-import overlay row(s) point at this file.
+    evidence: 14 resolved dead-import overlay row(s) point at this file.
+    technical_reason: 14 resolved dead-import overlay row(s) point at this file.
     next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     decision: remove_imports
-    scope: tests/unit/apps_exec/services/test_brief_assembler_service.py
+    scope: artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -10312,14 +9821,14 @@ deprecation_deletion_plan:
       it as dead import traffic.
     business_reason: This is high-confidence cleanup because the completed ADG resolved
       it as dead import traffic.
-    evidence: 11 resolved dead-import overlay row(s) point at this file.
-    technical_reason: 11 resolved dead-import overlay row(s) point at this file.
+    evidence: 13 resolved dead-import overlay row(s) point at this file.
+    technical_reason: 13 resolved dead-import overlay row(s) point at this file.
     next_step: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     why_this_rank: Remove the imports, then rerun ADG to confirm the dead-import signal
       clears.
     decision: remove_imports
-    scope: tests/apps_eval/test_eval_to_bus_roundtrip_micro.py
+    scope: tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -10400,14 +9909,14 @@ deprecation_deletion_plan:
   cleanup_candidates: &id051
   - item: mv_actionable_surface_without_schema
     item_type: mv
-    current_value: 786 rows; diagnostic_monitor
+    current_value: 787 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
       or planned slice.
   - item: mv_agent_specialization_overlap
     item_type: mv
-    current_value: 3034 rows; diagnostic_monitor
+    current_value: 3036 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10449,7 +9958,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_determinism_provenance_drift
     item_type: mv
-    current_value: 6608 rows; diagnostic_monitor
+    current_value: 6613 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10463,7 +9972,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_exemptions_near_critical_paths
     item_type: mv
-    current_value: 3180 rows; diagnostic_monitor
+    current_value: 3181 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10507,19 +10016,19 @@ audit_notes:
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
   - band: P2
-    gross: 747
+    gross: 748
     guardian: 716
-    non_exempt: 31
-    audit_net: 31
+    non_exempt: 32
+    audit_net: 32
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
   - band: P3
-    gross: 19262
+    gross: 19265
     guardian: 87
-    non_exempt: 19175
-    audit_net: 19175
+    non_exempt: 19178
+    audit_net: 19178
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
@@ -10534,28 +10043,28 @@ audit_notes:
     - mismatch_type: meta_count_mismatch
       ref_id: total_edges
       file: ''
-      detail: meta=1088137 actual=1088227
+      detail: meta=1088638 actual=1088728
       delta: 90
     - mismatch_type: meta_count_mismatch
       ref_id: total_nodes
       file: ''
-      detail: meta=187689 actual=187690
+      detail: meta=187779 actual=187780
       delta: 1
     - mismatch_type: artifact_timestamp_mismatch
       artifact_key: gate_results
-      file: artifacts/adg/adg_gate_results_20260703_122529.json
-      expected_snapshot_minute: '20260703_0812'
-      observed_snapshot_minute: '20260703_1225'
+      file: artifacts/adg/adg_gate_results_20260704_031728.json
+      expected_snapshot_minute: '20260703_2302'
+      observed_snapshot_minute: '20260704_0317'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: action_queue
       field: snapshot_ts
-      expected_snapshot_minute: '20260703_0812'
-      observed_snapshot_minute: '20260703_1225'
+      expected_snapshot_minute: '20260703_2302'
+      observed_snapshot_minute: '20260704_0317'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: review_template
       field: snapshot_ts
-      expected_snapshot_minute: '20260703_0812'
-      observed_snapshot_minute: '20260703_1225'
+      expected_snapshot_minute: '20260703_2302'
+      observed_snapshot_minute: '20260704_0317'
     - mismatch_type: generation_manifest_not_certified
       artifact_key: generation_manifest
       certification_status: failed
@@ -10578,29 +10087,29 @@ honest_bottom_line:
     after green unless it overlaps current work.
   - Runtime proof gaps are measurement gaps unless runtime artifacts show observed
     quality failure.
-  - Stop core importing apps
+  - Address H1_new_orphans_delta_ratchet
   - Do not chase raw MV counts, guardian gross counts, or diagnostic reports without
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: artifacts/adg/adg_gate_results_20260703_122529.json
-    bcg_adapter: artifacts/adg/adg_bcg_adapter_07032026_0812.json
-    action_queue: artifacts/adg/adg_action_queue_07032026_0812.json
-    review_template: artifacts/adg/adg_review_template_07032026_0812.json
-    burndown_table: artifacts/adg/adg_burndown_table_07032026_0812.json
+    gate_results: artifacts/adg/adg_gate_results_20260704_031728.json
+    bcg_adapter: artifacts/adg/adg_bcg_adapter_07032026_2302.json
+    action_queue: artifacts/adg/adg_action_queue_07032026_2302.json
+    review_template: artifacts/adg/adg_review_template_07032026_2302.json
+    burndown_table: artifacts/adg/adg_burndown_table_07032026_2302.json
     burndown_report: artifacts/adg/adg_burndown_report.md
-    sqlite_snapshot: artifacts/adg/adg_indexed_07032026_0812.sqlite
-    generation_manifest: artifacts/adg/adg_generation_manifest_07032026_0812.json
-    structural_outputs: artifacts/adg/adg_structural_outputs_07032026_0812.json
-    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07032026_0812.json
-    graphdb_queries: artifacts/adg/adg_graphdb_queries_07032026_0812.json
-    runtime_spine: artifacts/adg/adg_runtime_spine_07032026_0812.json
-    graphdb_projection: artifacts/adg/adg_graphdb_projection_07032026_0812.json
-    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07032026_0812.json
-    graphdb_index: artifacts/adg/adg_graphdb_index_07032026_0812.json
+    sqlite_snapshot: artifacts/adg/adg_indexed_07032026_2302.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_07032026_2302.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_07032026_2302.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07032026_2302.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_07032026_2302.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_07032026_2302.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_07032026_2302.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07032026_2302.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_07032026_2302.json
     graph_watchlist: ''
-    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07032026_0812.json
-    dead_code_report: artifacts/adg/dead_code_zone_control_report_07032026_0812.json
+    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07032026_2302.json
+    dead_code_report: artifacts/adg/dead_code_zone_control_report_07032026_2302.json
   loaded_status:
     missing:
     - graph_watchlist
@@ -10952,8 +10461,8 @@ bcg_findings:
     limits confidence in the lower-priority ranking; it does not change the first
     engineering move.'
   technical_read:
-  - 'First P0 evidence: `P0 action queue`; rows: 4.'
-  - 'Source: ADG `07032026_0812` emitted this as decision-linked queue evidence.'
+  - 'First P0 evidence: `P0 action queue`; rows: 3.'
+  - 'Source: ADG `07032026_2302` emitted this as decision-linked queue evidence.'
   - 'Report caveat: graph/report consistency is FAIL; only lower-priority ranking
     is provisional.'
   - 'Run context: 1 FIX gate(s); 5 action rows emitted.'
@@ -10966,17 +10475,17 @@ bcg_findings:
   priority_rows:
   - priority: 1
     rank: 1
-    move: Clear P0 FIX rows
-    action: Clear P0 FIX rows
-    work: Clear P0 FIX rows
+    move: Clear P0 foundation wave
+    action: Clear P0 foundation wave
+    work: Clear P0 foundation wave
     why_it_matters: P0 work is the first severity lane; do not let a P1 ratchet or
       graph/report caveat jump ahead of it.
     business_reason: P0 work is the first severity lane; do not let a P1 ratchet or
       graph/report caveat jump ahead of it.
-    evidence: '1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py,
-      agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more'
-    technical_reason: '1 P0 FIX row(s); 3 P0 wave row(s): 13_core_imports_apps, agentic_core/L1_cognition/__init__.py,
-      agentic_core/L1_cognition/apps_research_c0_binding.py, +1 more'
+    evidence: '3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py,
+      agentic_core/L1_cognition/apps_research_l1_binding.py'
+    technical_reason: '3 P0 wave file row(s): agentic_core/L1_cognition/__init__.py,
+      agentic_core/L1_cognition/apps_research_c0_binding.py, agentic_core/L1_cognition/apps_research_l1_binding.py'
     next_step: Burn down the listed P0 rows first, then rerun ADG before ranking P1-P3.
     why_this_rank: Burn down the listed P0 rows first, then rerun ADG before ranking
       P1-P3.
@@ -10992,23 +10501,25 @@ bcg_findings:
     action_type: p0_action_queue
   - priority: 1
     rank: 1
-    move: Stop core importing apps
-    action: Stop core importing apps
-    work: Stop core importing apps
-    why_it_matters: Core importing apps breaks the core/app boundary and directly
-      weakens provider-agnostic core.
-    business_reason: Core importing apps breaks the core/app boundary and directly
-      weakens provider-agnostic core.
-    evidence: 'ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core`
-      imports `apps_*`.'
-    technical_reason: 'ADG `07032026_0812` found 5 core-to-app import row(s): `agentic_core`
-      imports `apps_*`.'
-    next_step: Move app-specific bindings behind an adapter or app-owned wiring surface;
-      core should keep only generic contracts.
-    why_this_rank: Move app-specific bindings behind an adapter or app-owned wiring
-      surface; core should keep only generic contracts.
+    move: Address H1_new_orphans_delta_ratchet
+    action: Address H1_new_orphans_delta_ratchet
+    work: Address H1_new_orphans_delta_ratchet
+    why_it_matters: This gate still carries decision-grade risk and should be reviewed
+      on its own terms.
+    business_reason: This gate still carries decision-grade risk and should be reviewed
+      on its own terms.
+    evidence: 'ADG `07032026_2302`: `H1_new_orphans_delta_ratchet` found 3 H1_new_orphans_delta_ratchet,
+      +3 above baseline 0. Breakout unavailable.'
+    technical_reason: 'ADG `07032026_2302`: `H1_new_orphans_delta_ratchet` found 3
+      H1_new_orphans_delta_ratchet, +3 above baseline 0. Breakout unavailable.'
+    next_step: Review the Modules newly fan_in=0 vs prior snapshot (new orphans).
+      evidence. Investigate evidence before changing code; the current choices are
+      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
+    why_this_rank: Review the Modules newly fan_in=0 vs prior snapshot (new orphans).
+      evidence. Investigate evidence before changing code; the current choices are
+      Investigate evidence, Fix, Adapter/interface, Guardian exemption.
     decision: fix_blocker
-    scope: 13_core_imports_apps
+    scope: H1_new_orphans_delta_ratchet
     affected_system: ''
     affected_layers: []
     change_breakout: []
@@ -11079,8 +10590,8 @@ bcg_findings:
   - Graph/report mismatch makes lower-severity ordering provisional, not a reason
     to defer the P0 blocker.
   - After the P0 fix, rerun ADG to prove both the gate and report consistency.
-  next_step: Clear P0 FIX rows; rerun ADG and repair graph/report consistency before
-    lower-severity ranking.
+  next_step: Clear P0 foundation wave; rerun ADG and repair graph/report consistency
+    before lower-severity ranking.
   status: REPORT_INCONSISTENT
   status_label: Decision status
   secondary_statuses: {}
