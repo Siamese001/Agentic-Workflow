@@ -1,9 +1,11 @@
 version = 1
 id = "weekly-adg-audit-and-burndown"
 kind = "cron"
-name = "ADG Audit and Burndown"
+name = "Generate Full ADG"
 prompt = """
 Run the Agentic-Workflow full ADG audit from a clean main-branch state. Use the repo governance adapter and do not edit source files.
+
+If this automation ever requires edits, create and use the dedicated worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown on a codex-adg-audit-and-burndown branch before editing. Never edit the primary checkout on main.
 
 Run this exact command from the repo root:
 python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0
@@ -49,13 +51,16 @@ If repair_ready, produce an explicit P0/P1 handoff block directly from the diges
 Closeout must include certification_status, artifact_status, artifact_status_source, downstream_release_status, eligible downstream lanes, whether artifact_status was direct or inferred, blocking gates, top P0/P1 queue items, exact artifact paths, sha256 digests, command exit codes, and an RCA block when the audit is incomplete or failed.
 """
 status = "ACTIVE"
+execution_environment = "worktree"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=23;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
 model = "gpt-5.4-mini"
 reasoning_effort = "xhigh"
-execution_environment = "local"
-cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
+cwds = [
+  "C:\\Git\\Agentic-Workflow-FRESH",
+  "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown",
+]
 created_at = 1781555471411
-updated_at = 1782309600000
+updated_at = 1783162656030
 
 [handoff]
 chain = "adg-severity-lanes/v1"
