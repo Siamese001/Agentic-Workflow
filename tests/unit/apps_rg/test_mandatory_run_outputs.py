@@ -632,7 +632,7 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
 
     out = render(run)
 
-    assert "## Mandatory BCG / Run-Ledger Outputs" in out
+    assert "## Mandatory Outputs (1/2/3)" in out
     assert "Evidence mapping failure" in out
     assert "Causal allocation" in out
     assert "Retry recoverability" in out
