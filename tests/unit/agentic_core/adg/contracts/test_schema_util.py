@@ -16,6 +16,7 @@ from agentic_core.adg.contracts.schema_util import (
     LAYER_AUTHORITY_FORBIDDEN,
     LAYER_PREFIXES,
     PROMPT_AUTHORITY_RULES,
+    PROMPT_FIELD_TO_SLOT,
     PROMPT_SLOT_AUTHORITY,
     PROMPT_SLOT_TYPES,
     UWG_CANONICAL_SYMBOL,
@@ -159,6 +160,10 @@ class TestPromptAuthorityInvariants:
 
     def test_prompt_slot_types_includes_canonical_five(self) -> None:
         assert set(PROMPT_SLOT_TYPES) == {"S0", "D0", "I0", "C0", "U0"}
+
+    def test_prompt_field_mapping_includes_r0_output_schema_aliases(self) -> None:
+        assert PROMPT_FIELD_TO_SLOT["r0_output_format"] == "R0"
+        assert PROMPT_FIELD_TO_SLOT["output_format_schema"] == "R0"
 
     def test_prompt_authority_rules_slots_are_all_known(self) -> None:
         known = set(PROMPT_SLOT_TYPES)

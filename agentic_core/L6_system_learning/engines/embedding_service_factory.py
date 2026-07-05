@@ -379,6 +379,7 @@ class EmbeddingServiceFactory:
                 return "cuda"
         except RuntimeError as exc:
             logger.warning("[EmbeddingServiceFactory] torch CUDA probe failed; using CPU: %s", exc)
+            return "cpu"
         return "cpu"
 
     @staticmethod
