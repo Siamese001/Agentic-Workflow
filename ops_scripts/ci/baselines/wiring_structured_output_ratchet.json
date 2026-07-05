@@ -1,9 +1,18 @@
 {
   "gate_id": "P_structured_output_ratchet",
-  "count": 1,
+  "count": 0,
   "seeded_at": "2026-04-23T16:11:23.938628+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-07-05T03:14:59.689793+00:00",
-  "last_run_snapshot": "adg_indexed_07042026_2305.sqlite"
+  "snapshot": "adg_indexed_07052026_0127.sqlite",
+  "zero_run_streak": 2,
+  "last_run_at": "2026-07-05T05:37:22.584605+00:00",
+  "last_run_snapshot": "adg_indexed_07052026_0127.sqlite",
+  "tightened_at": "2026-07-05T05:36:38.912137+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-07-05T05:36:38.912137+00:00",
+      "snapshot": "adg_indexed_07052026_0127.sqlite",
+      "from": 1,
+      "to": 0
+    }
+  ]
 }

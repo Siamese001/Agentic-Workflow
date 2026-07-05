@@ -14,6 +14,7 @@ from apps_rg.runtime.bindings.u0_binding import (
 )
 from apps_rg.runtime.bindings.u0_package_ingest import (
     AppsRgRuntimePackageRegistry,
+    U0PackageValidationError,
     assert_package_files_on_disk,
     default_package_ref,
     ingest_apps_rg_runtime_package,
@@ -73,6 +74,20 @@ class TestPackageIngestHelper:
         assert len(result.package.package_digest) == 64
         assert result.validation_receipt.validation_passed is True
         assert result.package_dict.get("route_profile_ref")
+
+    def test_registry_parse_failure_is_typed_validation_error(self, tmp_path: Path) -> None:
+        registry_path = tmp_path / "apps_rg" / "config" / "domain_contract" / "runtime_package_registry.yaml"
+        registry_path.parent.mkdir(parents=True)
+        registry_path.write_text("default_packages: [", encoding="utf-8")
+
+        registry = AppsRgRuntimePackageRegistry(registry_base_path=tmp_path)
+
+        with pytest.raises(U0PackageValidationError) as exc_info:
+            registry.load_app_registry("apps_rg")
+
+        assert exc_info.value.field == "runtime_package_registry"
+        assert exc_info.value.reason_code == "registry_parse_error"
+        assert exc_info.value.receipt["registry_path"] == str(registry_path)
 
 
 class TestU0ValidatePackageWiring:

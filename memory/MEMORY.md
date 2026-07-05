@@ -93,6 +93,9 @@
   Claude-backed, so formal proof judging is OpenAI-required and `anthropic_claude` must be removed from
   competencies X1D CLI/env overrides. Detail:
   `memory/codex/apps_rg_competencies_x1d_self_judge_guard.md`.
+- **L2 E4 real healing prompt-packet repair (2026-07-01):** E4 healing must mutate the retry CPA/prompt
+  packet with H0 bounded repair context and before/after hashes; a heal receipt alone is not proof.
+  Detail: `memory/codex/l2_e4_real_healing_prompt_packet_repair.md`.
 - **Codex repo-local memory placement (2026-06-16):** Agentic Workflow-specific Codex memory artifacts
   belong under `memory/codex/`, not only under the global user-profile path
   `C:\Users\amita\.codex\memories`. The repo-local mirror contains `MEMORY.md`, `memory_summary.md`,
