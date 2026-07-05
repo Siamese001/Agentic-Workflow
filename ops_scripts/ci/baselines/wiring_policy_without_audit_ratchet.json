@@ -1,9 +1,21 @@
 {
   "gate_id": "C4_policy_without_audit_ratchet",
-  "count": 1,
+  "count": 0,
   "seeded_at": "2026-04-23T16:07:25.257628+00:00",
-  "snapshot": "adg_indexed_04232026_0925.sqlite",
-  "zero_run_streak": 0,
-  "last_run_at": "2026-07-04T14:30:54.339261+00:00",
-  "last_run_snapshot": "adg_indexed_07042026_1025.sqlite"
+  "snapshot": "adg_indexed_07042026_1748.sqlite",
+  "zero_run_streak": 3,
+  "last_run_at": "2026-07-05T05:26:45.266889+00:00",
+  "last_run_snapshot": "adg_indexed_07042026_1748.sqlite",
+  "tightened_at": "2026-07-05T00:29:09.923048+00:00",
+  "tighten_history": [
+    {
+      "at": "2026-07-05T00:29:09.923048+00:00",
+      "snapshot": "adg_indexed_07042026_1748.sqlite",
+      "from": 1,
+      "to": 0
+    }
+  ],
+  "auto_promoted_tier": "B",
+  "auto_promoted_at": "2026-07-05T05:26:45.266889+00:00",
+  "auto_promoted_after_streak": 3
 }

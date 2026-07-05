@@ -504,11 +504,17 @@ def materialize_phase_b(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
             n.layer               AS layer,
             COUNT(DISTINCT CASE WHEN e.relation_type = 'generates_prompt' THEN e.id END)
                                   AS generates_prompt_count,
-            COUNT(DISTINCT CASE WHEN e2.relation_type = 'implements' THEN e2.id END)
+            COUNT(DISTINCT CASE
+                WHEN e2.relation_type = 'implements' THEN e2.id
+                WHEN e.relation_type = 'generates_prompt' AND e.symbol LIKE 'R0:%' THEN e.id
+            END)
                                   AS output_schema_flag,
             CASE
                 WHEN COUNT(DISTINCT CASE WHEN e.relation_type = 'generates_prompt' THEN e.id END) > 0
-                 AND COUNT(DISTINCT CASE WHEN e2.relation_type = 'implements' THEN e2.id END) = 0
+                 AND COUNT(DISTINCT CASE
+                     WHEN e2.relation_type = 'implements' THEN e2.id
+                     WHEN e.relation_type = 'generates_prompt' AND e.symbol LIKE 'R0:%' THEN e.id
+                 END) = 0
                 THEN 1
                 ELSE 0
             END AS gap_flag
