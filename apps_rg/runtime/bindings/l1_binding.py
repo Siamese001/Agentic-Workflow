@@ -12,6 +12,9 @@ from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
+from apps_rg.runtime.bindings.l1_planning_capsule import (
+    build_apps_rg_l1_planning_capsule,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -66,9 +69,6 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     # Extract profile refs for planning_prior_refs
     planning_prior_refs = _extract_planning_prior_refs(app_payload)
 
-    # Build advisory route hints (not route authority)
-    route_hints = _build_advisory_route_hints(generation_mode)
-
     # Extract prompt BOM refs
     prompt_bom_refs = _extract_prompt_bom_refs(app_payload)
 
@@ -100,23 +100,48 @@ def l1_plan_apps_rg(validated_request: ValidatedRequest) -> L1PlanContract:
     replay_key = str(getattr(validated_request, "replay_key", "") or "")
 
     pm = app_payload.get("profile_manifest") if isinstance(app_payload.get("profile_manifest"), Mapping) else {}
-    planning_digest = str(pm.get("l1_planning_profile_digest") or "")
+    from apps_rg.runtime.bindings.u0_profile_manifest import (
+        l1_planning_profile_digest,
+        l1_planning_profile_ref,
+    )
+
+    planning_profile_ref = str(pm.get("l1_planning_profile_ref") or l1_planning_profile_ref())
+    planning_digest = str(
+        pm.get("l1_planning_profile_digest")
+        or l1_planning_profile_digest(allow_missing=False)
+    )
     manifest_digest = str(pm.get("manifest_digest") or validated_request.payload_digest)
     from apps_rg.runtime.bindings.briefing_u0_signals import (
         apps_research_call_required_at_u0,
         briefing_validate_or_raise,
     )
-    from apps_rg.runtime.bindings.l1_plan_evidence import (
-        build_ambiguity_register,
-        build_validation_receipt_id,
-    )
+    from apps_rg.runtime.bindings.l1_plan_evidence import build_validation_receipt_id
 
     validation_receipt_id = build_validation_receipt_id(
         request_id=validated_request.request_id,
         profile_manifest_digest=manifest_digest,
         planning_profile_digest=planning_digest,
     )
-    ambiguity_register = build_ambiguity_register(app_payload)
+    capsule = build_apps_rg_l1_planning_capsule(
+        app_payload=app_payload,
+        request_id=validated_request.request_id,
+        run_id=validated_request.run_id,
+        trace_id=validated_request.trace_id,
+        replay_key=replay_key,
+        planning_profile_ref=planning_profile_ref,
+        planning_profile_digest=planning_digest,
+    )
+    task_spec["apps_rg_planning_capsule_ref"] = capsule["capsule_digest"]
+    task_spec["apps_rg_planning_capsule"] = capsule
+    support_expectation["apps_rg_evidence_plan_ref"] = capsule["capsule_digest"]
+    output_expectation["apps_rg_completion_criteria_ref"] = capsule["capsule_digest"]
+    ambiguity_register = capsule["ambiguity_register"]
+
+    # Build advisory route hints (not route authority)
+    route_hints = _build_advisory_route_hints(
+        generation_mode,
+        capsule_route_feature_hints=capsule.get("route_feature_hints"),
+    )
 
     active_generation = (
         generation_mode in _FULL_RESUME_GENERATION_MODES
@@ -304,13 +329,29 @@ def _extract_policy_refs(app_payload: Mapping[str, Any]) -> Mapping[str, str]:
     return {}
 
 
-def _build_advisory_route_hints(generation_mode: str) -> Mapping[str, str]:
+def _build_advisory_route_hints(
+    generation_mode: str,
+    *,
+    capsule_route_feature_hints: Mapping[str, Any] | None = None,
+) -> Mapping[str, str]:
     """Build advisory route hints (not route authority)."""
     hints: dict[str, str] = {"authority_class": "ADVISORY_ONLY"}
     if generation_mode in _FULL_RESUME_GENERATION_MODES:
         hints["execution_shape_hint"] = "multi_work_unit_managed_candidate"
     elif generation_mode in _SINGLE_SECTION_MODES:
         hints["execution_shape_hint"] = "single_work_unit_direct"
+    route_features = dict(capsule_route_feature_hints or {})
+    feature_map = {
+        "multi_work_unit": "multi_work_unit_hint",
+        "merge_needed": "merge_needed_hint",
+        "candidate_selection_needed": "candidate_selection_needed_hint",
+        "grounding_needed": "grounding_needed_hint",
+    }
+    for src, dst in feature_map.items():
+        if src in route_features:
+            hints[dst] = "true" if bool(route_features[src]) else "false"
+    if route_features.get("hitl_risk_hint"):
+        hints["hitl_risk_hint"] = str(route_features["hitl_risk_hint"])
     return hints
 
 

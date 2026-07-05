@@ -1,4 +1,6 @@
-"""apps_rg app_payload CONSUMPTION tests (AG-2).
+"""apps-test-model: APP CONTRACT.
+
+apps_rg app_payload CONSUMPTION tests (AG-2).
 
 The companion suites prove REACHABILITY:
     - test_apps_rg_u0_payload_reflection.py — harness sidecar
@@ -295,7 +297,14 @@ def test_pa_emits_component_hash_map() -> None:
         "route",
         "governed_pa",
     }
-    assert set(chm.keys()) == expected_components
+    expected_l1_components = {
+        "l1_planning_capsule",
+        "l1_prompt_plan",
+        "l1_completion_criteria",
+        "l1_cognition_plan_requested",
+    }
+    assert expected_components <= set(chm.keys())
+    assert expected_l1_components <= set(chm.keys())
     for component, digest in chm.items():
         assert len(digest) == 64, f"{component} digest must be sha256 hex"
         assert all(c in "0123456789abcdef" for c in digest)

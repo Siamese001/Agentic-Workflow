@@ -1,4 +1,6 @@
-"""Tests for apps_rg L1 binding.
+"""apps-test-model: APP CONTRACT.
+
+Tests for apps_rg L1 binding.
 
 Validates:
 - l1_plan_apps_rg emits all four NAA keys True
@@ -51,6 +53,7 @@ def _profile_manifest_digest_only() -> dict[str, str]:
 
 def _ap_base(**extra: Any) -> dict[str, Any]:
     base: dict[str, Any] = {
+        "non_product_certified": True,
         "task_spec": {"generation_mode": "strategic_tailor"},
         "profile_manifest": _profile_manifest_digest_only(),
     }
@@ -235,6 +238,7 @@ class TestPlanningPriorRefs:
             trace_id="t1",
             l5_certification_ref=_L5_DEFAULT,
             app_payload={
+                "non_product_certified": True,
                 "task_spec": {"generation_mode": "strategic_tailor"},
                 "profile_manifest": {"rg_planning_profile": "custom/planning.yaml"},
             },
@@ -256,6 +260,7 @@ class TestPlanningPriorRefs:
             trace_id="t1",
             l5_certification_ref=_L5_DEFAULT,
             app_payload={
+                "non_product_certified": True,
                 "task_spec": {"generation_mode": "strategic_tailor"},
                 "profile_manifest": {"prompt_registry_ref": "apps_rg/prompt_assembly/x.yaml"},
             },

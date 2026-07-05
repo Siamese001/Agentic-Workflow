@@ -12,7 +12,7 @@ import os
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.final_evidence_contract import (
@@ -389,6 +389,7 @@ def c0_retrieve_apps_rg(
     chroma_path: str | None = None,
     *,
     trace_map_out: list[AppsRgEvidenceTraceMap] | None = None,
+    l1_plan: Any | None = None,
     **kwargs: Any,
 ) -> FinalEvidenceContract:
     """C0 retrieval for apps_rg — inline JD/resume + optional ``fact_vectors`` dense lane."""
@@ -765,6 +766,8 @@ def c0_retrieve_apps_rg(
             trace_sink.add_trace(st)
         trace_map_out.append(trace_sink)
 
+    l1_retrieval_plan_ref, l1_audit_refs = _l1_evidence_plan_receipts(l1_plan)
+
     return FinalEvidenceContract(
         request_id=request_id,
         run_id=run_id,
@@ -781,6 +784,7 @@ def c0_retrieve_apps_rg(
         source_version_map=tuple(source_version_map),
         freshness_receipts=tuple(freshness_receipts),
         dense_search_refs=tuple(dense_search_refs),
+        retrieval_plan_ref=l1_retrieval_plan_ref,
         query_vec_ref=query_vec_ref,
         sparse_search_refs=sparse_search_refs,
         graph_expansion_refs=graph_expansion_refs,
@@ -793,7 +797,41 @@ def c0_retrieve_apps_rg(
         final_evidence_digest=digest,
         evidence_collection_timestamp=ts,
         otel_span_refs=otel_span_refs,
+        audit_refs=l1_audit_refs,
     )
+
+
+def _l1_evidence_plan_receipts(l1_plan: Any | None) -> tuple[str, tuple[str, ...]]:
+    if l1_plan is None:
+        return "", ()
+    task_spec = dict(getattr(l1_plan, "task_spec", None) or {})
+    support_expectation = dict(getattr(l1_plan, "support_expectation", None) or {})
+    capsule = task_spec.get("apps_rg_planning_capsule")
+    capsule_ref = str(
+        task_spec.get("apps_rg_planning_capsule_ref")
+        or support_expectation.get("apps_rg_evidence_plan_ref")
+        or ""
+    ).strip()
+    evidence_plan: Any = []
+    if isinstance(capsule, Mapping):
+        capsule_ref = str(capsule.get("capsule_digest") or capsule_ref).strip()
+        evidence_plan = capsule.get("evidence_plan", [])
+    if not capsule_ref and not evidence_plan:
+        return "", ()
+    canonical = json.dumps(evidence_plan, sort_keys=True, separators=(",", ":"), default=str)
+    digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    ref = f"l1_evidence_plan:{digest[:16]}"
+    if capsule_ref:
+        ref = f"{ref}:capsule:{capsule_ref[:24]}"
+    audit_refs = tuple(
+        ref
+        for ref in (
+            f"l1_capsule_digest:{capsule_ref[:24]}" if capsule_ref else "",
+            f"l1_evidence_plan_digest:{digest[:24]}",
+        )
+        if ref
+    )
+    return ref, audit_refs
 
 
 # =============================================================================

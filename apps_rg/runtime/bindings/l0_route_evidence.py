@@ -6,7 +6,7 @@ import hashlib
 import hmac
 import json
 import os
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from agentic_core.runtime.contracts.route_contract import RouteContract
@@ -69,6 +69,43 @@ def sign_route_digest(digest: str, *, secret: bytes) -> str:
     return hmac.new(secret, digest.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
+def _sha256_json_prefix(payload: Any) -> str:
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
+
+
+def _l1_capsule_consumption_refs(plan: L1PlanContract) -> tuple[str, ...]:
+    task_spec = dict(plan.task_spec or {})
+    support_expectation = dict(plan.support_expectation or {})
+    capsule_ref = str(task_spec.get("apps_rg_planning_capsule_ref") or "").strip()
+    capsule = task_spec.get("apps_rg_planning_capsule")
+    if not capsule_ref and isinstance(capsule, Mapping):
+        capsule_ref = str(capsule.get("capsule_digest") or "").strip()
+    if not capsule_ref:
+        return ()
+    route_features: Any = {}
+    completion_count = 0
+    work_unit_count = 0
+    if isinstance(capsule, Mapping):
+        route_features = capsule.get("route_feature_hints") or {}
+        completion = capsule.get("completion_criteria")
+        work_units = capsule.get("work_units")
+        completion_count = len(completion) if isinstance(completion, Sequence) else 0
+        work_unit_count = len(work_units) if isinstance(work_units, Sequence) else 0
+    evidence_ref = str(support_expectation.get("apps_rg_evidence_plan_ref") or "").strip()
+    refs = [
+        f"l1_capsule_digest:{capsule_ref[:24]}",
+        f"l1_route_features:{_sha256_json_prefix(route_features)}",
+        f"l1_completion_criteria:{completion_count}",
+        f"l1_work_units:{work_unit_count}",
+        f"l1_work_shape:{plan.work_shape or 'unknown'}",
+        f"l1_task_shape:{plan.task_shape or 'unknown'}",
+    ]
+    if evidence_ref:
+        refs.append(f"l1_evidence_plan_ref:{evidence_ref[:24]}")
+    return tuple(refs)
+
+
 def stamp_route_evidence(
     route: RouteContract,
     *,
@@ -92,14 +129,15 @@ def stamp_route_evidence(
         cache_eligibility=cache_eligibility,
     )
     sig = sign_route_digest(digest, secret=resolve_route_hmac_secret())
-    if not sig:
-        return route
+    l1_refs = _l1_capsule_consumption_refs(plan)
 
     from dataclasses import replace
 
-    return replace(
-        route,
-        route_digest=digest,
-        hmac_sig=sig,
-        signature=sig,
-    )
+    updates: dict[str, Any] = {
+        "route_digest": digest,
+        "reason_codes": tuple(route.reason_codes or ()) + l1_refs,
+    }
+    if sig:
+        updates["hmac_sig"] = sig
+        updates["signature"] = sig
+    return replace(route, **updates)
