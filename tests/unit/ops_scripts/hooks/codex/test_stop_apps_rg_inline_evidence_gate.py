@@ -127,7 +127,9 @@ def _write_run(tmp_path: Path) -> tuple[Path, dict]:
                     "required_implementation_plan": ["Require an upstream token before scheduling downstream lanes."],
                 }
             ],
-            "recommended_next_move": ["Fix P0 gates before rerun."],
+            "recommended_next_move": [
+                "Resolve P0: Fix first blocked lane before rerun. Evidence: lane_dependency_contract."
+            ],
             "evidence_map": [{"label": "Mandatory run ledger", "path": str(run_dir / "02_section_lane_summary_table.md")}],
         },
         "section_lane_summary_table": {
@@ -246,6 +248,10 @@ Run root: `@{run_dir}`
 - `executive_summary`: P0_STATIC_MANUAL_BRIEF_USED
   - Root cause: Downstream lane scheduled without upstream token.
 
+## Recommended Next Move
+
+1. Resolve P0: Fix first blocked lane before rerun. Evidence: lane_dependency_contract.
+
 ## Locked Section Lane Summary Table
 
 | # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |
@@ -316,6 +322,37 @@ Run root: `@{run_dir}`
         assert rc == 2
         reason = json.loads(capsys.readouterr().out.strip().splitlines()[-1])["reason"]
         assert "section_lane_summary_table.row_count expected=2 observed=1" in reason
+
+    def test_stale_bcg_research_source_class_recommendation_fails(
+        self, gate_mod, monkeypatch, tmp_path, capsys
+    ) -> None:
+        run_dir, inline = _write_run(tmp_path)
+        inline["section_lane_summary_table"]["rows"][0]["research_source_class"] = "FRESH_APPS_RESEARCH"
+        inline["bcg"]["p0_p1_px_recommendations"]["rows"].append(
+            {
+                "priority": "PX",
+                "recommendation": "Add research source class to the locked BCG and lane table.",
+                "evidence": "FRESH_APPS_RESEARCH",
+                "gate_outcome": "Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP.",
+            }
+        )
+        (run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json").write_text(
+            json.dumps({"inline_required_output": inline}),
+            encoding="utf-8",
+        )
+        response = _full_inline_response(run_dir, inline).replace(
+            "| `P0` | Fix first blocked lane before rerun. | `lane_dependency_contract` | Downstream lanes cannot prove product authority. |",
+            (
+                "| `P0` | Fix first blocked lane before rerun. | `lane_dependency_contract` | Downstream lanes cannot prove product authority. |\n"
+                "| `PX` | Add research source class to the locked BCG and lane table. | `FRESH_APPS_RESEARCH` | Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP. |"
+            ),
+        )
+
+        rc = _run(gate_mod, response, monkeypatch)
+
+        assert rc == 2
+        reason = json.loads(capsys.readouterr().out.strip().splitlines()[-1])["reason"]
+        assert "research_source_class_already_present" in reason
 
     def test_real_transcript_payload_is_enforced(self, gate_mod, monkeypatch, tmp_path, capsys) -> None:
         run_dir, _inline = _write_run(tmp_path)

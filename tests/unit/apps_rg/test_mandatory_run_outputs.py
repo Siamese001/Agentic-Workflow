@@ -7,6 +7,7 @@ from pathlib import Path
 
 from apps_rg.runtime.full_resume_review_bundle import write_review_index
 from apps_rg.runtime.full_run_section_status import collect_full_run_section_status
+from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
     MANDATORY_RUN_OUTPUT_JSON,
@@ -141,11 +142,16 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
         "recommended_next_move",
         "evidence_map",
     ]
-    assert {"P0", "P1", "PX"}.issubset(
-        {row["priority"] for row in inline["bcg"]["p0_p1_px_recommendations"]["rows"]}
+    recommendation_rows = inline["bcg"]["p0_p1_px_recommendations"]["rows"]
+    assert any(row["priority"] == "P0" for row in recommendation_rows)
+    assert not any(
+        row["recommendation"] == "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane."
+        and "PHASE1_NO_RUN_DIR lanes:" not in row["evidence"]
+        for row in recommendation_rows
     )
     gates_by_id = {gate["gate_id"]: gate for gate in payload["mandatory_inline_output_gates"]}
     assert gates_by_id["mandatory_inline_required_json_shape_locked"]["pass"] is True
+    assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is True
     assert gates_by_id["mandatory_resume_docx_inline_json_present"]["pass"] is False
     assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
         "current_run_authorized"
@@ -542,6 +548,92 @@ def test_mandatory_row0_surfaces_apps_research_source_class_and_x2_x3(tmp_path: 
     assert "Research source class" in mandatory
     assert "FRESH_APPS_RESEARCH" in mandatory
     assert "ALLOW; X1=PASS" in mandatory
+    recommendations = emitted["payload"]["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
+    recommendation_text = "\n".join(row["recommendation"] for row in recommendations)
+    assert "Add research source class to the locked BCG and lane table." not in recommendation_text
+    assert "Compare latest run to prior passing research wiring" not in recommendation_text
+
+
+def test_bcg_recommendations_are_evidence_backed_for_fresh_research_blocked_lanes(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_fresh_blocked_lanes"
+    brief = tmp_path / "delegated_briefing.txt"
+    brief.write_text("Fresh delegated briefing text.", encoding="utf-8")
+    _write_json(
+        run / "modular_r4" / "phase1_lane_inventory.json",
+        {
+            "lane_argv_targeting": {
+                "target_company": "Anthropic",
+                "target_title": "Manager of Applied AI Architecture, Partnerships",
+                "briefing_source": "RUN_SPECIFIC",
+                "briefing_digest": "brief-digest-fresh",
+                "briefing_ref_used": str(brief),
+                "briefing_text": "Fresh delegated briefing text.",
+            }
+        },
+    )
+    _write_json(run / "ingress_raw.json", {"auto_research_internal": True, "manual_brief": str(brief)})
+    _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": True})
+
+    for lane_name in GENERATED_LANES:
+        lane = run / "modular_r4" / "sections" / lane_name
+        lane.mkdir(parents=True, exist_ok=True)
+        blocked = lane_name in {"insurtech_bullets", "headline"}
+        if lane_name != "insurtech_bullets":
+            display_name = {
+                "headline": "headline_output.txt",
+                "executive_summary": "resume_display_text.txt",
+                "competencies": "competencies_display.txt",
+            }.get(lane_name, f"{lane_name}_output.txt")
+            (lane / display_name).write_text(f"{lane_name} output\n", encoding="utf-8")
+        _write_json(
+            lane / "x3_disposition.json",
+            {
+                "x3_code": "X3_BLOCK" if blocked else "X3_ALLOW",
+                "product_quality_status": "FAIL" if lane_name == "insurtech_bullets" else "PASS",
+                "runtime_generation_status": "REAL_LLM",
+                "decisive_judge_failures": ["gemini_pro"] if blocked else [],
+            },
+        )
+        _write_json(
+            lane / "x2_gate_outputs.json",
+            {
+                "gates": [
+                    {
+                        "gate_id": "x2_insurtech_bullets_bullet_count_3",
+                        "pass": False,
+                        "failure_reason": "expected exactly 3 bullets",
+                    }
+                ]
+                if lane_name == "insurtech_bullets"
+                else []
+            },
+        )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    payload = emitted["payload"]
+    recommendations = payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
+    recommendation_text = "\n".join(row["recommendation"] for row in recommendations)
+    evidence_text = "\n".join(row["evidence"] for row in recommendations)
+    next_moves = payload["inline_required_output"]["bcg"]["recommended_next_move"]
+    gates_by_id = {gate["gate_id"]: gate for gate in payload["mandatory_inline_output_gates"]}
+
+    assert any(
+        row["priority"] == "P0"
+        and row["recommendation"] == "Fix X3-blocked generated lanes before authorizing the final resume."
+        and row["evidence"] == "insurtech_bullets, headline"
+        for row in recommendations
+    )
+    assert "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane." not in recommendation_text
+    assert "Add research source class to the locked BCG and lane table." not in recommendation_text
+    assert "Compare latest run to prior passing research wiring" not in recommendation_text
+    assert "PHASE1_NO_RUN_DIR" not in evidence_text
+    assert "insurtech_bullets, headline" in next_moves[0]
+    assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is True
 
 
 def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(tmp_path: Path) -> None:
@@ -579,7 +671,7 @@ def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(t
     assert "BCG Executive Output - apps_rg Run" in bcg
     assert "P0/P1/PX Recommendations" in bcg
     assert "Keep final resume product gate failed while generated-section gap markers exist." in bcg
-    assert "Fix P0 gates before rerun" in bcg
+    assert "Resolve P0:" in bcg
 
 
 def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:

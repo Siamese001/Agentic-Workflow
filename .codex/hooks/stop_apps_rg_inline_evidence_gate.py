@@ -235,6 +235,52 @@ def _row_value(row: dict[str, Any], key: str) -> str:
     return "" if value is None else str(value)
 
 
+def _bcg_truth_failures(inline: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    bcg = inline.get("bcg") if isinstance(inline.get("bcg"), dict) else {}
+    recs = bcg.get("p0_p1_px_recommendations") if isinstance(bcg.get("p0_p1_px_recommendations"), dict) else {}
+    rec_rows = recs.get("rows") if isinstance(recs.get("rows"), list) else []
+    lane_table = (
+        inline.get("section_lane_summary_table")
+        if isinstance(inline.get("section_lane_summary_table"), dict)
+        else {}
+    )
+    lane_rows = lane_table.get("rows") if isinstance(lane_table.get("rows"), list) else []
+    row0 = lane_rows[0] if lane_rows and isinstance(lane_rows[0], dict) else {}
+    research_source_class = str(row0.get("research_source_class") or "")
+    blocked_lanes = [
+        str(row.get("section") or "")
+        for row in lane_rows
+        if isinstance(row, dict) and str(row.get("x3") or "").startswith("X3_BLOCK")
+    ]
+    phase1_no_run_lanes = [
+        str(row.get("section") or "")
+        for row in lane_rows
+        if isinstance(row, dict)
+        and "PHASE1_NO_RUN_DIR" in f"{row.get('x3') or ''} {row.get('past_fail_blocker') or ''}"
+    ]
+    for idx, row in enumerate(rec_rows):
+        if not isinstance(row, dict):
+            continue
+        recommendation = str(row.get("recommendation") or "")
+        if "X3-blocked generated lanes" in recommendation and not blocked_lanes:
+            failures.append(f"bcg.p0_p1_px_recommendations.rows[{idx}].no_x3_blocked_lanes")
+        if "PHASE1_NO_RUN_DIR" in recommendation and not phase1_no_run_lanes:
+            failures.append(f"bcg.p0_p1_px_recommendations.rows[{idx}].no_phase1_no_run_dir")
+        if "research source class" in recommendation and research_source_class not in {"", "NOT_OBSERVED"}:
+            failures.append(f"bcg.p0_p1_px_recommendations.rows[{idx}].research_source_class_already_present")
+        if "static/manual research path" in recommendation and research_source_class != "STATIC_MANUAL_BRIEF":
+            failures.append(f"bcg.p0_p1_px_recommendations.rows[{idx}].not_static_manual_research")
+    next_moves = bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else []
+    p0_rows = [row for row in rec_rows if isinstance(row, dict) and str(row.get("priority") or "") == "P0"]
+    joined_next = " ".join(str(item) for item in next_moves)
+    if p0_rows and "P0" not in joined_next:
+        failures.append("bcg.recommended_next_move.missing_p0_reference")
+    if not p0_rows and "P0" in joined_next:
+        failures.append("bcg.recommended_next_move.stale_p0_reference")
+    return failures
+
+
 def _validate_bcg(text: str, inline: dict[str, Any], failures: list[str]) -> None:
     section = _section(text, "## Locked BCG Output", "## Locked Section Lane Summary Table")
     bcg = inline.get("bcg") if isinstance(inline.get("bcg"), dict) else {}
@@ -251,6 +297,9 @@ def _validate_bcg(text: str, inline: dict[str, Any], failures: list[str]) -> Non
         for key in ("priority", "recommendation", "evidence", "gate_outcome"):
             if not _contains(section, row.get(key)):
                 failures.append(f"bcg.p0_p1_px_recommendations.rows[{idx}].{key}")
+    for idx, item in enumerate(bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else []):
+        if not _contains(section, item):
+            failures.append(f"bcg.recommended_next_move[{idx}]")
     board = bcg.get("board_level_readout") if isinstance(bcg.get("board_level_readout"), dict) else {}
     for idx, row in enumerate(board.get("rows") if isinstance(board.get("rows"), list) else []):
         if not isinstance(row, dict):
@@ -264,6 +313,7 @@ def _validate_bcg(text: str, inline: dict[str, Any], failures: list[str]) -> Non
         for key in ("section", "classification", "root_cause"):
             if not _contains(section, row.get(key)):
                 failures.append(f"bcg.issue_tree[{idx}].{key}")
+    failures.extend(_bcg_truth_failures(inline))
 
 
 def _validate_lane_table(text: str, inline: dict[str, Any], failures: list[str]) -> None:
