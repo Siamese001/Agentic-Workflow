@@ -202,6 +202,7 @@ class FactWritebackEngine:
             receipt["status"] = "FAIL"
             receipt["reason"] = f"{type(exc).__name__}:{exc}"
             _logger.warning("fact writeback promotion failed: %s", exc)
+            return receipt
         return receipt
 
     def _promote_into_receipt(

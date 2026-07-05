@@ -445,6 +445,24 @@ class TestTaskContractViews:
         assert row is not None
         assert row[0] == 1
 
+    def test_structured_output_gap_r0_prompt_symbol_counts_as_schema(self, tmp_path: Path) -> None:
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 1, "prompter", "L0", "agentic_core/L0_routing/reasoning/assembly_stage.py")
+        _node(conn, 2, "prompt_target", "L2", "agentic_core/L2_execution/reasoning/target.py")
+        _edge(conn, 1, 2, "generates_prompt", symbol="R0:json")
+        conn.commit()
+        conn.close()
+        _setup_phase_a(db)
+        materialize_phase_b(db)
+        conn = sqlite3.connect(str(db))
+        row = conn.execute(
+            "SELECT output_schema_flag, gap_flag FROM mv_structured_output_gaps WHERE node_id = 1"
+        ).fetchone()
+        conn.close()
+        assert row is not None
+        assert row == (1, 0)
+
 
 # ---------------------------------------------------------------------------
 # Remaining Family 10 — Topology

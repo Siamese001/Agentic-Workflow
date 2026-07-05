@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate C3 — silent write (no sibling side-effect emit) (plan W4.3).
+"""Gate C3 — silent write (no same-surface side-effect emit) (plan W4.3).
 
 Flags modules with ``writes_to`` edges that emit zero
 ``emits_side_effect`` edges. Persistent state mutation without a
@@ -51,6 +51,11 @@ class SilentWritesGate(WiringGate):
               AND NOT EXISTS (
                   SELECT 1 FROM edges se
                   WHERE se.src_id = we.src_id
+                    AND se.relation_type = 'emits_side_effect'
+              )
+              AND NOT EXISTS (
+                  SELECT 1 FROM edges se
+                  WHERE se.dst_id = we.src_id
                     AND se.relation_type = 'emits_side_effect'
               )
         """

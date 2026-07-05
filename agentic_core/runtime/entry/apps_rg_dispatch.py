@@ -18,10 +18,16 @@ __all__ = [
     "run_ag2_retrieval_and_prompt",
 ]
 
+_MISSING_APP_ATTR = object()
+
 
 def _load_app_attr(module_name: str, attr_name: str) -> Any:
     """Resolve app-owned entrypoints without static core-to-app import edges."""
-    return getattr(import_module(module_name), attr_name)
+    module = import_module(module_name)
+    value = getattr(module, attr_name, _MISSING_APP_ATTR)
+    if value is _MISSING_APP_ATTR:
+        raise AttributeError(f"{module.__name__!r} does not export {attr_name!r}")
+    return value
 
 
 def apps_rg_parse(payload: dict[str, Any]) -> Any:

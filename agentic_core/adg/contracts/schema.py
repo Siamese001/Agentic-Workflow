@@ -525,6 +525,8 @@ PROMPT_FIELD_TO_SLOT: dict[str, str] = {
     "i0_instructional": "I0",
     "c0_context": "C0",
     "u0_user_prompt": "U0",
+    "r0_output_format": "R0",
+    "output_format_schema": "R0",
 }
 UWG_CANONICAL_SYMBOL: str = "ADG::Symbol::UniversalWriteGateway"
 UWG_MODULE_PATH: str = "agentic_core/L2_execution/UniversalWriteGateway.py"
@@ -608,6 +610,7 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/tracing": "L_SHARED",
     "agentic_core/visualization": "L_SHARED",
     "agentic_core/L6_system_learning": "L6",
+    "system_learning/reasoning": "L_SL",
     "system_learning": "L6",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",

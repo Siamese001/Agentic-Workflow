@@ -50,6 +50,7 @@ class PolicyWithoutAuditGate(WiringGate):
             JOIN nodes src ON src.id = pe.src_id
             WHERE pe.relation_type = 'controls_flow'
               AND src.resolved_path IS NOT NULL
+              AND src.resolved_path != ''
               AND NOT EXISTS (
                   SELECT 1 FROM edges ae
                   WHERE ae.src_id = pe.src_id

@@ -131,10 +131,15 @@ from importlib import import_module
 
 _APP_RG_PKG = "_".join(("apps", "rg"))
 _APP_RESEARCH_PKG = "_".join(("apps", "research"))
+_MISSING_APP_ATTR = object()
 
 
 def _load_app_attr(module_parts: tuple[str, ...], attr: str):
-    return getattr(import_module(".".join(module_parts)), attr)
+    module = import_module(".".join(module_parts))
+    value = getattr(module, attr, _MISSING_APP_ATTR)
+    if value is _MISSING_APP_ATTR:
+        raise AttributeError(f"{module.__name__!r} does not export {attr!r}")
+    return value
 
 
 # Reachability anchors for the ADG modules that must stay live from L0 seeds.
