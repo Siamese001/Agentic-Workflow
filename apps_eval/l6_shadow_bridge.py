@@ -93,6 +93,15 @@ def _trace_reconciliation_refs(record: CompletedEvalRecord) -> list[str]:
     return refs
 
 
+def _diagnostic_refs(record: CompletedEvalRecord) -> dict[str, str]:
+    refs: dict[str, str] = {}
+    for key in ("diagnostic_rows", "diagnostic_summary"):
+        ref = str(record.artifact_paths.get(key) or "").strip()
+        if ref:
+            refs[key] = ref.replace("\\", "/")
+    return refs
+
+
 def _emit_record_microstep_artifacts(
     record: CompletedEvalRecord,
     run_dir: Path,
@@ -171,6 +180,7 @@ def build_completed_eval_shadow_exhaust(
     record_ref = eval_record_path.replace("\\", "/")
     handoff_ref = l6_handoff_path.replace("\\", "/") if l6_handoff_path else ""
     trace_reconciliation_refs = _trace_reconciliation_refs(record)
+    diagnostic_refs = _diagnostic_refs(record)
     outcome_class = "normal_success" if record.scorecard.verdict == "pass" else "policy_failure"
     trace_root = f"trace:apps_eval:{record.record_id}"
     policy_hash = _hash_ref(record.rubric_ids)
@@ -224,6 +234,20 @@ def build_completed_eval_shadow_exhaust(
                 "trust_status": "TRUSTED",
             }
             for ref in trace_reconciliation_refs
+        ]
+        + [
+            {
+                "source_type": f"apps_eval_{key}",
+                "source_ref": ref,
+                "source_hash": _hash_ref({"diagnostic_ref": ref, "diagnostic_role": key}),
+                "source_schema_version": "apps_eval.diagnostic_observation.v1" if key == "diagnostic_rows" else "apps_eval.diagnostic_summary.v1",
+                "observed_stage": "L6",
+                "expected_stage_order": 11,
+                "lineage_parent_refs": [trace_root, record_ref],
+                "completeness_status": "COMPLETE",
+                "trust_status": "TRUSTED",
+            }
+            for key, ref in diagnostic_refs.items()
         ],
         "events": [
             {
@@ -244,12 +268,17 @@ def build_completed_eval_shadow_exhaust(
         "artifacts": {
             "generated": [record_ref]
             + ([handoff_ref] if handoff_ref else [])
-            + trace_reconciliation_refs,
+            + trace_reconciliation_refs
+            + list(diagnostic_refs.values()),
             "sealed": [record_ref],
-            "file_hashes": {record_ref: _hash_ref(record.to_dict())},
+            "file_hashes": {
+                record_ref: _hash_ref(record.to_dict()),
+                **{ref: _hash_ref({"diagnostic_ref": ref}) for ref in diagnostic_refs.values()},
+            },
             "artifact_lineage": {
                 record_ref: [trace_root],
                 **{ref: [trace_root, record_ref] for ref in trace_reconciliation_refs},
+                **{ref: [trace_root, record_ref] for ref in diagnostic_refs.values()},
             },
             "missing": [],
             "orphans": [],
@@ -301,6 +330,7 @@ def emit_completed_eval_l6_shadow_bridge(
         "span_export_jsonl_ref": span_paths["span_export_jsonl"].as_posix(),
         "l6_microstep_artifact_refs": dict(microstep_paths),
         "trace_reconciliation_refs": _trace_reconciliation_refs(record),
+        "diagnostic_artifact_refs": _diagnostic_refs(record),
         "requested_action": "consume_completed_eval_record_only",
         "current_run_mutated": False,
         "direct_l4_write_attempted": False,

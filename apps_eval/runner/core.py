@@ -707,6 +707,8 @@ def _apps_rg_diagnostic_summary(
     observations: list[DiagnosticObservationV1],
 ) -> DiagnosticSummaryV1:
     family_counts: Counter[str] = Counter(row.diagnostic_family for row in observations)
+    stage_counts: Counter[str] = Counter(str(row.stage_id) for row in observations)
+    lane_counts: Counter[str] = Counter(row.lane_id for row in observations if row.lane_id)
     verdict_counts: Counter[str] = Counter(str(row.diagnostic_verdict) for row in observations)
     promotion_counts: Counter[str] = Counter(str(row.promotion_state) for row in observations)
     return DiagnosticSummaryV1(
@@ -715,6 +717,8 @@ def _apps_rg_diagnostic_summary(
         run_id=run_id,
         observation_count=len(observations),
         family_counts=_sorted_counter(family_counts),
+        stage_counts=_sorted_counter(stage_counts),
+        lane_counts=_sorted_counter(lane_counts),
         verdict_counts=_sorted_counter(verdict_counts),
         promotion_state_counts=_sorted_counter(promotion_counts),
     )
@@ -848,6 +852,8 @@ def _emit_artifacts(
             "severity",
             "failure_mode",
             "decisive_reason",
+            "observed_value",
+            "threshold",
             "evidence_digest",
         ]
         coverage_buffer = io.StringIO(newline="")
@@ -894,6 +900,8 @@ def _emit_artifacts(
                 "component_scorecard": str(paths["apps_rg_component_scorecard"]).replace("\\", "/"),
                 "coverage_matrix": str(paths["coverage_matrix"]).replace("\\", "/"),
                 "missing_required_components": str(paths["missing_required_components"]).replace("\\", "/"),
+                "diagnostic_rows": str(paths["diagnostic_rows"]).replace("\\", "/"),
+                "diagnostic_summary": str(paths["diagnostic_summary"]).replace("\\", "/"),
             },
         }
         _wg.write_text(

@@ -10,6 +10,7 @@ from apps_eval.contracts import (
     DiagnosticObservationV1,
     DiagnosticSourceArtifactRef,
     EvalRequest,
+    ScorecardRow,
 )
 from apps_eval.diagnostics import build_apps_rg_diagnostics
 from apps_eval.runner.core import run_eval
@@ -20,6 +21,39 @@ def _source() -> DiagnosticSourceArtifactRef:
         artifact_role="fixture_snapshot",
         artifact_ref="snapshot.json",
         artifact_digest="abc123",
+    )
+
+
+def _scorecard_row(
+    *,
+    lane_id: str,
+    stage_id: str,
+    gate_id: str,
+    artifact_role: str,
+    artifact_ref: str,
+    verdict: str = "PASS",
+    failure_mode: str = "",
+) -> ScorecardRow:
+    return ScorecardRow(
+        suite_id="apps_rg.dev.resume_generation",
+        scenario_id="scenario",
+        app_id="apps_rg",
+        row_id=f"{lane_id}-{gate_id}",
+        microstep_id=f"{lane_id}.{stage_id}.row",
+        stage_id=stage_id,
+        component_id="apps_rg.generated_lane",
+        subcomponent_id=f"lane_{stage_id.lower()}",
+        verdict=verdict,
+        score=1.0 if verdict == "PASS" else 0.0,
+        severity="BLOCK",
+        run_id="run",
+        lane_id=lane_id,
+        gate_id=gate_id,
+        artifact_role=artifact_role,
+        artifact_ref=artifact_ref,
+        evidence_ref=artifact_ref,
+        evidence_digest=f"digest-{lane_id}-{gate_id}",
+        failure_mode=failure_mode,
     )
 
 
@@ -108,6 +142,55 @@ def test_apps_rg_diagnostics_are_shadow_only_and_cover_requested_families(tmp_pa
     assert diagnostics["summary"].future_run_only is True
 
 
+def test_apps_rg_diagnostics_emit_lane_scoped_x1d_rows(tmp_path: Path) -> None:
+    good = tmp_path / "headline_x1d.json"
+    bad = tmp_path / "skills_x1d.json"
+    good.write_text('{"overall":"PASS"}', encoding="utf-8")
+    bad.write_text('{"provider_unavailable":true}', encoding="utf-8")
+    snapshot = AppOutputSnapshot(
+        app_id="apps_rg",
+        scenario_id="scenario",
+        x3_disposition="X3D_ALLOW_FINISH",
+        output={"sections": {}},
+    )
+
+    diagnostics = build_apps_rg_diagnostics(
+        suite_id="apps_rg.dev.resume_generation",
+        scenario_id="scenario",
+        snapshot=snapshot,
+        run_id="run",
+        scorecard_rows=[
+            _scorecard_row(
+                lane_id="headline",
+                stage_id="X1D",
+                gate_id="x1d_judge_result_pass",
+                artifact_role="lane_x1d_llm_judge_outputs",
+                artifact_ref=good.as_posix(),
+            ),
+            _scorecard_row(
+                lane_id="skills",
+                stage_id="X1D",
+                gate_id="x1d_judge_result_pass",
+                artifact_role="lane_x1d_llm_judge_outputs",
+                artifact_ref=bad.as_posix(),
+                verdict="FAIL",
+                failure_mode="microstep.x1d_judge_result_pass",
+            ),
+        ],
+        snapshot_ref="snapshot.json",
+        snapshot_digest="digest",
+    )
+
+    x1d_rows = [row for row in diagnostics["rows"] if row.diagnostic_family == "x1d_judge_calibration"]
+    assert {row.lane_id for row in x1d_rows} == {"headline", "skills"}
+    assert {row.observed_value["x1d_category"] for row in x1d_rows} == {
+        "MODEL_BACKED_PASS",
+        "PROVIDER_UNAVAILABLE",
+    }
+    assert diagnostics["summary"].lane_counts == {"headline": 5, "skills": 5}
+    assert diagnostics["summary"].stage_counts["X1D"] == 2
+
+
 def test_apps_rg_eval_emits_diagnostic_artifacts_without_changing_scorecard(tmp_path: Path) -> None:
     record = run_eval(
         EvalRequest(
@@ -129,3 +212,5 @@ def test_apps_rg_eval_emits_diagnostic_artifacts_without_changing_scorecard(tmp_
     assert summary["authority"] == "post_run_l6_shadow_only"
     assert summary["current_run_mutated"] is False
     assert summary["future_run_only"] is True
+    assert "stage_counts" in summary
+    assert "lane_counts" in summary

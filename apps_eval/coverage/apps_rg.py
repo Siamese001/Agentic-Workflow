@@ -14,6 +14,7 @@ from apps_eval.contracts import (
     CoverageSummary,
     ScorecardRow,
 )
+from apps_eval.artifacts.apps_rg_resolver import resolve_apps_rg_artifact
 
 _REGISTRY_DIR = Path(__file__).resolve().parents[1] / "registries"
 _STAGE_ORDER = {
@@ -35,6 +36,18 @@ _STAGE_ORDER = {
 _PASSISH = {"PASS", "NOT_APPLICABLE"}
 _BLOCKING = {"FAIL", "UNKNOWN", "NOT_RUN"}
 _ALLOW_X3 = {"X3_ALLOW", "X3D_ALLOW_FINISH", "X3D", "ALLOW", "ALLOW_FINISH"}
+_PRESENCE_GATES = {
+    "u0_run_bundle_index_present",
+    "u0_runtime_package_present",
+    "l1_static_plan_profile_present",
+    "l0_managed_route_profile_present",
+    "c0_evidence_manifest_present",
+    "pa_compiled_prompt_present",
+    "package_scorecard_rows_present",
+    "package_component_scorecards_present",
+    "package_coverage_matrix_present",
+    "regression_outputs_present",
+}
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -334,6 +347,145 @@ def _trace_reconciliation_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "UNKNOWN", "trace reconciliation verdict missing or unknown", observed, "TRACE_RECONCILED"
 
 
+def _dict_payload(payload: Any) -> dict[str, Any] | None:
+    return payload if isinstance(payload, dict) else None
+
+
+def _bool_field(data: dict[str, Any], *keys: str) -> bool | None:
+    for key in keys:
+        if key in data and isinstance(data.get(key), bool):
+            return bool(data[key])
+    return None
+
+
+def _first_present(data: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = data.get(key)
+        if value not in (None, "", [], {}):
+            return value
+    return None
+
+
+def _count_nonempty(value: Any) -> int:
+    if isinstance(value, dict):
+        return sum(1 for key, item in value.items() if key and item not in (None, "", [], {}))
+    if isinstance(value, list):
+        return sum(1 for item in value if item not in (None, "", [], {}))
+    return 1 if value not in (None, "", [], {}) else 0
+
+
+def _l1_schema_bound_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    data = _dict_payload(payload)
+    if data is None:
+        return "UNKNOWN", "l1 profile exists but could not be parsed as an object", payload, "schema-bound L1 profile object"
+    explicit = _bool_field(data, "schema_bound", "profile_schema_bound", "l1_schema_bound")
+    observed = {
+        "schema_bound": explicit,
+        "schema_version": data.get("schema_version"),
+        "profile_verdict": data.get("profile_verdict") or data.get("verdict") or data.get("status"),
+        "support_expectation_present": _first_present(data, "support_expectation", "support_expectations", "evidence_expectations") is not None,
+        "action_expectation_present": _first_present(data, "action_expectation", "action_expectations", "route_expectations") is not None,
+    }
+    if explicit is False:
+        return "FAIL", "l1 profile explicitly reports schema_bound=false", observed, "schema_bound true"
+    if explicit is True or str(observed["schema_version"] or "").startswith("apps_rg."):
+        return "PASS", "l1 profile is schema-bound", observed, "schema version or schema_bound true"
+    return "FAIL", "l1 profile is missing schema binding fields", observed, "schema version or schema_bound true"
+
+
+def _l0_dispatch_canonical_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    data = _dict_payload(payload)
+    if data is None:
+        return "UNKNOWN", "l0 route profile exists but could not be parsed as an object", payload, "canonical dispatch profile object"
+    explicit = _bool_field(data, "canonical_dispatch", "dispatch_profile_canonical", "route_profile_canonical")
+    execution_form = str(data.get("execution_form") or data.get("route_execution_form") or "").lower()
+    route_id = str(data.get("route_id") or data.get("canonical_route_id") or "").strip()
+    bypass = _bool_field(data, "cache_bypass", "route_bypass", "dispatch_bypass")
+    observed = {
+        "canonical_dispatch": explicit,
+        "execution_form": execution_form,
+        "route_id_present": bool(route_id),
+        "cache_bypass": bypass,
+    }
+    if explicit is False or bypass is True:
+        return "FAIL", "l0 dispatch profile reports non-canonical dispatch or bypass", observed, "canonical dispatch with no bypass"
+    if explicit is True or "single" in execution_form or "integrated" in execution_form or route_id:
+        return "PASS", "l0 dispatch profile is canonical", observed, "canonical dispatch evidence"
+    return "FAIL", "l0 dispatch profile is missing canonical dispatch evidence", observed, "canonical dispatch evidence"
+
+
+def _c0_materiality_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    data = _dict_payload(payload)
+    if data is None:
+        return "UNKNOWN", "c0 evidence manifest exists but could not be parsed as an object", payload, "material evidence manifest object"
+    explicit = _bool_field(data, "materiality_present", "evidence_materiality_present", "has_material_evidence")
+    support = (
+        _count_nonempty(data.get("selected_facts"))
+        + _count_nonempty(data.get("selected_candidates"))
+        + _count_nonempty(data.get("evidence_refs"))
+        + _count_nonempty(data.get("claims"))
+        + _count_nonempty(data.get("facts"))
+    )
+    materiality_count = data.get("materiality_count")
+    try:
+        support += int(materiality_count or 0)
+    except (TypeError, ValueError):
+        pass
+    observed = {
+        "materiality_present": explicit,
+        "support_count": support,
+        "materiality_count": materiality_count,
+    }
+    if explicit is False:
+        return "FAIL", "c0 evidence manifest explicitly reports missing materiality", observed, "material support count > 0"
+    if explicit is True or support > 0:
+        return "PASS", "c0 evidence materiality is present", observed, "material support count > 0"
+    return "FAIL", "c0 evidence manifest is missing material support fields", observed, "material support count > 0"
+
+
+def _pa_evidence_as_data_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    data = _dict_payload(payload)
+    if data is None:
+        return "UNKNOWN", "compiled prompt artifact exists but could not be parsed as an object", payload, "prompt assembly receipt object"
+    explicit = _bool_field(data, "evidence_as_data", "evidence_as_data_bound", "pa_evidence_as_data")
+    wrong_slot = _bool_field(data, "evidence_in_instruction_slot", "evidence_in_system_slot", "evidence_as_instruction")
+    slots = data.get("slots") if isinstance(data.get("slots"), dict) else {}
+    evidence_slot = _first_present(data, "evidence_slot", "evidence_data", "evidence_refs") or slots.get("evidence")
+    authority_slot = str(data.get("evidence_authority_slot") or data.get("authority_slot") or "").lower()
+    observed = {
+        "evidence_as_data": explicit,
+        "evidence_in_instruction_slot": wrong_slot,
+        "evidence_slot_present": evidence_slot not in (None, "", [], {}),
+        "authority_slot": authority_slot,
+    }
+    if wrong_slot is True or authority_slot in {"instruction", "instructions", "system"}:
+        return "FAIL", "prompt assembly places evidence in an authority/instruction slot", observed, "evidence bound as data"
+    if explicit is True or observed["evidence_slot_present"]:
+        return "PASS", "prompt assembly binds evidence as data", observed, "evidence bound as data"
+    return "FAIL", "prompt assembly is missing evidence-as-data binding fields", observed, "evidence bound as data"
+
+
+def _x2_graph_coherence_materiality_verdict(payload: Any) -> tuple[str, str, Any, Any]:
+    x2_verdict, x2_reason, x2_observed, x2_threshold = _x2_verdict(payload)
+    data = _dict_payload(payload)
+    if data is None:
+        return x2_verdict, x2_reason, x2_observed, x2_threshold
+    explicit = _bool_field(data, "graph_coherence_materiality", "material_graph_coherence", "graph_materiality_present")
+    status = str(data.get("graph_coherence_status") or data.get("coherence_status") or "").upper()
+    support = _count_nonempty(data.get("material_edges")) + _count_nonempty(data.get("overlap_facts")) + _count_nonempty(data.get("section_graph_links"))
+    observed = {
+        "x2_verdict": x2_verdict,
+        "graph_coherence_materiality": explicit,
+        "graph_coherence_status": status,
+        "support_count": support,
+    }
+    if explicit is False or status in {"FAIL", "FAILED"} or x2_verdict == "FAIL":
+        return "FAIL", "cross-section graph coherence materiality failed", observed, "PASS with material graph support"
+    if explicit is True or status == "PASS" or support > 0 or x2_verdict == "PASS":
+        return "PASS", "cross-section graph coherence materiality passed", observed, "PASS with material graph support"
+    return "FAIL", "cross-section graph coherence materiality evidence is missing", observed, "PASS with material graph support"
+
+
 def _l6_grain_parity_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if payload is None:
         return "UNKNOWN", "l6 grain parity artifact exists but could not be parsed", None, "readable JSON"
@@ -360,6 +512,15 @@ def _l6_grain_parity_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "UNKNOWN", "l6 grain parity status missing or unbound", observed, "PASS with apps_eval_rows_bound"
 
 
+_SEMANTIC_VALIDATORS = {
+    "l1_static_plan_profile_schema_bound": _l1_schema_bound_verdict,
+    "l0_dispatch_profile_canonical": _l0_dispatch_canonical_verdict,
+    "c0_evidence_materiality_present": _c0_materiality_verdict,
+    "pa_prompt_boundary_evidence_as_data": _pa_evidence_as_data_verdict,
+    "x2_cross_section_graph_coherence_materiality": _x2_graph_coherence_materiality_verdict,
+}
+
+
 def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if payload is None:
         return "UNKNOWN", "exit artifact exists but could not be parsed", None, "readable JSON with whole-run exit"
@@ -379,23 +540,14 @@ def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     return "PASS", "whole-run exit packet has a single disposition", {"exactly_one_x3": inner.get("exactly_one_x3"), "x3_disposition": disposition}, "single disposition"
 
 
-def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[str, float, str, str, Any, Any]:
+def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any, *, required: bool = True) -> tuple[str, float, str, str, Any, Any]:
     if not artifact_ref:
         return "FAIL", 0.0, "coverage.missing_required_artifact", "required artifact was not resolved", "", "artifact_ref"
-    if gate_id.endswith("_present") or gate_id in {
-        "u0_run_bundle_index_present",
-        "u0_runtime_package_present",
-        "l1_static_plan_profile_present",
-        "l0_managed_route_profile_present",
-        "c0_evidence_manifest_present",
-        "pa_compiled_prompt_present",
-        "package_scorecard_rows_present",
-        "package_component_scorecards_present",
-        "package_coverage_matrix_present",
-        "regression_outputs_present",
-    }:
+    if gate_id in _SEMANTIC_VALIDATORS:
+        verdict, reason, observed, threshold = _SEMANTIC_VALIDATORS[gate_id](payload)
+    elif gate_id.endswith("_present") or gate_id in _PRESENCE_GATES:
         return "PASS", 1.0, "", "required artifact resolved", artifact_ref, "artifact_ref"
-    if "x2" in gate_id and gate_id.endswith("_pass"):
+    elif "x2" in gate_id and gate_id.endswith("_pass"):
         verdict, reason, observed, threshold = _x2_verdict(payload)
     elif gate_id == "x1d_judge_result_pass":
         verdict, reason, observed, threshold = _x1d_verdict(payload)
@@ -414,7 +566,10 @@ def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any) -> tuple[
     elif gate_id == "l6_apps_eval_grain_parity_verified":
         verdict, reason, observed, threshold = _l6_grain_parity_verdict(payload)
     else:
-        verdict, reason, observed, threshold = "PASS", "artifact-level proof resolved", artifact_ref, "artifact_ref"
+        verdict = "UNKNOWN" if required else "WARN"
+        reason = f"no semantic validator registered for gate {gate_id}"
+        observed = {"gate_id": gate_id, "artifact_ref": artifact_ref}
+        threshold = "registered semantic validator or explicit presence gate"
     failure_mode = "" if verdict in {"PASS", "WARN"} else f"microstep.{gate_id}"
     return verdict, 1.0 if verdict == "PASS" else 0.5 if verdict == "WARN" else 0.0, failure_mode, reason, observed, threshold
 
@@ -571,17 +726,22 @@ def build_apps_rg_microstep_evaluation(
         role = str(item.get("artifact_role", ""))
         lane = str(item.get("lane_id", ""))
         role_contract = artifact_contract.get("artifact_roles", {}).get(role, {})
-        artifact_ref, evidence_ref, evidence_digest, payload = _resolve_artifact(
+        resolved = resolve_apps_rg_artifact(
             snapshot=snapshot,
             role=role,
-            lane=lane,
+            lane_id=lane,
             artifact_contract=artifact_contract,
             planned_eval_artifacts=planned,
         )
+        artifact_ref = resolved.artifact_ref
+        evidence_ref = resolved.evidence_ref
+        evidence_digest = resolved.evidence_digest
+        payload = resolved.payload
         verdict, score, failure_mode, reason, observed, threshold = _evaluate_microstep(
             str(item.get("gate_id", "")),
             artifact_ref,
             payload,
+            required=bool(item.get("required", True)),
         )
         scope = _scope_key(item)
         if not artifact_ref and prior_blocked[scope] and bool(item.get("required", True)):

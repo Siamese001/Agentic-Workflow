@@ -140,7 +140,47 @@ def test_build_trend_dashboard_collects_history(tmp_path: Path) -> None:
 
     markdown = render_trend_dashboard(dashboard)
     assert "## Suite Trends" in markdown
+    assert "## Diagnostic Observations" in markdown
     assert "## Recent Samples" in markdown
+
+
+def test_trend_dashboard_reads_diagnostic_summary_without_blocking_release(tmp_path: Path) -> None:
+    records_root = tmp_path / "runs"
+    payload = _record_payload(record_id="a", created_at="2026-06-17T00:00:00Z", score=1.0)
+    payload["artifact_paths"]["diagnostic_summary"] = "diagnostic_summary.json"
+    record_path = _write_record(records_root, record_id="a", payload=payload)
+    (record_path.parent / "diagnostic_summary.json").write_text(
+        json.dumps(
+            {
+                "suite_id": "apps_rg.dev.resume_generation",
+                "app_id": "apps_rg",
+                "run_id": "a",
+                "observation_count": 3,
+                "family_counts": {"x1d_judge_calibration": 2, "l6_shadow_non_mutation": 1},
+                "verdict_counts": {"WARN": 1, "NOT_OBSERVED": 2},
+                "promotion_state_counts": {"shadow": 3},
+                "authority": "post_run_l6_shadow_only",
+                "current_run_mutated": False,
+                "future_run_only": True,
+                "schema_version": "apps_eval.diagnostic_summary.v1",
+            },
+            indent=2,
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+
+    dashboard = build_trend_dashboard(records_root=records_root, app_id="apps_rg", split="dev")
+    decision = evaluate_release_gate(dashboard, min_samples=1)
+    blocked = evaluate_release_gate(dashboard, min_samples=1, min_diagnostic_observations=4)
+
+    assert dashboard.diagnostic_observation_count == 3
+    assert dashboard.diagnostic_family_counts["x1d_judge_calibration"] == 2
+    assert dashboard.diagnostic_verdict_counts["NOT_OBSERVED"] == 2
+    assert dashboard.diagnostic_not_observed_rate == pytest.approx(2 / 3)
+    assert decision.status == "pass"
+    assert blocked.status == "blocked"
+    assert any("diagnostic observation count" in reason for reason in blocked.reasons)
 
 
 def test_release_gate_distinguishes_blocked_and_regression(tmp_path: Path) -> None:

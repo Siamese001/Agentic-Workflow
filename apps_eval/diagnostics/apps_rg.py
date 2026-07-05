@@ -15,6 +15,8 @@ from apps_eval.contracts import (
     DiagnosticSummaryV1,
     ScorecardRow,
 )
+from apps_eval.artifacts.apps_rg_resolver import ResolvedAppsRgArtifact, resolve_apps_rg_artifact
+from apps_eval.coverage.apps_rg import load_apps_rg_contracts
 
 _AUTHORITY = "post_run_l6_shadow_only"
 _UNSAFE_E4_REPAIRS = [
@@ -83,6 +85,16 @@ def _artifact_index_source(snapshot: AppOutputSnapshot, role: str, fallback: Dia
         artifact_role=role,
         artifact_ref=str(_as_list(value)[0]),
         artifact_digest=_canonical_digest(value),
+    )
+
+
+def _resolved_source(resolved: ResolvedAppsRgArtifact, fallback: DiagnosticSourceArtifactRef) -> DiagnosticSourceArtifactRef:
+    if not resolved.found:
+        return fallback
+    return DiagnosticSourceArtifactRef(
+        artifact_role=resolved.artifact_role,
+        artifact_ref=resolved.artifact_ref,
+        artifact_digest=resolved.evidence_digest or _canonical_digest(resolved.payload),
     )
 
 
@@ -217,6 +229,8 @@ def _obs(
 
 def _summary(suite_id: str, run_id: str, rows: list[DiagnosticObservationV1]) -> DiagnosticSummaryV1:
     family_counts = Counter(row.diagnostic_family for row in rows)
+    stage_counts = Counter(str(row.stage_id) for row in rows)
+    lane_counts = Counter(row.lane_id for row in rows if row.lane_id)
     verdict_counts = Counter(str(row.diagnostic_verdict) for row in rows)
     promotion_counts = Counter(str(row.promotion_state) for row in rows)
     return DiagnosticSummaryV1(
@@ -225,9 +239,53 @@ def _summary(suite_id: str, run_id: str, rows: list[DiagnosticObservationV1]) ->
         run_id=run_id,
         observation_count=len(rows),
         family_counts={key: family_counts[key] for key in sorted(family_counts)},
+        stage_counts={key: stage_counts[key] for key in sorted(stage_counts)},
+        lane_counts={key: lane_counts[key] for key in sorted(lane_counts)},
         verdict_counts={key: verdict_counts[key] for key in sorted(verdict_counts)},
         promotion_state_counts={key: promotion_counts[key] for key in sorted(promotion_counts)},
     )
+
+
+def _index_rows(scorecard_rows: list[ScorecardRow]) -> dict[str, dict[str, list[ScorecardRow]]]:
+    indexed: dict[str, dict[str, list[ScorecardRow]]] = {
+        "stage": {},
+        "lane": {},
+        "role": {},
+        "microstep": {},
+        "gate": {},
+    }
+    for row in scorecard_rows:
+        for index_name, value in (
+            ("stage", str(row.stage_id or "")),
+            ("lane", row.lane_id),
+            ("role", row.artifact_role),
+            ("microstep", row.microstep_id),
+            ("gate", row.gate_id),
+        ):
+            if value:
+                indexed[index_name].setdefault(str(value), []).append(row)
+    return indexed
+
+
+def _first_row(rows: list[ScorecardRow]) -> ScorecardRow | None:
+    return rows[0] if rows else None
+
+
+def _lane_ids(indexed: dict[str, dict[str, list[ScorecardRow]]]) -> list[str]:
+    return sorted(indexed["lane"])
+
+
+def _row_payload(row: ScorecardRow | None) -> Any:
+    if row is None or not row.artifact_ref:
+        return None
+    try:
+        return _json_payload(Path(row.artifact_ref))
+    except (OSError, TypeError, ValueError):
+        return None
+
+
+def _row_source_or_snapshot(row: ScorecardRow | None, fallback: DiagnosticSourceArtifactRef) -> DiagnosticSourceArtifactRef:
+    return _row_source(row) if row else fallback
 
 
 def build_apps_rg_diagnostics(
@@ -249,10 +307,20 @@ def build_apps_rg_diagnostics(
         raise ValueError(f"apps_rg diagnostics require apps_rg snapshot, got {snapshot.app_id!r}")
 
     source = _snapshot_source(snapshot, snapshot_ref, snapshot_digest)
-    rows_by_role = {row.artifact_role: row for row in scorecard_rows if row.artifact_role}
+    artifact_contract = load_apps_rg_contracts()["artifact_contract"]
+    indexed_rows = _index_rows(scorecard_rows)
     observations: list[DiagnosticObservationV1] = []
 
-    graph_ref, graph_digest, graph_payload = _load_root_json(
+    graph_artifact = resolve_apps_rg_artifact(
+        snapshot=snapshot,
+        role="graph_selection_rationale",
+        artifact_contract=artifact_contract,
+    )
+    graph_ref = graph_artifact.artifact_ref
+    graph_digest = graph_artifact.evidence_digest
+    graph_payload = graph_artifact.payload
+    if not graph_artifact.found:
+        graph_ref, graph_digest, graph_payload = _load_root_json(
         snapshot,
         [
             "native_c03_final_evidence.json",
@@ -260,9 +328,11 @@ def build_apps_rg_diagnostics(
             "c03_promotion_candidates.json",
             "selected_graph_evidence_plan.json",
         ],
-    )
+        )
     graph_source = (
-        DiagnosticSourceArtifactRef("graph_receipt", graph_ref, graph_digest)
+        _resolved_source(graph_artifact, source)
+        if graph_artifact.found
+        else DiagnosticSourceArtifactRef("graph_receipt", graph_ref, graph_digest)
         if graph_ref and graph_digest
         else _artifact_index_source(snapshot, "graph_selection_rationale", source)
     )
@@ -331,7 +401,7 @@ def build_apps_rg_diagnostics(
         )
     )
 
-    l2_rows = [row for row in scorecard_rows if str(row.stage_id) == "L2"]
+    l2_rows = indexed_rows["stage"].get("L2", [])
     l2_failures = [row.failure_mode for row in l2_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"}]
     observations.append(
         _obs(
@@ -351,28 +421,133 @@ def build_apps_rg_diagnostics(
         )
     )
 
-    x1d_row = rows_by_role.get("lane_x1d_llm_judge_outputs")
-    x1d_payload = None
-    if x1d_row and x1d_row.artifact_ref:
-        x1d_payload = _json_payload(Path(x1d_row.artifact_ref))
-    x1d_category = _x1d_category(x1d_payload)
-    observations.append(
-        _obs(
-            diagnostic_id=f"{scenario_id}.x1d_judge_calibration.category",
-            family="x1d_judge_calibration",
-            suite_id=suite_id,
-            scenario_id=scenario_id,
-            run_id=run_id,
-            stage_id="X1D",
-            depends_on_microstep_id="X1D.*.judge_result_pass",
-            source=_row_source(x1d_row) if x1d_row else source,
-            verdict="PASS" if x1d_category == "MODEL_BACKED_PASS" else "WARN" if x1d_category != "UNKNOWN" else "NOT_OBSERVED",
-            observed={"x1d_category": x1d_category},
-            threshold={"category": "MODEL_BACKED_PASS or classified non-quality issue"},
-            reason=f"x1d runtime category {x1d_category}",
-            action="trend quality failures separately from judge execution failures",
+    lane_ids = _lane_ids(indexed_rows)
+    if lane_ids:
+        for lane_id in lane_ids:
+            lane_rows = indexed_rows["lane"][lane_id]
+            lane_l2_rows = [row for row in lane_rows if str(row.stage_id) == "L2"]
+            lane_l2_failures = [row.failure_mode for row in lane_l2_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"}]
+            observations.append(
+                _obs(
+                    diagnostic_id=f"{scenario_id}.{lane_id}.l2_failure_retry.initial_state",
+                    family="l2_failure_retry",
+                    suite_id=suite_id,
+                    scenario_id=scenario_id,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    stage_id="L2",
+                    depends_on_microstep_id=f"{lane_id}.L2.output.present",
+                    source=_row_source_or_snapshot(_first_row(lane_l2_rows), source),
+                    verdict="WARN" if lane_l2_failures else "PASS" if lane_l2_rows else "NOT_OBSERVED",
+                    observed={"l2_row_count": len(lane_l2_rows), "non_pass_failure_modes": lane_l2_failures},
+                    threshold={"non_pass_failure_modes": 0},
+                    reason="lane L2 non-pass rows observed" if lane_l2_failures else "lane L2 rows did not expose initial failure",
+                    action="preserve provider attempt spans and recovered-on-retry receipts per lane",
+                )
+            )
+
+            lane_x2_rows = [row for row in lane_rows if str(row.stage_id) == "X2"]
+            lane_x2_failures = [row.failure_mode for row in lane_x2_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"}]
+            observations.append(
+                _obs(
+                    diagnostic_id=f"{scenario_id}.{lane_id}.x2_gate_quality.verdict",
+                    family="x2_gate_quality",
+                    suite_id=suite_id,
+                    scenario_id=scenario_id,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    stage_id="X2",
+                    depends_on_microstep_id=f"{lane_id}.X2.gates.pass",
+                    source=_row_source_or_snapshot(_first_row(lane_x2_rows), source),
+                    verdict="WARN" if lane_x2_failures else "PASS" if lane_x2_rows else "NOT_OBSERVED",
+                    observed={"x2_row_count": len(lane_x2_rows), "non_pass_failure_modes": lane_x2_failures},
+                    threshold={"x2_non_pass_failure_modes": 0},
+                    reason="lane X2 gate non-pass rows observed" if lane_x2_failures else "lane X2 gates did not expose failure",
+                    action="trend deterministic gate failures per lane",
+                )
+            )
+
+            lane_x1d_rows = [row for row in lane_rows if str(row.stage_id) == "X1D"]
+            x1d_row = _first_row([row for row in lane_x1d_rows if row.gate_id == "x1d_judge_result_pass"] or lane_x1d_rows)
+            x1d_category = _x1d_category(_row_payload(x1d_row))
+            observations.append(
+                _obs(
+                    diagnostic_id=f"{scenario_id}.{lane_id}.x1d_judge_calibration.category",
+                    family="x1d_judge_calibration",
+                    suite_id=suite_id,
+                    scenario_id=scenario_id,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    stage_id="X1D",
+                    depends_on_microstep_id=f"{lane_id}.X1D.judge_result.pass",
+                    source=_row_source_or_snapshot(x1d_row, source),
+                    verdict="PASS" if x1d_category == "MODEL_BACKED_PASS" else "WARN" if x1d_category != "UNKNOWN" else "NOT_OBSERVED",
+                    observed={"x1d_category": x1d_category},
+                    threshold={"category": "MODEL_BACKED_PASS or classified non-quality issue"},
+                    reason=f"lane x1d runtime category {x1d_category}",
+                    action="trend quality failures separately from judge execution failures per lane",
+                )
+            )
+
+            lane_x3_rows = [row for row in lane_rows if str(row.stage_id) == "X3"]
+            lane_x3_failures = [row.failure_mode for row in lane_x3_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"}]
+            observations.append(
+                _obs(
+                    diagnostic_id=f"{scenario_id}.{lane_id}.x3_disposition_quality.verdict",
+                    family="x3_disposition_quality",
+                    suite_id=suite_id,
+                    scenario_id=scenario_id,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    stage_id="X3",
+                    depends_on_microstep_id=f"{lane_id}.X3.disposition.earned",
+                    source=_row_source_or_snapshot(_first_row(lane_x3_rows), source),
+                    verdict="WARN" if lane_x3_failures else "PASS" if lane_x3_rows else "NOT_OBSERVED",
+                    observed={"x3_row_count": len(lane_x3_rows), "non_pass_failure_modes": lane_x3_failures},
+                    threshold={"earned_disposition_non_pass_failure_modes": 0},
+                    reason="lane X3 disposition non-pass rows observed" if lane_x3_failures else "lane X3 disposition did not expose failure",
+                    action="trend earned-disposition quality per lane",
+                )
+            )
+
+            lane_l6_rows = [row for row in lane_rows if str(row.stage_id) == "L6"]
+            lane_l6_failures = [row.failure_mode for row in lane_l6_rows if row.verdict not in {"PASS", "NOT_APPLICABLE"}]
+            observations.append(
+                _obs(
+                    diagnostic_id=f"{scenario_id}.{lane_id}.l6_shadow_non_mutation.verdict",
+                    family="l6_shadow_non_mutation",
+                    suite_id=suite_id,
+                    scenario_id=scenario_id,
+                    run_id=run_id,
+                    lane_id=lane_id,
+                    stage_id="L6",
+                    depends_on_microstep_id=f"{lane_id}.L6.shadow_package.non_mutating",
+                    source=_row_source_or_snapshot(_first_row(lane_l6_rows), source),
+                    verdict="FAIL" if lane_l6_failures else "PASS" if lane_l6_rows else "NOT_OBSERVED",
+                    observed={"l6_row_count": len(lane_l6_rows), "non_pass_failure_modes": lane_l6_failures},
+                    threshold={"non_mutation_failures": 0},
+                    reason="lane L6 non-mutation failure observed" if lane_l6_failures else "lane L6 shadow package remained non-mutating",
+                    action="keep diagnostic L6 observations future-run-only and non-mutating",
+                )
+            )
+    else:
+        observations.append(
+            _obs(
+                diagnostic_id=f"{scenario_id}.x1d_judge_calibration.category",
+                family="x1d_judge_calibration",
+                suite_id=suite_id,
+                scenario_id=scenario_id,
+                run_id=run_id,
+                stage_id="X1D",
+                depends_on_microstep_id="X1D.*.judge_result_pass",
+                source=source,
+                verdict="NOT_OBSERVED",
+                observed={"x1d_category": "UNKNOWN"},
+                threshold={"category": "MODEL_BACKED_PASS or classified non-quality issue"},
+                reason="x1d runtime category UNKNOWN",
+                action="trend quality failures separately from judge execution failures",
+            )
         )
-    )
 
     observations.append(
         _obs(
@@ -392,7 +567,7 @@ def build_apps_rg_diagnostics(
         )
     )
 
-    l1_row = rows_by_role.get("l1_static_plan_profile")
+    l1_row = _first_row(indexed_rows["role"].get("l1_static_plan_profile", []))
     observations.append(
         _obs(
             diagnostic_id=f"{scenario_id}.l1_planning_rigor.inference_debt",
@@ -411,7 +586,7 @@ def build_apps_rg_diagnostics(
         )
     )
 
-    l0_row = rows_by_role.get("l0_managed_route_profile")
+    l0_row = _first_row(indexed_rows["role"].get("l0_route_profile", []) or indexed_rows["role"].get("l0_managed_route_profile", []))
     cache_observed = "l2_semantic_cache" in json.dumps(snapshot.to_dict(), sort_keys=True, default=str)
     observations.append(
         _obs(

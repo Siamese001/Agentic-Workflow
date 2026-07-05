@@ -74,6 +74,7 @@ def _parser() -> argparse.ArgumentParser:
     release_gate.add_argument("--min-latest-pass-rate", type=float, default=1.0)
     release_gate.add_argument("--min-window-pass-rate", type=float, default=1.0)
     release_gate.add_argument("--max-latest-score-drop", type=float, default=0.05)
+    release_gate.add_argument("--min-diagnostic-observations", type=int, default=None)
     release_gate.add_argument("--out-dir", default="artifacts/apps_eval/trends")
     release_gate.add_argument("--emit-l6-shadow", action=argparse.BooleanOptionalAction, default=True)
     render = sub.add_parser("render")
@@ -190,6 +191,7 @@ def main(argv: list[str] | None = None) -> int:
             min_latest_pass_rate=float(args.min_latest_pass_rate),
             min_window_pass_rate=float(args.min_window_pass_rate),
             max_latest_score_drop=float(args.max_latest_score_drop),
+            min_diagnostic_observations=args.min_diagnostic_observations,
             out_dir=args.out_dir,
             emit_l6_shadow=bool(args.emit_l6_shadow),
         )

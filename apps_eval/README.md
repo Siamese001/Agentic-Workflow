@@ -29,6 +29,15 @@ and span artifacts beside the eval record. The bridge is observer-only evidence
 for core L6 G28 audit-completeness and G29 learning-firewall checks; it cannot
 mutate current-run artifacts or perform durable writes.
 
+For `apps_rg`, release-affecting scorecard rows and shadow diagnostics are
+separate surfaces. `ScorecardRow.v1` rows are deterministic microsteps that can
+block promotion when required artifacts or semantic gates fail. Diagnostic rows
+are source-backed, post-run observations that add lane, stage, gate, and reason
+granularity without changing the current run, X3 disposition, or default release
+gate outcome. Trend dashboards surface diagnostic family and verdict density;
+release gates use those diagnostics only when an explicit diagnostic threshold
+flag is supplied.
+
 ## apps_lic eval workflow
 
 `apps_lic` remains deterministic-first in this harness, but the live adapter now
@@ -97,6 +106,12 @@ Evaluate the release gate against the same history:
 
 ```bash
 python -m apps_eval release-gate --records-root artifacts/apps_eval/runs --app apps_rg --split dev
+```
+
+Opt into diagnostic-density gating only when desired:
+
+```bash
+python -m apps_eval release-gate --records-root artifacts/apps_eval/runs --app apps_rg --split dev --min-diagnostic-observations 1
 ```
 
 Emit the optional downstream L6 bridge alongside the gate artifacts:
