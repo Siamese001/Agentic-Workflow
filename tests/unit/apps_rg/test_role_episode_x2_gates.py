@@ -25,6 +25,10 @@ def _gate_map(gates: list[dict]) -> dict[str, bool]:
     return {str(g["gate_id"]): bool(g["pass"]) for g in gates}
 
 
+def _gate_by_id(gates: list[dict]) -> dict[str, dict]:
+    return {str(g["gate_id"]): g for g in gates}
+
+
 def _valid_bullets(prefix: str) -> list[dict]:
     return [
         {
@@ -239,3 +243,106 @@ def test_role_episode_bullet_path_has_no_fallback_bullet_symbol() -> None:
 
     assert "_fallback_bullets_from_facts" not in source
     assert "deterministic_graph_render" in source
+
+
+def test_ey_model_bullet_target_overwrite_is_discarded_before_display() -> None:
+    cfg = role_episode_lane._ROLE_LANES["ey_bullets"]
+    facts = [
+        {
+            "fact_id": "reb_ey_regulatory_analytics_modernization",
+            "claim_text": "EY graph evidence supports regulatory analytics data domains mapped through lineage controls.",
+        },
+        {
+            "fact_id": "reb_ey_capital_optimization_solvency",
+            "claim_text": "EY graph evidence supports capital stress scenarios run for hedge design.",
+        },
+        {
+            "fact_id": "reb_ey_erm_risk_governance",
+            "claim_text": "EY graph evidence supports risk metric definitions standardized across reporting stakeholders.",
+        },
+    ]
+    allowed = [str(f["fact_id"]) for f in facts]
+    parsed = {
+        "bullets": [
+            {
+                "bullet_text": "Led partner-led deployments of frontier AI at scale.",
+                "source_fact_ids": [allowed[0]],
+            },
+            {
+                "bullet_text": "Scaled target-role AI operating models for an AIG transformation.",
+                "source_fact_ids": [allowed[1]],
+            },
+            {
+                "bullet_text": "Drove alliance-led AI adoption for insurance executives.",
+                "source_fact_ids": [allowed[2]],
+            },
+        ],
+        "claim_ledger": [],
+    }
+
+    bullets, receipt = role_episode_lane._materialize_bullet_generation(
+        cfg=cfg,
+        parsed=parsed,
+        parse_error="",
+        provider_runtime_generation_status="REAL_LLM",
+        facts=facts,
+        allowed=allowed,
+        graph_packet_digest="digest://ey-proof",
+    )
+
+    display_text = "\n".join(b["bullet_text"] for b in bullets)
+    assert "partner-led deployments of frontier AI at scale" not in display_text
+    assert "target-role" not in display_text
+    assert [b["bullet_text"] for b in bullets] == [role_episode_lane._sentence(f["claim_text"]) for f in facts]
+    assert receipt["generation_method"] == "llm_selected_proof_render"
+    assert receipt["llm_output_used"] is False
+    assert receipt["llm_selection_used"] is True
+    assert receipt["model_display_text_discarded"] is True
+    assert receipt["display_text_authority"] == "selected_fact_plan_claim_text"
+
+    l2 = {
+        "bullets": bullets,
+        "claim_ledger": [
+            {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]}
+            for b in bullets
+        ],
+        "selected_fact_plan": {"facts": facts},
+        "role_episode_bundle_consumed": True,
+        **receipt,
+    }
+    gates = run_ey_bullets_x2_gates(
+        l2=l2,
+        allowed=allowed,
+        runtime_generation_status="REAL_LLM",
+    )
+
+    gate = _gate_by_id(gates)["x2_ey_bullets_display_text_proof_authorized"]
+    assert gate["pass"] is True
+
+
+def test_role_episode_display_text_gate_rejects_valid_id_with_unbacked_phrase() -> None:
+    fact = {
+        "fact_id": "reb_insurtech_founder_led_market_creation",
+        "claim_text": "InsurTech graph evidence supports founder-led insurance market creation.",
+    }
+    l2 = {
+        "narrative_sentence": "Led partner-led deployments of frontier AI at scale.",
+        "claim_ledger": [
+            {
+                "claim_text": "Led partner-led deployments of frontier AI at scale.",
+                "source_fact_ids": [fact["fact_id"]],
+            }
+        ],
+        "selected_fact_plan": {"facts": [fact]},
+        "display_text_authority": "selected_fact_plan_claim_text",
+    }
+
+    gates = run_insurtech_narrative_x2_gates(
+        l2=l2,
+        allowed=[fact["fact_id"]],
+        runtime_generation_status="REAL_LLM",
+    )
+
+    gate = _gate_by_id(gates)["x2_insurtech_narrative_display_text_proof_authorized"]
+    assert gate["pass"] is False
+    assert gate["observed_value"]["status"] == "FAIL"

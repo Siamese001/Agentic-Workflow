@@ -61,6 +61,8 @@ def test_targeted_prompt_injects_jd_and_graph_skills() -> None:
     # graph-skill arsenal surfaced
     assert "GRAPH_SKILL_EVIDENCE" in prompt
     assert "regulatory capital" in prompt and "Basel" in prompt
+    assert "approved wording" not in prompt
+    assert "display-text authority" in prompt
     # proof contract intact: facts still the claim anchor
     assert "bul_ey_003" in prompt
     assert "jd_used_as_proof=false" in prompt

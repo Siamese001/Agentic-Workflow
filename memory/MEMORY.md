@@ -164,6 +164,10 @@
   Anthropic SC paths with truncated JSON is a role-episode output-token-budget bug, while headline
   partner/alliance/channel repetition must fail deterministic segment quality before X1D. Detail:
   `memory/codex/apps_rg_anthropic_section_blockers.md`.
+- **apps_rg role-episode proof-authorized display text (2026-07-05):** InsurTech/EY role-episode
+  lanes must use LLM output only for allowed source_fact_id selection/order; visible bullets and
+  narratives render from selected proof fact `claim_text`, with `x2_<section>_display_text_proof_authorized`
+  as the runtime guard. Detail: `memory/codex/apps_rg_role_episode_proof_authorized_display_text.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit
