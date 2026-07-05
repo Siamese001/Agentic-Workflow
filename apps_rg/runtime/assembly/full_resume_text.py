@@ -49,7 +49,7 @@ def format_dates(start: str, end: str, is_current: bool) -> str:
 
 
 def contact_line(contact: dict[str, Any]) -> str:
-    order = ("phone", "email", "linkedin", "github", "location")
+    order = ("phone", "email", "linkedin", "github")
     return " | ".join(str(contact[k]).strip() for k in order if contact.get(k))
 
 

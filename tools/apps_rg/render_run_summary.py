@@ -25,6 +25,7 @@ markdown output inline in chat.
 """
 from __future__ import annotations
 
+import html
 import json
 import sys
 from datetime import datetime, timezone
@@ -122,6 +123,17 @@ def _sample_values(values: Any, *, limit: int = 8) -> str:
 
 def _md_cell(value: Any) -> str:
     return str(value if value is not None else "").replace("|", "\\|").replace("\n", " ")
+
+
+def _wide_md_code_cell(value: Any, *, min_width_ch: int = 32) -> str:
+    text = html.escape(str(value if value is not None else ""), quote=False)
+    text = text.replace("|", "&#124;").replace("\n", " ")
+    for marker in ("; blocker=", "; reason=", "; ref=", "; target="):
+        text = text.replace(marker, marker.replace("; ", ";<br>"))
+    return (
+        f'<span style="display:inline-block; min-width:{min_width_ch}ch; '
+        f'white-space:normal"><code>{text}</code></span>'
+    )
 
 
 def _gate_status(gates: Any, gate_id: str) -> str:
@@ -397,7 +409,7 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     lines.append("")
     lines.append("## Locked Section Lane Summary Table")
     lines.append("")
-    lines.append("| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |")
+    lines.append("| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | <span style=\"display:inline-block; min-width:32ch\">X2</span> | <span style=\"display:inline-block; min-width:32ch\">X3</span> | <span style=\"display:inline-block; min-width:44ch\">Past fail / blocker</span> | Display output | L6 evidence |")
     lines.append("|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     if not lane_table:
         lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
@@ -422,9 +434,9 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             f"`{row.get('judges_run')}` | "
             f"`{_md_cell(row.get('judge_models_scores'))}` | "
             f"`{_md_cell(row.get('judge_retry_fallback'))}` | "
-            f"`{row.get('x2')}` | "
-            f"`{row.get('x3')}` | "
-            f"`{_md_cell(row.get('past_fail_blocker'))}` | "
+            f"{_wide_md_code_cell(row.get('x2'))} | "
+            f"{_wide_md_code_cell(row.get('x3'))} | "
+            f"{_wide_md_code_cell(row.get('past_fail_blocker'), min_width_ch=44)} | "
             f"`{row.get('display_output')}` | "
             f"`{row.get('l6_evidence')}` |"
         )

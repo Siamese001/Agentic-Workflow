@@ -410,6 +410,30 @@ def _collapse_unify_narrative_companion_copy(narrative: str) -> str:
     return s
 
 
+def _collapse_unify_narrative_comma_stack(narrative: str) -> str:
+    """Convert a supported but comma-heavy thesis into a cleaner single through-line."""
+    s = str(narrative or "").strip()
+    if s.count(",") < 5:
+        return s
+    before = s
+    s = re.sub(
+        r",\s+(turning|building|converting|anchoring|establishing|productizing)\b",
+        r" by \1",
+        s,
+        count=1,
+        flags=re.IGNORECASE,
+    )
+    if s.count(",") >= 5:
+        s = re.sub(r",\s+and\s+", " and ", s, count=1, flags=re.IGNORECASE)
+    if s.count(",") >= 5:
+        s = re.sub(r",\s+([^,.;!?]+),\s+and\s+([^,.;!?]+)", r" \1 and \2", s, count=1)
+    s = re.sub(r"\s{2,}", " ", s)
+    s = re.sub(r"\s+([.,;:])", r"\1", s).strip()
+    if s and s[-1] not in ".!?":
+        s += "."
+    return s if s.count(",") < before.count(",") else before
+
+
 def build_prompt_messages(
     runtime_payload: dict[str, Any],
     companion_text: str = "",
@@ -543,6 +567,30 @@ def normalize_unify_narrative_parsed(
         if isinstance(out["self_check"], dict):
             out["self_check"]["companion_ngram_overlap_trimmed"] = True
         narrative = companion_collapsed
+    comma_collapsed = _collapse_unify_narrative_comma_stack(narrative)
+    if comma_collapsed != narrative:
+        old_narrative = narrative
+        out["narrative_sentence"] = comma_collapsed
+        ledger = out.get("claim_ledger")
+        if isinstance(ledger, list):
+            for entry in ledger:
+                if not isinstance(entry, dict):
+                    continue
+                claim_text = str(entry.get("claim_text") or "").strip()
+                if claim_text and claim_text == old_narrative:
+                    entry["claim_text"] = comma_collapsed
+        out.setdefault("change_log", [])
+        if isinstance(out["change_log"], list):
+            out["change_log"].append(
+                {
+                    "operation": "comma_stack_deterministic_trim",
+                    "reason": "x2_no_six_bullet_summary",
+                }
+            )
+        out.setdefault("self_check", {})
+        if isinstance(out["self_check"], dict):
+            out["self_check"]["comma_stack_trimmed"] = True
+        narrative = comma_collapsed
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
     allowed = {str(x) for x in (runtime_payload.get("allowed_fact_ids") or [])}
