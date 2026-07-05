@@ -79,6 +79,68 @@ def _int_count_map(payload: Any) -> dict[str, int]:
     return result
 
 
+def _resolve_record_artifact_path(record_path: Path, ref: str) -> Path | None:
+    if not ref:
+        return None
+    path = Path(ref)
+    if path.is_file():
+        return path
+    if not path.is_absolute():
+        candidate = record_path.parent / path
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _diagnostic_counts_from_record(record_path: Path, record: dict[str, Any]) -> dict[str, Any]:
+    artifact_paths = dict(record.get("artifact_paths") or {})
+    summary_path = _resolve_record_artifact_path(record_path, str(artifact_paths.get("diagnostic_summary") or ""))
+    if summary_path is not None:
+        summary = _load_json(summary_path)
+        verdict_counts = _int_count_map(summary.get("verdict_counts"))
+        observation_count = int(summary.get("observation_count") or sum(verdict_counts.values()) or 0)
+        not_observed = int(verdict_counts.get("NOT_OBSERVED", 0))
+        return {
+            "observation_count": observation_count,
+            "family_counts": _int_count_map(summary.get("family_counts")),
+            "verdict_counts": verdict_counts,
+            "not_observed_rate": round(not_observed / observation_count, 6) if observation_count else 0.0,
+        }
+
+    rows_path = _resolve_record_artifact_path(record_path, str(artifact_paths.get("diagnostic_rows") or ""))
+    if rows_path is None:
+        return {
+            "observation_count": 0,
+            "family_counts": {},
+            "verdict_counts": {},
+            "not_observed_rate": 0.0,
+        }
+    family_counts: Counter[str] = Counter()
+    verdict_counts: Counter[str] = Counter()
+    observation_count = 0
+    for line in rows_path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        observation_count += 1
+        family = str(row.get("diagnostic_family") or "")
+        verdict = str(row.get("diagnostic_verdict") or "")
+        if family:
+            family_counts[family] += 1
+        if verdict:
+            verdict_counts[verdict] += 1
+    not_observed = int(verdict_counts.get("NOT_OBSERVED", 0))
+    return {
+        "observation_count": observation_count,
+        "family_counts": _counter_dict(family_counts),
+        "verdict_counts": _counter_dict(verdict_counts),
+        "not_observed_rate": round(not_observed / observation_count, 6) if observation_count else 0.0,
+    }
+
+
 def _sample_from_record(path: Path, record: dict[str, Any]) -> TrendSample:
     suite_id = str(record.get("suite_id", ""))
     app_id = str(record.get("app_id", ""))
@@ -102,6 +164,7 @@ def _sample_from_record(path: Path, record: dict[str, Any]) -> TrendSample:
     dominant_failure_family = _dominant_key(failure_family_counts)
     score = float(scorecard.get("score", 0.0))
     block_failures = int(scorecard.get("block_failures", 0))
+    diagnostic_counts = _diagnostic_counts_from_record(path, record)
 
     return TrendSample(
         record_id=record_id,
@@ -119,6 +182,10 @@ def _sample_from_record(path: Path, record: dict[str, Any]) -> TrendSample:
         record_path=path.as_posix(),
         failure_mode_counts=failure_mode_counts,
         failure_family_counts=failure_family_counts,
+        diagnostic_observation_count=int(diagnostic_counts["observation_count"]),
+        diagnostic_family_counts=dict(diagnostic_counts["family_counts"]),
+        diagnostic_verdict_counts=dict(diagnostic_counts["verdict_counts"]),
+        diagnostic_not_observed_rate=float(diagnostic_counts["not_observed_rate"]),
     )
 
 
@@ -138,9 +205,15 @@ def _suite_summary_from_samples(
     window_regression_count = sum(1 for sample in window if sample.regression_verdict == "regression")
     failure_mode_counts: Counter[str] = Counter()
     failure_family_counts: Counter[str] = Counter()
+    diagnostic_family_counts: Counter[str] = Counter()
+    diagnostic_verdict_counts: Counter[str] = Counter()
+    diagnostic_observation_count = 0
     for sample in ordered:
         failure_mode_counts.update(sample.failure_mode_counts)
         failure_family_counts.update(sample.failure_family_counts)
+        diagnostic_family_counts.update(sample.diagnostic_family_counts)
+        diagnostic_verdict_counts.update(sample.diagnostic_verdict_counts)
+        diagnostic_observation_count += int(sample.diagnostic_observation_count)
 
     latest_score = round(float(latest.score), 6)
     previous_score = round(float(previous.score), 6)
@@ -171,6 +244,15 @@ def _suite_summary_from_samples(
         dominant_failure_family=_dominant_key(_counter_dict(failure_family_counts)),
         failure_mode_counts=_counter_dict(failure_mode_counts),
         failure_family_counts=_counter_dict(failure_family_counts),
+        diagnostic_observation_count=diagnostic_observation_count,
+        diagnostic_family_counts=_counter_dict(diagnostic_family_counts),
+        diagnostic_verdict_counts=_counter_dict(diagnostic_verdict_counts),
+        diagnostic_not_observed_rate=round(
+            int(diagnostic_verdict_counts.get("NOT_OBSERVED", 0)) / diagnostic_observation_count,
+            6,
+        )
+        if diagnostic_observation_count
+        else 0.0,
         score_series=[round(float(sample.score), 6) for sample in window],
         verdict_series=[sample.scorecard_verdict for sample in window],
         regression_series=[sample.regression_verdict for sample in window],
@@ -202,6 +284,8 @@ def _stable_trend_id(
                 "regression_verdict": sample.regression_verdict,
                 "record_seed_digest": sample.record_seed_digest,
                 "record_path": sample.record_path,
+                "diagnostic_observation_count": sample.diagnostic_observation_count,
+                "diagnostic_verdict_counts": sample.diagnostic_verdict_counts,
             }
             for sample in samples
         ],
@@ -335,9 +419,15 @@ def build_trend_dashboard(
 
     mode_counts: Counter[str] = Counter()
     family_counts: Counter[str] = Counter()
+    diagnostic_family_counts: Counter[str] = Counter()
+    diagnostic_verdict_counts: Counter[str] = Counter()
+    diagnostic_observation_count = 0
     for sample in samples:
         mode_counts.update(sample.failure_mode_counts)
         family_counts.update(sample.failure_family_counts)
+        diagnostic_family_counts.update(sample.diagnostic_family_counts)
+        diagnostic_verdict_counts.update(sample.diagnostic_verdict_counts)
+        diagnostic_observation_count += int(sample.diagnostic_observation_count)
 
     latest_samples = sorted(samples, key=_sample_sort_key, reverse=True)
     latest_sample = latest_samples[0] if latest_samples else None
@@ -402,6 +492,15 @@ def build_trend_dashboard(
         dominant_failure_family=_dominant_key(_counter_dict(family_counts)),
         failure_mode_counts=_counter_dict(mode_counts),
         failure_family_counts=_counter_dict(family_counts),
+        diagnostic_observation_count=diagnostic_observation_count,
+        diagnostic_family_counts=_counter_dict(diagnostic_family_counts),
+        diagnostic_verdict_counts=_counter_dict(diagnostic_verdict_counts),
+        diagnostic_not_observed_rate=round(
+            int(diagnostic_verdict_counts.get("NOT_OBSERVED", 0)) / diagnostic_observation_count,
+            6,
+        )
+        if diagnostic_observation_count
+        else 0.0,
         suite_summaries=suite_summaries,
         samples=latest_samples[:history_limit],
     )
@@ -445,6 +544,8 @@ def render_trend_dashboard(dashboard: TrendDashboardSummary) -> str:
         f"Latest trend direction: `{dashboard.latest_trend_direction or 'stable'}`",
         f"Dominant failure family: `{dashboard.dominant_failure_family or 'n/a'}`",
         f"Dominant failure mode: `{dashboard.dominant_failure_mode or 'n/a'}`",
+        f"Diagnostic observations: `{dashboard.diagnostic_observation_count}`",
+        f"Diagnostic NOT_OBSERVED rate: `{_format_rate(dashboard.diagnostic_not_observed_rate)}`",
         "",
         "## Suite Trends",
         "",
@@ -482,6 +583,32 @@ def render_trend_dashboard(dashboard: TrendDashboardSummary) -> str:
     if dashboard.failure_family_counts:
         for family, count in sorted(dashboard.failure_family_counts.items(), key=lambda item: (-item[1], item[0])):
             lines.append(f"| {_cell(family)} | {count} |")
+    else:
+        lines.append("| _none_ | 0 |")
+    lines.extend(
+        [
+            "",
+            "## Diagnostic Observations",
+            "",
+            "| Family | Count |",
+            "|---|---:|",
+        ]
+    )
+    if dashboard.diagnostic_family_counts:
+        for family, count in sorted(dashboard.diagnostic_family_counts.items(), key=lambda item: (-item[1], item[0])):
+            lines.append(f"| {_cell(family)} | {count} |")
+    else:
+        lines.append("| _none_ | 0 |")
+    lines.extend(
+        [
+            "",
+            "| Verdict | Count |",
+            "|---|---:|",
+        ]
+    )
+    if dashboard.diagnostic_verdict_counts:
+        for verdict, count in sorted(dashboard.diagnostic_verdict_counts.items(), key=lambda item: (-item[1], item[0])):
+            lines.append(f"| {_cell(verdict)} | {count} |")
     else:
         lines.append("| _none_ | 0 |")
     lines.extend(
@@ -526,6 +653,7 @@ def evaluate_release_gate(
     min_latest_pass_rate: float = 1.0,
     min_window_pass_rate: float = 1.0,
     max_latest_score_drop: float = 0.05,
+    min_diagnostic_observations: int | None = None,
 ) -> ReleaseGateDecision:
     suite_checks, blocking_suite_ids, regression_detected = _build_suite_checks(
         dashboard,
@@ -543,6 +671,11 @@ def evaluate_release_gate(
     if dashboard.latest_regression_rate > 0.0:
         reasons.append(
             f"latest regression rate: {dashboard.latest_regression_rate:.6f} > 0.000000"
+        )
+    if min_diagnostic_observations is not None and dashboard.diagnostic_observation_count < min_diagnostic_observations:
+        reasons.append(
+            "diagnostic observation count: "
+            f"{dashboard.diagnostic_observation_count} < {min_diagnostic_observations}"
         )
     for suite_check in suite_checks:
         if suite_check["reasons"]:
@@ -784,6 +917,7 @@ def emit_release_gate(
     min_latest_pass_rate: float = 1.0,
     min_window_pass_rate: float = 1.0,
     max_latest_score_drop: float = 0.05,
+    min_diagnostic_observations: int | None = None,
     out_dir: str | Path = "artifacts/apps_eval/trends",
     emit_l6_shadow: bool = False,
 ) -> ReleaseGateDecision:
@@ -802,6 +936,7 @@ def emit_release_gate(
         min_latest_pass_rate=min_latest_pass_rate,
         min_window_pass_rate=min_window_pass_rate,
         max_latest_score_drop=max_latest_score_drop,
+        min_diagnostic_observations=min_diagnostic_observations,
     )
     output_dir = Path(out_dir) / decision.trend_id
     artifact_paths = {

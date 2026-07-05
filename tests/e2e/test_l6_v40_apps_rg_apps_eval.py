@@ -57,6 +57,8 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["durable_write_attempted"] is False
     assert eval_bridge["future_run_only"] is True
     assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
+    assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_rows"] == eval_record.artifact_paths["diagnostic_rows"]
+    assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_summary"] == eval_record.artifact_paths["diagnostic_summary"]
     required_rows = [
         row for row in eval_record.scorecard.scorecard_rows if row.get("required", True)
     ]

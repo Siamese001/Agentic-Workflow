@@ -309,6 +309,8 @@ class DiagnosticSummaryV1:
     run_id: str
     observation_count: int
     family_counts: dict[str, int] = field(default_factory=dict)
+    stage_counts: dict[str, int] = field(default_factory=dict)
+    lane_counts: dict[str, int] = field(default_factory=dict)
     verdict_counts: dict[str, int] = field(default_factory=dict)
     promotion_state_counts: dict[str, int] = field(default_factory=dict)
     authority: DiagnosticAuthority | str = "post_run_l6_shadow_only"
@@ -450,6 +452,10 @@ class TrendSample:
     record_path: str = ""
     failure_mode_counts: dict[str, int] = field(default_factory=dict)
     failure_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_observation_count: int = 0
+    diagnostic_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_verdict_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_not_observed_rate: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -475,6 +481,10 @@ class TrendSuiteSummary:
     dominant_failure_family: str = ""
     failure_mode_counts: dict[str, int] = field(default_factory=dict)
     failure_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_observation_count: int = 0
+    diagnostic_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_verdict_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_not_observed_rate: float = 0.0
     score_series: list[float] = field(default_factory=list)
     verdict_series: list[str] = field(default_factory=list)
     regression_series: list[str] = field(default_factory=list)
@@ -512,6 +522,10 @@ class TrendDashboardSummary:
     dominant_failure_family: str = ""
     failure_mode_counts: dict[str, int] = field(default_factory=dict)
     failure_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_observation_count: int = 0
+    diagnostic_family_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_verdict_counts: dict[str, int] = field(default_factory=dict)
+    diagnostic_not_observed_rate: float = 0.0
     artifact_paths: dict[str, str] = field(default_factory=dict)
     suite_summaries: list[TrendSuiteSummary] = field(default_factory=list)
     samples: list[TrendSample] = field(default_factory=list)
