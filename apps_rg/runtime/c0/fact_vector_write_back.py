@@ -26,6 +26,7 @@ import hashlib
 import json
 import logging
 import os
+import sqlite3
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
@@ -52,6 +53,17 @@ from apps_rg.runtime.c0.constants import (
 )
 
 _logger = logging.getLogger(__name__)
+
+FACT_VECTOR_RUNTIME_EXCEPTIONS = (
+    AttributeError,
+    ImportError,
+    KeyError,
+    OSError,
+    RuntimeError,
+    sqlite3.Error,
+    TypeError,
+    ValueError,
+)
 
 # --- Operation taxonomy -----------------------------------------------------
 
@@ -607,6 +619,12 @@ class _ChromaFactWritebackStore:
     def __init__(self, *, staging: Any, live: Any | None = None) -> None:
         self._staging = staging
         self._live = live
+        self.hold_annotation_status: dict[str, str | int] = {
+            "status": "NOT_APPLICABLE",
+            "row_count": 0,
+            "error_type": "",
+            "error": "",
+        }
 
     @staticmethod
     def _as_list(value: Any) -> list[Any]:
@@ -655,21 +673,45 @@ class _ChromaFactWritebackStore:
     def mark_staged_rows_held(
         self,
         metadata_by_id: Mapping[str, Mapping[str, str | int | float | bool]],
-    ) -> None:
+    ) -> dict[str, str | int]:
         if not metadata_by_id:
-            return
+            self.hold_annotation_status = {
+                "status": "SKIPPED",
+                "row_count": 0,
+                "error_type": "",
+                "error": "",
+            }
+            return dict(self.hold_annotation_status)
         try:
             self._staging.update(
                 ids=list(metadata_by_id),
                 metadatas=[dict(metadata) for metadata in metadata_by_id.values()],
             )
-        except Exception as exc:  # guardian: allow-broad-except -- hold annotation must not block receipts.
+        except (AttributeError, TypeError, ValueError, RuntimeError, OSError) as exc:
             _logger.warning("fact_vectors staging hold annotation failed: %s", exc)
+            self.hold_annotation_status = {
+                "status": "FAIL_SOFT",
+                "row_count": len(metadata_by_id),
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+            return dict(self.hold_annotation_status)
+        self.hold_annotation_status = {
+            "status": "PASS",
+            "row_count": len(metadata_by_id),
+            "error_type": "",
+            "error": "",
+        }
+        return dict(self.hold_annotation_status)
 
     def live_count(self) -> int:
         if self._live is None:
             return 0
         return int(self._live.count())
+
+    @property
+    def live_collection_ref(self) -> Any | None:
+        return self._live
 
     def get_live_rows_by_ids(self, row_ids: Sequence[str]) -> dict[str, Any]:
         if self._live is None or not row_ids:
@@ -768,7 +810,57 @@ def _sync_sparse_fact_vectors(
     chroma_path: str,
     live_collection: str,
     sparse_dir: str | Path | None,
+    live_collection_ref: Any | None = None,
 ):
+    def _clear_sparse_sidecar(build_sparse_index: Any) -> None:
+        target_dir = Path(sparse_dir) if sparse_dir is not None else Path(build_sparse_index.SPARSE_PATH)
+        db_path = target_dir / f"{live_collection}.db"
+        for candidate in (db_path, Path(f"{db_path}-wal"), Path(f"{db_path}-shm")):
+            try:
+                candidate.unlink()
+            except FileNotFoundError:
+                continue
+
+    def _rebuild_from_live_collection(build_sparse_index: Any) -> dict[str, Any]:
+        if live_collection_ref is None:
+            return build_sparse_index.build_for_collection(
+                live_collection,
+                dry_run=False,
+                chroma_path=chroma_path,
+                sparse_dir=sparse_dir,
+            )
+        _clear_sparse_sidecar(build_sparse_index)
+        total = int(live_collection_ref.count())
+        batch_size = int(getattr(build_sparse_index, "BATCH_SIZE", 500) or 500)
+        offset = 0
+        rows: list[dict[str, Any]] = []
+        while offset < total:
+            batch = live_collection_ref.get(
+                limit=batch_size,
+                offset=offset,
+                include=["documents", "metadatas"],
+            )
+            ids = list(batch.get("ids") or [])
+            if not ids:
+                break
+            documents = list(batch.get("documents") or [])
+            metadatas = list(batch.get("metadatas") or [])
+            for idx, doc_id in enumerate(ids):
+                metadata = metadatas[idx] if idx < len(metadatas) else {}
+                rows.append(
+                    {
+                        "id": str(doc_id),
+                        "document": str(documents[idx] or "") if idx < len(documents) else "",
+                        "metadata": dict(metadata) if isinstance(metadata, Mapping) else {},
+                    }
+                )
+            offset += len(ids)
+        return build_sparse_index.upsert_documents(
+            live_collection,
+            rows,
+            sparse_dir=sparse_dir,
+        )
+
     def _sync(rows: Sequence[PromotedFactRow], dense_count: int) -> dict[str, Any]:
         update: dict[str, Any] = {
             "sparse_synced": False,
@@ -794,29 +886,19 @@ def _sync_sparse_fact_vectors(
             update["sparse_doc_count"] = int(sparse_stats.get("doc_count", 0))
             update["sparse_sync_reason"] = "incremental_upsert_ok"
             if update["sparse_doc_count"] != dense_count:
-                sparse_stats = build_sparse_index.build_for_collection(
-                    live_collection,
-                    dry_run=False,
-                    chroma_path=chroma_path,
-                    sparse_dir=sparse_dir,
-                )
+                sparse_stats = _rebuild_from_live_collection(build_sparse_index)
                 update["sparse_doc_count"] = int(sparse_stats.get("doc_count", 0))
                 update["sparse_sync_reason"] += ";full_rebuild_after_count_mismatch"
-        except Exception as exc:  # guardian: allow-broad-except -- dense promotion succeeded; record sparse drift.
+        except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
             update["sparse_sync_reason"] = f"incremental_failed:{type(exc).__name__}:{exc}"
             try:
                 from tools.generate.ingestion import build_sparse_index
 
-                sparse_stats = build_sparse_index.build_for_collection(
-                    live_collection,
-                    dry_run=False,
-                    chroma_path=chroma_path,
-                    sparse_dir=sparse_dir,
-                )
+                sparse_stats = _rebuild_from_live_collection(build_sparse_index)
                 update["sparse_synced"] = True
                 update["sparse_doc_count"] = int(sparse_stats.get("doc_count", 0))
                 update["sparse_sync_reason"] += ";full_rebuild_ok"
-            except Exception as rebuild_exc:  # guardian: allow-broad-except -- record sparse rebuild failure.
+            except FACT_VECTOR_RUNTIME_EXCEPTIONS as rebuild_exc:
                 update["sparse_synced"] = False
                 update["sparse_sync_reason"] += (
                     f";full_rebuild_failed:{type(rebuild_exc).__name__}:{rebuild_exc}"
@@ -858,7 +940,7 @@ def _build_live_projection_proof(
         proof["retrieved_count"] = len(retrieved)
         proof["status"] = "PASS" if not missing else "FAIL"
         proof["reason"] = "all_promoted_ids_retrieved" if not missing else "missing_promoted_ids"
-    except Exception as exc:  # guardian: projection proof is diagnostic; promotion receipt captures failure.
+    except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
         proof["status"] = "FAIL"
         proof["reason"] = f"{type(exc).__name__}:{exc}"
     return proof
@@ -951,12 +1033,14 @@ def promote_staged_fact_vectors(
                 chroma_path=chroma_path,
                 live_collection=live_collection,
                 sparse_dir=sparse_dir,
+                live_collection_ref=store.live_collection_ref,
             ),
         )
         receipt["source_x3_code"] = resolved_x3_code
         receipt["x3_finish_code_normalized"] = gate_x3_code if gate_x3_code != resolved_x3_code else ""
         promoted_ids = [str(item.get("id") or "") for item in list(receipt.get("promoted") or [])]
         receipt["uwg"] = dict(guarded_store.uwg_outcome)
+        receipt["hold_annotation"] = dict(store.hold_annotation_status)
         receipt["live_projection"] = _build_live_projection_proof(
             store=store,
             promoted_ids=promoted_ids,
@@ -981,7 +1065,7 @@ def promote_staged_fact_vectors(
         if receipt.get("status") == "PASS" and receipt["l7_auditability"]["retrieval_proof_status"] != "PASS":
             receipt["status"] = "FAIL"
             receipt["reason"] = "live_fact_vector_retrieval_proof_missing"
-    except Exception as exc:  # guardian: allow-broad-except -- promotion is best-effort, recorded in receipt
+    except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
         _logger.warning("fact_vectors staging promotion failed: %s", exc)
@@ -1013,7 +1097,7 @@ def list_staged_fact_vectors(
             chroma_path=chroma_path,
             limit=limit,
         )
-    except Exception as exc:  # guardian: allow-broad-except -- operator list should report errors as JSON.
+    except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
         _logger.warning("fact_vectors staging list failed: %s", exc)
@@ -1058,7 +1142,7 @@ def reject_staged_fact_vectors(
             ids=selected_ids,
             reason=reason,
         )
-    except Exception as exc:  # guardian: allow-broad-except -- operator reject should report errors as JSON.
+    except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
         receipt["status"] = "FAIL"
         receipt["reason"] = f"{type(exc).__name__}:{exc}"
         _logger.warning("fact_vectors staging reject failed: %s", exc)
@@ -1092,7 +1176,7 @@ def drain_held_staged_fact_vectors(
             chroma_path=chroma_path,
             reason=reason,
         )
-    except Exception as exc:  # guardian: allow-broad-except -- operator drain should report errors as JSON.
+    except FACT_VECTOR_RUNTIME_EXCEPTIONS as exc:
         _logger.warning("fact_vectors staging held drain failed: %s", exc)
         return {
             "schema_version": APPS_RG_FACT_WRITEBACK_PROFILE.staging_drain_schema_version,

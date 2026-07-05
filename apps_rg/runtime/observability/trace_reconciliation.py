@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -28,6 +30,8 @@ TRACE_PARTIAL = "TRACE_PARTIAL"
 TRACE_MISMATCH = "TRACE_MISMATCH"
 TRACE_UNAVAILABLE = "TRACE_UNAVAILABLE"
 
+_NUMERIC_TEXT = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$")
+
 OTEL_SNAPSHOT_CANDIDATES = (
     "otel_trace_snapshot.json",
     "runtime_trace_snapshot.json",
@@ -41,6 +45,24 @@ _UWG_LOCAL_ARTIFACTS = (
     "uwg_validation_receipt.json",
     "state_commit_receipt.json",
 )
+
+
+@dataclass(frozen=True, slots=True)
+class _JsonLoadResult:
+    payload: Any
+    status: str
+    path: str
+    error_type: str = ""
+    error: str = ""
+
+    def issue(self, *, artifact_name: str) -> dict[str, str]:
+        return {
+            "artifact": artifact_name,
+            "path": self.path,
+            "status": self.status,
+            "error_type": self.error_type,
+            "error": self.error,
+        }
 
 
 def _utc_now() -> str:
@@ -62,12 +84,34 @@ def _repo_rel(repo_root: Path, path: Path) -> str | None:
 
 
 def _load_json(path: Path) -> Any:
+    return _load_json_result(path).payload
+
+
+def _load_json_result(path: Path) -> _JsonLoadResult:
     if not path.is_file():
-        return None
+        return _JsonLoadResult(payload=None, status="missing", path=path.as_posix())
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
-        return None
+        return _JsonLoadResult(
+            payload=json.loads(path.read_text(encoding="utf-8")),
+            status="loaded",
+            path=path.as_posix(),
+        )
+    except OSError as exc:
+        return _JsonLoadResult(
+            payload=None,
+            status="read_error",
+            path=path.as_posix(),
+            error_type=type(exc).__name__,
+            error=str(exc),
+        )
+    except (json.JSONDecodeError, TypeError) as exc:
+        return _JsonLoadResult(
+            payload=None,
+            status="parse_error",
+            path=path.as_posix(),
+            error_type=type(exc).__name__,
+            error=str(exc),
+        )
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> Path:
@@ -124,19 +168,28 @@ def _provider_attempt_spans_from_provider_response(
     return [], "absent"
 
 
-def _load_local_provider_attempt_spans(artifact_dir: Path) -> tuple[list[dict[str, Any]], str]:
-    provider_doc = _load_json(artifact_dir / "provider_response.json")
+def _load_local_provider_attempt_spans(
+    artifact_dir: Path,
+) -> tuple[list[dict[str, Any]], str, list[dict[str, str]]]:
+    issues: list[dict[str, str]] = []
+    provider_result = _load_json_result(artifact_dir / "provider_response.json")
+    if provider_result.status not in {"loaded", "missing"}:
+        issues.append(provider_result.issue(artifact_name="provider_response.json"))
+    provider_doc = provider_result.payload
     spans, source = _provider_attempt_spans_from_provider_response(
         provider_doc if isinstance(provider_doc, Mapping) else None
     )
     if spans:
-        return spans, source
-    manifest = _load_json(artifact_dir / "section_l7_binding_manifest.json")
+        return spans, source, issues
+    manifest_result = _load_json_result(artifact_dir / "section_l7_binding_manifest.json")
+    if manifest_result.status not in {"loaded", "missing"}:
+        issues.append(manifest_result.issue(artifact_name="section_l7_binding_manifest.json"))
+    manifest = manifest_result.payload
     if isinstance(manifest, Mapping):
         manifest_spans = _span_list(manifest.get("provider_attempt_spans"))
         if manifest_spans:
-            return manifest_spans, "section_l7_binding_manifest.provider_attempt_spans"
-    return [], "absent"
+            return manifest_spans, "section_l7_binding_manifest.provider_attempt_spans", issues
+    return [], "absent", issues
 
 
 def _load_otel_snapshot(
@@ -289,10 +342,10 @@ def _provider_key(span: Mapping[str, Any], *, from_otel: bool = False) -> tuple[
 
 def _as_seconds(value: Any, *, millis: bool = False) -> float | None:
     if not isinstance(value, (int, float)):
-        try:
-            value = float(str(value))
-        except (TypeError, ValueError):
+        text = str(value).strip()
+        if not _NUMERIC_TEXT.fullmatch(text):
             return None
+        value = float(text)
     seconds = float(value) / 1000.0 if millis else float(value)
     return round(max(seconds, 0.0), 6)
 
@@ -383,7 +436,9 @@ def build_trace_reconciliation(
     repo_root = Path(repo_root)
     effective_run_id = run_id or artifact_dir.name
     local_refs = _local_artifact_refs(repo_root, artifact_dir)
-    local_provider_spans, local_provider_source = _load_local_provider_attempt_spans(artifact_dir)
+    local_provider_spans, local_provider_source, local_json_issues = _load_local_provider_attempt_spans(
+        artifact_dir
+    )
     local_timing_summary = summarize_provider_attempt_spans(local_provider_spans)
     otel_snapshot, otel_snapshot_ref = _load_otel_snapshot(artifact_dir, repo_root, otel_trace_snapshot)
     otel_spans = _extract_otel_spans(otel_snapshot)
@@ -409,6 +464,22 @@ def build_trace_reconciliation(
             source_refs={"otel_snapshot_ref": otel_snapshot_ref},
         )
     )
+
+    for issue in local_json_issues:
+        rows.append(
+            _row(
+                run_id=effective_run_id,
+                section_id=section_id,
+                stage_id="L7",
+                check_id=f"local_json.{issue['artifact']}",
+                verdict="WARN",
+                severity="WARN",
+                reason="local JSON artifact could not be loaded; reconciliation continues from available receipts",
+                observed_value=issue,
+                expected_value="valid JSON or intentionally absent optional artifact",
+                source_refs={"artifact_path": issue["path"]},
+            )
+        )
 
     rows.append(
         _row(
@@ -585,6 +656,7 @@ def build_trace_reconciliation(
         "otel_provider_attempt_span_count": len(otel_provider_spans),
         "local_provider_attempt_span_count": len(local_provider_spans),
         "local_provider_attempt_span_source": local_provider_source,
+        "local_json_load_issues": local_json_issues,
         "local_provider_attempt_timing_summary": local_timing_summary,
         "local_artifact_refs": local_refs,
         "summary": {
