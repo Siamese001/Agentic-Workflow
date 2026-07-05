@@ -1311,6 +1311,12 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
     recs = bcg.get("p0_p1_px_recommendations") if isinstance(bcg.get("p0_p1_px_recommendations"), dict) else {}
     rec_rows = recs.get("rows") if isinstance(recs.get("rows"), list) else []
     rec_priorities = {str(row.get("priority") or "") for row in rec_rows if isinstance(row, dict)}
+    next_moves = bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else []
+    bcg_truth_errors = _bcg_truth_errors(
+        doc,
+        [row for row in rec_rows if isinstance(row, dict)],
+        [str(item) for item in next_moves],
+    )
     row0 = lane_table[0] if lane_table and isinstance(lane_table[0], dict) else {}
     resume_inline = (
         inline.get("resume_docx_full_version_inline")
@@ -1387,14 +1393,15 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
             "pass": (
                 bcg.get("title") == "BCG Executive Output - apps_rg Run"
                 and bcg.get("section_order") == list(BCG_LOCKED_SECTION_ORDER)
-                and {"P0", "P1", "PX"}.issubset(rec_priorities)
+                and not bcg_truth_errors
             ),
             "observed_value": {
                 "title": bcg.get("title"),
                 "section_order": bcg.get("section_order"),
                 "priorities": sorted(rec_priorities),
+                "truth_errors": bcg_truth_errors,
             },
-            "threshold": "BCG title + section order + P0/P1/PX recommendations",
+            "threshold": "BCG title + section order + evidence-backed recommendations and next moves",
         },
         {
             "gate_id": "mandatory_research_briefing_input_row0_locked",
@@ -2049,53 +2056,19 @@ def _research_row(doc: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
+def _bcg_row(priority: str, recommendation: str, evidence: str, gate_outcome: str) -> dict[str, str]:
+    return {
+        "priority": priority,
+        "recommendation": recommendation,
+        "evidence": evidence,
+        "gate_outcome": gate_outcome,
+    }
+
+
+def _active_bcg_evidence(doc: dict[str, Any]) -> dict[str, Any]:
     final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
-    final_status = str(final_out.get("status") or "UNKNOWN")
-    failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
     research = _research_row(doc)
     lane_rows = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
-    rows: list[dict[str, str]] = []
-    if research.get("generation_status") == "P0_STATIC_MANUAL_BRIEF_USED":
-        rows.extend(
-            [
-                {
-                    "priority": "P0",
-                    "recommendation": "Fail closed when auto_research_internal=True but apps_research delegation does not execute.",
-                    "evidence": str(research.get("past_fail_blocker") or "research_delegation_executed=False"),
-                    "gate_outcome": "Block before section generation.",
-                },
-                {
-                    "priority": "P0",
-                    "recommendation": "Keep row 0 named research_briefing_input; do not call it apps_research unless apps_research actually ran.",
-                    "evidence": "No apps_research provider/model/run receipt observed for this run.",
-                    "gate_outcome": "Prevent false provenance.",
-                },
-                {
-                    "priority": "P0",
-                    "recommendation": "Require a fresh research artifact or explicit operator skip before resume lanes run.",
-                    "evidence": str(research.get("past_fail_blocker") or "static manual brief"),
-                    "gate_outcome": "Block stale/manual research.",
-                },
-            ]
-        )
-    first_blocker = next(
-        (
-            finding
-            for finding in doc.get("rca_findings", [])
-            if isinstance(finding, dict) and str(finding.get("section") or "") == "competencies"
-        ),
-        None,
-    )
-    if isinstance(first_blocker, dict):
-        rows.append(
-            {
-                "priority": "P0",
-                "recommendation": "Fix competencies first-lane execution failure before scheduling downstream lanes.",
-                "evidence": str(first_blocker.get("evidence") or first_blocker.get("classification") or "competencies blocked"),
-                "gate_outcome": "No downstream lane without upstream authorization.",
-            }
-        )
     blocked_generated_lanes = [
         str(row.get("section") or "")
         for row in lane_rows
@@ -2103,24 +2076,6 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
         and str(row.get("section") or "") != "research_briefing_input"
         and str(row.get("x3") or "").startswith("X3_BLOCK")
     ]
-    if blocked_generated_lanes:
-        rows.append(
-            {
-                "priority": "P0",
-                "recommendation": "Fix X3-blocked generated lanes before authorizing the final resume.",
-                "evidence": ", ".join(blocked_generated_lanes),
-                "gate_outcome": "Outcome remains blocked until every required generated lane clears X3.",
-            }
-        )
-    if final_status != "PASS":
-        rows.append(
-            {
-                "priority": "P0",
-                "recommendation": "Keep final resume product gate failed while generated-section gap markers exist.",
-                "evidence": ", ".join(str(x) for x in failed_final) or final_status,
-                "gate_outcome": "Final resume unauthorized.",
-            }
-        )
     provider_gap_sections = [
         str(row.get("section") or "")
         for row in lane_rows
@@ -2133,54 +2088,195 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
             or str(row.get("primary_model_observed") or "") in {"", "NOT_OBSERVED"}
         )
     ]
-    if provider_gap_sections:
-        rows.append(
-            {
-                "priority": "P1",
-                "recommendation": "Capture provider attempts, retries, fallback, and observed model IDs for failed lanes.",
-                "evidence": "Provider proof gap in: " + ", ".join(provider_gap_sections),
-                "gate_outcome": "Make failure RCA auditable.",
-            }
-        )
     phase1_no_run_lanes = [
         str(row.get("section") or "")
         for row in lane_rows
         if isinstance(row, dict)
         and "PHASE1_NO_RUN_DIR" in str(row.get("x3") or row.get("past_fail_blocker") or "")
     ]
-    rows.extend(
-        [
-            {
-                "priority": "P1",
-                "recommendation": "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane.",
-                "evidence": (
-                    "PHASE1_NO_RUN_DIR lanes: " + ", ".join(phase1_no_run_lanes)
-                    if phase1_no_run_lanes
-                    else "Downstream lanes report prior lane failed / missing run dir."
+    return {
+        "final_status": str(final_out.get("status") or "UNKNOWN"),
+        "failed_final": final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else [],
+        "research": research,
+        "research_status": str(research.get("generation_status") or "NOT_OBSERVED"),
+        "research_source_class": str(research.get("research_source_class") or "NOT_OBSERVED"),
+        "blocked_generated_lanes": blocked_generated_lanes,
+        "provider_gap_sections": provider_gap_sections,
+        "phase1_no_run_lanes": phase1_no_run_lanes,
+        "competencies_blocker": next(
+            (
+                finding
+                for finding in doc.get("rca_findings", [])
+                if isinstance(finding, dict) and str(finding.get("section") or "") == "competencies"
+            ),
+            None,
+        ),
+    }
+
+
+def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
+    evidence = _active_bcg_evidence(doc)
+    research = evidence["research"]
+    research_status = evidence["research_status"]
+    research_source_class = evidence["research_source_class"]
+    rows: list[dict[str, str]] = []
+    if research_status == "P0_STATIC_MANUAL_BRIEF_USED":
+        rows.extend(
+            [
+                _bcg_row(
+                    "P0",
+                    "Fail closed when auto_research_internal=True but apps_research delegation does not execute.",
+                    str(research.get("past_fail_blocker") or "research_delegation_executed=False"),
+                    "Block before section generation.",
                 ),
-                "gate_outcome": "Show exact upstream repair order.",
-            },
-            {
-                "priority": "PX",
-                "recommendation": "Add a research freshness-age policy.",
-                "evidence": str(research.get("past_fail_blocker") or "briefing freshness not observed"),
-                "gate_outcome": "Warn or block by age threshold.",
-            },
-            {
-                "priority": "PX",
-                "recommendation": "Add research source class to the locked BCG and lane table.",
-                "evidence": str(research.get("research_source_class") or "NOT_OBSERVED"),
-                "gate_outcome": "Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP.",
-            },
-            {
-                "priority": "PX",
-                "recommendation": "Compare latest run to prior passing research wiring when latest run uses a static/manual research path.",
-                "evidence": "Prior runs may use artifacts/apps_research/.../briefing.md while this run used a static JSON brief.",
-                "gate_outcome": "Surface regression automatically.",
-            },
-        ]
-    )
+                _bcg_row(
+                    "P0",
+                    "Keep row 0 named research_briefing_input; do not call it apps_research unless apps_research actually ran.",
+                    str(research.get("past_fail_blocker") or "research_delegation_executed=False"),
+                    "Prevent false provenance.",
+                ),
+                _bcg_row(
+                    "P0",
+                    "Require a fresh research artifact or explicit operator skip before resume lanes run.",
+                    str(research.get("past_fail_blocker") or "static manual brief"),
+                    "Block stale/manual research.",
+                ),
+            ]
+        )
+    first_blocker = evidence["competencies_blocker"]
+    if isinstance(first_blocker, dict):
+        rows.append(
+            _bcg_row(
+                "P0",
+                "Fix competencies first-lane execution failure before scheduling downstream lanes.",
+                str(first_blocker.get("evidence") or first_blocker.get("classification") or "competencies blocked"),
+                "No downstream lane without upstream authorization.",
+            )
+        )
+    if evidence["blocked_generated_lanes"]:
+        rows.append(
+            _bcg_row(
+                "P0",
+                "Fix X3-blocked generated lanes before authorizing the final resume.",
+                ", ".join(evidence["blocked_generated_lanes"]),
+                "Outcome remains blocked until every required generated lane clears X3.",
+            )
+        )
+    if evidence["final_status"] != "PASS":
+        rows.append(
+            _bcg_row(
+                "P0",
+                "Keep final resume product gate failed while generated-section gap markers exist.",
+                ", ".join(str(x) for x in evidence["failed_final"]) or evidence["final_status"],
+                "Final resume unauthorized.",
+            )
+        )
+    if evidence["provider_gap_sections"]:
+        rows.append(
+            _bcg_row(
+                "P1",
+                "Capture provider attempts, retries, fallback, and observed model IDs for failed lanes.",
+                "Provider proof gap in: " + ", ".join(evidence["provider_gap_sections"]),
+                "Make failure RCA auditable.",
+            )
+        )
+    if evidence["phase1_no_run_lanes"]:
+        rows.append(
+            _bcg_row(
+                "P1",
+                "Add dependency-token reporting for every PHASE1_NO_RUN_DIR lane.",
+                "PHASE1_NO_RUN_DIR lanes: " + ", ".join(evidence["phase1_no_run_lanes"]),
+                "Show exact upstream repair order.",
+            )
+        )
+    if research_source_class in {"", "NOT_OBSERVED"}:
+        rows.append(
+            _bcg_row(
+                "PX",
+                "Add research source class to the locked BCG and lane table.",
+                str(research.get("past_fail_blocker") or "research_source_class=NOT_OBSERVED"),
+                "Distinguish FRESH_APPS_RESEARCH, STATIC_MANUAL_BRIEF, and OPERATOR_SKIP.",
+            )
+        )
+    if research_source_class == "STATIC_MANUAL_BRIEF":
+        rows.append(
+            _bcg_row(
+                "PX",
+                "Compare latest run to prior passing research wiring when latest run uses a static/manual research path.",
+                str(research.get("past_fail_blocker") or "research_source_class=STATIC_MANUAL_BRIEF"),
+                "Surface regression automatically.",
+            )
+        )
     return rows
+
+
+def _build_bcg_recommended_next_moves(doc: dict[str, Any], recommendations: list[dict[str, str]]) -> list[str]:
+    summary = doc.get("result_summary") if isinstance(doc.get("result_summary"), dict) else {}
+    final_out = doc.get("final_resume_output") if isinstance(doc.get("final_resume_output"), dict) else {}
+    authorized = bool(summary.get("outcome_authorized")) and str(final_out.get("status") or "UNKNOWN") == "PASS"
+    if authorized:
+        return [
+            "Preserve the generated output package and run evidence.",
+            "Review the mandatory ledger and section-status table for audit details.",
+            "Treat future edits as new changes requiring the same X2/X3 gates.",
+        ]
+    p0_rows = [row for row in recommendations if row.get("priority") == "P0"]
+    if p0_rows:
+        first = p0_rows[0]
+        moves = [
+            f"Resolve P0: {first['recommendation']} Evidence: {first['evidence']}.",
+        ]
+        if len(p0_rows) > 1:
+            moves.append(f"Resolve the remaining {len(p0_rows) - 1} P0 row(s) before rerun.")
+        moves.extend(
+            [
+                "Rerun the integrated apps_rg path only after the listed P0 evidence clears.",
+                "Treat final assembly as valid only when every required section and product output is product-authorized.",
+            ]
+        )
+        return moves
+    if recommendations:
+        first = recommendations[0]
+        return [
+            f"Resolve {first['priority']}: {first['recommendation']} Evidence: {first['evidence']}.",
+            "Rerender the mandatory BCG and section ledger after that evidence changes.",
+        ]
+    return ["No evidence-backed BCG recommendation was generated; inspect the mandatory ledger before rerun."]
+
+
+def _bcg_truth_errors(doc: dict[str, Any], recommendations: list[dict[str, str]], next_moves: list[str]) -> list[str]:
+    evidence = _active_bcg_evidence(doc)
+    errors: list[str] = []
+    p0_rows = [row for row in recommendations if row.get("priority") == "P0"]
+    for idx, row in enumerate(recommendations):
+        recommendation = str(row.get("recommendation") or "")
+        row_evidence = str(row.get("evidence") or "")
+        if not recommendation.strip() or not row_evidence.strip():
+            errors.append(f"bcg.recommendations[{idx}].empty")
+        if "X3-blocked generated lanes" in recommendation and not evidence["blocked_generated_lanes"]:
+            errors.append(f"bcg.recommendations[{idx}].no_x3_blocked_lanes")
+        if "final resume product gate failed" in recommendation and evidence["final_status"] == "PASS":
+            errors.append(f"bcg.recommendations[{idx}].final_status_pass")
+        if "provider attempts" in recommendation and not evidence["provider_gap_sections"]:
+            errors.append(f"bcg.recommendations[{idx}].no_provider_gap")
+        if "PHASE1_NO_RUN_DIR" in recommendation and not evidence["phase1_no_run_lanes"]:
+            errors.append(f"bcg.recommendations[{idx}].no_phase1_no_run_dir")
+        if "research source class" in recommendation and evidence["research_source_class"] not in {"", "NOT_OBSERVED"}:
+            errors.append(f"bcg.recommendations[{idx}].research_source_class_already_present")
+        if "static/manual research path" in recommendation and evidence["research_source_class"] != "STATIC_MANUAL_BRIEF":
+            errors.append(f"bcg.recommendations[{idx}].not_static_manual_research")
+        if "apps_research delegation does not execute" in recommendation and evidence["research_status"] != "P0_STATIC_MANUAL_BRIEF_USED":
+            errors.append(f"bcg.recommendations[{idx}].research_not_static_manual_p0")
+    joined_next = " ".join(str(item) for item in next_moves)
+    if p0_rows:
+        if "P0" not in joined_next:
+            errors.append("bcg.recommended_next_move.missing_p0_reference")
+        first_evidence = str(p0_rows[0].get("evidence") or "")
+        if first_evidence and first_evidence not in joined_next:
+            errors.append("bcg.recommended_next_move.missing_active_p0_evidence")
+    elif "P0" in joined_next:
+        errors.append("bcg.recommended_next_move.stale_p0_reference")
+    return errors
 
 
 def _build_bcg_issue_tree(doc: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2262,6 +2358,8 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         {"label": "Final resume output contract", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}"},
         {"label": "Resume DOCX", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}"},
     ]
+    recommendations = _build_bcg_recommendations(doc)
+    next_moves = _build_bcg_recommended_next_moves(doc, recommendations)
     return {
         "schema_version": INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION,
         "immutable_section_order": list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER),
@@ -2271,18 +2369,14 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
             "executive_answer": executive_answer,
             "p0_p1_px_recommendations": {
                 "columns": list(BCG_RECOMMENDATION_COLUMNS),
-                "rows": _build_bcg_recommendations(doc),
+                "rows": recommendations,
             },
             "board_level_readout": {
                 "columns": list(BCG_BOARD_READOUT_COLUMNS),
                 "rows": board_rows,
             },
             "issue_tree": _build_bcg_issue_tree(doc),
-            "recommended_next_move": [
-                "Fix P0 gates before rerun.",
-                "Rerun the integrated apps_rg path only after research and first-lane generation are product-authorized or explicitly skipped.",
-                "Treat final assembly as valid only when every required section and product output is product-authorized.",
-            ],
+            "recommended_next_move": next_moves,
             "evidence_map": evidence_map,
         },
         "section_lane_summary_table": {
@@ -2495,9 +2589,16 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
         ("Rendered final resume text", final_out.get("rendered_resume_text")),
         ("Final resume DOCX", final_out.get("resume_docx")),
     )
+    resume_inline_authorized, _resume_inline_blockers = _resume_inline_authorization(doc)
     for label, art in final_artifacts:
         art = art if isinstance(art, dict) else {}
-        exists = "PASS" if art.get("exists") else "MISSING"
+        exists = (
+            "PASS"
+            if art.get("exists") and resume_inline_authorized
+            else "EXISTS_UNAUTHORIZED"
+            if art.get("exists")
+            else "MISSING"
+        )
         lines.append(
             "| "
             f"{label} | `{_markdown_table_escape(art.get('relpath') or '-')}` | "

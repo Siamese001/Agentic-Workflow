@@ -1190,6 +1190,26 @@ def _render_post_x3_completion(run_dir: Path) -> List[str]:
 def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> List[str]:
     lines: List[str] = ["## Output Artifacts", ""]
     output_manifest = _load_json(run_dir / "apps_rg_output_manifest.json") or {}
+    ledger = _load_json(run_dir / APPS_RG_MANDATORY_RUN_OUTPUT_JSON) or {}
+    result = ledger.get("result_summary") if isinstance(ledger.get("result_summary"), dict) else {}
+    mandatory_gates = (
+        ledger.get("mandatory_inline_output_gates")
+        if isinstance(ledger.get("mandatory_inline_output_gates"), list)
+        else []
+    )
+    gate_by_id = {
+        str(gate.get("gate_id") or ""): gate
+        for gate in mandatory_gates
+        if isinstance(gate, dict)
+    }
+    final_product_authorized = bool(result.get("outcome_authorized")) and all(
+        gate_by_id.get(gate_id, {}).get("pass") is True
+        for gate_id in (
+            "mandatory_resume_text_inline_present",
+            "mandatory_final_resume_json_present",
+            "mandatory_resume_docx_present",
+        )
+    )
     json_rel = _safe_manifest_rel(
         output_manifest.get("generated_resume_json_relpath"),
         "outputs/generated_resume.json",
@@ -1249,11 +1269,18 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
         ("Spine proof", run_dir / "agentic_core_spine_proof.json", False, "supplemental spine proof"),
     ]
     for label, path, required, optional_reason in artifact_rows:
+        status = _artifact_status(path, required=required, optional_reason=optional_reason)
+        if (
+            label in {"Resume JSON", "Final resume text", "Final resume output contract", "Resume DOCX"}
+            and path.is_file()
+            and not final_product_authorized
+        ):
+            status = "`EXISTS_UNAUTHORIZED`"
         rows.append(
             (
                 label,
                 _repo_rel(path),
-                _artifact_status(path, required=required, optional_reason=optional_reason),
+                status,
             )
         )
     lines.append("| Artifact | Path | Status |")
