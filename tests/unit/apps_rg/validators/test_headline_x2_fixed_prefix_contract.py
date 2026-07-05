@@ -109,6 +109,20 @@ def test_valid_canonical_derived_passes() -> None:
     assert _failed_ids(gates) == []
 
 
+def test_redundant_partner_ecosystem_segments_fail_segments_quality() -> None:
+    hl = (
+        "SVP Engineering | Provider Egress Governance Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | Partner Channel Alliance"
+    )
+    gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))
+    by_id = {g.gate_id: g for g in gates}
+
+    assert "x2_headline_segments_quality" in _failed_ids(gates)
+    assert "semantic_theme_overlap:partner_ecosystem" in str(
+        by_id["x2_headline_segments_quality"].observed_value
+    )
+
+
 def test_standalone_vendor_architecture_segment_fails() -> None:
     hl = "SVP Engineering | Databricks Lakehouse | Enterprise AI Platforms | Partner Co-Sell Motions"
     gates = run_headline_x2_gates(headline_line=hl, **_base_kwargs(hl))

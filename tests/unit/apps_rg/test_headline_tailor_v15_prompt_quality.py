@@ -83,6 +83,13 @@ def test_contrastive_section_preserves_mechanical_copy_warning() -> None:
     assert "flat ledger" in txt.lower() or "flat bul_" in txt.lower()
 
 
+def test_prompt_blocks_redundant_partner_ecosystem_segments() -> None:
+    txt = TEMPLATE_PATH.read_text(encoding="utf-8").lower()
+    assert "partner/alliance/channel/co-sell/hyperscaler" in txt
+    assert "hyperscaler alliance co-sell" in txt
+    assert "partner channel alliance" in txt
+
+
 @pytest.fixture(scope="module")
 def template_yaml() -> dict:
     return yaml.safe_load(TEMPLATE_PATH.read_text(encoding="utf-8"))

@@ -79,6 +79,12 @@ from apps_rg.runtime.sections.section_generation import build_section_request
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
+ROLE_EPISODE_MAX_OUTPUT_TOKENS_BY_SECTION: dict[str, int] = {
+    # Three-bullet lanes emit full bullet rows plus claim-ledger rows; Anthropic can truncate
+    # the required JSON under the narrative-sized default.
+    "insurtech_bullets": 2200,
+    "ey_bullets": 2200,
+}
 ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION = "deterministic_graph_bullet_render.v1"
 
 
@@ -138,6 +144,10 @@ _ROLE_LANES: dict[str, RoleEpisodeLaneConfig] = {
         output_kind="narrative",
     ),
 }
+
+
+def _max_output_tokens_for_lane(cfg: RoleEpisodeLaneConfig) -> int:
+    return int(ROLE_EPISODE_MAX_OUTPUT_TOKENS_BY_SECTION.get(cfg.section_id, MAX_OUTPUT_TOKENS))
 
 _X1D_WIRING_GATE_IDS: frozenset[str] = frozenset(
     {"x2_x1d_required_judges_present", "x2_x1d_schema_valid"}
@@ -909,12 +919,13 @@ def _write_blocked_artifacts(
         if str(args.provider) == "external_openai"
         else external_claude_generation_model(section_id=cfg.section_id)
     )
+    max_output_tokens = _max_output_tokens_for_lane(cfg)
     provider_req = {
         "provider_requested": str(args.provider),
         "provider_attempted": False,
         "model": generation_model,
         "temperature": float(args.temperature),
-        "max_tokens": MAX_OUTPUT_TOKENS,
+        "max_tokens": max_output_tokens,
         "mock_fallback_allowed": False,
         "blocked_before_provider": True,
     }
@@ -977,6 +988,7 @@ def run_role_episode_lane_execution(
 ) -> dict[str, Any]:
     sid = str(section_id or "").strip().lower()
     cfg = _ROLE_LANES[sid]
+    max_output_tokens = _max_output_tokens_for_lane(cfg)
     run_id = f"{sid}_{uuid.uuid4().hex[:12]}"
     artifact_dir = (
         Path(artifact_dir_override)
@@ -1049,7 +1061,7 @@ def run_role_episode_lane_execution(
         runtime_payload=runtime_payload,
         provider=str(args.provider),
         temperature=float(args.temperature),
-        max_tokens=MAX_OUTPUT_TOKENS,
+        max_tokens=max_output_tokens,
         output_filename=cfg.output_filename,
     )
     if blocked is not None:
@@ -1095,7 +1107,7 @@ def run_role_episode_lane_execution(
         prompt_hash=prompt_hash[:16],
         input_payload_hash=_json_hash(runtime_payload),
         temperature=float(args.temperature),
-        max_tokens=MAX_OUTPUT_TOKENS,
+        max_tokens=max_output_tokens,
         model=generation_model,
         provider_requested=str(args.provider),
     )
@@ -1146,13 +1158,13 @@ def run_role_episode_lane_execution(
             provider_result = _provider_gateway(sid, str(args.provider)).generate(
                 str(args.provider),
                 compiled_obj,
-                token_budget=MAX_OUTPUT_TOKENS,
+                token_budget=max_output_tokens,
                 temperature=float(args.temperature),
             )
             provider_result = maybe_fallback_to_openai_for_claude_availability(
                 provider_result,
                 compiled_obj,
-                token_budget=MAX_OUTPUT_TOKENS,
+                token_budget=max_output_tokens,
                 temperature=float(args.temperature),
             )
         except ProviderGatewayError as exc:
