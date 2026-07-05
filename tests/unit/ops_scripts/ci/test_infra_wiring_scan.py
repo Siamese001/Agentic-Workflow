@@ -203,7 +203,9 @@ class TestScanDirectory:
         baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
         latest_absorb = baseline["loosen_history"][-1]
 
-        assert baseline["count"] == 2789
+        assert baseline["count"] == 1453
+        assert baseline["tighten_history"][-1]["from"] == 1495
+        assert baseline["tighten_history"][-1]["to"] == 1453
         assert latest_absorb["from"] == 2788
         assert latest_absorb["to"] == 2789
         assert latest_absorb["raw_violation_count"] == 2789
