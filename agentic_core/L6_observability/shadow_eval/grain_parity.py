@@ -9,6 +9,10 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Mapping
 
+from agentic_core.L6_observability.shadow_eval.microsteps import (
+    evidence_class_for_alignment_source,
+)
+
 L6_APPS_EVAL_GRAIN_PARITY_SCHEMA_VERSION = "agentic_core.l6_apps_eval_grain_parity.v1"
 L6_APPS_EVAL_COVERAGE_JOIN_KEY = [
     "microstep_id",
@@ -122,6 +126,7 @@ def build_l6_apps_eval_grain_parity(
         "l6_observation_ref": l6_observation_ref,
         "alignment_source": alignment_source,
         "apps_eval_rows_bound": apps_eval_rows_bound,
+        "evidence_class": evidence_class_for_alignment_source(alignment_source),
         "coverage_join_key": list(L6_APPS_EVAL_COVERAGE_JOIN_KEY),
         "rows_expected": len(eval_rows),
         "apps_eval_rows_seen": len(eval_rows),

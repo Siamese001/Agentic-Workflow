@@ -50,6 +50,7 @@ def test_completed_eval_bridge_emits_real_apps_eval_grain_parity(tmp_path: Path)
     parity = json.loads(parity_path.read_text(encoding="utf-8"))
 
     assert parity["alignment_source"] == "apps_eval_scorecard_rows"
+    assert parity["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
     assert parity["apps_eval_rows_bound"] is True
     assert parity["grain_parity_status"] == "PASS"
 

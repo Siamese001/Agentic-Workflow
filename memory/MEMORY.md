@@ -148,6 +148,11 @@
   `trace_reconciliation.json`; apps_eval grades it as optional observability evidence and L6 turns gaps
   into future-run-only recommendations. Detail:
   `memory/codex/apps_rg_otel_trace_reconciliation_consumer.md`.
+- **apps_rg L6 shadow observability closure invariant (2026-07-05):** L6 evidence classes now
+  distinguish contract-only advisory, apps_eval-bound proof, and failure-terminal advisory; trace
+  reconciliation/summary precede microstep observations, closure receipts follow v40 packages, and
+  post-X3 section bindings are additive only. Detail:
+  `memory/codex/apps_rg_l6_shadow_observability_closure_invariant.md`.
 - **apps_rg mandatory BCG/run-ledger outputs (2026-06-28):** every apps_rg run must emit
   `BCG_EXECUTIVE_OUTPUT.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.md`, and
   `APPS_RG_MANDATORY_RUN_OUTPUT.json`; failed runs still need RCA, section/judge ledger, and

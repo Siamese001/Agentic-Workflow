@@ -22,8 +22,10 @@ from apps_rg.runtime.providers.provider_attempt_spans import (
 
 TRACE_RECONCILIATION_ARTIFACT = "trace_reconciliation.json"
 TRACE_RECONCILIATION_ROWS_ARTIFACT = "trace_reconciliation_rows.jsonl"
+L6_TRACE_OBSERVABILITY_SUMMARY_ARTIFACT = "l6_trace_observability_summary.json"
 TRACE_RECONCILIATION_SCHEMA_VERSION = "apps_rg.trace_reconciliation.v1"
 TRACE_RECONCILIATION_ROW_SCHEMA_VERSION = "apps_rg.trace_reconciliation.row.v1"
+L6_TRACE_OBSERVABILITY_SUMMARY_SCHEMA_VERSION = "apps_rg.l6_trace_observability_summary.v1"
 
 TRACE_RECONCILED = "TRACE_RECONCILED"
 TRACE_PARTIAL = "TRACE_PARTIAL"
@@ -699,9 +701,46 @@ def emit_trace_reconciliation_artifacts(
         "row_export_digest": _canonical_digest(rows),
     }
     doc_path = _write_json(artifact_dir / TRACE_RECONCILIATION_ARTIFACT, doc)
+    summary_path = _write_json(
+        artifact_dir / L6_TRACE_OBSERVABILITY_SUMMARY_ARTIFACT,
+        build_l6_trace_observability_summary(doc),
+    )
     return {
         "trace_reconciliation": doc_path,
         "trace_reconciliation_rows": rows_path,
+        "l6_trace_observability_summary": summary_path,
+    }
+
+
+def _row_verdict_by_check(rows: list[Mapping[str, Any]], check_id: str) -> str:
+    for row in rows:
+        if str(row.get("check_id") or "") == check_id:
+            return str(row.get("verdict") or "UNKNOWN")
+    return "NOT_OBSERVED"
+
+
+def build_l6_trace_observability_summary(reconciliation: Mapping[str, Any]) -> dict[str, Any]:
+    """Build a compact L6-only trace health rollup from reconciliation evidence."""
+    rows = [dict(row) for row in reconciliation.get("rows", []) if isinstance(row, Mapping)]
+    summary = reconciliation.get("summary")
+    summary_doc = dict(summary) if isinstance(summary, Mapping) else {}
+    return {
+        "schema_version": L6_TRACE_OBSERVABILITY_SUMMARY_SCHEMA_VERSION,
+        "run_id": str(reconciliation.get("run_id") or ""),
+        "section_id": str(reconciliation.get("section_id") or ""),
+        "trace_verdict": str(reconciliation.get("trace_verdict") or TRACE_UNAVAILABLE),
+        "otel_snapshot_available": bool(reconciliation.get("otel_snapshot_available") is True),
+        "provider_attempt_mirror_status": _row_verdict_by_check(rows, "l7_provider_attempts.otel_mirror"),
+        "x3_mirror_status": _row_verdict_by_check(rows, "x3_disposition.otel_mirror"),
+        "uwg_mirror_status": _row_verdict_by_check(rows, "uwg_handoff.otel_mirror"),
+        "warn_count": int(summary_doc.get("warn_count") or 0),
+        "fail_count": int(summary_doc.get("fail_count") or 0),
+        "row_count": int(summary_doc.get("row_count") or len(rows)),
+        "proof_authority": "local_receipts",
+        "current_run_mutation_assertion": False,
+        "direct_l4_write_assertion": False,
+        "durable_write_assertion": False,
+        "future_run_only": True,
     }
 
 
@@ -714,6 +753,9 @@ __all__ = [
     "TRACE_RECONCILIATION_ROW_SCHEMA_VERSION",
     "TRACE_RECONCILIATION_SCHEMA_VERSION",
     "TRACE_UNAVAILABLE",
+    "L6_TRACE_OBSERVABILITY_SUMMARY_ARTIFACT",
+    "L6_TRACE_OBSERVABILITY_SUMMARY_SCHEMA_VERSION",
+    "build_l6_trace_observability_summary",
     "build_trace_reconciliation",
     "emit_trace_reconciliation_artifacts",
 ]

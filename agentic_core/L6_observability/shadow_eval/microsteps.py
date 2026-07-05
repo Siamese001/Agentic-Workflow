@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from typing import Any, Iterable, Mapping
 
 from agentic_core.L6_observability.shadow_eval._digest import stamp_digest
@@ -18,6 +18,16 @@ from agentic_core.L6_observability.shadow_eval._digest import stamp_digest
 L6_MICROSTEP_OBSERVATION_SCHEMA_VERSION = "agentic_core.l6_microstep_observation.v1"
 L6_MICROSTEP_COVERAGE_SCHEMA_VERSION = "agentic_core.l6_microstep_coverage.v1"
 L6_APPS_EVAL_ALIGNMENT_SCHEMA_VERSION = "agentic_core.l6_apps_eval_alignment.v1"
+EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY = "CONTRACT_ONLY_ADVISORY"
+EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF = "APPS_EVAL_BOUND_PROOF"
+EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY = "FAILURE_TERMINAL_ADVISORY"
+EVIDENCE_CLASSES = frozenset(
+    {
+        EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
+        EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF,
+        EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY,
+    }
+)
 
 OBSERVED_STATUSES = frozenset({"OBSERVED", "MISSING", "UNKNOWN", "DRIFT", "VIOLATION"})
 SHADOW_CLASSIFICATIONS = frozenset(
@@ -56,6 +66,7 @@ class L6MicrostepObservation:
     gate_id: str = ""
     artifact_role: str = ""
     required: bool = True
+    severity: str = "INFO"
     orphan_observation: bool = False
     decisive_reason_seen: str = ""
     schema_version: str = L6_MICROSTEP_OBSERVATION_SCHEMA_VERSION
@@ -68,6 +79,15 @@ class L6MicrostepObservation:
 def canonical_digest(payload: Any) -> str:
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
     return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def evidence_class_for_alignment_source(alignment_source: str) -> str:
+    source = str(alignment_source or "").strip()
+    if source == "apps_eval_scorecard_rows":
+        return EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF
+    if source == "failure_terminal_no_apps_eval_rows":
+        return EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY
+    return EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY
 
 
 def expand_microstep_contract(microstep_contract: Mapping[str, Any], lane_contract: Mapping[str, Any]) -> list[dict[str, Any]]:
@@ -172,6 +192,7 @@ def build_observation_from_eval_row(
         gate_id=str(row.get("gate_id") or ""),
         artifact_role=str(row.get("artifact_role") or ""),
         required=bool(row.get("required", True)),
+        severity=str(row.get("severity") or "INFO"),
         decisive_reason_seen=str(row.get("decisive_reason") or ""),
     )
     return stamp_digest(observation)
@@ -210,6 +231,7 @@ def build_observation_from_contract_row(
         gate_id=str(item.get("gate_id") or ""),
         artifact_role=str(item.get("artifact_role") or ""),
         required=bool(item.get("required", True)),
+        severity=str(item.get("severity") or "INFO"),
         decisive_reason_seen=decisive_reason_seen,
     )
     return stamp_digest(observation)
@@ -293,24 +315,96 @@ def build_microstep_rca(observations: Iterable[L6MicrostepObservation | Mapping[
         for row in rows
         if row.get("shadow_classification") != "NORMAL" or row.get("observed_status") != "OBSERVED"
     ]
+    repeated: dict[str, dict[str, Any]] = {}
+    for row in gaps:
+        key = "|".join(
+            [
+                str(row.get("stage_id") or ""),
+                str(row.get("lane_id") or ""),
+                str(row.get("artifact_role") or ""),
+                str(row.get("shadow_classification") or ""),
+                str(row.get("observed_status") or ""),
+            ]
+        )
+        bucket = repeated.setdefault(
+            key,
+            {
+                "recurrence_key": key,
+                "stage_id": str(row.get("stage_id") or ""),
+                "lane_id": str(row.get("lane_id") or ""),
+                "artifact_role": str(row.get("artifact_role") or ""),
+                "shadow_classification": str(row.get("shadow_classification") or ""),
+                "observed_status": str(row.get("observed_status") or ""),
+                "recurrence_count": 0,
+                "microstep_ids": [],
+            },
+        )
+        bucket["recurrence_count"] += 1
+        bucket["microstep_ids"].append(str(row.get("microstep_id") or ""))
+    trace_rows = [row for row in rows if row.get("artifact_role") == "trace_reconciliation"]
+    trace_gaps = [row for row in trace_rows if row in gaps]
     return {
         "schema_version": "agentic_core.l6_microstep_rca.v1",
         "gap_count": len(gaps),
         "root_cause_candidates": sorted({str(row.get("root_cause_candidate") or "UNKNOWN_ROOT_CAUSE") for row in gaps}),
         "first_gap_microstep_id": str(gaps[0].get("microstep_id") or "") if gaps else "",
+        "first_blocking_gap": dict(gaps[0]) if gaps else {},
+        "gap_groups_by_stage": _count_by(gaps, "stage_id"),
+        "gap_groups_by_lane": _count_by(gaps, "lane_id"),
+        "gap_groups_by_artifact_role": _count_by(gaps, "artifact_role"),
+        "gap_groups_by_shadow_classification": _count_by(gaps, "shadow_classification"),
+        "trace_reconciliation_verdict": "GAP" if trace_gaps else "OBSERVED" if trace_rows else "NOT_OBSERVED",
+        "top_repeated_gap_candidates": sorted(
+            repeated.values(),
+            key=lambda item: (-int(item["recurrence_count"]), str(item["recurrence_key"])),
+        )[:10],
         "current_run_mutation_assertion": False,
         "l4_write_assertion": False,
         "future_run_only": True,
     }
 
 
+def _count_by(rows: Iterable[Mapping[str, Any]], field: str) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in rows:
+        key = str(row.get(field) or "UNKNOWN")
+        counts[key] = counts.get(key, 0) + 1
+    return dict(sorted(counts.items()))
+
+
 def build_microstep_patterns(observations: Iterable[L6MicrostepObservation | Mapping[str, Any]]) -> dict[str, Any]:
-    coverage = build_microstep_coverage(observations)
+    rows = [obs.to_dict() if isinstance(obs, L6MicrostepObservation) else dict(obs) for obs in observations]
+    coverage = build_microstep_coverage(rows)
+    recurrence: dict[str, int] = {}
+    severity_rollup: dict[str, int] = {}
+    for row in rows:
+        key = "|".join(
+            [
+                str(row.get("stage_id") or ""),
+                str(row.get("lane_id") or ""),
+                str(row.get("artifact_role") or ""),
+                str(row.get("observed_status") or ""),
+            ]
+        )
+        recurrence[key] = recurrence.get(key, 0) + 1
+        severity = str(row.get("severity") or "INFO")
+        severity_rollup[severity] = severity_rollup.get(severity, 0) + 1
+    repeated = sorted(recurrence.items(), key=lambda item: (-item[1], item[0]))
+    gap_present = any(
+        row.get("shadow_classification") != "NORMAL" or row.get("observed_status") != "OBSERVED"
+        for row in rows
+    )
+    pattern_status = "BASELINE"
+    if gap_present:
+        pattern_status = "REGRESSION_CANDIDATE" if any(count > 1 for _, count in repeated) else "WATCH"
     return {
         "schema_version": "agentic_core.l6_microstep_patterns.v1",
         "status_counts": coverage["status_counts"],
         "shadow_classification_counts": coverage["shadow_classification_counts"],
-        "pattern_status": "WATCH" if not coverage["coverage_complete"] else "BASELINE",
+        "pattern_status": pattern_status,
+        "recurrence_key": repeated[0][0] if repeated else "",
+        "recurrence_count": repeated[0][1] if repeated else 0,
+        "severity_rollup": dict(sorted(severity_rollup.items())),
         "current_run_mutation_assertion": False,
         "l4_write_assertion": False,
         "future_run_only": True,
@@ -321,9 +415,22 @@ def build_future_run_proposals(observations: Iterable[L6MicrostepObservation | M
     rows = [obs.to_dict() if isinstance(obs, L6MicrostepObservation) else dict(obs) for obs in observations]
     proposals = [
         {
+            "proposal_id": canonical_digest(
+                {
+                    "microstep_id": row.get("microstep_id"),
+                    "artifact_role": row.get("artifact_role"),
+                    "observed_status": row.get("observed_status"),
+                }
+            ),
             "microstep_id": row.get("microstep_id"),
             "proposal_type": "FUTURE_RUN_HARDENING",
+            "target_surface": row.get("artifact_role") or row.get("stage_id") or "unknown_surface",
+            "recommended_owner": "future_run_observability_owner",
+            "evidence_refs": [row.get("source_ref")] if row.get("source_ref") else [],
             "recommendation": row.get("future_run_recommendation"),
+            "blocked_current_run_mutation": True,
+            "requires_gauntlet": True,
+            "uwg_required_for_activation": True,
             "current_run_mutation_assertion": False,
             "l4_write_assertion": False,
             "future_run_only": True,
@@ -400,6 +507,7 @@ def build_apps_eval_alignment(
         "l6_observation_ref": l6_observation_ref,
         "alignment_source": alignment_source,
         "apps_eval_rows_bound": resolved_rows_bound,
+        "evidence_class": evidence_class_for_alignment_source(alignment_source),
         "contract_only_alignment_is_not_eval_proof": not resolved_rows_bound,
         "coverage_join_key": "microstep_id",
         "rows_expected": len(eval_rows),
@@ -431,6 +539,11 @@ __all__ = [
     "build_observations_from_eval_rows",
     "build_orphan_observation",
     "canonical_digest",
+    "evidence_class_for_alignment_source",
+    "EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF",
+    "EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY",
+    "EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY",
+    "EVIDENCE_CLASSES",
     "expand_microstep_contract",
     "observation_to_dict",
 ]

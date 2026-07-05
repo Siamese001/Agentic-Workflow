@@ -188,8 +188,11 @@ def test_post_x3_completion_commits_generated_resume_and_binds_eval(
     assert receipt["x3_to_uwg_to_eval_to_l6_completed"] is True
     assert receipt["l6_shadow"]["alignment_source"] == "apps_eval_scorecard_rows"
     assert receipt["l6_shadow"]["apps_eval_rows_bound"] is True
+    assert receipt["l6_shadow"]["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
     assert receipt["l6_shadow"]["grain_parity_status"] == "PASS"
     assert (tmp_path / receipt["l6_shadow"]["l6_apps_eval_grain_parity_ref"]).is_file()
+    assert (tmp_path / receipt["l6_shadow"]["l6_section_apps_eval_bindings_ref"]).is_file()
+    assert receipt["l6_shadow"]["l6_section_apps_eval_bindings_summary"]["apps_eval_rows_bound"] == 1
     assert commit_receipt["commit_status"] == "COMMITTED"
     assert commit_receipt["output_hash"] == expected_hash
     assert (tmp_path / "commit_request.json").is_file()
@@ -213,6 +216,7 @@ def test_post_x3_uwg_failure_emits_failure_l6_bridge(tmp_path: Path, monkeypatch
     assert result["failure_stage"] == "uwg_commit"
     assert result["l6_shadow"]["grain_parity_status"] == "WARN"
     assert result["l6_shadow"]["alignment_source"] == "failure_terminal_no_apps_eval_rows"
+    assert result["l6_shadow"]["evidence_class"] == "FAILURE_TERMINAL_ADVISORY"
     assert (tmp_path / subject.POST_X3_FAILURE_L6_SHADOW_BRIDGE).is_file()
     assert (tmp_path / subject.POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY).is_file()
 

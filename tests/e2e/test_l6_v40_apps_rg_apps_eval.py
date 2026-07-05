@@ -47,6 +47,9 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert rg_package["future_run_only_assertion"] is True
     assert rg_package["l6_microstep_observations_ref"]
     assert rg_package["l6_apps_eval_alignment_ref"]
+    assert rg_package["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert rg_package["l6_trace_observability_summary_ref"]
+    assert rg_package["l6_observability_closure_receipt_ref"]
     assert rg_alignment["missing_in_l6"] == []
     assert rg_alignment["authority_mismatch"] is False
 
@@ -56,6 +59,7 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["direct_l4_write_attempted"] is False
     assert eval_bridge["durable_write_attempted"] is False
     assert eval_bridge["future_run_only"] is True
+    assert eval_bridge["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
     assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
     assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_rows"] == eval_record.artifact_paths["diagnostic_rows"]
     assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_summary"] == eval_record.artifact_paths["diagnostic_summary"]
@@ -64,8 +68,10 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     ]
     assert eval_alignment["rows_expected"] == len(required_rows)
     assert eval_alignment["alignment_source"] == "apps_eval_scorecard_rows"
+    assert eval_alignment["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
     assert eval_alignment["apps_eval_rows_bound"] is True
     assert eval_grain_parity["grain_parity_status"] == "PASS"
+    assert eval_grain_parity["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
     assert eval_alignment["missing_in_l6"] == []
     assert eval_alignment["missing_in_apps_eval"] == []
     assert eval_grain_parity["missing_in_l6"] == []
