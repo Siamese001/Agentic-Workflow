@@ -12,16 +12,17 @@ from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.L6_observability.shadow_eval.microsteps import (
+    EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF,
     build_apps_eval_alignment,
     build_future_run_proposals,
     build_microstep_coverage,
     build_microstep_patterns,
     build_microstep_rca,
     build_observations_from_eval_rows,
-)
-from agentic_core.L6_observability.shadow_eval.grain_parity import (
-    build_l6_apps_eval_grain_parity,
 )
 from agentic_core.L6_observability.shadow_eval.pipeline import (
     L6PipelineState,
@@ -90,6 +91,16 @@ def _trace_reconciliation_refs(record: CompletedEvalRecord) -> list[str]:
         ref = str(row.get("artifact_ref") or "").strip()
         if ref and ref not in refs:
             refs.append(ref.replace("\\", "/"))
+    return refs
+
+
+def _trace_observability_summary_refs(record: CompletedEvalRecord) -> list[str]:
+    refs: list[str] = []
+    for ref in _trace_reconciliation_refs(record):
+        if ref.endswith("trace_reconciliation.json"):
+            summary_ref = ref[: -len("trace_reconciliation.json")] + "l6_trace_observability_summary.json"
+            if summary_ref not in refs:
+                refs.append(summary_ref)
     return refs
 
 
@@ -180,6 +191,7 @@ def build_completed_eval_shadow_exhaust(
     record_ref = eval_record_path.replace("\\", "/")
     handoff_ref = l6_handoff_path.replace("\\", "/") if l6_handoff_path else ""
     trace_reconciliation_refs = _trace_reconciliation_refs(record)
+    trace_summary_refs = _trace_observability_summary_refs(record)
     diagnostic_refs = _diagnostic_refs(record)
     outcome_class = "normal_success" if record.scorecard.verdict == "pass" else "policy_failure"
     trace_root = f"trace:apps_eval:{record.record_id}"
@@ -237,6 +249,20 @@ def build_completed_eval_shadow_exhaust(
         ]
         + [
             {
+                "source_type": "apps_rg_l6_trace_observability_summary",
+                "source_ref": ref,
+                "source_hash": _hash_ref({"l6_trace_observability_summary_ref": ref}),
+                "source_schema_version": "apps_rg.l6_trace_observability_summary.v1",
+                "observed_stage": "L6",
+                "expected_stage_order": 11,
+                "lineage_parent_refs": [trace_root, record_ref],
+                "completeness_status": "COMPLETE",
+                "trust_status": "TRUSTED",
+            }
+            for ref in trace_summary_refs
+        ]
+        + [
+            {
                 "source_type": f"apps_eval_{key}",
                 "source_ref": ref,
                 "source_hash": _hash_ref({"diagnostic_ref": ref, "diagnostic_role": key}),
@@ -269,15 +295,18 @@ def build_completed_eval_shadow_exhaust(
             "generated": [record_ref]
             + ([handoff_ref] if handoff_ref else [])
             + trace_reconciliation_refs
+            + trace_summary_refs
             + list(diagnostic_refs.values()),
             "sealed": [record_ref],
             "file_hashes": {
                 record_ref: _hash_ref(record.to_dict()),
                 **{ref: _hash_ref({"diagnostic_ref": ref}) for ref in diagnostic_refs.values()},
+                **{ref: _hash_ref({"l6_trace_observability_summary_ref": ref}) for ref in trace_summary_refs},
             },
             "artifact_lineage": {
                 record_ref: [trace_root],
                 **{ref: [trace_root, record_ref] for ref in trace_reconciliation_refs},
+                **{ref: [trace_root, record_ref] for ref in trace_summary_refs},
                 **{ref: [trace_root, record_ref] for ref in diagnostic_refs.values()},
             },
             "missing": [],
@@ -329,7 +358,9 @@ def emit_completed_eval_l6_shadow_bridge(
         "span_export_ref": span_paths["span_export_json"].as_posix(),
         "span_export_jsonl_ref": span_paths["span_export_jsonl"].as_posix(),
         "l6_microstep_artifact_refs": dict(microstep_paths),
+        "evidence_class": EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF if microstep_paths else "",
         "trace_reconciliation_refs": _trace_reconciliation_refs(record),
+        "trace_observability_summary_refs": _trace_observability_summary_refs(record),
         "diagnostic_artifact_refs": _diagnostic_refs(record),
         "requested_action": "consume_completed_eval_record_only",
         "current_run_mutated": False,

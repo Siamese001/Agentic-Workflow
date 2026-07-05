@@ -17,6 +17,11 @@
     "WARN",
     "INFO"
   ],
+  "evidence_class_enum": [
+    "CONTRACT_ONLY_ADVISORY",
+    "APPS_EVAL_BOUND_PROOF",
+    "FAILURE_TERMINAL_ADVISORY"
+  ],
   "stage_enum": [
     "U0",
     "L1",

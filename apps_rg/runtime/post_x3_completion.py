@@ -25,10 +25,15 @@ from agentic_core.L4_state.contracts import (
 from agentic_core.L4_state.contracts.records import stamp_digest
 from agentic_core.L4_state.uwg.durable_write_gateway import get_default_gateway
 from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    L6_APPS_EVAL_COVERAGE_JOIN_KEY,
     build_l6_apps_eval_grain_parity,
 )
+from agentic_core.L6_observability.shadow_eval.microsteps import (
+    EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF,
+    EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
+    EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY,
+)
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import compute_artifact_hash
-
 from apps_rg.runtime.package.apps_rg_full_resume_x3_eligibility import (
     evaluate_apps_rg_full_success_eligibility,
 )
@@ -44,6 +49,7 @@ UWG_COMMIT_RECEIPT = "uwg_commit_receipt.json"
 UWG_REFRESH_RECEIPTS = "uwg_refresh_receipts.json"
 POST_X3_FAILURE_L6_SHADOW_BRIDGE = "post_x3_failure_l6_shadow_bridge.json"
 POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY = "post_x3_failure_l6_apps_eval_grain_parity.json"
+L6_SECTION_APPS_EVAL_BINDINGS = "l6_section_apps_eval_bindings.json"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -385,9 +391,11 @@ def _bind_completion_artifacts(
         "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
         "l6_apps_eval_alignment_ref": str(l6_refs.get("l6_apps_eval_alignment_ref") or ""),
         "l6_apps_eval_grain_parity_ref": str(l6_refs.get("l6_apps_eval_grain_parity_ref") or ""),
+        "l6_section_apps_eval_bindings_ref": str(l6_refs.get("l6_section_apps_eval_bindings_ref") or ""),
         "alignment_source": str(l6_refs.get("alignment_source") or ""),
         "apps_eval_rows_bound": bool(l6_refs.get("apps_eval_rows_bound") is True),
         "grain_parity_status": str(l6_refs.get("grain_parity_status") or ""),
+        "evidence_class": str(l6_refs.get("evidence_class") or ""),
         "future_run_only": True,
         "current_run_mutated": False,
         "fact_vector_writeback_status": str(fv.get("status") or ""),
@@ -415,9 +423,11 @@ def _bind_completion_artifacts(
             "l6_shadow_bridge_ref": l6_bridge_path,
             "l6_apps_eval_alignment_ref": updates["l6_apps_eval_alignment_ref"],
             "l6_apps_eval_grain_parity_ref": updates["l6_apps_eval_grain_parity_ref"],
+            "l6_section_apps_eval_bindings_ref": updates["l6_section_apps_eval_bindings_ref"],
             "alignment_source": updates["alignment_source"],
             "apps_eval_rows_bound": updates["apps_eval_rows_bound"],
             "grain_parity_status": updates["grain_parity_status"],
+            "evidence_class": updates["evidence_class"],
             "fact_vector_writeback": fv,
             "note": "route-family certification is separate from app workflow completion",
         }
@@ -479,6 +489,7 @@ def _emit_post_x3_failure_l6_shadow_bridge(
         "partial_payload": dict(partial_payload),
         "alignment_source": "failure_terminal_no_apps_eval_rows",
         "apps_eval_rows_bound": False,
+        "evidence_class": EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY,
         "grain_parity_status": "WARN",
         "current_run_mutation_assertion": False,
         "direct_l4_write_assertion": False,
@@ -508,6 +519,7 @@ def _emit_post_x3_failure_l6_shadow_bridge(
         "l6_apps_eval_grain_parity_ref": _repo_rel(parity_path, artifact_dir),
         "alignment_source": "failure_terminal_no_apps_eval_rows",
         "apps_eval_rows_bound": False,
+        "evidence_class": EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY,
         "grain_parity_status": "WARN",
         "future_run_only": True,
         "current_run_mutated": False,
@@ -541,9 +553,113 @@ def _emit_post_x3_success_l6_grain_parity(
         "l6_microstep_observations_ref": _repo_rel(paths["l6_microstep_observations"], artifact_dir),
         "alignment_source": str(parity.get("alignment_source") or ""),
         "apps_eval_rows_bound": bool(parity.get("apps_eval_rows_bound") is True),
+        "evidence_class": str(parity.get("evidence_class") or ""),
         "grain_parity_status": str(parity.get("grain_parity_status") or ""),
         "future_run_only": bool(parity.get("future_run_only") is True),
         "current_run_mutated": False,
+    }
+
+
+def _lane_ids_from_contract_or_rows(scorecard_rows: list[Mapping[str, Any]]) -> list[str]:
+    contract_path = REPO_ROOT / "apps_eval" / "registries" / "apps_rg_lane_contract.json"
+    lane_ids: list[str] = []
+    doc = _read_json(contract_path)
+    for lane in doc.get("generated_lanes", []) if doc else []:
+        text = str(lane or "").strip()
+        if text and text not in lane_ids:
+            lane_ids.append(text)
+    for row in scorecard_rows:
+        text = str(row.get("lane_id") or "").strip()
+        if text and text not in lane_ids:
+            lane_ids.append(text)
+    return lane_ids
+
+
+def _section_package_candidates(artifact_dir: Path, lane_id: str) -> list[Path]:
+    return [
+        artifact_dir / "lanes" / lane_id / "l6_v40_shadow_eval_package.json",
+        artifact_dir / "modular_r4" / "sections" / lane_id / "l6_v40_shadow_eval_package.json",
+        artifact_dir / lane_id / "l6_v40_shadow_eval_package.json",
+    ]
+
+
+def _row_grain_key(row: Mapping[str, Any]) -> dict[str, str]:
+    return {field: str(row.get(field) or "") for field in L6_APPS_EVAL_COVERAGE_JOIN_KEY}
+
+
+def _emit_l6_section_apps_eval_bindings(
+    *,
+    artifact_dir: Path,
+    eval_record: Any,
+) -> dict[str, Any]:
+    scorecard_rows = [
+        dict(row)
+        for row in list(getattr(eval_record.scorecard, "scorecard_rows", []) or [])
+        if isinstance(row, Mapping) and row.get("required", True)
+    ]
+    bindings: list[dict[str, Any]] = []
+    for lane_id in _lane_ids_from_contract_or_rows(scorecard_rows):
+        lane_rows = [row for row in scorecard_rows if str(row.get("lane_id") or "") == lane_id]
+        package_path = next((path for path in _section_package_candidates(artifact_dir, lane_id) if path.is_file()), None)
+        package = _read_json(package_path) if package_path is not None else {}
+        proof_gaps: list[str] = []
+        if package_path is None:
+            proof_gaps.append("missing_l6_v40_shadow_eval_package")
+        if not lane_rows:
+            proof_gaps.append("missing_apps_eval_scorecard_rows")
+        evidence_class = (
+            EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF
+            if package_path is not None and lane_rows
+            else EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY
+        )
+        bindings.append(
+            {
+                "section_id": lane_id,
+                "artifact_dir_ref": _repo_rel(package_path.parent, artifact_dir) if package_path is not None else "",
+                "l6_v40_shadow_eval_package_ref": _repo_rel(package_path, artifact_dir) if package_path is not None else "",
+                "l6_v40_shadow_eval_package_sha256": f"sha256:{_sha256_file(package_path)}" if package_path is not None else "",
+                "apps_eval_row_count": len(lane_rows),
+                "apps_eval_row_ids": [str(row.get("row_id") or "") for row in lane_rows],
+                "apps_eval_grain_keys": [_row_grain_key(row) for row in lane_rows],
+                "binding_status": "PASS" if evidence_class == EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF else "WARN",
+                "evidence_class": evidence_class,
+                "proof_gaps": proof_gaps,
+                "package_grain_parity_status": str(package.get("grain_parity_status") or ""),
+                "package_alignment_source": str(package.get("alignment_source") or ""),
+                "package_immutable": True,
+                "future_run_only": True,
+                "current_run_mutation_assertion": False,
+                "direct_l4_write_assertion": False,
+                "durable_write_assertion": False,
+            }
+        )
+
+    summary = {
+        "sections_total": len(bindings),
+        "sections_bound": sum(1 for item in bindings if item["binding_status"] == "PASS"),
+        "sections_contract_only": sum(1 for item in bindings if item["evidence_class"] != EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF),
+        "apps_eval_rows_bound": sum(int(item["apps_eval_row_count"]) for item in bindings),
+        "grain_parity_status_by_section": {
+            str(item["section_id"]): str(item["package_grain_parity_status"] or item["binding_status"])
+            for item in bindings
+        },
+    }
+    payload = {
+        "schema_version": "apps_rg.l6_section_apps_eval_bindings.v1",
+        "eval_record_id": str(getattr(eval_record, "record_id", "") or ""),
+        "eval_record_ref": str(getattr(eval_record, "artifact_paths", {}).get("eval_record") or ""),
+        "summary": summary,
+        "bindings": bindings,
+        "current_run_mutation_assertion": False,
+        "direct_l4_write_assertion": False,
+        "durable_write_assertion": False,
+        "future_run_only": True,
+    }
+    path = artifact_dir / L6_SECTION_APPS_EVAL_BINDINGS
+    _write_json(path, payload)
+    return {
+        "l6_section_apps_eval_bindings_ref": _repo_rel(path, artifact_dir),
+        "l6_section_apps_eval_bindings_summary": summary,
     }
 
 
@@ -799,6 +915,11 @@ def complete_apps_rg_post_x3(
         eval_record=eval_record,
         l6_bridge_path=l6_bridge_path,
     )
+    l6_section_bindings = _emit_l6_section_apps_eval_bindings(
+        artifact_dir=art,
+        eval_record=eval_record,
+    )
+    l6_shadow_refs = {**l6_grain_refs, **l6_section_bindings}
     coverage = dict(eval_record.scorecard.coverage_summary or {})
     eval_pass = coverage.get("release_blocked") is False and coverage.get("coverage_complete") is True
     payload = {
@@ -833,7 +954,7 @@ def complete_apps_rg_post_x3(
         "l6_shadow": {
             "l6_shadow_bridge_ref": l6_bridge_path,
             "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
-            **l6_grain_refs,
+            **l6_shadow_refs,
             "future_run_only": True,
             "current_run_mutated": False,
         },
@@ -852,7 +973,7 @@ def complete_apps_rg_post_x3(
             l6_bridge_hash=l6_bridge_hash,
             commit_receipt_id=commit_receipt.commit_receipt_id,
             fact_vector_writeback=fact_vector_writeback,
-            l6_shadow_refs=l6_grain_refs,
+            l6_shadow_refs=l6_shadow_refs,
         )
     return payload
 
@@ -861,6 +982,7 @@ __all__ = [
     "POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY",
     "POST_X3_FAILURE_L6_SHADOW_BRIDGE",
     "POST_X3_COMPLETION_RECEIPT",
+    "L6_SECTION_APPS_EVAL_BINDINGS",
     "complete_apps_rg_post_x3",
     "is_full_resume_product_artifact_dir",
 ]

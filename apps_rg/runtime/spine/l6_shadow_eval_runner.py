@@ -23,6 +23,7 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
 from apps_rg.runtime.observability.trace_reconciliation import (
+    L6_TRACE_OBSERVABILITY_SUMMARY_ARTIFACT,
     TRACE_RECONCILIATION_ARTIFACT,
     emit_trace_reconciliation_artifacts,
 )
@@ -37,6 +38,7 @@ APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV = "APPS_RG_L6_V40_L5_CERTIFICATION_REF"
 L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT = "l6_v40_shadow_eval_package.json"
 L6_V40_SHADOW_EVAL_SPANS_ARTIFACT = "l6_v40_shadow_eval_spans.json"
 L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT = "l6_v40_shadow_eval_spans.jsonl"
+L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT = "l6_observability_closure_receipt.json"
 
 APPS_RG_V40_STAGE_BY_FILE: dict[str, str] = {
     "runtime_exhaust_bundle.json": "EXIT",
@@ -52,6 +54,7 @@ APPS_RG_V40_STAGE_BY_FILE: dict[str, str] = {
     "final_evidence_contract_bridge.json": "C0",
     "l6_shadow_eval_package.json": "EXIT",
     TRACE_RECONCILIATION_ARTIFACT: "L6",
+    L6_TRACE_OBSERVABILITY_SUMMARY_ARTIFACT: "L6",
 }
 
 
@@ -90,6 +93,66 @@ def _jsonable(value: object) -> object:
     return value
 
 
+def _write_json(path: Path, payload: Mapping[str, Any]) -> Path:
+    path.write_text(
+        json.dumps(dict(payload), indent=2, sort_keys=True, default=str) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    return path
+
+
+def _emit_l6_observability_closure_receipt(
+    *,
+    artifact_dir: Path,
+    repo_root: Path,
+    package_path: Path,
+    package: Mapping[str, Any],
+    trace_reconciliation_paths: Mapping[str, Path],
+    microstep_paths: Mapping[str, Path],
+) -> Path:
+    checks = {
+        "runtime_exhaust_exists": (artifact_dir / "runtime_exhaust_bundle.json").is_file(),
+        "exit_disposition_exists": (artifact_dir / "exit_disposition_receipt.json").is_file(),
+        "g28_receipt_exists": bool(package.get("g28_audit_completeness")),
+        "g29_receipt_exists": bool(package.get("g29_learning_firewall")),
+        "trace_reconciliation_exists": trace_reconciliation_paths["trace_reconciliation"].is_file(),
+        "trace_summary_exists": trace_reconciliation_paths["l6_trace_observability_summary"].is_file(),
+        "microstep_observations_exists": microstep_paths["l6_microstep_observations"].is_file(),
+        "grain_parity_exists": microstep_paths["l6_apps_eval_grain_parity"].is_file(),
+        "v40_package_exists": package_path.is_file(),
+        "no_current_run_mutation_assertion": package.get("current_run_mutation_assertion") is False
+        and package.get("current_run_x3_mutation_assertion") is False,
+        "no_direct_l4_write_assertion": package.get("direct_l4_write_assertion") is False,
+        "no_durable_write_assertion": package.get("durable_write_assertion") is False,
+    }
+    receipt = {
+        "schema_version": "apps_rg.l6_observability_closure_receipt.v1",
+        "section_id": str(package.get("section_id") or ""),
+        "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
+        "closure_status": "PASS" if all(checks.values()) else "WARN",
+        "checks": checks,
+        "refs": {
+            "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
+            "exit_disposition_receipt": _repo_rel(repo_root, artifact_dir / "exit_disposition_receipt.json"),
+            "trace_reconciliation": _repo_rel(repo_root, trace_reconciliation_paths["trace_reconciliation"]),
+            "l6_trace_observability_summary": _repo_rel(
+                repo_root,
+                trace_reconciliation_paths["l6_trace_observability_summary"],
+            ),
+            "l6_microstep_observations": _repo_rel(repo_root, microstep_paths["l6_microstep_observations"]),
+            "l6_apps_eval_grain_parity": _repo_rel(repo_root, microstep_paths["l6_apps_eval_grain_parity"]),
+            "l6_v40_shadow_eval_package": _repo_rel(repo_root, package_path),
+        },
+        "current_run_mutation_assertion": False,
+        "current_run_x3_mutation_assertion": False,
+        "direct_l4_write_assertion": False,
+        "durable_write_assertion": False,
+        "future_run_only_assertion": True,
+    }
+    return _write_json(artifact_dir / L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT, receipt)
+
+
 def run_l6_v40_shadow_eval_for_section(
     artifact_dir: Path,
     *,
@@ -101,6 +164,23 @@ def run_l6_v40_shadow_eval_for_section(
 ) -> dict[str, Path]:
     """Build v40 exhaust, run 6A + observer readiness, and write artifacts."""
     l5_ref = l5_certification_ref or os.environ.get(APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV, "")
+    preliminary_exhaust = from_section_artifacts(
+        artifact_dir,
+        repo_root,
+        section_id=section_id,
+        stage_by_file=APPS_RG_V40_STAGE_BY_FILE,
+        provider_lane="apps_rg",
+        session_id=session_id,
+        tenant_id=tenant_id,
+        l5_certification_ref=l5_ref,
+    )
+    run_id_hint = str(preliminary_exhaust.get("run_id") or section_id)
+    trace_reconciliation_paths = emit_trace_reconciliation_artifacts(
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        section_id=section_id,
+        run_id=run_id_hint,
+    )
     raw_exhaust = from_section_artifacts(
         artifact_dir,
         repo_root,
@@ -126,19 +206,14 @@ def run_l6_v40_shadow_eval_for_section(
         jsonl_name=L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT,
         source="apps_rg_l6_v40_shadow_eval",
     )
+    run_id = ingest.bundle.run_id
     microstep_paths = emit_apps_rg_l6_microstep_artifacts(
         output_dir=artifact_dir,
         artifact_dir=artifact_dir,
         repo_root=repo_root,
-        run_id=ingest.bundle.run_id,
+        run_id=run_id,
         runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
         section_id=section_id,
-    )
-    trace_reconciliation_paths = emit_trace_reconciliation_artifacts(
-        artifact_dir=artifact_dir,
-        repo_root=repo_root,
-        section_id=section_id,
-        run_id=ingest.bundle.run_id,
     )
     parity_payload = {}
     try:
@@ -173,6 +248,7 @@ def run_l6_v40_shadow_eval_for_section(
         "alignment_source": str(parity_payload.get("alignment_source") or "contract_only_pseudo_rows"),
         "apps_eval_rows_bound": bool(parity_payload.get("apps_eval_rows_bound") is True),
         "grain_parity_status": str(parity_payload.get("grain_parity_status") or "WARN"),
+        "evidence_class": str(parity_payload.get("evidence_class") or "CONTRACT_ONLY_ADVISORY"),
         "trace_reconciliation_ref": _repo_rel(
             repo_root,
             trace_reconciliation_paths["trace_reconciliation"],
@@ -180,6 +256,14 @@ def run_l6_v40_shadow_eval_for_section(
         "trace_reconciliation_rows_ref": _repo_rel(
             repo_root,
             trace_reconciliation_paths["trace_reconciliation_rows"],
+        ),
+        "l6_trace_observability_summary_ref": _repo_rel(
+            repo_root,
+            trace_reconciliation_paths["l6_trace_observability_summary"],
+        ),
+        "l6_observability_closure_receipt_ref": _repo_rel(
+            repo_root,
+            artifact_dir / L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT,
         ),
         "input_refs": {
             "artifact_dir": _repo_rel(repo_root, artifact_dir),
@@ -197,13 +281,18 @@ def run_l6_v40_shadow_eval_for_section(
         "future_run_only_assertion": True,
     }
     package_path = artifact_dir / L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT
-    package_path.write_text(
-        json.dumps(package, indent=2, sort_keys=True, default=str) + "\n",
-        encoding="utf-8",
-        newline="\n",
+    _write_json(package_path, package)
+    closure_path = _emit_l6_observability_closure_receipt(
+        artifact_dir=artifact_dir,
+        repo_root=repo_root,
+        package_path=package_path,
+        package=package,
+        trace_reconciliation_paths=trace_reconciliation_paths,
+        microstep_paths=microstep_paths,
     )
     return {
         "l6_v40_shadow_eval_package": package_path,
+        "l6_observability_closure_receipt": closure_path,
         "l6_v40_shadow_eval_spans": span_paths["span_export_json"],
         "l6_v40_shadow_eval_spans_jsonl": span_paths["span_export_jsonl"],
         **trace_reconciliation_paths,
@@ -238,6 +327,7 @@ __all__ = [
     "APPS_RG_L6_V40_SHADOW_EVAL_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV",
     "L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT",
+    "L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT",
     "l6_v40_shadow_eval_enabled",

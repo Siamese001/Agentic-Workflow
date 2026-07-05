@@ -113,6 +113,7 @@
     },
     "lane_l6_shadow_eval_package": {
       "required": true,
+      "semantics": "Legacy lane-local L6 summary package. Required as lane evidence, advisory only, and not the governed v40 closure package.",
       "source_artifact_schema": "apps_rg.l6_shadow_eval_package.v1",
       "relative_paths": [
         "lanes/{lane}/l6_shadow_eval_package.json",
@@ -193,12 +194,29 @@
         "observability/trace_reconciliation.json"
       ]
     },
+    "l6_trace_observability_summary": {
+      "required": false,
+      "source_artifact_schema": "apps_rg.l6_trace_observability_summary.v1",
+      "relative_paths": [
+        "l6_trace_observability_summary.json",
+        "observability/l6_trace_observability_summary.json"
+      ]
+    },
     "l6_v40_shadow_eval_package": {
       "required": false,
+      "semantics": "Governed v40 post-run L6 package. Additive completed-run observability evidence with no current-run rescue or direct L4 write authority.",
       "source_artifact_schema": "apps_rg.l6_v40_shadow_eval.v1",
       "relative_paths": [
         "l6_v40_shadow_eval_package.json",
         "l6/l6_v40_shadow_eval_package.json"
+      ]
+    },
+    "l6_observability_closure_receipt": {
+      "required": false,
+      "source_artifact_schema": "apps_rg.l6_observability_closure_receipt.v1",
+      "relative_paths": [
+        "l6_observability_closure_receipt.json",
+        "l6/l6_observability_closure_receipt.json"
       ]
     },
     "l6_microstep_observations": {

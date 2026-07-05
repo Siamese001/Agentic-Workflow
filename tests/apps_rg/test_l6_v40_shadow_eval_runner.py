@@ -30,13 +30,31 @@ def test_apps_rg_v40_runner_writes_package_and_spans(tmp_path: Path) -> None:
     assert outputs["l6_v40_shadow_eval_spans"].is_file()
     assert outputs["trace_reconciliation"].is_file()
     assert outputs["trace_reconciliation_rows"].is_file()
+    assert outputs["l6_trace_observability_summary"].is_file()
+    assert outputs["l6_observability_closure_receipt"].is_file()
     assert package["trace_reconciliation_ref"] == "trace_reconciliation.json"
     assert package["trace_reconciliation_rows_ref"] == "trace_reconciliation_rows.jsonl"
+    assert package["l6_trace_observability_summary_ref"] == "l6_trace_observability_summary.json"
+    assert package["l6_observability_closure_receipt_ref"] == "l6_observability_closure_receipt.json"
     assert outputs["l6_apps_eval_grain_parity"].is_file()
     assert package["l6_apps_eval_grain_parity_ref"] == "l6_apps_eval_grain_parity.json"
     assert package["alignment_source"] == "contract_only_pseudo_rows"
+    assert package["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
     assert package["apps_eval_rows_bound"] is False
     assert package["grain_parity_status"] == "WARN"
+    closure = json.loads(outputs["l6_observability_closure_receipt"].read_text(encoding="utf-8"))
+    assert closure["closure_status"] == "PASS"
+    assert closure["checks"]["trace_reconciliation_exists"] is True
+    observations = [
+        json.loads(line)
+        for line in outputs["l6_microstep_observations"].read_text(encoding="utf-8").splitlines()
+    ]
+    trace_rows = [
+        row
+        for row in observations
+        if row["microstep_id"] == "L6.trace_reconciliation.present"
+    ]
+    assert trace_rows[0]["observed_status"] == "OBSERVED"
 
 
 def test_section_l6_contract_only_grain_parity_warns(tmp_path: Path) -> None:
