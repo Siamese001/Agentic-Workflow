@@ -414,11 +414,11 @@ def _rebind_ibm_slot_claim_text_to_bundle(plan: dict[str, Any]) -> None:
         from apps_rg.runtime.sections.role_episode_metric_registry import (
             metric_outcome_nodes_from_path,
         )
-    except Exception:  # guardian: allow-broad-except -- optional cross-section import boundary; fail-soft
+    except (ImportError, AttributeError, TypeError, ValueError):  # optional cross-section import boundary; fail-soft
         return
     try:
         metric_nodes = metric_outcome_nodes_from_path(_IBM_BUNDLES_PATH)
-    except Exception:  # guardian: allow-broad-except -- metric registry load fail-soft
+    except (json.JSONDecodeError, OSError, TypeError, ValueError):  # metric registry load fail-soft
         metric_nodes = {}
     for fact in plan.get("facts") or []:
         if not isinstance(fact, dict):
@@ -429,7 +429,7 @@ def _rebind_ibm_slot_claim_text_to_bundle(plan: dict[str, Any]) -> None:
             continue
         try:
             bundle = get_bundle_by_id(bundle_id)
-        except Exception:  # guardian: allow-broad-except -- bundle lookup fail-soft; keep prior claim_text
+        except (LookupError, TypeError, ValueError):  # bundle lookup fail-soft; keep prior claim_text
             continue
         if not isinstance(bundle, dict):
             continue
