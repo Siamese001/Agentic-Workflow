@@ -86,6 +86,7 @@ ROLE_EPISODE_MAX_OUTPUT_TOKENS_BY_SECTION: dict[str, int] = {
     "ey_bullets": 2200,
 }
 ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION = "deterministic_graph_bullet_render.v1"
+ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION = "proof_authorized_fact_claim_render.v1"
 
 
 @dataclass(frozen=True)
@@ -348,6 +349,124 @@ def _deterministic_graph_bullet_render(
     return out
 
 
+def _fact_id_from_row(fact: dict[str, Any]) -> str:
+    return str(fact.get("fact_id") or fact.get("candidate_fact_id") or "").strip()
+
+
+def _proof_fact_text(fact: dict[str, Any]) -> str:
+    return _sentence(str(fact.get("claim_text") or fact.get("text") or ""))
+
+
+def _proof_fact_by_id(facts: list[dict[str, Any]], allowed: list[str]) -> dict[str, dict[str, Any]]:
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    out: dict[str, dict[str, Any]] = {}
+    for fact in facts:
+        fid = _fact_id_from_row(fact)
+        if fid and fid in allowed_set and _proof_fact_text(fact):
+            out[fid] = fact
+    return out
+
+
+def _ordered_ids_from_bullets(
+    bullets: list[dict[str, Any]],
+    *,
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+) -> list[str]:
+    proof_by_id = _proof_fact_by_id(facts, allowed)
+    seen: set[str] = set()
+    out: list[str] = []
+    for bullet in bullets:
+        if not isinstance(bullet, dict):
+            continue
+        for raw in bullet.get("source_fact_ids") or []:
+            fid = str(raw or "").strip()
+            if fid and fid in proof_by_id and fid not in seen:
+                seen.add(fid)
+                out.append(fid)
+    if out:
+        return out
+    for fact in facts:
+        fid = _fact_id_from_row(fact)
+        if fid and fid in proof_by_id and fid not in seen:
+            seen.add(fid)
+            out.append(fid)
+    return out
+
+
+def _proof_authorized_bullets_from_selection(
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    model_bullets: list[dict[str, Any]],
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+) -> list[dict[str, Any]]:
+    if not model_bullets:
+        return []
+    proof_by_id = _proof_fact_by_id(facts, allowed)
+    selected_ids = _ordered_ids_from_bullets(model_bullets, facts=facts, allowed=allowed)
+    out: list[dict[str, Any]] = []
+    for fid in selected_ids:
+        fact = proof_by_id.get(fid)
+        if not fact:
+            continue
+        text = _proof_fact_text(fact)
+        if not text:
+            continue
+        idx = len(out)
+        out.append(
+            {
+                "bullet_id": f"{cfg.bullet_prefix}_{idx + 1:03d}",
+                "bullet_text": text,
+                "source_fact_ids": [fid],
+            }
+        )
+        if len(out) >= 3:
+            break
+    return out
+
+
+def _source_ids_from_parsed_claim_ledger(parsed: dict[str, Any], allowed: list[str]) -> list[str]:
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    seen: set[str] = set()
+    out: list[str] = []
+    for raw in parsed.get("source_fact_ids") or []:
+        fid = str(raw or "").strip()
+        if fid and fid in allowed_set and fid not in seen:
+            seen.add(fid)
+            out.append(fid)
+    for row in parsed.get("claim_ledger") or []:
+        if not isinstance(row, dict):
+            continue
+        for raw in row.get("source_fact_ids") or []:
+            fid = str(raw or "").strip()
+            if fid and fid in allowed_set and fid not in seen:
+                seen.add(fid)
+                out.append(fid)
+    return out
+
+
+def _proof_authorized_narrative_from_selection(
+    *,
+    parsed: dict[str, Any],
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+) -> tuple[str, list[str], str]:
+    proof_by_id = _proof_fact_by_id(facts, allowed)
+    source_ids = _source_ids_from_parsed_claim_ledger(parsed, allowed)
+    selected_source = "llm_source_fact_ids"
+    if not source_ids:
+        source_ids = [fid for fid in allowed if fid in proof_by_id][:1]
+        selected_source = "selected_fact_plan_order"
+    for fid in source_ids:
+        fact = proof_by_id.get(fid)
+        if fact:
+            text = _proof_fact_text(fact)
+            if text:
+                return text, [fid], selected_source
+    return "", [], selected_source
+
+
 def _llm_generation_status(
     *,
     provider_runtime_generation_status: str,
@@ -382,10 +501,15 @@ def _materialize_bullet_generation(
         model_bullets=model_bullets,
     )
     if model_bullets:
-        bullets = model_bullets
-        generation_method = "llm_generation"
-        llm_output_used = True
-        renderer_version = ""
+        bullets = _proof_authorized_bullets_from_selection(
+            cfg=cfg,
+            model_bullets=model_bullets,
+            facts=facts,
+            allowed=allowed,
+        )
+        generation_method = "llm_selected_proof_render" if bullets else "model_output_invalid"
+        llm_output_used = False
+        renderer_version = ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION if bullets else ""
     else:
         bullets = []
         generation_method = (
@@ -402,6 +526,9 @@ def _materialize_bullet_generation(
         "generation_method": generation_method,
         "llm_generation_status": llm_status,
         "llm_output_used": llm_output_used,
+        "llm_selection_used": bool(model_bullets and bullets),
+        "model_display_text_discarded": bool(model_bullets),
+        "display_text_authority": "selected_fact_plan_claim_text" if bullets else "",
         "evidence_authority": "augmented_skills_graph",
         "source_fact_ids": source_fact_ids,
         "graph_packet_digest": str(graph_packet_digest or ""),
@@ -469,22 +596,21 @@ def _parse_json_object(raw: str) -> tuple[dict[str, Any] | None, str]:
 
 def _role_episode_evidence_block(runtime_payload: dict[str, Any]) -> str:
     """Proof-substrate block from the role-episode bundles already attached to
-    ``proof_pool_metadata`` (the candidate's bound graph skills + their approved
-    phrases). This lets the InsurTech/EY lanes compose JD-targeted prose from the
-    graph-skill arsenal — surfacing understated capabilities (e.g. actuarial /
-    capital-modeling) — instead of paraphrasing the locked base facts. The skill
-    phrases are approved VOCABULARY for wording, never claim proof: claims still
-    bind to the allowed ``source_fact_ids``. ACTIVE_CONFIRMED skills are
-    foregrounded; others are offered as JD-relevance-gated options.
+    ``proof_pool_metadata`` (the candidate's bound graph skills + their ranking
+    phrases). This lets the InsurTech/EY lanes choose JD-relevant proof fact IDs
+    from the graph-skill arsenal while runtime display text remains rendered
+    from selected proof fact claim_text. Skill phrases are selection hints, never
+    claim proof or display-text authority. ACTIVE_CONFIRMED skills are
+    foregrounded for selection; others are offered as JD-relevance-gated options.
     """
     ppm = runtime_payload.get("proof_pool_metadata") or {}
     bundles = ppm.get("role_episode_bundles") or []
     if not bundles:
         return ""
     lines = [
-        "GRAPH_SKILL_EVIDENCE (compose JD-targeted prose from these bound skills; the phrases are "
-        "approved vocabulary, NOT verbatim claims; skill_id alone is not proof — every claim still "
-        "cites allowed source_fact_ids):",
+        "GRAPH_SKILL_EVIDENCE (use these bound skills only to choose and order allowed "
+        "source_fact_ids; phrases are ranking vocabulary, NOT display-text authority; skill_id "
+        "alone is not proof):",
     ]
     for bundle in bundles:
         if not isinstance(bundle, dict):
@@ -508,10 +634,10 @@ def _role_episode_evidence_block(runtime_payload: dict[str, Any]) -> str:
             else:
                 optional.append(entry)
         if primary:
-            lines.append("  primary_skills (foreground these for the target role):")
+            lines.append("  primary_skills (foreground these for source_fact_id selection):")
             lines.extend(primary)
         if optional:
-            lines.append("  optional_skills (use only when JD-relevant):")
+            lines.append("  optional_skills (use only for JD-relevant source_fact_id selection):")
             lines.extend(optional)
     return "\n".join(lines)
 
@@ -569,10 +695,11 @@ def _compiled_prompt(cfg: RoleEpisodeLaneConfig, runtime_payload: dict[str, Any]
             graph_proof_pool_mode=True,
         )
         instruction = (
-            "Use JD_TEXT and BRIEFING to choose emphasis, ordering, and which bound graph skills to "
-            "foreground for the target role — NOT to invent employers, tools, or metrics. Every claim "
-            "MUST cite only allowed source_fact_ids; the graph-skill phrases are approved wording, not "
-            "proof. targeting_only=true; jd_used_as_proof=false."
+            "Use JD_TEXT and BRIEFING only to choose emphasis, ordering, and allowed source_fact_ids "
+            "for the target role — NOT to create display claim wording, employers, tools, or metrics. "
+            "The runtime renders visible text from selected proof fact claim_text only. Every claim "
+            "MUST cite only allowed source_fact_ids; graph-skill phrases are selection hints, not "
+            "proof or approved display wording. targeting_only=true; jd_used_as_proof=false."
         )
         return "\n".join(
             [
@@ -671,6 +798,63 @@ def _display_text_for_x2(l2: dict[str, Any], cfg: RoleEpisodeLaneConfig) -> str:
     return str(l2.get("narrative_sentence") or "")
 
 
+def _selected_fact_plan_authorized_texts(l2: dict[str, Any]) -> dict[str, str]:
+    facts = _facts_from_plan(l2.get("selected_fact_plan") or {})
+    return {
+        fid: _proof_fact_text(fact)
+        for fact in facts
+        if (fid := _fact_id_from_row(fact)) and _proof_fact_text(fact)
+    }
+
+
+def _display_text_is_proof_authorized(
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    l2: dict[str, Any],
+    allowed: list[str],
+) -> tuple[bool, dict[str, Any]]:
+    authority = str(l2.get("display_text_authority") or "").strip()
+    authorized_by_id = _selected_fact_plan_authorized_texts(l2)
+    if not authority and not authorized_by_id:
+        return True, {"status": "not_evaluated_legacy_payload"}
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    rows: list[dict[str, Any]] = []
+    if cfg.is_bullet_lane:
+        display_rows = [
+            (str(b.get("bullet_id") or ""), str(b.get("bullet_text") or ""), list(b.get("source_fact_ids") or []))
+            for b in (l2.get("bullets") or [])
+            if isinstance(b, dict)
+        ]
+    else:
+        display_rows = [
+            (
+                "narrative_sentence",
+                str(l2.get("narrative_sentence") or ""),
+                [sid for row in (l2.get("claim_ledger") or []) if isinstance(row, dict) for sid in row.get("source_fact_ids") or []],
+            )
+        ]
+    ok = authority == "selected_fact_plan_claim_text"
+    for row_id, text, source_ids in display_rows:
+        normalized_text = _sentence(text)
+        normalized_ids = [str(sid).strip() for sid in source_ids if str(sid).strip()]
+        source_ok = bool(normalized_ids) and all(sid in allowed_set for sid in normalized_ids)
+        text_ok = any(authorized_by_id.get(sid) == normalized_text for sid in normalized_ids)
+        rows.append(
+            {
+                "row_id": row_id,
+                "source_fact_ids": normalized_ids,
+                "source_fact_ids_allowed": source_ok,
+                "text_matches_selected_fact_claim_text": text_ok,
+            }
+        )
+        ok = ok and source_ok and text_ok
+    return ok, {
+        "status": "PASS" if ok else "FAIL",
+        "display_text_authority": authority,
+        "rows": rows,
+    }
+
+
 def _has_first_person(text: str) -> bool:
     return bool(re.search(r"\b(I|me|my|mine|we|us|our|ours)\b", str(text or ""), flags=re.IGNORECASE))
 
@@ -689,6 +873,11 @@ def _x2_gates(
             cited.extend(str(x) for x in row.get("source_fact_ids") or [])
     bad = sorted({x for x in cited if x not in set(allowed)})
     display_text = _display_text_for_x2(l2, cfg)
+    proof_text_ok, proof_text_obs = _display_text_is_proof_authorized(
+        cfg=cfg,
+        l2=l2,
+        allowed=allowed,
+    )
     gates = [
         _x2_gate(
             f"x2_{cfg.section_id}_allowed_fact_ids_non_empty",
@@ -707,6 +896,12 @@ def _x2_gates(
             bool(claim_ledger) and all(str(r.get("claim_text") or "").strip() for r in claim_ledger if isinstance(r, dict)),
             "claim_ledger missing or empty claim_text",
             len(claim_ledger),
+        ),
+        _x2_gate(
+            f"x2_{cfg.section_id}_display_text_proof_authorized",
+            proof_text_ok,
+            "display text must be rendered from selected proof fact claim_text",
+            proof_text_obs,
         ),
         _x2_gate(
             f"x2_{cfg.section_id}_runtime_real_llm",
@@ -1215,13 +1410,10 @@ def run_role_episode_lane_execution(
         l2["generation_receipt"] = dict(generation_receipt)
     else:
         narrative_from_model = _narrative_from_parsed(parsed or {})
-        narrative = narrative_from_model
-        if provider_result.runtime_generation_status == "REAL_LLM" and not narrative:
-            narrative = _sentence(str(facts[0].get("claim_text") or facts[0].get("text") or ""))
-        source_ids = _normalize_source_ids(
-            (parsed or {}).get("source_fact_ids"),
-            allowed_fact_ids,
-            0,
+        narrative, source_ids, narrative_selection_source = _proof_authorized_narrative_from_selection(
+            parsed=parsed or {},
+            facts=facts,
+            allowed=allowed_fact_ids,
         )
         claim_ledger = [{"claim_text": narrative, "source_fact_ids": source_ids}] if narrative else []
         llm_status = "not_run"
@@ -1233,13 +1425,17 @@ def run_role_episode_lane_execution(
             else:
                 llm_status = "usable_output"
         generation_receipt = {
-            "generation_method": "llm_generation" if narrative_from_model else "deterministic_graph_render",
+            "generation_method": "llm_selected_proof_render" if narrative_from_model else "deterministic_graph_render",
             "llm_generation_status": llm_status,
-            "llm_output_used": bool(narrative_from_model),
+            "llm_output_used": False,
+            "llm_selection_used": bool(narrative_from_model and narrative),
+            "model_display_text_discarded": bool(narrative_from_model),
+            "display_text_authority": "selected_fact_plan_claim_text" if narrative else "",
+            "selection_source": narrative_selection_source,
             "evidence_authority": "augmented_skills_graph",
             "source_fact_ids": source_ids if narrative else [],
             "graph_packet_digest": str(pool.proof_pool_digest or ""),
-            "renderer_version": ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION if narrative and not narrative_from_model else "",
+            "renderer_version": ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION if narrative else "",
             "lane_contract_allows_deterministic_graph_render": False,
             "allowed_graph_packet_fact_count": len(allowed_fact_ids),
             "rendered_source_fact_ids_within_allowed_packet": set(source_ids).issubset(set(allowed_fact_ids)),
@@ -1330,7 +1526,25 @@ def run_role_episode_lane_execution(
     write_json(artifact_dir / "selected_fact_plan.json", selected_fact_plan)
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
-    write_json(artifact_dir / "text_claim_coverage.json", {"source_fact_ids_checked": allowed_fact_ids, "claims": claim_ledger})
+    proof_display_gate = next(
+        (g for g in x2 if g.get("gate_id") == f"x2_{sid}_display_text_proof_authorized"),
+        {},
+    )
+    proof_display_obs = (
+        proof_display_gate.get("observed_value")
+        if isinstance(proof_display_gate.get("observed_value"), dict)
+        else {}
+    )
+    write_json(
+        artifact_dir / "text_claim_coverage.json",
+        {
+            "source_fact_ids_checked": allowed_fact_ids,
+            "claims": claim_ledger,
+            "display_text_authority": l2.get("display_text_authority"),
+            "display_text_proof_authorized": bool(proof_display_gate.get("pass")),
+            "proof_authorized_rows": proof_display_obs.get("rows") or [],
+        },
+    )
     write_json(artifact_dir / "parsed_output.json", {"parsed": parsed, "parse_error": parse_error})
     write_json(artifact_dir / "x2_gate_outputs.json", {"gates": x2, "x2_failed": len(failed), "x2_passed": len(x2) - len(failed), "failed_gates": failed})
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})

@@ -626,6 +626,7 @@ def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: 
         proof_gate_ids=(
             f"x2_{section_id}_allowed_fact_ids_non_empty",
             f"x2_{section_id}_source_fact_ids_supported",
+            f"x2_{section_id}_display_text_proof_authorized",
             "x2_claim_ledger_claim_text_non_empty",
             f"x2_{section_id}_runtime_real_llm",
         ),
@@ -659,6 +660,7 @@ def _role_narrative_shape(section_id: str, *, employer_label: str, bullet_prefix
         proof_gate_ids=(
             f"x2_{section_id}_allowed_fact_ids_non_empty",
             f"x2_{section_id}_source_fact_ids_supported",
+            f"x2_{section_id}_display_text_proof_authorized",
             "x2_claim_ledger_claim_text_non_empty",
             f"x2_{section_id}_runtime_real_llm",
         ),
