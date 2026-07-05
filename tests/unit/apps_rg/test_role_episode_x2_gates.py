@@ -56,6 +56,17 @@ def test_insurtech_bullets_valid_payload_passes_core_gates() -> None:
     assert by_id["x2_no_first_person"] is True
 
 
+def test_insurtech_bullet_lane_uses_truncation_safe_output_budget() -> None:
+    cfg = role_episode_lane._ROLE_LANES["insurtech_bullets"]
+    narrative_cfg = role_episode_lane._ROLE_LANES["insurtech_narrative"]
+
+    assert role_episode_lane._max_output_tokens_for_lane(cfg) >= 2200
+    assert (
+        role_episode_lane._max_output_tokens_for_lane(narrative_cfg)
+        == role_episode_lane.MAX_OUTPUT_TOKENS
+    )
+
+
 def test_ey_narrative_valid_sentence_passes_budget_gates() -> None:
     narrative = "Led enterprise risk analytics modernization across regulated insurance programs."
     l2 = {

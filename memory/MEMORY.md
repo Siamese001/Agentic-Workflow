@@ -155,6 +155,10 @@
   root-cause-linked rows, not symptom-only remediation or generic buckets. Causal-control
   fixtures live in `tests/unit/apps_rg/test_causal_rca_regression_fixtures.py`. Detail:
   `memory/codex/apps_rg_mandatory_bcg_run_outputs.md`.
+- **apps_rg Anthropic section blockers (2026-07-05):** InsurTech bullet empty-selection after real
+  Anthropic SC paths with truncated JSON is a role-episode output-token-budget bug, while headline
+  partner/alliance/channel repetition must fail deterministic segment quality before X1D. Detail:
+  `memory/codex/apps_rg_anthropic_section_blockers.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

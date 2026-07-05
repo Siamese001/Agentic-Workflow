@@ -33,6 +33,10 @@ slot_bodies:
     words + 9-11 words across X/Y/Z). If a draft segment is 2 words, expand it with ONE specific modifier
     drawn from its cited fact's claim_text before emitting (NOT a generic framing noun -- segments built
     only of generic stoplist words are rejected as ungrounded by the literal-grounding floor).
+    Distinctness rule: partner/alliance/channel/co-sell/hyperscaler ecosystem language may appear in
+    at most ONE of X/Y/Z. If one segment uses that family, the other two must use different capability
+    families such as runtime governance, regulated systems, platform productization, or distributed
+    infrastructure.
     Rank by JD/briefing relevance (ranking only, never proof). Prefer strong nouns over adjectives.
     </north_star_task>
     <task_contract>
@@ -84,6 +88,8 @@ slot_bodies:
 
     <composition_heuristics>
     Pick three supported themes from facts; rank with JD/briefing; compose fresh X/Y/Z (non-overlapping).
+    Do not split one partner ecosystem idea into two slots: Hyperscaler Alliance Co-Sell and Partner
+    Channel Alliance are redundant, even when each phrase cites a different fact.
     Generate internal headline candidates silently; select the best; do not print candidates.
     SEGMENT DRAFTING RULE: For each candidate X/Y/Z, first read the cited fact's claim_text and
     extract 1-2 specific nouns from that text; build the segment phrase AROUND those nouns. Never
@@ -141,6 +147,7 @@ slot_bodies:
     <contrastive_examples>
     Bad (metric): SVP Engineering | Fortune 500 AI | $22M Revenue | 20% Growth
     Bad (stuffing): SVP Engineering | LLMOps Retrieval Governance Runtime | Platform Scale | AI Leadership
+    Bad (redundant partner ecosystem): SVP Engineering | Provider Egress Governance Infrastructure | Hyperscaler Alliance Co-Sell | Partner Channel Alliance
     Bad (generic): SVP Engineering | Enterprise AI Strategy | Digital Transformation | Innovation Leadership
     Bad (narrowing IT labels — FORBIDDEN: demotes SVP Engineering posture):
       SVP Engineering | IT Strategy | Data Modernization | Cloud Transformation

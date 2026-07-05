@@ -203,6 +203,44 @@ _HEADLINE_SEMANTIC_GROUNDING_GROUPS: dict[str, frozenset[str]] = {
 }
 
 
+_HEADLINE_SEGMENT_THEME_FAMILIES: dict[str, frozenset[str]] = {
+    "partner_ecosystem": frozenset(
+        {
+            "alliance",
+            "alliances",
+            "channel",
+            "channels",
+            "co-sell",
+            "cosell",
+            "ecosystem",
+            "ecosystems",
+            "hyperscaler",
+            "hyperscalers",
+            "partner",
+            "partners",
+            "partnership",
+            "partnerships",
+        }
+    ),
+}
+
+
+def _headline_segment_theme_overlap_issues(segments: list[str]) -> list[str]:
+    """Flag repeated high-signal theme families across X/Y/Z headline segments."""
+    issues: list[str] = []
+    family_segments: dict[str, list[str]] = {}
+    for idx, segment in enumerate(segments, start=2):
+        tokens = set(re.findall(r"[A-Za-z][A-Za-z\-]{3,}", str(segment or "").lower()))
+        for family_name, family_tokens in _HEADLINE_SEGMENT_THEME_FAMILIES.items():
+            hits = sorted(tokens & family_tokens)
+            if len(hits) >= 2:
+                family_segments.setdefault(family_name, []).append(f"seg{idx}:{','.join(hits)}")
+    for family_name, rows in sorted(family_segments.items()):
+        if len(rows) >= 2:
+            issues.append(f"semantic_theme_overlap:{family_name}:{';'.join(rows)}")
+    return issues
+
+
 def _semantic_stoplist_grounding_support(segment: str, evidence_texts: list[str]) -> dict[str, Any]:
     """Ground all-stoplist executive phrases against cited graph skill/fact concepts."""
     raw_tokens = {
@@ -891,11 +929,12 @@ def run_headline_x2_gates(
         uniq_low = [parts[i].lower() for i in (1, 2, 3)]
         if len(set(uniq_low)) < 3:
             seg_issues.append("duplicate_segment_theme")
+        seg_issues.extend(_headline_segment_theme_overlap_issues(parts[1:4]))
     add(
         "x2_headline_segments_quality",
         not seg_issues,
         seg_issues or "ok",
-        "segments 2–4: 2–5 words, low comma load, no duplicate themes, no banned fillers",
+        "segments 2–4: 2–5 words, low comma load, no duplicate/overlapping themes, no banned fillers",
         None if not seg_issues else "Segment quality gate failed.",
     )
 
