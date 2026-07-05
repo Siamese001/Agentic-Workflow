@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Gate S2 — UWG-bypass ratchet (plan W4.2).
 
-Counts `writes_to` edges where the source module is NOT on the
-UWG-approved writer allowlist. Constitutional Rule §22/ADG-surfaces
-"Write" requires state mutations to flow through the Unified Write
-Gateway (`write_gateway.py`) or its sanctioned proxies.
+Counts write-sovereignty rows that are not routed through the Unified
+Write Gateway. Constitutional Rule §22/ADG-surfaces "Write" requires
+state mutations to flow through the Unified Write Gateway
+(`write_gateway.py`) or its sanctioned proxies.
 
 Tier: R (ratchet).
 
@@ -60,6 +60,68 @@ class UwgBypassRatchetGate(WiringGate):
     baseline_filename = "wiring_uwg_bypass_ratchet.json"
 
     def run(self, conn) -> list[Violation]:
+        if _has_table(conn, "mv_write_sovereignty_paths"):
+            return self._run_from_write_sovereignty_mv(conn)
+        return self._run_from_raw_edges(conn)
+
+    def _run_from_write_sovereignty_mv(self, conn) -> list[Violation]:
+        rows = conn.execute(
+            """
+            SELECT
+                writer_file,
+                write_line,
+                writer_layer,
+                write_symbol,
+                source_file,
+                severity,
+                is_direct_infra_write
+            FROM mv_write_sovereignty_paths
+            WHERE COALESCE(is_uwg_routed, 0) = 0
+              AND writer_file IS NOT NULL
+            """
+        ).fetchall()
+
+        violations: list[Violation] = []
+        for (
+            writer_file,
+            write_line,
+            writer_layer,
+            write_symbol,
+            source_file,
+            severity,
+            is_direct_infra_write,
+        ) in rows:
+            if writer_layer in EXCLUDE_LAYERS:
+                continue
+            if not _source_file_exists(writer_file):
+                continue
+            if writer_file in UWG_APPROVED_WRITERS:
+                continue
+            subject_file = source_file or writer_file
+            loc = f"{subject_file}:{write_line}" if write_line else f"{subject_file}:?"
+            violations.append(
+                Violation(
+                    gate_id=self.gate_id,
+                    tier=self.tier,
+                    subject=loc,
+                    rule="write_outside_uwg",
+                    detail=(
+                        f"layer={writer_layer}; symbol={write_symbol}; module={writer_file}; "
+                        f"severity={severity}"
+                    ),
+                    extra={
+                        "layer": writer_layer,
+                        "module": writer_file,
+                        "symbol": write_symbol,
+                        "severity": severity,
+                        "is_direct_infra_write": bool(is_direct_infra_write),
+                        "source_surface": "mv_write_sovereignty_paths",
+                    },
+                )
+            )
+        return violations
+
+    def _run_from_raw_edges(self, conn) -> list[Violation]:
         rows = conn.execute(
             """
             SELECT e.source_file, e.line_no, src.resolved_path, src.layer, e.symbol
@@ -90,6 +152,20 @@ class UwgBypassRatchetGate(WiringGate):
                 )
             )
         return violations
+
+
+def _has_table(conn, table_name: str) -> bool:
+    row = conn.execute(
+        """
+        SELECT 1
+        FROM sqlite_master
+        WHERE name = ?
+          AND type IN ('table', 'view')
+        LIMIT 1
+        """,
+        (table_name,),
+    ).fetchone()
+    return row is not None
 
 
 def main() -> int:
