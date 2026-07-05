@@ -29,6 +29,8 @@ import mcp_callability_epoch  # noqa: E402
 
 
 SCHEMA_VERSION = "codex-mcp-transport-diagnosis/v1"
+AGGREGATE_SCHEMA_VERSION = "codex-mcp-transport-diagnosis-aggregate/v1"
+REQUIRED_CORE_SERVERS = tuple(codex_readiness.DEFAULT_REQUIRED_CALLABLE_ROUTES)
 DUPLICATE_PROCESS_CLASSIFICATIONS = {"duplicate", "duplicate_launch_tree"}
 STALE_PROOF_STATUSES = {
     "stale_epoch",
@@ -41,6 +43,7 @@ STALE_PROOF_STATUSES = {
 CALLABLE_CLASSIFICATIONS = {"CALLABLE"}
 PLUGIN_CLASSIFICATIONS = {"PLUGIN_SUBSTITUTE"}
 SUBSTITUTE_CLASSIFICATIONS = {"SUBSTITUTE_CALLABLE"}
+NON_BLOCKING_CLASSIFICATIONS = {"callable", "plugin_substitute", "substitute_callable"}
 
 
 def _load_configured_servers(root: Path = ROOT) -> set[str]:
@@ -313,10 +316,134 @@ def build_diagnosis(
     }
 
 
+def _dedupe_server_ids(server_ids: list[str] | tuple[str, ...]) -> list[str]:
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for server_id in server_ids:
+        normalized = str(server_id).strip()
+        if normalized and normalized not in seen:
+            ordered.append(normalized)
+            seen.add(normalized)
+    return ordered
+
+
+def _proof_status_from_diagnosis(diagnosis: dict[str, Any]) -> str:
+    evidence = diagnosis.get("evidence")
+    if not isinstance(evidence, dict):
+        return "absent"
+    callability_epoch = evidence.get("callability_epoch")
+    if isinstance(callability_epoch, dict):
+        status = str(callability_epoch.get("status") or "").strip()
+        if status:
+            return status
+    route_state = evidence.get("route_state")
+    if isinstance(route_state, dict):
+        route_proof = route_state.get("callability_proof")
+        if isinstance(route_proof, dict):
+            status = str(route_proof.get("status") or "").strip()
+            if status:
+                return status
+    adg_status = evidence.get("adg_transport_status")
+    if isinstance(adg_status, dict):
+        callable_proof = adg_status.get("callable_proof")
+        if isinstance(callable_proof, dict):
+            status = str(callable_proof.get("status") or "").strip()
+            if status:
+                return status
+    return "absent"
+
+
+def _diagnosis_summary(diagnosis: dict[str, Any]) -> dict[str, Any]:
+    evidence = diagnosis.get("evidence")
+    evidence = evidence if isinstance(evidence, dict) else {}
+    route_state = evidence.get("route_state")
+    route_state = route_state if isinstance(route_state, dict) else {}
+    process_state = evidence.get("process_state")
+    process_state = process_state if isinstance(process_state, dict) else {}
+    return {
+        "server_id": diagnosis.get("server_id"),
+        "classification": diagnosis.get("classification"),
+        "callable_proof_status": _proof_status_from_diagnosis(diagnosis),
+        "callable_status": route_state.get("callable_status"),
+        "process_state": {
+            "classification": process_state.get("classification", "none"),
+            "process_count": process_state.get("process_count", 0),
+        },
+        "cleanup_safety": diagnosis.get("safe_to_cleanup_processes"),
+        "degraded_fallback_available": diagnosis.get("degraded_fallback_available"),
+        "recommended_action": diagnosis.get("recommended_action"),
+    }
+
+
+def _aggregate_counts(diagnoses: dict[str, dict[str, Any]], configured_servers: set[str]) -> dict[str, Any]:
+    classification_counts: dict[str, int] = {}
+    for diagnosis in diagnoses.values():
+        classification = str(diagnosis.get("classification") or "unknown")
+        classification_counts[classification] = classification_counts.get(classification, 0) + 1
+
+    return {
+        "required_route_count": sum(1 for server_id in REQUIRED_CORE_SERVERS if server_id in diagnoses),
+        "diagnosed_route_count": len(diagnoses),
+        "configured_route_count": len(configured_servers),
+        "callable_count": classification_counts.get("callable", 0),
+        "blocked_count": sum(
+            1
+            for diagnosis in diagnoses.values()
+            if str(diagnosis.get("classification") or "unknown") not in NON_BLOCKING_CLASSIFICATIONS
+        ),
+        "process_only_count": classification_counts.get("process_only_callability_unproven", 0),
+        "duplicate_cohort_count": classification_counts.get("duplicate_cohort", 0),
+        "stale_proof_count": classification_counts.get("stale_callability_proof", 0),
+        "classification_counts": dict(sorted(classification_counts.items())),
+    }
+
+
+def build_aggregate_diagnosis(
+    server_ids: list[str] | tuple[str, ...],
+    *,
+    mode: str,
+    route_contract_path: Path | None = None,
+    report: dict[str, Any] | None = None,
+    adg_transport_checker: Any | None = None,
+    root: Path = ROOT,
+    summary: bool = False,
+) -> dict[str, Any]:
+    audit_report = report if report is not None else audit_codex_mcp_transports.build_report(route_contract_path)
+    configured_servers = _load_configured_servers(root)
+    selected_server_ids = _dedupe_server_ids(server_ids)
+    diagnoses = {
+        server_id: build_diagnosis(
+            server_id,
+            route_contract_path=route_contract_path,
+            report=audit_report,
+            adg_transport_checker=adg_transport_checker,
+            root=root,
+        )
+        for server_id in selected_server_ids
+    }
+    server_payload = {
+        server_id: _diagnosis_summary(diagnosis) if summary else diagnosis
+        for server_id, diagnosis in diagnoses.items()
+    }
+    return {
+        "schema_version": AGGREGATE_SCHEMA_VERSION,
+        "mode": mode,
+        "summary": summary,
+        "counts": _aggregate_counts(diagnoses, configured_servers),
+        "required_servers": list(REQUIRED_CORE_SERVERS),
+        "diagnosed_servers": selected_server_ids,
+        "servers": server_payload,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--server", required=True, help="Stable MCP server id, such as adg_sqlite")
+    target = parser.add_mutually_exclusive_group(required=True)
+    target.add_argument("--server", help="Stable MCP server id, such as adg_sqlite")
+    target.add_argument("--all-required", action="store_true", help="Diagnose required core Codex MCP routes")
+    target.add_argument("--all-configured", action="store_true", help="Diagnose every server configured in root .mcp.json")
     parser.add_argument("--json", action="store_true", help="Emit JSON output")
+    parser.add_argument("--summary", action="store_true", help="Emit compact per-server evidence instead of full diagnosis evidence")
     parser.add_argument(
         "--route-contract",
         type=Path,
@@ -324,15 +451,43 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    diagnosis = build_diagnosis(args.server, route_contract_path=args.route_contract)
+    if args.server:
+        diagnosis = build_diagnosis(args.server, route_contract_path=args.route_contract)
+        payload = _diagnosis_summary(diagnosis) if args.summary else diagnosis
+        if args.json:
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print(f"server_id: {payload['server_id']}")
+            print(f"classification: {payload['classification']}")
+            print(f"recommended_action: {payload['recommended_action']}")
+            if not args.summary:
+                print(f"codex_restart_required: {payload['codex_restart_required']}")
+                print(f"safe_to_cleanup_processes: {payload['safe_to_cleanup_processes']}")
+        return 0
+
+    if args.all_required:
+        server_ids = list(REQUIRED_CORE_SERVERS)
+        mode = "all_required"
+    else:
+        server_ids = sorted(_load_configured_servers(ROOT))
+        mode = "all_configured"
+
+    diagnosis = build_aggregate_diagnosis(
+        server_ids,
+        mode=mode,
+        route_contract_path=args.route_contract,
+        summary=args.summary,
+    )
     if args.json:
         print(json.dumps(diagnosis, indent=2, sort_keys=True))
     else:
-        print(f"server_id: {diagnosis['server_id']}")
-        print(f"classification: {diagnosis['classification']}")
-        print(f"recommended_action: {diagnosis['recommended_action']}")
-        print(f"codex_restart_required: {diagnosis['codex_restart_required']}")
-        print(f"safe_to_cleanup_processes: {diagnosis['safe_to_cleanup_processes']}")
+        counts = diagnosis["counts"]
+        print(f"mode: {diagnosis['mode']}")
+        print(f"required_route_count: {counts['required_route_count']}")
+        print(f"callable_count: {counts['callable_count']}")
+        print(f"blocked_count: {counts['blocked_count']}")
+        for server_id, server in diagnosis["servers"].items():
+            print(f"{server_id}: {server['classification']} - {server['recommended_action']}")
     return 0
 
 

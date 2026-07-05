@@ -1,0 +1,98 @@
+{
+  "schema_version": "codex-mcp-transport-remaining-gaps/v1",
+  "generated_at": "2026-07-05T11:14:20Z",
+  "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-mcp-transport-remaining-gaps-latest-main",
+  "branch": "codex-mcp-transport-remaining-gaps-latest-main",
+  "baseline_head": "c9e187f99eeac7218ab42f48e2582dfd1e57b3d0",
+  "commands": [
+    {
+      "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+      "exit_code": 0,
+      "result": "route evidence available; required raw routes lacked active callability proof"
+    },
+    {
+      "command": "python scripts/governance/diagnose_codex_mcp_transport.py --server adg_sqlite --json",
+      "exit_code": 0,
+      "result": "adg_sqlite classified as server_healthy_codex_transport_closed"
+    },
+    {
+      "command": "python scripts/governance/codex_readiness.py --json --skip-searxng",
+      "exit_code": 1,
+      "result": "readiness failed on required MCP protocol/callability gates"
+    },
+    {
+      "command": "python scripts/governance/diagnose_codex_mcp_transport.py --all-required --summary --json",
+      "exit_code": 0,
+      "result": "aggregate diagnosis produced one required-route matrix"
+    }
+  ],
+  "direct_tool_calls": {
+    "adg_sqlite": "Transport closed",
+    "memory": "Transport closed",
+    "vector_db": "Transport closed",
+    "GitKraken": "git_status succeeded"
+  },
+  "aggregate_counts": {
+    "required_route_count": 4,
+    "callable_count": 0,
+    "blocked_count": 4,
+    "process_only_count": 0,
+    "duplicate_cohort_count": 1,
+    "stale_proof_count": 0
+  },
+  "matrix": [
+    {
+      "server_id": "memory",
+      "classification": "host_mcp_required",
+      "callable_proof_state": "absent",
+      "process_state": {
+        "classification": "none",
+        "process_count": 0
+      },
+      "cleanup_safety": false,
+      "degraded_fallback_available": false,
+      "next_action": "Sync/start host MCP management or a new Codex session, then prove a live Memory MCP tool call before marking green."
+    },
+    {
+      "server_id": "GitKraken",
+      "classification": "duplicate_cohort",
+      "callable_proof_state": "absent",
+      "process_state": {
+        "classification": "duplicate",
+        "process_count": 16
+      },
+      "cleanup_safety": "requires_attached_pid",
+      "degraded_fallback_available": false,
+      "next_action": "Do not kill processes. Get host-attached PID proof before guarded cleanup; live git_status success still needs shell-visible callability proof for readiness."
+    },
+    {
+      "server_id": "adg_sqlite",
+      "classification": "server_healthy_codex_transport_closed",
+      "callable_proof_state": "absent",
+      "process_state": {
+        "classification": "single",
+        "process_count": 1
+      },
+      "cleanup_safety": false,
+      "degraded_fallback_available": false,
+      "next_action": "Use Codex host/TUI MCP reconnect, then prove a live mcp__adg_sqlite.adg_health call before setting any callability override."
+    },
+    {
+      "server_id": "vector_db",
+      "classification": "degraded_fallback_available",
+      "callable_proof_state": "absent",
+      "process_state": {
+        "classification": "none",
+        "process_count": 0
+      },
+      "cleanup_safety": false,
+      "degraded_fallback_available": true,
+      "next_action": "Use only the stamped degraded fallback; do not count it as green readiness until active Vector DB MCP callability is proven."
+    }
+  ],
+  "notes": [
+    "No green ADG readiness is claimed.",
+    "The direct GitKraken MCP call succeeded, but shell-side readiness still lacks accepted CODEX_MCP_CALLABLE_GITKRAKEN/epoch proof.",
+    "No servers were launched, killed, or treated as callable through direct SQLite/process evidence."
+  ]
+}
