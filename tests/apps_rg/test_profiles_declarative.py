@@ -1,4 +1,7 @@
-"""Validation tests for current apps_rg declarative profile files."""
+"""apps-test-model: APP CONTRACT.
+
+Validation tests for current apps_rg declarative profile files.
+"""
 
 from __future__ import annotations
 
@@ -67,10 +70,21 @@ def test_advisory_profiles_have_expected_section(filename: str, section: str) ->
     assert section in data
 
 
-def test_planning_profile_is_minimal_digest_stable_ref() -> None:
+def test_planning_profile_is_planning_prior_only() -> None:
     data = _load_yaml("rg_planning_profile.yaml")
 
-    assert data == {"schema_version": "1.0", "profile_id": "rg_planning_profile"}
+    assert data["schema_version"] == "apps_rg_l1_planning_profile.v1"
+    assert data["profile_id"] == "rg_planning_profile"
+    assert data["authority_class"] == "PLANNING_PRIOR_ONLY"
+    assert set(data["generation_modes"]) == {
+        "strategic_tailor",
+        "tailor_existing",
+        "generate_scratch",
+        "section_regen",
+        "healing_fact_check",
+    }
+    assert data["ambiguity_rules"]
+    assert data["work_unit_profiles"]
 
 
 @pytest.mark.parametrize("filename", sorted(PROFILE_PATHS))

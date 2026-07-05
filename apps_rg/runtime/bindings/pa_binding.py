@@ -324,6 +324,27 @@ def _sha256_hex64(payload: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _sha256_json_hex64(payload: Any) -> str:
+    return _sha256_hex64(json.dumps(payload, sort_keys=True, default=str))
+
+
+def _l1_planning_capsule_from_plan(plan: L1PlanContract) -> dict[str, Any]:
+    task_spec = dict(plan.task_spec or {})
+    capsule = task_spec.get("apps_rg_planning_capsule")
+    return dict(capsule) if isinstance(capsule, Mapping) else {}
+
+
+def _l1_planning_component_hashes(capsule: Mapping[str, Any]) -> dict[str, str]:
+    if not capsule:
+        return {}
+    return {
+        "l1_planning_capsule": _sha256_json_hex64(capsule),
+        "l1_prompt_plan": _sha256_json_hex64(capsule.get("prompt_plan", [])),
+        "l1_completion_criteria": _sha256_json_hex64(capsule.get("completion_criteria", [])),
+        "l1_cognition_plan_requested": _sha256_json_hex64(capsule.get("cognition_plan", [])),
+    }
+
+
 def _resolve_provider_targets(route: RouteContract) -> tuple[str, str, tuple[str, ...]]:
     """Return (model, provider, extra_gate_verdict_refs)."""
     ref = (route.provider_model_requirement_ref or "").strip()
@@ -424,6 +445,7 @@ def _pa_compose_apps_rg_legacy(
     slot_lineage_map = {
         "system_block_0": "PA-authored|SYSTEM_INTERNAL|S0_SYSTEM",
         "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|U0_NEUTRALIZED_USER_TASK",
+        "l1_planning_capsule": "L1_PLAN_PROJECTIONS|PLANNING_ADVISORY_ONLY",
         "u0_task_segment": "U0_NEUTRALIZED_USER_TASK|I0_INSTRUCTIONS",
         "c0_evidence_segment": "C0_VERIFIED_EVIDENCE_DATA|R0_RESPONSE_SCHEMA",
     }
@@ -464,6 +486,7 @@ def _pa_compose_apps_rg_legacy(
         "app_payload": _sha256_hex64(app_key),
         "route": _sha256_hex64(route_key),
     }
+    component_hash_map.update(_l1_planning_component_hashes(_l1_planning_capsule_from_plan(plan)))
 
     rk = plan.replay_key or getattr(validated_request, "replay_key", "") or ""
     replay_manifest_ref = f"replay_key:{rk}" if rk else f"reflection:{validated_request.request_id}"

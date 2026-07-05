@@ -1,4 +1,132 @@
-# apps_rg — L1 planning profile (advisory; consumed by L1 binding for planning_prior_refs).
-# Digest-stable SSOT for p3.1 U0→L1 profile_manifest wiring.
-schema_version: "1.0"
-profile_id: rg_planning_profile
+# apps_rg - L1 planning profile
+schema_version: "apps_rg_l1_planning_profile.v1"
+profile_id: "rg_planning_profile"
+authority_class: "PLANNING_PRIOR_ONLY"
+
+generation_modes:
+  strategic_tailor:
+    deliverable: targeted_resume
+    work_shape: full_resume_generation
+    route_feature_hints:
+      multi_work_unit: true
+      merge_needed: true
+      candidate_selection_needed: true
+      grounding_needed: true
+    completion_criteria:
+      - all_generated_factual_claims_have_provenance_anchors
+      - output_satisfies_requested_formats
+      - role_alignment_meets_threshold
+      - unsupported_claims_blocked_or_marked_insufficient
+  tailor_existing:
+    deliverable: targeted_resume_revision
+    work_shape: full_resume_generation
+    route_feature_hints:
+      multi_work_unit: true
+      merge_needed: true
+      candidate_selection_needed: true
+      grounding_needed: true
+    completion_criteria:
+      - preserve_source_resume_identity
+      - all_material_edits_have_support
+      - output_satisfies_requested_formats
+  generate_scratch:
+    deliverable: scratch_resume
+    work_shape: full_resume_generation
+    route_feature_hints:
+      multi_work_unit: true
+      merge_needed: true
+      candidate_selection_needed: true
+      grounding_needed: true
+    completion_criteria:
+      - no_unbacked_candidate_facts
+      - role_alignment_meets_threshold
+      - output_satisfies_requested_formats
+  section_regen:
+    deliverable: regenerated_section
+    work_shape: narrow_regeneration
+    route_feature_hints:
+      multi_work_unit: false
+      merge_needed: false
+      candidate_selection_needed: false
+      grounding_needed: true
+    completion_criteria:
+      - requested_section_only
+      - source_backed_claims_only
+      - section_schema_valid
+  healing_fact_check:
+    deliverable: corrected_fact_checked_section
+    work_shape: narrow_regeneration
+    route_feature_hints:
+      multi_work_unit: false
+      merge_needed: false
+      candidate_selection_needed: false
+      grounding_needed: true
+    completion_criteria:
+      - unsupported_claims_removed_or_marked
+      - corrected_claims_have_source_anchors
+
+ambiguity_rules:
+  - code: TARGET_ROLE_MISSING
+    field: target_role
+    severity: medium
+    blocks_progress: false
+  - code: TARGET_COMPANY_MISSING
+    field: target_company
+    severity: low
+    blocks_progress: false
+  - code: TARGET_LEVEL_UNSPECIFIED
+    field: target_level
+    severity: low
+    blocks_progress: false
+  - code: JOB_DESCRIPTION_EMPTY
+    field: job_description_text
+    severity: high
+    blocks_progress: true
+  - code: SOURCE_RESUME_EMPTY
+    field: source_resume_text
+    severity: high
+    blocks_progress: true
+
+work_unit_profiles:
+  executive_summary:
+    unit_type: narrative_section
+    criticality: T3_CRITICAL_SECTION
+    support_target: source_backed_executive_positioning
+    variance_class: generation_variance
+    required_slots: [S0, D0, I0, C0, M0, U0, R0]
+  headline:
+    unit_type: locked_or_low_variance_section
+    criticality: T0_LOCKED_FACT
+    support_target: concise_role_positioning
+    variance_class: deterministic_guard
+    required_slots: [S0, D0, I0, C0, U0, R0]
+  competencies:
+    unit_type: skills_section
+    criticality: T2_QUALITY_SECTION
+    support_target: jd_anchor_coverage
+    variance_class: anchor_coverage
+    required_slots: [S0, D0, I0, C0, M0, U0, R0]
+  experience_block:
+    unit_type: evidence_heavy_section
+    criticality: T2_QUALITY_SECTION
+    support_target: metric_preserving_experience
+    variance_class: evidence_support
+    required_slots: [S0, D0, I0, C0, M0, U0, R0]
+  skills_block:
+    unit_type: skills_section
+    criticality: T2_QUALITY_SECTION
+    support_target: jd_keyword_and_truth_alignment
+    variance_class: anchor_coverage
+    required_slots: [S0, D0, I0, C0, U0, R0]
+  education_block:
+    unit_type: locked_fact_section
+    criticality: T0_LOCKED_FACT
+    support_target: preserve_verbatim_education_facts
+    variance_class: deterministic_guard
+    required_slots: [S0, D0, I0, C0, U0, R0]
+  certifications_block:
+    unit_type: locked_fact_section
+    criticality: T0_LOCKED_FACT
+    support_target: preserve_verbatim_certification_facts
+    variance_class: deterministic_guard
+    required_slots: [S0, D0, I0, C0, U0, R0]

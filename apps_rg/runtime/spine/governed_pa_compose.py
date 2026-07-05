@@ -50,6 +50,23 @@ def _sha256_json_hex64(payload: Any) -> str:
     return _sha256_hex64(json.dumps(payload, sort_keys=True, default=str))
 
 
+def _l1_planning_capsule_from_plan(plan: L1PlanContract) -> dict[str, Any]:
+    task_spec = dict(plan.task_spec or {})
+    capsule = task_spec.get("apps_rg_planning_capsule")
+    return dict(capsule) if isinstance(capsule, Mapping) else {}
+
+
+def _l1_planning_component_hashes(capsule: Mapping[str, Any]) -> dict[str, str]:
+    if not capsule:
+        return {}
+    return {
+        "l1_planning_capsule": _sha256_json_hex64(capsule),
+        "l1_prompt_plan": _sha256_json_hex64(capsule.get("prompt_plan", [])),
+        "l1_completion_criteria": _sha256_json_hex64(capsule.get("completion_criteria", [])),
+        "l1_cognition_plan_requested": _sha256_json_hex64(capsule.get("cognition_plan", [])),
+    }
+
+
 def _stable_app_payload_for_hash(payload: Mapping[str, Any]) -> dict[str, Any]:
     stable = json.loads(json.dumps(dict(payload or {}), sort_keys=True, default=str))
     receipt = stable.get("package_validation_receipt")
@@ -292,9 +309,12 @@ def envelope_to_runtime_compiled_prompt(
         "route": _sha256_json_hex64(route_key),
         "governed_pa": _sha256_hex64(envelope.hmac_signature),
     }
+    capsule = _l1_planning_capsule_from_plan(plan)
+    component_hash_map.update(_l1_planning_component_hashes(capsule))
     slot_lineage_map: dict[str, str] = {
         "system_block_0": "PA-authored|SYSTEM_INTERNAL|core_assemble_prompt",
         "user_block_1": "USER_INTENT|L1_PLAN_PROJECTIONS|core_assemble_prompt",
+        "l1_planning_capsule": "L1_PLAN_PROJECTIONS|PLANNING_ADVISORY_ONLY",
         "evidence": f"C0:{ev_digest}",
     }
     for idx, row in enumerate(envelope.slot_manifest):

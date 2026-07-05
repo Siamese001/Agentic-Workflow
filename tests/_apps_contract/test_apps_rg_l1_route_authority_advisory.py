@@ -1,4 +1,7 @@
-"""L1 route_hints are ADVISORY_ONLY; L0 RouteContract is route authority."""
+"""apps-test-model: APP CONTRACT.
+
+L1 route_hints are ADVISORY_ONLY; L0 RouteContract is route authority.
+"""
 
 from __future__ import annotations
 
@@ -38,6 +41,7 @@ def _minimal_validated_request(*, generation_mode: str = "strategic_tailor") -> 
         ),
         l5_certification_ref="test:valid:w6",
         app_payload={
+            "non_product_certified": True,
             "target_company": "Acme",
             "target_role": "VP Engineering",
             "task_spec": {"generation_mode": generation_mode},
