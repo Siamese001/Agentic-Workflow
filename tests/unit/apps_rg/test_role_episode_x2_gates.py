@@ -136,6 +136,87 @@ def test_role_episode_empty_llm_bullets_fail_closed_without_graph_render() -> No
     assert receipt["rendered_source_fact_ids_within_allowed_packet"] is True
 
 
+def test_role_episode_bullet_normalization_strips_targeting_only_tail_claim() -> None:
+    cfg = role_episode_lane._ROLE_LANES["ey_bullets"]
+    parsed = {
+        "bullets": [
+            {
+                "bullet_id": "bul_ey_001",
+                "bullet_text": (
+                    "Led CCAR-era capital and liquidity controls for regulated financial institutions, "
+                    "mirroring the enterprise-grade rigor required to enable partner-led deployments "
+                    "of frontier AI at scale."
+                ),
+                "source_fact_ids": ["reb_ey_ccar_capital_liquidity_stress_testing"],
+            }
+        ]
+    }
+
+    bullets = role_episode_lane._normalize_bullets(
+        parsed,
+        cfg=cfg,
+        allowed=["reb_ey_ccar_capital_liquidity_stress_testing"],
+    )
+
+    assert bullets[0]["bullet_text"] == (
+        "Led CCAR-era capital and liquidity controls for regulated financial institutions."
+    )
+    assert role_episode_lane._targeting_only_experience_hits(bullets[0]["bullet_text"]) == []
+
+
+def test_role_episode_x2_catches_unstripped_targeting_only_experience_claim() -> None:
+    text = (
+        "Led CCAR-era capital controls while enabling partner-led deployments "
+        "of frontier AI at scale."
+    )
+    l2 = {
+        "bullets": [
+            {
+                "bullet_id": "bul_ey_001",
+                "bullet_text": text,
+                "source_fact_ids": ["reb_ey_ccar_capital_liquidity_stress_testing"],
+            },
+            {
+                "bullet_id": "bul_ey_002",
+                "bullet_text": "Architected enterprise risk-governance operating models.",
+                "source_fact_ids": ["reb_ey_erm_risk_governance"],
+            },
+            {
+                "bullet_id": "bul_ey_003",
+                "bullet_text": "Directed regulatory analytics modernization for global banks.",
+                "source_fact_ids": ["reb_ey_regulatory_analytics_modernization"],
+            },
+        ],
+        "claim_ledger": [
+            {"claim_text": text, "source_fact_ids": ["reb_ey_ccar_capital_liquidity_stress_testing"]},
+            {
+                "claim_text": "Architected enterprise risk-governance operating models.",
+                "source_fact_ids": ["reb_ey_erm_risk_governance"],
+            },
+            {
+                "claim_text": "Directed regulatory analytics modernization for global banks.",
+                "source_fact_ids": ["reb_ey_regulatory_analytics_modernization"],
+            },
+        ],
+        "role_episode_bundle_consumed": True,
+    }
+    gates = run_ey_bullets_x2_gates(
+        l2=l2,
+        allowed=[
+            "reb_ey_ccar_capital_liquidity_stress_testing",
+            "reb_ey_erm_risk_governance",
+            "reb_ey_regulatory_analytics_modernization",
+        ],
+        runtime_generation_status="REAL_LLM",
+    )
+    by_id = {g["gate_id"]: g for g in gates}
+
+    assert by_id["x2_ey_bullets_targeting_only_not_experience_claim"]["pass"] is False
+    assert "frontier_ai_as_experience" in by_id[
+        "x2_ey_bullets_targeting_only_not_experience_claim"
+    ]["observed_value"]
+
+
 def test_role_episode_deterministic_graph_render_excludes_out_of_packet_facts() -> None:
     cfg = role_episode_lane._ROLE_LANES["ey_bullets"]
     facts = [

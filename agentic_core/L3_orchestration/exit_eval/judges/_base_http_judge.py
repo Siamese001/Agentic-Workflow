@@ -49,10 +49,56 @@ class _HttpRequest:
     body: bytes
 
 
-# Matches a JSON object at the start or anywhere in the text. Judges
-# sometimes wrap the JSON in prose despite instructions; we tolerate
-# that by extracting the first well-formed object.
-_JSON_OBJECT_RE = re.compile(r"\{.*\}", re.DOTALL)
+def _balanced_json_object(text: str) -> str | None:
+    """Return the first balanced JSON object embedded in *text*."""
+    start = text.find("{")
+    while start >= 0:
+        depth = 0
+        in_string = False
+        escaped = False
+        for idx in range(start, len(text)):
+            ch = text[idx]
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif ch == "\\":
+                    escaped = True
+                elif ch == '"':
+                    in_string = False
+                continue
+            if ch == '"':
+                in_string = True
+            elif ch == "{":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    return text[start : idx + 1]
+                if depth < 0:
+                    break
+        start = text.find("{", start + 1)
+    return None
+
+
+_PARTIAL_VERDICT_RE = re.compile(r'"verdict"\s*:\s*"(PASS|FAIL|UNKNOWN)"', re.IGNORECASE)
+_PARTIAL_SCORE_RE = re.compile(r'"score"\s*:\s*(-?(?:\d+(?:\.\d*)?|\.\d+))')
+
+
+def _partial_judge_payload(text: str) -> dict[str, Any] | None:
+    """Recover a decisive judge verdict when only reasoning text is truncated."""
+    verdict_match = _PARTIAL_VERDICT_RE.search(text)
+    score_match = _PARTIAL_SCORE_RE.search(text)
+    if not verdict_match or not score_match:
+        return None
+    try:
+        score = float(score_match.group(1))
+    except ValueError:
+        return None
+    return {
+        "verdict": verdict_match.group(1).upper(),
+        "score": score,
+        "reasoning": "judge_response_truncated_after_required_fields",
+    }
 
 
 class BaseHttpJudge(JudgeProtocol, ABC):
@@ -136,13 +182,22 @@ class BaseHttpJudge(JudgeProtocol, ABC):
         if not isinstance(text, str) or not text.strip():
             raise GraderError("judge returned empty text")
 
-        match = _JSON_OBJECT_RE.search(text)
-        if not match:
-            raise GraderError(f"no JSON object in judge response: {text[:200]!r}")
-        try:
-            blob = json.loads(match.group(0))
-        except ValueError as exc:
-            raise GraderError(f"judge JSON parse failed: {exc}") from exc
+        json_object = _balanced_json_object(text)
+        if json_object:
+            try:
+                blob = json.loads(json_object)
+            except ValueError as exc:
+                raise GraderError(f"judge JSON parse failed: {exc}") from exc
+        else:
+            partial_blob = _partial_judge_payload(text)
+            if partial_blob is not None:
+                blob = partial_blob
+            elif "{" in text:
+                raise GraderError(
+                    f"incomplete JSON object in judge response: {text[:200]!r}"
+                )
+            else:
+                raise GraderError(f"no JSON object in judge response: {text[:200]!r}")
         if not isinstance(blob, dict):
             raise GraderError("judge JSON was not an object")
 

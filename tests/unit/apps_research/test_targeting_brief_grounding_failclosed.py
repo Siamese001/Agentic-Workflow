@@ -6,9 +6,15 @@ import re
 
 import pytest
 
+from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
+from agentic_core.L3_orchestration.exit_eval.graders.llm_judge import JudgeResponse
 from apps_research.engines.company_brief_engine import (
     CompanyBriefEngine,
     CompanyBriefUnavailableError,
+)
+from apps_research.integrations.apps_rg_handoff import (
+    run_apps_rg_handoff_x2_judge,
+    x2_judge_receipt_passes,
 )
 from apps_research.prompt_assembly.apps_rg_targeting_brief import (
     load_targeting_brief_prompt_template,
@@ -129,7 +135,15 @@ def test_synthesis_fails_closed_on_missing_model_backed_x2(monkeypatch) -> None:
             "provider_status": "MODEL_BACKED_FAIL",
         },
     )
-    with pytest.raises(CompanyBriefUnavailableError, match="X2 judge failed"):
+    monkeypatch.setattr(
+        engine,
+        "_persist_x2_blocked_receipt",
+        lambda **_kwargs: "artifact://x2-blocked",
+    )
+    with pytest.raises(
+        CompanyBriefUnavailableError,
+        match=rf"X2 judge failed.*{re.escape('diagnostic_ref=artifact://x2-blocked')}",
+    ):
         engine._synthesize_apps_rg_targeting_brief(
             topic="Acme Co",
             findings={"overview": "Acme is a mid-cap insurer with verified scale."},
@@ -153,6 +167,64 @@ def test_synthesis_rejects_invalid_markdown(monkeypatch) -> None:
             jd_context=_TARGETING_JD_CONTEXT,
             jd_anchor=None,
         )
+
+
+class _FlakySerializationJudge:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def judge(self, _dimension, _context):
+        self.calls += 1
+        if self.calls == 1:
+            raise GraderError("incomplete JSON object in judge response: '{\"verdict\"'")
+        return JudgeResponse(score=0.91, abstain=False, reasoning="clean retry")
+
+
+class _SemanticFailJudge:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def judge(self, _dimension, _context):
+        self.calls += 1
+        return JudgeResponse(score=0.2, abstain=False, reasoning="insufficient support")
+
+
+def test_apps_rg_x2_judge_retries_serialization_error_once() -> None:
+    judge = _FlakySerializationJudge()
+
+    receipt = run_apps_rg_handoff_x2_judge(
+        brief_text=_VALID_MD,
+        jd_text="Lead partner architecture.",
+        research_notes="Acme has verified partner motion.",
+        source_register=[{"family": "overview", "has_content": True}],
+        judge=judge,
+    )
+
+    assert judge.calls == 2
+    assert receipt["status"] == "PASS"
+    assert receipt["attempt_count"] == 2
+    assert receipt["retry_count"] == 1
+    assert receipt["retryable_provider_error"] is True
+    assert x2_judge_receipt_passes(receipt)
+
+
+def test_apps_rg_x2_judge_does_not_retry_semantic_fail() -> None:
+    judge = _SemanticFailJudge()
+
+    receipt = run_apps_rg_handoff_x2_judge(
+        brief_text=_VALID_MD,
+        jd_text="Lead partner architecture.",
+        research_notes="Acme has verified partner motion.",
+        source_register=[{"family": "overview", "has_content": True}],
+        judge=judge,
+    )
+
+    assert judge.calls == 1
+    assert receipt["status"] == "FAIL"
+    assert receipt["provider_status"] == "MODEL_BACKED_FAIL"
+    assert receipt["model_backed"] is True
+    assert receipt["retry_count"] == 0
+    assert not x2_judge_receipt_passes(receipt)
 
 
 def test_hop_company_brief_adapter_populates_company_brief_key(monkeypatch) -> None:

@@ -11,6 +11,7 @@ produce useful output.
 
 from __future__ import annotations
 
+import html
 import json
 import sys
 from datetime import datetime, timezone
@@ -1990,11 +1991,22 @@ def _markdown_table_escape(value: Any) -> str:
     return str(value if value is not None else "-").replace("|", "\\|").replace("\n", " ")
 
 
+def _wide_markdown_code_cell(value: Any, *, min_width_ch: int = 32) -> str:
+    text = html.escape(str(value if value is not None else "-"), quote=False)
+    text = text.replace("|", "&#124;").replace("\n", " ")
+    for marker in ("; blocker=", "; reason=", "; ref=", "; target="):
+        text = text.replace(marker, marker.replace("; ", ";<br>"))
+    return (
+        f'<span style="display:inline-block; min-width:{min_width_ch}ch; '
+        f'white-space:normal"><code>{text}</code></span>'
+    )
+
+
 def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
     lines = [
         "## Section Lane Summary Table",
         "",
-        "| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |",
+        "| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | <span style=\"display:inline-block; min-width:32ch\">X2</span> | <span style=\"display:inline-block; min-width:32ch\">X3</span> | <span style=\"display:inline-block; min-width:44ch\">Past fail / blocker</span> | Display output | L6 evidence |",
         "|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     if not rows:
@@ -2019,9 +2031,9 @@ def _render_section_lane_table_lines(rows: list[dict[str, Any]]) -> list[str]:
             f"`{_markdown_table_escape(row.get('judges_run'))}` | "
             f"`{_markdown_table_escape(row.get('judge_models_scores'))}` | "
             f"`{_markdown_table_escape(row.get('judge_retry_fallback'))}` | "
-            f"`{_markdown_table_escape(row.get('x2'))}` | "
-            f"`{_markdown_table_escape(row.get('x3'))}` | "
-            f"`{_markdown_table_escape(row.get('past_fail_blocker'))}` | "
+            f"{_wide_markdown_code_cell(row.get('x2'))} | "
+            f"{_wide_markdown_code_cell(row.get('x3'))} | "
+            f"{_wide_markdown_code_cell(row.get('past_fail_blocker'), min_width_ch=44)} | "
             f"`{_markdown_table_escape(row.get('display_output'))}` | "
             f"`{_markdown_table_escape(row.get('l6_evidence'))}` |"
         )

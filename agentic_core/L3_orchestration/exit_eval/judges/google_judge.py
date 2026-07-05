@@ -29,6 +29,22 @@ _ENDPOINT_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     "{model}:generateContent?key={key}"
 )
+_JUDGE_RESPONSE_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "verdict": {
+            "type": "STRING",
+            "enum": ["PASS", "FAIL", "UNKNOWN"],
+        },
+        "score": {
+            "type": "NUMBER",
+        },
+        "reasoning": {
+            "type": "STRING",
+        },
+    },
+    "required": ["verdict", "score", "reasoning"],
+}
 
 
 class GoogleJudge(BaseHttpJudge):
@@ -75,7 +91,11 @@ class GoogleJudge(BaseHttpJudge):
     def _build_request(self, system: str, user: str) -> _HttpRequest:
         key = self._resolve_key()
         url = _ENDPOINT_TEMPLATE.format(model=self._model, key=key)
-        combined_text = f"{system}\n\n{user}"
+        combined_text = (
+            f"{system}\n\n{user}\n\n"
+            "Provider constraint: return minified JSON only. If verdict is PASS, "
+            'set "reasoning" to "ok"; otherwise keep reasoning under 12 words.'
+        )
         body = {
             "contents": [
                 {
@@ -85,6 +105,8 @@ class GoogleJudge(BaseHttpJudge):
             ],
             "generationConfig": {
                 "maxOutputTokens": self._max_tokens,
+                "responseMimeType": "application/json",
+                "responseSchema": _JUDGE_RESPONSE_SCHEMA,
                 "temperature": 0.0,
             },
         }
@@ -102,14 +124,19 @@ class GoogleJudge(BaseHttpJudge):
         candidates = response_json.get("candidates")
         if not isinstance(candidates, list) or not candidates:
             raise GraderError("Gemini response missing candidates array")
-        content = candidates[0].get("content", {})
+        first = candidates[0]
+        if not isinstance(first, dict):
+            raise GraderError("Gemini candidate was not an object")
+        content = first.get("content", {})
         parts = content.get("parts", [])
         for part in parts:
             if isinstance(part, dict):
                 text = part.get("text", "")
                 if isinstance(text, str) and text.strip():
                     return text
-        raise GraderError("Gemini response had no text part")
+        finish_reason = str(first.get("finishReason") or "").strip()
+        reason_suffix = f"; finish_reason={finish_reason}" if finish_reason else ""
+        raise GraderError(f"Gemini response had no text part{reason_suffix}")
 
 
 __all__ = ["GoogleJudge"]

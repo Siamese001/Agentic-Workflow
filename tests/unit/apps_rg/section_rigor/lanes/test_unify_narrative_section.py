@@ -192,3 +192,80 @@ def test_unify_narrative_normalization_trims_exact_companion_overlap_phrase() ->
     )
     by_id = {g.gate_id: g for g in gates}
     assert by_id["x2_no_companion_ngram_copy"].pass_ is True
+
+
+def test_unify_narrative_normalization_collapses_live_comma_stack_before_x2() -> None:
+    narrative = (
+        "Owned Unify Consulting's governed agentic AI platform mandate, turning architecture, "
+        "partner distribution, and productized services into a commercial engine for regulated "
+        "enterprises through reusable IP, scalable delivery, and disciplined adoption."
+    )
+    companion = (
+        "- bul_unify_001: Own SVP-level architecture for a governed agentic AI platform.\n"
+        "- bul_unify_002: Built Unify's global AI channel program.\n"
+        "- bul_unify_006: Productized agentic AI primitives into reusable platform services."
+    )
+    parsed = {
+        "narrative_sentence": narrative,
+        "claim_ledger": [
+            {
+                "claim_text": "Owned SVP-level governed agentic AI platform architecture.",
+                "source_fact_ids": ["reb_unify_agentic_platform_architecture"],
+            },
+            {
+                "claim_text": "Built partner distribution around reusable AI platform services.",
+                "source_fact_ids": ["reb_unify_partner_channel_cosell"],
+            },
+            {
+                "claim_text": "Converted platform capability into reusable IP.",
+                "source_fact_ids": ["reb_unify_platform_commercialization_leadership"],
+            },
+        ],
+        "selected_fact_plan": {"facts": []},
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_jd_themes": ["partner architecture"],
+            "selected_briefing_themes": [],
+            "targeting_rationale": "Targeting only.",
+        },
+        "change_log": [],
+        "self_check": {},
+    }
+    runtime_payload = {
+        "selected_fact_plan": parsed["selected_fact_plan"],
+        "allowed_fact_ids": [
+            "reb_unify_agentic_platform_architecture",
+            "reb_unify_partner_channel_cosell",
+            "reb_unify_platform_commercialization_leadership",
+        ],
+        "briefing": "",
+        "jd_text": "partner architecture",
+    }
+
+    normalized = normalize_unify_narrative_parsed(parsed, runtime_payload, companion_text=companion)
+    assert normalized is not None
+    assert normalized["narrative_sentence"].count(",") < 5
+    assert any(
+        step.get("operation") == "comma_stack_deterministic_trim"
+        for step in normalized.get("change_log") or []
+    )
+
+    gates = run_unify_narrative_x2_gates(
+        narrative_sentence=normalized["narrative_sentence"],
+        parsed_output=normalized,
+        claim_ledger=normalized["claim_ledger"],
+        jd_text=runtime_payload["jd_text"],
+        runtime_generation_status="REAL_LLM",
+        companion_bullet_texts=companion,
+        companion_bullets_status="ACCEPTED_FINALIZED",
+        companion_bullets_reason="ok",
+        provider_requested="external_openai",
+        provider_attempted="external_openai",
+        raw_output=json.dumps(normalized, ensure_ascii=False),
+        x1d_judges=[],
+        allowed_fact_ids=set(runtime_payload["allowed_fact_ids"]),
+    )
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_no_six_bullet_summary"].pass_ is True

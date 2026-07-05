@@ -379,6 +379,76 @@ def test_unify_metric_source_gate_accepts_approved_metric_outcome_id_lists() -> 
     assert by_id["x2_unify_metric_source_required"].pass_ is True
 
 
+def test_unify_normalizer_rehydrates_runtime_plan_and_repairs_hashed_metric_aliases() -> None:
+    bullets, parsed, meta = _partner_metric_surface_payload()
+    parsed["selected_fact_plan"] = {
+        "bul_unify_001": ["bul_unify_001"],
+        "bul_unify_002": ["bul_unify_002"],
+        "bul_unify_003": ["bul_unify_003"],
+        "bul_unify_004": ["bul_unify_004", "bul_unify_004_metric_06dd515f"],
+        "bul_unify_005": ["bul_unify_005"],
+        "bul_unify_006": ["bul_unify_006", "bul_unify_006_metric_6f3de275"],
+    }
+    for bullet in bullets:
+        if bullet["bullet_id"] == "bul_unify_004":
+            bullet["metric_raw"] = "bul_unify_004_metric_06dd515f"
+            bullet["source_fact_ids"] = ["bul_unify_004", "bul_unify_004_metric_06dd515f"]
+        if bullet["bullet_id"] == "bul_unify_006":
+            bullet["metric_raw"] = "bul_unify_006_metric_6f3de275"
+            bullet["source_fact_ids"] = ["bul_unify_006"]
+
+    runtime_payload = {
+        "allowed_fact_ids": [
+            *UNIFY_BULLET_IDS,
+            "bul_unify_004_metric_06dd515f",
+            "bul_unify_006_metric_6f3de275",
+        ],
+        "proof_pool_metadata": meta,
+        "selected_fact_plan": {
+            "selection_method": TRACK_RANKED_SELECTION_METHOD,
+            "facts": [
+                {"fact_id": bid, "metric_raw": "", "has_metric": False}
+                for bid in UNIFY_BULLET_IDS
+            ],
+        },
+    }
+    by_fact = {
+        row["fact_id"]: row
+        for row in runtime_payload["selected_fact_plan"]["facts"]
+    }
+    by_fact["bul_unify_004"].update({"metric_raw": "6 months to 3 weeks", "has_metric": True})
+    by_fact["bul_unify_006"].update(
+        {
+            "metric_raw": "$22M IP-led revenue|20% gross margin expansion|team 8 to 28",
+            "has_metric": True,
+        }
+    )
+
+    normalized = normalize_unify_parsed_without_ledger_synthesis(parsed, runtime_payload)
+    assert normalized is not None
+    assert normalized["selected_fact_plan"]["facts"][3]["metric_raw"] == "6 months to 3 weeks"
+    normalized_bullets = {b["bullet_id"]: b for b in normalized["bullets"]}
+    assert normalized_bullets["bul_unify_004"]["metric_raw"] == [
+        "metric_unify_cycle_six_months_to_three_weeks"
+    ]
+    assert normalized_bullets["bul_unify_006"]["metric_raw"] == [
+        "metric_unify_22m_ip_led_revenue"
+    ]
+
+    gates = run_unify_bullets_x2_gates(
+        bullets=normalized["bullets"],
+        parsed_output=normalized,
+        claim_ledger=normalized["claim_ledger"],
+        allowed_fact_ids=set(runtime_payload["allowed_fact_ids"]),
+        jd_text=JD,
+        runtime_generation_status="MOCKED",
+        proof_pool_metadata=meta,
+    )
+
+    by_id = {g.gate_id: g for g in gates}
+    assert by_id["x2_unify_metric_source_required"].pass_ is True
+
+
 def test_unify_metric_source_gate_rejects_bare_canonical_metric_without_outcome_id() -> None:
     bullets, parsed, meta = _partner_metric_surface_payload()
     bullets[0]["metric_raw"] = "$22M"

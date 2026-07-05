@@ -779,10 +779,19 @@ class CompanyBriefEngine(BaseResearchEngine):
             source_register=source_register,
         )
         if not x2_judge_receipt_passes(x2_judge_receipt):
+            diagnostic_ref = self._persist_x2_blocked_receipt(
+                company_name=company_name,
+                brief_text=sealed.company_brief_text,
+                jd_text=jd_text,
+                x2_judge_receipt=x2_judge_receipt,
+                source_register=source_register,
+            )
+            diagnostic_suffix = f"; diagnostic_ref={diagnostic_ref}" if diagnostic_ref else ""
             raise CompanyBriefUnavailableError(
                 f"{company_name}: apps_rg targeting brief X2 judge failed: "
                 f"{x2_judge_receipt.get('status', 'MISSING_RECEIPT')}; "
                 f"reason={x2_judge_receipt.get('reason', 'missing_model_backed_pass')}"
+                f"{diagnostic_suffix}"
             )
         return {
             "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
@@ -1025,6 +1034,51 @@ class CompanyBriefEngine(BaseResearchEngine):
             research_notes=research_notes,
             source_register=source_register,
         )
+
+    def _persist_x2_blocked_receipt(
+        self,
+        *,
+        company_name: str,
+        brief_text: str,
+        jd_text: str,
+        x2_judge_receipt: dict[str, Any],
+        source_register: list[dict[str, Any]],
+    ) -> str:
+        """Write fail-closed X2 diagnostics without authorizing handoff."""
+        try:
+            repo_root = Path(__file__).resolve().parents[2]
+            out_dir = repo_root / "artifacts" / "apps_research" / "x2_judge_failures"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            digest = hashlib.sha256(
+                f"{company_name}\n{brief_text}".encode("utf-8")
+            ).hexdigest()[:12]
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+            path = out_dir / f"{timestamp}_{digest}.json"
+            payload = {
+                "schema_version": "apps_research.x2_blocked_receipt.v1",
+                "company_name": company_name,
+                "emitted_at_utc": datetime.now(timezone.utc).isoformat(),
+                "brief_text_sha256": hashlib.sha256(
+                    str(brief_text or "").encode("utf-8")
+                ).hexdigest(),
+                "jd_text_sha256": hashlib.sha256(
+                    str(jd_text or "").encode("utf-8")
+                ).hexdigest(),
+                "handoff_authorized": False,
+                "x2_judge_receipt": dict(x2_judge_receipt or {}),
+                "source_register": list(source_register or []),
+            }
+            path.write_text(
+                json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            return str(path)
+        except (OSError, TypeError, ValueError) as exc:
+            self.logger.warning(
+                "[CompanyBriefEngine] failed to persist X2 blocked receipt: %s",
+                exc,
+            )
+            return ""
 
     def _call_llm_plain_markdown(self, prompt: str) -> str:
         """OpenAI route for plain-text targeting brief output."""

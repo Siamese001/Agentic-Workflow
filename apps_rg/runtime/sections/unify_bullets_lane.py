@@ -378,6 +378,68 @@ def _ensure_selected_plan_metric_ids(out: dict[str, Any], bullet_id: str, metric
     slot_plan["selected_metric_outcome_ids"] = existing
 
 
+def _selected_fact_plan_has_runtime_facts(plan: Any) -> bool:
+    return isinstance(plan, dict) and bool(
+        [f for f in (plan.get("facts") or []) if isinstance(f, dict)]
+    )
+
+
+def _runtime_selected_fact_plan(runtime_payload: dict[str, Any]) -> dict[str, Any] | None:
+    plan = runtime_payload.get("selected_fact_plan")
+    return plan if _selected_fact_plan_has_runtime_facts(plan) else None
+
+
+def _authoritative_selected_fact_plan(
+    candidate: Any,
+    runtime_payload: dict[str, Any],
+) -> Any:
+    """Prefer the runtime graph plan when model output only echoed a compact slot map."""
+    if _selected_fact_plan_has_runtime_facts(candidate):
+        return candidate
+    runtime_plan = _runtime_selected_fact_plan(runtime_payload)
+    return runtime_plan if runtime_plan is not None else candidate
+
+
+def _unify_metric_raw_values(raw: Any) -> list[str]:
+    if isinstance(raw, (list, tuple, set)):
+        return [str(x).strip().lower() for x in raw if str(x).strip()]
+    if raw is None:
+        return []
+    text = str(raw).strip().lower()
+    if not text:
+        return []
+    return [
+        token.strip().strip("[]'\" ")
+        for token in re.split(r"[,;]", text)
+        if token.strip().strip("[]'\" ")
+    ]
+
+
+def _plan_metric_raw_for_slot(runtime_payload: dict[str, Any], bullet_id: str) -> str:
+    facts = list((runtime_payload.get("selected_fact_plan") or {}).get("facts") or [])
+    for fact in facts:
+        if isinstance(fact, dict) and str(fact.get("fact_id") or "") == bullet_id:
+            return str(fact.get("metric_raw") or "").lower()
+    return ""
+
+
+def _metric_raw_traces_to_plan_or_outcomes(
+    raw: Any,
+    *,
+    bullet_id: str,
+    runtime_payload: dict[str, Any],
+    approved_metric_ids: set[str],
+) -> bool:
+    tokens = _unify_metric_raw_values(raw)
+    if not tokens:
+        return False
+    joined = ", ".join(tokens).lower()
+    plan_metric = _plan_metric_raw_for_slot(runtime_payload, bullet_id)
+    if plan_metric and (plan_metric in joined or joined in plan_metric):
+        return True
+    return bool(approved_metric_ids) and all(token in approved_metric_ids for token in tokens)
+
+
 def _enforce_unify_metric_outcome_surfaces(
     out: dict[str, Any],
     runtime_payload: dict[str, Any],
@@ -404,8 +466,23 @@ def _enforce_unify_metric_outcome_surfaces(
         if visible_allowed:
             _ensure_change_log_entry(out, bid, metric_ids=visible_allowed)
             _ensure_selected_plan_metric_ids(out, bid, visible_allowed)
-            if not bullet.get("metric_raw"):
-                bullet["metric_raw"] = visible_allowed[0]
+            approved_lower = {mid.lower() for mid in allowed}
+            if not _metric_raw_traces_to_plan_or_outcomes(
+                bullet.get("metric_raw"),
+                bullet_id=bid,
+                runtime_payload=runtime_payload,
+                approved_metric_ids=approved_lower,
+            ):
+                previous_metric_raw = bullet.get("metric_raw")
+                bullet["metric_raw"] = list(visible_allowed)
+                repairs.append(
+                    {
+                        "operation": "normalize_unify_metric_raw_to_approved_outcome_ids",
+                        "target_bullet_id": bid,
+                        "previous_metric_raw": previous_metric_raw,
+                        "metric_outcome_ids": list(visible_allowed),
+                    }
+                )
             bullet["has_metric"] = True
             continue
 
@@ -569,6 +646,10 @@ def normalize_unify_parsed_without_ledger_synthesis(
     _normalize_unify_claim_ledger(out, remap=legacy_remap, allowed=allowed)
     if not isinstance(out.get("selected_fact_plan"), dict):
         out["selected_fact_plan"] = runtime_payload["selected_fact_plan"]
+    out["selected_fact_plan"] = _authoritative_selected_fact_plan(
+        out.get("selected_fact_plan"),
+        runtime_payload,
+    )
     if not isinstance(out.get("jd_alignment"), dict):
         out["jd_alignment"] = {"targeting_only": True, "jd_used_as_proof": False}
     out.setdefault("gap_notes", [])
@@ -1110,7 +1191,11 @@ def run_unify_bullets_execution(
         "product_quality_reason": "",
         "unify_header": unify_header,
         "bullets": bullets,
-        "selected_fact_plan": (parsed or {}).get("selected_fact_plan") or selected_fact_plan,
+        "selected_fact_plan": _authoritative_selected_fact_plan(
+            (parsed or {}).get("selected_fact_plan"),
+            runtime_payload,
+        )
+        or selected_fact_plan,
         "claim_ledger": claim_ledger,
         "jd_alignment": (parsed or {}).get("jd_alignment") or {"targeting_only": True, "jd_used_as_proof": False},
         "gap_notes": (parsed or {}).get("gap_notes") or [],
@@ -1362,7 +1447,11 @@ def run_unify_bullets_execution(
             repo_root=REPO_ROOT,
             artifact_dir=artifact_dir,
             runtime_payload=runtime_payload,
-            selected_fact_plan=new_parsed.get("selected_fact_plan") or l2_output["selected_fact_plan"],
+            selected_fact_plan=_authoritative_selected_fact_plan(
+                new_parsed.get("selected_fact_plan"),
+                runtime_payload,
+            )
+            or l2_output["selected_fact_plan"],
             claim_ledger=new_ledger,
             allowed_fact_ids=allowed_fact_ids,
             jd_text=str(runtime_payload.get("jd_text") or ""),
@@ -1450,9 +1539,10 @@ def run_unify_bullets_execution(
         )
         l2_output["bullets"] = state.bullets
         l2_output["claim_ledger"] = state.claim_ledger
-        l2_output["selected_fact_plan"] = (
-            state.parsed.get("selected_fact_plan") or l2_output["selected_fact_plan"]
-        )
+        l2_output["selected_fact_plan"] = _authoritative_selected_fact_plan(
+            state.parsed.get("selected_fact_plan"),
+            runtime_payload,
+        ) or l2_output["selected_fact_plan"]
         l2_output["gap_notes"] = state.parsed.get("gap_notes") or []
         l2_output["change_log"] = state.parsed.get("change_log") or []
         l2_output["self_check"] = state.parsed.get("self_check") or l2_output["self_check"]

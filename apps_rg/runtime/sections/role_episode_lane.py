@@ -279,6 +279,58 @@ def _normalize_source_ids(raw: Any, allowed: list[str], idx: int) -> list[str]:
     return allowed[:1]
 
 
+_TARGETING_ONLY_TAIL_REPAIRS: tuple[re.Pattern[str], ...] = (
+    re.compile(
+        r",?\s+(?:mirroring|positioning|aligning|framing|mapping|translating)\b"
+        r"[^.?!]*(?:frontier\s+AI|partner-led\s+deployments?|target\s+role|"
+        r"target\s+company|Anthropic|applied\s+AI\s+architecture|ecosystem\s+revenue)"
+        r"[^.?!]*",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\s+(?:required|needed)\s+to\s+enable\s+partner-led\s+deployments?"
+        r"\s+of\s+frontier\s+AI(?:\s+at\s+scale)?",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r",?\s+for\s+(?:Anthropic|the\s+target\s+role|the\s+target\s+company|"
+        r"target\s+role|target\s+company)\b[^.?!]*",
+        re.IGNORECASE,
+    ),
+)
+
+_TARGETING_ONLY_EXPERIENCE_MARKERS: tuple[tuple[str, re.Pattern[str]], ...] = (
+    ("target_company_name", re.compile(r"\bAnthropic\b", re.IGNORECASE)),
+    ("frontier_ai_as_experience", re.compile(r"\bfrontier\s+AI\b", re.IGNORECASE)),
+    (
+        "partner_led_deployment_as_experience",
+        re.compile(r"\bpartner-led\s+deployments?\b", re.IGNORECASE),
+    ),
+    ("target_role_as_experience", re.compile(r"\btarget\s+(?:role|company)\b", re.IGNORECASE)),
+)
+
+
+def _targeting_only_experience_hits(text: str) -> list[str]:
+    return [
+        label
+        for label, pattern in _TARGETING_ONLY_EXPERIENCE_MARKERS
+        if pattern.search(str(text or ""))
+    ]
+
+
+def _strip_targeting_only_experience_claims(text: str) -> tuple[str, list[str]]:
+    """Remove JD/briefing-only tail claims without inventing replacement proof."""
+    original = str(text or "")
+    cleaned = original
+    for pattern in _TARGETING_ONLY_TAIL_REPAIRS:
+        cleaned = pattern.sub("", cleaned)
+    cleaned = re.sub(r"\s{2,}", " ", cleaned)
+    cleaned = re.sub(r"\s+([.,;:])", r"\1", cleaned).strip(" ,;:")
+    if cleaned != original and cleaned:
+        cleaned = _sentence(cleaned)
+    return (cleaned or original), _targeting_only_experience_hits(cleaned or original)
+
+
 def _normalize_bullets(parsed: dict[str, Any], *, cfg: RoleEpisodeLaneConfig, allowed: list[str]) -> list[dict[str, Any]]:
     rows = parsed.get("bullets") if isinstance(parsed, dict) else None
     out: list[dict[str, Any]] = []
@@ -286,7 +338,10 @@ def _normalize_bullets(parsed: dict[str, Any], *, cfg: RoleEpisodeLaneConfig, al
         for idx, row in enumerate(rows[:3]):
             if not isinstance(row, dict):
                 continue
-            text = _sentence(str(row.get("bullet_text") or row.get("text") or ""))
+            text, _hits = _strip_targeting_only_experience_claims(
+                str(row.get("bullet_text") or row.get("text") or "")
+            )
+            text = _sentence(text)
             if not text:
                 continue
             out.append(
@@ -723,6 +778,12 @@ def _x2_gates(
             "x2_no_em_dash",
             "—" not in display_text,
             "em dash detected",
+        ),
+        _x2_gate(
+            f"x2_{cfg.section_id}_targeting_only_not_experience_claim",
+            not _targeting_only_experience_hits(display_text),
+            "targeting/JD-only phrase used as experience claim",
+            _targeting_only_experience_hits(display_text),
         ),
     ]
     if cfg.is_bullet_lane:

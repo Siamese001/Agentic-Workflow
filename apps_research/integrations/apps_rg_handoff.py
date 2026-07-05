@@ -18,6 +18,15 @@ APPS_RG_HANDOFF_JUDGE_NAME = "gemini_pro"
 APPS_RG_HANDOFF_JUDGE_PROVIDER = "gemini_pro"
 APPS_RG_HANDOFF_JUDGE_MODEL = "gemini-3.1-pro-preview"
 APPS_RG_HANDOFF_X2_THRESHOLD = 0.75
+APPS_RG_HANDOFF_JUDGE_MAX_TOKENS = 4096
+APPS_RG_HANDOFF_X2_MAX_ATTEMPTS = 2
+_RETRYABLE_JUDGE_PARSE_MARKERS = (
+    "no JSON object",
+    "incomplete JSON object",
+    "judge JSON parse failed",
+    "judge response was not JSON",
+    "response had no text part",
+)
 
 
 def sha256_text(text: str) -> str:
@@ -73,6 +82,13 @@ def find_apps_rg_targeting_sidecar(value: Any, *, _depth: int = 0) -> dict[str, 
     return {}
 
 
+def _retryable_judge_serialization_error(exc: BaseException) -> bool:
+    if not isinstance(exc, GraderError):
+        return False
+    message = str(exc).lower()
+    return any(marker.lower() in message for marker in _RETRYABLE_JUDGE_PARSE_MARKERS)
+
+
 def run_apps_rg_handoff_x2_judge(
     *,
     brief_text: str,
@@ -105,7 +121,7 @@ def run_apps_rg_handoff_x2_judge(
     resolved_judge = judge or GoogleJudge(
         model=APPS_RG_HANDOFF_JUDGE_MODEL,
         timeout=30.0,
-        max_tokens=512,
+        max_tokens=APPS_RG_HANDOFF_JUDGE_MAX_TOKENS,
     )
     base = {
         "schema_version": "apps_research.apps_rg_handoff_x2_judge_receipt.v1",
@@ -116,18 +132,29 @@ def run_apps_rg_handoff_x2_judge(
         "threshold": APPS_RG_HANDOFF_X2_THRESHOLD,
         "model_backed": True,
     }
-    try:
-        response = resolved_judge.judge(dimension, context)
-    except (GraderError, TimeoutError, KeyError, ValueError, RuntimeError, OSError) as exc:
-        return {
-            **base,
-            "status": "FAIL",
-            "score": 0.0,
-            "verdict": "FAIL",
-            "provider_status": "JUDGE_PROVIDER_ERROR",
-            "model_backed": False,
-            "reason": f"{type(exc).__name__}: {exc}",
-        }
+    response = None
+    attempt = 0
+    retryable_error = False
+    for attempt in range(1, APPS_RG_HANDOFF_X2_MAX_ATTEMPTS + 1):
+        try:
+            response = resolved_judge.judge(dimension, context)
+            break
+        except (GraderError, TimeoutError, KeyError, ValueError, RuntimeError, OSError) as exc:
+            retryable_error = _retryable_judge_serialization_error(exc)
+            if retryable_error and attempt < APPS_RG_HANDOFF_X2_MAX_ATTEMPTS:
+                continue
+            return {
+                **base,
+                "status": "FAIL",
+                "score": 0.0,
+                "verdict": "FAIL",
+                "provider_status": "JUDGE_PROVIDER_ERROR",
+                "model_backed": False,
+                "attempt_count": attempt,
+                "retry_count": max(0, attempt - 1),
+                "retryable_provider_error": retryable_error,
+                "reason": f"{type(exc).__name__}: {exc}",
+            }
 
     score = float(getattr(response, "score", 0.0) or 0.0)
     abstain = bool(getattr(response, "abstain", False))
@@ -138,6 +165,9 @@ def run_apps_rg_handoff_x2_judge(
         "score": score,
         "verdict": status,
         "provider_status": f"MODEL_BACKED_{status}",
+        "attempt_count": attempt,
+        "retry_count": max(0, attempt - 1),
+        "retryable_provider_error": retryable_error,
         "reason": str(getattr(response, "reasoning", "") or ""),
     }
 
