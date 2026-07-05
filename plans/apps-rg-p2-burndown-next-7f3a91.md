@@ -206,3 +206,32 @@ Stop and report RCA if:
 - This branch currently contains only the plan.
 - Source implementation should start from a branch that includes PR #499 or from main after PR #499 lands.
 - If implementation proceeds on this branch, update this plan with actual selected rows and validation results before opening the implementation PR.
+
+## Implementation Record
+
+2026-07-05 implementation used the user's explicit override to use the current `artifacts/adg` latest files in this checkout after the earlier handoff pointer became non-validatable because digest-bound `07042026_2305` artifact paths were removed with the completed audit worktree. The latest files present under `artifacts/adg` were the `07042026_1748` set.
+
+PR #499 had landed on `main` before implementation, so this branch merged current `origin/main` and avoided the first three hotspot files already fixed there.
+
+Actual edited files:
+
+- `apps_rg/runtime/section_graph_skills_proof_pool.py`
+- `apps_rg/runtime/fact_vectors_bootstrap.py`
+- `apps_rg/runtime/judges/executive_summary_x1d.py`
+- `apps_rg/runtime/orchestration/patch_run.py`
+
+Actual row strategy:
+
+- Narrowed broad `except Exception` optional/fail-soft boundaries to explicit expected exception tuples.
+- Removed stale `allow-broad-exception` comment text that would continue to match static hygiene scans.
+- No generated artifacts were edited.
+
+Validation run:
+
+- `python -m compileall apps_rg/runtime/section_graph_skills_proof_pool.py apps_rg/runtime/fact_vectors_bootstrap.py apps_rg/runtime/judges/executive_summary_x1d.py apps_rg/runtime/orchestration/patch_run.py` passed.
+- `python -m pytest tests/unit/apps_rg/runtime/test_section_graph_skills_proof_pool.py tests/unit/apps_rg/test_unify_graph_ranked_allocation.py tests/unit/apps_rg/test_ibm_slot_claim_text_bundle_rebind.py -q` passed: `20 passed`.
+- `python -m pytest tests/unit/apps_rg/test_fact_vector_hydration_runtime.py tests/unit/apps_rg/test_fact_vectors_bootstrap_w3.py -q` passed: `16 passed`.
+- `python -m pytest tests/unit/apps_rg/test_patch_run.py -q` passed: `17 passed`.
+- `python -m pytest tests/unit/apps_rg/test_executive_summary_x1d_judge_retries.py tests/unit/apps_rg/test_x1d_judge_transport_parity.py tests/_apps_contract/test_apps_rg_judge_model_env_boundary.py -q` had `53 passed`, `1 failed`.
+- The failing test was `tests/_apps_contract/test_apps_rg_judge_model_env_boundary.py::test_anthropic_standard_uses_yaml_not_env`; rerunning it alone still failed with `model_actual == ''` vs `claude-sonnet-5`, which is outside these exception-boundary edits.
+- `git diff --check` passed.
