@@ -29,6 +29,7 @@ from apps_rg.runtime.c0.fact_vector_write_back import (
     STAGE_FOR_FACT_VECTORS,
     STAGING_COLLECTION_NAME,
     X3_ALLOW,
+    _ChromaFactWritebackStore,
     _staged_row_is_promotable,
     classify_write_back_operation,
     decide_write_back,
@@ -182,12 +183,22 @@ def _plain_chroma(monkeypatch):
     """Patch the precomputed-collection helper to a plain Chroma collection (explicit embeddings,
     no embedding function), so the promotion round-trip needs no BGE model."""
     import apps_rg.runtime.chroma_precomputed_collection as cpc
+    from apps_rg.runtime.c0.chroma_persistent_client import reset_apps_rg_chroma_client_cache_for_tests
+
+    reset_apps_rg_chroma_client_cache_for_tests()
 
     def _plain(client, name, *, metadata=None):
         return client.get_or_create_collection(name=name)
 
     monkeypatch.setattr(cpc, "get_precomputed_embeddings_collection", _plain)
-    return _plain
+    yield _plain
+    reset_apps_rg_chroma_client_cache_for_tests()
+
+
+def _chroma_client(path: str):
+    from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
+
+    return ensure_apps_rg_chroma_client(path)
 
 
 def _stage_row(client, *, doc_id, metadata, embedding):
@@ -196,11 +207,9 @@ def _stage_row(client, *, doc_id, metadata, embedding):
 
 
 def test_promotion_moves_promotable_rows_staging_to_live(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     emb = [0.1, 0.2, 0.3, 0.4]
     _stage_row(client, doc_id="apps_rg:fv:f1", embedding=emb, metadata=_promotable_metadata())
     _stage_row(client, doc_id="apps_rg:fv:bad", embedding=emb,
@@ -231,11 +240,9 @@ def test_promotion_moves_promotable_rows_staging_to_live(tmp_path, _plain_chroma
 
 
 def test_promotion_holds_for_hitl(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.setenv(PROMOTION_HITL_ENV, "1")
     path = str(tmp_path / "chroma_hitl")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     _stage_row(
         client,
         doc_id="apps_rg:fv:f1",
@@ -254,11 +261,9 @@ def test_promotion_holds_for_hitl(tmp_path, _plain_chroma, monkeypatch) -> None:
 
 
 def test_promotion_skips_duplicate_chunk_digest(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma_duplicate")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     emb = [0.1, 0.2, 0.3, 0.4]
     live = client.get_or_create_collection(name="fact_vectors")
     live.upsert(
@@ -287,11 +292,9 @@ def test_promotion_skips_duplicate_chunk_digest(tmp_path, _plain_chroma, monkeyp
 
 
 def test_promotion_holds_below_score_floor(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma_low_score")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     _stage_row(
         client,
         doc_id="apps_rg:fv:low",
@@ -314,13 +317,26 @@ def test_promotion_holds_below_score_floor(tmp_path, _plain_chroma, monkeypatch)
     assert "apps_rg:fv:low" in set(staging.get()["ids"])
 
 
-def test_sparse_sync_full_rebuilds_when_incremental_count_mismatches(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
+def test_hold_annotation_failure_is_explicit_receipt_state() -> None:
+    class _FailingStaging:
+        def update(self, *, ids, metadatas) -> None:
+            raise RuntimeError("staging unavailable")
 
+    store = _ChromaFactWritebackStore(staging=_FailingStaging())
+
+    result = store.mark_staged_rows_held({"row-1": {"promotion_hold_reason": "hitl_required"}})
+
+    assert result["status"] == "FAIL_SOFT"
+    assert result["row_count"] == 1
+    assert result["error_type"] == "RuntimeError"
+    assert store.hold_annotation_status == result
+
+
+def test_sparse_sync_full_rebuilds_when_incremental_count_mismatches(tmp_path, _plain_chroma, monkeypatch) -> None:
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma_sparse_mismatch")
     sparse_dir = tmp_path / "sparse"
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     emb = [0.1, 0.2, 0.3, 0.4]
     live = client.get_or_create_collection(name="fact_vectors")
     live.upsert(
@@ -354,8 +370,6 @@ def test_sparse_sync_full_rebuilds_when_incremental_count_mismatches(tmp_path, _
 
 
 def test_promotion_writes_standalone_receipt(tmp_path, _plain_chroma, monkeypatch, caplog) -> None:
-    import chromadb
-
     from tools.ledgers import hook_helpers
 
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
@@ -369,7 +383,7 @@ def test_promotion_writes_standalone_receipt(tmp_path, _plain_chroma, monkeypatc
     caplog.set_level("INFO", logger="apps_rg.runtime.c0.fact_vector_write_back")
     path = str(tmp_path / "chroma_receipt")
     artifact_dir = tmp_path / "run"
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     _stage_row(
         client,
         doc_id="apps_rg:fv:f1",
@@ -390,23 +404,26 @@ def test_promotion_writes_standalone_receipt(tmp_path, _plain_chroma, monkeypatc
     assert written["promoted_count"] == 1
     assert written["uwg_witness"]["ledger"] == "router_l4_uwg"
     assert written["uwg_witness"]["event_id"] == "event-fv-witness"
-    assert emitted[0]["ledger"] == "router_l4_uwg"
-    assert emitted[0]["event_kind"] == "route_decision"
-    assert emitted[0]["prediction"]["selected"] == "commit"
-    assert emitted[0]["outcome"]["success"] is True
+    promotion_event = next(
+        item
+        for item in emitted
+        if item.get("metadata", {}).get("witness_kind") == "fact_vector_promotion_receipt"
+    )
+    assert promotion_event["ledger"] == "router_l4_uwg"
+    assert promotion_event["event_kind"] == "route_decision"
+    assert promotion_event["prediction"]["selected"] == "commit"
+    assert promotion_event["outcome"]["success"] is True
     assert (
-        emitted[0]["metadata"]["promotion_receipt_digest"]
+        promotion_event["metadata"]["promotion_receipt_digest"]
         == written["uwg_witness"]["promotion_receipt_digest"]
     )
     assert "ROUTER_DECISION: layer=L4 router=uwg" in caplog.text
 
 
 def test_deferred_x3_gate_promotes_only_allow_run(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma_x3")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     emb = [0.1, 0.2, 0.3, 0.4]
     _stage_row(
         client,
@@ -463,11 +480,9 @@ def test_deferred_x3_gate_promotes_only_allow_run(tmp_path, _plain_chroma, monke
 
 
 def test_list_staged_fact_vectors_surfaces_hold_reason(tmp_path, _plain_chroma, monkeypatch) -> None:
-    import chromadb
-
     monkeypatch.delenv(PROMOTION_HITL_ENV, raising=False)
     path = str(tmp_path / "chroma_list")
-    client = chromadb.PersistentClient(path=path)
+    client = _chroma_client(path)
     _stage_row(
         client,
         doc_id="apps_rg:fv:held",

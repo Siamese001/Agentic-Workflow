@@ -32,10 +32,17 @@ _PROFILE_REF_FIELD_MAP: dict[str, str] = {
 class U0PackageValidationError(Exception):
     """Raised when apps_rg U0 package validation fails."""
 
-    def __init__(self, message: str, field: str = "", receipt: Any = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        field: str = "",
+        receipt: Any = None,
+        reason_code: str = "",
+    ) -> None:
         self.message = message
         self.field = field
         self.receipt = receipt
+        self.reason_code = reason_code
         super().__init__(message)
 
 
@@ -59,14 +66,32 @@ class AppsRgRuntimePackageRegistry:
         try:
             data = yaml.safe_load(registry_path.read_text(encoding="utf-8"))
         except OSError as exc:
-            _LOGGER.error("Failed to read registry for %s: %s", app_id, exc)
-            return None
+            message = f"Failed to read registry for {app_id}: {exc}"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_package_registry",
+                reason_code="registry_read_error",
+                receipt={"registry_path": str(registry_path), "error_type": type(exc).__name__},
+            ) from exc
         except yaml.YAMLError as exc:
-            _LOGGER.error("Failed to parse registry for %s: %s", app_id, exc)
-            return None
+            message = f"Failed to parse registry for {app_id}: {exc}"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_package_registry",
+                reason_code="registry_parse_error",
+                receipt={"registry_path": str(registry_path), "error_type": type(exc).__name__},
+            ) from exc
         if not isinstance(data, dict):
-            _LOGGER.error("Runtime package registry for %s is not a mapping", app_id)
-            return None
+            message = f"Runtime package registry for {app_id} is not a mapping"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_package_registry",
+                reason_code="registry_not_mapping",
+                receipt={"registry_path": str(registry_path), "data_type": type(data).__name__},
+            )
         self._cache[app_id] = data
         return data
 
@@ -111,14 +136,32 @@ class AppsRgRuntimePackageRegistry:
         try:
             data = yaml.safe_load(package_path.read_text(encoding="utf-8"))
         except OSError as exc:
-            _LOGGER.error("Failed to read package from %s: %s", package_path, exc)
-            return None
+            message = f"Failed to read package from {package_path}: {exc}"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_customization_package",
+                reason_code="package_read_error",
+                receipt={"package_path": str(package_path), "error_type": type(exc).__name__},
+            ) from exc
         except yaml.YAMLError as exc:
-            _LOGGER.error("Failed to parse package from %s: %s", package_path, exc)
-            return None
+            message = f"Failed to parse package from {package_path}: {exc}"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_customization_package",
+                reason_code="package_parse_error",
+                receipt={"package_path": str(package_path), "error_type": type(exc).__name__},
+            ) from exc
         if not isinstance(data, dict):
-            _LOGGER.error("Runtime package at %s is not a mapping", package_path)
-            return None
+            message = f"Runtime package at {package_path} is not a mapping"
+            _LOGGER.error(message)
+            raise U0PackageValidationError(
+                message=message,
+                field="runtime_customization_package",
+                reason_code="package_not_mapping",
+                receipt={"package_path": str(package_path), "data_type": type(data).__name__},
+            )
         return RuntimeCustomizationPackage.from_dict(data)
 
 
