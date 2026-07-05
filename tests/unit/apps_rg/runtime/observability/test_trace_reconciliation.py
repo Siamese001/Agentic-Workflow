@@ -54,6 +54,21 @@ def test_reconciliation_warns_when_otel_unavailable_but_keeps_local_receipts(tmp
     assert any(row["check_id"] == "l7_provider_attempts.otel_mirror" for row in doc["rows"])
 
 
+def test_reconciliation_records_malformed_local_json_issue(tmp_path: Path) -> None:
+    (tmp_path / "provider_response.json").write_text("{", encoding="utf-8")
+
+    doc = build_trace_reconciliation(
+        artifact_dir=tmp_path,
+        repo_root=tmp_path,
+        section_id="executive_summary",
+        run_id="run-1",
+    )
+
+    assert doc["local_json_load_issues"][0]["artifact"] == "provider_response.json"
+    assert doc["local_json_load_issues"][0]["status"] == "parse_error"
+    assert any(row["check_id"] == "local_json.provider_response.json" for row in doc["rows"])
+
+
 def test_reconciliation_passes_when_otel_provider_mirror_matches(tmp_path: Path) -> None:
     _write_json(
         tmp_path / "provider_response.json",
