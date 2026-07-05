@@ -22,6 +22,7 @@ import importlib
 import json
 import os
 import shutil
+import sqlite3
 import sys
 import time
 import uuid
@@ -249,7 +250,7 @@ def _module_probe() -> tuple[dict[str, str], dict[str, Any]]:
     for name in _REQUIRED_HYDRATION_IMPORTS:
         try:
             modules[name] = importlib.import_module(name)
-        except Exception as exc:  # guardian: allow-broad-exception -- classify optional dependency blockers
+        except (ImportError, OSError, RuntimeError) as exc:
             failures[name] = f"{type(exc).__name__}: {exc}"
     return failures, modules
 
@@ -275,7 +276,7 @@ def validate_fact_vector_hydration_runtime(
             cuda_available = bool(torch_mod.cuda.is_available())
             if cuda_available:
                 cuda_device_name = str(torch_mod.cuda.get_device_name(0))
-        except Exception as exc:  # guardian: allow-broad-exception -- torch CUDA probes vary by build
+        except (AttributeError, OSError, RuntimeError, TypeError) as exc:
             reasons.append(f"torch_cuda_probe_failed:{type(exc).__name__}")
     if require_cuda and device != "cuda":
         reasons.append(f"hydration_device_not_cuda:{device}")
@@ -415,7 +416,7 @@ def snapshot_chroma_before_hydration(
             dest,
             ignore=shutil.ignore_patterns(HYDRATION_LOCK_FILENAME, "*.tmp"),
         )
-    except Exception as exc:  # guardian: allow-broad-exception -- snapshot failure blocks mutation
+    except (OSError, shutil.Error) as exc:
         receipt.update(
             {
                 "status": "BLOCKED",
@@ -602,7 +603,7 @@ def _reset_collection(chroma_path: str, collection_name: str = "fact_vectors") -
     try:
         existing = client.get_collection(collection_name)
         count = int(existing.count())
-    except Exception:  # guardian: allow-broad-exception -- collection may not exist yet; nothing to reset
+    except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError):
         return 0
     client.delete_collection(collection_name)
     return count
@@ -655,7 +656,7 @@ def _build_sparse_sidecar(
         manifest["sparse_sidecar_built"] = bool(sparse_sidecar_exists("fact_vectors"))
         manifest["sparse_doc_count"] = int(stats.get("doc_count") or 0)
         manifest["sparse_term_count"] = int(stats.get("term_count") or 0)
-    except Exception as exc:  # guardian: allow-broad-exception -- sparse build is best-effort; recorded in manifest for strict gating
+    except (AttributeError, ImportError, OSError, RuntimeError, sqlite3.Error, TypeError, ValueError) as exc:
         manifest["sparse_sidecar_built"] = False
         manifest["sparse_sidecar_error"] = f"{type(exc).__name__}: {exc}"
 
@@ -666,7 +667,7 @@ def _collection_count(chroma_path: str, collection_name: str = "fact_vectors") -
     client = persistent_chroma_client(chroma_path)
     try:
         return int(client.get_collection(collection_name).count())
-    except Exception:  # guardian: allow-broad-exception -- absent collection reports 0
+    except (AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError):
         return 0
 
 

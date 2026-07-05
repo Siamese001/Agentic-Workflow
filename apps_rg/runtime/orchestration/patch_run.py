@@ -602,7 +602,7 @@ def _dispatch_patch_lanes(
                 continue
         try:
             results[lane] = dispatch(plan=plan, lane=lane, lane_provider=lane_provider)
-        except Exception as exc:  # guardian: allow-broad-exception -- mirror full-run phase1 lane fail-soft loop
+        except (ImportError, AttributeError, KeyError, OSError, RuntimeError, TypeError, ValueError) as exc:
             results[lane] = {"fault": "exception", "error": str(exc), "exit_status": "error"}
         if product_fail_closed_runtime() and phase1_dispatch_hard_failed(results[lane]):
             aborted = True

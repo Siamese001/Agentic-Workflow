@@ -306,7 +306,7 @@ def _policy_model_name(provider_key: str, section_id: str, fallback: str = "unkn
 
     try:
         resolution = resolve_section_proof_judge_model(section_id, provider_key)
-    except Exception:  # guardian: policy lookup is best-effort for evidence-only rows
+    except (ImportError, AttributeError, KeyError, RuntimeError, TypeError, ValueError):
         return fallback or "unknown"
     return (
         resolution.model_requested
@@ -1753,7 +1753,7 @@ def run_llm_judges(
                 (
                     f"No non-empty API credential in {env_checked}; "
                     f"Gemini resolves GOOGLE_API_KEY then deprecated GEMINI_API_KEY alias."
-                    if key == "gemini_pro"  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+                    if key == "gemini_pro"
                     else f"{meta['env']} environment variable not set"
                 ),
             ))
@@ -1885,7 +1885,16 @@ def run_llm_judges(
                         output.proof_eligible_judge = False
                         output.fallback_used = True
             outputs.append(output)
-        except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+        except (
+            ImportError,
+            AttributeError,
+            KeyError,
+            OSError,
+            RuntimeError,
+            TypeError,
+            ValueError,
+            urllib.error.URLError,
+        ) as exc:
             # Catch any unexpected errors and mark as blocked
             outputs.append(_make_blocked_output(
                 key, input_hash, "BLOCKED_PROVIDER_UNAVAILABLE",
