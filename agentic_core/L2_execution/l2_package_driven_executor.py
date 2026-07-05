@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
@@ -105,6 +105,9 @@ class HealReceipt:
     success: bool
     attempt_number: int
     timestamp: str
+    before_prompt_hash: str = ""
+    after_prompt_hash: str = ""
+    repaired_packet_ref: str = ""
 
 
 @dataclass(frozen=True)
@@ -191,6 +194,86 @@ def _load_yaml_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
 def _compute_hash(content: str) -> str:
     """Compute SHA256 hash."""
     return hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
+
+
+def _packet_prompt_text(compiled_prompt: Any) -> str:
+    """Return the model-facing prompt text across rich/runtime CPA variants."""
+    blocks = tuple(getattr(compiled_prompt, "prompt_blocks", ()) or ())
+    if blocks:
+        return "\n".join(
+            f"{getattr(block, 'role', '?')}: {getattr(block, 'content', '')}"
+            for block in blocks
+        )
+    final_system = str(getattr(compiled_prompt, "final_system_string", "") or "")
+    final_user = str(getattr(compiled_prompt, "final_user_string", "") or "")
+    if final_system or final_user:
+        return f"{final_system}\n{final_user}".strip()
+    system = str(getattr(compiled_prompt, "system_preamble", "") or "")
+    user = str(getattr(compiled_prompt, "user_instruction", "") or "")
+    return f"{system}\n{user}".strip()
+
+
+def _prompt_packet_hash(compiled_prompt: Any) -> str:
+    return _compute_hash(_packet_prompt_text(compiled_prompt))
+
+
+def _append_h0_repair_context(
+    compiled_prompt: CompiledPromptArtifact,
+    repair_hints: str,
+) -> CompiledPromptArtifact:
+    """Create a same-authority repaired packet carrying H0 repair context."""
+    updates: dict[str, Any] = {}
+
+    if hasattr(compiled_prompt, "user_instruction"):
+        current = str(getattr(compiled_prompt, "user_instruction", "") or "")
+        updates["user_instruction"] = f"{current}\n\n{repair_hints}".strip()
+
+    if hasattr(compiled_prompt, "final_user_string"):
+        current = str(getattr(compiled_prompt, "final_user_string", "") or "")
+        updates["final_user_string"] = f"{current}\n\n{repair_hints}".strip()
+
+    if hasattr(compiled_prompt, "prompt_blocks"):
+        blocks = tuple(getattr(compiled_prompt, "prompt_blocks", ()) or ())
+        try:
+            from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock  # noqa: PLC0415
+
+            repair_block = PromptBlock(
+                role="system",
+                content=repair_hints,
+                block_index=len(blocks),
+            )
+            updates["prompt_blocks"] = blocks + (repair_block,)
+        except ImportError:
+            pass
+
+    if hasattr(compiled_prompt, "metadata"):
+        metadata = dict(getattr(compiled_prompt, "metadata", {}) or {})
+        metadata["l2_e4_repair"] = {
+            "stage": "E4_HEAL",
+            "strategy": "same_authority_rewrite",
+            "slot": "H0_bounded_repair",
+        }
+        updates["metadata"] = metadata
+
+    if hasattr(compiled_prompt, "audit_refs"):
+        audit_refs = tuple(getattr(compiled_prompt, "audit_refs", ()) or ())
+        updates["audit_refs"] = audit_refs + ("l2_e4_repair:H0_bounded_repair",)
+
+    if hasattr(compiled_prompt, "compilation_hash"):
+        payload = {
+            "previous_hash": str(getattr(compiled_prompt, "compilation_hash", "") or ""),
+            "prompt_text": _packet_prompt_text(compiled_prompt),
+            "repair_hints": repair_hints,
+        }
+        updates["compilation_hash"] = f"sha256:{hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()}"
+
+    if hasattr(compiled_prompt, "tokens"):
+        try:
+            updates["tokens"] = int(getattr(compiled_prompt, "tokens", 0) or 0) + max(1, len(repair_hints) // 4)
+        except (TypeError, ValueError):
+            pass
+
+    return replace(compiled_prompt, **updates)
 
 
 def _freeze_execution_context(
@@ -316,6 +399,10 @@ def _perform_same_authority_repair(
     """
     _LOGGER.info(f"Performing same-authority repair for attempt {attempt_number}")
     
+    repair_authority = repair_profile.get("repair_authority", {}) if isinstance(repair_profile, dict) else {}
+    if repair_authority and not repair_authority.get("same_authority_only", False):
+        raise RuntimeError("cross_authority_repair_blocked: repair_profile must be same-authority only")
+
     # Get repair hints template
     hints_template = repair_profile.get("repair_hints", {}).get("template", "")
     
@@ -323,7 +410,7 @@ def _perform_same_authority_repair(
     error_details = "\n".join(validation_receipt.errors) if validation_receipt.errors else "Unknown error"
     
     # Build repair hints for H0 slot
-    repair_hints = f"""## Repair Hints for Output Correction
+    repair_hints = f"""## H0 Bounded Repair Context
 
 The previous attempt had the following issues:
 {error_details}
@@ -335,9 +422,12 @@ Please correct:
 
 Ensure output strictly follows the JSON schema in R0.
 """
-    
-    # In real implementation, would modify compiled_prompt.envelope to add H0 hints
-    # For now, return original with heal receipt
+    if hints_template:
+        repair_hints = f"{repair_hints}\nProfile hint template:\n{hints_template}".strip()
+
+    before_hash = _prompt_packet_hash(compiled_prompt)
+    repaired_prompt = _append_h0_repair_context(compiled_prompt, repair_hints)
+    after_hash = _prompt_packet_hash(repaired_prompt)
     
     heal_receipt = HealReceipt(
         receipt_id=f"hr-{attempt_number}",
@@ -345,12 +435,15 @@ Ensure output strictly follows the JSON schema in R0.
         repair_strategy="same_authority_rewrite",
         slots_modified=["H0_bounded_repair"],
         hints_provided=[repair_hints],
-        success=True,  # Hints generated successfully
+        success=before_hash != after_hash,
         attempt_number=attempt_number,
         timestamp=datetime.now(timezone.utc).isoformat(),
+        before_prompt_hash=before_hash,
+        after_prompt_hash=after_hash,
+        repaired_packet_ref=str(getattr(repaired_prompt, "compilation_hash", "") or after_hash),
     )
     
-    return compiled_prompt, heal_receipt
+    return repaired_prompt, heal_receipt
 
 
 def l2_execute_package_driven(

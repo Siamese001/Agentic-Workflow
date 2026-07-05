@@ -134,6 +134,7 @@ class HealReceipt:
     repair_tactic: str = ""
     before_hash: str = ""
     after_hash: str = ""
+    repair_patch: dict[str, Any] = field(default_factory=dict)
     oscillation_status: str = ""
     snapshot_guard_status: str = "PASS"
     next_action: str = ""
