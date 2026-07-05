@@ -29,6 +29,7 @@ import json
 import os
 import time
 import uuid
+from dataclasses import replace
 from types import SimpleNamespace
 from typing import Any, Optional
 
@@ -117,6 +118,93 @@ def _cpa_prompt_text(cpa: Any) -> str:
     sp = str(getattr(cpa, "system_preamble", "") or "")
     ui = str(getattr(cpa, "user_instruction", "") or "")
     return f"{sp}\n{ui}".strip()
+
+
+def _prompt_packet_hash(cpa: Any) -> str:
+    return hashlib.sha256(_cpa_prompt_text(cpa).encode("utf-8")).hexdigest()
+
+
+def _repair_instruction_for_tactic(tactic: str) -> str:
+    if tactic == "json_repair_intact_source":
+        return (
+            "Return only a strict JSON object matching the requested resume schema. "
+            "Do not wrap JSON in markdown or prose. Preserve the same evidence and facts."
+        )
+    if tactic == "trim_oversized_output_preserving_required_fields":
+        return (
+            "Shorten only verbose generated text while preserving all required fields, "
+            "evidence references, and factual claims. Do not add new facts."
+        )
+    if tactic == "output_reformat_to_required_shape":
+        return (
+            "Reformat the prior output into the required schema shape only. "
+            "Do not change facts, evidence, provider, model, or route."
+        )
+    if tactic == "retry_same_transient_tool_call":
+        return (
+            "Retry the same approved provider call under the same authority. "
+            "Do not change provider, model, evidence, credentials, or route."
+        )
+    return (
+        "Apply only the local same-authority repair tactic selected by E4. "
+        "Do not widen authority or invent missing facts."
+    )
+
+
+def _repair_patch_for_tactic(tactic: str, failed_attempt: Any, repair_count: int) -> dict[str, Any]:
+    instruction = _repair_instruction_for_tactic(tactic)
+    return {
+        "stage": "E4_HEAL",
+        "repair_count": repair_count,
+        "repair_tactic": tactic,
+        "parent_attempt_receipt_id": str(getattr(failed_attempt, "attempt_receipt_id", "") or ""),
+        "bounded_context": (
+            "## H0 Bounded Repair Context\n"
+            f"- tactic: {tactic}\n"
+            f"- failed_reason: {str(getattr(failed_attempt, 'decisive_reason_code', '') or '')}\n"
+            f"- failed_error: {str(getattr(failed_attempt, 'error_summary', '') or '')}\n"
+            f"- instruction: {instruction}"
+        ),
+    }
+
+
+def _apply_heal_repair_patch(cpa: Any, heal_receipt: Any) -> Any:
+    patch = dict(getattr(heal_receipt, "repair_patch", {}) or {})
+    bounded_context = str(patch.get("bounded_context", "") or "").strip()
+    if not bounded_context:
+        return cpa
+
+    updates: dict[str, Any] = {}
+    if hasattr(cpa, "user_instruction"):
+        current = str(getattr(cpa, "user_instruction", "") or "")
+        updates["user_instruction"] = f"{current}\n\n{bounded_context}".strip()
+
+    if hasattr(cpa, "prompt_blocks"):
+        blocks = tuple(getattr(cpa, "prompt_blocks", ()) or ())
+        try:
+            from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock  # noqa: PLC0415
+
+            updates["prompt_blocks"] = blocks + (
+                PromptBlock(role="system", content=bounded_context, block_index=len(blocks)),
+            )
+        except ImportError:
+            pass
+
+    if hasattr(cpa, "audit_refs"):
+        audit_refs = tuple(getattr(cpa, "audit_refs", ()) or ())
+        updates["audit_refs"] = audit_refs + (
+            f"l2_e4_repair:{str(getattr(heal_receipt, 'repair_attempt_id', '') or '')}",
+        )
+
+    if hasattr(cpa, "compilation_hash"):
+        payload = {
+            "previous_hash": str(getattr(cpa, "compilation_hash", "") or ""),
+            "repair_patch": patch,
+            "prompt_text": _cpa_prompt_text(cpa),
+        }
+        updates["compilation_hash"] = f"sha256:{hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()}"
+
+    return replace(cpa, **updates)
 
 
 def _build_lineage_root(prompt_artifact: Any) -> Any:
@@ -954,10 +1042,10 @@ def _heal_attempt_failure(
     )
     from apps_rg.runtime.bindings.l2_envelope_contracts import DISALLOWED_REPAIRS, SAFE_LOCAL_REPAIRS, is_repair_allowed
 
-    _ = cpa  # reserved for CPA-scoped repairs
     rid = HealReceipt.new_id()
     prep_det = prep_output.replay_bindings.determinism
-    att_det = failed_attempt.determinism
+    att_det = getattr(failed_attempt, "determinism", prep_det)
+    before_hash = _prompt_packet_hash(cpa)
     snapshot_ok = (
         att_det.blueprint_hash == prep_det.blueprint_hash
         and att_det.policy_hash == prep_det.policy_hash
@@ -973,6 +1061,8 @@ def _heal_attempt_failure(
         snap: str = "PASS" if snapshot_ok else "FAIL",
         nxt: str = "SEND_TO_E5",
         rstat: Any | None = None,
+        patch: dict[str, Any] | None = None,
+        after_hash: str | None = None,
     ) -> Any:
         if tactic and not is_repair_allowed(tactic):
             _ = tactic  # documented gate usage
@@ -980,16 +1070,19 @@ def _heal_attempt_failure(
             rstat = RepairStatus.REPAIRED if outcome == HealOutcomeStamp.PASS else RepairStatus.NOT_REPAIRED
         return HealReceipt(
             repair_attempt_id=rid,
-            parent_attempt_receipt_id=failed_attempt.attempt_receipt_id,
-            failed_span_id=failed_attempt.span_id,
+            parent_attempt_receipt_id=str(getattr(failed_attempt, "attempt_receipt_id", "") or ""),
+            failed_span_id=getattr(failed_attempt, "span_id", None),
             reason_code=reason,
             repair_count=repair_count,
             determinism=prep_det,
-            lineage=failed_attempt.lineage,
+            lineage=getattr(failed_attempt, "lineage", prep_output.lineage_root),
             delta_summary=delta,
             outcome=outcome,
             repair_tactic=tactic,
             repair_status=rstat,
+            before_hash=before_hash,
+            after_hash=after_hash if after_hash is not None else before_hash,
+            repair_patch=patch or {},
             oscillation_status=osc,
             snapshot_guard_status=snap,
             next_action=nxt,
@@ -1090,6 +1183,12 @@ def _heal_attempt_failure(
     if tactic in DISALLOWED_REPAIRS:
         return _hr(outcome=HealOutcomeStamp.FAIL_TERMINAL, reason="E4_DISALLOWED", delta=f"tactic {tactic} disallowed")
     assert tactic in SAFE_LOCAL_REPAIRS or is_repair_allowed(tactic)
+    patch = _repair_patch_for_tactic(tactic, failed_attempt, repair_count)
+    repaired_cpa = _apply_heal_repair_patch(
+        cpa,
+        SimpleNamespace(repair_patch=patch, repair_attempt_id=rid),
+    )
+    after_hash = _prompt_packet_hash(repaired_cpa)
 
     return _hr(
         outcome=HealOutcomeStamp.PASS,
@@ -1098,6 +1197,8 @@ def _heal_attempt_failure(
         delta=f"applied {tactic}",
         nxt="RETURN_TO_E3",
         rstat=RepairStatus.REPAIRED,
+        patch=patch,
+        after_hash=after_hash,
     )
 
 
@@ -1293,17 +1394,18 @@ def run_apps_rg_l2_envelope(
 ) -> Any:
     """Run E1→E2→(E3↔E4)→E5 for apps_rg."""
     del route_contract, validated_request, budget
-    prep = _build_prep_output(prompt_artifact)
-    val = _validate_work_order(prep, prompt_artifact)
+    active_prompt_artifact = prompt_artifact
+    prep = _build_prep_output(active_prompt_artifact)
+    val = _validate_work_order(prep, active_prompt_artifact)
     if val.validation_status != "PASS" or val.approved_work_order is None:
         return _seal_e2_rejection(
-            cpa=prompt_artifact,
+            cpa=active_prompt_artifact,
             prep_output=prep,
             validation_output=val,
         )
 
     attempt = _execute_approved_work_order(
-        cpa=prompt_artifact,
+        cpa=active_prompt_artifact,
         approved_work_order=val.approved_work_order,
         prep_output=prep,
         attempt_number=attempt_number,
@@ -1324,14 +1426,15 @@ def run_apps_rg_l2_envelope(
             failed_attempt=attempt,
             prep_output=prep,
             approved_work_order=val.approved_work_order,
-            cpa=prompt_artifact,
+            cpa=active_prompt_artifact,
             repair_count=heals_used + 1,
         )
         heals_used += 1
         if heal_r.next_action != "RETURN_TO_E3":
             break
+        active_prompt_artifact = _apply_heal_repair_patch(active_prompt_artifact, heal_r)
         attempt = _execute_approved_work_order(
-            cpa=prompt_artifact,
+            cpa=active_prompt_artifact,
             approved_work_order=val.approved_work_order,
             prep_output=prep,
             attempt_number=attempt_number + heals_used,
@@ -1340,7 +1443,7 @@ def run_apps_rg_l2_envelope(
         )
 
     return _seal_l2_artifact(
-        cpa=prompt_artifact,
+        cpa=active_prompt_artifact,
         prep_output=prep,
         validation_output=val,
         attempt_receipt=attempt,

@@ -454,6 +454,7 @@ from apps_rg.runtime.bindings.l2_envelope_contracts import (
 )
 
 from apps_rg.runtime.bindings.l2_envelope_adapter import (
+    _apply_heal_repair_patch,
     _build_approved_work_order,
     _build_budget_snapshot,
     _build_capability_scope_summary,
@@ -1245,6 +1246,60 @@ class TestE4AllowedRepairs:
         assert heal_receipt.repair_tactic == "json_repair_intact_source"
         assert heal_receipt.outcome == HealOutcomeStamp.PASS
         assert heal_receipt.next_action == "RETURN_TO_E3"
+        assert heal_receipt.before_hash
+        assert heal_receipt.after_hash
+        assert heal_receipt.before_hash != heal_receipt.after_hash
+        assert heal_receipt.repair_patch["stage"] == "E4_HEAL"
+        repaired_cpa = _apply_heal_repair_patch(cpa, heal_receipt)
+        assert "H0 Bounded Repair Context" in repaired_cpa.user_instruction
+        assert repaired_cpa.compilation_hash != cpa.compilation_hash
+
+    def test_e4_retry_consumes_repaired_prompt_packet(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """E4 must modify the retry packet, not only emit a repair receipt."""
+        import apps_rg.runtime.bindings.l2_envelope_adapter as adapter
+
+        cpa = _make_minimal_cpa()
+        seen_prompts: list[str] = []
+
+        def fake_execute(
+            *,
+            cpa: Any,
+            approved_work_order: Any,
+            prep_output: Any,
+            attempt_number: int,
+            resume_artifact_contract_mode: Any | None = None,
+            artifact_dir: str | None = None,
+        ) -> AttemptReceipt:
+            del approved_work_order, resume_artifact_contract_mode, artifact_dir
+            seen_prompts.append(adapter._cpa_prompt_text(cpa))
+            result_class = ResultClass.SUCCESS if attempt_number == 2 else ResultClass.SOFT_REPAIRABLE
+            return AttemptReceipt(
+                attempt_receipt_id=AttemptReceipt.new_id(),
+                validation_packet_id="validation-test-001",
+                attempt_count=attempt_number,
+                determinism=prep_output.replay_bindings.determinism,
+                lineage=prep_output.lineage_root,
+                trace_id=cpa.trace_id,
+                span_id=f"e3-attempt-{attempt_number}",
+                latency_ms=1.0,
+                tokens_used=1,
+                return_code=0 if result_class == ResultClass.SUCCESS else 3,
+                result_class=result_class,
+                error_summary=None if result_class == ResultClass.SUCCESS else "JSON parse error",
+                execution_lane=ExecutionLane.MODEL,
+                decisive_reason_code="E3_SUCCESS" if result_class == ResultClass.SUCCESS else "E3_JSON_PARSE_ERROR",
+                proposed_state_diff={"generated_resume": {"headline": "ok"}} if result_class == ResultClass.SUCCESS else {},
+            )
+
+        monkeypatch.setattr(adapter, "_execute_approved_work_order", fake_execute)
+
+        sealed = adapter.run_apps_rg_l2_envelope(cpa, enable_heal=True, max_heal_attempts=1)
+
+        assert sealed.execution_status == "completed"
+        assert len(seen_prompts) == 2
+        assert "H0 Bounded Repair Context" not in seen_prompts[0]
+        assert "H0 Bounded Repair Context" in seen_prompts[1]
+        assert any(ref.startswith("heal:") for ref in sealed.audit_refs)
 
     def test_e4_trims_trailing_content_deterministically(self) -> None:
         """Test E4 trims oversized output as allowed same-authority repair."""
