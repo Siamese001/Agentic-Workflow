@@ -28,6 +28,14 @@
   `tools/adg/run_full_adg_audit.py`, so retention must be invoked there as a fail-soft sweep and must group
   UTC helper artifacts by their canonical `adg_indexed_<ts>.sqlite` metadata. Detail:
   `memory/codex/adg_scheduled_retention_contract.md`.
+- **ADG C3 module-target side-effect ratchet (2026-07-05):** C3 silent-write counts must treat
+  `emits_side_effect` edges that target the writer module as satisfying the same-surface side-effect
+  requirement; otherwise module-level `writes_to` rows are overcounted. Detail:
+  `memory/codex/adg_c3_module_target_side_effect_ratchet.md`.
+- **ADG S2 write-sovereignty MV ratchet (2026-07-05):** S2 UWG-bypass counts must prefer
+  `mv_write_sovereignty_paths WHERE is_uwg_routed = 0` over raw `writes_to` edges when the MV exists,
+  because the MV carries durable-write scope, tooling/script exclusions, and routed-UWG symbol
+  classification. Detail: `memory/codex/adg_s2_write_sovereignty_mv_ratchet.md`.
 - **apps_rg C0.3 graph skills** use `master_skills_arsenal_ledger.json` as canonical source and generated
   SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
 - **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling
