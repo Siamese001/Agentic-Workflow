@@ -389,7 +389,11 @@ def _artifact_path(
     else:
         base = Path("artifacts/apps_rg/runtime_proofs/executive_summary")
     _ensure_dir(base)
-    leaf_provider = _ARTIFACT_PROVIDER_FILENAME_ALIASES.get(provider_key, provider_key)
+    leaf_provider = (
+        provider_key
+        if suffix == "anthropic_judge_cache_receipt"
+        else _ARTIFACT_PROVIDER_FILENAME_ALIASES.get(provider_key, provider_key)
+    )
     return base / f"x1d_{leaf_provider}_{suffix}_{ts}.json"
 
 
