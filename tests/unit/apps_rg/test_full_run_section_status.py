@@ -235,6 +235,45 @@ def test_collect_rows_support_flat_lane_pointer_to_sibling_runtime_proof(tmp_pat
     assert "Google Gemini 3.1 Pro Preview" in row.judge_summary
 
 
+def test_collect_rows_support_flat_single_section_run_root(tmp_path: Path):
+    run_root = tmp_path / "headline_smoke"
+    run_root.mkdir(parents=True, exist_ok=True)
+    (run_root / "headline_output.txt").write_text("SVP | AI Platforms | Partnerships\n", encoding="utf-8")
+    (run_root / "l2_output.json").write_text(
+        json.dumps(
+            {
+                "section_id": "headline",
+                "runtime_generation_status": "REAL_LLM",
+                "headline_line": "SVP | AI Platforms | Partnerships",
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (run_root / "run_manifest.json").write_text(
+        json.dumps({"section_id": "headline", "runtime_generation_status": "REAL_LLM"}) + "\n",
+        encoding="utf-8",
+    )
+    (run_root / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3_ALLOW", "product_quality_status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    (run_root / "x2_gate_outputs.json").write_text(
+        json.dumps({"gates": [{"gate_id": "x2_smoke", "pass": True}]}) + "\n",
+        encoding="utf-8",
+    )
+
+    rows = collect_full_run_section_status(run_root, repo_root=tmp_path)
+    by_lane = {r.lane: r for r in rows}
+
+    assert by_lane["headline"].lane_dir == "headline_smoke"
+    assert by_lane["headline"].display_txt_rel == "headline_output.txt"
+    assert by_lane["headline"].x3_code == "X3_ALLOW"
+    assert by_lane["headline"].x2_pass == "PASS"
+    assert by_lane["headline"].runtime_generation_status == "REAL_LLM"
+    assert by_lane["executive_summary"].executed is False
+
+
 def test_persist_infers_repo_root_for_modular_pointers(tmp_path: Path):
     (tmp_path / "apps_rg" / "resume" / "base").mkdir(parents=True)
     run_root = tmp_path / "artifacts" / "apps_rg" / "runs" / "whole_run"

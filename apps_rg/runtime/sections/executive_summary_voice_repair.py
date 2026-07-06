@@ -635,6 +635,11 @@ _INSURTECH_POOL_UTILIZATION_SENTENCE = (
     "adoption standards."
 )
 
+_UNIFY_PLATFORM_COMMERCIALIZATION_UTILIZATION_SENTENCE = (
+    "Platform commercialization, IP-led revenue, margin expansion, and team scale now position "
+    "partner-led AI solution architecture and alliance GTM motion."
+)
+
 _GRAPH_OVERRIDE_ANCHOR = "dependency graph intelligence enables accelerated"
 
 
@@ -1912,13 +1917,26 @@ def ensure_required_allowed_fact_utilization(
     pending = [u for u in unused if u not in waived]
     needs_gov = "fact_governance_003" in pending
     needs_insurtech = "reb_insurtech_insurance_regulatory_cloud_adoption_standards" in pending
-    if not needs_gov and not needs_insurtech:
+    needs_unify_commercialization = (
+        "reb_unify_platform_commercialization_leadership" in pending
+    )
+    if not needs_gov and not needs_insurtech and not needs_unify_commercialization:
         return parsed, receipt
 
     out = dict(parsed)
     text = str(parsed.get("resume_display_text") or "").strip()
     gov_present = "basel iii" in text.lower() and "40%" in text
     insurtech_present = "insurance regulatory cloud adoption standards" in text.lower()
+    unify_commercialization_present = (
+        "reb_unify_platform_commercialization_leadership"
+        in {
+            str(fid).strip()
+            for row in ledger
+            if isinstance(row, dict)
+            for fid in (row.get("source_fact_ids") or [])
+            if str(fid).strip()
+        }
+    )
 
     if needs_gov and not gov_present:
         sentences = split_sentences(text)
@@ -1995,6 +2013,49 @@ def ensure_required_allowed_fact_utilization(
         receipt["patched_fact_ids"].append(
             "reb_insurtech_insurance_regulatory_cloud_adoption_standards"
         )
+        text = str(out.get("resume_display_text") or "").strip()
+
+    if needs_unify_commercialization and not unify_commercialization_present:
+        sentences = split_sentences(text)
+        if len(sentences) != 6:
+            return parsed, receipt
+        sentences[5] = _UNIFY_PLATFORM_COMMERCIALIZATION_UTILIZATION_SENTENCE
+        out["resume_display_text"] = " ".join(s.strip() for s in sentences if s.strip())
+        ledger = [dict(r) for r in (out.get("claim_ledger") or []) if isinstance(r, dict)]
+        row_source_ids = ["reb_unify_platform_commercialization_leadership"]
+        if "reb_unify_partner_channel_cosell" in allowed:
+            row_source_ids.append("reb_unify_partner_channel_cosell")
+        row = {
+            "claim": "Platform commercialization and partner AI GTM",
+            "claim_text": _UNIFY_PLATFORM_COMMERCIALIZATION_UTILIZATION_SENTENCE,
+            "source_fact_ids": row_source_ids,
+        }
+        if len(ledger) >= 6:
+            ledger[5] = row
+        else:
+            ledger.append(row)
+        out["claim_ledger"] = ledger
+        out = reconcile_claim_ledger_after_voice_repair(out)
+        for ledger_row in out.get("claim_ledger") or []:
+            if not isinstance(ledger_row, dict):
+                continue
+            claim = str(ledger_row.get("claim_text") or "").lower()
+            if "ip-led revenue" in claim and "team scale" in claim:
+                source_ids = [
+                    str(x).strip()
+                    for x in (ledger_row.get("source_fact_ids") or [])
+                    if str(x).strip()
+                ]
+                for fid in (
+                    "reb_unify_platform_commercialization_leadership",
+                    "reb_unify_partner_channel_cosell",
+                ):
+                    if fid not in allowed:
+                        continue
+                    if fid not in source_ids:
+                        source_ids.append(fid)
+                ledger_row["source_fact_ids"] = source_ids
+        receipt["patched_fact_ids"].append("reb_unify_platform_commercialization_leadership")
     return out, receipt
 
 

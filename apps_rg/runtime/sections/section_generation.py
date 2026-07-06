@@ -7,6 +7,10 @@ remains - the external provider owns transport.
 """
 from __future__ import annotations
 
+import json
+from dataclasses import asdict, is_dataclass
+from datetime import date, datetime
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -23,6 +27,8 @@ __all__ = [
     "build_section_request",
     "generate_section",
     "merge_transport_context",
+    "provider_payload_json_default",
+    "provider_payload_json_dumps",
     "tag_reasoning_lane",
 ]
 
@@ -41,6 +47,33 @@ def merge_transport_context(**kwargs: Any) -> None:
     local-transport consumer, so it intentionally does nothing.
     """
     return None
+
+
+def provider_payload_json_default(value: Any) -> Any:
+    """Serialize provider-payload metadata for receipts without mutating live transport payloads."""
+    to_dict = getattr(value, "to_dict", None)
+    if callable(to_dict):
+        return to_dict()
+    if is_dataclass(value) and not isinstance(value, type):
+        return asdict(value)
+    if isinstance(value, (date, datetime)):
+        return value.isoformat()
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, set):
+        return sorted(value)
+    return repr(value)
+
+
+def provider_payload_json_dumps(data: Any, *, indent: int = 2, ensure_ascii: bool = False) -> str:
+    return json.dumps(
+        data,
+        indent=indent,
+        ensure_ascii=ensure_ascii,
+        default=provider_payload_json_default,
+    )
 
 
 def assert_temperature_in_profile(

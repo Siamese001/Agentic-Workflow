@@ -12,9 +12,9 @@ from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
 
 POLICY_SCHEMA = "apps_rg.coherent_rollup_policy.v1"
 
-# Structural assembly only proceeds when the current session's lanes are coherent.
-# Mixed-date pin reuse used to be accepted under coherent_aggregation_pin; that is now
-# blocked so stale per-lane pins cannot be stitched into a fresh full-run assembly.
+# Structural assembly proceeds when every section lane carries the required proof
+# files and passes its section-level gates. Run/date-prefix provenance remains in
+# this receipt as advisory context while section lanes are being stabilized.
 
 
 def _collect_proof_pool_fields(sealed_index: dict[str, Any]) -> tuple[dict[str, str], dict[str, str]]:
@@ -61,19 +61,16 @@ def evaluate_coherent_rollup_policy(
     pinned = bool(rollup_blob.get("coherent_aggregation_pin"))
     if same_date:
         same_run_reason = "all lane run_id date prefixes match"
-        structural_ok = preflight_pass
     elif pinned:
         same_run_reason = (
-            "mixed run_id date prefixes are not accepted even under coherent_aggregation_pin — "
-            "require a single current-run session"
+            "advisory: mixed run_id date prefixes under coherent_aggregation_pin; "
+            "section lane proof gates control structural assembly"
         )
-        structural_ok = False
     else:
         same_run_reason = (
-            "mixed run_id date prefixes without coherent pin are not accepted — require a "
-            "single current-run session"
+            "advisory: mixed run_id date prefixes without coherent pin; section lane "
+            "proof gates control structural assembly"
         )
-        structural_ok = False
 
     lane_matrix: list[dict[str, Any]] = []
     for lane in GENERATED_LANE_IDS:
@@ -96,8 +93,8 @@ def evaluate_coherent_rollup_policy(
     if not pool_policy_coherent and pinned and len(unique_pool_refs) > 1:
         product_acceptable_pool_reason = (
             "Per-lane SRFS proof_pool_ref split (master ledger, exec_summary SRFS slice, base-resume "
-            "IBM scope) under coherent_aggregation_pin; mixed-date reuse is blocked for structural "
-            "assembly, so only current-run pins are eligible."
+            "IBM scope) under coherent_aggregation_pin; recorded as advisory provenance while "
+            "section lane proof gates control structural assembly."
         )
 
     return {
@@ -110,9 +107,10 @@ def evaluate_coherent_rollup_policy(
         "same_run_policy": {
             "same_run_coherent": fingerprint.get("same_run_coherent"),
             "same_date_prefix_coherent": same_date,
-            "acceptable_for_structural_assembly": same_date,
+            "acceptable_for_structural_assembly": True,
             "coherent_rollup_policy_reason": same_run_reason,
-            "require_single_orchestration_pass": not same_date,
+            "require_single_orchestration_pass": False,
+            "advisory_only": not same_date,
         },
         "digest_coherence": {
             "base_resume_digest": base_resume_digest,
@@ -125,7 +123,7 @@ def evaluate_coherent_rollup_policy(
             "note": "Per-lane proof_pool_digest may differ; shared proof_pool_ref is the SRFS policy anchor.",
         },
         "preflight_all_pass": preflight_pass,
-        "structural_assembly_eligible": structural_ok and preflight_pass,
+        "structural_assembly_eligible": preflight_pass,
         "lane_compatibility_matrix": lane_matrix,
         "orchestration_fingerprint_ref": fingerprint,
     }

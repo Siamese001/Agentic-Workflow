@@ -269,6 +269,19 @@ def _latest_child_run_dir(lane_base: Path) -> Path | None:
     return None
 
 
+def _root_is_flat_section_run(root: Path, lane: str) -> bool:
+    """Return true when ``run_root`` itself is a single-section lane artifact dir."""
+    if not (root / "l2_output.json").is_file():
+        return False
+    l2 = _load_json(root / "l2_output.json")
+    manifest = _load_json(root / "run_manifest.json")
+    section_ids = {
+        str(l2.get("section_id") or "").strip(),
+        str(manifest.get("section_id") or "").strip(),
+    }
+    return lane in section_ids
+
+
 def _rollup_source_run_dirs(root: Path, repo: Path) -> dict[str, Path]:
     """Current final assembly rollup dirs, used after patch-run reaggregation."""
     doc = _load_json(root / "modular_r4" / "generated_lane_rollup" / "generated_lane_rollup.json")
@@ -304,6 +317,8 @@ def _rollup_source_run_dirs(root: Path, repo: Path) -> dict[str, Path]:
 
 def _lane_status_dirs(root: Path, repo: Path, lane: str) -> tuple[Path | None, Path | None]:
     """Return the effective run dir and lane base dir for a whole-run lane."""
+    if _root_is_flat_section_run(root, lane):
+        return root, root
     flat = root / "lanes" / lane
     if flat.is_dir():
         if (flat / "l2_output.json").is_file():

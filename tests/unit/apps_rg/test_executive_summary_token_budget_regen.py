@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import pytest
 
+from apps_rg.prompt_assembly.contracts import CompiledPromptArtifact
 from apps_rg.runtime.providers import provider_contract as retired_provider_profile_provider
 from apps_rg.runtime.sections.executive_summary_regen_dispatch import (
     budgeted_regen_call,
@@ -109,6 +111,55 @@ def test_budgeted_regen_requires_provider_response_for_accepted_parse(
     assert row["provider_response_present"] is True
     assert row["parse_ok"] is True
     assert row["accepted"] is True
+
+
+def test_budgeted_regen_request_receipt_serializes_compiled_prompt_artifact(
+    monkeypatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("LOCAL_MODEL_SERVER_MAX_MODEL_LEN", "16384")
+    artifact = CompiledPromptArtifact(
+        messages=[{"role": "system", "content": "governance"}],
+        system_prompt="governance",
+        template_id="executive_summary.generate_scratch_v1",
+        template_version="v1",
+        prompt_hash="prompt-hash",
+    )
+    seen: dict[str, object] = {}
+
+    def _fake_call(payload, *_a, **_k):
+        seen["compiled_prompt_artifact"] = payload.get("compiled_prompt_artifact")
+        return retired_provider_profile_provider.ProviderResult(
+            provider_requested="retired_provider_profile",
+            provider_attempted=True,
+            provider_available=True,
+            exact_provider_error=None,
+            runtime_generation_status="REAL_LLM",
+            model="test",
+            raw_model_output='{"resume_display_text":"ok","claim_ledger":[]}',
+            provider_response={"choices": [{"message": {"content": "{}"}}]},
+        )
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.generate_section",
+        _fake_call,
+    )
+    clear_regen_budget_ledger(tmp_path)
+    outcome = budgeted_regen_call(
+        {"model": "test-model", "compiled_prompt_artifact": artifact},
+        messages=[{"role": "user", "content": "short prompt"}],
+        phase="synthesis_regen",
+        call_site="test_compiled_prompt_receipt",
+        artifact_dir=tmp_path,
+    )
+
+    assert outcome.dispatch_allowed is True
+    assert seen["compiled_prompt_artifact"] is artifact
+    request_files = list(tmp_path.glob("provider_request_synthesis_regen_*.json"))
+    assert request_files
+    request_doc = json.loads(request_files[0].read_text(encoding="utf-8"))
+    serialized = request_doc["payload"]["compiled_prompt_artifact"]
+    assert serialized["template_id"] == "executive_summary.generate_scratch_v1"
+    assert serialized["messages"] == [{"role": "system", "content": "governance"}]
 
 
 def test_budgeted_regen_timeout_never_accepted(monkeypatch, tmp_path: Path) -> None:

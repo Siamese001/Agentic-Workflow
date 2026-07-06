@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import os
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -161,6 +162,109 @@ def _lane_app_payload(run_dir: Path) -> dict[str, Any]:
     return ap if isinstance(ap, dict) else {}
 
 
+def _pointer_run_dir(repo: Path, pointer_doc: Mapping[str, Any]) -> Path | None:
+    rel = str(pointer_doc.get("run_dir") or "").strip()
+    if not rel:
+        return None
+    rd = Path(rel)
+    if not rd.is_absolute():
+        rd = repo / rel
+    return rd.resolve()
+
+
+def _iter_lane_targeting_sources(
+    repo: Path,
+    sections_root: Path,
+    lane: str,
+) -> list[tuple[str, dict[str, Any], dict[str, Any]]]:
+    """Return targeting metadata sources for one lane in precedence order.
+
+    Current runs keep the canonical metadata in ``real/<run_id>`` lane dirs. Some
+    copied or compacted historical runs only keep lane pointer files with the
+    original command, so patch-run must be able to recover from those pointers too.
+    """
+    out: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
+    lrd = latest_lane_run_dir_any(sections_root, lane)
+    if lrd is not None:
+        out.append(
+            (
+                f"lane:{lane}:real",
+                _load_json(lrd / "run_manifest.json") or {},
+                _lane_app_payload(lrd),
+            )
+        )
+
+    lane_root = Path(sections_root) / lane
+    for pointer_name in ("latest_successful_real_run.json", "latest_real_run.json"):
+        pointer = _load_json(lane_root / pointer_name) or {}
+        if not pointer:
+            continue
+        if str(pointer.get("command") or "").strip():
+            out.append((f"lane:{lane}:{pointer_name}", pointer, {}))
+        rd = _pointer_run_dir(repo, pointer)
+        if rd is not None and rd.is_dir():
+            out.append(
+                (
+                    f"lane:{lane}:{pointer_name}:run_dir",
+                    _load_json(rd / "run_manifest.json") or {},
+                    _lane_app_payload(rd),
+                )
+            )
+    return out
+
+
+def _iter_existing_lane_run_dirs(repo: Path, sections_root: Path, lane: str) -> list[Path]:
+    out: list[Path] = []
+    seen: set[Path] = set()
+    lrd = latest_lane_run_dir_any(sections_root, lane)
+    if lrd is not None and lrd.is_dir():
+        resolved = lrd.resolve()
+        out.append(resolved)
+        seen.add(resolved)
+
+    lane_root = Path(sections_root) / lane
+    for pointer_name in ("latest_successful_real_run.json", "latest_real_run.json"):
+        pointer = _load_json(lane_root / pointer_name) or {}
+        rd = _pointer_run_dir(repo, pointer)
+        if rd is not None and rd.is_dir() and rd not in seen:
+            out.append(rd)
+            seen.add(rd)
+    return out
+
+
+def _existing_majority_briefing(repo: Path, sections_root: Path) -> tuple[str, str] | None:
+    """Return the majority briefing text already used by banked lane inputs.
+
+    Patch-run must preserve whole-run input coherence. Root ingress can be stale
+    after copied or compacted runs, while the lane ledgers/runtime payloads show
+    the actual briefing text used by accepted evidence.
+    """
+    counts: Counter[str] = Counter()
+    text_by_hash: dict[str, str] = {}
+    for lane in GENERATED_LANES:
+        for rd in _iter_existing_lane_run_dirs(repo, sections_root, lane):
+            ledger = _load_json(rd / "section_input_usage_ledger.json") or {}
+            refs = ledger.get("input_refs") if isinstance(ledger, dict) else {}
+            briefing_hash = str(
+                refs.get("briefing_hash") if isinstance(refs, dict) else ""
+            ).strip()
+            payload = _load_json(rd / "runtime_payload.json") or {}
+            briefing_text = str(payload.get("briefing") or "").strip()
+            if not briefing_hash or not briefing_text:
+                continue
+            counts[briefing_hash] += 1
+            text_by_hash.setdefault(briefing_hash, briefing_text)
+
+    if not counts:
+        return None
+    top_count = counts.most_common(1)[0][1]
+    top_hashes = [h for h, count in counts.items() if count == top_count]
+    if len(top_hashes) != 1:
+        return None
+    top_hash = top_hashes[0]
+    return text_by_hash[top_hash], f"lane:runtime_payload.majority_briefing_hash:{top_hash}"
+
+
 def derive_patch_targeting(repo: Path, run_dir: Path) -> PatchTargeting:
     """Re-derive targeting inputs from the run dir's persisted artifacts.
 
@@ -191,22 +295,26 @@ def derive_patch_targeting(repo: Path, run_dir: Path) -> PatchTargeting:
         sources["manual_brief"] = "ingress_raw.json"
 
     sections_root = run_dir / "modular_r4" / "sections"
+    existing_briefing = _existing_majority_briefing(repo, sections_root)
+    if existing_briefing is not None:
+        manual_brief, source = existing_briefing
+        sources["manual_brief"] = source
+
     command_flags: dict[str, str] = {}
     app_payload: dict[str, Any] = {}
-    command_lane = ""
+    command_source = ""
+    payload_source = ""
     for lane in GENERATED_LANES:
-        lrd = latest_lane_run_dir_any(sections_root, lane)
-        if lrd is None:
-            continue
-        manifest = _load_json(lrd / "run_manifest.json") or {}
-        flags = parse_cli_command_flags(str(manifest.get("command") or ""))
-        if flags and not command_flags:
-            command_flags = flags
-            command_lane = lane
-        if not app_payload:
-            ap = _lane_app_payload(lrd)
-            if ap:
+        for source, manifest, ap in _iter_lane_targeting_sources(repo, sections_root, lane):
+            flags = parse_cli_command_flags(str(manifest.get("command") or ""))
+            if flags and not command_flags:
+                command_flags = flags
+                command_source = source
+            if ap and not app_payload:
                 app_payload = ap
+                payload_source = source
+            if command_flags and app_payload:
+                break
         if command_flags and app_payload:
             break
 
@@ -215,19 +323,19 @@ def derive_patch_targeting(repo: Path, run_dir: Path) -> PatchTargeting:
             command_flags.get("--target-company") or app_payload.get("target_company") or ""
         ).strip()
         if target_company:
-            sources["target_company"] = f"lane:{command_lane}"
+            sources["target_company"] = command_source or payload_source
     if not target_role:
         target_role = str(
             command_flags.get("--target-role") or app_payload.get("target_role") or ""
         ).strip()
         if target_role:
-            sources["target_role"] = f"lane:{command_lane}"
+            sources["target_role"] = command_source or payload_source
 
     target_level = str(
         command_flags.get("--target-level") or app_payload.get("target_level") or ""
     ).strip()
     if target_level:
-        sources["target_level"] = f"lane:{command_lane}"
+        sources["target_level"] = command_source or payload_source
 
     jd_ref = ""
     jd_text = ""
@@ -238,7 +346,7 @@ def derive_patch_targeting(repo: Path, run_dir: Path) -> PatchTargeting:
             cand = repo / jd_flag
         if cand.is_file():
             jd_ref = str(cand.resolve())
-            sources["job_description_ref"] = f"lane:{command_lane}:command:--jd"
+            sources["job_description_ref"] = f"{command_source}:command:--jd"
     if not jd_ref:
         jd_text = str(app_payload.get("job_description_text") or "").strip()
         if jd_text:

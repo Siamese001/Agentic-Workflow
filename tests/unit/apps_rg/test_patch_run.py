@@ -7,6 +7,7 @@ receipt schema, and --dry-run.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -209,6 +210,57 @@ def test_derive_patch_targeting_from_persisted_artifacts(tmp_path: Path) -> None
     assert t.generation_mode == "strategic_tailor"
     assert t.sources["target_company"] == "ingress_raw.json"
     assert "command:--jd" in t.sources["job_description_ref"]
+
+
+def test_derive_patch_targeting_from_pointer_command_without_real_dirs(tmp_path: Path) -> None:
+    repo, run_dir = _seed_integrated_run(tmp_path)
+    sections_root = run_dir / "modular_r4" / "sections"
+    lane_rd = latest_lane_run_dir_any(sections_root, "competencies")
+    assert lane_rd is not None
+    command = json.loads((lane_rd / "run_manifest.json").read_text(encoding="utf-8"))["command"]
+
+    for lane in GENERATED_LANES:
+        lane_root = sections_root / lane
+        for pointer_name in ("latest_successful_real_run.json", "latest_real_run.json"):
+            pointer_path = lane_root / pointer_name
+            if not pointer_path.is_file():
+                continue
+            pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+            pointer["command"] = command
+            pointer["run_dir"] = f"artifacts/apps_rg/runtime_proofs/missing_{lane}"
+            _write_json(pointer_path, pointer)
+        real_root = lane_root / "real"
+        if real_root.is_dir():
+            shutil.rmtree(real_root)
+
+    t = derive_patch_targeting(repo, run_dir)
+    assert t.target_company == "AIG"
+    assert t.target_role == "VP Global Head of Agentic AI Solutions"
+    assert t.target_level == "VP"
+    assert t.job_description_ref.endswith("aig_jd.txt")
+    assert t.sources["job_description_ref"].endswith(
+        "latest_successful_real_run.json:command:--jd"
+    )
+
+
+def test_derive_patch_targeting_preserves_existing_lane_briefing(tmp_path: Path) -> None:
+    repo, run_dir = _seed_integrated_run(tmp_path)
+    sections_root = run_dir / "modular_r4" / "sections"
+    existing_briefing = "Existing accepted lane briefing text"
+    for lane in ("competencies", "unify_bullets"):
+        lane_rd = latest_lane_run_dir_any(sections_root, lane)
+        assert lane_rd is not None
+        _write_json(lane_rd / "runtime_payload.json", {"briefing": existing_briefing})
+        _write_json(
+            lane_rd / "section_input_usage_ledger.json",
+            {"input_refs": {"briefing_hash": "majority_hash"}},
+        )
+
+    t = derive_patch_targeting(repo, run_dir)
+    assert t.manual_brief == existing_briefing
+    assert t.sources["manual_brief"] == (
+        "lane:runtime_payload.majority_briefing_hash:majority_hash"
+    )
 
 
 def test_derive_targeting_jd_text_fallback_when_jd_file_gone(tmp_path: Path) -> None:

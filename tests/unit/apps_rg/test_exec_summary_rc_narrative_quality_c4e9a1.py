@@ -241,6 +241,53 @@ def test_ensure_governance_fact_utilization_inserts_basel_sentence() -> None:
     assert "fact_governance_003" in cited
 
 
+def test_ensure_unify_commercialization_fact_utilization_inserts_b4_sentence() -> None:
+    parsed = {
+        "resume_display_text": (
+            "Enterprise technology leader who led AWS modernization for regulated workloads. "
+            "Governed agentic platform architecture gave teams reliable runtime controls. "
+            "IBM-AWS co-sell motions and accelerators packaged modernization patterns. "
+            "Insurance regulatory standards kept partner-led delivery compliant. "
+            "Decision-support data models connected modernization to executive decisions. "
+            "Distributed cloud execution paired with partner-channel leadership for alliance GTM."
+        ),
+        "claim_ledger": [
+            {"claim_text": "a", "source_fact_ids": ["reb_insurtech_aws_migration_execution"]},
+            {"claim_text": "b", "source_fact_ids": ["reb_unify_agentic_platform_architecture"]},
+            {"claim_text": "c", "source_fact_ids": ["reb_ibm_aws_alliance_partner_cosell_gtm"]},
+            {"claim_text": "d", "source_fact_ids": ["reb_insurtech_insurance_regulatory_cloud_adoption_standards"]},
+            {"claim_text": "e", "source_fact_ids": ["reb_ibm_data_modeling_bi_decision_support"]},
+            {"claim_text": "f", "source_fact_ids": ["reb_unify_partner_channel_cosell"]},
+        ],
+    }
+    facts = [
+        {"fact_id": "reb_insurtech_aws_migration_execution", "claim_text": "AWS modernization"},
+        {"fact_id": "reb_unify_agentic_platform_architecture", "claim_text": "Agentic platform architecture"},
+        {"fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm", "claim_text": "IBM-AWS co-sell"},
+        {
+            "fact_id": "reb_insurtech_insurance_regulatory_cloud_adoption_standards",
+            "claim_text": "Insurance regulatory cloud adoption standards",
+        },
+        {"fact_id": "reb_ibm_data_modeling_bi_decision_support", "claim_text": "Decision support"},
+        {"fact_id": "reb_unify_partner_channel_cosell", "claim_text": "Partner channel co-sell"},
+        {
+            "fact_id": "reb_unify_platform_commercialization_leadership",
+            "claim_text": "Platform commercialization leadership grew IP-led revenue and margins",
+        },
+    ]
+
+    patched, receipt = ensure_required_allowed_fact_utilization(parsed, selected_facts=facts)
+
+    assert "reb_unify_platform_commercialization_leadership" in receipt.get("patched_fact_ids", [])
+    assert "ip-led revenue" in str(patched.get("resume_display_text") or "").lower()
+    cited = {
+        fid
+        for row in patched.get("claim_ledger") or []
+        for fid in (row.get("source_fact_ids") or [])
+    }
+    assert "reb_unify_platform_commercialization_leadership" in cited
+
+
 def test_polish_dedupes_dependency_graph_and_weaves_team_metric() -> None:
     duplicate_resume = (
         "Enterprise technology leader who unifies governed AI platforms. "

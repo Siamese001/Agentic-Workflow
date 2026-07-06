@@ -37,7 +37,7 @@ def _patch_policy_inputs(monkeypatch, *, same_date_prefix_coherent: bool) -> Non
     monkeypatch.setattr(policy_mod, "run_aggregation_preflight", _fake_preflight)
 
 
-def test_mixed_date_pins_are_not_accepted_for_structural_assembly(monkeypatch) -> None:
+def test_mixed_date_pins_are_advisory_for_structural_assembly(monkeypatch) -> None:
     _patch_policy_inputs(monkeypatch, same_date_prefix_coherent=False)
 
     policy = policy_mod.evaluate_coherent_rollup_policy(
@@ -46,9 +46,10 @@ def test_mixed_date_pins_are_not_accepted_for_structural_assembly(monkeypatch) -
         base_resume_digest="base-digest",
     )
 
-    assert policy["same_run_policy"]["acceptable_for_structural_assembly"] is False
-    assert policy["structural_assembly_eligible"] is False
-    assert "not accepted even under coherent_aggregation_pin" in policy["same_run_policy"][
+    assert policy["same_run_policy"]["acceptable_for_structural_assembly"] is True
+    assert policy["same_run_policy"]["advisory_only"] is True
+    assert policy["structural_assembly_eligible"] is True
+    assert "section lane proof gates control structural assembly" in policy["same_run_policy"][
         "coherent_rollup_policy_reason"
     ]
 

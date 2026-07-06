@@ -5,9 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
-from apps_rg.runtime.aggregation.preflight import run_aggregation_preflight
+from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
+from apps_rg.runtime.aggregation.preflight import assert_preflight_pass, run_aggregation_preflight
 from apps_rg.runtime.aggregation.run_fingerprint import build_orchestration_fingerprint
 from apps_rg.runtime.aggregation.section_sealed_index import build_section_sealed_index
 
@@ -67,3 +66,52 @@ def test_preflight_fails_blocked_x3(tmp_path: Path) -> None:
     results = run_aggregation_preflight(repo=tmp_path, rollup_blob=rollup, fingerprint=fp, sealed_index=sealed)
     blocked = next(r for r in results if r.gate_id == "x2_preflight_no_blocked_x3")
     assert blocked.pass_ is False
+
+
+def test_preflight_records_provenance_mismatch_without_blocking(tmp_path: Path) -> None:
+    lanes = {}
+    pointers = []
+    for lane in GENERATED_LANE_IDS:
+        rel = f"lane/{lane}"
+        run_dir = tmp_path / rel
+        run_dir.mkdir(parents=True)
+        for name in (
+            "l2_output.json",
+            "x2_gate_outputs.json",
+            "x3_disposition.json",
+            "section_input_usage_ledger.json",
+            "x2_source_fact_pool_receipt.json",
+        ):
+            (run_dir / name).write_text("{}", encoding="utf-8")
+        lanes[lane] = {
+            "latest_successful_real_artifact_path": rel,
+            "x2_failed": 0,
+            "x3_code": "X3_ALLOW",
+        }
+        pointers.append(
+            {
+                "lane": lane,
+                "x3_code": "X3_ALLOW",
+                "product_quality_status": "PASS",
+                "pool_receipt_status": "PASS",
+            }
+        )
+
+    fingerprint = {
+        "same_date_prefix_coherent": False,
+        "lane_run_ids": {lane: f"{lane}_mixed" for lane in GENERATED_LANE_IDS},
+        "jd_digest_coherent": "MISMATCH",
+        "briefing_digest_coherent": "MISMATCH",
+    }
+    results = run_aggregation_preflight(
+        repo=tmp_path,
+        rollup_blob={"lanes": lanes},
+        fingerprint=fingerprint,
+        sealed_index={"pointers": pointers},
+    )
+
+    assert next(r for r in results if r.gate_id == "x2_preflight_jd_digest_coherence").pass_
+    briefing = next(r for r in results if r.gate_id == "x2_preflight_briefing_digest_coherence")
+    assert briefing.pass_
+    assert briefing.observed["advisory_only"] is True
+    assert_preflight_pass(results)

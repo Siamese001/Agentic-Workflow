@@ -10,7 +10,11 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.providers import provider_contract
-from apps_rg.runtime.sections.section_generation import generate_section, tag_reasoning_lane
+from apps_rg.runtime.sections.section_generation import (
+    generate_section,
+    provider_payload_json_dumps,
+    tag_reasoning_lane,
+)
 from apps_rg.runtime.sections.executive_summary_context_limits import (
     resolve_regen_max_output_tokens,
     resolve_scratch_max_output_tokens,
@@ -26,7 +30,7 @@ LANE_KEY = "executive_summary"
 
 def _write_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    path.write_text(provider_payload_json_dumps(data) + "\n", encoding="utf-8")
 
 _REGEN_PHASES = frozenset(
     {"synthesis_regen", "judge_regen", "judge_x2_repair", "word_budget_repair"},
