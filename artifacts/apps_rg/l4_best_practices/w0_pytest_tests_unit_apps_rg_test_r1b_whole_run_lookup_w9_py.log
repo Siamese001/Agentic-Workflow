@@ -1,0 +1,52 @@
+COMMAND: pytest tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py
+START_UTC: 2026-07-06T10:53:55.2240710Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 9 items
+
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_preflight_order_constant PASSED [ 11%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_accepted_hit_on_matching_intent PASSED [ 22%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_r1b_hit_receipts_are_whole_run_only_authority PASSED [ 33%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_semantic_miss_fallthrough PASSED [ 44%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_profile_mismatch_inadmissible_not_hit PASSED [ 55%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_child_chunks_inspected_not_independent_lookup PASSED [ 66%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_r1b_not_c0_fact_vectors PASSED [ 77%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_main_r1a_before_r1b_order FAILED [ 88%]
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_main_r1b_hit_skips_pipeline PASSED [100%]
+
+================================== FAILURES ===================================
+_______________________ test_main_r1a_before_r1b_order ________________________
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:211: in test_main_r1a_before_r1b_order
+    assert order.index("R1B") < order.index("PIPELINE")
+E   AssertionError: assert 2 < 1
+E    +  where 2 = <built-in method index of list object at 0x000002094EC6AB80>('R1B')
+E    +    where <built-in method index of list object at 0x000002094EC6AB80> = ['R1A', 'PIPELINE', 'R1B'].index
+E    +  and   1 = <built-in method index of list object at 0x000002094EC6AB80>('PIPELINE')
+E    +    where <built-in method index of list object at 0x000002094EC6AB80> = ['R1A', 'PIPELINE', 'R1B'].index
+------------------------------ Captured log call ------------------------------
+WARNING  agentic_core.embeddings.embedding_factory:embedding_factory.py:678 EmbeddingFactory: EMBEDDING_ENABLED=false - embeddings disabled (fail-closed)
+WARNING  apps_rg.runtime.jd_resolution:jd_resolution.py:270 jd targeting DEFAULT_SSOT: no run-specific JD provided; resume will target the generic role profile. Supply job_description_text, job_description_ref, or jd_data for targeted generation.
+============================== warnings summary ===============================
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_accepted_hit_on_matching_intent
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_accepted_hit_on_matching_intent
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py::test_main_r1a_before_r1b_order
+=================== 1 failed, 8 passed, 2 warnings in 6.72s ===================
+
+END_UTC: 2026-07-06T10:54:07.3540269Z
+EXIT_CODE: 1

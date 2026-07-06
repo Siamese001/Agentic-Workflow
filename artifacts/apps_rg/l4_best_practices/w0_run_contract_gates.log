@@ -1,0 +1,224 @@
+COMMAND: python ops_scripts/ci/run_contract_gates.py
+START_UTC: 2026-07-06T10:53:24.0016040Z
+
+
+[MCP HEALTH CHECK]
+✅ AGENTS.md MCP coverage validated
+✅ Skill frontmatter validated (Anthropic spec)
+✅ Skill description quality validated (W4)
+🔍 Running graph-layer evidence gate (refactoring plans)...
+  [1/85] evaluating plans\adg-burndown-remaining-e7b3a1.md
+  [2/85] evaluating plans\adg-redis-hotcache-enforcement-b9f4c2.md
+  [3/85] evaluating plans\adg-testing-hotspots-wave-plan-a7f3c1.md
+  [4/85] evaluating plans\adr-open-scope-closeout-a6d4f2.md
+  [5/85] evaluating plans\always-on-rule-surface-cut-c7f3a1.md
+  [6/85] evaluating plans\apps-eval-rg-lic-rebuild-no-agents-20260613.md
+  [8/85] evaluating plans\apps-lic-completeness-graph-grounding-ssot-e7b2c4.md
+  [9/85] evaluating plans\apps-lic-graph-claim-gate-rescope-c4e1a9.md
+  [10/85] evaluating plans\apps-lic-linkedin-qwen-refactor-a9c4e2.md
+  [11/85] evaluating plans\apps-lic-prompt-slot-x1x3-ssot-drift-4a9f2c.md
+  [12/85] evaluating plans\apps-lic-prompt-slot-x1x3-w0-inventory-4a9f2c.md
+  [13/85] evaluating plans\apps-rfp-deprecation-deletion-6f4a2b.md
+  [14/85] evaluating plans\apps-rg-11-lane-closeout-5f8c2a.md
+  [15/85] evaluating plans\apps-rg-aig-remaining-lanes-closeout-d4e1f7.md
+  [16/85] evaluating plans\apps-rg-apps-eval-diagnostics-a4e9c7.md
+  [17/85] evaluating plans\apps-rg-c02-bootstrap-gate-correctness-c02f1a.md
+  [18/85] evaluating plans\apps-rg-config-ssot-consolidation-d4e7b1.md
+  [19/85] evaluating plans\apps-rg-e2e-gap-remediation-7e2d9c.md
+  [20/85] evaluating plans\apps-rg-e2e-readiness-e7c4f9.md
+  [21/85] evaluating plans\apps-rg-fact-vector-writeback-discipline-67652c.md
+  [22/85] evaluating plans\apps-rg-fec-grounding-blocker-d9a4b7.md
+  [23/85] evaluating plans\apps-rg-insurtech-ey-unlock-a4c0f0.md
+  [24/85] evaluating plans\apps-rg-l0-routing-only-a4c9e2.md
+  [25/85] evaluating plans\apps-rg-l1-planning-capsule-hardening-f19c3a.md
+  [26/85] evaluating plans\apps-rg-l2-e1-e5-best-practice-closeout-9d2a31.md
+  [27/85] evaluating plans\apps-rg-l6-shadow-observability-improvement-waves.md
+  [28/85] evaluating plans\apps-rg-l7-provider-attempt-spans-a4f9c2.md
+  [29/85] evaluating plans\apps-rg-lane-aggregation-gap-closure-b8c3d1.md
+  [30/85] evaluating plans\apps-rg-lane-reasoning-optimization-7c4e9b.md
+  [31/85] evaluating plans\apps-rg-otel-trace-reconciliation-5d4c2b.md
+  [32/85] evaluating plans\apps-rg-p2-burndown-next-7f3a91.md
+  [33/85] evaluating plans\apps-rg-qwen-removal-b3d9f7.md
+  [34/85] evaluating plans\apps-rg-skills-bindability-closure-a7e2f9.md
+  [35/85] evaluating plans\askq-confidence-meta-learning-loop-c4e7a1.md
+  [36/85] evaluating plans\c0-grounded-fact-writeback-spine-4f8e2a.md
+  [37/85] evaluating plans\candidate-static-profile-migration-6d2a4f.md
+  [38/85] evaluating plans\claude-native-supersession-9d3f7a.md
+  [39/85] evaluating plans\closed-unmerged-pr-publication-a9c4d1.md
+  [40/85] evaluating plans\codex-claude-mcp-access-parity-c6d4e2.md
+  [41/85] evaluating plans\codex-mcp-attached-pid-diagnostic-c4e9b2.md
+  [42/85] evaluating plans\codex-mcp-http-transport-hardening-f7b2a9.md
+  [43/85] evaluating plans\codex-mcp-launch-tree-cleanup-c9d2e4.md
+  [44/85] evaluating plans\codex-mcp-lifecycle-guards-b8f2a1.md
+  [45/85] evaluating plans\codex-mcp-transport-diagnosis-latest-main-73b728.md
+  [46/85] evaluating plans\codex-mcp-transport-parity-4b9c7e.md
+  [47/85] evaluating plans\codex-primary-execution-7e4c2a.md
+  [48/85] evaluating plans\cursor-decommission-a1f7c3.md
+  [49/85] evaluating plans\cursor-deletion-final-cleanup-c7d4a9.md
+  [50/85] evaluating plans\cursor-naming-rename-w5-b4f1a9.md
+  [51/85] evaluating plans\cursor-windsurf-codeium-decommission-dec0de.md
+  [52/85] evaluating plans\enforcement-surface-consolidation-d8b3f6.md
+  [53/85] evaluating plans\eval-harness-adg-mcp-open-replan-9c1f2a.md
+  [54/85] evaluating plans\eval-harness-adg-mcp-replan-a71c9e.md
+  [55/85] evaluating plans\eval-harness-spine-adg-closeout-6f2a9c.md
+  [56/85] evaluating plans\governance-rule-residue-cleanup-7e3a91.md
+  [57/85] evaluating plans\graph-skills-sqlite-runtime-redesign-a4c9e2.md
+  [58/85] evaluating plans\graph-source-ey-insurtech-bullets-c5f2a9.md
+  [59/85] evaluating plans\graph-sqlite-path-index-runtime-b7e2c4.md
+  [60/85] evaluating plans\grep-pretooluse-adg-gate-a3f1c7.md
+  [61/85] evaluating plans\historical-plans-memorial-consolidation-d4e7a2.md
+  [62/85] evaluating plans\l6-learning-consolidation-a4f8c2.md
+  [63/85] evaluating plans\l6-shadow-apps-eval-grain-parity-f8a6c2.md
+  [64/85] evaluating plans\legacy-windsurf-tree-decommission-9f2c47.md
+  [65/85] evaluating plans\notion-stale-plan-triage-7f3a21.md
+  [66/85] evaluating plans\notion-supersession-auto-retire-b4e7a1.md
+  [67/85] evaluating plans\notion-wave-enforcement-removal-e4d8b2.md
+  [68/85] evaluating plans\old-l5-agent-retirement-a94f6c.md
+  [69/85] evaluating plans\otel-l6-shadow-bridge-c7a1e9.md
+  [70/85] evaluating plans\otel-provider-bootstrap-9082d0.md
+  [71/85] evaluating plans\plan-notion-disk-tandem-enforcement-b8e3f1.md
+  [72/85] evaluating plans\plan-persistence-discipline-7c2e9a.md
+  [73/85] evaluating plans\plan-ssot-hook-path-recognition-a4f2c1.md
+  [74/85] evaluating plans\plan-ssot-notion-pipeline-d2f7a1.md
+  [75/85] evaluating plans\prompt-cache-anthropic-best-practice-c7a1e9.md
+  [76/85] evaluating plans\prompt-gate-ssot-consolidation-e7c9a2.md
+  [77/85] evaluating plans\rca-depth-enforcement-83e392.md
+  [78/85] evaluating plans\relocate-plans-ssot-outside-claude-c1a17d.md
+  [79/85] evaluating plans\retire-legacy-windsurf-mirrors-a9d3f7.md
+  [80/85] evaluating plans\searxng-primary-search-a4f7c9.md
+  [81/85] evaluating plans\shared-lane-skill-metric-skew-elimination-b4e8c1.md
+  [82/85] evaluating plans\sqlite-graph-engine-incremental-refinement-c4f91a.md
+  [83/85] evaluating plans\typed-edge-role-facet-guardrails-a6f3d2.md
+  [84/85] evaluating plans\worktree-deliver-reap-b3f7d1.md
+  [85/85] evaluating plans\x2-gate-slimdown-b4e8d2.md
+
+[check_graph_layer_evidence] FAIL — 31 plan(s) missing graph-layer evidence
+  - plans\adg-burndown-remaining-e7b3a1.md
+      * unknown_plan_type='ci_governance' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\adg-redis-hotcache-enforcement-b9f4c2.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-lic-completeness-graph-grounding-ssot-e7b2c4.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-lic-linkedin-qwen-refactor-a9c4e2.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-11-lane-closeout-5f8c2a.md
+      * unknown_plan_type='closeout' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\apps-rg-aig-remaining-lanes-closeout-d4e1f7.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-apps-eval-diagnostics-a4e9c7.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-config-ssot-consolidation-d4e7b1.md
+      * hotspot_report_missing_surface_reference (required: at least one of ['Execution Surface', 'Observability Surface', 'Security Surface', 'State Surface', 'Write Surface'] or the literal 'none')
+      * insufficient_materialized_views cited=1 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-e2e-gap-remediation-7e2d9c.md
+      * unknown_plan_type='app_runtime_remediation' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\apps-rg-l0-routing-only-a4c9e2.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-l1-planning-capsule-hardening-f19c3a.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-l2-e1-e5-best-practice-closeout-9d2a31.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-l7-provider-attempt-spans-a4f9c2.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-lane-aggregation-gap-closure-b8c3d1.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-lane-reasoning-optimization-7c4e9b.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-otel-trace-reconciliation-5d4c2b.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-p2-burndown-next-7f3a91.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-qwen-removal-b3d9f7.md
+      * hotspot_report_missing_surface_reference (required: at least one of ['Execution Surface', 'Observability Surface', 'Security Surface', 'State Surface', 'Write Surface'] or the literal 'none')
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\apps-rg-skills-bindability-closure-a7e2f9.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\candidate-static-profile-migration-6d2a4f.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\claude-native-supersession-9d3f7a.md
+      * unknown_plan_type='governance_refactor' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\cursor-deletion-final-cleanup-c7d4a9.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+  - plans\governance-rule-residue-cleanup-7e3a91.md
+      * unknown_plan_type='governance_cleanup' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\grep-pretooluse-adg-gate-a3f1c7.md
+      * unknown_plan_type='governance_hook_change' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\notion-supersession-auto-retire-b4e7a1.md
+      * unknown_plan_type='governance_hook_addition' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\plan-notion-disk-tandem-enforcement-b8e3f1.md
+      * unknown_plan_type='governance_hook_fix' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\plan-ssot-hook-path-recognition-a4f2c1.md
+      * unknown_plan_type='governance_hook_fix' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\relocate-plans-ssot-outside-claude-c1a17d.md
+      * unknown_plan_type='governance_change' — must be one of ['apps_rg_evidence', 'architecture', 'audit', 'doc', 'execution', 'governance', 'hardening', 'infra', 'platform_core_change', 'refactor', 'retrospective', 'scoped_refactor', 'tracker', 'verification']
+  - plans\searxng-primary-search-a4f7c9.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\shared-lane-skill-metric-skew-elimination-b4e8c1.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * insufficient_materialized_views cited=0 required=3
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+  - plans\typed-edge-role-facet-guardrails-a6f3d2.md
+      * missing_adg_graph_layer_evidence_section
+      * missing_adg_hotspot_report_section (required by adg-hotspot-enforcement.md; plans must include ranked hotspot report from MV-driven analysis)
+      * no_semantic_edge_or_pview — must cite at least one of ['controls_flow', 'emits_side_effect', 'flows_to', 'reads_from', 'resolves_callsite', 'writes_to'] or v_p0/1/2/3_* view
+
+Constitutional rule §22 violated. See .codex/rules/adg-graph-layer-enforcement.md
+Log: artifacts\governance\graph_layer_violations.jsonl
+
+
+
+END_UTC: 2026-07-06T10:53:34.3802361Z
+EXIT_CODE: 1

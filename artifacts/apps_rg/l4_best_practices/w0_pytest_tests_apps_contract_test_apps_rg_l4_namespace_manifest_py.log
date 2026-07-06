@@ -1,0 +1,227 @@
+COMMAND: pytest tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py
+START_UTC: 2026-07-06T10:54:19.1654440Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 17 items
+
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_manifest_file_exists FAILED [  5%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_manifest_parseable FAILED [ 11%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_schema_file_exists FAILED [ 17%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_schema_parseable FAILED [ 23%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_app_id_is_apps_rg FAILED [ 29%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surface_ids_unique FAILED [ 35%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surfaces_count_at_least_10 FAILED [ 41%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surfaces_is_list FAILED [ 47%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_version_present FAILED [ 52%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_all_surfaces_have_required_fields FAILED [ 58%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_mutation_requires_uwg_is_bool FAILED [ 64%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_read_write_allowed_are_bools FAILED [ 70%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_surface_types_valid FAILED [ 76%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_durable_surfaces_require_uwg FAILED [ 82%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_durable_surfaces_write_not_allowed_directly FAILED [ 88%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_in_memory_surfaces_no_uwg_required FAILED [ 94%]
+tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_known_surfaces_present FAILED [100%]
+
+================================== FAILURES ===================================
+___________ TestL4NamespaceManifestExists.test_manifest_file_exists ___________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:56: in test_manifest_file_exists
+    self.assertTrue(
+E   AssertionError: False is not true : L4 namespace manifest not found at apps_rg\config\l4_namespace_manifest.yaml
+____________ TestL4NamespaceManifestExists.test_manifest_parseable ____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:71: in test_manifest_parseable
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+____________ TestL4NamespaceManifestExists.test_schema_file_exists ____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:63: in test_schema_file_exists
+    self.assertTrue(
+E   AssertionError: False is not true : L4 namespace schema not found at apps_rg\config\l4_namespace_manifest.schema.json
+_____________ TestL4NamespaceManifestExists.test_schema_parseable _____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:77: in test_schema_parseable
+    with SCHEMA_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.schema.json'
+_____________ TestL4NamespaceManifestShape.test_app_id_is_apps_rg _____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:87: in setUp
+    self.data = _load_manifest()
+                ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+____________ TestL4NamespaceManifestShape.test_surface_ids_unique _____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:87: in setUp
+    self.data = _load_manifest()
+                ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+________ TestL4NamespaceManifestShape.test_surfaces_count_at_least_10 _________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:87: in setUp
+    self.data = _load_manifest()
+                ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+_____________ TestL4NamespaceManifestShape.test_surfaces_is_list ______________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:87: in setUp
+    self.data = _load_manifest()
+                ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+______________ TestL4NamespaceManifestShape.test_version_present ______________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:87: in setUp
+    self.data = _load_manifest()
+                ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+_____ TestL4SurfaceRequiredFields.test_all_surfaces_have_required_fields ______
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:117: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+_______ TestL4SurfaceRequiredFields.test_mutation_requires_uwg_is_bool ________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:117: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+________ TestL4SurfaceRequiredFields.test_read_write_allowed_are_bools ________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:117: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+____________ TestL4SurfaceRequiredFields.test_surface_types_valid _____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:117: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+________ TestL4DurableSurfacePolicy.test_durable_surfaces_require_uwg _________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:155: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+_ TestL4DurableSurfacePolicy.test_durable_surfaces_write_not_allowed_directly _
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:155: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+_____ TestL4DurableSurfacePolicy.test_in_memory_surfaces_no_uwg_required ______
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:155: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+___________ TestL4DurableSurfacePolicy.test_known_surfaces_present ____________
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:155: in setUp
+    data = _load_manifest()
+           ^^^^^^^^^^^^^^^^
+tests\_apps_contract\test_apps_rg_l4_namespace_manifest.py:47: in _load_manifest
+    with MANIFEST_PATH.open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\l4_namespace_manifest.yaml'
+=========================== short test summary info ===========================
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_manifest_file_exists
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_manifest_parseable
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_schema_file_exists
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestExists::test_schema_parseable
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_app_id_is_apps_rg
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surface_ids_unique
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surfaces_count_at_least_10
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_surfaces_is_list
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4NamespaceManifestShape::test_version_present
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_all_surfaces_have_required_fields
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_mutation_requires_uwg_is_bool
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_read_write_allowed_are_bools
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4SurfaceRequiredFields::test_surface_types_valid
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_durable_surfaces_require_uwg
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_durable_surfaces_write_not_allowed_directly
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_in_memory_surfaces_no_uwg_required
+FAILED tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py::TestL4DurableSurfacePolicy::test_known_surfaces_present
+============================= 17 failed in 0.52s ==============================
+
+END_UTC: 2026-07-06T10:54:23.1582160Z
+EXIT_CODE: 1

@@ -1,0 +1,38 @@
+COMMAND: pytest tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py
+START_UTC: 2026-07-06T10:53:42.4076678Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 9 items
+
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_file_store_not_durable_production_truth PASSED [ 11%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_l2_direct_durable_write_blocked PASSED [ 22%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_l6_direct_durable_write_blocked PASSED [ 33%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_uwg_reject_direct_write_receipt PASSED [ 44%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_commit_request_fields PASSED [ 55%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_uwg_admitted_promotion PASSED [ 66%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_blocked_when_not_cache_admissible PASSED [ 77%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_blocked_uwg_when_skip_env PASSED [ 88%]
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_r1b_not_c0_fact_vectors PASSED [100%]
+
+============================== warnings summary ===============================
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_uwg_admitted_promotion
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py::test_uwg_admitted_promotion
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 9 passed, 2 warnings in 6.79s ========================
+
+END_UTC: 2026-07-06T10:53:55.2126725Z
+EXIT_CODE: 0
