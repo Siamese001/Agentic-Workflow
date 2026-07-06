@@ -169,6 +169,10 @@
   lanes must use LLM output only for allowed source_fact_id selection/order; visible bullets and
   narratives render from selected proof fact `claim_text`, with `x2_<section>_display_text_proof_authorized`
   as the runtime guard. Detail: `memory/codex/apps_rg_role_episode_proof_authorized_display_text.md`.
+- **apps_rg L0 canonical route contract invariant (2026-07-05):** apps_rg L0 now uses canonical
+  L0 branch vocabulary for `RouteContract.route_id`/`route_family`, keeps app-specific labels as
+  non-authority metadata, and fails closed on missing production signing or required gate UNKNOWN.
+  Detail: `memory/codex/apps_rg_l0_canonical_route_contract_invariant.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit

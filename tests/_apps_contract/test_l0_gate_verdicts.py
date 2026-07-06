@@ -1,11 +1,14 @@
-"""p3.2 DoD-4/5 — typed RouteGateReceipts on clean dry-run."""
+"""p3.2 DoD-4/5 — typed RouteGateReceipts on clean dry-run.
+
+apps-test-model: APP CONTRACT
+"""
 from __future__ import annotations
 
-from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
-from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
-from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from agentic_core.runtime.contracts.route_gate_receipt import RouteGateReceipt
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
 
 
 def _thin() -> dict:
@@ -33,4 +36,4 @@ def test_gate_receipts_are_typed_and_g07_passes_with_hashes() -> None:
     g07 = next(r for r in route.route_gate_receipts if r.gate_id == "G07_GROUNDING_READINESS")
     assert g07.verdict == "PASS"
     g20 = next(r for r in route.route_gate_receipts if r.gate_id == "G20_ROUTE_BUDGET")
-    assert g20.verdict == "UNKNOWN"
+    assert g20.verdict == "NOT_APPLICABLE"

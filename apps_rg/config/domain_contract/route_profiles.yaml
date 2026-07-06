@@ -1,20 +1,121 @@
-# apps_rg route profiles — canonical SSOT per p3.2 (fail-closed L0 loader).
-# List order: first matching `conditions` wins (see apps_rg/runtime/bindings/l0_binding.py).
+# apps_rg route profiles — canonical SSOT for deterministic fail-closed L0 routing.
+# L0 selects from L1PlanContract facts only; profiles own apps_rg route policy.
+
+- route_profile_id: arpf::apps_rg::resume_generation::r1a_exact_cache::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  selection_order: 10
+  production_enabled: true
+  test_only: false
+  required_activation_flags: []
+  conditions:
+    task_spec.l0_terminal_route: R1A_EXACT_CACHE
+  spine:
+    canonical_route_id: R1A_EXACT_CACHE
+    app_route_id: apps_rg.exact_cache_return
+    route_family: R1A_EXACT_CACHE
+    execution_form: TERMINAL
+    l3_required: false
+  personalization_default: false
+  provider_model_requirement_ref: ""
+  hitl_posture: none
+  hitl_required_gate_ref: ""
+  managed_workflow:
+    workflow_ref: ""
+    workflow_manifest_ref: ""
+    workflow_registry_ref: ""
+  budget_constraints:
+    enforced: false
+    profile_present: false
+  graph_traverse:
+    graph_expansion_allowed: false
+
+- route_profile_id: arpf::apps_rg::resume_generation::r1b_semantic_cache::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  selection_order: 20
+  production_enabled: true
+  test_only: false
+  required_activation_flags: []
+  conditions:
+    task_spec.l0_terminal_route: R1B_SEMANTIC_CACHE
+  spine:
+    canonical_route_id: R1B_SEMANTIC_CACHE
+    app_route_id: apps_rg.semantic_cache_return
+    route_family: R1B_SEMANTIC_CACHE
+    execution_form: TERMINAL
+    l3_required: false
+  personalization_default: false
+  provider_model_requirement_ref: ""
+  hitl_posture: none
+  hitl_required_gate_ref: ""
+  managed_workflow:
+    workflow_ref: ""
+    workflow_manifest_ref: ""
+    workflow_registry_ref: ""
+  budget_constraints:
+    enforced: false
+    profile_present: false
+  graph_traverse:
+    graph_expansion_allowed: false
+
+- route_profile_id: arpf::apps_rg::resume_generation::r5_fallback::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  selection_order: 30
+  production_enabled: true
+  test_only: false
+  required_activation_flags: []
+  conditions:
+    task_spec.l0_terminal_route: R5_FALLBACK
+  spine:
+    canonical_route_id: R5_FALLBACK
+    app_route_id: apps_rg.fallback_or_abstain
+    route_family: R5_FALLBACK
+    execution_form: TERMINAL
+    l3_required: false
+  personalization_default: false
+  provider_model_requirement_ref: ""
+  hitl_posture: none
+  hitl_required_gate_ref: ""
+  managed_workflow:
+    workflow_ref: ""
+    workflow_manifest_ref: ""
+    workflow_registry_ref: ""
+  budget_constraints:
+    enforced: false
+    profile_present: false
+  graph_traverse:
+    graph_expansion_allowed: false
 
 - route_profile_id: arpf::apps_rg::resume_generation::scratch_managed::v1
   app_id: apps_rg
   task_class: resume_generation
   version: "1.0.0"
   status: active
+  selection_order: 55
+  production_enabled: false
+  test_only: true
+  required_activation_flags:
+    - APPS_RG_ENABLE_MANAGED_WORKFLOW_L0
   conditions:
     generation_mode: generate_scratch
   spine:
-    route_family: R4_MANAGED_DRAFT
-    route_id: R3_GENERATIVE
+    canonical_route_id: R3R4_MANAGED_WORKFLOW
+    app_route_id: R3_GENERATIVE
+    route_family: R3R4_MANAGED_WORKFLOW
     execution_form: MANAGED_WORKFLOW
     l3_required: true
   personalization_default: true
   provider_model_requirement_ref: apps_rg::provider_model::resume_generation::v1
+  hitl_posture: advisory
+  hitl_required_gate_ref: ""
   managed_workflow:
     workflow_ref: wfm::apps_rg::resume_generation::v1
     workflow_manifest_ref: wfm::apps_rg::resume_generation::v1
@@ -47,15 +148,23 @@
   task_class: resume_generation
   version: "1.0.0"
   status: active
+  selection_order: 60
+  production_enabled: false
+  test_only: true
+  required_activation_flags:
+    - APPS_RG_ENABLE_MANAGED_WORKFLOW_L0
   conditions:
     merge_required_hint: true
   spine:
+    canonical_route_id: R3R4_MANAGED_WORKFLOW
+    app_route_id: R4_MANAGED_DRAFT
     route_family: R3R4_MANAGED_WORKFLOW
-    route_id: R4_MANAGED_DRAFT
     execution_form: MANAGED_WORKFLOW
     l3_required: true
   personalization_default: true
   provider_model_requirement_ref: apps_rg::provider_model::resume_generation::v1
+  hitl_posture: advisory
+  hitl_required_gate_ref: ""
   managed_workflow:
     workflow_ref: wfm::apps_rg::resume_generation::v1
     workflow_manifest_ref: wfm::apps_rg::resume_generation::v1
@@ -88,14 +197,21 @@
   task_class: resume_generation
   version: "1.0.0"
   status: active
+  selection_order: 40
+  production_enabled: true
+  test_only: false
+  required_activation_flags: []
   conditions: {}
   spine:
+    canonical_route_id: R3_SIMPLE_GROUNDED_READ
+    app_route_id: R3_SIMPLE_GROUNDED_READ
     route_family: R3_SIMPLE_GROUNDED_READ
-    route_id: R3_SIMPLE_GROUNDED_READ
     execution_form: SINGLE_STEP
     l3_required: false
   personalization_default: false
   provider_model_requirement_ref: apps_rg::provider_model::resume_generation::v1
+  hitl_posture: advisory
+  hitl_required_gate_ref: ""
   managed_workflow:
     workflow_ref: ""
     workflow_manifest_ref: ""

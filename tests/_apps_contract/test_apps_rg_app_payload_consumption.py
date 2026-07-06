@@ -20,7 +20,6 @@ Plan: docs/archive/windsurf/legacy-tree/plans/apps-rg-app-payload-consumption-wi
 from __future__ import annotations
 
 import ast
-import copy
 import importlib.util as _importlib_util
 import inspect
 import os
@@ -31,22 +30,18 @@ from unittest.mock import patch
 
 import pytest
 
-from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
-from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
-from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
-from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-    RequestEnvelope,
     ValidatedRequest,
 )
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
 )
-from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
-from agentic_core.runtime.contracts.route_contract import RouteContract
-from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
+from apps_rg.runtime.bindings.c0_binding import c0_retrieve_apps_rg
+from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
+from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
+from apps_rg.runtime.bindings.pa_binding import pa_compose_apps_rg
 from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
-
+from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch, apps_rg_parse
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -193,7 +188,9 @@ def test_l0_route_scratch_still_grounded_without_apps_research_delegation() -> N
     assert plan.grounding_required is True
     assert plan.apps_research_call_required is False
     route = l0_route_apps_rg(plan)
-    assert route.route_family == "R4_MANAGED_DRAFT"
+    assert route.route_family == "R3R4_MANAGED_WORKFLOW"
+    assert route.route_id == "R3R4_MANAGED_WORKFLOW"
+    assert "app_route_id=R3_GENERATIVE" in route.reason_codes
     assert route.grounding_required is True
     assert route.cache_eligibility["r3_grounded"] is True
 
@@ -639,7 +636,7 @@ def test_ast_helper_fails_on_chromadb_attribute_usage() -> None:
     """``chromadb.PersistentClient(...)`` must be detected (Name node)."""
     source = "import chromadb\nclient = chromadb.PersistentClient(path='/tmp')\n"
     violations = _ast_chromadb_violations(source, "<test>")
-    assert violations, f"Expected violations, got none for chromadb.PersistentClient usage"
+    assert violations, "Expected violations, got none for chromadb.PersistentClient usage"
 
 
 def test_ast_helper_fails_on_importlib_dynamic_import() -> None:
