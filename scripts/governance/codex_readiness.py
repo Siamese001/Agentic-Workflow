@@ -39,7 +39,12 @@ import ensure_searxng_readiness  # noqa: E402
 from worktree_hygiene import find_dirty_protected_worktrees, summarize_dirty_worktrees  # noqa: E402
 
 DEFAULT_REQUIRED_CALLABLE_ROUTES = ("memory", "GitKraken", "adg_sqlite", "vector_db")
-CALLABLE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
+CALLABLE_CLASSIFICATIONS = {
+    "CALLABLE",
+    "PLUGIN_SUBSTITUTE",
+    "SUBSTITUTE_CALLABLE",
+    "codex_http_route_callable",
+}
 DUPLICATE_PROCESS_CLASSIFICATIONS = {"duplicate", "duplicate_launch_tree"}
 VECTOR_SEMANTIC_READY_VALUES = {"ready", "healthy", "true", "1", "semantic_ready"}
 VECTOR_SEMANTIC_NOT_READY_VALUES = {"metadata_only", "loading", "timeout", "unavailable", "false", "0"}
@@ -52,6 +57,11 @@ class ReadinessCheck:
     severity: str
     summary: str
     detail: str = ""
+
+
+def _classification_is_callable(classification: str) -> bool:
+    value = str(classification or "").strip()
+    return value in CALLABLE_CLASSIFICATIONS or value.upper() in CALLABLE_CLASSIFICATIONS
 
 
 def _run_git_status(root: Path) -> tuple[int, str, str]:
@@ -299,7 +309,7 @@ def _check_required_routes(report: dict[str, Any], required_routes: Sequence[str
             checks.append(ReadinessCheck(f"mcp.{server_id}", "FAIL", "critical", "Required route is absent from route evidence."))
             continue
         classification = str(state.get("classification", ""))
-        if classification in CALLABLE_CLASSIFICATIONS:
+        if _classification_is_callable(classification):
             checks.append(ReadinessCheck(f"mcp.{server_id}", "PASS", "critical", f"{server_id} is callable in Codex.", classification))
         else:
             checks.append(
@@ -371,17 +381,49 @@ def _check_required_mcp_protocol_gate(root: Path) -> ReadinessCheck:
 def _route_failure_detail(server_id: str, state: dict[str, Any]) -> str:
     """Explain route proof failures without conflating them with process hygiene."""
     detail = dict(state)
-    detail["blocker"] = "missing route/callability proof"
-    detail["why"] = (
-        "MCP process presence only proves startup. It does not prove the active "
-        "Codex host exposes a callable tool route."
-    )
+    classification = str(state.get("classification") or "").strip().lower()
+    if classification == "http_service_down":
+        detail["blocker"] = "http service down"
+        detail["why"] = (
+            "The server is configured as a HTTP MCP route, but the repo-managed "
+            "HTTP service receipt is absent, not running, on the wrong URL, or the PID is dead."
+        )
+        detail["unblock"] = (
+            f"Start or restart the {server_id} HTTP MCP service at the configured URL, "
+            "then prove a live Codex MCP tool call in this session."
+        )
+    elif classification == "http_protocol_unhealthy":
+        detail["blocker"] = "http protocol unhealthy"
+        detail["why"] = (
+            "The HTTP service is present, but its MCP initialize/tools-list protocol "
+            "state is not healthy. A listening port is not sufficient."
+        )
+        detail["unblock"] = (
+            "Fix the HTTP MCP service/protocol probe first, then prove active-session "
+            "Codex tool callability."
+        )
+    elif classification == "codex_http_route_unproven":
+        detail["blocker"] = "codex http route unproven"
+        detail["why"] = (
+            "HTTP service/protocol evidence is separate from the active Codex client route. "
+            "No fresh PostToolUse proof matches the configured endpoint."
+        )
+        detail["unblock"] = (
+            f"Reload or reconnect the Codex MCP client if needed, then call a live {server_id} "
+            "MCP tool and let PostToolUse record route_kind=http plus the configured endpoint."
+        )
+    else:
+        detail["blocker"] = "missing route/callability proof"
+        detail["why"] = (
+            "MCP process presence only proves startup. It does not prove the active "
+            "Codex host exposes a callable tool route."
+        )
+        detail["unblock"] = (
+            f"Prove a live callable route for {server_id} in the active Codex host, "
+            f"or set CODEX_MCP_CALLABLE_{server_id.upper()}=healthy only after that API-level proof. "
+            "If Codex Desktop exposes no callable API for this server in this session, keep this check failing."
+        )
     detail["process_hygiene"] = "Duplicate process cohorts are reported separately under process.* checks."
-    detail["unblock"] = (
-        f"Prove a live callable route for {server_id} in the active Codex host, "
-        f"or set CODEX_MCP_CALLABLE_{server_id.upper()}=healthy only after that API-level proof. "
-        "If Codex Desktop exposes no callable API for this server in this session, keep this check failing."
-    )
     if _state_is_closed_transport(state):
         detail["transport_rca"] = _closed_transport_rca(server_id, state)
     return json.dumps(detail, sort_keys=True)
@@ -392,6 +434,7 @@ def _state_is_closed_transport(state: dict[str, Any]) -> bool:
         str(state.get("callable_status") or "").strip().lower() == "closed_transport"
         or str(state.get("fallback_message_key") or "").strip().lower() == "closed_transport"
         or str(state.get("classification") or "").strip().upper() == "EXPOSED_BLOCKED"
+        or str(state.get("classification") or "").strip().lower() == "legacy_stdio_closed"
     )
 
 
@@ -462,7 +505,7 @@ def _check_adg(report: dict[str, Any], root: Path, allow_sqlite_fallback: bool) 
     servers = report.get("route_evidence", {}).get("servers", {})
     adg_state = servers.get("adg_sqlite", {}) if isinstance(servers, dict) else {}
     classification = str(adg_state.get("classification", ""))
-    if classification in CALLABLE_CLASSIFICATIONS:
+    if _classification_is_callable(classification):
         return ReadinessCheck("mcp.adg_sqlite", "PASS", "critical", "ADG MCP is callable in Codex.", classification)
     snapshot = _latest_adg_snapshot(root)
     primary_root = Path(str(report.get("primary_root", ""))) if report.get("primary_root") else None
@@ -523,8 +566,72 @@ def _adg_transport_failure_detail(result: dict[str, Any]) -> str:
     return json.dumps(detail, sort_keys=True)
 
 
+def _configured_http_endpoint(root: Path, server_id: str) -> str:
+    try:
+        data = json.loads((root / ".mcp.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return ""
+    servers = data.get("mcpServers")
+    cfg = servers.get(server_id) if isinstance(servers, dict) else None
+    if not isinstance(cfg, dict):
+        return ""
+    return str(cfg.get("url") or cfg.get("serverUrl") or "").strip()
+
+
+def _check_adg_http_transport(root: Path, configured_url: str) -> ReadinessCheck:
+    proof = audit_codex_mcp_transports.mcp_callability_epoch.proof_status(
+        "adg_sqlite",
+        repo_root=root,
+    )
+    acceptance = audit_codex_mcp_transports.http_route_acceptance(
+        "adg_sqlite",
+        configured_url,
+        proof,
+    )
+    detail = {
+        "route_kind": "http",
+        "configured_url": configured_url,
+        "callability_proof": proof,
+        "http_callability_acceptance": acceptance,
+    }
+    if acceptance.get("accepted"):
+        return ReadinessCheck(
+            "mcp.adg_sqlite.transport",
+            "PASS",
+            "critical",
+            "ADG MCP HTTP route is callable in the active Codex session.",
+            json.dumps(detail, sort_keys=True),
+        )
+    detail["transport_rca"] = {
+        "symptom": "ADG MCP HTTP service/protocol may exist, but active Codex route callability is unproven.",
+        "root_cause": (
+            "HTTP initialize/tools-list and service heartbeats are protocol evidence only. "
+            "ADG opens only after a current-session Codex tool call records route_kind=http "
+            "and the configured endpoint."
+        ),
+        "shell_reopen_supported": False,
+        "proof_command": "mcp__adg_sqlite.adg_health",
+        "fix_or_next": (
+            "next: reload/reconnect the Codex MCP client if needed, then prove a live "
+            "mcp__adg_sqlite.adg_health, adg_runtime_info, or adg_process_identity call."
+        ),
+        "unsafe_action": "Do not mark ADG green from port-open, curl, tools/list, heartbeat, or SQLite evidence.",
+    }
+    return ReadinessCheck(
+        "mcp.adg_sqlite.transport",
+        "FAIL",
+        "critical",
+        "ADG MCP HTTP route is not proven callable in the active Codex session.",
+        json.dumps(detail, sort_keys=True),
+    )
+
+
 def _check_adg_transport(root: Path) -> ReadinessCheck:
     """Require active-session ADG MCP callability, not protocol listing only."""
+    configured_url = _configured_http_endpoint(root, "adg_sqlite")
+    if configured_url:
+        return _check_adg_http_transport(root, configured_url)
+
     try:
         from tools.adg.mcp import supervisor
 

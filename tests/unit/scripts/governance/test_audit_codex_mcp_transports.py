@@ -27,7 +27,7 @@ def test_closed_transport_overrides_process_presence() -> None:
     route = _route("adg_sqlite", "host_mcp_required", "closed_transport")
     process_state = {"process_count": 1, "classification": "single"}
 
-    assert mod.classify_route(route, process_state, "closed_transport") == "EXPOSED_BLOCKED"
+    assert mod.classify_route(route, process_state, "closed_transport") == "legacy_stdio_closed"
 
 
 def test_process_only_when_server_runs_but_no_callable_surface() -> None:
@@ -154,6 +154,13 @@ def test_adg_launcher_marker_matches_current_mcp_command() -> None:
     assert any(marker.lower().replace("\\", "/") in normalized for marker in markers)
 
 
+def test_adg_http_launcher_marker_matches_current_mcp_command() -> None:
+    markers = mod.PROCESS_MARKERS["adg_sqlite"]["markers"]
+    normalized = "python -m tools.mcp.launch_adg_sqlite_http_mcp"
+
+    assert any(marker.lower().replace("\\", "/") in normalized for marker in markers)
+
+
 def test_gitkraken_marker_registered_for_process_hygiene() -> None:
     config = mod.PROCESS_MARKERS["GitKraken"]
     normalized = "c:/users/amita/appdata/local/gitkrakencli/gk.exe mcp --readonly"
@@ -215,12 +222,12 @@ def test_build_route_evidence_counts_and_fields(monkeypatch) -> None:
 
     assert evidence["available"] is True
     assert evidence["counts"] == {
-        "EXPOSED_BLOCKED": 1,
+        "legacy_stdio_closed": 1,
         "PLUGIN_SUBSTITUTE": 1,
         "PROCESS_ONLY": 1,
         "HOST_MCP_REQUIRED": 1,
     }
-    assert evidence["servers"]["adg_sqlite"]["classification"] == "EXPOSED_BLOCKED"
+    assert evidence["servers"]["adg_sqlite"]["classification"] == "legacy_stdio_closed"
     assert evidence["servers"]["memory"]["classification"] == "PROCESS_ONLY"
     assert evidence["servers"]["GitKraken"]["classification"] == "HOST_MCP_REQUIRED"
     assert evidence["servers"]["notion"]["fallback_message_key"] == "plugin_substitute"
@@ -238,12 +245,146 @@ def test_legacy_codex_route_shape_is_normalized() -> None:
     evidence = mod.build_route_evidence(contract, {})
 
     assert evidence["counts"] == {
-        "EXPOSED_BLOCKED": 1,
+        "legacy_stdio_closed": 1,
         "HOST_MCP_REQUIRED": 2,
     }
     assert evidence["servers"]["GitKraken"]["classification"] == "HOST_MCP_REQUIRED"
     assert evidence["servers"]["memory"]["classification"] == "HOST_MCP_REQUIRED"
-    assert evidence["servers"]["adg_sqlite"]["classification"] == "EXPOSED_BLOCKED"
+    assert evidence["servers"]["adg_sqlite"]["classification"] == "legacy_stdio_closed"
+
+
+def test_http_route_running_without_matching_codex_proof_is_unproven(tmp_path: Path) -> None:
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+    evidence = mod.build_route_evidence(
+        contract,
+        {"memory": {"process_count": 1, "classification": "single"}},
+        registry_servers={"memory": {"url": "http://127.0.0.1:8766/mcp"}},
+        http_service_states={
+            "memory": {
+                "available": True,
+                "status": "running",
+                "url": "http://127.0.0.1:8766/mcp",
+                "url_matches_config": True,
+            }
+        },
+        root=tmp_path,
+    )
+
+    state = evidence["servers"]["memory"]
+    assert state["classification"] == "codex_http_route_unproven"
+    assert state["route_kind"] == "http"
+    assert state["configured_url"] == "http://127.0.0.1:8766/mcp"
+
+
+def test_http_route_service_down_is_separate_from_codex_unproven(tmp_path: Path) -> None:
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+    evidence = mod.build_route_evidence(
+        contract,
+        {},
+        registry_servers={"memory": {"url": "http://127.0.0.1:8766/mcp"}},
+        http_service_states={"memory": {"available": False, "status": "absent"}},
+        root=tmp_path,
+    )
+
+    assert evidence["servers"]["memory"]["classification"] == "http_service_down"
+
+
+def test_external_http_route_without_local_state_is_unproven_not_down(tmp_path: Path) -> None:
+    contract = {"routes": [_route("deepwiki", "raw_mcp_callable", "")]}
+    evidence = mod.build_route_evidence(
+        contract,
+        {},
+        registry_servers={"deepwiki": {"url": "https://mcp.deepwiki.com/mcp"}},
+        http_service_states={"deepwiki": {"available": False, "status": "absent"}},
+        root=tmp_path,
+    )
+
+    assert evidence["servers"]["deepwiki"]["classification"] == "codex_http_route_unproven"
+
+
+def test_http_protocol_unhealthy_is_not_codex_callable(tmp_path: Path) -> None:
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+    evidence = mod.build_route_evidence(
+        contract,
+        {"memory": {"process_count": 1, "classification": "single"}},
+        registry_servers={"memory": {"url": "http://127.0.0.1:8766/mcp"}},
+        http_service_states={
+            "memory": {
+                "available": True,
+                "status": "running",
+                "url_matches_config": True,
+                "protocol_status": "fail",
+            }
+        },
+        root=tmp_path,
+    )
+
+    assert evidence["servers"]["memory"]["classification"] == "http_protocol_unhealthy"
+
+
+def test_http_route_requires_current_endpoint_matched_codex_proof(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.delenv("CODEX_MCP_CALLABLE_MEMORY", raising=False)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="memory",
+        tool="memory_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+        route_kind="http",
+        endpoint="http://127.0.0.1:8766/mcp",
+    )
+    contract = {"routes": [_route("memory", "raw_mcp_callable", "")]}
+
+    evidence = mod.build_route_evidence(
+        contract,
+        {"memory": {"process_count": 1, "classification": "single"}},
+        registry_servers={"memory": {"url": "http://127.0.0.1:8766/mcp"}},
+        http_service_states={
+            "memory": {
+                "available": True,
+                "status": "running",
+                "url_matches_config": True,
+            }
+        },
+        root=tmp_path,
+    )
+
+    assert evidence["servers"]["memory"]["classification"] == "codex_http_route_callable"
+    assert evidence["servers"]["memory"]["http_callability_acceptance"]["accepted"] is True
+
+
+def test_adg_http_route_rejects_non_proof_tool(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.delenv("CODEX_MCP_CALLABLE_ADG_SQLITE", raising=False)
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="adg_sqlite",
+        tool="adg_edge_fanout",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+        route_kind="http",
+        endpoint="http://127.0.0.1:8765/mcp",
+    )
+    contract = {"routes": [_route("adg_sqlite", "raw_mcp_callable", "")]}
+
+    evidence = mod.build_route_evidence(
+        contract,
+        {"adg_sqlite": {"process_count": 1, "classification": "single"}},
+        registry_servers={"adg_sqlite": {"url": "http://127.0.0.1:8765/mcp"}},
+        http_service_states={
+            "adg_sqlite": {
+                "available": True,
+                "status": "running",
+                "url_matches_config": True,
+            }
+        },
+        root=tmp_path,
+    )
+
+    assert evidence["servers"]["adg_sqlite"]["classification"] == "codex_http_route_unproven"
+    assert "adg_proof_tool_not_allowed" in evidence["servers"]["adg_sqlite"]["http_callability_acceptance"]["reasons"]
 
 
 def test_build_route_evidence_without_contract_is_explicit() -> None:

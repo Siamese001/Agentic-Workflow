@@ -31,7 +31,14 @@ def test_session_restart_clears_previous_callability_proof(tmp_path: Path) -> No
         now=datetime(2026, 7, 3, 0, 1, tzinfo=UTC),
     )
 
-    assert epoch.proof_status("memory", repo_root=tmp_path)["status"] == "healthy"
+    assert (
+        epoch.proof_status(
+            "memory",
+            repo_root=tmp_path,
+            now=datetime(2026, 7, 3, 0, 1, tzinfo=UTC),
+        )["status"]
+        == "healthy"
+    )
 
     epoch.write_restart_epoch(
         repo_root=tmp_path,
@@ -93,3 +100,21 @@ def test_proof_age_expires_with_env_limit(tmp_path: Path) -> None:
     )
 
     assert status["status"] == "stale_age"
+
+
+def test_http_route_metadata_is_returned_with_healthy_proof(tmp_path: Path) -> None:
+    epoch.write_restart_epoch(repo_root=tmp_path, epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="memory",
+        tool="memory_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+        route_kind="http",
+        endpoint="http://127.0.0.1:8766/mcp",
+    )
+
+    status = epoch.proof_status("memory", repo_root=tmp_path)
+
+    assert status["status"] == "healthy"
+    assert status["route_kind"] == "http"
+    assert status["endpoint"] == "http://127.0.0.1:8766/mcp"

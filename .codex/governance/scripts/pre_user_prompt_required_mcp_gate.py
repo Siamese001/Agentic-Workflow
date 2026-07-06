@@ -57,7 +57,12 @@ TIMEOUT_ENV = "REQUIRED_MCP_GATE_TIMEOUT_SEC"
 MAX_WORKERS_ENV = "REQUIRED_MCP_GATE_MAX_WORKERS"
 
 DEFAULT_CALLABILITY_REQUIRED_SERVERS = ("memory", "GitKraken", "adg_sqlite", "vector_db")
-CALLABLE_ROUTE_CLASSIFICATIONS = {"CALLABLE", "PLUGIN_SUBSTITUTE", "SUBSTITUTE_CALLABLE"}
+CALLABLE_ROUTE_CLASSIFICATIONS = {
+    "CALLABLE",
+    "PLUGIN_SUBSTITUTE",
+    "SUBSTITUTE_CALLABLE",
+    "codex_http_route_callable",
+}
 
 _MCP_REPAIR_PHRASES = (
     "/mcp-failure-rca",
@@ -538,6 +543,8 @@ def _route_failure_reason(state: dict[str, Any] | None) -> str:
         f"classification={state.get('classification') or 'absent'}",
         f"callable_status={state.get('callable_status') or 'absent'}",
         f"selected_route={state.get('selected_codex_route') or 'absent'}",
+        f"route_kind={state.get('route_kind') or 'absent'}",
+        f"configured_url={state.get('configured_url') or 'absent'}",
         f"process_classification={state.get('process_classification') or 'absent'}",
         f"process_count={state.get('process_count') or 0}",
     ]
@@ -588,7 +595,7 @@ def _check_required_route_callability(required_servers: tuple[str, ...]) -> list
     for server_id in required_servers:
         state = servers.get(server_id) if isinstance(servers, dict) else None
         classification = str(state.get("classification", "")) if isinstance(state, dict) else ""
-        if classification in CALLABLE_ROUTE_CLASSIFICATIONS:
+        if classification in CALLABLE_ROUTE_CLASSIFICATIONS or classification.upper() in CALLABLE_ROUTE_CLASSIFICATIONS:
             continue
         failures.append(
             ProbeResult(

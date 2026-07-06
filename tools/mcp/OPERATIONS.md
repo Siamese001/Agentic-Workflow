@@ -1,4 +1,39 @@
-# pytest_mcp — Operator Guide
+# MCP Operator Guide
+
+## Memory MCP HTTP Route
+
+Primary Codex route:
+
+```bash
+python -m tools.mcp.launch_memory_http_mcp
+```
+
+Configured URL:
+
+```json
+"url": "http://127.0.0.1:8766/mcp"
+```
+
+The legacy `tools/memory/adg_memory_server.py` stdio server remains a fallback
+or probe target only. It is not the primary Codex route.
+
+Verification:
+
+```bash
+python -m tools.mcp.launch_memory_http_mcp --preflight-only --json
+python scripts/governance/probe_mcp_http_server.py --url http://127.0.0.1:8766/mcp --tool memory_health --json
+python scripts/governance/stress_codex_mcp_transport.py --server-id memory --url http://127.0.0.1:8766/mcp --tool memory_health --count 500 --output artifacts/mcp/stress/memory_http_stress.json
+```
+
+Recovery order:
+
+1. Run `python scripts/governance/diagnose_codex_mcp_transport.py --server memory --json`.
+2. If classification is `http_service_down`, restart only the repo-managed Memory HTTP MCP service.
+3. If classification is `http_protocol_unhealthy`, inspect `artifacts/mcp/memory_http_service.jsonl` and rerun the direct HTTP probe.
+4. If classification is `codex_http_route_unproven`, reload/reconnect the Codex MCP client once, then call live `mcp__memory.memory_health` or `mcp__memory.mem_process_identity`.
+5. Do not accept process liveness, heartbeat files, direct SQLite, port-open, curl, or tools/list as active-session callability proof. The route is green only after the PostToolUse callability ledger records fresh `route_kind=http` proof for `http://127.0.0.1:8766/mcp`.
+
+## pytest_mcp
 
 ## Health / Verification
 

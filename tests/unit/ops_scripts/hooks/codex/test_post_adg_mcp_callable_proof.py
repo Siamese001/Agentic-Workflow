@@ -134,6 +134,10 @@ def test_ignores_non_proof_adg_tool(tmp_path: Path, monkeypatch) -> None:
 
 def test_records_memory_health_in_current_epoch_ledger(monkeypatch, tmp_path: Path) -> None:
     monkeypatch.setattr(cap, "_REPO_ROOT", tmp_path)
+    (tmp_path / ".mcp.json").write_text(
+        json.dumps({"mcpServers": {"memory": {"url": "http://127.0.0.1:8766/mcp"}}}),
+        encoding="utf-8",
+    )
     epoch.write_restart_epoch(repo_root=tmp_path, session_id="session-123", epoch_id="epoch-1")
     payload = {
         "session_id": "session-123",
@@ -148,6 +152,8 @@ def test_records_memory_health_in_current_epoch_ledger(monkeypatch, tmp_path: Pa
     assert status["status"] == "healthy"
     assert status["tool"] == "memory_health"
     assert status["pid"] == os.getpid()
+    assert status["route_kind"] == "http"
+    assert status["endpoint"] == "http://127.0.0.1:8766/mcp"
 
 
 def test_records_vector_health_without_pid_in_current_epoch_ledger(

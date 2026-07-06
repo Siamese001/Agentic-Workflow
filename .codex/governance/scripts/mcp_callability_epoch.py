@@ -155,6 +155,8 @@ def write_callability_proof(
     repo_root: Path | None = None,
     session_id: str = "",
     pid: int | None = None,
+    route_kind: str = "",
+    endpoint: str = "",
     now: datetime | None = None,
 ) -> Path | None:
     root = _repo_root(repo_root)
@@ -179,6 +181,12 @@ def write_callability_proof(
     }
     if isinstance(pid, int) and pid > 0:
         proof["pid"] = pid
+    resolved_route_kind = str(route_kind or "").strip().lower()
+    if resolved_route_kind:
+        proof["route_kind"] = resolved_route_kind
+    resolved_endpoint = str(endpoint or "").strip()
+    if resolved_endpoint:
+        proof["endpoint"] = resolved_endpoint
 
     servers = ledger.get("servers")
     if not isinstance(servers, dict):
@@ -247,4 +255,6 @@ def proof_status(
         "age_s": age_s,
         "max_age_s": max_age_s,
         "pid": proof.get("pid"),
+        "route_kind": proof.get("route_kind") or "",
+        "endpoint": proof.get("endpoint") or "",
     }

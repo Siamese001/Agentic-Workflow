@@ -105,6 +105,33 @@ def test_required_route_accepts_substitute_callable() -> None:
     assert checks[0].status == "PASS"
 
 
+def test_required_route_accepts_http_callable() -> None:
+    checks = mod._check_required_routes(
+        _transport_report({"memory": "codex_http_route_callable"}),
+        ["memory"],
+    )
+
+    assert checks[0].status == "PASS"
+
+
+def test_required_route_failure_detail_for_http_unproven() -> None:
+    report = _transport_report({"memory": "codex_http_route_unproven"})
+    report["route_evidence"]["servers"]["memory"].update(
+        {
+            "route_kind": "http",
+            "configured_url": "http://127.0.0.1:8766/mcp",
+            "http_callability_acceptance": {"accepted": False, "reasons": ["proof_endpoint_mismatch"]},
+        }
+    )
+
+    check = mod._check_required_routes(report, ["memory"])[0]
+    detail = json.loads(check.detail)
+
+    assert check.status == "FAIL"
+    assert detail["blocker"] == "codex http route unproven"
+    assert "PostToolUse proof" in detail["why"]
+
+
 def test_required_mcp_protocol_gate_passes_when_script_exits_zero(monkeypatch, tmp_path: Path) -> None:
     gate_path = tmp_path / ".codex" / "governance" / "scripts" / "pre_user_prompt_required_mcp_gate.py"
     gate_path.parent.mkdir(parents=True)
@@ -502,6 +529,52 @@ def test_adg_transport_check_passes_only_when_supervisor_reports_open(
     assert check.id == "mcp.adg_sqlite.transport"
     assert observed["state_path"] == tmp_path / supervisor.DEFAULT_STATE_RELATIVE_PATH
     assert observed["proof_path"] == tmp_path / supervisor.DEFAULT_CALLABLE_PROOF_RELATIVE_PATH
+
+
+def test_adg_http_transport_accepts_only_endpoint_matched_current_proof(tmp_path: Path) -> None:
+    (tmp_path / ".mcp.json").write_text(
+        json.dumps({"mcpServers": {"adg_sqlite": {"url": "http://127.0.0.1:8765/mcp"}}}),
+        encoding="utf-8",
+    )
+    epoch = mod.audit_codex_mcp_transports.mcp_callability_epoch
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="adg_sqlite",
+        tool="adg_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+        route_kind="http",
+        endpoint="http://127.0.0.1:8765/mcp",
+    )
+
+    check = mod._check_adg_transport(tmp_path)
+
+    assert check.status == "PASS"
+    assert "HTTP route is callable" in check.summary
+
+
+def test_adg_http_transport_rejects_wrong_endpoint_proof(tmp_path: Path) -> None:
+    (tmp_path / ".mcp.json").write_text(
+        json.dumps({"mcpServers": {"adg_sqlite": {"url": "http://127.0.0.1:8765/mcp"}}}),
+        encoding="utf-8",
+    )
+    epoch = mod.audit_codex_mcp_transports.mcp_callability_epoch
+    epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+    epoch.write_callability_proof(
+        server_id="adg_sqlite",
+        tool="adg_health",
+        evidence='{"status":"ok"}',
+        repo_root=tmp_path,
+        route_kind="http",
+        endpoint="http://127.0.0.1:9999/mcp",
+    )
+
+    check = mod._check_adg_transport(tmp_path)
+    detail = json.loads(check.detail)
+
+    assert check.status == "FAIL"
+    assert detail["http_callability_acceptance"]["accepted"] is False
+    assert "proof_endpoint_mismatch" in detail["http_callability_acceptance"]["reasons"]
 
 
 def test_adg_transport_check_fails_when_callability_unproven(

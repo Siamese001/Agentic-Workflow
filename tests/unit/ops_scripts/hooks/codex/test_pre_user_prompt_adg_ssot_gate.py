@@ -25,6 +25,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".codex" / "governance/scripts"))
 
 import pre_user_prompt_adg_ssot_gate as gate  # noqa: E402
+import mcp_callability_epoch as epoch  # noqa: E402
 
 
 def _run(
@@ -111,6 +112,46 @@ class TestTransportAuthority:
         )
         err = capsys.readouterr().err
         assert "recovery" in err.lower() and "closed_transport" in err
+
+    def test_http_transport_opens_with_endpoint_matched_adg_health_proof(
+        self,
+        monkeypatch,
+        tmp_path: Path,
+    ):
+        monkeypatch.setattr(gate, "_REPO_ROOT", tmp_path)
+        epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+        epoch.write_callability_proof(
+            server_id="adg_sqlite",
+            tool="adg_health",
+            evidence='{"status":"ok"}',
+            repo_root=tmp_path,
+            route_kind="http",
+            endpoint="http://127.0.0.1:8765/mcp",
+        )
+
+        open_, status, detail = gate._check_adg_http_transport_open("http://127.0.0.1:8765/mcp")
+
+        assert open_ is True
+        assert status == "codex_http_route_callable"
+        assert detail["http_callability_acceptance"]["accepted"] is True
+
+    def test_http_transport_rejects_wrong_adg_tool(self, monkeypatch, tmp_path: Path):
+        monkeypatch.setattr(gate, "_REPO_ROOT", tmp_path)
+        epoch.write_restart_epoch(repo_root=tmp_path, session_id="s1", epoch_id="epoch-1")
+        epoch.write_callability_proof(
+            server_id="adg_sqlite",
+            tool="adg_edge_fanout",
+            evidence='{"status":"ok"}',
+            repo_root=tmp_path,
+            route_kind="http",
+            endpoint="http://127.0.0.1:8765/mcp",
+        )
+
+        open_, status, detail = gate._check_adg_http_transport_open("http://127.0.0.1:8765/mcp")
+
+        assert open_ is False
+        assert status == "codex_http_route_unproven"
+        assert "adg_proof_tool_not_allowed" in detail["http_callability_acceptance"]["reasons"]
 
 
 class TestRedisAdvisory:

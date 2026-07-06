@@ -26,18 +26,10 @@ approval_mode = "approve"
 approval_mode = "approve"
 
 [mcp_servers.adg_sqlite]
-command = "python"
-args = ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
+url = "http://127.0.0.1:8765/mcp"
 required = true
 startup_timeout_sec = 120
 tool_timeout_sec = 120
-
-[mcp_servers.adg_sqlite.env]
-ADG_REDIS_URL = "${ADG_REDIS_URL}"
-ADG_REPO_ROOT = "C:/Git/Agentic-Workflow-FRESH"
-PYTHONPATH = "C:/Git/Agentic-Workflow-FRESH"
-PYTHONUNBUFFERED = "1"
 
 [mcp_servers.adg_sqlite.tools.adg_health]
 approval_mode = "approve"
@@ -66,25 +58,17 @@ startup_timeout_sec = 120
 tool_timeout_sec = 120
 
 [mcp_servers.memory]
-command = "python"
-args = ["-u", "C:/Git/Agentic-Workflow-FRESH/tools/memory/adg_memory_server.py"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
+url = "http://127.0.0.1:8766/mcp"
 required = true
 startup_timeout_sec = 120
 tool_timeout_sec = 120
-
-[mcp_servers.memory.env]
-ADG_REDIS_URL = "${ADG_REDIS_URL}"
-MEMORY_DB = "artifacts/memory/knowledge_graph.sqlite"
-PYTHONPATH = "C:/Git/Agentic-Workflow-FRESH"
-PYTHONUNBUFFERED = "1"
 
 [mcp_servers.memory.tools.mem_recall_session_start]
 approval_mode = "approve"
 
 [mcp_servers.vector_db]
-command = "python"
-args = ["-u", "C:/Git/Agentic-Workflow-FRESH/tools/mcp/vector_db_server.py"]
+command = "cmd"
+args = ["/c", "python", "-u", "C:/Git/Agentic-Workflow-FRESH/tools/mcp/vector_db_server.py"]
 cwd = "C:/Git/Agentic-Workflow-FRESH"
 required = true
 startup_timeout_sec = 120

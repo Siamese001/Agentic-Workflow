@@ -1,11 +1,13 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-07-05T05:44:45.021622+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\adg\\adg_indexed_07052026_0127.sqlite",
+  "timestamp": "2026-07-06T03:27:03.868244+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07052026_2301.sqlite",
   "strict_mode": true,
-  "total_rows": 0,
-  "by_authority_status": {},
+  "total_rows": 3867,
+  "by_authority_status": {
+    "AUTHORITATIVE_RUNTIME": 3867
+  },
   "violations": [],
   "violation_count": 0,
   "status": "ok"

@@ -44,6 +44,9 @@ if str(_GOV_DIR) not in sys.path:
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
+_GOVERNANCE_SCRIPTS = _REPO_ROOT / "scripts" / "governance"
+if str(_GOVERNANCE_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_GOVERNANCE_SCRIPTS))
 
 _ADG_RECOVERY_TERMS = (
     "transport",
@@ -104,8 +107,45 @@ def _is_adg_transport_recovery_prompt(prompt: str) -> bool:
     return "adg" in text and any(term in text for term in _ADG_RECOVERY_TERMS)
 
 
+def _configured_http_endpoint(server_id: str) -> str:
+    try:
+        data = json.loads((_REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return ""
+    servers = data.get("mcpServers")
+    cfg = servers.get(server_id) if isinstance(servers, dict) else None
+    if not isinstance(cfg, dict):
+        return ""
+    return str(cfg.get("url") or cfg.get("serverUrl") or "").strip()
+
+
+def _check_adg_http_transport_open(configured_url: str) -> tuple[bool, str, dict[str, Any]]:
+    try:
+        import audit_codex_mcp_transports as audit
+        import mcp_callability_epoch
+
+        proof = mcp_callability_epoch.proof_status("adg_sqlite", repo_root=_REPO_ROOT)
+        acceptance = audit.http_route_acceptance("adg_sqlite", configured_url, proof)
+    except Exception as exc:  # noqa: BLE001
+        # guardian: hook should block ordinary T2/T3 but must not crash the host.
+        return False, "probe_error", {"error": f"{type(exc).__name__}: {exc}"}
+    return (
+        bool(acceptance.get("accepted")),
+        "codex_http_route_callable" if acceptance.get("accepted") else "codex_http_route_unproven",
+        {
+            "route_kind": "http",
+            "configured_url": configured_url,
+            "callability_proof": proof,
+            "http_callability_acceptance": acceptance,
+        },
+    )
+
+
 def _check_adg_transport_open(session_id: str = "") -> tuple[bool, str, dict[str, Any]]:
     """Probe the out-of-band supervisor for active-session ADG MCP callability."""
+    configured_url = _configured_http_endpoint("adg_sqlite")
+    if configured_url:
+        return _check_adg_http_transport_open(configured_url)
     try:
         from tools.adg.mcp import supervisor
 
@@ -120,6 +160,7 @@ def _check_adg_transport_open(session_id: str = "") -> tuple[bool, str, dict[str
 
 def _transport_detail(result: dict[str, Any]) -> str:
     callable_proof = result.get("callable_proof") if isinstance(result, dict) else None
+    http_acceptance = result.get("http_callability_acceptance") if isinstance(result, dict) else None
     proof_required = ""
     if isinstance(callable_proof, dict):
         proof_required = str(callable_proof.get("proof_required") or "")
@@ -134,6 +175,13 @@ def _transport_detail(result: dict[str, Any]) -> str:
         pieces.append(f"proof_source={proof_source}")
     if proof_required:
         pieces.append(proof_required)
+    if isinstance(http_acceptance, dict):
+        reasons = http_acceptance.get("reasons")
+        if reasons:
+            pieces.append(f"http_acceptance_reasons={reasons}")
+        required_endpoint = http_acceptance.get("required_endpoint")
+        if required_endpoint:
+            pieces.append(f"required_endpoint={required_endpoint}")
     if not pieces and isinstance(result, dict) and result.get("error"):
         pieces.append(str(result.get("error")))
     return " ".join(pieces)

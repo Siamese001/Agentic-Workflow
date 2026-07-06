@@ -1,32 +1,32 @@
 {
-  "snapshot": "adg_indexed_07052026_0127.sqlite",
-  "total_edges": 1090479,
+  "snapshot": "adg_indexed_07052026_2301.sqlite",
+  "total_edges": 1093003,
   "before_legacy_authority_histogram": {
     "dynamic": 164,
-    "external": 482423,
-    "test_only": 322204,
-    "unresolved": 56168,
-    "verified": 229520
+    "external": 483369,
+    "test_only": 323019,
+    "unresolved": 56631,
+    "verified": 229820
   },
   "after_projected_bucket_counts": {
-    "static": 1090479,
+    "static": 1093003,
     "runtime": 0,
     "registry": 0
   },
   "after_projected_authority_status_counts": {
     "UNKNOWN_NOT_PROOF": 164,
-    "EXTERNAL_ONLY": 482423,
-    "EXCLUDED_TEST_ONLY": 322204,
-    "RISK_SIGNAL_ONLY": 56168,
-    "AUTHORITATIVE": 229520
+    "EXTERNAL_ONLY": 483369,
+    "EXCLUDED_TEST_ONLY": 323019,
+    "RISK_SIGNAL_ONLY": 56631,
+    "AUTHORITATIVE": 229820
   },
   "after_projected_resolution_status_counts": {
     "UNRESOLVED_DYNAMIC": 164,
-    "NOT_APPLICABLE": 482423,
-    "VERIFIED_MODULE": 551724,
-    "UNRESOLVED_MODULE": 56168
+    "NOT_APPLICABLE": 483369,
+    "VERIFIED_MODULE": 552839,
+    "UNRESOLVED_MODULE": 56631
   },
-  "proof_count": 229520,
-  "risk_count": 56332,
-  "inventory_only_count": 804627
+  "proof_count": 229820,
+  "risk_count": 56795,
+  "inventory_only_count": 806388
 }

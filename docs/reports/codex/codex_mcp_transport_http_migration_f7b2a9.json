@@ -1,0 +1,402 @@
+{
+  "schema_version": "codex-mcp-http-migration-w0/v1",
+  "plan_id": "codex-mcp-http-transport-hardening-f7b2a9",
+  "captured_at_utc": "2026-07-05T18:14:35.4036547Z",
+  "failure_classification": "codex_stdio_transport_closes_midturn",
+  "target_route": "Streamable HTTP MCP",
+  "affected_servers": [
+    "adg_sqlite",
+    "memory"
+  ],
+  "rejected_recovery": [
+    "repeated Codex restarts",
+    "process killing without active host-attached PID proof",
+    "environment proof overrides",
+    "ADG green claim from backing-store or heartbeat evidence"
+  ],
+  "runtime_gate_rule": {
+    "unknown_is_pass": false,
+    "offline_or_probe_evidence_waives_live_route_proof": false,
+    "process_liveness_is_callability_proof": false,
+    "readable_sqlite_is_callability_proof": false,
+    "protocol_tools_list_is_callability_proof": false
+  },
+  "safety_log": {
+    "process_killing_used": false,
+    "environment_proof_override_used": false,
+    "codex_restart_used": false,
+    "adg_green_claimed": false
+  },
+  "live_codex_tool_calls": [
+    {
+      "server_id": "adg_sqlite",
+      "tool": "adg_health",
+      "result": "failed",
+      "error": "Transport closed",
+      "classification_contribution": "direct active-session route failure"
+    },
+    {
+      "server_id": "memory",
+      "tool": "memory_health",
+      "result": "failed",
+      "error": "Transport closed",
+      "classification_contribution": "direct active-session route failure"
+    }
+  ],
+  "command_evidence": [
+    {
+      "command": "python scripts/governance/diagnose_codex_mcp_transport.py --server adg_sqlite --json",
+      "exit_code": 0,
+      "observed": {
+        "classification": "server_healthy_codex_transport_closed",
+        "configured_in_mcp_json": true,
+        "route_classification": "EXPOSED_BLOCKED",
+        "selected_codex_route": "raw_mcp_callable",
+        "callable_status": "absent",
+        "transport_status": "callability_unproven",
+        "open": false,
+        "file_proof_status": "stale_file_proof",
+        "file_proof_tool": "adg_process_identity",
+        "file_proof_pid": 14688,
+        "heartbeat_pid": 4776,
+        "proof_pid_matches_heartbeat": false,
+        "sqlite_status": "ok",
+        "redis_status": "healthy",
+        "snapshot_id": "07042026_1748",
+        "node_count": 187972,
+        "edge_count": 1090016,
+        "shell_reopen_supported": false,
+        "safe_to_cleanup_processes": false
+      }
+    },
+    {
+      "command": "python scripts/governance/diagnose_codex_mcp_transport.py --server memory --json",
+      "exit_code": 0,
+      "observed": {
+        "classification": "duplicate_cohort",
+        "configured_in_mcp_json": true,
+        "route_classification": "PROCESS_ONLY",
+        "selected_codex_route": "raw_mcp_callable",
+        "callable_status": "absent",
+        "process_classification": "duplicate",
+        "process_count": 2,
+        "cleanup_blocker": "attached_pid_required",
+        "safe_to_cleanup_processes": "requires_attached_pid",
+        "shell_reopen_supported": false
+      }
+    },
+    {
+      "command": "python scripts/governance/audit_codex_mcp_transports.py --json",
+      "exit_code": 0,
+      "observed": {
+        "route_evidence_available": true,
+        "contract_plan_id": "codex-mcp-transport-parity-4b9c7e",
+        "contract_wave": "W2",
+        "route_counts": {
+          "EXPOSED_BLOCKED": 1,
+          "NOT_EXPOSED": 1,
+          "PLUGIN_SUBSTITUTE": 1,
+          "PROCESS_ONLY": 4,
+          "SUBSTITUTE_CALLABLE": 1
+        },
+        "adg_sqlite": {
+          "route_classification": "EXPOSED_BLOCKED",
+          "process_classification": "single",
+          "process_count": 1,
+          "callable_status": "absent"
+        },
+        "memory": {
+          "route_classification": "PROCESS_ONLY",
+          "process_classification": "duplicate",
+          "process_count": 2,
+          "callable_status": "absent"
+        },
+        "redis_localhost_6379": "open",
+        "script_compile_failures": 0
+      }
+    },
+    {
+      "command": "python tools/mcp/check_adg_sqlite_transport.py --json",
+      "exit_code": 1,
+      "observed": {
+        "status": "callability_unproven",
+        "open": false,
+        "file_proof_status": "stale_file_proof",
+        "file_proof_pid": 14688,
+        "heartbeat_pid": 4776,
+        "proof_pid_matches_heartbeat": false,
+        "preflight_status": "ok",
+        "sqlite_status": "ok",
+        "redis_status": "healthy"
+      }
+    }
+  ],
+  "fact_classification": {
+    "directly_observed": [
+      "Live adg_sqlite health call failed with Transport closed.",
+      "Live memory health call failed with Transport closed.",
+      "ADG diagnosis classified the route as server_healthy_codex_transport_closed.",
+      "Memory diagnosis classified the route/process state as duplicate_cohort.",
+      "ADG backing SQLite preflight was ok while route callability remained unproven.",
+      "ADG transport check exited nonzero with status callability_unproven."
+    ],
+    "derived": [
+      "codex_stdio_transport_closes_midturn is the appropriate W0 failure class for the active-session symptom.",
+      "Streamable HTTP MCP is the target route because stdio process liveness cannot reattach Codex to a closed pipe.",
+      "Repeated Codex restarts are rejected as recovery because W0 must freeze evidence and later waves must harden transport."
+    ],
+    "unresolved": [
+      "Exact HTTP launcher adapter shape.",
+      "Final Codex URL route sync behavior before W3.",
+      "Fresh active-session HTTP proof recording details before W4."
+    ]
+  },
+  "execution_update_2026_07_05": {
+    "plan_status": "BLOCKED",
+    "last_completed_wave": "W4",
+    "blocked_at": "W5.3",
+    "completed": {
+      "w1_stdio_guard": true,
+      "w2_http_services": true,
+      "w3_http_route_cutover": true,
+      "w4_http_proof_gates": true,
+      "w5_direct_http_stress": true,
+      "w6_runbook_lock": true
+    },
+    "direct_http_stress": {
+      "adg_sqlite": {
+        "url": "http://127.0.0.1:8765/mcp",
+        "tool": "adg_health",
+        "passed": 500,
+        "failed": 0,
+        "receipt": "artifacts/mcp/stress/adg_sqlite_http_stress_f7b2a9.json"
+      },
+      "memory": {
+        "url": "http://127.0.0.1:8766/mcp",
+        "tool": "memory_health",
+        "passed": 500,
+        "failed": 0,
+        "receipt": "artifacts/mcp/stress/memory_http_stress_f7b2a9.json"
+      }
+    },
+    "active_session_status": {
+      "adg_sqlite": {
+        "live_tool": "mcp__adg_sqlite.adg_health",
+        "result": "Transport closed",
+        "diagnosis_classification": "codex_http_route_unproven"
+      },
+      "memory": {
+        "live_tool": "mcp__memory.memory_health",
+        "result": "Transport closed",
+        "diagnosis_classification": "codex_http_route_unproven"
+      }
+    },
+    "final_gate_status": {
+      "sync_user_config": "PASS",
+      "direct_http_probes": "PASS",
+      "targeted_tests": "PASS",
+      "codex_readiness": "FAIL",
+      "blocker": "active Codex MCP client still lacks fresh HTTP endpoint-matched PostToolUse proof for adg_sqlite and memory"
+    },
+    "fail_closed_recovery_receipts": [
+      "artifacts/mcp/recovery_receipts/20260705T183804_adg_sqlite_e34b65.json",
+      "artifacts/mcp/recovery_receipts/20260705T183812_memory_4ca855.json"
+    ]
+  },
+  "next_step_execution_2026_07_05_2039z": {
+    "user_config_sync": {
+      "before": "C:\\Users\\amita\\.codex\\config.toml still projected adg_sqlite and memory as legacy stdio commands.",
+      "sync_command": "python .codex/governance/scripts/sync_mcp_config.py --sync-user-config --json",
+      "sync_status": "PASS",
+      "changed": true,
+      "check_command": "python .codex/governance/scripts/sync_mcp_config.py --check-user-config --json",
+      "check_status": "PASS",
+      "after": {
+        "adg_sqlite": "http://127.0.0.1:8765/mcp",
+        "memory": "http://127.0.0.1:8766/mcp"
+      }
+    },
+    "direct_http_probe_after_sync": {
+      "adg_sqlite": {
+        "status": "ok",
+        "tool": "adg_health",
+        "snapshot_id": "07042026_1748",
+        "node_count": 187972,
+        "edge_count": 1090016
+      },
+      "memory": {
+        "status": "ok",
+        "tool": "memory_health",
+        "http_service_pid": 47680,
+        "entity_count": 352,
+        "observation_count": 196
+      }
+    },
+    "active_codex_tool_calls_after_sync": {
+      "adg_sqlite": {
+        "tool": "mcp__adg_sqlite.adg_health",
+        "result": "Transport closed",
+        "accepted_as_http_proof": false
+      },
+      "memory": {
+        "tool": "mcp__memory.memory_health",
+        "result": "ok",
+        "responding_pid": 48184,
+        "expected_http_service_pid": 47680,
+        "accepted_as_http_proof": false,
+        "reason": "The active Codex handle still points at a legacy stdio process."
+      }
+    },
+    "active_proof_stress_after_sync": {
+      "adg_sqlite": {
+        "receipt": "artifacts/mcp/stress/adg_sqlite_http_active_proof_after_config_sync_f7b2a9.json",
+        "direct_http": "1/1 passed",
+        "active_session_proof": "fail"
+      },
+      "memory": {
+        "receipt": "artifacts/mcp/stress/memory_http_active_proof_after_config_sync_f7b2a9.json",
+        "direct_http": "1/1 passed",
+        "active_session_proof": "fail"
+      }
+    },
+    "fail_closed_recovery_receipts_after_sync": [
+      "artifacts/mcp/recovery_receipts/20260705T203927_adg_sqlite_2805dd.json",
+      "artifacts/mcp/recovery_receipts/20260705T203927_memory_562092.json"
+    ],
+    "current_blocker": "The repo and user config now point to HTTP, but the active Codex MCP client did not hot-rebind and still needs a controlled reconnect/reload before W5.3, W6.2, or W7 can pass."
+  },
+  "follow_up_reconnect_2026_07_06_0006z": {
+    "live_calls": {
+      "adg_sqlite": {
+        "tool": "mcp__adg_sqlite.adg_health",
+        "status": "ok",
+        "sqlite": "healthy",
+        "redis": "healthy",
+        "snapshot_id": "07042026_1748",
+        "node_count": 187972,
+        "edge_count": 1090016,
+        "accepted_as_http_proof": false
+      },
+      "memory": {
+        "tool": "mcp__memory.memory_health",
+        "status": "ok",
+        "process_pid": 41680,
+        "entity_count": 352,
+        "observation_count": 196,
+        "accepted_as_http_proof": false
+      }
+    },
+    "diagnosis_after_live_calls": {
+      "adg_sqlite": {
+        "classification": "codex_http_route_unproven",
+        "active_process_marker": "tools.mcp.launch_adg_sqlite_mcp",
+        "active_process_pid": 35372,
+        "configured_url": "http://127.0.0.1:8765/mcp",
+        "http_service_pid": 34504
+      },
+      "memory": {
+        "classification": "codex_http_route_unproven",
+        "active_process_marker": "tools/memory/adg_memory_server.py",
+        "active_process_pid": 41680,
+        "configured_url": "http://127.0.0.1:8766/mcp",
+        "http_service_pid": 47680
+      }
+    },
+    "root_cause_refined": "Repo-local .codex/config.toml still rendered adg_sqlite and memory as legacy stdio routes, and the reconnect reseeded the user Codex config from that stale source.",
+    "fix_applied": {
+      "repo_local_config": ".codex/config.toml",
+      "adg_sqlite_url": "http://127.0.0.1:8765/mcp",
+      "memory_url": "http://127.0.0.1:8766/mcp",
+      "user_config_sync_status": "PASS",
+      "user_config_changed": true
+    },
+    "regression_guard": {
+      "test": "tests/unit/codex_governance/test_sync_mcp_config_http_routes.py",
+      "assertion": "repo-local .codex/config.toml keeps adg_sqlite and memory on HTTP URL routes without command or args",
+      "result": "2 passed in 0.12s"
+    },
+    "current_blocker": "Both repo-local and user-level Codex configs now point to HTTP, but another controlled reconnect is required because the current successful live calls were still stdio-backed."
+  },
+  "fresh_thread_fail_closed_2026_07_06_0013z": {
+    "captured_at_utc": "2026-07-06T00:13:36.8719020Z",
+    "live_calls": {
+      "adg_sqlite_health": {
+        "tool": "mcp__adg_sqlite.adg_health",
+        "status": "ok",
+        "sqlite": "healthy",
+        "redis": "healthy",
+        "snapshot_id": "07042026_1748",
+        "node_count": 187972,
+        "edge_count": 1090016
+      },
+      "memory_health": {
+        "tool": "mcp__memory.memory_health",
+        "status": "ok",
+        "process_pid": 47680,
+        "entity_count": 352,
+        "observation_count": 196
+      },
+      "adg_process_identity": {
+        "tool": "mcp__adg_sqlite.adg_process_identity",
+        "status": "ok",
+        "process_pid": 34504
+      },
+      "adg_runtime_info": {
+        "tool": "mcp__adg_sqlite.adg_runtime_info",
+        "status": "ok",
+        "process_pid": 34504,
+        "startup_nonce": "6ab4aa8362e7"
+      }
+    },
+    "diagnosis_after_live_calls": {
+      "adg_sqlite": {
+        "classification": "codex_http_route_unproven",
+        "configured_url": "http://127.0.0.1:8765/mcp",
+        "http_service_pid": 34504,
+        "legacy_stdio_pid_visible": 35372,
+        "callability_proof_status": "absent",
+        "acceptance_reasons": [
+          "proof_not_healthy",
+          "proof_route_kind_not_http",
+          "proof_endpoint_mismatch",
+          "adg_proof_tool_not_allowed"
+        ]
+      },
+      "memory": {
+        "classification": "codex_http_route_unproven",
+        "configured_url": "http://127.0.0.1:8766/mcp",
+        "http_service_pid": 47680,
+        "legacy_stdio_pid_visible": 41680,
+        "callability_proof_status": "absent",
+        "acceptance_reasons": [
+          "proof_not_healthy",
+          "proof_route_kind_not_http",
+          "proof_endpoint_mismatch"
+        ]
+      }
+    },
+    "proof_ledger": {
+      "path": "artifacts/mcp/codex_mcp_callability_proofs.json",
+      "servers": {},
+      "accepted_as_http_endpoint_matched_proof": false
+    },
+    "stale_file_proof": {
+      "path": "artifacts/mcp_heartbeat/adg_sqlite_callable_proof.json",
+      "proved_at": "2026-07-03T16:55:44.524230+00:00",
+      "pid": 14688,
+      "tool": "adg_process_identity",
+      "accepted": false
+    },
+    "rca": "Fresh MCP calls appear to reach the HTTP service processes, but the PostToolUse/callability proof ledger did not record fresh route_kind=http endpoint-matched proof. Diagnosis therefore correctly remains fail-closed for both adg_sqlite and memory.",
+    "decision": {
+      "status": "FAIL_CLOSED",
+      "rerun_blocked_w5_w6_w7": false,
+      "reason": "HTTP proof is not valid because the proof ledger is empty and diagnosis remains codex_http_route_unproven."
+    }
+  },
+  "artifacts": {
+    "plan": "plans/codex-mcp-http-transport-hardening-f7b2a9.md",
+    "markdown_report": "docs/reports/codex/codex_mcp_transport_http_migration_f7b2a9.md",
+    "json_report": "docs/reports/codex/codex_mcp_transport_http_migration_f7b2a9.json"
+  }
+}

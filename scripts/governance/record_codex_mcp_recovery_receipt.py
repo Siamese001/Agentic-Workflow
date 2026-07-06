@@ -77,7 +77,7 @@ def _primary_proof_status(diagnosis: dict[str, Any]) -> str:
 
 def _has_fresh_active_tool_proof(diagnosis: dict[str, Any]) -> bool:
     return (
-        str(diagnosis.get("classification") or "") == "callable"
+        str(diagnosis.get("classification") or "") in {"callable", "codex_http_route_callable"}
         and FRESH_PROOF_STATUS in _proof_statuses(diagnosis)
     )
 

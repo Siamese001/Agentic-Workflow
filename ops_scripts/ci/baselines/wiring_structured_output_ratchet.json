@@ -3,9 +3,9 @@
   "count": 0,
   "seeded_at": "2026-04-23T16:11:23.938628+00:00",
   "snapshot": "adg_indexed_07052026_0127.sqlite",
-  "zero_run_streak": 2,
-  "last_run_at": "2026-07-05T05:37:22.584605+00:00",
-  "last_run_snapshot": "adg_indexed_07052026_0127.sqlite",
+  "zero_run_streak": 3,
+  "last_run_at": "2026-07-06T03:22:01.743544+00:00",
+  "last_run_snapshot": "adg_indexed_07052026_2301.sqlite",
   "tightened_at": "2026-07-05T05:36:38.912137+00:00",
   "tighten_history": [
     {
@@ -14,5 +14,8 @@
       "from": 1,
       "to": 0
     }
-  ]
+  ],
+  "auto_promoted_tier": "B",
+  "auto_promoted_at": "2026-07-06T03:22:01.743544+00:00",
+  "auto_promoted_after_streak": 3
 }
