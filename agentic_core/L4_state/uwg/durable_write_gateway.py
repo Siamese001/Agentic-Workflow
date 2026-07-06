@@ -40,6 +40,7 @@ from agentic_core.L4_state.contracts.records import (
     UWGValidationReceipt,
     WriteLockReceipt,
     stamp_digest,
+    record_canonical_payload,
 )
 from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 from agentic_core.L4_state.otel.spans import emit_uwg_span
@@ -65,6 +66,18 @@ ALLOWED_OPERATIONS: Tuple[str, ...] = (
     # per the UWG Exit-only authority rule.
     "app_domain_contract_register",
 )
+
+PLACEHOLDER_HASHES: frozenset[str] = frozenset({"", "unknown", "UNKNOWN", "MIGRATION_UNKNOWN"})
+
+
+def compute_state_diffs_digest(state_diffs: Iterable[StateDiff]) -> str:
+    payload = {
+        "state_diffs": [
+            record_canonical_payload(sd)
+            for sd in sorted(state_diffs, key=lambda row: row.state_diff_id)
+        ]
+    }
+    return compute_deterministic_digest(payload)
 
 
 # Surfaces NOT allowed to issue CommitRequest directly. Only Exit may.
@@ -388,7 +401,30 @@ class DurableWriteGateway:
                 committed_at=str(audit_append_receipt.ledger_sequence),
                 state_diff_refs=tuple(sd.state_diff_id for sd in state_diffs),
                 affected_state_surfaces=target_surfaces,
+                audit_refs=tuple(commit_request.audit_refs),
                 l5_certification_ref=commit_request.l5_certification_ref,
+                source_surface=commit_request.source_surface,
+                policy_hash=commit_request.policy_hash,
+                blueprint_hash=commit_request.blueprint_hash,
+                replay_key=commit_request.replay_key,
+                gate_verdict_refs=tuple(commit_request.gate_verdict_refs),
+                cleared_exit_review_packet_ref=commit_request.cleared_exit_review_packet_ref,
+                registry_digest_set=tuple(commit_request.registry_digest_set),
+                clearance_proof_id=commit_request.clearance_proof_id,
+                staged_diff_hash=commit_request.staged_diff_hash,
+                content_hash=compute_deterministic_digest(
+                    {
+                        "commit_request_id": commit_request.commit_request_id,
+                        "state_diff_refs": [sd.state_diff_id for sd in state_diffs],
+                        "snapshot_before": snapshot_before,
+                        "snapshot_after": snapshot_after,
+                        "audit_append_receipt_ref": audit_append_receipt.audit_append_receipt_id,
+                    }
+                ),
+                validator_receipt_id=(
+                    commit_request.validator_receipt_id
+                    or validation.uwg_validation_receipt_id
+                ),
             )
             commit_receipt = stamp_digest(commit_receipt)
             self._commits[commit_receipt.commit_receipt_id] = commit_receipt
@@ -533,11 +569,61 @@ class DurableWriteGateway:
                 failed.append(f"required_field::{fld}")
                 reason_codes.append(f"missing::{fld}")
 
+        checked.append("policy_hash_not_placeholder")
+        if str(commit_request.policy_hash or "").strip() in PLACEHOLDER_HASHES:
+            failed.append("policy_hash_not_placeholder")
+            reason_codes.append("missing_or_placeholder_policy_hash")
+
+        checked.append("blueprint_hash_not_placeholder")
+        if str(commit_request.blueprint_hash or "").strip() in PLACEHOLDER_HASHES:
+            failed.append("blueprint_hash_not_placeholder")
+            reason_codes.append("missing_or_placeholder_blueprint_hash")
+
         # 00.6 §PHASE 2 step 2: gate / cert refs
         checked.append("gate_verdict_refs")
         if not commit_request.gate_verdict_refs:
             failed.append("gate_verdict_refs")
-            reason_codes.append("missing::gate_verdict_refs")
+            reason_codes.append("missing_gate_verdict_refs")
+
+        checked.append("l5_certification_ref")
+        from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+
+        if not verify_certification_ref(commit_request.l5_certification_ref):
+            failed.append("l5_certification_ref")
+            reason_codes.append("l5_certification_invalid")
+
+        checked.append("clearance_proof_id")
+        if not str(commit_request.clearance_proof_id or "").strip():
+            failed.append("clearance_proof_id")
+            reason_codes.append("missing_clearance_proof_id")
+
+        checked.append("registry_digest_set")
+        if commit_request.expected_read_surface_refreshes and not commit_request.registry_digest_set:
+            failed.append("registry_digest_set")
+            reason_codes.append("missing_registry_digest_set")
+
+        checked.append("commit_request_signature")
+        if not (
+            str(commit_request.commit_request_signature or "").strip()
+            or str(commit_request.signature or "").strip()
+        ):
+            failed.append("commit_request_signature")
+            reason_codes.append("commit_request_signature_invalid")
+
+        supplied_state_diff_ids = tuple(sd.state_diff_id for sd in state_diffs)
+        checked.append("state_diff_refs_match")
+        if tuple(commit_request.state_diff_refs) != supplied_state_diff_ids:
+            failed.append("state_diff_refs_match")
+            reason_codes.append("state_diff_refs_mismatch")
+
+        checked.append("staged_diff_hash")
+        actual_diff_hash = compute_state_diffs_digest(state_diffs)
+        if not commit_request.staged_diff_hash:
+            failed.append("staged_diff_hash")
+            reason_codes.append("missing_staged_diff_hash")
+        elif commit_request.staged_diff_hash != actual_diff_hash:
+            failed.append("staged_diff_hash")
+            reason_codes.append("state_diff_hash_mismatch")
 
         # 00.6 §PHASE 2 step 3: state diffs
         # progress: bounded by len(state_diffs) — usually 1-3 per CommitRequest, no UI bar needed
@@ -556,6 +642,9 @@ class DurableWriteGateway:
             if not sd.schema_ref:
                 failed.append(label)
                 reason_codes.append(f"missing_schema_ref::{sd.state_diff_id}")
+            if commit_request.affected_state_surfaces and sd.target_surface not in commit_request.affected_state_surfaces:
+                failed.append(label)
+                reason_codes.append("target_surface_not_allowlisted")
 
         # 00.6 §PHASE 2 step 4: replay/audit
         checked.append("replay_key_present")
@@ -600,7 +689,11 @@ class DurableWriteGateway:
             blueprint_status="PASS" if commit_request.blueprint_hash else "FAIL",
             schema_status="PASS" if all(sd.schema_ref for sd in state_diffs) else "FAIL",
             gate_status="PASS" if commit_request.gate_verdict_refs else "FAIL",
-            l5_cert_status="PASS",  # this minimal pack does not introduce L5 cert checks
+            l5_cert_status=(
+                "PASS"
+                if "l5_certification_ref" not in failed
+                else "FAIL"
+            ),
             hitl_status="PASS",  # only checked when explicitly required by route
             replay_status="PASS" if commit_request.replay_key else "FAIL",
             rollback_status="PASS" if commit_request.rollback_plan_ref else "FAIL",
@@ -845,5 +938,6 @@ __all__ = [
     "UWGAuthorityError",
     "UWGContentionError",
     "get_default_gateway",
+    "compute_state_diffs_digest",
     "reset_default_gateway",
 ]

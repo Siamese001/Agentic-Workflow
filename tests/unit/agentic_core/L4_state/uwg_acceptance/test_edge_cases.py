@@ -588,6 +588,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         r = coord.issue_alias_refresh(
@@ -613,6 +614,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         r = coord.issue_index_refresh(
@@ -656,6 +658,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         refs = ("src:1", "src:2", "src:3", "src:4", "src:5")

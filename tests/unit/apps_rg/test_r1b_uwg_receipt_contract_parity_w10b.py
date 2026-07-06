@@ -96,15 +96,21 @@ def test_admitted_preserves_governance_receipt(tmp_path: Path, monkeypatch: pyte
     assert gov.get("policy_hash") == "prompt_profile_w7_v1"
     assert gov.get("blueprint_hash") == "gate_profile_w7_v1"
     assert gov.get("source_surface") == "Exit"
+    assert gov.get("core_receipt_l5_present") is True
+    assert gov.get("core_receipt_gate_verdict_present") is True
+    assert gov.get("core_receipt_policy_hash_present") is True
+    assert gov.get("core_receipt_replay_key_present") is True
     assert "l4.apps_rg.r1b_semantic_cache" in (gov.get("affected_state_surfaces") or [])
 
 
 def test_parity_matrix_and_core_receipt_gap_documented() -> None:
     matrix = build_receipt_field_parity_matrix()
     assert any(r["field"] == "l5_certification_ref" for r in matrix)
+    assert all(r["uwg_commit_receipt_core"] is True for r in matrix)
     gaps = document_r1b_uwg_core_receipt_gaps()
-    assert "gate_verdict_refs" in gaps["fields_core_cannot_carry"]
-    assert "l5_certification_ref" in gaps["fields_promotion_gateway_enriches"]
+    assert gaps["fields_core_cannot_carry"] == []
+    assert gaps["fields_promotion_gateway_enriches"] == []
+    assert "No active core receipt parity gap" in gaps["core_gap_summary"]
 
 
 def test_admitted_projection_includes_governance_receipt(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
