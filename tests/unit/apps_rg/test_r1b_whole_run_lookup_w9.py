@@ -22,13 +22,37 @@ from apps_rg.cache.r1b_whole_run_preflight import (
     execute_whole_run_r1b_preflight,
 )
 from tests.unit.apps_rg.r1b_fixture_builders import (
+    build_admissible_intent_record,
+    build_admissible_output_chunks,
+    build_post_exit_eligibility,
     r1b_match_request,
-    seed_admissible_r1b_store,
+    write_post_exit_artifacts,
 )
 
 
 def _seed_admissible(store: R1BSemanticCacheStore) -> None:
-    seed_admissible_r1b_store(store)
+    from apps_rg.cache.r1b_uwg_promotion import (
+        AppsRgR1BUwgGateway,
+        build_r1b_promotion_candidate,
+        promote_and_project_r1b_cache,
+    )
+
+    record = build_admissible_intent_record()
+    chunks = build_admissible_output_chunks(record.record_id)
+    run_dir = store.root / "_post_exit_run"
+    write_post_exit_artifacts(run_dir, record)
+    candidate = build_r1b_promotion_candidate(
+        record=record,
+        chunks=chunks,
+        post_exit_eligibility=build_post_exit_eligibility(record, chunks),
+        run_dir=run_dir,
+    )
+    outcome = promote_and_project_r1b_cache(
+        candidate=candidate,
+        projection_root=store.root,
+        gateway=AppsRgR1BUwgGateway(),
+    )
+    assert outcome.status == "ADMITTED"
 
 
 def _match_request() -> dict:

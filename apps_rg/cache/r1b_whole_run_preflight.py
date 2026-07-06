@@ -168,12 +168,20 @@ def execute_whole_run_r1b_preflight(
     )
 
     if hit is None:
+        projection_unavailable = any(
+            "derived_index_unavailable" in (row.get("reason_codes") or [])
+            for row in report
+        )
         inadmissible_only = any(
             row.get("similarity", 0) >= threshold and not row.get("admissible")
             for row in report
         )
         return WholeRunR1BPreflightResult(
-            outcome="r1b_inadmissible_only" if inadmissible_only else "r1b_miss",
+            outcome=(
+                "r1b_read_projection_unavailable"
+                if projection_unavailable
+                else "r1b_inadmissible_only" if inadmissible_only else "r1b_miss"
+            ),
             r1b_hit=False,
             lookup_anchor="HistoricalIntentRecord.request_intent_vector",
             cache_grain=CACHE_GRAIN_ROLE_TARGET_RUN,

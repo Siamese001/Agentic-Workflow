@@ -82,6 +82,7 @@ def ingest_post_exit_from_run_dir(
     store: R1BSemanticCacheStore | None = None,
     record_id: str | None = None,
     gateway: Any | None = None,
+    write_fixture_mirror: bool = False,
 ) -> str | None:
     """Persist R1B via UWG admission after Exit; fixture mirror optional for tests."""
     if not (run_dir / "x3_disposition.json").is_file():
@@ -100,7 +101,8 @@ def ingest_post_exit_from_run_dir(
     record = HistoricalIntentRecord.from_dict(record_dict)
     chunks = [HistoricalOutputChunk.from_dict(c) for c in assessment.get("chunks") or []]
     if not record.cache_admissible:
-        st.write_intent(record)
+        if write_fixture_mirror:
+            st.write_intent(record)
         return None
 
     manifest = _read_json(run_dir / "run_manifest.json") or {}
@@ -132,11 +134,13 @@ def ingest_post_exit_from_run_dir(
             outcome=chain.promotion_outcome,
         )
         project_durable_to_derived_index(st.root)
-        st.write_intent(record)
-        for ch in chunks:
-            st.write_chunk(ch)
+        if write_fixture_mirror:
+            st.write_intent(record)
+            for ch in chunks:
+                st.write_chunk(ch)
         return record.record_id
-    st.write_intent(record)
+    if write_fixture_mirror:
+        st.write_intent(record)
     return record.record_id
 
 
@@ -146,6 +150,7 @@ def ingest_post_exit_after_run(
     raw_request: dict[str, Any],
     runs_dir: Path | str,
     record_id: str | None = None,
+    write_fixture_mirror: bool = False,
 ) -> str | None:
     """Entry point for CLI / pipeline — requires x3_disposition.json in artifact_dir."""
     store = R1BSemanticCacheStore(Path(runs_dir) if runs_dir else default_store_root())
@@ -154,6 +159,7 @@ def ingest_post_exit_after_run(
         raw_request=raw_request,
         store=store,
         record_id=record_id,
+        write_fixture_mirror=write_fixture_mirror,
     )
 
 

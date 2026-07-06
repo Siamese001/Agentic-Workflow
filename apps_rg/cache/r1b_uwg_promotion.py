@@ -67,6 +67,7 @@ class R1BPromotionOutcome:
     blocked_reason_codes: tuple[str, ...] = field(default_factory=tuple)
     missing_contract_fields: tuple[str, ...] = field(default_factory=tuple)
     fixture_mirror_written: bool = False
+    fixture_mirror_written_reason: str = ""
     c0_fact_vectors_consulted: bool = False
     governance_receipt: dict[str, Any] | None = None
 
@@ -81,6 +82,7 @@ class R1BPromotionOutcome:
             "blocked_reason_codes": list(self.blocked_reason_codes),
             "missing_contract_fields": list(self.missing_contract_fields),
             "fixture_mirror_written": self.fixture_mirror_written,
+            "fixture_mirror_written_reason": self.fixture_mirror_written_reason,
             "c0_fact_vectors_consulted": self.c0_fact_vectors_consulted,
             "governance_receipt": self.governance_receipt,
             "cache_grain": CACHE_GRAIN_ROLE_TARGET_RUN,
@@ -418,7 +420,7 @@ def promote_and_project_r1b_cache(
     projection_root: Path,
     fixture_store: Any | None = None,
     gateway: Any | None = None,
-    mirror_fixture_on_blocked: bool = True,
+    mirror_fixture_on_blocked: bool = False,
 ) -> R1BPromotionOutcome:
     """UWG admission then durable projection; optional fixture mirror for tests."""
     outcome = promote_r1b_cache_via_uwg(candidate, gateway=gateway)
@@ -434,6 +436,7 @@ def promote_and_project_r1b_cache(
         if fixture_store is not None:
             _write_fixture_mirror(fixture_store, candidate)
             outcome.fixture_mirror_written = True
+            outcome.fixture_mirror_written_reason = "admitted_projection_test_mirror"
         return outcome
 
     write_blocked_promotion_receipt(
@@ -444,6 +447,7 @@ def promote_and_project_r1b_cache(
     if mirror_fixture_on_blocked and fixture_store is not None and candidate.cache_admissible:
         _write_fixture_mirror(fixture_store, candidate)
         outcome.fixture_mirror_written = True
+        outcome.fixture_mirror_written_reason = "blocked_projection_explicit_test_mirror"
     return outcome
 
 

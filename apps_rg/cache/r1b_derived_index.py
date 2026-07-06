@@ -69,6 +69,40 @@ def derived_index_available(projection_root: Path | str) -> bool:
     return (derived_index_root(projection_root) / INDEX_MANIFEST).is_file()
 
 
+def _fixture_fallback_enabled_for_tests(*, explicit_private_flag: bool) -> bool:
+    """Test-only compatibility bridge for legacy fixture tests.
+
+    Production callers never pass the private flag, and the env var alone is
+    insufficient. This keeps fixture mirrors from becoming runtime truth by
+    accident.
+    """
+    env_enabled = os.environ.get("APPS_RG_R1B_ALLOW_FIXTURE_FALLBACK_FOR_TESTS", "").strip().lower()
+    return bool(explicit_private_flag and env_enabled in {"1", "true", "yes", "on"})
+
+
+def _derived_index_unavailable_report() -> list[dict[str, Any]]:
+    return [
+        {
+            "candidate_record_id": "",
+            "similarity": 0.0,
+            "admissible": False,
+            "reason": "derived_index_unavailable; fixture_fallback_forbidden",
+            "reason_codes": [
+                "derived_index_unavailable",
+                "fixture_fallback_forbidden",
+            ],
+            "checks": {
+                "derived_index_available": False,
+                "fixture_store_consulted": False,
+                "generation_required": True,
+            },
+            "lookup_surface": "derived_index",
+            "generation_required": True,
+            "fixture_store_consulted": False,
+        }
+    ]
+
+
 @dataclass
 class IndexRefreshReceipt:
     refreshed_at_utc: str
@@ -246,6 +280,7 @@ def lookup_r1b_via_derived_index(
     similarity_threshold: float = 0.88,
     query_prompt_hash: str = "",
     query_gate_hash: str = "",
+    _allow_fixture_fallback_for_tests: bool = False,
 ) -> tuple[Any | None, list[dict[str, Any]]]:
     """Lookup using derived index vectors; load record/chunks from durable truth on hit."""
     from apps_rg.cache.r1b_compatibility import assess_candidate_for_reuse, compatibility_report_row
@@ -253,16 +288,25 @@ def lookup_r1b_via_derived_index(
 
     root = Path(projection_root)
     if not derived_index_available(root):
+        if not _fixture_fallback_enabled_for_tests(
+            explicit_private_flag=_allow_fixture_fallback_for_tests,
+        ):
+            return None, _derived_index_unavailable_report()
         st = R1BSemanticCacheStore(root)
         from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
 
-        return lookup_r1b_with_compatibility_report(
+        hit, report = lookup_r1b_with_compatibility_report(
             raw_request,
             store=st,
             similarity_threshold=similarity_threshold,
             query_prompt_hash=query_prompt_hash,
             query_gate_hash=query_gate_hash,
         )
+        for row in report:
+            row["lookup_surface"] = "fixture_mirror_test_only"
+            row["fixture_store_consulted"] = True
+            row["requires_explicit_test_flag"] = True
+        return hit, report
 
     intent_text = intent_text_from_request(raw_request)
     query_digest = normalized_intent_digest(intent_text)
