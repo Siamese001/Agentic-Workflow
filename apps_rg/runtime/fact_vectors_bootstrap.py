@@ -22,7 +22,6 @@ import importlib
 import json
 import os
 import shutil
-import sqlite3
 import sys
 import time
 import uuid
@@ -33,8 +32,10 @@ from pathlib import Path
 from types import TracebackType
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from apps_rg.runtime.c0.constants import PROOF_ELIGIBLE, SOURCE_BASE_RESUME
 from apps_rg.runtime.cli_exit_codes import EXIT_GENERIC_FAILURE, EXIT_SUCCESS
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 # Generated resume lanes that draw dense enrichment from fact_vectors. Keep this in the same
 # dependency order as apps_rg.runtime.internal.generated_lane_rollup.GENERATED_LANES; this module is
@@ -337,9 +338,25 @@ class FactVectorHydrationLock(AbstractContextManager[dict[str, Any]]):
             "pid": os.getpid(),
             "created_at_utc": datetime.now(timezone.utc).isoformat(),
         }
+        if self.lock_path.exists():
+            try:
+                existing = self.lock_path.read_text(encoding="utf-8")[:1000]
+            except OSError:
+                existing = "<unreadable>"
+            self.receipt.update(
+                {
+                    "status": "BLOCKED",
+                    "reasons": ["fact_vector_hydration_lock_exists"],
+                    "existing_lock_excerpt": existing,
+                }
+            )
+            raise FactVectorHydrationRuntimeError(self.receipt)
         try:
-            with self.lock_path.open("x", encoding="utf-8") as handle:
-                handle.write(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+            _wg.write_text(
+                self.lock_path,
+                json.dumps(payload, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
         except FileExistsError as exc:
             try:
                 existing = self.lock_path.read_text(encoding="utf-8")[:1000]
@@ -692,7 +709,7 @@ def _write_manifest(
     elif str(manifest.get("status") or "") == "FALLBACK_ALLOWED":
         path = path.with_name(FALLBACK_MANIFEST_NAME)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    _wg.write_text(path, json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path
 
 

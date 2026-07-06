@@ -26,13 +26,14 @@ import hashlib
 import json
 import logging
 import os
-import sqlite3
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 from agentic_core.L4_state.fact_writeback import (
     FactWritebackEngine,
     FactWritebackProfile,
@@ -254,7 +255,8 @@ def _write_promotion_receipt(artifact_dir: str | Path | None, receipt: dict[str,
     try:
         path = Path(artifact_dir)
         path.mkdir(parents=True, exist_ok=True)
-        (path / PROMOTION_RECEIPT_NAME).write_text(
+        _wg.write_text(
+            path / PROMOTION_RECEIPT_NAME,
             json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
@@ -426,7 +428,8 @@ def _write_fact_vectors_uwg_artifacts(
     written: dict[str, str] = {}
     for key, (name, payload) in files.items():
         path = root / name
-        path.write_text(
+        _wg.write_text(
+            path,
             json.dumps(_json_ready(payload), indent=2, ensure_ascii=False, sort_keys=True) + "\n",
             encoding="utf-8",
         )
