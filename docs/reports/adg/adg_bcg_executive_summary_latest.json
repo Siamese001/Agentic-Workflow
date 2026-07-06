@@ -9,30 +9,6 @@
         ],
         "next_action": "Burn down after FIX rows clear.",
         "order": 1,
-        "records": 2063,
-        "scope": "C3_silent_writes_ratchet",
-        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
-        "work_class": "ratchet_burndown"
-      },
-      {
-        "done_condition": "Lower baseline and rerun ADG.",
-        "driver_signals": [
-          "gate_results"
-        ],
-        "next_action": "Burn down after FIX rows clear.",
-        "order": 2,
-        "records": 1609,
-        "scope": "S2_uwg_bypass_ratchet",
-        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
-        "work_class": "ratchet_burndown"
-      },
-      {
-        "done_condition": "Lower baseline and rerun ADG.",
-        "driver_signals": [
-          "gate_results"
-        ],
-        "next_action": "Burn down after FIX rows clear.",
-        "order": 3,
         "records": 1453,
         "scope": "G_REACH_l0_reachability",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
@@ -44,8 +20,8 @@
           "gate_results"
         ],
         "next_action": "Burn down after FIX rows clear.",
-        "order": 4,
-        "records": 995,
+        "order": 2,
+        "records": 997,
         "scope": "I2_replay_surface_gaps_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
@@ -56,9 +32,33 @@
           "gate_results"
         ],
         "next_action": "Burn down after FIX rows clear.",
-        "order": 5,
+        "order": 3,
         "records": 982,
         "scope": "E1_trace_stub_module",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 4,
+        "records": 982,
+        "scope": "F1_untyped_seam_ratchet",
+        "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
+        "work_class": "ratchet_burndown"
+      },
+      {
+        "done_condition": "Lower baseline and rerun ADG.",
+        "driver_signals": [
+          "gate_results"
+        ],
+        "next_action": "Burn down after FIX rows clear.",
+        "order": 5,
+        "records": 862,
+        "scope": "B2_layer_skip_ratchet",
         "why_after_green": "Ratchet floor work should not distract from current FIX rows.",
         "work_class": "ratchet_burndown"
       }
@@ -73,7 +73,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_gate_results_20260705_053733.json",
+        "path": "artifacts/adg/adg_gate_results_20260706_045318.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -86,7 +86,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_bcg_adapter_07052026_0127.json",
+        "path": "artifacts/adg/adg_bcg_adapter_07062026_0048.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -99,7 +99,7 @@
         "decision_impact": "Directly affects verdict and next-best-action ranking.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_action_queue_07052026_0127.json",
+        "path": "artifacts/adg/adg_action_queue_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -112,7 +112,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_review_template_07052026_0127.json",
+        "path": "artifacts/adg/adg_review_template_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -125,7 +125,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_burndown_table_07052026_0127.json",
+        "path": "artifacts/adg/adg_burndown_table_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -151,7 +151,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": false,
-        "path": "artifacts/adg/adg_indexed_07052026_0127.sqlite",
+        "path": "artifacts/adg/adg_indexed_07062026_0048.sqlite",
         "rationale": "Existing non-JSON artifact or SQLite snapshot mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -164,7 +164,7 @@
         "decision_impact": "Supports consistency/evidence trace.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_generation_manifest_07052026_0127.json",
+        "path": "artifacts/adg/adg_generation_manifest_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -177,7 +177,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_structural_outputs_07052026_0127.json",
+        "path": "artifacts/adg/adg_structural_outputs_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -190,7 +190,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_refactor_accelerator_07052026_0127.json",
+        "path": "artifacts/adg/adg_refactor_accelerator_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -203,7 +203,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_queries_07052026_0127.json",
+        "path": "artifacts/adg/adg_graphdb_queries_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -216,7 +216,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_runtime_spine_07052026_0127.json",
+        "path": "artifacts/adg/adg_runtime_spine_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -229,7 +229,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_projection_07052026_0127.json",
+        "path": "artifacts/adg/adg_graphdb_projection_07062026_0048.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -242,7 +242,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_metadata_07052026_0127.json",
+        "path": "artifacts/adg/adg_graphdb_metadata_07062026_0048.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -255,7 +255,7 @@
         "decision_impact": "No current decision effect; suppress inline unless tied to a future blocker or audit.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/adg_graphdb_index_07052026_0127.json",
+        "path": "artifacts/adg/adg_graphdb_index_07062026_0048.json",
         "rationale": "Available only as diagnostic/evidence context or missing from this run.",
         "recommendation": "keep_hide_inline",
         "stale": false,
@@ -268,7 +268,7 @@
         "decision_impact": "Shapes blast-radius, MV, and structural interpretation.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/issues/p0_remediation_wave_plan_07052026_0127.json",
+        "path": "artifacts/adg/issues/p0_remediation_wave_plan_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -281,7 +281,7 @@
         "decision_impact": "Provides audit/baseline context, not automatic fix priority.",
         "exists": true,
         "loaded": true,
-        "path": "artifacts/adg/dead_code_zone_control_report_07052026_0127.json",
+        "path": "artifacts/adg/dead_code_zone_control_report_07062026_0048.json",
         "rationale": "Loaded and mapped to a decision lens.",
         "recommendation": "keep",
         "stale": false,
@@ -297,42 +297,42 @@
       "errors": [
         {
           "delta": 90,
-          "detail": "meta=1089861 actual=1089951",
+          "detail": "meta=1091609 actual=1091699",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_edges"
         },
         {
           "delta": 1,
-          "detail": "meta=187968 actual=187969",
+          "detail": "meta=188193 actual=188194",
           "file": "",
           "mismatch_type": "meta_count_mismatch",
           "ref_id": "total_nodes"
         },
         {
           "artifact_key": "gate_results",
-          "expected_snapshot_minute": "20260705_0127",
-          "file": "artifacts/adg/adg_gate_results_20260705_053733.json",
+          "expected_snapshot_minute": "20260706_0048",
+          "file": "artifacts/adg/adg_gate_results_20260706_045318.json",
           "mismatch_type": "artifact_timestamp_mismatch",
-          "observed_snapshot_minute": "20260705_0537"
+          "observed_snapshot_minute": "20260706_0453"
         },
         {
           "artifact_key": "action_queue",
-          "expected_snapshot_minute": "20260705_0127",
+          "expected_snapshot_minute": "20260706_0048",
           "field": "snapshot_ts",
           "mismatch_type": "artifact_embedded_snapshot_mismatch",
-          "observed_snapshot_minute": "20260705_0537"
+          "observed_snapshot_minute": "20260706_0453"
         },
         {
           "artifact_key": "review_template",
-          "expected_snapshot_minute": "20260705_0127",
+          "expected_snapshot_minute": "20260706_0048",
           "field": "snapshot_ts",
           "mismatch_type": "artifact_embedded_snapshot_mismatch",
-          "observed_snapshot_minute": "20260705_0537"
+          "observed_snapshot_minute": "20260706_0453"
         },
         {
           "artifact_key": "generation_manifest",
-          "certification_status": "failed",
+          "certification_status": "clean",
           "mismatch_type": "generation_manifest_not_certified"
         }
       ],
@@ -349,31 +349,31 @@
         "non_exempt": 3
       },
       {
-        "audit_net": 0,
+        "audit_net": 3,
         "band": "P1",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 1143,
+        "gross": 1146,
         "guardian": 1143,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 0
+        "non_exempt": 3
       },
       {
-        "audit_net": 31,
+        "audit_net": 25,
         "band": "P2",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 747,
-        "guardian": 716,
+        "gross": 723,
+        "guardian": 698,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 31
+        "non_exempt": 25
       },
       {
-        "audit_net": 19196,
+        "audit_net": 19222,
         "band": "P3",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 19283,
+        "gross": 19309,
         "guardian": 87,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 19196
+        "non_exempt": 19222
       }
     ],
     "notes": [
@@ -439,7 +439,7 @@
         "work": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py"
       },
       {
-        "action": "Burn down ratchet C3_silent_writes_ratchet",
+        "action": "Burn down ratchet G_REACH_l0_reachability",
         "action_type": "burn_down_ratchet",
         "affected_layers": [],
         "affected_system": "",
@@ -449,16 +449,16 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "2,063 floor-row(s) remain on the ratchet gate.",
-        "move": "Burn down ratchet C3_silent_writes_ratchet",
+        "evidence": "1,453 floor-row(s) remain on the ratchet gate.",
+        "move": "Burn down ratchet G_REACH_l0_reachability",
         "next_step": "Burn down the ratchet after the current red gates clear.",
         "priority": 3,
         "rank": 3,
-        "scope": "C3_silent_writes_ratchet",
-        "technical_reason": "2,063 floor-row(s) remain on the ratchet gate.",
+        "scope": "G_REACH_l0_reachability",
+        "technical_reason": "1,453 floor-row(s) remain on the ratchet gate.",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
         "why_this_rank": "Burn down the ratchet after the current red gates clear.",
-        "work": "Burn down ratchet C3_silent_writes_ratchet"
+        "work": "Burn down ratchet G_REACH_l0_reachability"
       },
       {
         "action": "Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps",
@@ -490,7 +490,7 @@
     "table_limit": 4,
     "technical_read": [
       "First P0 evidence: `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; rows: 0.",
-      "Source: ADG `07052026_0127` emitted this as decision-linked queue evidence.",
+      "Source: ADG `07062026_0048` emitted this as decision-linked queue evidence.",
       "Report caveat: graph/report consistency is FAIL; only lower-priority ranking is provisional.",
       "Run context: 0 FIX gate(s); 4 action rows emitted.",
       "Runtime signal: present_failing.",
@@ -505,7 +505,7 @@
   },
   "bcg_gate_adapter": {
     "artifact_kind": "adg_bcg_gate_adapter",
-    "generated_at_utc": "2026-07-05T05:43:58+00:00",
+    "generated_at_utc": "2026-07-06T04:56:13+00:00",
     "policy": {
       "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
       "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -518,43 +518,6 @@
     },
     "policy_version": "2026-06-28.high_signal_burndown_v1",
     "priority_rows": [
-      {
-        "band": "P0",
-        "baseline_count": 1609,
-        "classification": "pass",
-        "delta_vs_baseline": 0,
-        "enforcement": "ratchet",
-        "gate_class": "UwgBypassRatchetGate",
-        "gate_id": "S2_uwg_bypass_ratchet",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "architecture_backlog",
-        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-        "raw_gate": {
-          "band": "P0",
-          "baseline_count": 1609,
-          "classification": "pass",
-          "dispatch": "in-process",
-          "enforcement": "ratchet",
-          "exit_code": 0,
-          "gate_class": "UwgBypassRatchetGate",
-          "gate_id": "S2_uwg_bypass_ratchet",
-          "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
-          "owner": "wiring_ci",
-          "source": "sql",
-          "status": "pass",
-          "stderr_tail": [],
-          "violation_count": 1609
-        },
-        "reported_for_priority_queue": true,
-        "rows": 1609,
-        "section": "burn_down",
-        "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1609 at floor (baseline 1609); no new debt.",
-        "status": "pass",
-        "sub": "floor",
-        "verdict": "TRACK"
-      },
       {
         "band": "P0",
         "baseline_count": 1453,
@@ -618,15 +581,52 @@
           "source": "sql",
           "status": "warn",
           "stderr_tail": [],
-          "violation_count": 764
+          "violation_count": 759
         },
         "reported_for_priority_queue": true,
-        "rows": 764,
+        "rows": 759,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 764 warn inventory; not halt-tier.",
+        "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 759 warn inventory; not halt-tier.",
         "status": "warn",
         "sub": "inventory",
+        "verdict": "TRACK"
+      },
+      {
+        "band": "P0",
+        "baseline_count": 749,
+        "classification": "pass",
+        "delta_vs_baseline": 0,
+        "enforcement": "ratchet",
+        "gate_class": "UwgBypassRatchetGate",
+        "gate_id": "S2_uwg_bypass_ratchet",
+        "is_burndown_work": true,
+        "is_kpi_or_watchlist": false,
+        "materiality": "architecture_backlog",
+        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+        "raw_gate": {
+          "band": "P0",
+          "baseline_count": 749,
+          "classification": "pass",
+          "dispatch": "in-process",
+          "enforcement": "ratchet",
+          "exit_code": 0,
+          "gate_class": "UwgBypassRatchetGate",
+          "gate_id": "S2_uwg_bypass_ratchet",
+          "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
+          "owner": "wiring_ci",
+          "source": "sql",
+          "status": "pass",
+          "stderr_tail": [],
+          "violation_count": 749
+        },
+        "reported_for_priority_queue": true,
+        "rows": 749,
+        "section": "burn_down",
+        "section_label": "Burn down / owned backlog",
+        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 749 at floor (baseline 749); no new debt.",
+        "status": "pass",
+        "sub": "floor",
         "verdict": "TRACK"
       },
       {
@@ -664,43 +664,6 @@
         "signal": "Counts: Declared canonical_pipelines.yaml steps missing required call wiring. Sub: 1 subprocess warn.",
         "status": "warn",
         "sub": "inventory",
-        "verdict": "TRACK"
-      },
-      {
-        "band": "P1",
-        "baseline_count": 2063,
-        "classification": "pass",
-        "delta_vs_baseline": 0,
-        "enforcement": "ratchet",
-        "gate_class": "SilentWritesGate",
-        "gate_id": "C3_silent_writes_ratchet",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "architecture_backlog",
-        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-        "raw_gate": {
-          "band": "P1",
-          "baseline_count": 2063,
-          "classification": "pass",
-          "dispatch": "in-process",
-          "enforcement": "ratchet",
-          "exit_code": 0,
-          "gate_class": "SilentWritesGate",
-          "gate_id": "C3_silent_writes_ratchet",
-          "handler": "ops_scripts/ci/check_w4_silent_writes.py",
-          "owner": "wiring_ci",
-          "source": "sql",
-          "status": "pass",
-          "stderr_tail": [],
-          "violation_count": 2063
-        },
-        "reported_for_priority_queue": true,
-        "rows": 2063,
-        "section": "burn_down",
-        "section_label": "Burn down / owned backlog",
-        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2063 at floor (baseline 2063); no new debt.",
-        "status": "pass",
-        "sub": "floor",
         "verdict": "TRACK"
       },
       {
@@ -816,7 +779,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 685,
+        "baseline_count": 686,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -828,7 +791,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 685,
+          "baseline_count": 686,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -840,13 +803,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 685
+          "violation_count": 686
         },
         "reported_for_priority_queue": true,
-        "rows": 685,
+        "rows": 686,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
+        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 686 at floor (baseline 686); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -890,6 +853,43 @@
       },
       {
         "band": "P1",
+        "baseline_count": 125,
+        "classification": "pass",
+        "delta_vs_baseline": 0,
+        "enforcement": "ratchet",
+        "gate_class": "SilentWritesGate",
+        "gate_id": "C3_silent_writes_ratchet",
+        "is_burndown_work": true,
+        "is_kpi_or_watchlist": false,
+        "materiality": "architecture_backlog",
+        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+        "raw_gate": {
+          "band": "P1",
+          "baseline_count": 125,
+          "classification": "pass",
+          "dispatch": "in-process",
+          "enforcement": "ratchet",
+          "exit_code": 0,
+          "gate_class": "SilentWritesGate",
+          "gate_id": "C3_silent_writes_ratchet",
+          "handler": "ops_scripts/ci/check_w4_silent_writes.py",
+          "owner": "wiring_ci",
+          "source": "sql",
+          "status": "pass",
+          "stderr_tail": [],
+          "violation_count": 125
+        },
+        "reported_for_priority_queue": true,
+        "rows": 125,
+        "section": "burn_down",
+        "section_label": "Burn down / owned backlog",
+        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 125 at floor (baseline 125); no new debt.",
+        "status": "pass",
+        "sub": "floor",
+        "verdict": "TRACK"
+      },
+      {
+        "band": "P1",
         "baseline_count": 88,
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -927,7 +927,7 @@
       },
       {
         "band": "P2",
-        "baseline_count": 995,
+        "baseline_count": 997,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -939,7 +939,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P2",
-          "baseline_count": 995,
+          "baseline_count": 997,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -951,13 +951,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 995
+          "violation_count": 997
         },
         "reported_for_priority_queue": true,
-        "rows": 995,
+        "rows": 997,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
+        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 997 at floor (baseline 997); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -1040,7 +1040,7 @@
       },
       {
         "band": "P3",
-        "baseline_count": 10795,
+        "baseline_count": 10796,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1052,7 +1052,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 10795,
+          "baseline_count": 10796,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1064,20 +1064,20 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 10795
+          "violation_count": 10796
         },
         "reported_for_priority_queue": false,
-        "rows": 10795,
+        "rows": 10796,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Unused import edges in production modules. Sub: 10795 at floor (baseline 10795); no new debt.",
+        "signal": "Counts: Unused import edges in production modules. Sub: 10796 at floor (baseline 10796); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 1190,
+        "baseline_count": 1199,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1089,7 +1089,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 1190,
+          "baseline_count": 1199,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1101,20 +1101,20 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1190
+          "violation_count": 1199
         },
         "reported_for_priority_queue": false,
-        "rows": 1190,
+        "rows": 1199,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1190 at floor (baseline 1190); no new debt.",
+        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1199 at floor (baseline 1199); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 469,
+        "baseline_count": 472,
         "classification": "pass",
         "delta_vs_baseline": 0,
         "enforcement": "ratchet",
@@ -1126,7 +1126,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 469,
+          "baseline_count": 472,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -1138,13 +1138,13 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 469
+          "violation_count": 472
         },
         "reported_for_priority_queue": false,
-        "rows": 469,
+        "rows": 472,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
+        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 472 at floor (baseline 472); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -1193,45 +1193,8 @@
         "description": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
         "gate_count": 13,
         "label": "Burn down / owned backlog",
-        "row_count": 11385,
+        "row_count": 8585,
         "rows": [
-          {
-            "band": "P0",
-            "baseline_count": 1609,
-            "classification": "pass",
-            "delta_vs_baseline": 0,
-            "enforcement": "ratchet",
-            "gate_class": "UwgBypassRatchetGate",
-            "gate_id": "S2_uwg_bypass_ratchet",
-            "is_burndown_work": true,
-            "is_kpi_or_watchlist": false,
-            "materiality": "architecture_backlog",
-            "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-            "raw_gate": {
-              "band": "P0",
-              "baseline_count": 1609,
-              "classification": "pass",
-              "dispatch": "in-process",
-              "enforcement": "ratchet",
-              "exit_code": 0,
-              "gate_class": "UwgBypassRatchetGate",
-              "gate_id": "S2_uwg_bypass_ratchet",
-              "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
-              "owner": "wiring_ci",
-              "source": "sql",
-              "status": "pass",
-              "stderr_tail": [],
-              "violation_count": 1609
-            },
-            "reported_for_priority_queue": true,
-            "rows": 1609,
-            "section": "burn_down",
-            "section_label": "Burn down / owned backlog",
-            "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1609 at floor (baseline 1609); no new debt.",
-            "status": "pass",
-            "sub": "floor",
-            "verdict": "TRACK"
-          },
           {
             "band": "P0",
             "baseline_count": 1453,
@@ -1295,15 +1258,52 @@
               "source": "sql",
               "status": "warn",
               "stderr_tail": [],
-              "violation_count": 764
+              "violation_count": 759
             },
             "reported_for_priority_queue": true,
-            "rows": 764,
+            "rows": 759,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 764 warn inventory; not halt-tier.",
+            "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 759 warn inventory; not halt-tier.",
             "status": "warn",
             "sub": "inventory",
+            "verdict": "TRACK"
+          },
+          {
+            "band": "P0",
+            "baseline_count": 749,
+            "classification": "pass",
+            "delta_vs_baseline": 0,
+            "enforcement": "ratchet",
+            "gate_class": "UwgBypassRatchetGate",
+            "gate_id": "S2_uwg_bypass_ratchet",
+            "is_burndown_work": true,
+            "is_kpi_or_watchlist": false,
+            "materiality": "architecture_backlog",
+            "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+            "raw_gate": {
+              "band": "P0",
+              "baseline_count": 749,
+              "classification": "pass",
+              "dispatch": "in-process",
+              "enforcement": "ratchet",
+              "exit_code": 0,
+              "gate_class": "UwgBypassRatchetGate",
+              "gate_id": "S2_uwg_bypass_ratchet",
+              "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
+              "owner": "wiring_ci",
+              "source": "sql",
+              "status": "pass",
+              "stderr_tail": [],
+              "violation_count": 749
+            },
+            "reported_for_priority_queue": true,
+            "rows": 749,
+            "section": "burn_down",
+            "section_label": "Burn down / owned backlog",
+            "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 749 at floor (baseline 749); no new debt.",
+            "status": "pass",
+            "sub": "floor",
             "verdict": "TRACK"
           },
           {
@@ -1341,43 +1341,6 @@
             "signal": "Counts: Declared canonical_pipelines.yaml steps missing required call wiring. Sub: 1 subprocess warn.",
             "status": "warn",
             "sub": "inventory",
-            "verdict": "TRACK"
-          },
-          {
-            "band": "P1",
-            "baseline_count": 2063,
-            "classification": "pass",
-            "delta_vs_baseline": 0,
-            "enforcement": "ratchet",
-            "gate_class": "SilentWritesGate",
-            "gate_id": "C3_silent_writes_ratchet",
-            "is_burndown_work": true,
-            "is_kpi_or_watchlist": false,
-            "materiality": "architecture_backlog",
-            "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-            "raw_gate": {
-              "band": "P1",
-              "baseline_count": 2063,
-              "classification": "pass",
-              "dispatch": "in-process",
-              "enforcement": "ratchet",
-              "exit_code": 0,
-              "gate_class": "SilentWritesGate",
-              "gate_id": "C3_silent_writes_ratchet",
-              "handler": "ops_scripts/ci/check_w4_silent_writes.py",
-              "owner": "wiring_ci",
-              "source": "sql",
-              "status": "pass",
-              "stderr_tail": [],
-              "violation_count": 2063
-            },
-            "reported_for_priority_queue": true,
-            "rows": 2063,
-            "section": "burn_down",
-            "section_label": "Burn down / owned backlog",
-            "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2063 at floor (baseline 2063); no new debt.",
-            "status": "pass",
-            "sub": "floor",
             "verdict": "TRACK"
           },
           {
@@ -1493,7 +1456,7 @@
           },
           {
             "band": "P1",
-            "baseline_count": 685,
+            "baseline_count": 686,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1505,7 +1468,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P1",
-              "baseline_count": 685,
+              "baseline_count": 686,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1517,13 +1480,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 685
+              "violation_count": 686
             },
             "reported_for_priority_queue": true,
-            "rows": 685,
+            "rows": 686,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
+            "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 686 at floor (baseline 686); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -1567,6 +1530,43 @@
           },
           {
             "band": "P1",
+            "baseline_count": 125,
+            "classification": "pass",
+            "delta_vs_baseline": 0,
+            "enforcement": "ratchet",
+            "gate_class": "SilentWritesGate",
+            "gate_id": "C3_silent_writes_ratchet",
+            "is_burndown_work": true,
+            "is_kpi_or_watchlist": false,
+            "materiality": "architecture_backlog",
+            "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+            "raw_gate": {
+              "band": "P1",
+              "baseline_count": 125,
+              "classification": "pass",
+              "dispatch": "in-process",
+              "enforcement": "ratchet",
+              "exit_code": 0,
+              "gate_class": "SilentWritesGate",
+              "gate_id": "C3_silent_writes_ratchet",
+              "handler": "ops_scripts/ci/check_w4_silent_writes.py",
+              "owner": "wiring_ci",
+              "source": "sql",
+              "status": "pass",
+              "stderr_tail": [],
+              "violation_count": 125
+            },
+            "reported_for_priority_queue": true,
+            "rows": 125,
+            "section": "burn_down",
+            "section_label": "Burn down / owned backlog",
+            "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 125 at floor (baseline 125); no new debt.",
+            "status": "pass",
+            "sub": "floor",
+            "verdict": "TRACK"
+          },
+          {
+            "band": "P1",
             "baseline_count": 88,
             "classification": "pass",
             "delta_vs_baseline": 0,
@@ -1604,7 +1604,7 @@
           },
           {
             "band": "P2",
-            "baseline_count": 995,
+            "baseline_count": 997,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -1616,7 +1616,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P2",
-              "baseline_count": 995,
+              "baseline_count": 997,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -1628,13 +1628,13 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 995
+              "violation_count": 997
             },
             "reported_for_priority_queue": true,
-            "rows": 995,
+            "rows": 997,
             "section": "burn_down",
             "section_label": "Burn down / owned backlog",
-            "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
+            "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 997 at floor (baseline 997); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -2844,7 +2844,7 @@
         "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
         "gate_count": 5,
         "label": "KPI / watchlist",
-        "row_count": 12562,
+        "row_count": 12575,
         "rows": [
           {
             "band": "P2",
@@ -2885,7 +2885,7 @@
           },
           {
             "band": "P3",
-            "baseline_count": 10795,
+            "baseline_count": 10796,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -2897,7 +2897,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 10795,
+              "baseline_count": 10796,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -2909,20 +2909,20 @@
               "source": "sql",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 10795
+              "violation_count": 10796
             },
             "reported_for_priority_queue": false,
-            "rows": 10795,
+            "rows": 10796,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Unused import edges in production modules. Sub: 10795 at floor (baseline 10795); no new debt.",
+            "signal": "Counts: Unused import edges in production modules. Sub: 10796 at floor (baseline 10796); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
           },
           {
             "band": "P3",
-            "baseline_count": 1190,
+            "baseline_count": 1199,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -2934,7 +2934,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 1190,
+              "baseline_count": 1199,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -2946,20 +2946,20 @@
               "source": "disk",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 1190
+              "violation_count": 1199
             },
             "reported_for_priority_queue": false,
-            "rows": 1190,
+            "rows": 1199,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1190 at floor (baseline 1190); no new debt.",
+            "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1199 at floor (baseline 1199); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
           },
           {
             "band": "P3",
-            "baseline_count": 469,
+            "baseline_count": 472,
             "classification": "pass",
             "delta_vs_baseline": 0,
             "enforcement": "ratchet",
@@ -2971,7 +2971,7 @@
             "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
             "raw_gate": {
               "band": "P3",
-              "baseline_count": 469,
+              "baseline_count": 472,
               "classification": "pass",
               "dispatch": "in-process",
               "enforcement": "ratchet",
@@ -2983,13 +2983,13 @@
               "source": "disk",
               "status": "pass",
               "stderr_tail": [],
-              "violation_count": 469
+              "violation_count": 472
             },
             "reported_for_priority_queue": false,
-            "rows": 469,
+            "rows": 472,
             "section": "kpi_watchlist",
             "section_label": "KPI / watchlist",
-            "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
+            "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 472 at floor (baseline 472); no new debt.",
             "status": "pass",
             "sub": "floor",
             "verdict": "TRACK"
@@ -3037,25 +3037,25 @@
     "source": {
       "burndown_schema_version": "2.2",
       "overall_exit_code": 0,
-      "snapshot": "adg_indexed_07052026_0127.sqlite",
-      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\adg\\adg_indexed_07052026_0127.sqlite",
-      "timestamp": "2026-07-05T05:37:33.314299+00:00"
+      "snapshot": "adg_indexed_07062026_0048.sqlite",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07062026_0048.sqlite",
+      "timestamp": "2026-07-06T04:53:18.136776+00:00"
     },
     "summary": {
       "burn_down_gates": 13,
-      "burn_down_rows": 11385,
+      "burn_down_rows": 8585,
       "clear_gates": 31,
       "fix_now_gates": 0,
       "fix_now_rows": 0,
       "kpi_watchlist_gates": 5,
-      "kpi_watchlist_rows": 12562,
+      "kpi_watchlist_rows": 12575,
       "priority_queue_gate_count": 13,
-      "priority_queue_row_count": 11385,
+      "priority_queue_row_count": 8585,
       "report_only_gate_count": 5,
-      "report_only_row_count": 12562,
+      "report_only_row_count": 12575,
       "total_gates": 49,
       "work_section_gate_count": 13,
-      "work_section_row_count": 11385
+      "work_section_row_count": 8585
     }
   },
   "canonical_next_best_actions": {
@@ -3127,7 +3127,7 @@
         "work": "Refactor high-blast-radius seam agentic_core/adg/extraction/static_scanner.py"
       },
       {
-        "action": "Burn down ratchet C3_silent_writes_ratchet",
+        "action": "Burn down ratchet G_REACH_l0_reachability",
         "action_type": "burn_down_ratchet",
         "affected_layers": [],
         "affected_system": "",
@@ -3138,26 +3138,26 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived.",
-        "evidence": "2,063 floor-row(s) remain on the ratchet gate.",
+        "evidence": "1,453 floor-row(s) remain on the ratchet gate.",
         "evidence_used": [
           {
             "decision_effect": "Accepted baseline debt should fall after red gates are clear.",
-            "signal_name": "C3_silent_writes_ratchet",
+            "signal_name": "G_REACH_l0_reachability",
             "signal_type": "gate"
           }
         ],
-        "move": "Burn down ratchet C3_silent_writes_ratchet",
+        "move": "Burn down ratchet G_REACH_l0_reachability",
         "next_step": "Burn down the ratchet after the current red gates clear.",
         "priority": 3,
         "rank": 3,
-        "scope": "C3_silent_writes_ratchet",
-        "technical_reason": "2,063 floor-row(s) remain on the ratchet gate.",
+        "scope": "G_REACH_l0_reachability",
+        "technical_reason": "1,453 floor-row(s) remain on the ratchet gate.",
         "testing_requirement": "Add tests only when touched scope overlaps hotspot.",
         "timing": "after_green",
         "why_it_matters": "Accepted baseline debt should fall after red gates are clear.",
         "why_now": "Accepted baseline debt should fall after red gates are clear.",
         "why_this_rank": "Burn down the ratchet after the current red gates clear.",
-        "work": "Burn down ratchet C3_silent_writes_ratchet"
+        "work": "Burn down ratchet G_REACH_l0_reachability"
       },
       {
         "action": "Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps",
@@ -3344,7 +3344,7 @@
         "status_label": "Deletion status",
         "table_limit": 6,
         "technical_read": [
-          "ADG source: artifacts/adg/adg_indexed_07052026_0127.sqlite (snapshot 07052026_0127)",
+          "ADG source: artifacts/adg/adg_indexed_07062026_0048.sqlite (snapshot 07062026_0048)",
           "Dead code candidates: 913",
           "Dead imports: 913",
           "Unresolved imports: 483",
@@ -3501,8 +3501,8 @@
         "dead_code_candidates": 913,
         "dead_imports": 913,
         "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-        "first_party_low_confidence_ratio": 1.5584667010841509,
-        "inferred_symbol_ratio": 10.132248682057808,
+        "first_party_low_confidence_ratio": 1.5572105619498984,
+        "inferred_symbol_ratio": 10.129419174009497,
         "unresolved_imports": 483,
         "why_this_order": [
           "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -3644,8 +3644,8 @@
       "executive_metrics": {
         "dead_code_count": 913,
         "dead_import_count": 913,
-        "first_party_low_confidence_ratio": 1.5584667010841509,
-        "inferred_symbol_ratio": 10.132248682057808,
+        "first_party_low_confidence_ratio": 1.5572105619498984,
+        "inferred_symbol_ratio": 10.129419174009497,
         "l4_unresolved_import_count": 0,
         "low_confidence_count": 483,
         "unresolved_import_count": 483
@@ -3662,18 +3662,18 @@
     },
     "inferred_symbols": {
       "inferred_by_confidence": {
-        "MEDIUM": 17836
+        "MEDIUM": 17853
       },
       "inferred_by_layer": {
         "L0": 1348,
         "L1": 574,
-        "L2": 892,
-        "L3": 859,
+        "L2": 893,
+        "L3": 861,
         "L4": 604,
         "L5": 1284,
-        "L6": 1324,
-        "L_APP": 5416,
-        "L_OPS": 500,
+        "L6": 1328,
+        "L_APP": 5423,
+        "L_OPS": 503,
         "L_PG": 497,
         "L_RUNTIME": 1079,
         "L_SHARED": 602,
@@ -3681,12 +3681,12 @@
         "L_TOOLS": 2352,
         "L_UNKNOWN": 216
       },
-      "inferred_symbol_ratio": 10.132248682057808,
-      "total_inferred_symbols": 17836,
-      "total_symbols": 176032
+      "inferred_symbol_ratio": 10.129419174009497,
+      "total_inferred_symbols": 17853,
+      "total_symbols": 176249
     },
     "low_confidence_zones": {
-      "first_party_low_confidence_ratio": 1.5584667010841509,
+      "first_party_low_confidence_ratio": 1.5572105619498984,
       "governance_low_confidence_ratio": 0.0,
       "low_conf_by_entity_type": {
         "symbol": 483
@@ -3706,8 +3706,8 @@
       "total_low_confidence": 483
     },
     "source": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_07052026_0127.sqlite",
-      "adg_snapshot_ts": "07052026_0127",
+      "adg_snapshot": "artifacts/adg/adg_indexed_07062026_0048.sqlite",
+      "adg_snapshot_ts": "07062026_0048",
       "dead_code_signal_sources": [
         "overlay_violations.category=dead_import_resolved",
         "mv_dead_import_hotspots_overlay",
@@ -3717,11 +3717,11 @@
     },
     "status": "PASS",
     "summary": {
-      "adg_snapshot": "artifacts/adg/adg_indexed_07052026_0127.sqlite",
-      "adg_snapshot_ts": "07052026_0127",
+      "adg_snapshot": "artifacts/adg/adg_indexed_07062026_0048.sqlite",
+      "adg_snapshot_ts": "07062026_0048",
       "executive_ready": true,
-      "first_party_low_confidence_ratio": 1.5584667010841509,
-      "inferred_symbol_ratio": 10.132248682057808,
+      "first_party_low_confidence_ratio": 1.5572105619498984,
+      "inferred_symbol_ratio": 10.129419174009497,
       "l4_unresolved_imports": 0,
       "total_dead_code_candidates": 913,
       "total_dead_imports": 913,
@@ -3789,7 +3789,7 @@
   "defer_delete_deprecate": {
     "rows": [
       {
-        "current_value": "787 rows; diagnostic_monitor",
+        "current_value": "789 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -3845,7 +3845,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6613 rows; diagnostic_monitor",
+        "current_value": "6616 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -3861,7 +3861,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3180 rows; diagnostic_monitor",
+        "current_value": "3159 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4035,7 +4035,7 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07052026_0127.sqlite (snapshot 07052026_0127)",
+        "ADG source: artifacts/adg/adg_indexed_07062026_0048.sqlite (snapshot 07062026_0048)",
         "Dead code candidates: 913",
         "Dead imports: 913",
         "Unresolved imports: 483",
@@ -4053,7 +4053,7 @@
     },
     "cleanup_candidates": [
       {
-        "current_value": "787 rows; diagnostic_monitor",
+        "current_value": "789 rows; diagnostic_monitor",
         "item": "mv_actionable_surface_without_schema",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4109,7 +4109,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "6613 rows; diagnostic_monitor",
+        "current_value": "6616 rows; diagnostic_monitor",
         "item": "mv_determinism_provenance_drift",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4125,7 +4125,7 @@
         "revisit_condition": "Promote only when tied to blocker, test gap, critical path, or planned slice."
       },
       {
-        "current_value": "3180 rows; diagnostic_monitor",
+        "current_value": "3159 rows; diagnostic_monitor",
         "item": "mv_exemptions_near_critical_paths",
         "item_type": "mv",
         "rationale": "Raw MV count alone is not a funding signal.",
@@ -4289,8 +4289,8 @@
       "dead_code_candidates": 913,
       "dead_imports": 913,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.5584667010841509,
-      "inferred_symbol_ratio": 10.132248682057808,
+      "first_party_low_confidence_ratio": 1.5572105619498984,
+      "inferred_symbol_ratio": 10.129419174009497,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -4700,44 +4700,6 @@
     "burn_down_after_green": [
       {
         "band": "P0",
-        "baseline_count": 1609,
-        "bucket": "BURN_DOWN_AFTER_GREEN",
-        "classification": "pass",
-        "delta_vs_baseline": 0,
-        "enforcement": "ratchet",
-        "gate_class": "UwgBypassRatchetGate",
-        "gate_id": "S2_uwg_bypass_ratchet",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "architecture_backlog",
-        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-        "raw_gate": {
-          "band": "P0",
-          "baseline_count": 1609,
-          "classification": "pass",
-          "dispatch": "in-process",
-          "enforcement": "ratchet",
-          "exit_code": 0,
-          "gate_class": "UwgBypassRatchetGate",
-          "gate_id": "S2_uwg_bypass_ratchet",
-          "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
-          "owner": "wiring_ci",
-          "source": "sql",
-          "status": "pass",
-          "stderr_tail": [],
-          "violation_count": 1609
-        },
-        "reported_for_priority_queue": true,
-        "rows": 1609,
-        "section": "burn_down",
-        "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 1609 at floor (baseline 1609); no new debt.",
-        "status": "pass",
-        "sub": "floor",
-        "verdict": "TRACK"
-      },
-      {
-        "band": "P0",
         "baseline_count": 1453,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
@@ -4801,15 +4763,53 @@
           "source": "sql",
           "status": "warn",
           "stderr_tail": [],
-          "violation_count": 764
+          "violation_count": 759
         },
         "reported_for_priority_queue": true,
-        "rows": 764,
+        "rows": 759,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 764 warn inventory; not halt-tier.",
+        "signal": "Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory). Sub: 759 warn inventory; not halt-tier.",
         "status": "warn",
         "sub": "inventory",
+        "verdict": "TRACK"
+      },
+      {
+        "band": "P0",
+        "baseline_count": 749,
+        "bucket": "BURN_DOWN_AFTER_GREEN",
+        "classification": "pass",
+        "delta_vs_baseline": 0,
+        "enforcement": "ratchet",
+        "gate_class": "UwgBypassRatchetGate",
+        "gate_id": "S2_uwg_bypass_ratchet",
+        "is_burndown_work": true,
+        "is_kpi_or_watchlist": false,
+        "materiality": "architecture_backlog",
+        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+        "raw_gate": {
+          "band": "P0",
+          "baseline_count": 749,
+          "classification": "pass",
+          "dispatch": "in-process",
+          "enforcement": "ratchet",
+          "exit_code": 0,
+          "gate_class": "UwgBypassRatchetGate",
+          "gate_id": "S2_uwg_bypass_ratchet",
+          "handler": "ops_scripts/ci/check_uwg_bypass_ratchet.py",
+          "owner": "wiring_ci",
+          "source": "sql",
+          "status": "pass",
+          "stderr_tail": [],
+          "violation_count": 749
+        },
+        "reported_for_priority_queue": true,
+        "rows": 749,
+        "section": "burn_down",
+        "section_label": "Burn down / owned backlog",
+        "signal": "Counts: Write paths that bypass UWG (overlay on write_sovereignty edges). Sub: 749 at floor (baseline 749); no new debt.",
+        "status": "pass",
+        "sub": "floor",
         "verdict": "TRACK"
       },
       {
@@ -4848,44 +4848,6 @@
         "signal": "Counts: Declared canonical_pipelines.yaml steps missing required call wiring. Sub: 1 subprocess warn.",
         "status": "warn",
         "sub": "inventory",
-        "verdict": "TRACK"
-      },
-      {
-        "band": "P1",
-        "baseline_count": 2063,
-        "bucket": "BURN_DOWN_AFTER_GREEN",
-        "classification": "pass",
-        "delta_vs_baseline": 0,
-        "enforcement": "ratchet",
-        "gate_class": "SilentWritesGate",
-        "gate_id": "C3_silent_writes_ratchet",
-        "is_burndown_work": true,
-        "is_kpi_or_watchlist": false,
-        "materiality": "architecture_backlog",
-        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-        "raw_gate": {
-          "band": "P1",
-          "baseline_count": 2063,
-          "classification": "pass",
-          "dispatch": "in-process",
-          "enforcement": "ratchet",
-          "exit_code": 0,
-          "gate_class": "SilentWritesGate",
-          "gate_id": "C3_silent_writes_ratchet",
-          "handler": "ops_scripts/ci/check_w4_silent_writes.py",
-          "owner": "wiring_ci",
-          "source": "sql",
-          "status": "pass",
-          "stderr_tail": [],
-          "violation_count": 2063
-        },
-        "reported_for_priority_queue": true,
-        "rows": 2063,
-        "section": "burn_down",
-        "section_label": "Burn down / owned backlog",
-        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 2063 at floor (baseline 2063); no new debt.",
-        "status": "pass",
-        "sub": "floor",
         "verdict": "TRACK"
       },
       {
@@ -5004,7 +4966,7 @@
       },
       {
         "band": "P1",
-        "baseline_count": 685,
+        "baseline_count": 686,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -5017,7 +4979,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P1",
-          "baseline_count": 685,
+          "baseline_count": 686,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -5029,13 +4991,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 685
+          "violation_count": 686
         },
         "reported_for_priority_queue": true,
-        "rows": 685,
+        "rows": 686,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 685 at floor (baseline 685); no new debt.",
+        "signal": "Counts: Actionable taint surfaces without output schema binding. Sub: 686 at floor (baseline 686); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -5080,6 +5042,44 @@
       },
       {
         "band": "P1",
+        "baseline_count": 125,
+        "bucket": "BURN_DOWN_AFTER_GREEN",
+        "classification": "pass",
+        "delta_vs_baseline": 0,
+        "enforcement": "ratchet",
+        "gate_class": "SilentWritesGate",
+        "gate_id": "C3_silent_writes_ratchet",
+        "is_burndown_work": true,
+        "is_kpi_or_watchlist": false,
+        "materiality": "architecture_backlog",
+        "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+        "raw_gate": {
+          "band": "P1",
+          "baseline_count": 125,
+          "classification": "pass",
+          "dispatch": "in-process",
+          "enforcement": "ratchet",
+          "exit_code": 0,
+          "gate_class": "SilentWritesGate",
+          "gate_id": "C3_silent_writes_ratchet",
+          "handler": "ops_scripts/ci/check_w4_silent_writes.py",
+          "owner": "wiring_ci",
+          "source": "sql",
+          "status": "pass",
+          "stderr_tail": [],
+          "violation_count": 125
+        },
+        "reported_for_priority_queue": true,
+        "rows": 125,
+        "section": "burn_down",
+        "section_label": "Burn down / owned backlog",
+        "signal": "Counts: writes_to edges without sibling emits_side_effect on same source. Sub: 125 at floor (baseline 125); no new debt.",
+        "status": "pass",
+        "sub": "floor",
+        "verdict": "TRACK"
+      },
+      {
+        "band": "P1",
         "baseline_count": 88,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
@@ -5118,7 +5118,7 @@
       },
       {
         "band": "P2",
-        "baseline_count": 995,
+        "baseline_count": 997,
         "bucket": "BURN_DOWN_AFTER_GREEN",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -5131,7 +5131,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P2",
-          "baseline_count": 995,
+          "baseline_count": 997,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -5143,13 +5143,13 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 995
+          "violation_count": 997
         },
         "reported_for_priority_queue": true,
-        "rows": 995,
+        "rows": 997,
         "section": "burn_down",
         "section_label": "Burn down / owned backlog",
-        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 995 at floor (baseline 995); no new debt.",
+        "signal": "Counts: State mutations not consumed by replay surface (gap_flag=1). Sub: 997 at floor (baseline 997); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -6428,7 +6428,7 @@
       },
       {
         "band": "P3",
-        "baseline_count": 10795,
+        "baseline_count": 10796,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6441,7 +6441,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 10795,
+          "baseline_count": 10796,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6453,20 +6453,20 @@
           "source": "sql",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 10795
+          "violation_count": 10796
         },
         "reported_for_priority_queue": false,
-        "rows": 10795,
+        "rows": 10796,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Unused import edges in production modules. Sub: 10795 at floor (baseline 10795); no new debt.",
+        "signal": "Counts: Unused import edges in production modules. Sub: 10796 at floor (baseline 10796); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 1190,
+        "baseline_count": 1199,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6479,7 +6479,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 1190,
+          "baseline_count": 1199,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6491,20 +6491,20 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 1190
+          "violation_count": 1199
         },
         "reported_for_priority_queue": false,
-        "rows": 1190,
+        "rows": 1199,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1190 at floor (baseline 1190); no new debt.",
+        "signal": "Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1199 at floor (baseline 1199); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
       },
       {
         "band": "P3",
-        "baseline_count": 469,
+        "baseline_count": 472,
         "bucket": "KPI_WATCHLIST",
         "classification": "pass",
         "delta_vs_baseline": 0,
@@ -6517,7 +6517,7 @@
         "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
         "raw_gate": {
           "band": "P3",
-          "baseline_count": 469,
+          "baseline_count": 472,
           "classification": "pass",
           "dispatch": "in-process",
           "enforcement": "ratchet",
@@ -6529,13 +6529,13 @@
           "source": "disk",
           "status": "pass",
           "stderr_tail": [],
-          "violation_count": 469
+          "violation_count": 472
         },
         "reported_for_priority_queue": false,
-        "rows": 469,
+        "rows": 472,
         "section": "kpi_watchlist",
         "section_label": "KPI / watchlist",
-        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 469 at floor (baseline 469); no new debt.",
+        "signal": "Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 472 at floor (baseline 472); no new debt.",
         "status": "pass",
         "sub": "floor",
         "verdict": "TRACK"
@@ -6593,34 +6593,34 @@
         "non_exempt": 3
       },
       {
-        "audit_net": 0,
+        "audit_net": 3,
         "band": "P1",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 1143,
+        "gross": 1146,
         "guardian": 1143,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 0
+        "non_exempt": 3
       },
       {
-        "audit_net": 31,
+        "audit_net": 25,
         "band": "P2",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 747,
-        "guardian": 716,
+        "gross": 723,
+        "guardian": 698,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 31
+        "non_exempt": 25
       },
       {
-        "audit_net": 19196,
+        "audit_net": 19222,
         "band": "P3",
         "bucket": "SEVERITY_INVENTORY",
         "executive_read": "Audit context only until it maps to a failing gate, runtime failure, hotspot, or changed code.",
-        "gross": 19283,
+        "gross": 19309,
         "guardian": 87,
         "meaning": "Severity audit inventory after guardian exemptions; not a live work order by itself.",
-        "non_exempt": 19196
+        "non_exempt": 19222
       }
     ]
   },
@@ -6676,9 +6676,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 1143,
-        "audit_net": 0,
-        "audit_net_display": "0",
+        "audit_gross": 1146,
+        "audit_net": 3,
+        "audit_net_display": "3",
         "band": "P1",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -6687,20 +6687,20 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 747,
-        "audit_net": 31,
-        "audit_net_display": "31",
+        "audit_gross": 723,
+        "audit_net": 25,
+        "audit_net_display": "25",
         "band": "P2",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
-        "guardian_exempted": 716,
+        "guardian_exempted": 698,
         "live_gate_drivers": 0
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 19283,
-        "audit_net": 19196,
-        "audit_net_display": "19,196",
+        "audit_gross": 19309,
+        "audit_net": 19222,
+        "audit_net_display": "19,222",
         "band": "P3",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -7246,25 +7246,25 @@
     "key_interpretation": "A blocked ADG run is not automatically a platform crisis; regression delta and graph/test linkage determine urgency.",
     "kpi_watchlist": {
       "gate_count": 5,
-      "row_count": 12562,
+      "row_count": 12575,
       "top_signals": [
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "S4_unused_imports_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 10795
+          "records": 10796
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "Q2_cyclomatic_complexity_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 1190
+          "records": 1199
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
           "gate_id": "M1_module_loc_ratchet",
           "recommended_action": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
-          "records": 469
+          "records": 472
         },
         {
           "executive_read": "Watchlist signal; do not treat as burn-down work without an owner and target.",
@@ -7281,21 +7281,9 @@
       ]
     },
     "managed_debt": {
-      "open_non_ratchet_records": 765,
-      "ratchet_floor_records": 10620,
+      "open_non_ratchet_records": 760,
+      "ratchet_floor_records": 7825,
       "top_ratchets": [
-        {
-          "after_green_action": "Burn down after FIX rows clear.",
-          "executive_read": "Accepted baseline debt, not current red.",
-          "gate_id": "C3_silent_writes_ratchet",
-          "records": 2063
-        },
-        {
-          "after_green_action": "Burn down after FIX rows clear.",
-          "executive_read": "Accepted baseline debt, not current red.",
-          "gate_id": "S2_uwg_bypass_ratchet",
-          "records": 1609
-        },
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
@@ -7306,13 +7294,25 @@
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "I2_replay_surface_gaps_ratchet",
-          "records": 995
+          "records": 997
         },
         {
           "after_green_action": "Burn down after FIX rows clear.",
           "executive_read": "Accepted baseline debt, not current red.",
           "gate_id": "E1_trace_stub_module",
           "records": 982
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "F1_untyped_seam_ratchet",
+          "records": 982
+        },
+        {
+          "after_green_action": "Burn down after FIX rows clear.",
+          "executive_read": "Accepted baseline debt, not current red.",
+          "gate_id": "B2_layer_skip_ratchet",
+          "records": 862
         }
       ]
     },
@@ -8539,6 +8539,7 @@
             "tests/unit/apps_rg/test_briefing_grounding_vocabulary_split.py",
             "tests/unit/apps_rg/test_briefing_mandatory_no_apps_research.py",
             "tests/unit/apps_rg/test_graph_skills_w10_ag_pipeline.py",
+            "tests/unit/apps_rg/test_l1_planning_capsule.py",
             "tests/unit/apps_rg/test_section_evidence_w6a_quarantine.py",
             "tests/unit/apps_rg/test_section_evidence_w6d_proof_boundary.py",
             "tests/unit/apps_shared/config/test_titanium_search_tool_config.py",
@@ -9664,7 +9665,7 @@
     "test_scope_inventory": {
       "folders": [
         {
-          "file_count": 3186,
+          "file_count": 3191,
           "folder": "tests/unit",
           "mapped_production_scopes": [
             "agentic_core",
@@ -9717,6 +9718,8 @@
             "agentic_core/L3_orchestration/doctrine",
             "agentic_core/L3_orchestration/exit_control",
             "agentic_core/L3_orchestration/exit_eval",
+            "agentic_core/L3_orchestration/exit_eval/graders",
+            "agentic_core/L3_orchestration/exit_eval/judges",
             "agentic_core/L3_orchestration/exit_eval/v6",
             "agentic_core/L3_orchestration/inference",
             "agentic_core/L3_orchestration/inference/qwen_vllm",
@@ -10772,7 +10775,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 787,
+        "row_count": 789,
         "signal": "mv_actionable_surface_without_schema",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -10849,7 +10852,7 @@
         "decision_role": "used_for_testing",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4912,
+        "row_count": 4917,
         "signal": "mv_debt_concentration_hotspots",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -10860,7 +10863,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11857,
+        "row_count": 11865,
         "signal": "mv_dependency_cone_risk",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -10871,7 +10874,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6613,
+        "row_count": 6616,
         "signal": "mv_determinism_provenance_drift",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -10904,7 +10907,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 3180,
+        "row_count": 3159,
         "signal": "mv_exemptions_near_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11014,7 +11017,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 10935,
+        "row_count": 10943,
         "signal": "mv_high_fan_in_out_with_defects",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11036,7 +11039,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11857,
+        "row_count": 11865,
         "signal": "mv_hotspot_centrality",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11047,7 +11050,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4433,
+        "row_count": 4435,
         "signal": "mv_hotspot_coverage_risk",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11102,7 +11105,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 4930,
+        "row_count": 4933,
         "signal": "mv_modified_area_regressions",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11135,7 +11138,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 764,
+        "row_count": 759,
         "signal": "mv_new_write_bypass_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11146,7 +11149,7 @@
         "decision_role": "used_now",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 8537,
+        "row_count": 8542,
         "signal": "mv_newly_introduced_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": true,
@@ -11168,7 +11171,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 11857,
+        "row_count": 11865,
         "signal": "mv_path_criticality_rollup",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11201,7 +11204,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1449,
+        "row_count": 1448,
         "signal": "mv_repeated_p3_near_critical_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11214,7 +11217,7 @@
           "I2_replay_surface_gaps_ratchet"
         ],
         "related_scopes": [],
-        "row_count": 995,
+        "row_count": 997,
         "signal": "mv_replay_surface_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11247,7 +11250,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 401745,
+        "row_count": 402638,
         "signal": "mv_snapshot_integrity_anomalies",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11280,7 +11283,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1034,
+        "row_count": 1036,
         "signal": "mv_task_contract_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11302,7 +11305,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 458,
+        "row_count": 459,
         "signal": "mv_trace_replay_eval_gaps",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11313,7 +11316,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 6613,
+        "row_count": 6616,
         "signal": "mv_unknown_taxonomy_and_orphans",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11335,7 +11338,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 1175,
+        "row_count": 1178,
         "signal": "mv_write_sovereignty_paths",
         "signal_type": "materialized_view",
         "used_inline": false,
@@ -11390,7 +11393,7 @@
         "decision_role": "diagnostic_monitor",
         "related_gates": [],
         "related_scopes": [],
-        "row_count": 626272,
+        "row_count": 626905,
         "signal": "graphdb_projection",
         "signal_type": "graphdb_report",
         "used_inline": false,
@@ -11449,7 +11452,7 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "cone_risk_score",
-        "total_rows": 11857
+        "total_rows": 11865
       },
       "mv_graph_chokepoint_bridges": {
         "available": true,
@@ -11484,14 +11487,14 @@
         "queried": true,
         "rows_used": 25,
         "score_column": "betweenness_approx",
-        "total_rows": 11857
+        "total_rows": 11865
       },
       "mv_newly_introduced_critical_paths": {
         "available": true,
         "queried": true,
         "rows_used": 25,
         "score_column": "criticality_score",
-        "total_rows": 8537
+        "total_rows": 8542
       }
     },
     "summary": {
@@ -11510,7 +11513,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 84.0,
-        "centrality": 2.1861,
+        "centrality": 2.1847,
         "chokepoint": 25921.0,
         "dependency_cone": 84.0,
         "executive_read": "High structural risk \u2014 newly-introduced critical path (modified-area regression); overlaps an under-tested coverage hotspot.",
@@ -11525,7 +11528,7 @@
       {
         "action": "Refactor/guard this seam in the current slice.",
         "blast_radius": 175.93,
-        "centrality": 0.8092,
+        "centrality": 0.8087,
         "chokepoint": 1370.71,
         "dependency_cone": 91.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
@@ -11539,15 +11542,15 @@
       },
       {
         "action": "Refactor/guard this seam in the current slice.",
-        "blast_radius": 160.09,
-        "centrality": 0.7431,
-        "chokepoint": 801.0,
-        "dependency_cone": 81.0,
+        "blast_radius": 164.24,
+        "centrality": 0.7593,
+        "chokepoint": 1001.0,
+        "dependency_cone": 83.0,
         "executive_read": "High structural risk \u2014 overlaps an under-tested coverage hotspot.",
         "graph_signal": "centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint",
         "layer": "L2",
         "rank": 3,
-        "reverse_dependency": 81.0,
+        "reverse_dependency": 83.0,
         "scc": null,
         "scope": "agentic_core/L2_execution/utils/write_gateway.py",
         "testing_implication": "Add mapped tests before refactoring this high-blast scope."
@@ -11555,7 +11558,7 @@
       {
         "action": "Monitor; promote when it overlaps a blocker or hotspot.",
         "blast_radius": 3239.52,
-        "centrality": 87.6605,
+        "centrality": 87.6013,
         "chokepoint": null,
         "dependency_cone": 1770.0,
         "executive_read": "High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot.",
@@ -11570,7 +11573,7 @@
       {
         "action": "Monitor; promote when it overlaps a blocker or hotspot.",
         "blast_radius": 588.34,
-        "centrality": 1.6259,
+        "centrality": 1.6248,
         "chokepoint": null,
         "dependency_cone": 370.0,
         "executive_read": "High structural risk across 4 graph view(s); monitor unless it overlaps a blocker or hotspot.",
@@ -11593,7 +11596,7 @@
         "mv_name": "mv_actionable_surface_without_schema",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 787,
+        "row_count": 789,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11656,7 +11659,7 @@
         "mv_name": "mv_debt_concentration_hotspots",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 4912,
+        "row_count": 4917,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11665,7 +11668,7 @@
         "mv_name": "mv_dependency_cone_risk",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11857,
+        "row_count": 11865,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11674,7 +11677,7 @@
         "mv_name": "mv_determinism_provenance_drift",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6613,
+        "row_count": 6616,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11701,7 +11704,7 @@
         "mv_name": "mv_exemptions_near_critical_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 3180,
+        "row_count": 3159,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11791,7 +11794,7 @@
         "mv_name": "mv_high_fan_in_out_with_defects",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 10935,
+        "row_count": 10943,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11809,7 +11812,7 @@
         "mv_name": "mv_hotspot_centrality",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 11857,
+        "row_count": 11865,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11818,7 +11821,7 @@
         "mv_name": "mv_hotspot_coverage_risk",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 4433,
+        "row_count": 4435,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11863,7 +11866,7 @@
         "mv_name": "mv_modified_area_regressions",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 4930,
+        "row_count": 4933,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11890,7 +11893,7 @@
         "mv_name": "mv_new_write_bypass_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 764,
+        "row_count": 759,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11899,7 +11902,7 @@
         "mv_name": "mv_newly_introduced_critical_paths",
         "recommendation": "keep",
         "replacement_or_refinement": "",
-        "row_count": 8537,
+        "row_count": 8542,
         "why_not_used_if_suppressed": ""
       },
       {
@@ -11917,7 +11920,7 @@
         "mv_name": "mv_path_criticality_rollup",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 11857,
+        "row_count": 11865,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11944,7 +11947,7 @@
         "mv_name": "mv_repeated_p3_near_critical_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1449,
+        "row_count": 1448,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11953,7 +11956,7 @@
         "mv_name": "mv_replay_surface_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 995,
+        "row_count": 997,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -11980,7 +11983,7 @@
         "mv_name": "mv_snapshot_integrity_anomalies",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 401745,
+        "row_count": 402638,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12007,7 +12010,7 @@
         "mv_name": "mv_task_contract_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1034,
+        "row_count": 1036,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12025,7 +12028,7 @@
         "mv_name": "mv_trace_replay_eval_gaps",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 458,
+        "row_count": 459,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12034,7 +12037,7 @@
         "mv_name": "mv_unknown_taxonomy_and_orphans",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 6613,
+        "row_count": 6616,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       },
       {
@@ -12052,7 +12055,7 @@
         "mv_name": "mv_write_sovereignty_paths",
         "recommendation": "keep_hide_inline",
         "replacement_or_refinement": "Tie to a gate, hotspot, action queue lane, or artifact consistency rule.",
-        "row_count": 1175,
+        "row_count": 1178,
         "why_not_used_if_suppressed": "Raw MV count alone is not a funding signal."
       }
     ],
@@ -12120,9 +12123,9 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 1143,
-        "audit_net": 0,
-        "audit_net_display": "0",
+        "audit_gross": 1146,
+        "audit_net": 3,
+        "audit_net_display": "3",
         "band": "P1",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -12131,20 +12134,20 @@
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 747,
-        "audit_net": 31,
-        "audit_net_display": "31",
+        "audit_gross": 723,
+        "audit_net": 25,
+        "audit_net_display": "25",
         "band": "P2",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
-        "guardian_exempted": 716,
+        "guardian_exempted": 698,
         "live_gate_drivers": 0
       },
       {
         "action_role": "Severity inventory to map to a failing gate, hotspot, changed code, or owner.",
-        "audit_gross": 19283,
-        "audit_net": 19196,
-        "audit_net_display": "19,196",
+        "audit_gross": 19309,
+        "audit_net": 19222,
+        "audit_net_display": "19,222",
         "band": "P3",
         "foundation_blockers": null,
         "foundation_blockers_display": "n/a",
@@ -12192,7 +12195,7 @@
         {
           "app": "apps_rg",
           "executive_read": "Product surface; prioritize when high blast radius and missing e2e/regression tests overlap.",
-          "file_count": 592
+          "file_count": 593
         },
         {
           "app": "apps_shared",
@@ -12222,7 +12225,7 @@
         {
           "app": "apps_eval",
           "executive_read": "Product surface; prioritize when high blast radius and missing e2e/regression tests overlap.",
-          "file_count": 48
+          "file_count": 51
         },
         {
           "app": "apps_architect",
@@ -12230,17 +12233,17 @@
           "file_count": 29
         }
       ],
-      "total_files": 1472
+      "total_files": 1476
     },
     "executive_read": "Patient-size metrics show where ADG risk lands across core, apps, and tests.",
-    "production_python_files": 7078,
-    "snapshot_ts": "2026-07-05T05:37:33.314299+00:00",
+    "production_python_files": 7085,
+    "snapshot_ts": "2026-07-06T04:53:18.136776+00:00",
     "status": "present",
-    "test_python_files": 5246,
+    "test_python_files": 5251,
     "tests": {
       "folder_breakdown": [
         {
-          "file_count": 3080,
+          "file_count": 3085,
           "folder": "tests/unit"
         },
         {
@@ -12276,9 +12279,9 @@
           "folder": "tests/unknown"
         }
       ],
-      "total_files": 5246
+      "total_files": 5251
     },
-    "total_python_files": 12324
+    "total_python_files": 12336
   },
   "plain_english_context": {
     "what_adg_is": {
@@ -12348,23 +12351,23 @@
   },
   "raw_inputs": {
     "artifacts": {
-      "action_queue": "artifacts/adg/adg_action_queue_07052026_0127.json",
-      "bcg_adapter": "artifacts/adg/adg_bcg_adapter_07052026_0127.json",
+      "action_queue": "artifacts/adg/adg_action_queue_07062026_0048.json",
+      "bcg_adapter": "artifacts/adg/adg_bcg_adapter_07062026_0048.json",
       "burndown_report": "artifacts/adg/adg_burndown_report.md",
-      "burndown_table": "artifacts/adg/adg_burndown_table_07052026_0127.json",
-      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_07052026_0127.json",
-      "gate_results": "artifacts/adg/adg_gate_results_20260705_053733.json",
-      "generation_manifest": "artifacts/adg/adg_generation_manifest_07052026_0127.json",
-      "graphdb_index": "artifacts/adg/adg_graphdb_index_07052026_0127.json",
-      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_07052026_0127.json",
-      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_07052026_0127.json",
-      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_07052026_0127.json",
-      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_07052026_0127.json",
-      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_07052026_0127.json",
-      "review_template": "artifacts/adg/adg_review_template_07052026_0127.json",
-      "runtime_spine": "artifacts/adg/adg_runtime_spine_07052026_0127.json",
-      "sqlite_snapshot": "artifacts/adg/adg_indexed_07052026_0127.sqlite",
-      "structural_outputs": "artifacts/adg/adg_structural_outputs_07052026_0127.json"
+      "burndown_table": "artifacts/adg/adg_burndown_table_07062026_0048.json",
+      "dead_code_report": "artifacts/adg/dead_code_zone_control_report_07062026_0048.json",
+      "gate_results": "artifacts/adg/adg_gate_results_20260706_045318.json",
+      "generation_manifest": "artifacts/adg/adg_generation_manifest_07062026_0048.json",
+      "graphdb_index": "artifacts/adg/adg_graphdb_index_07062026_0048.json",
+      "graphdb_metadata": "artifacts/adg/adg_graphdb_metadata_07062026_0048.json",
+      "graphdb_projection": "artifacts/adg/adg_graphdb_projection_07062026_0048.json",
+      "graphdb_queries": "artifacts/adg/adg_graphdb_queries_07062026_0048.json",
+      "p0_wave_plan": "artifacts/adg/issues/p0_remediation_wave_plan_07062026_0048.json",
+      "refactor_accelerator": "artifacts/adg/adg_refactor_accelerator_07062026_0048.json",
+      "review_template": "artifacts/adg/adg_review_template_07062026_0048.json",
+      "runtime_spine": "artifacts/adg/adg_runtime_spine_07062026_0048.json",
+      "sqlite_snapshot": "artifacts/adg/adg_indexed_07062026_0048.sqlite",
+      "structural_outputs": "artifacts/adg/adg_structural_outputs_07062026_0048.json"
     },
     "loaded_status": {
       "degraded": [],
@@ -12390,14 +12393,14 @@
     }
   },
   "run": {
-    "commit_sha": "525d9f3a818052161689dfdc5af5f85237174bdd",
+    "commit_sha": "abc3efe80eac34827031cdb835df2b9a34d95e58",
     "decision_grade_status": "REPORT_INCONSISTENT",
     "degradation_reasons": [],
     "emit_status": "PASS",
-    "generated_at_utc": "2026-07-05T05:44:19+00:00",
-    "repo_state_hash": "87854a978fb74c34",
-    "run_id": "07052026_0127",
-    "snapshot_ts": "2026-07-05T05:37:33.314299+00:00"
+    "generated_at_utc": "2026-07-06T04:56:35+00:00",
+    "repo_state_hash": "8c73144ca99e1298",
+    "run_id": "07062026_0048",
+    "snapshot_ts": "2026-07-06T04:53:18.136776+00:00"
   },
   "schema_version": "1.0"
 }
