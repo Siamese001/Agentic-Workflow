@@ -16,8 +16,14 @@ from apps_rg.runtime.judges.executive_summary_x1d import (
     _extract_anthropic_message_text,
     _extract_json_from_text,
     _is_openai_gpt5_chat_model,
+    _write_artifact,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_apps_rg_env
+from apps_rg.runtime.providers.anthropic_prompt_cache import (
+    anthropic_prompt_cache_enabled,
+    anthropic_prompt_cache_telemetry_enabled,
+    build_cache_receipt_from_usage,
+)
 from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
 from apps_rg.runtime.judges.employment_bullet_judge_rubric import pool_selector_scoring_instruction
 from apps_rg.runtime.reasoning.competencies_graph_pool import (
@@ -132,6 +138,59 @@ def _first_path_failure_detail(paths: list[SelfConsistencyPath]) -> str:
 
 def _sha16(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
+
+
+def _selector_cache_receipt_seed(*, model: str, input_hash: str, prompt: str) -> dict[str, Any]:
+    stable_hash = _sha16(POOL_SELECTOR_SYSTEM_PROMPT)
+    candidate_hash = _sha16(prompt)
+    group_hash = _sha16(f"selector:{stable_hash}")
+    return {
+        "provider": "anthropic_claude",
+        "model": str(model or ""),
+        "section_id": "bullet_pool_selector",
+        "cache_enabled": True,
+        "cache_strategy": "selector_system_v1",
+        "stable_prefix_hash": stable_hash,
+        "c0_prefix_hash": "",
+        "volatile_tail_hash": candidate_hash,
+        "selector_cache_group_hash": group_hash,
+        "candidate_pool_hash": candidate_hash,
+        "input_hash": input_hash,
+        "cache_marker_count": 1,
+        "input_tokens": None,
+        "output_tokens": None,
+        "cache_creation_input_tokens": None,
+        "cache_read_input_tokens": None,
+        "cache_hit_ratio": None,
+        "estimated_uncached_input_tokens": None,
+        "estimated_cached_input_tokens": None,
+        "cache_savings_estimate_source": "pending_anthropic_usage",
+    }
+
+
+def _selector_system_for_anthropic(
+    system_prompt: str = POOL_SELECTOR_SYSTEM_PROMPT,
+) -> str | list[dict[str, Any]]:
+    if not anthropic_prompt_cache_enabled():
+        return system_prompt
+    return [
+        {
+            "type": "text",
+            "text": system_prompt,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+
+
+def _write_selector_cache_receipt(
+    artifact_dir: Path | None,
+    receipt: dict[str, Any],
+) -> None:
+    if artifact_dir is None:
+        return
+    if not (anthropic_prompt_cache_enabled() or anthropic_prompt_cache_telemetry_enabled()):
+        return
+    _write_artifact(artifact_dir / "bullet_pool_selector_cache_receipt.json", receipt)
 
 
 def _bullet_by_id(parsed: dict[str, Any], bullet_id: str) -> dict[str, Any] | None:
@@ -807,10 +866,16 @@ def _call_anthropic_pool_selector(
 
     timeout_s = pool_selector_timeout_s()
     max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=1)
+    selector_system_prompt = POOL_SELECTOR_SYSTEM_PROMPT
+    cache_seed = (
+        _selector_cache_receipt_seed(model=model, input_hash=input_hash, prompt=prompt)
+        if anthropic_prompt_cache_enabled()
+        else None
+    )
     payload = {
         "model": model,
         "max_tokens": max_tokens,
-        "system": POOL_SELECTOR_SYSTEM_PROMPT,
+        "system": _selector_system_for_anthropic(selector_system_prompt),
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
@@ -826,6 +891,7 @@ def _call_anthropic_pool_selector(
             "purpose": "bullet_pool_claude_selector",
             "effective_timeout_seconds": timeout_s,
             "timestamp": started_wall,
+            "selector_cache_receipt_seed": cache_seed,
         },
     )
     _write_selector_timing_receipt(
@@ -934,6 +1000,18 @@ def _call_anthropic_pool_selector(
     try:
         data = json.loads(raw_response)
         text = _extract_anthropic_message_text(data)
+        if cache_seed is not None:
+            usage = data.get("usage") if isinstance(data, dict) else None
+            _write_selector_cache_receipt(
+                artifact_dir,
+                build_cache_receipt_from_usage(
+                    seed=cache_seed,
+                    provider="anthropic_claude",
+                    model=model,
+                    section_id="bullet_pool_selector",
+                    usage=usage if isinstance(usage, dict) else None,
+                ),
+            )
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
         blocked = _make_blocked_output(
             "anthropic_claude",

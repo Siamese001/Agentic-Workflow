@@ -351,6 +351,8 @@ def run_competencies_lane_execution(
         timeout_seconds=competencies_provider_chat_timeout_s(),
         model=section_model,
         provider_requested=str(args.provider),
+        compiled_prompt_artifact=section_compiled.artifact,
+        anthropic_workload_kind="SELF_CONSISTENCY",
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)

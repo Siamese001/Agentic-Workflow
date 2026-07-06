@@ -41,6 +41,7 @@ class ProviderResult:
     model: str
     raw_model_output: str
     provider_response: dict[str, Any] | None
+    prompt_cache_receipt: dict[str, Any] | None = None
     reasoning_execution_receipt: dict[str, Any] | None = None
     stub: bool = False
     apps_rg_provider_preflight_blocked: bool = False

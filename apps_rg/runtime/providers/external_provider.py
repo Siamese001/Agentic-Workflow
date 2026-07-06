@@ -197,6 +197,38 @@ def _anthropic_system_and_messages(request: dict[str, Any]) -> tuple[str, list[d
     return system or "Return compact JSON only.", messages
 
 
+def _validate_native_anthropic_payload(payload: Mapping[str, Any]) -> None:
+    gateway_owned = {
+        "model",
+        "max_tokens",
+        "temperature",
+        "stream",
+        "base_url",
+        "timeout_seconds",
+    }
+    collisions = sorted(k for k in payload if str(k) in gateway_owned)
+    if collisions:
+        joined = ", ".join(collisions)
+        raise ProviderGatewayError(f"Native Anthropic payload includes gateway-owned key(s): {joined}")
+
+
+def _anthropic_body_from_native_request(request: dict[str, Any], provider_model: str) -> dict[str, Any]:
+    native = request.get("anthropic_payload")
+    if not isinstance(native, Mapping):
+        raise ProviderGatewayError("Native Anthropic payload must be a mapping")
+    _validate_native_anthropic_payload(native)
+    body = dict(native)
+    body["model"] = str(request.get("model") or provider_model)
+    body["max_tokens"] = int(request.get("max_tokens") or 900)
+    body["temperature"] = float(request.get("temperature") or 0.0)
+    body["stream"] = True
+    if not isinstance(body.get("messages"), list):
+        raise ProviderGatewayError("Native Anthropic payload requires a messages list")
+    if not (isinstance(body.get("system"), (str, list))):
+        raise ProviderGatewayError("Native Anthropic payload requires a string or block-list system field")
+    return body
+
+
 def _coerce_timeout_seconds(value: Any) -> float:
     try:
         timeout = float(value)
@@ -259,15 +291,19 @@ class ExternalProvider:
         # output (no idle) and a fresh process both succeed. Streaming keeps tokens flowing, so the
         # connection never idles and the read returns normally. (Diagnosed 2026-06-16: in-process
         # probe — non-stream 2800-tok hangs; identical stream=True returns in ~34s/79 chunks.)
-        system, messages = _anthropic_system_and_messages(request)
-        body = {
-            "model": str(request.get("model") or self.model),
-            "max_tokens": int(request.get("max_tokens") or 900),
-            "temperature": float(request.get("temperature") or 0.0),
-            "system": system,
-            "messages": messages,
-            "stream": True,
-        }
+        native_payload = request.get("anthropic_payload")
+        if isinstance(native_payload, Mapping):
+            body = _anthropic_body_from_native_request(request, self.model)
+        else:
+            system, messages = _anthropic_system_and_messages(request)
+            body = {
+                "model": str(request.get("model") or self.model),
+                "max_tokens": int(request.get("max_tokens") or 900),
+                "temperature": float(request.get("temperature") or 0.0),
+                "system": system,
+                "messages": messages,
+                "stream": True,
+            }
         apply_anthropic_temperature_capability(body)
         apply_anthropic_adaptive_thinking_config(body, self.environ)
         url = str(request.get("base_url") or self.base_url or DEFAULT_ANTHROPIC_MESSAGES_URL)
@@ -599,6 +635,13 @@ class ExternalProvider:
             "timeout_seconds": provider_timeout_seconds,
             "progress_sink": progress_sink,
         }
+        if self.provider_profile == ProviderProfile.EXTERNAL_CLAUDE:
+            native_anthropic_payload = getattr(compiled_prompt, "anthropic_payload", None)
+            if isinstance(native_anthropic_payload, Mapping):
+                request["anthropic_payload"] = dict(native_anthropic_payload)
+            native_cache_seed = getattr(compiled_prompt, "anthropic_cache_receipt_seed", None)
+            if isinstance(native_cache_seed, Mapping):
+                request["anthropic_cache_receipt_seed"] = dict(native_cache_seed)
         if self._uses_process_environ:
             bootstrap_process_env_if_needed(self.environ)
         if not str(self.environ.get(self.api_key_env_var) or "").strip():
@@ -612,7 +655,10 @@ class ExternalProvider:
                 model=self.model,
                 raw_model_output="",
                 provider_response=_provider_response_with_attempt(
-                    {"provider_profile": self.provider_profile.value},
+                    {
+                        "provider_profile": self.provider_profile.value,
+                        "anthropic_cache_receipt_seed": request.get("anthropic_cache_receipt_seed"),
+                    },
                     provider_attempted=False,
                     provider_available=False,
                     runtime_generation_status="BLOCKED",
@@ -706,6 +752,7 @@ class ExternalProvider:
                         "effective_timeout_seconds": provider_timeout_seconds,
                         "transport_timing": response.get("transport_timing"),
                         "transport_response": response,
+                        "anthropic_cache_receipt_seed": request.get("anthropic_cache_receipt_seed"),
                     },
                     provider_attempted=True,
                     provider_available=False,
@@ -730,6 +777,7 @@ class ExternalProvider:
                     "effective_timeout_seconds": provider_timeout_seconds,
                     "transport_timing": response.get("transport_timing"),
                     "transport_response": response,
+                    "anthropic_cache_receipt_seed": request.get("anthropic_cache_receipt_seed"),
                 },
                 provider_attempted=True,
                 provider_available=True,

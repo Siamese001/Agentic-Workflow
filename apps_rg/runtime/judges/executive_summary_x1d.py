@@ -29,6 +29,11 @@ from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     ensure_dimension_verdicts,
 )
 from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
+from apps_rg.runtime.providers.anthropic_prompt_cache import (
+    anthropic_prompt_cache_enabled,
+    anthropic_prompt_cache_telemetry_enabled,
+    build_cache_receipt_from_usage,
+)
 from apps_rg.runtime.section_judge_policy import get_section_judge_policy
 from apps_rg.runtime.section_model_limits import runtime_limit_float, runtime_limit_int
 
@@ -367,6 +372,72 @@ def _write_artifact(path: Path, data: Any) -> str:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
     return str(path)
+
+
+def _x1d_hash16(value: str) -> str:
+    return hashlib.sha256(str(value or "").encode("utf-8")).hexdigest()[:16]
+
+
+def _anthropic_judge_cache_seed(
+    *,
+    model: str,
+    system_prompt: str,
+    user_prompt: str,
+    input_hash: str,
+    packet_hash: str | None,
+    canonical_contract_hash: str | None,
+    section_id: str | None,
+) -> dict[str, Any]:
+    stable_hash = _x1d_hash16(system_prompt)
+    candidate_hash = _x1d_hash16(user_prompt)
+    contract_hash = str(canonical_contract_hash or stable_hash)
+    return {
+        "provider": "anthropic_claude",
+        "model": str(model or ""),
+        "section_id": str(section_id or "executive_summary"),
+        "cache_enabled": True,
+        "cache_strategy": "x1d_judge_system_v1",
+        "stable_prefix_hash": stable_hash,
+        "c0_prefix_hash": "",
+        "volatile_tail_hash": candidate_hash,
+        "x1d_cache_group_hash": _x1d_hash16(f"x1d:{contract_hash}:{stable_hash}"),
+        "judge_contract_hash": contract_hash,
+        "candidate_hash": candidate_hash,
+        "packet_hash": str(packet_hash or input_hash or ""),
+        "cache_marker_count": 1,
+        "input_tokens": None,
+        "output_tokens": None,
+        "cache_creation_input_tokens": None,
+        "cache_read_input_tokens": None,
+        "cache_hit_ratio": None,
+        "estimated_uncached_input_tokens": None,
+        "estimated_cached_input_tokens": None,
+        "cache_savings_estimate_source": "pending_anthropic_usage",
+    }
+
+
+def _anthropic_judge_system_for_payload(system_prompt: str) -> str | list[dict[str, Any]]:
+    if not anthropic_prompt_cache_enabled():
+        return system_prompt
+    return [
+        {
+            "type": "text",
+            "text": system_prompt,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
+
+
+def _write_anthropic_judge_cache_receipt(
+    *,
+    provider_key: str,
+    artifact_base: Path | None,
+    receipt: dict[str, Any],
+) -> None:
+    if not (anthropic_prompt_cache_enabled() or anthropic_prompt_cache_telemetry_enabled()):
+        return
+    receipt_path = _artifact_path(provider_key, "anthropic_judge_cache_receipt", artifact_base=artifact_base)
+    _write_artifact(receipt_path, receipt)
 
 
 def _validate_judge_score_contract(
@@ -1158,10 +1229,24 @@ def _call_anthropic(
         if section_id
         else _resolved_x1d_judge_max_output_tokens(attempt=attempt)
     )
+    system_prompt = build_x1d_judge_system_prompt(compact=True)
+    cache_seed = (
+        _anthropic_judge_cache_seed(
+            model=model,
+            system_prompt=system_prompt,
+            user_prompt=prompt,
+            input_hash=input_hash,
+            packet_hash=packet_hash,
+            canonical_contract_hash=canonical_contract_hash,
+            section_id=section_id,
+        )
+        if anthropic_prompt_cache_enabled()
+        else None
+    )
     payload = {
         "model": model,
         "max_tokens": max_tokens,
-        "system": build_x1d_judge_system_prompt(compact=True),
+        "system": _anthropic_judge_system_for_payload(system_prompt),
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
     }
@@ -1189,6 +1274,7 @@ def _call_anthropic(
         "model_requested": model_requested or model,
         "model_actual": model,
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "anthropic_judge_cache_receipt_seed": cache_seed,
     }
     if judge_receipt:
         req_doc["judge_receipt"] = judge_receipt
@@ -1255,6 +1341,19 @@ def _call_anthropic(
         data = json.loads(raw_response)
         text = _extract_anthropic_message_text(data)
         stop_reason = str(data.get("stop_reason") or "")
+        if cache_seed is not None:
+            usage = data.get("usage") if isinstance(data, dict) else None
+            _write_anthropic_judge_cache_receipt(
+                provider_key=provider_key,
+                artifact_base=artifact_base,
+                receipt=build_cache_receipt_from_usage(
+                    seed=cache_seed,
+                    provider="anthropic_claude",
+                    model=model,
+                    section_id=section_id or "executive_summary",
+                    usage=usage if isinstance(usage, dict) else None,
+                ),
+            )
     except (json.JSONDecodeError, KeyError, TypeError) as exc:
         parse_err_path = _artifact_path(provider_key, "provider_parse_result", artifact_base=artifact_base)
         _write_artifact(parse_err_path, {

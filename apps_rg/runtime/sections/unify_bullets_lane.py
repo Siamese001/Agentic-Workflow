@@ -695,7 +695,12 @@ def retry_provider_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": UNIFY_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": UNIFY_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -975,6 +980,8 @@ def run_unify_bullets_execution(
         temperature_bounds=UNIFY_TEMP_RANGE,
         model=section_model,
         provider_requested=str(args.provider),
+        compiled_prompt_artifact=section_compiled.artifact,
+        anthropic_workload_kind="SELF_CONSISTENCY",
     )
     provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
     provider_request_data = provider_req.to_dict()

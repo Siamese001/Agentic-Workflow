@@ -854,7 +854,12 @@ def retry_provider_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, None, parse_error
@@ -893,7 +898,12 @@ def retry_headline_word_and_pipe(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed, None
@@ -1028,7 +1038,12 @@ def retry_headline_content_signal(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, parsed, None, "provider_not_real"
@@ -1304,7 +1319,12 @@ def retry_headline_proof_shape(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": HEADLINE_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(tag_reasoning_lane(repair_payload, LANE_KEY))
     if result.runtime_generation_status != "REAL_LLM":
         return raw_output, failed_snapshot, None
@@ -1604,6 +1624,8 @@ def run_headline_execution(
         max_tokens=HEADLINE_MAX_OUTPUT_TOKENS,
         model=section_model,
         provider_requested=str(args.provider),
+        compiled_prompt_artifact=section_compiled.artifact,
+        anthropic_workload_kind="ONE_SHOT",
     )
     provider_request_data = provider_req.to_dict()
     write_json(artifact_dir / "provider_request.json", provider_request_data)

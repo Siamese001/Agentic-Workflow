@@ -12,6 +12,12 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, Callable
 
+from apps_rg.runtime.providers.anthropic_prompt_cache import (
+    anthropic_prompt_cache_enabled,
+    anthropic_prompt_cache_fanout_enabled,
+    anthropic_prompt_cache_prewarm_enabled,
+    anthropic_prompt_cache_telemetry_enabled,
+)
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.section_provider_call import call_section_model_provider
 from apps_rg.runtime.sections.section_generation import tag_reasoning_lane
@@ -193,9 +199,19 @@ def _tagged_path_payload(
     *,
     section_lane: str,
     path_index: int,
+    path_count: int,
     temperature: float,
 ) -> dict[str, Any]:
-    tagged = tag_reasoning_lane(dict(provider_payload), section_lane)
+    tagged = tag_reasoning_lane(
+        {
+            **dict(provider_payload),
+            "anthropic_workload_kind": "SELF_CONSISTENCY",
+            "sc_path_index": int(path_index),
+            "sc_path_count": int(path_count),
+            "sc_temperature": float(temperature),
+        },
+        section_lane,
+    )
     if section_lane == "unify_bullets":
         from apps_rg.runtime.sections.unify_bullets_graph_evidence import (
             append_unify_path_framing_to_messages,
@@ -267,6 +283,7 @@ def _run_one_self_consistency_path(
     run_id: str | None,
     provider_profile: str | None,
     path_index: int,
+    path_count: int,
     temperature: float,
     progress_rows: list[dict[str, Any]],
     progress_lock: Lock,
@@ -304,6 +321,7 @@ def _run_one_self_consistency_path(
         provider_payload,
         section_lane=section_lane,
         path_index=path_index,
+        path_count=path_count,
         temperature=temperature,
     )
     result = call_section_model_provider(
@@ -403,6 +421,7 @@ def run_provider_self_consistency_paths(
             run_id=run_id,
             provider_profile=provider_profile,
             path_index=path_index_start + offset,
+            path_count=n_paths,
             temperature=temp,
             progress_rows=progress_rows,
             progress_lock=progress_lock,
@@ -410,7 +429,26 @@ def run_provider_self_consistency_paths(
             max_parallel=max_parallel,
         )
 
-    if execution_mode == "parallel":
+    prewarm_parallel = (
+        execution_mode == "parallel"
+        and n_paths > 1
+        and anthropic_prompt_cache_enabled()
+        and (anthropic_prompt_cache_prewarm_enabled() or anthropic_prompt_cache_fanout_enabled())
+    )
+    if prewarm_parallel:
+        paths.append(_run(0, temps[0]))
+        remaining = list(enumerate(temps))[1:]
+        with ThreadPoolExecutor(
+            max_workers=max_parallel,
+            thread_name_prefix=thread_prefix,
+        ) as executor:
+            future_by_offset = {
+                executor.submit(_run, offset, temp): offset
+                for offset, temp in remaining
+            }
+            for future in as_completed(future_by_offset):
+                paths.append(future.result())
+    elif execution_mode == "parallel":
         with ThreadPoolExecutor(
             max_workers=max_parallel,
             thread_name_prefix=thread_prefix,
@@ -510,6 +548,71 @@ def _write_paths_artifact(
                 json.dumps(p.parsed, indent=2, ensure_ascii=False) + "\n",
                 encoding="utf-8",
             )
+    _write_lane_cache_summary(artifact_dir, section_lane, paths)
+
+
+def _receipt_int(receipt: dict[str, Any], key: str) -> int:
+    try:
+        return int(receipt.get(key) or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _write_lane_cache_summary(
+    artifact_dir: Path,
+    section_lane: str,
+    paths: list[SelfConsistencyPath],
+) -> None:
+    if not (anthropic_prompt_cache_enabled() or anthropic_prompt_cache_telemetry_enabled()):
+        return
+    receipts: list[dict[str, Any]] = []
+    for path in paths:
+        result = path.provider_result
+        receipt = getattr(result, "prompt_cache_receipt", None) if result is not None else None
+        if isinstance(receipt, dict):
+            receipts.append({"path_index": path.path_index, **receipt})
+    if not receipts:
+        return
+    stable_counts: dict[str, int] = {}
+    for receipt in receipts:
+        stable = str(receipt.get("stable_prefix_hash") or "")
+        if stable:
+            stable_counts[stable] = stable_counts.get(stable, 0) + 1
+    warnings: list[dict[str, Any]] = []
+    for stable_hash, count in stable_counts.items():
+        matching = [r for r in receipts if r.get("stable_prefix_hash") == stable_hash]
+        creation = sum(_receipt_int(r, "cache_creation_input_tokens") for r in matching)
+        reads = sum(_receipt_int(r, "cache_read_input_tokens") for r in matching)
+        if count >= 3 and creation > 0 and reads == 0:
+            warnings.append(
+                {
+                    "warning": "cache_miss_repeated_prefix_warning",
+                    "stable_prefix_hash": stable_hash,
+                    "repeated_count": count,
+                    "cache_creation_input_tokens": creation,
+                    "cache_read_input_tokens": reads,
+                }
+            )
+    creation_total = sum(_receipt_int(r, "cache_creation_input_tokens") for r in receipts)
+    read_total = sum(_receipt_int(r, "cache_read_input_tokens") for r in receipts)
+    denom = creation_total + read_total
+    summary = {
+        "schema": "apps_rg_lane_cache_summary_v1",
+        "section_lane": section_lane,
+        "cache_enabled": anthropic_prompt_cache_enabled(),
+        "path_count": len(paths),
+        "receipt_count": len(receipts),
+        "cache_creation_input_tokens": creation_total,
+        "cache_read_input_tokens": read_total,
+        "cache_hit_ratio": round(float(read_total) / float(denom), 6) if denom else None,
+        "stable_prefix_hashes": sorted(stable_counts),
+        "warnings": warnings,
+        "receipts": receipts,
+    }
+    (artifact_dir / "lane_cache_summary.json").write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
 
 
 def patch_receipt_samples_executed(

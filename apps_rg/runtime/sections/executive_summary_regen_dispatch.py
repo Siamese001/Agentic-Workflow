@@ -230,7 +230,12 @@ def budgeted_regen_call(
             block_reason=budget.block_reason,
         )
 
-    payload = {**provider_payload, "messages": messages, "max_tokens": max_out}
+    payload = {
+        **provider_payload,
+        "messages": messages,
+        "max_tokens": max_out,
+        "anthropic_workload_kind": "REPAIR",
+    }
     if art_path is not None:
         _write_json(
             art_path / req_name,
