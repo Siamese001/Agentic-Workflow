@@ -16,9 +16,9 @@ Plan: apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan W4
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from agentic_core.runtime.contracts.final_evidence_contract import (
     FinalEvidenceContract,
@@ -32,6 +32,9 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
 from apps_rg.runtime.schemas import SectionCacheWriteProposal
+
+if TYPE_CHECKING:
+    from agentic_core.runtime.exhaust.runtime_exhaust_bundle import RuntimeExhaustBundle
 
 # ---------------------------------------------------------------------------
 # Blocking status set — apps_rg-owned; never in agentic_core
@@ -48,6 +51,8 @@ _NON_BLOCKING_STATUSES: frozenset[str] = frozenset({
     SUPPORT_STATUS_PASS,
     SUPPORT_STATUS_WEAK_WITH_CAVEATS,
 })
+
+_PLACEHOLDER_TEST_L5_CERT_REF = "test:valid:w6"
 
 
 # ---------------------------------------------------------------------------
@@ -275,10 +280,15 @@ def _compute_apps_rg_owned_fields(
     # overfit_score: stub — 0.0 means no detected overfitting
     overfit_score = 0.0
 
-    # provenance_valid: requires non-empty compilation_hash + non-empty cert ref
+    # provenance_valid: requires non-empty compilation_hash + certified L5 packet
     compilation_hash: str = getattr(sealed, "compilation_hash", "") or ""
-    l5_ref: str = getattr(sealed, "l5_certification_ref", "") or ""
-    provenance_valid = bool(compilation_hash and l5_ref)
+    l5_packet_digest: str = getattr(sealed, "l5_certification_packet_digest", "") or ""
+    l5_status: str = getattr(sealed, "l5_certification_status", "") or ""
+    provenance_valid = bool(
+        compilation_hash
+        and _is_valid_l5_packet_digest(l5_packet_digest)
+        and l5_status == "L5_CERTIFIED"
+    )
 
     # citation_anchor_coverage
     citation_map: tuple = tuple(getattr(fec, "citation_map", ()) or ())
@@ -295,6 +305,64 @@ def _compute_apps_rg_owned_fields(
         "unsupported_material_claim_rate": round(1.0 - jd_coverage, 4),
         "citation_anchor_coverage": round(citation_coverage, 4),
     }
+
+
+def _is_valid_l5_packet_digest(value: str) -> bool:
+    return len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def _evaluate_l5_certification_gate(
+    sealed: SealedL2Artifact,
+    *,
+    allow_test_l5_cert_ref: bool = False,
+) -> tuple[ExitGateResult, bool, str]:
+    """Return the apps_rg L5 packet gate result.
+
+    L5 is evidence-only: this gate consumes the packet as a precondition for
+    Exit allow/cache proposals. It never turns a failed C0/Exit decision into
+    an allow decision.
+    """
+
+    old_ref = str(getattr(sealed, "l5_certification_ref", "") or "").strip()
+    packet_ref = str(getattr(sealed, "l5_certification_packet_ref", "") or "").strip()
+    packet_digest = str(
+        getattr(sealed, "l5_certification_packet_digest", "") or ""
+    ).strip()
+    status = str(getattr(sealed, "l5_certification_status", "") or "").strip()
+
+    if old_ref == _PLACEHOLDER_TEST_L5_CERT_REF and not allow_test_l5_cert_ref:
+        reason = "placeholder l5_certification_ref rejected in governed mode"
+        return (
+            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
+            True,
+            reason,
+        )
+    if not packet_ref:
+        reason = "missing l5_certification_packet_ref"
+        return (
+            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
+            True,
+            reason,
+        )
+    if not _is_valid_l5_packet_digest(packet_digest):
+        reason = "malformed l5_certification_packet_digest"
+        return (
+            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
+            True,
+            reason,
+        )
+    if status != "L5_CERTIFIED":
+        reason = f"l5_certification_status={status or 'missing'}"
+        return (
+            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
+            True,
+            reason,
+        )
+    return (
+        ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.PASS, status),
+        False,
+        "",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -366,18 +434,31 @@ def _exit_finalize_apps_rg_impl(
     fec: Optional[FinalEvidenceContract] = None,
     target_company: str = "",
     target_role: str = "",
+    allow_test_l5_cert_ref: bool = False,
 ) -> ExitResult:
     """Core apps_rg Exit gate evaluation (no spine ExitEvalPipeline wrapper)."""
     gate_results, c0_blocking, blocking_reason = _evaluate_c0_evidence_gates(fec)
+    l5_gate, l5_blocking, l5_blocking_reason = _evaluate_l5_certification_gate(
+        sealed,
+        allow_test_l5_cert_ref=allow_test_l5_cert_ref,
+    )
+    gate_results.append(l5_gate)
+    if l5_blocking:
+        blocking_reason = ", ".join(
+            reason
+            for reason in (blocking_reason, l5_blocking_reason)
+            if reason
+        )
     owned_fields = _compute_apps_rg_owned_fields(fec, sealed)
 
-    outcome_authorized = not c0_blocking
+    outcome_authorized = not c0_blocking and not l5_blocking
     run_id: str = getattr(sealed, "run_id", "") or ""
 
     # Build run_metadata candidate (inert)
     w4_c0_evidence: dict[str, Any] = {
-        "c0_blocking": c0_blocking,
-        "blocking_reason": blocking_reason,
+            "c0_blocking": c0_blocking,
+            "l5_blocking": l5_blocking,
+            "blocking_reason": blocking_reason,
         "gate_results": [
             {"gate_id": g.gate_id, "verdict": g.verdict.value, "reason": g.reason}
             for g in gate_results
@@ -401,7 +482,7 @@ def _exit_finalize_apps_rg_impl(
     disposition = ExitDisposition(
         outcome_authorized=outcome_authorized,
         gate_results=gate_results,
-        c0_blocking=c0_blocking,
+        c0_blocking=c0_blocking or l5_blocking,
         blocking_reason=blocking_reason,
         final_output=getattr(sealed, "generated_content", None),
     )
@@ -424,6 +505,12 @@ def _exit_finalize_apps_rg_impl(
                 content_digest=content_digest,
                 metadata_ref=f"virtual/apps_rg/runs/{run_id}/c02_semantic_cache_payload.json",
                 proposal_status="PENDING_UWG",
+                l5_certification_packet_ref=str(
+                    getattr(sealed, "l5_certification_packet_ref", "") or ""
+                ),
+                l5_certification_packet_digest=str(
+                    getattr(sealed, "l5_certification_packet_digest", "") or ""
+                ),
             ),
         )
 
@@ -497,6 +584,13 @@ def build_exhaust_bundle_from_exit(
         sealed_result_ref=sealed_ref or "",
         learning_profile_ref=learning_profile_ref,
         meta_feedback_profile_ref=meta_feedback_profile_ref,
+        l5_certification_packet_ref=str(
+            getattr(sealed, "l5_certification_packet_ref", "") or ""
+        ),
+        l5_certification_packet_digest=str(
+            getattr(sealed, "l5_certification_packet_digest", "") or ""
+        ),
+        l5_certification_status=str(getattr(sealed, "l5_certification_status", "") or ""),
     )
 
 

@@ -6,9 +6,9 @@ Canonical dataclass for L2 execution output.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping
 
-from agentic_core.runtime.contracts.origin import Origin, OriginTaggedContent
+from agentic_core.runtime.contracts.origin import Origin
 from agentic_core.runtime.contracts.posture import RuntimePosture, POSTURE_WRITE_INTENT
 
 
@@ -75,6 +75,12 @@ class SealedL2Artifact:
     is_uwg_write_authority: bool = False
     is_future_run_only: bool = False
     l5_certification_ref: str = ""
+    l5_certification_packet_ref: str = ""
+    l5_certification_packet_digest: str = ""
+    l5_certification_status: str = ""
+    l5_egress_receipt_refs: tuple[str, ...] = field(default_factory=tuple)
+    l5_egress_receipt_digests: tuple[str, ...] = field(default_factory=tuple)
+    l5_egress_receipts: tuple[Any, ...] = field(default_factory=tuple)
 
     # ====================================================================
     # AG-4 W7: opaque-ref carrier fields preserved through L2 seal.

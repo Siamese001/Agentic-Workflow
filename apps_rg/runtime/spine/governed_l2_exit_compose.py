@@ -44,11 +44,21 @@ def _stamp_sealed_governed_marker(sealed: SealedL2Artifact) -> SealedL2Artifact:
 
 
 def governed_l2_seal_integrated(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
-    """Integrated L2 — core executor (package-driven or v4 envelope) + governed marker."""
+    """Integrated L2 — core executor (package-driven or v4 envelope) + L5 packet."""
     from apps_rg.runtime.bindings.l2_binding_adapter import _l2_execute_apps_rg_core
+    from apps_rg.runtime.l5.packet_builder import (
+        attach_l5_packet_to_sealed,
+        build_l5_certification_packet,
+    )
 
     sealed = _l2_execute_apps_rg_core(prompt)
-    return _stamp_sealed_governed_marker(sealed)
+    sealed = _stamp_sealed_governed_marker(sealed)
+    packet_result = build_l5_certification_packet(
+        sealed=sealed,
+        prompt_artifact=prompt,
+        allow_test_l5_cert_ref=bool(getattr(prompt, "allow_test_l5_cert_ref", False)),
+    )
+    return attach_l5_packet_to_sealed(sealed, packet_result)
 
 
 def _x3_code_from_eval(eval_result: Any) -> str:
@@ -85,6 +95,15 @@ def _build_exit_eval_receipts(
         "terminal_class": "success" if getattr(disp, "outcome_authorized", False) else "failure",
         "compilation_hash": str(getattr(sealed, "compilation_hash", "") or ""),
         "l5_certification_ref": str(getattr(sealed, "l5_certification_ref", "") or ""),
+        "l5_certification_packet_ref": str(
+            getattr(sealed, "l5_certification_packet_ref", "") or ""
+        ),
+        "l5_certification_packet_digest": str(
+            getattr(sealed, "l5_certification_packet_digest", "") or ""
+        ),
+        "l5_certification_status": str(
+            getattr(sealed, "l5_certification_status", "") or ""
+        ),
         "fec_support_status": str(getattr(fec, "support_status", "") or "") if fec else "",
     }
 

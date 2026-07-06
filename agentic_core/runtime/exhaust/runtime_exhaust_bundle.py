@@ -54,6 +54,11 @@ class RuntimeExhaustBundle:
     # Runtime receipt bundle
     runtime_receipt_refs: tuple[str, ...] = field(default_factory=tuple)
 
+    # L5 certification evidence refs — evidence-only, not runtime authority.
+    l5_certification_packet_ref: str = ""
+    l5_certification_packet_digest: str = ""
+    l5_certification_status: str = ""
+
     # Learning / meta-feedback profile refs (declarative, not authoritative)
     learning_profile_ref: str = ""
     meta_feedback_profile_ref: str = ""
@@ -96,6 +101,9 @@ class RuntimeExhaustBundle:
             "gate_mesh_result_ref": self.gate_mesh_result_ref,
             "exit_disposition_ref": self.exit_disposition_ref,
             "runtime_receipt_refs": list(self.runtime_receipt_refs),
+            "l5_certification_packet_ref": self.l5_certification_packet_ref,
+            "l5_certification_packet_digest": self.l5_certification_packet_digest,
+            "l5_certification_status": self.l5_certification_status,
             "learning_profile_ref": self.learning_profile_ref,
             "meta_feedback_profile_ref": self.meta_feedback_profile_ref,
             "learning_signals": list(self.learning_signals),
@@ -117,6 +125,9 @@ def build_runtime_exhaust_bundle(
     gate_mesh_result_ref: str = "",
     exit_disposition_ref: str,
     runtime_receipt_refs: tuple[str, ...] = (),
+    l5_certification_packet_ref: str = "",
+    l5_certification_packet_digest: str = "",
+    l5_certification_status: str = "",
     learning_profile_ref: str = "",
     meta_feedback_profile_ref: str = "",
     learning_signals: tuple[str, ...] = (),
@@ -146,6 +157,9 @@ def build_runtime_exhaust_bundle(
         "sealed_result_ref": sealed_result_ref,
         "gate_mesh_result_ref": gate_mesh_result_ref,
         "exit_disposition_ref": exit_disposition_ref,
+        "l5_certification_packet_ref": l5_certification_packet_ref,
+        "l5_certification_packet_digest": l5_certification_packet_digest,
+        "l5_certification_status": l5_certification_status,
         "created_after_exit": True,
         "current_run_closed": True,
         "created_at": created_at,
@@ -162,6 +176,9 @@ def build_runtime_exhaust_bundle(
         gate_mesh_result_ref=gate_mesh_result_ref,
         exit_disposition_ref=exit_disposition_ref,
         runtime_receipt_refs=runtime_receipt_refs,
+        l5_certification_packet_ref=l5_certification_packet_ref,
+        l5_certification_packet_digest=l5_certification_packet_digest,
+        l5_certification_status=l5_certification_status,
         learning_profile_ref=learning_profile_ref,
         meta_feedback_profile_ref=meta_feedback_profile_ref,
         learning_signals=learning_signals,

@@ -114,6 +114,8 @@ def _receipt_to_sortable_dict(r: ChildCertifierReceipt) -> dict[str, Any]:
         "certified": r.certified,
         "evidence_digest": r.evidence_digest,
         "evidence_ref": r.evidence_ref,
+        # Exclude l5_governance_context_digest from the context hash payload:
+        # it is a claim about the payload hash, not an input to that hash.
         "reason_codes": sorted(r.reason_codes),
         "notes": r.notes,
         "not_applicable_reason": r.not_applicable_reason,
@@ -127,6 +129,10 @@ def _egress_to_sortable_dict(r: EgressCertificationReceipt) -> dict[str, Any]:
         "provider_ref": r.provider_ref,
         "response_digest": r.response_digest,
         "redaction_policy_ref": r.redaction_policy_ref,
+        "request_digest": r.request_digest,
+        "call_purpose_ref": r.call_purpose_ref,
+        "redaction_receipt_ref": r.redaction_receipt_ref,
+        "egress_status": r.egress_status,
         "prompt_artifact_ref": r.prompt_artifact_ref,
         "egress_policy_ref": r.egress_policy_ref,
         "schema_version": r.schema_version,
@@ -331,8 +337,8 @@ class L5PacketProducer:
         Raises
         ------
         L5DigestMismatchError
-            When a child or egress receipt evidence_digest does not match
-            the canonical l5_governance_context_digest.  Fail-closed.
+            When a child or egress receipt l5_governance_context_digest does
+            not match the canonical packet context digest.  Fail-closed.
         L5AuthorityWideningError
             When authority_ref introduces scope not grounded in inputs or
             child receipts.  Fail-closed.
@@ -364,27 +370,32 @@ class L5PacketProducer:
         )
 
         # ------------------------------------------------------------------
-        # Step 3: Child receipt digest validation (fail-closed on mismatch)
+        # Step 3: Child receipt context validation (fail-closed on mismatch)
         # ------------------------------------------------------------------
         for receipt in child_receipts:
-            if receipt.evidence_digest:
-                if receipt.evidence_digest != governance_context_digest:
+            if receipt.l5_governance_context_digest:
+                if receipt.l5_governance_context_digest != governance_context_digest:
                     raise L5DigestMismatchError(
-                        f"Child receipt domain={receipt.domain!r} evidence_digest "
-                        f"{receipt.evidence_digest!r} does not match governance "
-                        f"context digest {governance_context_digest!r}."
+                        f"Child receipt domain={receipt.domain!r} "
+                        f"l5_governance_context_digest "
+                        f"{receipt.l5_governance_context_digest!r} does not match "
+                        f"governance context digest {governance_context_digest!r}."
                     )
 
         # ------------------------------------------------------------------
-        # Step 4: Egress receipt digest validation (fail-closed on mismatch)
+        # Step 4: Egress receipt context validation (fail-closed on mismatch)
         # ------------------------------------------------------------------
         for er in egress_receipts:
-            # response_digest is the content hash of the redacted response,
-            # not the governance context digest — but when the receipt also
-            # carries an evidence_digest field (if it ever grows one), that
-            # must match.  For now: egress receipts must have certified=True
-            # to count toward L5_CERTIFIED.
-            pass  # response_digest is content-bound, not governance-context-bound
+            # request_digest / response_digest are content hashes of redacted
+            # artifacts, not governance context hashes.
+            if er.l5_governance_context_digest:
+                if er.l5_governance_context_digest != governance_context_digest:
+                    raise L5DigestMismatchError(
+                        f"Egress receipt provider={er.provider_ref!r} "
+                        f"l5_governance_context_digest "
+                        f"{er.l5_governance_context_digest!r} does not match "
+                        f"governance context digest {governance_context_digest!r}."
+                    )
 
         # ------------------------------------------------------------------
         # Step 5: Required refs check
@@ -436,6 +447,13 @@ class L5PacketProducer:
                 )
                 continue
 
+            if not receipt.certified and receipt.reason_codes:
+                not_certified_reasons.append(
+                    f"child {category!r} certified=False with reason_codes "
+                    f"{receipt.reason_codes!r}."
+                )
+                continue
+
             # UNKNOWN child certification status
             if not receipt.certified and not receipt.reason_codes:
                 # certified=False with no reason codes means UNKNOWN/unset
@@ -467,6 +485,11 @@ class L5PacketProducer:
                     not_certified_reasons.append(
                         f"child {category!r} REQUIRED but certified=False with no "
                         "reason_codes (UNKNOWN child)."
+                    )
+                elif not receipt.certified:
+                    not_certified_reasons.append(
+                        f"child {category!r} REQUIRED but certified=False with "
+                        f"reason_codes {receipt.reason_codes!r}."
                     )
 
         # ------------------------------------------------------------------
@@ -514,6 +537,7 @@ class L5PacketProducer:
             producer_ref=producer_ref,
             policy_ref=policy_ref,
             certifier_version=certifier_version,
+            l5_governance_context_digest=governance_context_digest,
             digest_sha256=packet_digest,
             run_id=run_id,
             trace_id=trace_id,

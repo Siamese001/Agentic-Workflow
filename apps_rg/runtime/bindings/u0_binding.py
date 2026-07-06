@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 # Re-export terminal rejection for callers/tests.
-from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError  # noqa: E402
+from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError  # noqa: E402,F401
 from apps_rg.runtime.bindings.briefing_u0_signals import briefing_supplied_at_u0  # noqa: E402
 from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH  # noqa: E402
 from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH  # noqa: E402
@@ -116,7 +116,6 @@ def u0_validate_apps_rg(
         If the envelope type is not supported.
     """
     from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
-        AppsRgIngressPayload,
         RequestEnvelope,
         ValidatedRequest,
     )
@@ -402,6 +401,10 @@ def u0_validate_apps_rg(
         "support_expectation": support_expectation,
         "output_expectation": output_expectation,
         "policy_refs": policy_refs,
+        "allow_test_l5_cert_ref": bool(
+            app_payload.get("allow_test_l5_cert_ref")
+            or (app_payload.get("user_constraints") or {}).get("allow_test_l5_cert_ref")
+        ),
     }
 
     trace_id = str(meta.get("trace_id") or "") or trace_root_pre
@@ -416,12 +419,26 @@ def u0_validate_apps_rg(
 
     payload_digest = str(app_payload.get("payload_digest") or "")
 
+    allow_test_l5_cert_ref = bool(validated_app_payload["allow_test_l5_cert_ref"])
     l5_ref = app_payload.get("l5_certification_ref")
     if l5_ref is None and isinstance(envelope, RequestEnvelope):
         l5_ref = envelope.payload.l5_certification_ref
     l5_str = str(l5_ref) if l5_ref else ""
     if not l5_str.strip():
-        l5_str = "test:valid:w6"
+        if allow_test_l5_cert_ref:
+            l5_str = "test:valid:w6"
+        else:
+            seed = hashlib.sha256(
+                "|".join(
+                    [
+                        request_id,
+                        replay_key_final,
+                        target_company,
+                        target_role,
+                    ]
+                ).encode("utf-8")
+            ).hexdigest()[:24]
+            l5_str = f"l5:apps_rg:u0:{seed}"
     if not payload_digest and isinstance(envelope, RequestEnvelope):
         payload_digest = str(envelope.payload.payload_digest or "")
     if not payload_digest:

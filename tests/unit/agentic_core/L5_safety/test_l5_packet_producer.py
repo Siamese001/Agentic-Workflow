@@ -347,27 +347,42 @@ class TestNotApplicableJustification:
 
 
 class TestChildDigestMismatch:
-    def test_child_digest_mismatch_raises(self):
+    def test_child_context_digest_mismatch_raises(self):
         children = _full_child_set()
-        # Add a valid-format but wrong digest to one child
+        # Add a valid-format but wrong context digest to one child. The child
+        # evidence_digest is a child-evidence hash and is not context-matched.
         bad_child = ChildCertifierReceipt(
             domain=children[0].domain,
             applicability="REQUIRED",
             certified=True,
-            evidence_digest="b" * 64,  # wrong digest — will not match computed
+            l5_governance_context_digest="b" * 64,
         )
         children[0] = bad_child
-        with pytest.raises(L5DigestMismatchError, match="evidence_digest"):
+        with pytest.raises(L5DigestMismatchError, match="l5_governance_context_digest"):
             _PRODUCER.produce_packet(
                 child_receipts=children,
                 egress_receipts=[],
                 **_COMMON_REFS,
             )
 
-    def test_child_without_digest_accepted(self):
-        # Children without evidence_digest set are not digest-checked
+    def test_child_evidence_digest_accepted_as_child_hash(self):
+        children = _full_child_set()
+        children[0] = ChildCertifierReceipt(
+            domain=children[0].domain,
+            applicability="REQUIRED",
+            certified=True,
+            evidence_digest="b" * 64,
+        )
         packet = _PRODUCER.produce_packet(
-            child_receipts=_full_child_set(),  # evidence_digest="" by default
+            child_receipts=children,
+            egress_receipts=[],
+            **_COMMON_REFS,
+        )
+        assert packet.certification_status == "L5_CERTIFIED"
+
+    def test_child_without_digest_accepted(self):
+        packet = _PRODUCER.produce_packet(
+            child_receipts=_full_child_set(),
             egress_receipts=[],
             **_COMMON_REFS,
         )

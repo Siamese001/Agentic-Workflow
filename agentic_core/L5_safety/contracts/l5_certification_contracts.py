@@ -26,7 +26,7 @@ L5_CERTIFIED semantics:
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import ClassVar
 
 from agentic_core.L5_safety.contracts._base import L5Result
@@ -73,6 +73,7 @@ class ChildCertifierReceipt:
 
     evidence_digest: str = ""
     evidence_ref: str = ""
+    l5_governance_context_digest: str = ""
     reason_codes: tuple[str, ...] = ()
     notes: str = ""
 
@@ -113,6 +114,15 @@ class ChildCertifierReceipt:
                 f"when present, got {self.evidence_digest!r}."
             )
 
+        if self.l5_governance_context_digest and not _is_hex64(
+            self.l5_governance_context_digest
+        ):
+            raise ValueError(
+                "ChildCertifierReceipt.l5_governance_context_digest must be 64 "
+                "lowercase hex chars when present, got "
+                f"{self.l5_governance_context_digest!r}."
+            )
+
 
 # ---------------------------------------------------------------------------
 # EgressCertificationReceipt
@@ -135,6 +145,11 @@ class EgressCertificationReceipt:
     response_digest: str
     redaction_policy_ref: str
 
+    request_digest: str = ""
+    call_purpose_ref: str = ""
+    redaction_receipt_ref: str = ""
+    l5_governance_context_digest: str = ""
+    egress_status: str = ""
     prompt_artifact_ref: str = ""
     egress_policy_ref: str = ""
     schema_version: str = ""
@@ -164,6 +179,21 @@ class EgressCertificationReceipt:
                 "EgressCertificationReceipt.response_digest must be 64 lowercase "
                 f"hex chars (sha256 of redacted canonical response), "
                 f"got {self.response_digest!r}."
+            )
+
+        if self.request_digest and not _is_hex64(self.request_digest):
+            raise ValueError(
+                "EgressCertificationReceipt.request_digest must be 64 lowercase "
+                f"hex chars when present, got {self.request_digest!r}."
+            )
+
+        if self.l5_governance_context_digest and not _is_hex64(
+            self.l5_governance_context_digest
+        ):
+            raise ValueError(
+                "EgressCertificationReceipt.l5_governance_context_digest must be "
+                "64 lowercase hex chars when present, got "
+                f"{self.l5_governance_context_digest!r}."
             )
 
 
@@ -197,6 +227,7 @@ class L5CertificationPacket(L5Result):
     producer_ref: str = ""
     policy_ref: str = ""
     certifier_version: str = ""
+    l5_governance_context_digest: str = ""
 
     output_name: ClassVar[str] = "l5_certification_packet"
     source_doc: ClassVar[str] = "00_L5_Governance_Safety_detailed.md"
@@ -223,6 +254,15 @@ class L5CertificationPacket(L5Result):
             raise ValueError(
                 "L5CertificationPacket.digest_sha256 must be 64 lowercase hex chars "
                 f"when present, got {self.digest_sha256!r}."
+            )
+
+        if self.l5_governance_context_digest and not _is_hex64(
+            self.l5_governance_context_digest
+        ):
+            raise ValueError(
+                "L5CertificationPacket.l5_governance_context_digest must be 64 "
+                "lowercase hex chars when present, got "
+                f"{self.l5_governance_context_digest!r}."
             )
 
 
