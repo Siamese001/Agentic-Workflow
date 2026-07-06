@@ -1347,7 +1347,12 @@ def retry_provider_for_parse(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,
@@ -1534,7 +1539,12 @@ def retry_provider_competency_restatement(
             ),
         },
     ]
-    repair_payload = {**provider_payload, "messages": repair_messages, "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS}
+    repair_payload = {
+        **provider_payload,
+        "messages": repair_messages,
+        "max_tokens": COMPETENCIES_MAX_OUTPUT_TOKENS,
+        "anthropic_workload_kind": "REPAIR",
+    }
     result = generate_section(
         tag_reasoning_lane(repair_payload, LANE_KEY),
         artifact_dir=artifact_dir,

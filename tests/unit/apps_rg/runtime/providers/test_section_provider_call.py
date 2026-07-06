@@ -40,7 +40,10 @@ class _CapturingGateway:
 
 
 def test_build_section_provider_gateway_registers_external_profiles() -> None:
-    gateway = subject.build_section_provider_gateway()
+    gateway = subject.build_section_provider_gateway(
+        claude_model="claude-sonnet-5",
+        openai_model="gpt-5.4-mini-2026-03-17",
+    )
 
     assert set(gateway.registered_profiles()) == {
         ProviderProfile.EXTERNAL_CLAUDE,
@@ -68,6 +71,7 @@ def test_call_section_model_provider_threads_messages_and_overrides(monkeypatch)
             "prompt_hash": "prompt-hash",
             "request_id": "request-1",
             "run_id": "payload-run",
+            "_reasoning_section_lane": "competencies",
             "max_tokens": 44,
             "temperature": 0.91,
             "timeout_seconds": 7,
@@ -108,6 +112,7 @@ def test_call_section_model_provider_falls_back_to_prompt_and_max_output_tokens(
             "messages": [{"role": "user", "content": ""}],
             "prompt": "Fallback prompt body.",
             "run_id": "payload-run",
+            "_reasoning_section_lane": "unify_narrative",
             "max_output_tokens": 123,
         },
     )
@@ -136,6 +141,7 @@ def test_call_section_model_provider_explicit_token_budget_wins(monkeypatch) -> 
         None,
         {
             "prompt": "Use defaults.",
+            "_reasoning_section_lane": "competencies",
             "max_tokens": 10,
             "max_output_tokens": 20,
         },
@@ -147,7 +153,7 @@ def test_call_section_model_provider_explicit_token_budget_wins(monkeypatch) -> 
     assert call["token_budget"] == 77
 
 
-def test_call_section_model_provider_pins_openai_competencies_model(monkeypatch) -> None:
+def test_call_section_model_provider_pins_openai_unify_narrative_model(monkeypatch) -> None:
     gateway = _CapturingGateway()
     captured: dict[str, object] = {}
 
@@ -161,8 +167,8 @@ def test_call_section_model_provider_pins_openai_competencies_model(monkeypatch)
     subject.call_section_model_provider(
         ProviderProfile.EXTERNAL_OPENAI,
         {
-            "_reasoning_section_lane": "competencies",
-            "prompt": "Use competencies override.",
+            "_reasoning_section_lane": "unify_narrative",
+            "prompt": "Use unify narrative override.",
             "max_tokens": 10,
         },
     )

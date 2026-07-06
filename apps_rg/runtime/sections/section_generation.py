@@ -64,6 +64,11 @@ def build_section_request(
     model: str | None = None,
     provider_requested: str = "external_claude",
     temperature_bounds: tuple[float, float] = (0.0, 0.99),
+    compiled_prompt_artifact: Any | None = None,
+    anthropic_workload_kind: str | None = None,
+    anthropic_payload: dict[str, Any] | None = None,
+    anthropic_cache_receipt_seed: dict[str, Any] | None = None,
+    anthropic_cache_strategy: str | None = None,
 ) -> tuple[ProviderRequest, dict[str, Any]]:
     """Build an OpenAI-compatible section generation request for the apps_rg provider gateway.
 
@@ -95,6 +100,16 @@ def build_section_request(
         "timeout_seconds": timeout_seconds,
         "response_format": {"type": "json_object"},
     }
+    if compiled_prompt_artifact is not None:
+        payload["compiled_prompt_artifact"] = compiled_prompt_artifact
+    if str(anthropic_workload_kind or "").strip():
+        payload["anthropic_workload_kind"] = str(anthropic_workload_kind).strip()
+    if anthropic_payload is not None:
+        payload["anthropic_payload"] = dict(anthropic_payload)
+    if anthropic_cache_receipt_seed is not None:
+        payload["anthropic_cache_receipt_seed"] = dict(anthropic_cache_receipt_seed)
+    if str(anthropic_cache_strategy or "").strip():
+        payload["anthropic_cache_strategy"] = str(anthropic_cache_strategy).strip()
     return provider_request, payload
 
 

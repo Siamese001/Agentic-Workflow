@@ -2170,6 +2170,8 @@ def run_executive_summary_execution(
             max_tokens=max_out_tokens,
             model=section_model,
             provider_requested=str(args.provider),
+            compiled_prompt_artifact=section_compiled.artifact,
+            anthropic_workload_kind="ONE_SHOT",
         )
         provider_payload = tag_reasoning_lane(provider_payload, LANE_KEY)
         provider_request_data = provider_req.to_dict()
