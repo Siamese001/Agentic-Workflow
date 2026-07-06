@@ -38,3 +38,8 @@ Required broad filters (`pytest -k r1b`) surface **9 pre-existing failures** out
 - Core `UWGCommitReceipt` field parity is **not** solved (W10b gap carried forward).
 - Broad `-k r1b` pytest is not fully green (pre-existing debt documented above).
 - No new architecture features were added in closeout.
+## 2026-07-06 L4 Best-Practices Hardening Note
+
+R1B fixture mirrors are proof/test-only and no longer serve production lookup
+truth when the derived index is missing. Production hits require UWG-admitted
+durable projection plus a derived read-surface refresh receipt.

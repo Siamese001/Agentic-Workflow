@@ -39,3 +39,8 @@ UWG-admitted R1B durable bundles under `durable/uwg_admitted/` are projected int
 - Core `UWGCommitReceipt` parity is **not** solved (W10b gap carried forward).  
 - Chroma/vector DB is not wired as production index; derived index is file-backed projection.  
 - No section-level loose R1B lookup.
+## 2026-07-06 Read-Surface Refresh Binding Update
+
+Derived-index entries now include `source_commit_receipt_ref` and
+`source_refresh_receipt_ref`. Missing refresh receipts cause lookup miss and
+generation fallthrough, not fixture fallback.

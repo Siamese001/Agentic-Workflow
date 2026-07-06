@@ -681,6 +681,10 @@ def main():
             "ops_scripts/ci/check_apps_rg_live_authority.py",
         ),
         (
+            "APPS-RG-L4-BEST-PRACTICES apps_rg R1B/L4 durable cache invariants (fail-closed)",
+            "ops_scripts/ci/check_apps_rg_l4_best_practices.py",
+        ),
+        (
             "PLAN-DOD plan files have ## Definition of Done (advisory baseline)",
             "ops_scripts/ci/check_plan_definition_of_done.py",
         ),

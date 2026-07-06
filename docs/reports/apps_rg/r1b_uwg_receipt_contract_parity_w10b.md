@@ -51,3 +51,9 @@ W10 unit/contract tests and W7–W9b suites re-run in manifest.
 
 - Full parity on bare `UWGCommitReceipt` without apps_rg sidecar (PARTIAL by design).
 - No `agentic_core` edits.
+## 2026-07-06 Core Receipt Parity Update
+
+`UWGCommitReceipt` now carries R1B durable-write provenance directly, including
+L5 ref, gate refs, policy/blueprint hash, replay key, clearance proof,
+staged-diff hash, content hash, and audit chain hash. The apps_rg sidecar
+remains a projection convenience, not the only provenance source.
