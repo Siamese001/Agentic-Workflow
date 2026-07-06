@@ -44,6 +44,10 @@ class AuditLedgerSequenceGapError(RuntimeError):
     """
 
 
+class AuditLedgerChainError(RuntimeError):
+    """Raised when ``chain_check()`` detects broken hash-chain evidence."""
+
+
 @dataclass(frozen=True)
 class AuditAppendReceipt:
     """Receipt for a successful audit ledger append."""
@@ -54,6 +58,8 @@ class AuditAppendReceipt:
     snapshot_position: int
     deterministic_digest: str
     schema_version: str = L4_CONTRACT_SCHEMA_VERSION
+    prev_chain_hash: str = ""
+    chain_hash: str = ""
 
 
 class AuditLedger:
@@ -68,6 +74,9 @@ class AuditLedger:
         self._sequence_counter: int = 0
         self._lock = threading.RLock()
         self._available: bool = True
+        self._last_chain_hash: str = compute_deterministic_digest(
+            {"audit_ledger_genesis": L4_CONTRACT_SCHEMA_VERSION}
+        )
 
     def set_available(self, available: bool) -> None:
         """Toggle ledger availability (test/maintenance hook)."""
@@ -145,8 +154,19 @@ class AuditLedger:
                 state_refs=state_refs,
                 reason_codes=reason_codes,
                 supersedes_ref=supersedes_ref,
+                prev_chain_hash=self._last_chain_hash,
             )
             record = stamp_digest(record)
+            chain_hash = compute_deterministic_digest(
+                {
+                    "prev_chain_hash": self._last_chain_hash,
+                    "record_digest": record.deterministic_digest,
+                }
+            )
+            record = stamp_digest(
+                replace(record, chain_hash=chain_hash, deterministic_digest="")
+            )
+            self._last_chain_hash = chain_hash
             self._records.append(record)
             self._persist(record)
             receipt = AuditAppendReceipt(
@@ -155,6 +175,8 @@ class AuditLedger:
                 ledger_sequence=seq,
                 snapshot_position=len(self._records),
                 deterministic_digest=record.deterministic_digest,
+                prev_chain_hash=record.prev_chain_hash,
+                chain_hash=record.chain_hash,
             )
             self._receipts[receipt.audit_append_receipt_id] = receipt
             return record, receipt
@@ -181,6 +203,33 @@ class AuditLedger:
                         f"ledger gap: position {idx} has sequence "
                         f"{record.ledger_sequence}, expected {expected}"
                     )
+
+    def chain_check(self) -> None:
+        """Verify every record links to the previous hash and recomputes."""
+        with self._lock:
+            prev = compute_deterministic_digest(
+                {"audit_ledger_genesis": L4_CONTRACT_SCHEMA_VERSION}
+            )
+            for idx, record in enumerate(self._records):
+                if record.prev_chain_hash != prev:
+                    raise AuditLedgerChainError(
+                        f"chain gap: position {idx + 1} prev_chain_hash "
+                        f"{record.prev_chain_hash!r}, expected {prev!r}"
+                    )
+                base = replace(record, chain_hash="", deterministic_digest="")
+                base = stamp_digest(base)
+                expected = compute_deterministic_digest(
+                    {
+                        "prev_chain_hash": prev,
+                        "record_digest": base.deterministic_digest,
+                    }
+                )
+                if record.chain_hash != expected:
+                    raise AuditLedgerChainError(
+                        f"chain hash mismatch: position {idx + 1} has "
+                        f"{record.chain_hash!r}, expected {expected!r}"
+                    )
+                prev = record.chain_hash
 
     def is_overwrite_attempted(self, audit_record_id: str) -> bool:
         """Return True if ``audit_record_id`` already exists.
@@ -222,6 +271,7 @@ def reset_default_ledger() -> None:
 
 __all__ = [
     "AuditAppendReceipt",
+    "AuditLedgerChainError",
     "AuditLedger",
     "AuditLedgerSequenceGapError",
     "AuditLedgerUnavailableError",

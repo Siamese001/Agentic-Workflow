@@ -740,6 +740,8 @@ class AuditLedgerRecord:
     state_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     reason_codes: Tuple[str, ...] = field(default_factory=_empty_tuple)
     supersedes_ref: Optional[str] = None  # for correction-via-append-record
+    prev_chain_hash: str = ""
+    chain_hash: str = ""
 
 
 @dataclass(frozen=True)

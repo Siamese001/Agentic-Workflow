@@ -9,6 +9,9 @@ from typing import Any
 
 from apps_rg.cache.r1b_derived_index import (
     derived_index_available,
+    derived_index_root,
+    list_derived_index_record_ids,
+    load_derived_index_entry,
     lookup_r1b_via_derived_index,
     project_durable_to_derived_index,
 )
@@ -55,6 +58,31 @@ def prove_r1b_index_lifecycle(
     )
     refresh = project_durable_to_derived_index(root)
     result.steps.append({"stage": "derived_index_refresh", "receipt": refresh.to_dict()})
+    manifest_path = derived_index_root(root) / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.is_file() else {}
+    for rid in list_derived_index_record_ids(root):
+        entry = load_derived_index_entry(root, rid) or {}
+        durable_ref = str(entry.get("durable_bundle_ref") or "")
+        refresh_ref = str(entry.get("source_refresh_receipt_ref") or "")
+        bundle = json.loads((root / durable_ref).read_text(encoding="utf-8"))
+        refresh_payload = json.loads((root / refresh_ref).read_text(encoding="utf-8"))
+        same_commit = (
+            entry.get("source_commit_receipt_ref")
+            == bundle.get("source_commit_receipt_ref")
+            == refresh_payload.get("source_commit_receipt_ref")
+        )
+        result.steps.append(
+            {
+                "stage": "receipt_chain_consistency",
+                "record_id": rid,
+                "same_commit_receipt_ref": same_commit,
+                "manifest_points_to_commit": entry.get("source_commit_receipt_ref")
+                in (manifest.get("source_commit_receipt_refs") or []),
+                "manifest_points_to_refresh": refresh_ref
+                in (manifest.get("source_refresh_receipt_refs") or []),
+                "derived_index_replaces_provenance": False,
+            }
+        )
 
     hit, report = lookup_r1b_via_derived_index(
         match_request,

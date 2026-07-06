@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -68,6 +68,7 @@ class R1BPromotionOutcome:
     fixture_mirror_written_reason: str = ""
     c0_fact_vectors_consulted: bool = False
     governance_receipt: dict[str, Any] | None = None
+    uwg_commit_receipt: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -83,6 +84,7 @@ class R1BPromotionOutcome:
             "fixture_mirror_written_reason": self.fixture_mirror_written_reason,
             "c0_fact_vectors_consulted": self.c0_fact_vectors_consulted,
             "governance_receipt": self.governance_receipt,
+            "uwg_commit_receipt": self.uwg_commit_receipt,
             "cache_grain": CACHE_GRAIN_ROLE_TARGET_RUN,
             "target_surface": R1B_UWG_TARGET_SURFACE,
         }
@@ -327,6 +329,7 @@ def promote_r1b_cache_via_uwg(
             commit_request_id=cr.commit_request_id,
             uwg_commit_receipt_id=commit_receipt.commit_receipt_id,
             governance_receipt=gov_bundle.to_dict(),
+            uwg_commit_receipt=asdict(commit_receipt),
         )
     blocked_codes: tuple[str, ...] = ()
     blocked_id = ""
@@ -364,6 +367,7 @@ def write_uwg_admitted_projection(
     """Persist UWG-admitted R1B bundle under durable projection (not fixture SSOT)."""
     assert outcome.status == "ADMITTED"
     assert outcome.uwg_commit_receipt_id
+    core_receipt = outcome.uwg_commit_receipt or {}
 
     root = projection_root / "durable" / "uwg_admitted"
     intents = root / "intents"
@@ -395,8 +399,21 @@ def write_uwg_admitted_projection(
         "storage_tier": "uwg_admitted_durable_projection",
         "durable_write_path": outcome.durable_write_path,
         "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id,
+        "source_commit_receipt_ref": outcome.uwg_commit_receipt_id,
         "commit_request_id": outcome.commit_request_id,
+        "core_uwg_commit_receipt": core_receipt,
         "governance_receipt": outcome.governance_receipt,
+        "policy_hash": core_receipt.get("policy_hash") or candidate.policy_hash,
+        "blueprint_hash": core_receipt.get("blueprint_hash") or candidate.blueprint_hash,
+        "replay_key": core_receipt.get("replay_key") or "",
+        "registry_digest_set": core_receipt.get("registry_digest_set") or [],
+        "gate_verdict_refs": core_receipt.get("gate_verdict_refs") or [],
+        "l5_certification_ref": core_receipt.get("l5_certification_ref") or "",
+        "audit_append_receipt_ref": core_receipt.get("audit_append_receipt_ref") or "",
+        "content_hash": core_receipt.get("content_hash") or "",
+        "chain_hash": core_receipt.get("chain_hash") or "",
+        "snapshot_before": core_receipt.get("snapshot_before") or "",
+        "snapshot_after": core_receipt.get("snapshot_after") or "",
         "parent_intent_record": candidate.record.to_dict(),
         "child_chunks": [c.to_dict() for c in candidate.chunks],
         "child_chunk_embedding_metadata": chunk_embeddings,

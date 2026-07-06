@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -140,6 +141,37 @@ def _load_durable_bundle(path: Path) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
+def _write_read_surface_refresh_receipt(
+    *,
+    root: Path,
+    record_id: str,
+    bundle: dict[str, Any],
+    before_snapshot: str,
+    after_snapshot: str,
+) -> str:
+    receipts_dir = root / "durable" / "uwg_admitted" / "receipts"
+    receipts_dir.mkdir(parents=True, exist_ok=True)
+    rel = Path("durable") / "uwg_admitted" / "receipts" / f"{record_id}_read_surface_refresh.json"
+    payload = {
+        "refresh_receipt_id": f"r1b_refresh:{record_id}:{uuid.uuid5(uuid.NAMESPACE_URL, record_id)}",
+        "source_commit_receipt_ref": str(
+            bundle.get("source_commit_receipt_ref")
+            or bundle.get("uwg_commit_receipt_id")
+            or ""
+        ),
+        "state_surface": "l4.apps_rg.r1b_semantic_cache",
+        "refresh_type": "r1b_semantic_cache_projection",
+        "before_snapshot": before_snapshot,
+        "after_snapshot": after_snapshot,
+        "policy_hash": str(bundle.get("policy_hash") or ""),
+        "blueprint_hash": str(bundle.get("blueprint_hash") or ""),
+        "status": "SUCCESS",
+        "reason_codes": [],
+    }
+    (root / rel).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return str(rel)
+
+
 def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefreshReceipt:
     """Project UWG-admitted durable bundles into derived intent-vector index (W11)."""
     root = Path(projection_root)
@@ -152,6 +184,9 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
     durable_intents = root / DURABLE_INTENTS_SUBDIR
     scanned = 0
     projected = 0
+    source_commit_refs: set[str] = set()
+    source_refresh_refs: set[str] = set()
+    before_snapshot = ""
     for bundle_path in sorted(durable_intents.glob("*.json")):
         scanned += 1
         bundle = _load_durable_bundle(bundle_path)
@@ -165,6 +200,24 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
         record = HistoricalIntentRecord.from_dict(parent)
         if not record.cache_admissible:
             continue
+        source_commit_ref = str(
+            bundle.get("source_commit_receipt_ref")
+            or bundle.get("uwg_commit_receipt_id")
+            or ""
+        )
+        if not source_commit_ref:
+            continue
+        before_snapshot = before_snapshot or str(bundle.get("snapshot_before") or "")
+        after_snapshot = str(bundle.get("snapshot_after") or f"r1b_snapshot:{record.record_id}")
+        refresh_ref = _write_read_surface_refresh_receipt(
+            root=root,
+            record_id=record.record_id,
+            bundle=bundle,
+            before_snapshot=before_snapshot,
+            after_snapshot=after_snapshot,
+        )
+        source_commit_refs.add(source_commit_ref)
+        source_refresh_refs.add(refresh_ref)
         digest = record.normalized_intent_digest
         vec_payload = vector_payload(digest, intent_text=str(record.request_intent_text or ""))
         vec = [float(x) for x in vec_payload.get("values") or []]
@@ -185,6 +238,11 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
             "vector": vec_payload,
             "governance_receipt": bundle.get("governance_receipt"),
             "uwg_commit_receipt_id": bundle.get("uwg_commit_receipt_id", ""),
+            "source_commit_receipt_ref": source_commit_ref,
+            "source_refresh_receipt_ref": refresh_ref,
+            "policy_hash": str(bundle.get("policy_hash") or ""),
+            "blueprint_hash": str(bundle.get("blueprint_hash") or ""),
+            "read_surface_role": "projection_not_truth",
         }
         (vec_dir / f"{record.record_id}.json").write_text(
             json.dumps(entry, indent=2, sort_keys=True) + "\n",
@@ -196,9 +254,10 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
         )
         projected += 1
 
+    refreshed_at = _utc_now()
     manifest = {
         "schema_version": "2026-05-18-r1b-w11-w12-v1",
-        "refreshed_at_utc": _utc_now(),
+        "refreshed_at_utc": refreshed_at,
         "entries_count": projected,
         "durable_truth_path": str(durable_truth_root(root)),
         "derived_index_path": str(idx_root),
@@ -208,7 +267,19 @@ def project_durable_to_derived_index(projection_root: Path | str) -> IndexRefres
         "child_chunks_parent_bound_only": True,
         "not_c0_fact_vectors": True,
         "r1b_vs_c0": R1B_NOT_C0_FACT_VECTORS,
+        "source_commit_receipt_refs": sorted(source_commit_refs),
+        "source_refresh_receipt_refs": sorted(source_refresh_refs),
+        "snapshot_id": f"r1b_derived_index:{refreshed_at}",
+        "policy_hash": "",
+        "blueprint_hash": "",
+        "read_surface_role": "projection_not_truth",
     }
+    if source_commit_refs:
+        first_bundle = next(iter(sorted(durable_intents.glob("*.json"))), None)
+        if first_bundle:
+            loaded = _load_durable_bundle(first_bundle) or {}
+            manifest["policy_hash"] = str(loaded.get("policy_hash") or "")
+            manifest["blueprint_hash"] = str(loaded.get("blueprint_hash") or "")
     (idx_root / INDEX_MANIFEST).write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
@@ -319,6 +390,23 @@ def lookup_r1b_via_derived_index(
     for rid in list_derived_index_record_ids(root):
         entry = load_derived_index_entry(root, rid)
         if not entry or not entry.get("cache_admissible"):
+            continue
+        refresh_ref = str(entry.get("source_refresh_receipt_ref") or "")
+        if not refresh_ref or not (root / refresh_ref).is_file():
+            report.append(
+                {
+                    "candidate_record_id": rid,
+                    "similarity": 0.0,
+                    "admissible": False,
+                    "reason": "read_surface_refresh_receipt_missing",
+                    "reason_codes": ["read_surface_refresh_receipt_missing"],
+                    "checks": {"read_surface_refresh_receipt_present": False},
+                    "lookup_surface": "derived_index",
+                    "durable_truth_ref": entry.get("durable_bundle_ref"),
+                    "generation_required": True,
+                    "fixture_store_consulted": False,
+                }
+            )
             continue
         vec_data = entry.get("vector") or {}
         vals = vec_data.get("values") if isinstance(vec_data, dict) else None

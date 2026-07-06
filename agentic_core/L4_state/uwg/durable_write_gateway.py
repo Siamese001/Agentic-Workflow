@@ -419,8 +419,11 @@ class DurableWriteGateway:
                         "snapshot_before": snapshot_before,
                         "snapshot_after": snapshot_after,
                         "audit_append_receipt_ref": audit_append_receipt.audit_append_receipt_id,
+                        "audit_chain_hash": audit_append_receipt.chain_hash,
                     }
                 ),
+                prev_chain_hash=audit_append_receipt.prev_chain_hash,
+                chain_hash=audit_append_receipt.chain_hash,
                 validator_receipt_id=(
                     commit_request.validator_receipt_id
                     or validation.uwg_validation_receipt_id
