@@ -164,6 +164,10 @@
   Anthropic SC paths with truncated JSON is a role-episode output-token-budget bug, while headline
   partner/alliance/channel repetition must fail deterministic segment quality before X1D. Detail:
   `memory/codex/apps_rg_anthropic_section_blockers.md`.
+- **apps_rg L0 canonical route contract invariant (2026-07-05):** apps_rg L0 now uses canonical
+  L0 branch vocabulary for `RouteContract.route_id`/`route_family`, keeps app-specific labels as
+  non-authority metadata, and fails closed on missing production signing or required gate UNKNOWN.
+  Detail: `memory/codex/apps_rg_l0_canonical_route_contract_invariant.md`.
 
 - 2026-06-20: Branch publication closeout now means **exact ancestry on `origin/main`**, not
   patch-equivalence. `git cherry -v` is diagnostic only: `-` rows can justify an explicit
