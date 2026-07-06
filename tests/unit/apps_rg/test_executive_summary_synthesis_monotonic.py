@@ -164,6 +164,42 @@ def test_synthesis_regen_still_rejects_fact_regression_without_judge_x2_context(
     )
 
 
+def test_synthesis_regen_allows_fact_density_reduction_for_cross_fact_repair() -> None:
+    text = (
+        "Executive leader aligns platform, governance, and alliance delivery for regulated enterprises. "
+        "Modernization programs moved insurance workloads into AWS reference architecture waves. "
+        "A governed agentic platform pairs route selection with controlled execution and auditability. "
+        "Regulatory cloud standards kept modernization aligned to control expectations. "
+        "Alliance co-sell produced measurable revenue growth through reusable accelerators. "
+        "Partner co-sell scaled joint solution architecture across hyperscaler ecosystems."
+    )
+    prior = _parsed(text, ledger_rows=6)
+    prior["claim_ledger"][4]["source_fact_ids"] = [
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "metric_ibm_20pct_joint_revenue_growth",
+        "metric_ibm_alliance_cosell_operating_cadence",
+        "metric_ibm_ai_driven_sales_frameworks",
+        "reb_ibm_offering_accelerator_management",
+    ]
+    post = _parsed(text, ledger_rows=6)
+    post["claim_ledger"][4]["source_fact_ids"] = [
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "metric_ibm_20pct_joint_revenue_growth",
+        "reb_ibm_offering_accelerator_management",
+    ]
+
+    ok, detail = evaluate_synthesis_regen_monotonicity(
+        prior_parsed=prior,
+        prior_reject_reason="cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence",
+        new_parsed=post,
+        repair_context="synthesis_regen",
+    )
+
+    assert ok is True, detail
+    assert detail["allow_substance_regression"] is True
+    assert detail["prior_needs_density_reduction"] is True
+
+
 def test_monotonic_rejects_ledger_row_regression() -> None:
     text = (
         "One two three four five six seven eight. "

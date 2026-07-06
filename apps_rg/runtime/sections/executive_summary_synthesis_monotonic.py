@@ -52,6 +52,14 @@ JUDGE_X2_REPAIR_ALLOW_SUBSTANCE_REGRESSION_GATE_IDS: frozenset[str] = frozenset(
     }
 )
 
+SYNTHESIS_REGEN_DENSITY_REDUCTION_GATE_IDS: frozenset[str] = frozenset(
+    {
+        "x2_exec_summary_paragraph_max_words",
+        "x2_exec_summary_no_mechanism_inventory",
+        "x2_exec_summary_cross_fact_conflation_zero",
+    }
+)
+
 
 def _resume_word_count(text: str) -> int:
     return len(re.findall(r"\S+", str(text or "").strip()))
@@ -122,6 +130,19 @@ def _prior_needs_prose_tighten(prior_reject_reason: str, gate_ids: frozenset[str
     )
 
 
+def _prior_needs_density_reduction(prior_reject_reason: str, gate_ids: frozenset[str]) -> bool:
+    if gate_ids & SYNTHESIS_REGEN_DENSITY_REDUCTION_GATE_IDS:
+        return True
+    blob = str(prior_reject_reason or "").lower()
+    return (
+        "too_many_source_fact_ids" in blob
+        or "cross_fact_display_conflation" in blob
+        or "word count" in blob
+        and "exceeds maximum" in blob
+        or "mechanism_inventory" in blob
+    )
+
+
 def evaluate_synthesis_regen_monotonicity(
     *,
     prior_parsed: dict[str, Any],
@@ -158,11 +179,16 @@ def evaluate_synthesis_regen_monotonicity(
     sentence_repair = _prior_failed_sentence_count(prior_reject_reason, gate_ids)
     evidence_repair = _prior_needs_evidence_weave(prior_reject_reason, gate_ids)
     prose_repair = _prior_needs_prose_tighten(prior_reject_reason, gate_ids)
+    density_repair = _prior_needs_density_reduction(prior_reject_reason, gate_ids)
     judge_x2_shape_repair = repair_context == "judge_x2_repair" and bool(
         gate_ids & JUDGE_X2_REPAIR_WAIVE_SHRINK_GATE_IDS
     )
-    allow_substance_regression = judge_x2_shape_repair and bool(
-        gate_ids & JUDGE_X2_REPAIR_ALLOW_SUBSTANCE_REGRESSION_GATE_IDS
+    allow_substance_regression = (
+        judge_x2_shape_repair
+        and bool(gate_ids & JUDGE_X2_REPAIR_ALLOW_SUBSTANCE_REGRESSION_GATE_IDS)
+    ) or (
+        repair_context == "synthesis_regen"
+        and density_repair
     )
 
     detail: dict[str, Any] = {
@@ -177,6 +203,7 @@ def evaluate_synthesis_regen_monotonicity(
         "prior_failed_sentence_count": sentence_repair,
         "prior_needs_evidence_weave": evidence_repair,
         "prior_needs_prose_tighten": prose_repair,
+        "prior_needs_density_reduction": density_repair,
         "judge_x2_shape_repair": judge_x2_shape_repair,
         "allow_substance_regression": allow_substance_regression,
         "ledger_rows_gained": ledger_rows_gained,
@@ -187,6 +214,7 @@ def evaluate_synthesis_regen_monotonicity(
     waive_shrink = (
         sentence_repair
         or judge_x2_shape_repair
+        or density_repair
         or (evidence_repair and (ledger_rows_gained or facts_gained))
         or (evidence_repair and post_wc >= pre_wc)
     )

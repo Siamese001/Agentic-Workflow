@@ -12,6 +12,9 @@ from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
     MANDATORY_RUN_OUTPUT_JSON,
     MANDATORY_RUN_OUTPUT_MD,
+    _causal_allocation,
+    _classify_failure,
+    _top_rca_sections,
     build_mandatory_run_output,
     emit_mandatory_run_outputs,
 )
@@ -429,6 +432,41 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert payload["rca_findings"]
 
 
+def test_mandatory_outputs_rca_classifies_selector_timeout(tmp_path: Path) -> None:
+    run = tmp_path / "selector_timeout_run"
+    lane = run / "modular_r4" / "sections" / "competencies"
+    lane.mkdir(parents=True, exist_ok=True)
+    _write_json(
+        lane / "integrated_lane_pre_run_failure.json",
+        {
+            "blocker": "EXECUTED_X3A",
+            "lane_exec_status": (
+                "dispatch_error:L2_EXECUTION_ERROR:PoolSelectorUnavailableError:"
+                "competencies selector unavailable: Anthropic pool selector selector_timeout "
+                "after 90.141s (budget 90.0s): TimeoutError: The read operation timed out"
+            ),
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    payload = emitted["payload"]
+    comp = next(row for row in payload["sections"] if row["section"] == "competencies")
+    assert comp["failure_classification"].startswith("Provider selector timeout:")
+
+    finding = next(row for row in payload["rca_findings"] if row["section"] == "competencies")
+    assert "live provider call" in finding["root_cause"]
+    assert "dependency graph" not in finding["root_cause"]
+    allocation = finding["causal_allocation"]
+    assert allocation["dominant_cause"].startswith("The competencies selector provider request")
+    domains = [row["domain"] for row in allocation["allocation"]]
+    assert "Provider selector budget" in domains
+
+
 def test_mandatory_row0_reports_apps_research_provider_when_handoff_missing(tmp_path: Path) -> None:
     run = tmp_path / "delegated_research_missing_handoff"
     run.mkdir()
@@ -634,6 +672,255 @@ def test_bcg_recommendations_are_evidence_backed_for_fresh_research_blocked_lane
     assert "PHASE1_NO_RUN_DIR" not in evidence_text
     assert "insurtech_bullets, headline" in next_moves[0]
     assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is True
+
+
+def test_bcg_surfaces_final_aggregation_x2_failure_as_p0(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_final_aggregation_blocked"
+    (run / "modular_r4" / "sections").mkdir(parents=True)
+    for lane_name in GENERATED_LANES:
+        lane = run / "modular_r4" / "sections" / lane_name
+        lane.mkdir(parents=True, exist_ok=True)
+        _write_json(
+            lane / "x3_disposition.json",
+            {
+                "x3_code": "X3_ALLOW",
+                "product_quality_status": "PASS",
+                "runtime_generation_status": "REAL_LLM",
+            },
+        )
+        _write_json(lane / "x2_gate_outputs.json", {"gates": []})
+    asm = run / "modular_r4" / "final_resume_assembly"
+    asm.mkdir(parents=True)
+    (asm / "final_resume.json").write_text('{"sections":[]}\n', encoding="utf-8")
+    _write_json(
+        asm / "final_resume_x2_gate_outputs.json",
+        {
+            "gates": [
+                {
+                    "gate_id": "x2_full_resume_llm_coherence_aggregation",
+                    "pass": False,
+                    "failure_reason": "deterministic_blocker",
+                    "observed_value": {
+                        "blockers": ["judge_quorum_insufficient:model_backed=0 required=2"]
+                    },
+                }
+            ]
+        },
+    )
+    _write_json(
+        asm / "full_resume_llm_coherence_review.json",
+        {
+            "full_resume_coherence_pass": False,
+            "decisive_reason": "deterministic_blocker",
+            "blockers": ["judge_quorum_insufficient:model_backed=0 required=2"],
+            "model_backed_pass_count": 0,
+            "model_backed_total": 0,
+            "quorum_required": 2,
+        },
+    )
+    _write_json(
+        asm / "x1d_full_resume_judge_outputs.json",
+        {
+            "judges": [
+                {
+                    "judge_id": "x1d_gemini_pro_full_resume_coherence",
+                    "provider_name": "Google Gemini 3.1 Pro Preview",
+                    "provider_key": "gemini_pro",
+                    "model_name": "gemini-3.1-pro-preview",
+                    "provider_status": "BLOCKED_PROVIDER_ERROR",
+                    "pass": False,
+                    "threshold": 0.8,
+                }
+            ],
+            "aggregation": {
+                "full_resume_coherence_pass": False,
+                "aggregation_method": "quorum_majority_model_backed",
+                "model_backed_pass_count": 0,
+                "model_backed_total": 0,
+            },
+        },
+    )
+    _write_json(
+        run / FINAL_RESUME_OUTPUT_JSON,
+        {
+            "schema_version": "apps_rg.final_resume_output.v1",
+            "required": True,
+            "status": "PASS",
+            "failed_gate_ids": [],
+            "final_resume_json": {"relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH, "exists": True, "bytes": 12},
+            "rendered_resume_text": {"relpath": FINAL_RESUME_OUTPUT_TXT, "exists": True, "bytes": 64},
+            "resume_docx": {"relpath": FINAL_RESUME_DOCX_RELPATH, "exists": True, "bytes": 64},
+            "gates": [],
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    payload = emitted["payload"]
+    final_section = next(
+        section for section in payload["sections"] if section["section"] == "final_resume_aggregation"
+    )
+    final_rca = next(
+        finding for finding in payload["rca_findings"] if finding["section"] == "final_resume_aggregation"
+    )
+    recommendations = payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
+    issue_tree = payload["inline_required_output"]["bcg"]["issue_tree"]
+    board = payload["inline_required_output"]["bcg"]["board_level_readout"]["rows"]
+    gates_by_id = {gate["gate_id"]: gate for gate in payload["mandatory_inline_output_gates"]}
+
+    assert final_section["x2_pass"] == "FAIL"
+    assert "provider quorum" in final_section["failure_classification"].lower()
+    assert [gate["gate_id"] for gate in final_section["failed_gates"]] == [
+        "x2_full_resume_llm_coherence_aggregation"
+    ]
+    assert "full-resume coherence judge panel" in final_rca["root_cause"]
+    assert "required-lane authorization ledger" not in final_rca["root_cause"]
+    assert "Provider artifact persistence" in {
+        row["domain"] for row in final_rca["causal_allocation"]["allocation"]
+    }
+    assert any(
+        "long-path" in item or "long-path" in item.lower()
+        for item in final_rca["implementation_plan"]
+    )
+    assert any(
+        row["priority"] == "P0"
+        and row["recommendation"] == "Fix final_resume_aggregation before authorizing the final resume."
+        and "x2_full_resume_llm_coherence_aggregation" in row["evidence"]
+        for row in recommendations
+    )
+    assert any(row["section"] == "final_resume_aggregation" for row in issue_tree)
+    assert "final_resume_aggregation" in next(row["answer"] for row in board if row["question"] == "Primary blocker")
+    assert "x3_blocked=final_resume_aggregation" in next(
+        gate["observed_value"]["blockers"]
+        for gate in payload["mandatory_inline_output_gates"]
+        if gate["gate_id"] == "mandatory_resume_text_inline_present"
+    )
+    assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is True
+
+    summary = render(run)
+    assert (
+        "Final resume aggregation failed gates: `x2_full_resume_llm_coherence_aggregation`"
+        in summary
+    )
+
+
+def test_bcg_classifies_final_aggregation_upstream_certification_failure(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_final_aggregation_exec_summary_review_only"
+    (run / "modular_r4" / "sections").mkdir(parents=True)
+    for lane_name in GENERATED_LANES:
+        lane = run / "modular_r4" / "sections" / lane_name
+        lane.mkdir(parents=True, exist_ok=True)
+        is_exec = lane_name == "executive_summary"
+        _write_json(
+            lane / "x3_disposition.json",
+            {
+                "x3_code": "X3_REVIEW_JUDGE_SOFT_FAIL" if is_exec else "X3_ALLOW",
+                "product_quality_status": "PASS",
+                "runtime_generation_status": "REAL_LLM",
+                "publish_disposition": "judge_certification_required" if is_exec else "product_authorized",
+                "x1d_certified": False if is_exec else True,
+                "blocking_judge_ids": ["gemini_pro"] if is_exec else [],
+                "soft_failed_judges": ["gemini_pro"] if is_exec else [],
+                "model_backed_pass_provider_keys": ["openai_chatgpt"] if is_exec else ["gemini_pro"],
+            },
+        )
+        _write_json(lane / "x2_gate_outputs.json", {"gates": []})
+        display_name = "resume_display_text.txt" if is_exec else f"{lane_name}_output.txt"
+        (lane / display_name).write_text(f"{lane_name} output\n", encoding="utf-8")
+
+    asm = run / "modular_r4" / "final_resume_assembly"
+    asm.mkdir(parents=True)
+    (asm / "final_resume.json").write_text('{"sections":[]}\n', encoding="utf-8")
+    _write_json(
+        asm / "final_resume_x2_gate_outputs.json",
+        {
+            "gates": [
+                {
+                    "gate_id": "x2_generated_sections_from_latest_successful_real",
+                    "pass": False,
+                    "failure_reason": "section_resolution_not_accepted",
+                    "observed_value": "executive_summary resolution not accepted: modular_r4_explicit_run_dir; publish_disposition=judge_certification_required; blocking_judge_ids=gemini_pro",
+                }
+            ]
+        },
+    )
+    _write_json(
+        asm / "full_resume_llm_coherence_review.json",
+        {
+            "full_resume_coherence_pass": True,
+            "model_backed_pass_count": 2,
+            "quorum_required": 2,
+        },
+    )
+    _write_json(
+        asm / "x1d_full_resume_judge_outputs.json",
+        {
+            "judges": [
+                {
+                    "provider_name": "Google Gemini 3.1 Pro Preview",
+                    "provider_key": "gemini_pro",
+                    "model_name": "gemini-3.1-pro-preview",
+                    "provider_status": "MODEL_BACKED_PASS",
+                    "score": 5,
+                    "threshold": 4,
+                    "pass": True,
+                },
+                {
+                    "provider_name": "OpenAI ChatGPT",
+                    "provider_key": "openai_chatgpt",
+                    "model_name": "gpt-5.5",
+                    "provider_status": "MODEL_BACKED_PASS",
+                    "score": 4.4,
+                    "threshold": 4,
+                    "pass": True,
+                },
+            ],
+            "aggregation": {
+                "full_resume_coherence_pass": True,
+                "model_backed_pass_count": 2,
+                "model_backed_total": 2,
+            },
+        },
+    )
+    _write_json(
+        run / FINAL_RESUME_OUTPUT_JSON,
+        {
+            "schema_version": "apps_rg.final_resume_output.v1",
+            "required": True,
+            "status": "PASS",
+            "failed_gate_ids": [],
+            "final_resume_json": {"relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH, "exists": True, "bytes": 12},
+            "rendered_resume_text": {"relpath": FINAL_RESUME_OUTPUT_TXT, "exists": True, "bytes": 64},
+            "resume_docx": {"relpath": FINAL_RESUME_DOCX_RELPATH, "exists": True, "bytes": 64},
+            "gates": [],
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    payload = emitted["payload"]
+    final_section = next(
+        section for section in payload["sections"] if section["section"] == "final_resume_aggregation"
+    )
+    final_rca = next(
+        finding for finding in payload["rca_findings"] if finding["section"] == "final_resume_aggregation"
+    )
+
+    assert "upstream certification" in final_section["failure_classification"].lower()
+    assert "provider quorum" not in final_section["failure_classification"].lower()
+    assert "review-only" in final_rca["root_cause"]
+    assert "Section certification / X3 authority" in {
+        row["domain"] for row in final_rca["causal_allocation"]["allocation"]
+    }
+    assert any("judge-certification soft fail" in item for item in final_rca["implementation_plan"])
 
 
 def test_mandatory_result_summary_prefers_patch_pass_over_prior_terminal_fault(tmp_path: Path) -> None:
@@ -869,3 +1156,163 @@ def test_render_run_summary_rejects_root_cause_plan_without_causal_allocation(tm
     out = render(run)
 
     assert "missing causal allocation with concrete root-cause-linked rows" in out
+
+
+def test_exec_summary_evidence_mapping_rca_uses_exec_summary_density_language() -> None:
+    allocation = _causal_allocation(
+        {
+            "section": "executive_summary",
+            "failure_classification": "Evidence mapping failure",
+            "failed_gates": [
+                "x2_exec_summary_paragraph_max_words",
+                "x2_exec_summary_no_mechanism_inventory",
+                "x2_exec_summary_cross_fact_conflation_zero",
+            ],
+            "x2_gate_details": [
+                {
+                    "gate_id": "x2_exec_summary_cross_fact_conflation_zero",
+                    "failure_reason": "cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence",
+                }
+            ],
+        }
+    )
+
+    assert "executive summary" in allocation["dominant_cause"].lower()
+    assert "competency surface" not in allocation["dominant_cause"].lower()
+    assert any(
+        "x2_exec_summary_cross_fact_conflation_zero" in row["evidence_refs"]
+        for row in allocation["allocation"]
+    )
+
+
+def test_exec_summary_deterministic_gate_rca_names_synthesis_contract() -> None:
+    failed_gates = [
+        {
+            "gate_id": "x2_exec_summary_allowed_fact_utilization",
+            "failure_reason": "uncovered_required_brushstrokes=['reb_unify_platform_commercialization_leadership']",
+            "observed_value": "uncovered_required_brushstrokes=['reb_unify_platform_commercialization_leadership']",
+        },
+        {
+            "gate_id": "x2_executive_summary_synthesis_quality",
+            "failure_reason": "robotic_transition_stack:3_in_s2_s5_matched=through that,building on that,that operating foundation",
+            "observed_value": "robotic_transition_stack:3_in_s2_s5_matched=through that,building on that,that operating foundation",
+        },
+        {
+            "gate_id": "x2_exec_summary_robotic_transition_stack_zero",
+            "failure_reason": "robotic_transition_stack:3_in_s2_s5_matched=through that,building on that,that operating foundation",
+            "observed_value": "robotic_transition_stack:3_in_s2_s5_matched=through that,building on that,that operating foundation",
+        },
+    ]
+
+    classification = _classify_failure("executive_summary", failed_gates, {})
+    allocation = _causal_allocation(
+        {
+            "section": "executive_summary",
+            "failure_classification": classification,
+            "failed_gates": failed_gates,
+            "x2_gate_details": failed_gates,
+        }
+    )
+
+    assert "Executive summary synthesis contract failure" in classification
+    assert "repair path" in allocation["dominant_cause"]
+    assert allocation["retry_recoverability"] == "MEDIUM"
+    assert any(
+        row["domain"] == "Composition-plan brushstroke coverage"
+        and "x2_exec_summary_allowed_fact_utilization" in row["evidence_refs"]
+        for row in allocation["allocation"]
+    )
+    assert "failed gate evidence has not been allocated" not in allocation["dominant_cause"]
+
+
+def test_x1d_decisive_judge_failure_rca_surfaces_without_failed_x2_gates() -> None:
+    judges = [
+        {
+            "provider": "Google Gemini 3.1 Pro Preview",
+            "provider_key": "gemini_pro",
+            "model": "gemini-3.1-pro-preview",
+            "score": 0.0,
+            "threshold": 4.0,
+            "pass": False,
+            "provider_status": "MODEL_BACKED_FAIL",
+            "decisive_failure": True,
+            "findings": [
+                "The narrative claims experience with insurance operations, but the cited source fact only supports regulatory analytics.",
+                "The claim ledger fails to cite reb_ey_insurance_core_modernization to support the insurance claim.",
+            ],
+            "dimension_verdicts": {
+                "factual_support": {
+                    "pass": False,
+                    "severity": "major",
+                    "codes": ["unsupported_claim", "missing_citation"],
+                }
+            },
+        }
+    ]
+
+    classification = _classify_failure(
+        "ey_narrative",
+        [],
+        {},
+        x3_code="X3_BLOCK",
+        judges=judges,
+    )
+    section = {
+        "section": "ey_narrative",
+        "status_bucket": "ran_real_llm",
+        "x3_code": "X3_BLOCK",
+        "failed_gates": [],
+        "failure_classification": classification,
+        "judges": judges,
+        "judge_issue_summary": {"decisive_judge_failures": ["gemini_pro"]},
+    }
+    findings = _top_rca_sections([section])
+    allocation = findings[0]["causal_allocation"]
+
+    assert "X1D decisive judge failure" in classification
+    assert findings[0]["section"] == "ey_narrative"
+    assert "insurance operations" in findings[0]["evidence"]
+    assert "claim-ledger" in findings[0]["root_cause"]
+    assert allocation["retry_recoverability"] == "LOW_UNTIL_LEDGER_FIX"
+    assert any(row["domain"] == "Claim ledger normalization" for row in allocation["allocation"])
+
+
+def test_headline_vendor_display_gate_rca_names_positioning_contract() -> None:
+    failed_gates = [
+        {
+            "gate_id": "x2_headline_executive_abstraction_floor",
+            "failure_reason": "Each headline segment must express executive scope.",
+            "observed_value": {
+                "segments_missing_executive_abstraction": [
+                    "AWS Migration Modernization Execution"
+                ]
+            },
+        },
+        {
+            "gate_id": "x2_headline_vendor_terms_proof_only",
+            "failure_reason": "Vendor/product terms may support proof, but display segments require an executive abstraction.",
+            "observed_value": {
+                "vendor_terms_without_executive_abstraction": [
+                    "AWS Migration Modernization Execution"
+                ]
+            },
+        },
+    ]
+
+    classification = _classify_failure("headline", failed_gates, {})
+    allocation = _causal_allocation(
+        {
+            "section": "headline",
+            "failure_classification": classification,
+            "failed_gates": failed_gates,
+        }
+    )
+
+    assert "Headline executive positioning contract failure" in classification
+    assert "vendor-specific migration phrase" in allocation["dominant_cause"]
+    assert allocation["retry_recoverability"] == "HIGH_AFTER_NORMALIZATION_FIX"
+    assert any(
+        row["domain"] == "Headline normalization / display policy"
+        and "x2_headline_vendor_terms_proof_only" in row["evidence_refs"]
+        for row in allocation["allocation"]
+    )

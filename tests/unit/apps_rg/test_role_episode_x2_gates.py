@@ -9,6 +9,8 @@ import pytest
 from apps_rg.runtime.sections import role_episode_lane
 from apps_rg.runtime.sections.role_episode_lane import (
     ROLE_EPISODE_X2_GATE_IDS_BY_RUN_FUNCTION,
+    _narrative_source_ids_for_claim,
+    _parsed_claim_ledger_source_ids_for_narrative,
     run_ey_bullets_x2_gates,
     run_ey_narrative_x2_gates,
     run_insurtech_bullets_x2_gates,
@@ -84,6 +86,124 @@ def test_ey_narrative_valid_sentence_passes_budget_gates() -> None:
     assert by_id["x2_ey_narrative_char_budget"] is True
     assert len(narrative.split()) <= NARRATIVE_MAX_WORDS
     assert len(narrative) <= NARRATIVE_MAX_CHARS
+
+
+def test_insurtech_narrative_source_ids_reconcile_material_claims() -> None:
+    narrative = (
+        "Founded and led a cloud-native insurer modernization firm that turned regulated AWS "
+        "demand into repeatable partner-ready delivery, pairing safety-first control design with "
+        "lean execution, cloud economics, and founder-led GTM to make complex workloads "
+        "deployable at scale."
+    )
+    allowed = [
+        "reb_insurtech_founder_led_market_creation",
+        "reb_insurtech_founder_led_gtm_revenue",
+        "reb_insurtech_lean_delivery_operating_model",
+        "reb_insurtech_aws_cloud_economics",
+        "reb_insurtech_aws_migration_execution",
+        "reb_insurtech_aws_shared_responsibility_operating_model",
+        "reb_insurtech_regulated_aws_control_implementation",
+    ]
+    selected_fact_plan = {
+        "facts": [
+            {"fact_id": fid, "claim_text": f"{fid} claim"}
+            for fid in allowed
+        ]
+    }
+
+    source_ids, added = _narrative_source_ids_for_claim(
+        narrative=narrative,
+        raw_source_ids=["reb_insurtech_founder_led_market_creation"],
+        allowed=allowed,
+        selected_fact_plan=selected_fact_plan,
+    )
+
+    assert "reb_insurtech_founder_led_gtm_revenue" in source_ids
+    assert "reb_insurtech_lean_delivery_operating_model" in source_ids
+    assert "reb_insurtech_aws_cloud_economics" in source_ids
+    assert "reb_insurtech_aws_migration_execution" in source_ids
+    assert "reb_insurtech_aws_shared_responsibility_operating_model" in source_ids
+    assert "reb_insurtech_regulated_aws_control_implementation" in source_ids
+    assert set(added).issubset(set(allowed))
+
+    gates = run_insurtech_narrative_x2_gates(
+        l2={
+            "narrative_sentence": narrative,
+            "claim_ledger": [{"claim_text": narrative, "source_fact_ids": source_ids}],
+        },
+        allowed=allowed,
+        runtime_generation_status="REAL_LLM",
+    )
+    assert all(g["pass"] for g in gates)
+
+
+def test_ey_narrative_preserves_parsed_claim_ledger_source_ids_for_x1d_support() -> None:
+    narrative = (
+        "Architected governed modernization programs that translated complex risk and insurance "
+        "operations into auditable, scalable workflows with traceable controls, enabling enterprise "
+        "stakeholders to adopt new capabilities without sacrificing model risk discipline or deployment quality."
+    )
+    allowed = [
+        "reb_ey_regulatory_analytics_modernization",
+        "reb_ey_capital_optimization_solvency",
+        "reb_ey_ccar_capital_liquidity_stress_testing",
+        "reb_ey_insurance_core_modernization",
+        "reb_ey_erm_risk_governance",
+    ]
+    parsed = {
+        "narrative_sentence": narrative,
+        "claim_ledger": [
+            {
+                "claim_text": (
+                    "Architected governed modernization programs that translated complex risk "
+                    "and insurance operations into auditable, scalable workflows."
+                ),
+                "source_fact_ids": [
+                    "reb_ey_regulatory_analytics_modernization",
+                    "reb_ey_insurance_core_modernization",
+                    "reb_ey_erm_risk_governance",
+                ],
+            },
+            {
+                "claim_text": (
+                    "Enabled enterprise stakeholders to adopt new capabilities without sacrificing "
+                    "model risk discipline or deployment quality."
+                ),
+                "source_fact_ids": [
+                    "reb_ey_ccar_capital_liquidity_stress_testing",
+                    "reb_ey_capital_optimization_solvency",
+                    "reb_ey_erm_risk_governance",
+                ],
+            },
+        ],
+    }
+    selected_fact_plan = {"facts": [{"fact_id": fid, "claim_text": fid} for fid in allowed]}
+
+    parsed_ids = _parsed_claim_ledger_source_ids_for_narrative(
+        parsed=parsed,
+        narrative=narrative,
+        allowed=allowed,
+    )
+    source_ids, added = _narrative_source_ids_for_claim(
+        narrative=narrative,
+        raw_source_ids=parsed_ids,
+        allowed=allowed,
+        selected_fact_plan=selected_fact_plan,
+    )
+
+    assert "reb_ey_insurance_core_modernization" in parsed_ids
+    assert "reb_ey_insurance_core_modernization" in source_ids
+    assert "reb_ey_erm_risk_governance" in source_ids
+    assert set(added).issubset(set(allowed))
+    gates = run_ey_narrative_x2_gates(
+        l2={
+            "narrative_sentence": narrative,
+            "claim_ledger": [{"claim_text": narrative, "source_fact_ids": source_ids}],
+        },
+        allowed=allowed,
+        runtime_generation_status="REAL_LLM",
+    )
+    assert all(g["pass"] for g in gates)
 
 
 @pytest.mark.parametrize(

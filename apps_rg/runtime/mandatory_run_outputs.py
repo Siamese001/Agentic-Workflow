@@ -201,6 +201,13 @@ def _judge_rows_from_blob(blob: dict[str, Any]) -> list[dict[str, Any]]:
                 "blocked": judge.get("blocked"),
                 "mocked": judge.get("mocked"),
                 "error": judge.get("error"),
+                "findings": _as_list(judge.get("findings")),
+                "remediation_suggestions": _as_list(judge.get("remediation_suggestions")),
+                "dimension_verdicts": (
+                    judge.get("dimension_verdicts")
+                    if isinstance(judge.get("dimension_verdicts"), dict)
+                    else {}
+                ),
             }
         )
     return rows
@@ -226,7 +233,81 @@ def _normalize_judge_record(judge: dict[str, Any]) -> dict[str, Any]:
         "blocked": judge.get("blocked"),
         "mocked": judge.get("mocked"),
         "error": judge.get("error"),
+        "findings": _as_list(judge.get("findings")),
+        "remediation_suggestions": _as_list(judge.get("remediation_suggestions")),
+        "dimension_verdicts": (
+            judge.get("dimension_verdicts")
+            if isinstance(judge.get("dimension_verdicts"), dict)
+            else {}
+        ),
     }
+
+
+def _judge_failure_records(judges: Any) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for judge in _as_list(judges):
+        if not isinstance(judge, dict):
+            continue
+        status = str(judge.get("provider_status") or "").upper()
+        if (
+            judge.get("decisive_failure") is True
+            or judge.get("pass") is False
+            or status.endswith("_FAIL")
+        ):
+            rows.append(judge)
+    return rows
+
+
+def _failed_dimension_codes(judge: dict[str, Any]) -> list[str]:
+    dims = judge.get("dimension_verdicts")
+    if not isinstance(dims, dict):
+        return []
+    out: list[str] = []
+    for name, verdict in dims.items():
+        if not isinstance(verdict, dict) or verdict.get("pass") is not False:
+            continue
+        codes = ",".join(str(code) for code in _as_list(verdict.get("codes")) if str(code))
+        severity = str(verdict.get("severity") or "").strip()
+        detail = codes or severity or "failed"
+        out.append(f"{name}:{detail}")
+    return out
+
+
+def _judge_failure_text_from_judges(judges: Any) -> str:
+    pieces: list[str] = []
+    for judge in _judge_failure_records(judges):
+        provider = str(judge.get("provider") or judge.get("provider_key") or "judge")
+        model = str(judge.get("model") or "").strip()
+        status = str(judge.get("provider_status") or "").strip()
+        score = _score_text(judge.get("score"))
+        threshold = _score_text(judge.get("threshold"))
+        findings = [str(x) for x in _as_list(judge.get("findings")) if str(x).strip()]
+        dims = _failed_dimension_codes(judge)
+        bits = [provider]
+        if model:
+            bits.append(model)
+        if status:
+            bits.append(status)
+        if score != "-" or threshold != "-":
+            bits.append(f"score={score}/{threshold}")
+        if dims:
+            bits.append("dimensions=" + ",".join(dims[:3]))
+        if findings:
+            bits.append("findings=" + " ; ".join(findings[:2]))
+        pieces.append(" | ".join(bits))
+    return " || ".join(pieces)
+
+
+def _judge_failure_evidence(section: dict[str, Any]) -> str:
+    judge_text = _judge_failure_text_from_judges(section.get("judges"))
+    if judge_text:
+        return judge_text
+    summary = section.get("judge_issue_summary")
+    if isinstance(summary, dict):
+        decisive = [str(x) for x in _as_list(summary.get("decisive_judge_failures")) if str(x)]
+        if decisive:
+            return "decisive_judge_failures=" + ",".join(decisive)
+    return ""
 
 
 def _resolve_display(root: Path, section_id: str) -> tuple[str | None, str | None]:
@@ -293,28 +374,87 @@ def _status_bucket(row: LaneSectionStatusRow, pre_run: dict[str, Any]) -> str:
     return "ran_unknown_runtime"
 
 
-def _classify_failure(section_id: str, failed_gates: list[dict[str, Any]], pre_run: dict[str, Any]) -> str:
+def _classify_failure(
+    section_id: str,
+    failed_gates: list[dict[str, Any]],
+    pre_run: dict[str, Any],
+    *,
+    x3_code: str = "",
+    judges: Any = None,
+) -> str:
     blocker = str(pre_run.get("blocker") or pre_run.get("lane_exec_status") or "").strip()
     lane_status = str(pre_run.get("lane_exec_status") or "").strip()
     pre_run_text = f"{blocker} {lane_status}".lower()
     if "temperature" in pre_run_text and "deprecated" in pre_run_text:
         return "Provider capability failure: Anthropic rejected deprecated temperature for the selected model."
+    if "poolselectorunavailableerror" in pre_run_text and "selector_timeout" in pre_run_text:
+        return (
+            "Provider selector timeout: the competencies pool selector exceeded its bounded "
+            "provider budget before returning a selection."
+        )
     if pre_run and not failed_gates and blocker != "EXECUTED_X3_BLOCK":
         detail = blocker
         if lane_status and lane_status != blocker:
             detail = f"{blocker}; {lane_status}"
         return f"Pre-run dependency blocked execution: {detail}"
+    judge_text = _judge_failure_text_from_judges(judges)
+    if not failed_gates and str(x3_code or "").startswith("X3_BLOCK") and judge_text:
+        judge_text_l = judge_text.lower()
+        if (
+            "factual_support" in judge_text_l
+            or "unsupported_claim" in judge_text_l
+            or "missing_citation" in judge_text_l
+            or "source_fact" in judge_text_l
+            or "claim ledger" in judge_text_l
+        ):
+            return (
+                "X1D decisive judge failure: model-backed judge rejected factual support "
+                "or claim-ledger source binding."
+            )
+        return "X1D decisive judge failure: model-backed judge rejected section product quality."
     gate_ids = " ".join(str(g.get("gate_id") or "") for g in failed_gates).lower()
     reasons = " ".join(str(g.get("failure_reason") or "") for g in failed_gates).lower()
-    combined = f"{gate_ids} {reasons}"
+    observed = " ".join(
+        json.dumps(g.get("observed_value"), sort_keys=True, default=str)
+        for g in failed_gates
+        if isinstance(g, dict) and g.get("observed_value") not in (None, "", [], {})
+    ).lower()
+    combined = f"{gate_ids} {reasons} {observed}"
     if "competenc" in section_id:
         return "Evidence mapping failure: visible content was not fully backed by source facts or graph lineage."
+    if section_id == "executive_summary" and (
+        "x2_exec_summary" in combined or "x2_executive_summary_synthesis_quality" in combined
+    ):
+        return (
+            "Executive summary synthesis contract failure: deterministic producer repair did "
+            "not satisfy brushstroke coverage, attribution density, and transition-quality gates."
+        )
+    if section_id == "headline" and (
+        "x2_headline_executive_abstraction_floor" in combined
+        or "x2_headline_vendor_terms_proof_only" in combined
+    ):
+        return (
+            "Headline executive positioning contract failure: vendor/tool proof terms reached "
+            "display without an executive abstraction segment."
+        )
     if "claim_ledger" in combined or "bullet_count" in combined or "parse" in combined:
         return "Output contract failure: parsed content or claim ledger did not satisfy section schema."
     if "technical_specificity" in combined:
         return "Deterministic specificity failure: generated text missed required mechanism/technology signal."
     if "source_fact" in combined or "graph" in combined:
         return "Evidence mapping failure: visible content was not fully backed by source facts or graph lineage."
+    if section_id == FINAL_AGGREGATION_LANE:
+        if "judge_quorum_insufficient" in combined or "quorum_not_met" in combined:
+            return (
+                "Final resume aggregation provider quorum failure: the full-resume "
+                "coherence judge panel did not reach the required model-backed quorum."
+            )
+        if "resolution not accepted" in combined or "judge_certification_required" in combined:
+            return (
+                "Final resume aggregation upstream certification failure: a required section "
+                "was review-only or non-certified, so latest-successful-real resolution was refused."
+            )
+        return "Final resume aggregation failure: full-resume coherence or product release gate did not pass."
     if failed_gates:
         return "Deterministic gate failure."
     return "No section-level failure recorded."
@@ -327,11 +467,29 @@ def _section_record_from_row(row: LaneSectionStatusRow, *, repo_root: Path) -> d
     if lane_dir is None and row.display_txt_abs:
         lane_dir = Path(row.display_txt_abs).parent
     x3 = _load_json(lane_dir / "x3_disposition.json") if lane_dir is not None else {}
+    x2_artifact_name = (
+        "final_resume_x2_gate_outputs.json"
+        if row.lane == FINAL_AGGREGATION_LANE
+        else "x2_gate_outputs.json"
+    )
     x2_status, failed_gates = (
-        _x2_summary_doc(_load_json(lane_dir / "x2_gate_outputs.json"))
+        _x2_summary_doc(_load_json(lane_dir / x2_artifact_name))
         if lane_dir is not None
         else (row.x2_pass, [])
     )
+    if not failed_gates and str(row.x2_failed_gate_ids or "").strip():
+        failed_gates = [
+            {
+                "gate_id": gate_id.strip(),
+                "failure_reason": "",
+                "observed_value": None,
+                "threshold": None,
+            }
+            for gate_id in str(row.x2_failed_gate_ids).split(",")
+            if gate_id.strip()
+        ]
+    if x2_status == "UNKNOWN" and row.x2_pass in {"PASS", "FAIL"}:
+        x2_status = row.x2_pass
     pre_run = (
         _load_json(lane_dir / "integrated_lane_pre_run_failure.json")
         if lane_dir is not None
@@ -369,7 +527,13 @@ def _section_record_from_row(row: LaneSectionStatusRow, *, repo_root: Path) -> d
         "product_quality_status": row.product_quality,
         "runtime_generation_status": row.runtime_generation_status,
         "failed_gates": failed_gates,
-        "failure_classification": _classify_failure(row.lane, failed_gates, pre_run),
+        "failure_classification": _classify_failure(
+            row.lane,
+            failed_gates,
+            pre_run,
+            x3_code=row.x3_code,
+            judges=judges,
+        ),
         "pre_run_failure": pre_run,
         "judges": judges,
         "judge_summary": row.judge_summary,
@@ -1222,6 +1386,8 @@ def _non_authorized_section_ids(doc: dict[str, Any]) -> dict[str, list[str]]:
         bucket = str(section.get("status_bucket") or "")
         if x3_code.startswith("X3_BLOCK"):
             blocked["x3_blocked"].append(section_id)
+        elif section_id == FINAL_AGGREGATION_LANE and x3_code.startswith("X3_REVIEW_AGGREGATION"):
+            blocked["x3_blocked"].append(section_id)
         elif bucket == "pre_run_blocked" or x3_code.startswith("PRE_RUN:"):
             blocked["pre_run_blocked"].append(section_id)
         elif bucket == "not_run" or x3_code == "NOT_RUN":
@@ -1455,9 +1621,16 @@ def _top_rca_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
         x3 = str(section.get("x3_code") or "")
         bucket = str(section.get("status_bucket") or "")
         failed = section.get("failed_gates") or []
+        judge_evidence = _judge_failure_evidence(section)
+        has_judge_failure = bool(judge_evidence) and x3.startswith("X3_BLOCK")
         if x3 == "X3_ALLOW" and bucket not in {"pre_run_blocked", "not_run"}:
             continue
-        if not failed and bucket not in {"pre_run_blocked", "not_run"} and x3 != "NOT_RUN":
+        if (
+            not failed
+            and bucket not in {"pre_run_blocked", "not_run"}
+            and x3 != "NOT_RUN"
+            and not has_judge_failure
+        ):
             continue
         gate_text = ", ".join(str(g.get("gate_id")) for g in failed if isinstance(g, dict))
         implementation_plan = _implementation_plan(section)
@@ -1467,7 +1640,7 @@ def _top_rca_sections(sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "section": str(section.get("section") or ""),
                 "classification": str(section.get("failure_classification") or ""),
                 "root_cause": _root_cause(section),
-                "evidence": gate_text or x3 or bucket,
+                "evidence": gate_text or judge_evidence or x3 or bucket,
                 "causal_allocation": causal_allocation,
                 "implementation_plan": implementation_plan,
                 "action": _recommended_action(section),
@@ -1489,6 +1662,21 @@ def _root_cause(section: dict[str, Any]) -> str:
             "The lane does not bind narrative text to evidence-backed mechanism or technology "
             "requirements before deterministic specificity validation."
         )
+    if "executive summary synthesis contract" in classification:
+        return (
+            "The executive-summary final producer path accepted repaired prose before revalidating "
+            "required brushstroke coverage, row-level attribution density, and non-robotic transition shape."
+        )
+    if "headline executive positioning contract" in classification:
+        return (
+            "The headline normalization path did not rewrite a vendor-specific migration phrase "
+            "into the executive positioning vocabulary required for X/Y/Z display segments."
+        )
+    if "x1d decisive judge failure" in classification:
+        return (
+            "The lane published judge-visible narrative text after normalizing the provider payload "
+            "through a lossy claim-ledger path that dropped source_fact_ids needed to support material claims."
+        )
     if "evidence mapping" in classification:
         return (
             "Visible content can be rendered before every term or claim has source-fact IDs, "
@@ -1498,6 +1686,23 @@ def _root_cause(section: dict[str, Any]) -> str:
         return (
             "The Anthropic Messages API request included a model-incompatible temperature field "
             "after the generation model changed to a no-temperature Sonnet 5 family model."
+        )
+    if "selector timeout" in classification:
+        return (
+            "The competencies pool selector used a live provider call whose timeout budget was "
+            "too short for the graph-backed candidate-selection payload."
+        )
+    if "provider quorum" in classification:
+        return (
+            "The final full-resume coherence judge panel produced fewer model-backed verdicts "
+            "than the required quorum, so final aggregation stayed blocked even though the "
+            "generated section lanes may have product-authorized evidence."
+        )
+    if "upstream certification" in classification:
+        return (
+            "Final aggregation correctly refused to resolve a required section whose lane evidence "
+            "was review-only rather than product-authorized; the section must pass X2 and every "
+            "configured X1D proof judge before final assembly can authorize the resume."
         )
     if "pre-run" in classification:
         return (
@@ -1530,6 +1735,27 @@ def _implementation_plan(section: dict[str, Any]) -> list[str]:
             "Update the deterministic specificity gate to check evidence-bound mechanisms in the claim ledger before accepting display text.",
             "Add a regression fixture with one generic narrative rejection and one mechanism-bound narrative acceptance.",
         ]
+    if "executive summary synthesis contract" in classification:
+        return [
+            "Rebind the final executive-summary display text to the required composition-plan brushstroke facts after every deterministic and LLM repair.",
+            "Run transition-shape repair after word-budget and judge-polish rewrites so stock bridge openers cannot re-enter X2.",
+            "Keep each claim-ledger row capped to directly supporting source facts while preserving one cited fact per required B1-B4 brushstroke group.",
+            "Add regression fixtures using the live failed Anthropic paragraph for allowed-fact utilization and robotic-transition stack gates.",
+        ]
+    if "headline executive positioning contract" in classification:
+        return [
+            "Map vendor-specific migration fragments to proof-backed executive headline abstractions before X2 runs.",
+            "Rebuild the segment claim ledger after headline rewrites so the displayed X/Y/Z phrases remain source-bound.",
+            "Keep vendor names and product terms in proof evidence, not standalone display segments, unless the segment also carries an executive abstraction.",
+            "Add a regression fixture using the live failed headline with AWS Migration Modernization Execution.",
+        ]
+    if "x1d decisive judge failure" in classification:
+        return [
+            "Preserve valid source_fact_ids from parsed narrative claim_ledger rows when normalizing role-episode narrative output.",
+            "Add source-binding patterns for material EY insurance, ERM, CCAR, regulatory analytics, and capital/solvency claims.",
+            "Keep X2 PASS insufficient for authorization when X1D factual-support judges reject the published claim ledger.",
+            "Add a regression fixture using the live EY narrative where insurance operations must cite reb_ey_insurance_core_modernization.",
+        ]
     if "evidence mapping" in classification:
         return [
             "List every visible term or claim missing source_fact_id, graph path ID, or claim-ledger coverage from the failed gate evidence.",
@@ -1543,6 +1769,27 @@ def _implementation_plan(section: dict[str, Any]) -> list[str]:
             "Omit temperature from Claude Sonnet 5 generation, selector, and judge payloads while preserving it for older supported Anthropic models.",
             "Persist the exact provider HTTP error into lane pre-run failure receipts and mandatory RCA evidence.",
             "Add regression tests that prove Sonnet 5 payloads omit temperature and the run ledger surfaces provider capability errors.",
+        ]
+    if "selector timeout" in classification:
+        return [
+            "Align the competencies pool-selector timeout with the bounded competencies generation budget while preserving the operator override and shared ceiling.",
+            "Keep competencies selection fail-closed when the selector is unavailable so no deterministic fallback silently authorizes the lane.",
+            "Persist the selector timing receipt and exact timeout error into the lane pre-run failure and mandatory RCA records.",
+            "Add regression tests proving selector timeout RCA is classified as provider selection budget, not dependency-token failure.",
+        ]
+    if "provider quorum" in classification:
+        return [
+            "Repair X1D full-resume judge artifact persistence and provider transport so Gemini/OpenAI request and response artifacts can be written under long run roots.",
+            "Rerun final aggregation with the required model-backed judge roster and require model_backed_pass_count to meet quorum_required before authorization.",
+            "Keep final resume inline output withheld whenever provider_blocked_count is nonzero or model_backed_pass_count is below quorum_required.",
+            "Add regression tests for long-path provider artifacts and mandatory RCA provider-quorum reporting.",
+        ]
+    if "upstream certification" in classification:
+        return [
+            "Name each non-certified required section in final aggregation gate evidence, including its X3 code, publish_disposition, and blocking judge ids.",
+            "Repair the blocking section producer or deterministic X2 gates so judge-visible certification defects trigger same-authority regeneration before X1D.",
+            "Keep final assembly fail-closed on review-only section dispositions; do not treat X2 PASS alone as latest-successful-real authorization.",
+            "Add regression tests proving executive_summary judge-certification soft fail blocks aggregation and is classified separately from missing-lane or provider-quorum failures.",
         ]
     if "pre-run" in classification:
         return [
@@ -1711,7 +1958,193 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                 ),
             ],
         }
+    if "executive summary synthesis contract" in classification:
+        utilization_gate = _gate_reason(section, "allowed_fact_utilization")
+        synthesis_gate = _gate_reason(section, "synthesis_quality")
+        transition_gate = _gate_reason(section, "robotic_transition")
+        conflation_gate = _gate_reason(section, "cross_fact_conflation")
+        return {
+            "dominant_cause": "The executive-summary repair path let a word-budget candidate become final without re-closing brushstroke utilization and transition-shape gates.",
+            "retry_recoverability": "MEDIUM",
+            "retry_recoverability_reason": "Blind retry can recreate the same bridge stack, but producer-side rebinding and transition repair can recover without changing the evidence substrate.",
+            "allocation": [
+                _allocation_row(
+                    domain="Producer finalization / repair ordering",
+                    causal_role="PRIMARY",
+                    root_cause_link=synthesis_gate
+                    or transition_gate
+                    or "The final producer accepted text that still carried robotic S2-S5 transition openers.",
+                    work_share="35%",
+                    evidence_refs=[
+                        "x2_executive_summary_synthesis_quality",
+                        "x2_exec_summary_robotic_transition_stack_zero",
+                    ],
+                    required_work="Apply bridge-density repair after all final polish and word-budget rewrites, then re-run the same synthesis-shape predicate X2 uses.",
+                ),
+                _allocation_row(
+                    domain="Composition-plan brushstroke coverage",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link=utilization_gate
+                    or "The claim ledger dropped the B4 commercialization-leadership fact required by the composition plan.",
+                    work_share="30%",
+                    evidence_refs=["x2_exec_summary_allowed_fact_utilization"],
+                    required_work="Preserve at least one cited source fact for every required B1-B4 brushstroke group after display-ledger reconciliation.",
+                ),
+                _allocation_row(
+                    domain="Claim attribution density",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link=conflation_gate
+                    or "Density repair must choose direct supporting facts instead of carrying every adjacent source_fact_id.",
+                    work_share="20%",
+                    evidence_refs=["x2_exec_summary_cross_fact_conflation_zero", "claim_ledger.json"],
+                    required_work="Cap each sentence row to the direct proof facts while preferring composition-required facts when multiple facts compete.",
+                ),
+                _allocation_row(
+                    domain="Validation / RCA reporting",
+                    causal_role="DETECTION",
+                    root_cause_link="The mandatory output must allocate deterministic executive-summary gate failures to the producer contract instead of generic validation precision.",
+                    work_share="15%",
+                    evidence_refs=gate_ids or ["x2_gate_outputs.json"],
+                    required_work="Classify executive-summary deterministic gate families with sentence-shape, brushstroke, and attribution-density RCA rows.",
+                ),
+            ],
+        }
+    if "headline executive positioning contract" in classification:
+        abstraction_gate = _gate_reason(section, "executive_abstraction_floor")
+        vendor_gate = _gate_reason(section, "vendor_terms_proof_only")
+        return {
+            "dominant_cause": "The headline producer let a vendor-specific migration phrase remain in display position instead of projecting it to a proof-backed executive operating abstraction.",
+            "retry_recoverability": "HIGH_AFTER_NORMALIZATION_FIX",
+            "retry_recoverability_reason": "The selected proof was valid and judges passed; deterministic normalization can recover by rewriting the display segment and ledger before X2.",
+            "allocation": [
+                _allocation_row(
+                    domain="Headline normalization / display policy",
+                    causal_role="PRIMARY",
+                    root_cause_link=abstraction_gate
+                    or vendor_gate
+                    or "X2 observed a headline segment missing executive abstraction while carrying a vendor/tool term.",
+                    work_share="45%",
+                    evidence_refs=[
+                        "x2_headline_executive_abstraction_floor",
+                        "x2_headline_vendor_terms_proof_only",
+                    ],
+                    required_work="Rewrite vendor-specific migration phrases to allowed executive headline abstractions before display validation.",
+                ),
+                _allocation_row(
+                    domain="Claim ledger segment rebinding",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="Headline segment rewrites must also update claim_text rows so visible X/Y/Z phrases remain the ledger authority.",
+                    work_share="25%",
+                    evidence_refs=["claim_ledger.json", "parsed_output.json"],
+                    required_work="Rebuild the three segment claim-ledger rows after deterministic headline phrase repair.",
+                ),
+                _allocation_row(
+                    domain="Validation / gate precision",
+                    causal_role="DETECTION",
+                    root_cause_link="The deterministic headline gates correctly blocked a proof-only vendor term in display despite model-backed judge passes.",
+                    work_share="20%",
+                    evidence_refs=["x2_gate_outputs.json"],
+                    required_work="Keep display-policy X2 gates authoritative over X1D judge approval for headline formatting and abstraction constraints.",
+                ),
+                _allocation_row(
+                    domain="Retry / repair policy",
+                    causal_role="HIGH_RECOVERY",
+                    root_cause_link="The failure is a deterministic phrase-normalization gap, so a targeted repair fixture should recover without changing research or section evidence.",
+                    work_share="10%",
+                    evidence_refs=["headline_output.txt"],
+                    required_work="Rerun after the live failed headline fixture proves X2 clears with the repaired segment.",
+                ),
+            ],
+        }
+    if "x1d decisive judge failure" in classification:
+        judge_evidence = _judge_failure_evidence(section)
+        return {
+            "dominant_cause": "The section was generated, parsed, and X2-clean, but the published claim ledger lost source-fact bindings that X1D required for judge-visible material claims.",
+            "retry_recoverability": "LOW_UNTIL_LEDGER_FIX",
+            "retry_recoverability_reason": "Blind regeneration can return a valid parsed claim ledger again, but the same lossy normalization path will keep dropping support before X1D.",
+            "allocation": [
+                _allocation_row(
+                    domain="Claim ledger normalization",
+                    causal_role="PRIMARY",
+                    root_cause_link=judge_evidence
+                    or "The decisive judge rejected a material claim because the published claim ledger omitted its supporting source_fact_id.",
+                    work_share="45%",
+                    evidence_refs=["parsed_output.json", "claim_ledger.json", "x1d_llm_judge_outputs.json"],
+                    required_work="Preserve valid source_fact_ids from parsed narrative claim_ledger rows when publishing the single-sentence role-episode ledger.",
+                ),
+                _allocation_row(
+                    domain="Narrative source binding",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="Narrative material phrases such as insurance operations, model risk, and traceable controls must bind to selected role-episode facts before judge review.",
+                    work_share="25%",
+                    evidence_refs=["selected_fact_plan.json", "role_episode_lane.py"],
+                    required_work="Add deterministic phrase-to-fact reconciliation for EY narrative material claims within the allowed graph packet.",
+                ),
+                _allocation_row(
+                    domain="X1D authorization policy",
+                    causal_role="DETECTION",
+                    root_cause_link="X2 PASS and product PASS were not enough because the model-backed judge rejected factual support.",
+                    work_share="20%",
+                    evidence_refs=["x3_disposition.json", "x1d_llm_judge_outputs.json"],
+                    required_work="Keep X3 blocked on decisive factual-support judge failures and surface the judge finding as the primary RCA.",
+                ),
+                _allocation_row(
+                    domain="Retry / repair policy",
+                    causal_role="LOW_RECOVERY",
+                    root_cause_link="The fix belongs at the parser/ledger boundary, not in downstream rerun scheduling or final assembly.",
+                    work_share="10%",
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
+                    required_work="Rerun only after the narrative ledger preservation fixture and mandatory-RCA fixture pass.",
+                ),
+            ],
+        }
     if "evidence mapping" in classification:
+        if str(section.get("section") or "") == "executive_summary":
+            paragraph_gate = _gate_reason(section, "paragraph_max_words")
+            mechanism_gate = _gate_reason(section, "no_mechanism_inventory")
+            conflation_gate = _gate_reason(section, "cross_fact_conflation")
+            return {
+                "dominant_cause": "The executive summary can over-compress platform, modernization, governance, and alliance facts into dense sentences before X2 attribution gates run.",
+                "retry_recoverability": "MEDIUM",
+                "retry_recoverability_reason": "Blind retries can repeat the density pattern, but gate-aware synthesis repair plus deterministic density trimming can recover without changing the research substrate.",
+                "allocation": [
+                    _allocation_row(
+                        domain="Synthesis density / prose shaping",
+                        causal_role="PRIMARY",
+                        root_cause_link=paragraph_gate or mechanism_gate or "Failed gates show over-budget prose or mechanism-inventory wording in the executive summary.",
+                        work_share="40%",
+                        evidence_refs=[
+                            "x2_exec_summary_paragraph_max_words",
+                            "x2_exec_summary_no_mechanism_inventory",
+                        ],
+                        required_work="Constrain the repair prompt and deterministic polish chain to produce six sentences under the word ceiling without mechanism inventories.",
+                    ),
+                    _allocation_row(
+                        domain="Claim attribution density",
+                        causal_role="CONTRIBUTING",
+                        root_cause_link=conflation_gate or "A claim-ledger row carried too many distinct source_fact_ids for a single displayed sentence.",
+                        work_share="30%",
+                        evidence_refs=["x2_exec_summary_cross_fact_conflation_zero"],
+                        required_work="Keep each claim-ledger row bound to the directly supporting facts for that sentence and split or compact overloaded proof themes.",
+                    ),
+                    _allocation_row(
+                        domain="Validation / gate precision",
+                        causal_role="DETECTION",
+                        root_cause_link="X2 identified the exact failed executive-summary gates, but the run RCA must preserve sentence-level failure details.",
+                        work_share="20%",
+                        evidence_refs=gate_ids,
+                        required_work="Emit sentence index, word count, mechanism hits, and source_fact_id counts in executive-summary gate evidence.",
+                    ),
+                    _allocation_row(
+                        domain="Retry / repair policy",
+                        causal_role="RECOVERY",
+                        root_cause_link="Repair must be allowed to reduce source-fact density when the failing gate is over-compression, not treat fact-count reduction as a substance regression.",
+                        work_share="10%",
+                        evidence_refs=["synthesis_regen_receipt.json", "exec_summary_word_budget_repair_receipt.json"],
+                        required_work="Let density-specific repairs reduce over-packed source_fact_ids while preserving six claim rows and required brushstroke coverage.",
+                    ),
+                ],
+            }
         graph_gate = _gate_reason(section, "competencies_graph_granularity")
         term_gate = _gate_reason(section, "term_supported")
         ledger_gate = _gate_reason(section, "all_terms_source_fact_ids")
@@ -1791,6 +2224,132 @@ def _causal_allocation(section: dict[str, Any]) -> dict[str, Any]:
                     work_share="20%",
                     evidence_refs=[MANDATORY_RUN_OUTPUT_JSON, "integrated_lane_pre_run_failure.json"],
                     required_work="Propagate first provider failure details into mandatory run RCA records.",
+                ),
+            ],
+        }
+    if "selector timeout" in classification:
+        pre_run = _pre_run_reason(section)
+        return {
+            "dominant_cause": "The competencies selector provider request exceeded its configured wall-clock budget before a selection response was available.",
+            "retry_recoverability": "MEDIUM",
+            "retry_recoverability_reason": "A rerun can recover after increasing the bounded selector budget or reducing selector payload size; blind downstream retries cannot recover before competencies selects.",
+            "allocation": [
+                _allocation_row(
+                    domain="Provider selector budget",
+                    causal_role="PRIMARY",
+                    root_cause_link=pre_run or "The selector timing receipt reported selector_timeout.",
+                    work_share="55%",
+                    evidence_refs=["integrated_lane_pre_run_failure.json", "bullet_pool_claude_selector_timing.json"],
+                    required_work="Use a selector timeout budget sized for competencies graph-pool selection and keep it bounded by the shared provider ceiling.",
+                ),
+                _allocation_row(
+                    domain="Selector payload / candidate pool",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="Competencies graph-pool selection ranks a larger structured candidate set than ordinary bullet selectors.",
+                    work_share="20%",
+                    evidence_refs=["bullet_pool_claude_selector_provider_request.json"],
+                    required_work="Keep candidate payload compact and preserve request artifacts so slow selector paths can be inspected.",
+                ),
+                _allocation_row(
+                    domain="Retry / repair policy",
+                    causal_role="MEDIUM_RECOVERY",
+                    root_cause_link="The lane has no run directory until the selector returns, so retries must target selector execution before downstream lanes.",
+                    work_share="15%",
+                    evidence_refs=["full_run_section_status.json"],
+                    required_work="Route retry to competencies selector execution, then schedule downstream lanes only after competencies product authorization.",
+                ),
+                _allocation_row(
+                    domain="Observability / RCA reporting",
+                    causal_role="DETECTION",
+                    root_cause_link="Mandatory outputs must distinguish provider selector timeout from PHASE1 dependency-token blockers.",
+                    work_share="10%",
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
+                    required_work="Classify selector timeouts as provider-selector budget failures in BCG/RCA output.",
+                ),
+            ],
+        }
+    if "provider quorum" in classification:
+        quorum_gate = _gate_reason(section, "full_resume_llm_coherence", "quorum")
+        return {
+            "dominant_cause": "The final aggregation judge panel could not count enough model-backed full-resume coherence verdicts to satisfy quorum.",
+            "retry_recoverability": "HIGH_AFTER_ARTIFACT_FIX",
+            "retry_recoverability_reason": "A rerun can recover after repairing the provider artifact path/transport blocker; blind reruns before that fix reproduce the same zero-quorum result.",
+            "allocation": [
+                _allocation_row(
+                    domain="Provider artifact persistence",
+                    causal_role="PRIMARY",
+                    root_cause_link=quorum_gate or "Provider request artifact writes failed before Gemini/OpenAI could produce model-backed verdicts.",
+                    work_share="45%",
+                    evidence_refs=[
+                        "coherence_judge_providers/*provider_request*.json",
+                        "x1d_full_resume_judge_outputs.json",
+                    ],
+                    required_work="Make X1D provider request/response artifact paths compact and long-path safe before provider calls run.",
+                ),
+                _allocation_row(
+                    domain="Judge panel quorum",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="The aggregation contract requires two model-backed pass verdicts; blocked providers do not count toward quorum.",
+                    work_share="25%",
+                    evidence_refs=["full_resume_llm_coherence_review.json"],
+                    required_work="Preserve fail-closed quorum semantics and rerun the required Gemini/OpenAI full-resume judges after artifact persistence is repaired.",
+                ),
+                _allocation_row(
+                    domain="Product authorization gate",
+                    causal_role="DETECTION",
+                    root_cause_link="Final resume output remained unauthorized because x2_full_resume_llm_coherence_aggregation did not pass.",
+                    work_share="20%",
+                    evidence_refs=gate_ids or ["final_resume_x2_gate_outputs.json"],
+                    required_work="Continue withholding inline resume/DOCX authorization until final aggregation X2 and product gates pass in the same run root.",
+                ),
+                _allocation_row(
+                    domain="Observability / RCA reporting",
+                    causal_role="REPORTING_GAP",
+                    root_cause_link="Mandatory outputs must distinguish final judge provider quorum from missing upstream generated lanes.",
+                    work_share="10%",
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
+                    required_work="Name provider_blocked_count, model_backed_pass_count, quorum_required, and failed aggregation gate IDs in RCA outputs.",
+                ),
+            ],
+        }
+    if "upstream certification" in classification:
+        upstream_gate = _gate_reason(section, "latest_successful_real", "resolution not accepted")
+        return {
+            "dominant_cause": "Final aggregation refused a required section whose evidence was generated but not product-certified.",
+            "retry_recoverability": "HIGH_AFTER_SECTION_REPAIR",
+            "retry_recoverability_reason": "Aggregation can recover only after the blocking section repairs its judge-visible defect and returns X3_ALLOW in the same run root.",
+            "allocation": [
+                _allocation_row(
+                    domain="Section certification / X3 authority",
+                    causal_role="PRIMARY",
+                    root_cause_link=upstream_gate or "A required section resolved to review-only/non-certified rather than latest-successful-real.",
+                    work_share="50%",
+                    evidence_refs=["final_resume_x2_gate_outputs.json", MANDATORY_RUN_OUTPUT_JSON],
+                    required_work="Surface the blocking section, X3 code, publish disposition, and blocking judge ids in final aggregation evidence.",
+                ),
+                _allocation_row(
+                    domain="Section producer / deterministic gates",
+                    causal_role="CONTRIBUTING",
+                    root_cause_link="The blocking section passed deterministic X2 while still failing judge-visible certification quality.",
+                    work_share="25%",
+                    evidence_refs=["x2_gate_outputs.json", "x1d_llm_judge_outputs.json"],
+                    required_work="Move the judge-observed defect into deterministic shape gates or same-authority regeneration before X1D.",
+                ),
+                _allocation_row(
+                    domain="Product authorization gate",
+                    causal_role="DETECTION",
+                    root_cause_link="Final assembly correctly withheld authorization because X2 PASS without X1D certification is review-only.",
+                    work_share="15%",
+                    evidence_refs=["x3_disposition.json", "full_run_section_status.json"],
+                    required_work="Keep latest-successful-real resolution tied to X3_ALLOW and product authorization, not merely runtime REAL_LLM.",
+                ),
+                _allocation_row(
+                    domain="Observability / RCA reporting",
+                    causal_role="REPORTING_GAP",
+                    root_cause_link="Mandatory outputs must distinguish non-certified upstream sections from provider quorum and missing-lane dependency failures.",
+                    work_share="10%",
+                    evidence_refs=[MANDATORY_RUN_OUTPUT_JSON],
+                    required_work="Classify upstream section certification failures with their blocking section and judge evidence.",
                 ),
             ],
         }
@@ -1976,10 +2535,18 @@ def _recommended_action(section: dict[str, Any]) -> str:
         return "Implement the output-contract plan; do not rerun until schema and claim-ledger contract tests pass."
     if "specificity" in classification:
         return "Implement the evidence-bound specificity plan; do not rely on text-only regeneration."
+    if "headline executive positioning contract" in classification:
+        return "Implement the headline display-policy normalization fix before rerunning headline/final assembly."
+    if "x1d decisive judge failure" in classification:
+        return "Implement the claim-ledger source-binding fix before rerunning the judge-blocked section."
     if "evidence mapping" in classification:
         return "Implement the evidence-mapping plan; do not accept visible claims without lineage."
     if "provider capability" in classification:
         return "Implement the provider-capability payload fix before rerunning Anthropic-backed lanes."
+    if "provider quorum" in classification:
+        return "Implement the final aggregation provider-quorum fix before rerunning final assembly."
+    if "upstream certification" in classification:
+        return "Repair the non-certified upstream section before rerunning final aggregation; do not authorize review-only section evidence."
     if "pre-run" in classification:
         return "Implement the dependency-token plan before scheduling the dependent lane."
     if section_id == FINAL_AGGREGATION_LANE:
@@ -2106,6 +2673,24 @@ def _active_bcg_evidence(doc: dict[str, Any]) -> dict[str, Any]:
         if isinstance(row, dict)
         and "PHASE1_NO_RUN_DIR" in str(row.get("x3") or row.get("past_fail_blocker") or "")
     ]
+    final_aggregation_blockers: list[str] = []
+    for section in doc.get("sections", []):
+        if not isinstance(section, dict) or str(section.get("section") or "") != FINAL_AGGREGATION_LANE:
+            continue
+        x2_pass = str(section.get("x2_pass") or "UNKNOWN")
+        product = str(section.get("product_quality_status") or "UNKNOWN")
+        x3_code = str(section.get("x3_code") or "UNKNOWN")
+        failed_gates = [
+            str(gate.get("gate_id") or "unknown_gate")
+            for gate in section.get("failed_gates") or []
+            if isinstance(gate, dict)
+        ]
+        if x2_pass != "PASS" or product != "PASS" or x3_code != "X3_ALLOW":
+            evidence_bits = []
+            if failed_gates:
+                evidence_bits.append(",".join(failed_gates))
+            evidence_bits.extend([f"x2={x2_pass}", f"product={product}", f"x3={x3_code}"])
+            final_aggregation_blockers.append(f"{FINAL_AGGREGATION_LANE}: " + "; ".join(evidence_bits))
     return {
         "final_status": str(final_out.get("status") or "UNKNOWN"),
         "failed_final": final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else [],
@@ -2115,6 +2700,7 @@ def _active_bcg_evidence(doc: dict[str, Any]) -> dict[str, Any]:
         "blocked_generated_lanes": blocked_generated_lanes,
         "provider_gap_sections": provider_gap_sections,
         "phase1_no_run_lanes": phase1_no_run_lanes,
+        "final_aggregation_blockers": final_aggregation_blockers,
         "competencies_blocker": next(
             (
                 finding
@@ -2172,6 +2758,15 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "Fix X3-blocked generated lanes before authorizing the final resume.",
                 ", ".join(evidence["blocked_generated_lanes"]),
                 "Outcome remains blocked until every required generated lane clears X3.",
+            )
+        )
+    if evidence["final_aggregation_blockers"]:
+        rows.append(
+            _bcg_row(
+                "P0",
+                "Fix final_resume_aggregation before authorizing the final resume.",
+                " | ".join(evidence["final_aggregation_blockers"]),
+                "Outcome remains blocked until full-resume aggregation clears X2/product gates.",
             )
         )
     if evidence["final_status"] != "PASS":
@@ -2267,6 +2862,8 @@ def _bcg_truth_errors(doc: dict[str, Any], recommendations: list[dict[str, str]]
             errors.append(f"bcg.recommendations[{idx}].empty")
         if "X3-blocked generated lanes" in recommendation and not evidence["blocked_generated_lanes"]:
             errors.append(f"bcg.recommendations[{idx}].no_x3_blocked_lanes")
+        if "final_resume_aggregation" in recommendation and not evidence["final_aggregation_blockers"]:
+            errors.append(f"bcg.recommendations[{idx}].no_final_aggregation_blocker")
         if "final resume product gate failed" in recommendation and evidence["final_status"] == "PASS":
             errors.append(f"bcg.recommendations[{idx}].final_status_pass")
         if "provider attempts" in recommendation and not evidence["provider_gap_sections"]:
@@ -2353,6 +2950,14 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
             "The run is blocked and must not authorize a final resume. Required generation and/or "
             "final product gates did not clear; use the P0/P1/PX recommendations below as the repair order."
         )
+    recommendations = _build_bcg_recommendations(doc)
+    next_moves = _build_bcg_recommended_next_moves(doc, recommendations)
+    primary_p0 = next((row for row in recommendations if row.get("priority") == "P0"), None)
+    primary_blocker = (
+        f"{primary_p0.get('recommendation')} Evidence: {primary_p0.get('evidence')}"
+        if isinstance(primary_p0, dict)
+        else str(research.get("generation_status") or summary.get("fault") or "NOT_OBSERVED")
+    )
     board_rows = [
         {"question": "Did apps_research run?", "answer": "Yes" if research.get("provider_call_attempted") is True else "No"},
         {"question": "Research source class", "answer": str(research.get("research_source_class") or "NOT_OBSERVED")},
@@ -2360,7 +2965,7 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         {"question": "Briefing evidence", "answer": str(research.get("past_fail_blocker") or "NOT_OBSERVED")},
         {"question": "Did resume generation run?", "answer": f"{counts['ran_real_llm']} REAL_LLM section(s)"},
         {"question": "Final product authorized?", "answer": str(summary.get("outcome_authorized"))},
-        {"question": "Primary blocker", "answer": str(research.get("generation_status") or summary.get("fault") or "NOT_OBSERVED")},
+        {"question": "Primary blocker", "answer": primary_blocker},
         {"question": "Decision", "answer": "Do not authorize; fix P0 gates first." if not authorized else "Authorized; preserve evidence."},
     ]
     evidence_map = [
@@ -2370,8 +2975,6 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         {"label": "Final resume output contract", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}"},
         {"label": "Resume DOCX", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}"},
     ]
-    recommendations = _build_bcg_recommendations(doc)
-    next_moves = _build_bcg_recommended_next_moves(doc, recommendations)
     return {
         "schema_version": INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION,
         "immutable_section_order": list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER),

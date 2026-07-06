@@ -10,6 +10,8 @@ from apps_rg.runtime.sections.exec_summary_graph_only_quality import (
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_cross_fact_display_conflation,
     check_exec_summary_mechanical_opener_stack,
+    check_exec_summary_robotic_transition_stack,
+    check_synthesis_quality,
 )
 
 
@@ -50,6 +52,46 @@ def test_cross_fact_conflation_detects_platform_and_governance() -> None:
     ok, reason = check_cross_fact_display_conflation(resume, ledger)
     assert ok is False
     assert reason and "conflation" in reason
+
+
+def test_robotic_transition_stack_matches_latest_exec_summary_failure() -> None:
+    text = (
+        "Technology strategy executive who led AWS modernization execution for monolithic policy administration and insurance platform workloads across regulated cloud migration. "
+        "Through that migration discipline, IBM-AWS alliance co-sell motions for financial-services modernization pair with agentic AI platform control-plane architecture and distributed cloud and data execution infrastructure to align partner GTM with governed runtime delivery. "
+        "That operating foundation also connects decision-support data models and BI views to reusable offering accelerators packaging cloud, data, and AI modernization patterns for repeatable client pursuits. "
+        "In parallel, insurer and regulatory engagement on cloud controls and data security standards keeps partner-led deployment aligned with adoption requirements. "
+        "Building on that governance base, platform productization and IP-led revenue growth scale team capacity while expanding operating margins across partner-enabled programs. "
+        "AI partnerships and alliance GTM leadership position continued scale of partner-led AI solution architecture across cloud and GSI ecosystems."
+    )
+
+    ok, reason = check_exec_summary_robotic_transition_stack(text)
+    assert ok is False
+    assert reason and "robotic_transition_stack:3" in reason
+    synth_ok, synth_reason = check_synthesis_quality(text)
+    assert synth_ok is False
+    assert synth_reason and "robotic_transition_stack" in synth_reason
+
+
+def test_cross_fact_conflation_detects_overcompressed_source_fact_row() -> None:
+    sentence = (
+        "Through that migration discipline, IBM-AWS alliance co-sell motions for financial-services "
+        "modernization pair with agentic AI platform control-plane architecture and distributed cloud "
+        "and data execution infrastructure to align partner GTM with governed runtime delivery."
+    )
+    ledger = [
+        {
+            "claim_text": sentence,
+            "source_fact_ids": [
+                "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "reb_unify_agentic_platform_architecture",
+                "reb_unify_distributed_ecosystem_engineering",
+                "reb_ibm_aws_modernization_architecture",
+            ],
+        }
+    ]
+    ok, reason = check_cross_fact_display_conflation(sentence, ledger)
+    assert ok is False
+    assert reason == "cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence"
 
 
 def test_graph_only_repair_applies_on_conflation() -> None:

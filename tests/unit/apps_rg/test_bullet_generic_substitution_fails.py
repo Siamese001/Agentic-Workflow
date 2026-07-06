@@ -95,6 +95,10 @@ class TestTechnicalSpecificityFloor:
                 "bul_ibm_004",
                 "Owned cross-functional BI and data models for modernization portfolios, building governed BI views.",
             ),
+            (
+                "bul_ibm_002",
+                "Directed cognitive decision-support engagements that connected HPC-driven risk scenario analysis to executive decision workflows across regulated financial-services portfolios.",
+            ),
         ]
         for bid, text in tech_bullets:
             r = check_bullet_technical_specificity_floor(bid, text)

@@ -279,6 +279,161 @@ def _normalize_source_ids(raw: Any, allowed: list[str], idx: int) -> list[str]:
     return allowed[:1]
 
 
+_NARRATIVE_LEDGER_STOPWORDS = {
+    "and",
+    "for",
+    "into",
+    "that",
+    "the",
+    "with",
+    "without",
+}
+
+
+def _narrative_ledger_tokens(text: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", str(text or "").lower())
+        if len(token) > 2 and token not in _NARRATIVE_LEDGER_STOPWORDS
+    }
+
+
+def _valid_source_ids_without_fallback(raw: Any, allowed: list[str]) -> list[str]:
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    out: list[str] = []
+    for value in raw if isinstance(raw, list) else ([raw] if raw else []):
+        fid = str(value or "").strip()
+        if fid and fid in allowed_set and fid not in out:
+            out.append(fid)
+    return out
+
+
+def _parsed_claim_ledger_source_ids_for_narrative(
+    *,
+    parsed: dict[str, Any],
+    narrative: str,
+    allowed: list[str],
+) -> list[str]:
+    """Preserve valid parsed ledger IDs whose claim text appears in the narrative."""
+    rows = parsed.get("claim_ledger") if isinstance(parsed, dict) else None
+    if not isinstance(rows, list):
+        return []
+    narrative_text = str(narrative or "")
+    narrative_l = narrative_text.lower()
+    narrative_tokens = _narrative_ledger_tokens(narrative_text)
+    source_ids: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        claim_text = str(row.get("claim_text") or row.get("claim") or "").strip()
+        claim_l = claim_text.lower()
+        if claim_text and claim_l not in narrative_l:
+            claim_tokens = _narrative_ledger_tokens(claim_text)
+            required_overlap = 2 if len(claim_tokens) <= 5 else 3
+            if len(narrative_tokens & claim_tokens) < required_overlap:
+                continue
+        for fid in _valid_source_ids_without_fallback(row.get("source_fact_ids"), allowed):
+            if fid not in source_ids:
+                source_ids.append(fid)
+    return source_ids
+
+
+_NARRATIVE_SOURCE_BINDING_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
+    "reb_ey_regulatory_analytics_modernization": (
+        re.compile(r"\bregulatory\s+analytics\b", re.IGNORECASE),
+        re.compile(r"\blineage[-\s]+backed\s+regulatory\b", re.IGNORECASE),
+        re.compile(r"\bpredictive\s+risk\s+analytics\b", re.IGNORECASE),
+    ),
+    "reb_ey_capital_optimization_solvency": (
+        re.compile(r"\bcapital\b", re.IGNORECASE),
+        re.compile(r"\bsolvency\b", re.IGNORECASE),
+        re.compile(r"\bhedg(?:e|ing)\b", re.IGNORECASE),
+        re.compile(r"\bliability\s+greeks\b", re.IGNORECASE),
+    ),
+    "reb_ey_ccar_capital_liquidity_stress_testing": (
+        re.compile(r"\bccar\b", re.IGNORECASE),
+        re.compile(r"\bstress\s+testing\b", re.IGNORECASE),
+        re.compile(r"\bmodel[-\s]?risk\b", re.IGNORECASE),
+        re.compile(r"\bgovernance\s+evidence\b", re.IGNORECASE),
+    ),
+    "reb_ey_insurance_core_modernization": (
+        re.compile(r"\binsurance\s+operations\b", re.IGNORECASE),
+        re.compile(r"\bpolicy\s+(?:and\s+claims\s+)?operations\b", re.IGNORECASE),
+        re.compile(r"\bclaims\s+(?:operations|workflow)\b", re.IGNORECASE),
+        re.compile(r"\bpolicy\s+administration\b", re.IGNORECASE),
+        re.compile(r"\bbilling/rating/underwriting\b", re.IGNORECASE),
+        re.compile(r"\bBI[-\s]+ready\s+data\s+outputs\b", re.IGNORECASE),
+    ),
+    "reb_ey_erm_risk_governance": (
+        re.compile(r"\bauditable\b", re.IGNORECASE),
+        re.compile(r"\btraceable\s+controls?\b", re.IGNORECASE),
+        re.compile(r"\brisk[-\s]+data\b", re.IGNORECASE),
+        re.compile(r"\bthree[-\s]+lines(?:[-\s]+of[-\s]+defense)?\b", re.IGNORECASE),
+        re.compile(r"\brisk\s+metrics?\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_founder_led_gtm_revenue": (
+        re.compile(r"\bgtm\b", re.IGNORECASE),
+        re.compile(r"\bgo[-\s]?to[-\s]?market\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_lean_delivery_operating_model": (
+        re.compile(r"\bcontrol\s+discipline\b", re.IGNORECASE),
+        re.compile(r"\baudit/control\s+discipline\b", re.IGNORECASE),
+        re.compile(r"\blean\s+execution\b", re.IGNORECASE),
+        re.compile(r"\blean\s+(?:delivery|operating)\s+model\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_aws_cloud_economics": (
+        re.compile(r"\beconomics(?:[-\s]+driven)?\b", re.IGNORECASE),
+        re.compile(r"\bcost\s+controls?\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_aws_migration_execution": (
+        re.compile(r"\blegacy\s+platforms?\b", re.IGNORECASE),
+        re.compile(r"\benterprise\s+workloads?\b", re.IGNORECASE),
+        re.compile(r"\bcomplex\s+workloads?\b", re.IGNORECASE),
+        re.compile(r"\bworkloads?\s+deployable\b", re.IGNORECASE),
+        re.compile(r"\bproduction\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_aws_shared_responsibility_operating_model": (
+        re.compile(r"\bcontrol\s+discipline\b", re.IGNORECASE),
+        re.compile(r"\bsafety[-\s]first\s+control\b", re.IGNORECASE),
+        re.compile(r"\binsurer-owned\s+controls?\b", re.IGNORECASE),
+    ),
+    "reb_insurtech_regulated_aws_control_implementation": (
+        re.compile(r"\bregulated\s+AWS\b", re.IGNORECASE),
+        re.compile(r"\bcontrol\s+discipline\b", re.IGNORECASE),
+        re.compile(r"\bcontrol\s+design\b", re.IGNORECASE),
+        re.compile(r"\bsafety[-\s]first\s+control\b", re.IGNORECASE),
+    ),
+}
+
+
+def _narrative_source_ids_for_claim(
+    *,
+    narrative: str,
+    raw_source_ids: Any,
+    allowed: list[str],
+    selected_fact_plan: dict[str, Any],
+) -> tuple[list[str], list[str]]:
+    """Bind narrative material phrases to selected role-episode bundle facts."""
+    source_ids = _normalize_source_ids(raw_source_ids, allowed, 0)
+    fact_ids = {
+        str(row.get("fact_id") or row.get("role_episode_bundle_id") or "").strip()
+        for row in _facts_from_plan(selected_fact_plan)
+    }
+    allowed_set = {str(x).strip() for x in allowed if str(x).strip()}
+    added: list[str] = []
+    for fid in allowed:
+        if fid in source_ids or fid not in fact_ids:
+            continue
+        patterns = _NARRATIVE_SOURCE_BINDING_PATTERNS.get(fid, ())
+        if not patterns or not any(pattern.search(narrative) for pattern in patterns):
+            continue
+        if fid not in allowed_set:
+            continue
+        source_ids.append(fid)
+        added.append(fid)
+    return source_ids, added
+
+
 _TARGETING_ONLY_TAIL_REPAIRS: tuple[re.Pattern[str], ...] = (
     re.compile(
         r",?\s+(?:mirroring|positioning|aligning|framing|mapping|translating)\b"
@@ -1279,11 +1434,22 @@ def run_role_episode_lane_execution(
         narrative = narrative_from_model
         if provider_result.runtime_generation_status == "REAL_LLM" and not narrative:
             narrative = _sentence(str(facts[0].get("claim_text") or facts[0].get("text") or ""))
-        source_ids = _normalize_source_ids(
-            (parsed or {}).get("source_fact_ids"),
-            allowed_fact_ids,
-            0,
+        parsed_ledger_source_ids = _parsed_claim_ledger_source_ids_for_narrative(
+            parsed=parsed or {},
+            narrative=narrative,
+            allowed=allowed_fact_ids,
         )
+        raw_source_ids = (parsed or {}).get("source_fact_ids") or parsed_ledger_source_ids
+        source_ids, narrative_source_repairs = _narrative_source_ids_for_claim(
+            narrative=narrative,
+            raw_source_ids=raw_source_ids,
+            allowed=allowed_fact_ids,
+            selected_fact_plan=selected_fact_plan,
+        )
+        for fid in parsed_ledger_source_ids:
+            if fid not in source_ids:
+                source_ids.append(fid)
+                narrative_source_repairs.append(fid)
         claim_ledger = [{"claim_text": narrative, "source_fact_ids": source_ids}] if narrative else []
         llm_status = "not_run"
         if provider_result.runtime_generation_status == "REAL_LLM":
@@ -1305,6 +1471,11 @@ def run_role_episode_lane_execution(
             "allowed_graph_packet_fact_count": len(allowed_fact_ids),
             "rendered_source_fact_ids_within_allowed_packet": set(source_ids).issubset(set(allowed_fact_ids)),
         }
+        if narrative_source_repairs:
+            generation_receipt["source_fact_binding_repair"] = {
+                "operation": "role_episode_narrative_material_claim_source_reconciliation",
+                "added_source_fact_ids": narrative_source_repairs,
+            }
         l2 = {
             "run_id": run_id,
             "section_id": sid,

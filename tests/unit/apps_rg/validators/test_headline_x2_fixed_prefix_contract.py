@@ -15,6 +15,7 @@ from apps_rg.runtime.sections.headline_lane import (
 )
 from apps_rg.runtime.exit.headline_x3 import aggregate_x3
 from apps_rg.runtime.validators.headline_x2 import run_headline_x2_gates
+from apps_rg.runtime.validators.headline_x2 import check_headline_xyz_literal_grounding
 
 
 def _fake_judges() -> list[dict[str, Any]]:
@@ -387,3 +388,420 @@ def test_machine_phrase_repair_rewrites_governed_runtime_architecture() -> None:
 
     assert repaired == "SVP Engineering | Runtime Governance Architecture | Partner Co-Sell Motions | Distributed Cloud Data"
     assert changes == [{"from": "Governed Runtime Architecture", "to": "Runtime Governance Architecture"}]
+
+
+def test_machine_phrase_repair_rewrites_hyperscaler_alliance_revenue() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Data Infrastructure | "
+        "Egress Governance Controls | Hyperscaler Alliance Revenue"
+    )
+
+    repaired, changes = _rewrite_machine_headline_segments(hl)
+
+    assert repaired == (
+        "SVP Engineering | Distributed Cloud Data Infrastructure | "
+        "Egress Governance Controls | Hyperscaler Partner Ecosystem"
+    )
+    assert changes == [{"from": "Hyperscaler Alliance Revenue", "to": "Hyperscaler Partner Ecosystem"}]
+
+
+def test_live_policy_administration_migration_repair_clears_executive_floor() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | Policy Administration Migration"
+    )
+    fact_ids = [
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "reb_insurtech_aws_migration_execution",
+    ]
+    selected_fact_plan = {
+        "section_id": "headline",
+        "required_fact_ids": list(fact_ids),
+        "selected_claim_fact_ids": list(fact_ids),
+        "selected_required_fact_ids": list(fact_ids),
+        "facts": [
+            {
+                "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                "claim_text": "Distributed cloud and data execution infrastructure",
+                "graph_skill_node_ids": ["skill_sr_cloud_data_platform_engineering"],
+            },
+            {
+                "fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "claim_text": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+                "graph_skill_node_ids": ["skill_partner_hyperscaler_cosell"],
+            },
+            {
+                "fact_id": "reb_insurtech_aws_migration_execution",
+                "claim_text": (
+                    "Led AWS modernization execution for monolithic policy administration "
+                    "and insurance platform workloads."
+                ),
+                "graph_skill_node_ids": ["skill_aws_migration_readiness_assessment"],
+            },
+        ],
+    }
+    parsed = {
+        "headline_line": hl,
+        "selected_fact_plan": selected_fact_plan,
+        "claim_ledger": [
+            {"claim_text": "Distributed Cloud Infrastructure", "source_fact_ids": [fact_ids[0]]},
+            {"claim_text": "Hyperscaler Alliance Co-Sell", "source_fact_ids": [fact_ids[1]]},
+            {"claim_text": "Policy Administration Migration", "source_fact_ids": [fact_ids[2]]},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "distributed cloud infrastructure, hyperscaler co-sell, policy migration",
+            "anti_stuffing_check": "passed",
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+    runtime_payload = {"target_company": "", "selected_fact_plan": selected_fact_plan}
+
+    out = normalize_parsed_output(parsed, runtime_payload, set(fact_ids), hl)
+
+    assert out is not None
+    assert out["headline_line"] == (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | Policy Administration Platforms"
+    )
+    assert [row["claim_text"] for row in out["claim_ledger"]] == [
+        "Distributed Cloud Infrastructure",
+        "Hyperscaler Alliance Co-Sell",
+        "Policy Administration Platforms",
+    ]
+    gates = run_headline_x2_gates(
+        headline_line=out["headline_line"],
+        parsed_output=out,
+        claim_ledger=out["claim_ledger"],
+        jd_text="enterprise platform delivery",
+        target_company="",
+        target_title="SVP Engineering",
+        resume_support_blob=json.dumps({"employment": [], "header": {"name": "A B"}}),
+        employer_names_lower=[],
+        allowed_fact_ids=set(fact_ids),
+        runtime_generation_status="REAL_LLM",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
+        raw_output=json.dumps(out),
+        raw_model_parsed_before_normalize=parsed,
+        x1d_judges=_fake_judges(),
+        companion_context="",
+        text_claim_coverage={"schema": "headline_text_claim_coverage_v1", "overall_pass": True, "segments": []},
+    )
+    assert "x2_headline_executive_abstraction_floor" not in _failed_ids(gates)
+    assert _failed_ids(gates) == []
+
+
+def test_live_aws_migration_execution_repair_clears_headline_floors() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | AWS Migration Execution"
+    )
+    fact_ids = [
+        "reb_unify_distributed_ecosystem_engineering",
+        "skill_provider_and_egress_governance",
+        "skill_sr_cloud_data_platform_engineering",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "skill_partner_hyperscaler_cosell",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "reb_insurtech_aws_migration_execution",
+        "skill_aws_migration_readiness_assessment",
+    ]
+    selected_fact_plan = {
+        "section_id": "headline",
+        "required_fact_ids": list(fact_ids),
+        "selected_claim_fact_ids": list(fact_ids),
+        "selected_required_fact_ids": list(fact_ids),
+        "facts": [
+            {
+                "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                "claim_text": "Distributed cloud and data execution infrastructure",
+                "graph_skill_node_ids": ["skill_sr_cloud_data_platform_engineering"],
+            },
+            {
+                "fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "claim_text": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+                "graph_skill_node_ids": ["skill_partner_hyperscaler_cosell"],
+            },
+            {
+                "fact_id": "reb_insurtech_aws_migration_execution",
+                "claim_text": (
+                    "Led AWS modernization execution for monolithic policy administration "
+                    "and insurance platform workloads."
+                ),
+                "graph_skill_node_ids": ["skill_aws_migration_readiness_assessment"],
+            },
+        ],
+    }
+    parsed = {
+        "headline_line": hl,
+        "selected_fact_plan": selected_fact_plan,
+        "claim_ledger": [
+            {"claim_text": "Distributed Cloud Infrastructure", "source_fact_ids": fact_ids[:3]},
+            {"claim_text": "Hyperscaler Alliance Co-Sell", "source_fact_ids": fact_ids[3:6]},
+            {"claim_text": "AWS Migration Execution", "source_fact_ids": fact_ids[6:]},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "distributed cloud infrastructure, hyperscaler co-sell, AWS migration execution",
+            "anti_stuffing_check": "passed",
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+    runtime_payload = {"target_company": "", "selected_fact_plan": selected_fact_plan}
+
+    out = normalize_parsed_output(parsed, runtime_payload, set(fact_ids), hl)
+
+    assert out is not None
+    assert out["headline_line"] == (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | Policy Administration Platforms"
+    )
+    assert out["claim_ledger"][2]["claim_text"] == "Policy Administration Platforms"
+    gates = run_headline_x2_gates(
+        headline_line=out["headline_line"],
+        parsed_output=out,
+        claim_ledger=out["claim_ledger"],
+        jd_text="enterprise platform delivery",
+        target_company="",
+        target_title="SVP Engineering",
+        resume_support_blob=json.dumps({"employment": [], "header": {"name": "A B"}}),
+        employer_names_lower=[],
+        allowed_fact_ids=set(fact_ids),
+        runtime_generation_status="REAL_LLM",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
+        raw_output=json.dumps(out),
+        raw_model_parsed_before_normalize=parsed,
+        x1d_judges=_fake_judges(),
+        companion_context="",
+        text_claim_coverage={"schema": "headline_text_claim_coverage_v1", "overall_pass": True, "segments": []},
+    )
+    assert _failed_ids(gates) == []
+
+
+def test_live_aws_migration_modernization_execution_repair_clears_headline_floors() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Governed Partner Cosell Alliances | AWS Migration Modernization Execution"
+    )
+    fact_ids = [
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_unify_partner_channel_cosell",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "reb_insurtech_aws_migration_execution",
+    ]
+    selected_fact_plan = {
+        "section_id": "headline",
+        "required_fact_ids": list(fact_ids),
+        "selected_claim_fact_ids": list(fact_ids),
+        "selected_required_fact_ids": list(fact_ids),
+        "facts": [
+            {
+                "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                "claim_text": "Distributed cloud and data execution infrastructure",
+                "graph_skill_node_ids": ["skill_sr_cloud_data_platform_engineering"],
+            },
+            {
+                "fact_id": "reb_unify_partner_channel_cosell",
+                "claim_text": "Governed partner cosell alliances, partner co-sell, and cloud vendor joint GTM motions",
+                "graph_skill_node_ids": ["skill_partner_co_selling"],
+            },
+            {
+                "fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "claim_text": "Led IBM-AWS alliance co-sell motions for modernization opportunities",
+                "graph_skill_node_ids": ["skill_partner_hyperscaler_cosell"],
+            },
+            {
+                "fact_id": "reb_insurtech_aws_migration_execution",
+                "claim_text": (
+                    "Led AWS modernization execution for monolithic policy administration "
+                    "platforms and insurance platform workloads."
+                ),
+                "graph_skill_node_ids": ["skill_aws_migration_readiness_assessment"],
+            },
+        ],
+    }
+    parsed = {
+        "headline_line": hl,
+        "selected_fact_plan": selected_fact_plan,
+        "claim_ledger": [
+            {"claim_text": "Distributed Cloud Infrastructure", "source_fact_ids": fact_ids[:1]},
+            {"claim_text": "Governed Partner Cosell Alliances", "source_fact_ids": fact_ids[1:3]},
+            {"claim_text": "AWS Migration Modernization Execution", "source_fact_ids": fact_ids[3:]},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "distributed cloud infrastructure, governed partner co-sell, AWS migration modernization execution",
+            "anti_stuffing_check": "passed",
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+    runtime_payload = {"target_company": "", "selected_fact_plan": selected_fact_plan}
+
+    out = normalize_parsed_output(parsed, runtime_payload, set(fact_ids), hl)
+
+    assert out is not None
+    assert out["headline_line"] == (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Governed Partner Cosell Alliances | Policy Administration Platforms"
+    )
+    assert out["claim_ledger"][2]["claim_text"] == "Policy Administration Platforms"
+    gates = run_headline_x2_gates(
+        headline_line=out["headline_line"],
+        parsed_output=out,
+        claim_ledger=out["claim_ledger"],
+        jd_text="enterprise platform delivery",
+        target_company="",
+        target_title="SVP Engineering",
+        resume_support_blob=json.dumps({"employment": [], "header": {"name": "A B"}}),
+        employer_names_lower=[],
+        allowed_fact_ids=set(fact_ids),
+        runtime_generation_status="REAL_LLM",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
+        raw_output=json.dumps(out),
+        raw_model_parsed_before_normalize=parsed,
+        x1d_judges=_fake_judges(),
+        companion_context="",
+        text_claim_coverage={"schema": "headline_text_claim_coverage_v1", "overall_pass": True, "segments": []},
+    )
+    assert "x2_headline_executive_abstraction_floor" not in _failed_ids(gates)
+    assert "x2_headline_vendor_terms_proof_only" not in _failed_ids(gates)
+    assert _failed_ids(gates) == []
+
+
+def test_live_partner_alliance_cosell_repair_binds_graph_skills() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Regulated AWS Modernization | Partner Alliance Cosell"
+    )
+    fact_ids = [
+        "reb_ibm_aws_modernization_architecture",
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_unify_partner_channel_cosell",
+    ]
+    selected_fact_plan = {
+        "section_id": "headline",
+        "required_fact_ids": list(fact_ids),
+        "selected_claim_fact_ids": list(fact_ids),
+        "selected_required_fact_ids": list(fact_ids),
+        "facts": [
+            {
+                "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                "claim_text": "Distributed cloud and data execution infrastructure",
+                "graph_skill_node_ids": [
+                    "skill_sr_cloud_data_platform_engineering",
+                    "skill_dense_sparse_exact_retrieval_design",
+                ],
+            },
+            {
+                "fact_id": "reb_unify_partner_channel_cosell",
+                "claim_text": "AI Partnerships, Co-Sell Channel & Alliance GTM",
+                "graph_skill_node_ids": [
+                    "skill_partner_partner_motions",
+                    "skill_partner_co_selling",
+                    "skill_partner_cloud_vendor_joint_gtm",
+                ],
+            },
+            {
+                "fact_id": "reb_ibm_aws_modernization_architecture",
+                "claim_text": (
+                    "Led AWS modernization architecture for regulated financial-services "
+                    "workloads moving from on-prem constraints to cloud-native delivery patterns"
+                ),
+                "graph_skill_node_ids": [
+                    "skill_p2_tech_aws_modernization_patterns",
+                    "skill_p2_tech_reference_architecture",
+                ],
+            },
+        ],
+        "selected_skills": [
+            {
+                "skill_id": "skill_partner_co_selling",
+                "role_episode_bundle_id": "reb_unify_partner_channel_cosell",
+            }
+        ],
+    }
+    parsed = {
+        "headline_line": hl,
+        "selected_fact_plan": selected_fact_plan,
+        "claim_ledger": _segment_claim_ledger(hl, fact_ids),
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "t",
+            "anti_stuffing_check": "passed",
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+    runtime_payload = {
+        "target_company": "",
+        "selected_fact_plan": selected_fact_plan,
+    }
+
+    out = normalize_parsed_output(parsed, runtime_payload, set(fact_ids), hl)
+
+    assert out is not None
+    assert out["headline_line"] == (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Regulated AWS Modernization | Co-Sell Channel Alliance"
+    )
+    lineage = next(
+        row
+        for row in out["change_log"]
+        if isinstance(row, dict) and row.get("operation") == "headline_graph_skill_lineage_binding"
+    )
+    assert "skill_partner_co_selling" in lineage["graph_skill_node_ids"]
+    assert "reb_unify_partner_channel_cosell" in lineage["source_fact_ids"]
+
+    fact_text = {
+        fact["fact_id"]: fact["claim_text"]
+        for fact in selected_fact_plan["facts"]
+        if isinstance(fact, dict)
+    }
+    ok, _observed, failure = check_headline_xyz_literal_grounding(
+        headline_line=out["headline_line"],
+        claim_ledger=out["claim_ledger"],
+        fact_id_to_text=fact_text,
+    )
+    assert ok is True, failure
+
+    from apps_rg.runtime.validators.headline_positioning_x2 import run_headline_positioning_x2_gates
+
+    positioning_gates = {
+        g.gate_id: g
+        for g in run_headline_positioning_x2_gates(
+            headline_line=out["headline_line"],
+            parsed_output=out,
+            proof_pool_metadata={
+                "headline_positioning_bundle_consumption": True,
+                "headline_positioning_bundles": [
+                    {
+                        "headline_positioning_bundle_id": "hpb_dummy",
+                        "linked_source_fact_ids": ["fact_dummy"],
+                        "graph_skill_node_ids": ["skill_dummy"],
+                    }
+                ],
+            },
+            jd_text="enterprise platform delivery",
+        )
+    }
+    assert positioning_gates["x2_headline_graph_skill_node_ids_required"].passed
+    assert positioning_gates["x2_headline_source_fact_or_graph_lineage_required"].passed

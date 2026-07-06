@@ -19,6 +19,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
+    check_exec_summary_robotic_transition_stack,
     check_exec_summary_sentence_count_6,
     collect_unused_allowed_fact_ids,
 )
@@ -316,7 +317,7 @@ def build_deterministic_gate_summary(
     """Pre-judge X2 gate snapshot aligned with live product-shape gates (exactly six sentences, max 140 words)."""
     sent_ok, sent_reason = check_exec_summary_sentence_count_6(resume_display_text)
     cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
-    mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(resume_display_text)
+    mechanism_ok, mechanism_reason = check_exec_summary_no_mechanism_inventory(resume_display_text)
     bounds_ok, bounds_reason = check_exec_summary_paragraph_max_words(
         resume_display_text, parsed_output
     )
@@ -327,7 +328,8 @@ def build_deterministic_gate_summary(
     from apps_rg.runtime.validators.executive_summary_x2 import check_synthesis_quality
 
     synthesis_ok, synthesis_reason = check_synthesis_quality(resume_display_text)
-    mech_ok, mech_reason = check_exec_summary_mechanical_opener_stack(resume_display_text)
+    opener_ok, opener_reason = check_exec_summary_mechanical_opener_stack(resume_display_text)
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(resume_display_text)
     orphan_ok, orphan_reason = check_claim_ledger_orphan_source_ids(claim_ledger, allowed_fact_ids)
     parse_ok = bool(parsed_output) and not (parsed_output or {}).get("parse_error")
     ledger_nonempty = all(
@@ -347,8 +349,8 @@ def build_deterministic_gate_summary(
             "detail": cred_reason or "ok",
         },
         "x2_exec_summary_no_mechanism_inventory": {
-            "pass": mech_ok,
-            "detail": mech_reason or "ok",
+            "pass": mechanism_ok,
+            "detail": mechanism_reason or "ok",
         },
         "x2_exec_summary_meta_filler_zero": {
             "pass": meta_ok,
@@ -363,8 +365,12 @@ def build_deterministic_gate_summary(
             "detail": synthesis_reason or "ok",
         },
         "x2_exec_summary_mechanical_opener_stack_zero": {
-            "pass": mech_ok,
-            "detail": mech_reason or "ok",
+            "pass": opener_ok,
+            "detail": opener_reason or "ok",
+        },
+        "x2_exec_summary_robotic_transition_stack_zero": {
+            "pass": transition_ok,
+            "detail": transition_reason or "ok",
         },
         "x2_schema_valid": {"pass": parse_ok, "detail": "parsed_output_present" if parse_ok else "parse_missing"},
         "x2_json_parse_valid": {"pass": parse_ok, "detail": "ok" if parse_ok else "json_parse_failed"},

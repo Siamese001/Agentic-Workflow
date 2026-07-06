@@ -308,6 +308,19 @@ EXEC_SUMMARY_MECHANICAL_OPENERS = (
     "scaled",
 )
 
+# Judge-visible robotic transitions. These are not forbidden individually; they
+# fail only when stacked through the S2-S5 body cadence.
+EXEC_SUMMARY_ROBOTIC_TRANSITION_PREFIXES = (
+    "through that",
+    "that operating foundation",
+    "that migration discipline",
+    "building on that",
+    "with that governance",
+    "from that",
+    "against that",
+    "complementing that",
+)
+
 # Phrases that must have direct source support
 SOURCE_SENSITIVE_PHRASES = [
     "regulated enterprise workflows",
@@ -489,6 +502,31 @@ def check_exec_summary_mechanical_opener_stack(
     return True, None
 
 
+def check_exec_summary_robotic_transition_stack(
+    text: str,
+    *,
+    min_hits: int = 3,
+) -> tuple[bool, str | None]:
+    """Fail stacked synthetic bridge openers in S2-S5."""
+    sentences = split_sentences(text)
+    if len(sentences) < min_hits:
+        return True, None
+    body = sentences[1:5] if len(sentences) >= 6 else sentences[1:]
+    matched: list[str] = []
+    for sentence in body:
+        low = sentence.strip().lower()
+        for prefix in EXEC_SUMMARY_ROBOTIC_TRANSITION_PREFIXES:
+            if low.startswith(prefix):
+                matched.append(prefix)
+                break
+    if len(matched) >= min_hits:
+        return (
+            False,
+            f"robotic_transition_stack:{len(matched)}_in_s2_s5_matched={','.join(matched)}",
+        )
+    return True, None
+
+
 def _source_fact_base_id(fid: str) -> str:
     s = str(fid or "").strip()
     if "_metric_" in s:
@@ -540,6 +578,16 @@ def check_cross_fact_display_conflation(
     for row in claim_ledger:
         if not isinstance(row, dict):
             continue
+        source_ids = [
+            _source_fact_base_id(str(x))
+            for x in (row.get("source_fact_ids") or [])
+            if str(x or "").strip()
+        ]
+        if len(dict.fromkeys(source_ids)) > 3:
+            return (
+                False,
+                "cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence",
+            )
         bases = {_source_fact_base_id(str(x)) for x in (row.get("source_fact_ids") or [])}
         if bases & gov_ids and bases & plat_ids:
             ct = str(row.get("claim_text") or "")
@@ -628,6 +676,10 @@ def check_synthesis_quality(text: str) -> tuple[bool, str | None]:
     mech_ok, mech_reason = check_exec_summary_mechanical_opener_stack(text)
     if not mech_ok and mech_reason:
         return False, mech_reason
+
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(text)
+    if not transition_ok and transition_reason:
+        return False, transition_reason
 
     if len(sentences) >= 4:
         short_action_sentences = 0
@@ -2734,6 +2786,14 @@ def run_x2_gates(
         mech_stack_reason or "ok",
         None,
         mech_stack_reason,
+    )
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(resume_display_text)
+    add(
+        "x2_exec_summary_robotic_transition_stack_zero",
+        transition_ok,
+        transition_reason or "ok",
+        "no_three_stock_that_transitions_in_s2_s5",
+        transition_reason,
     )
     if strategy_lane:
         stock_ok, stock_reason = check_exec_summary_stock_bridge_count(

@@ -299,6 +299,31 @@ PROVIDERS = {
     },
 }
 
+_ARTIFACT_PROVIDER_FILENAME_ALIASES = {
+    "gemini_pro": "gemini",
+    "openai_chatgpt": "openai",
+    "anthropic_claude": "claude",
+}
+
+
+def _filesystem_path(path: Path) -> str:
+    """Return a local filesystem path safe for long Windows artifact names."""
+    if os.name != "nt":
+        return str(path)
+    try:
+        absolute = str(path.resolve(strict=False))
+    except OSError:
+        absolute = str(path.absolute())
+    if absolute.startswith("\\\\?\\"):
+        return absolute
+    if absolute.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + absolute.lstrip("\\")
+    return "\\\\?\\" + absolute
+
+
+def _ensure_dir(path: Path) -> None:
+    Path(_filesystem_path(path)).mkdir(parents=True, exist_ok=True)
+
 
 def _policy_model_name(provider_key: str, section_id: str, fallback: str = "unknown") -> str:
     """Return the section policy model name for evidence-only blocked/mocked rows."""
@@ -358,13 +383,15 @@ def _artifact_path(
         base = artifact_base
     else:
         base = Path("artifacts/apps_rg/runtime_proofs/executive_summary")
-    base.mkdir(parents=True, exist_ok=True)
-    return base / f"x1d_{provider_key}_{suffix}_{ts}.json"
+    _ensure_dir(base)
+    leaf_provider = _ARTIFACT_PROVIDER_FILENAME_ALIASES.get(provider_key, provider_key)
+    return base / f"x1d_{leaf_provider}_{suffix}_{ts}.json"
 
 
 def _write_artifact(path: Path, data: Any) -> str:
     """Write artifact and return path string."""
-    with open(path, "w", encoding="utf-8") as f:
+    _ensure_dir(path.parent)
+    with open(_filesystem_path(path), "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False, default=str)
     return str(path)
 

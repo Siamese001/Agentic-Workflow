@@ -52,6 +52,7 @@ from apps_rg.runtime.run_output_contract import (
     LEGACY_BCG_EXECUTIVE_OUTPUT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
+from apps_rg.runtime.full_run_section_status import FINAL_AGGREGATION_LANE
 from apps_rg.runtime.section_display_labels import summary_section_label
 
 # ----------------------------------------------------------------- read helpers
@@ -400,10 +401,30 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
                 f"| **{label}** | `{art.get('relpath') or '—'}` | `{exists}` | {int(art.get('bytes') or 0)} |"
             )
         failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+        failed_aggregation: list[str] = []
+        for section in ledger.get("sections") or []:
+            if not isinstance(section, dict):
+                continue
+            if str(section.get("section") or "") != FINAL_AGGREGATION_LANE:
+                continue
+            failed_aggregation = [
+                str(gate.get("gate_id") or "unknown_gate")
+                for gate in section.get("failed_gates") or []
+                if isinstance(gate, dict)
+            ]
+            break
         lines.append("")
         lines.append(
-            "Final resume failed gates: "
+            "Final resume output failed gates: "
             + ("`" + "`, `".join(str(g) for g in failed_final) + "`" if failed_final else "`none`")
+        )
+        lines.append(
+            "Final resume aggregation failed gates: "
+            + (
+                "`" + "`, `".join(str(g) for g in failed_aggregation) + "`"
+                if failed_aggregation
+                else "`none`"
+            )
         )
     lane_table = ledger.get("section_lane_table") if isinstance(ledger.get("section_lane_table"), list) else []
     lines.append("")

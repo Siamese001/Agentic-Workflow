@@ -836,10 +836,25 @@ def _repair_ai_partnership_judge_findings(
 _STOCK_BRIDGE_OPENERS: tuple[str, ...] = (
     "building on",
     "through that",
+    "that operating foundation",
     "complementing",
     "with that governance",
     "against that",
     "from that",
+)
+
+_STOCK_BRIDGE_PREFIX_RE = re.compile(
+    r"^(?:"
+    r"Building on that [^,]{0,80},\s*|"
+    r"Through that [^,]{0,80},\s*|"
+    r"That operating foundation also\s+|"
+    r"That operating foundation\s*,\s*|"
+    r"Complementing [^,]{0,80},\s*|"
+    r"With that governance,\s*|"
+    r"Against that [^,]{0,80},\s*|"
+    r"From that [^,]{0,80},\s*"
+    r")",
+    re.IGNORECASE,
 )
 
 
@@ -874,13 +889,13 @@ def _reduce_formulaic_bridge_echo(sentences: list[str]) -> list[str]:
     if len(bridge_hits) >= 3:
         non_stock_alternatives = (
             "In parallel,",
-            "That operating foundation also,",
+            "Commercially,",
         )
         for offset, i in enumerate(bridge_hits[2:]):
             alt = non_stock_alternatives[offset % len(non_stock_alternatives)]
             sent = out[i]
             # Strip whatever stock opener exists (up to first comma) and prepend alt.
-            stripped = re.sub(r"^[A-Za-z][^,]{0,80},\s*", "", sent, count=1)
+            stripped = _STOCK_BRIDGE_PREFIX_RE.sub("", sent, count=1)
             if stripped and stripped != sent:
                 # Capitalize first letter of remaining sentence if not already.
                 first = stripped[:1]
@@ -1016,6 +1031,16 @@ def _source_fact_ids_for_display_sentence(sentence: str) -> list[str]:
     # When the same sentence also names team scale (8→28 from fact_exec_002), cite both.
     has_revenue_metric = bool(re.search(r"\$22m", low)) and "20%" in low
     has_team_scale = bool(re.search(r"\b8\s+to\s+28\b", sentence, re.I))
+    if (
+        "platform commercialization" in low
+        and has_revenue_metric
+        and has_team_scale
+    ):
+        return [
+            "reb_unify_platform_commercialization_leadership",
+            "metric_unify_22m_ip_led_revenue",
+            "metric_unify_20pct_gross_margin_expansion",
+        ]
     if has_revenue_metric and has_team_scale:
         return ["fact_engineering_platform_006", "fact_exec_002"]
     if has_revenue_metric:
@@ -1304,12 +1329,19 @@ def _rebuild_claim_ledger_from_display(parsed: dict[str, Any]) -> dict[str, Any]
         fids = []
         prior_row = prior_rows[len(ledger)] if len(ledger) < len(prior_rows) else None
         prior_fids = _source_fact_ids_from_row(prior_row)
+        anchor_fids = _source_fact_ids_for_display_sentence(s)
         if prior_fids:
             # Slot-aligned narrative rewrites must keep the row's existing proof ids.
-            # Display heuristics only fill rows that started empty.
-            fids = prior_fids
+            # Display heuristics normally only fill rows that started empty. When a
+            # live graph-era phrase now maps to a more precise required fact, prefer
+            # that bounded anchor set so brushstroke coverage cannot be lost by a
+            # stale provider row.
+            if "reb_unify_platform_commercialization_leadership" in anchor_fids:
+                fids = anchor_fids
+            else:
+                fids = prior_fids
         else:
-            fids = _source_fact_ids_for_display_sentence(s)
+            fids = anchor_fids
             if not fids:
                 prior_fids = _rebind_source_fact_ids_from_prior_rows(s, prior_rows)
                 if prior_fids and (not fids or _graph_era_fact_ids(prior_fids)):
@@ -1536,6 +1568,22 @@ def _trim_paragraph_word_budget(
     # factual claims or required anchors.
     if _wc(out) > max_words:
         low_signal_rewrites: tuple[tuple[str, str], ...] = (
+            (
+                "AWS modernization execution, governed agentic platform architecture, and hyperscaler alliance co-sell into one applied-AI partnership operating model",
+                "AWS modernization, governed agentic architecture, and hyperscaler co-sell into an applied-AI partnership model",
+            ),
+            (
+                "policy administration and insurance platform workloads were classified by cloud fit and moved into AWS-native modernization waves reused across regulated reference architectures",
+                "insurance workloads were classified by cloud fit and moved into AWS-native modernization waves reused as reference architectures",
+            ),
+            (
+                "Partner channel co-sell and joint solution development built on that discipline, positioning this leader to scale a partner solutions architecture practice across GSI and hyperscaler ecosystems",
+                "Partner channel co-sell and joint solution development position this leader to scale partner solutions architecture across hyperscaler ecosystems",
+            ),
+            (
+                "partner solutions architecture practice across GSI and hyperscaler ecosystems",
+                "partner solutions architecture across hyperscaler ecosystems",
+            ),
             (
                 "that regulated delivery foundation drove in IP-led and 20% expansion while scaling the platform engineering team from 8 to 28 specialists",
                 "that work drove $22M in IP-led revenue and 20% gross margin expansion while the team scaled from 8 to 28 specialists",

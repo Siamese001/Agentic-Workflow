@@ -11,7 +11,11 @@ from apps_rg.runtime.assembly.full_resume_llm_coherence import (
     emit_full_resume_llm_coherence_review,
     run_full_resume_coherence_judges,
 )
-from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
+from apps_rg.runtime.judges.executive_summary_x1d import (
+    JudgeOutput,
+    _filesystem_path,
+    _write_artifact,
+)
 
 
 def _judge(*, key: str, pass_: bool, blocked: bool = False, mocked: bool = False) -> JudgeOutput:
@@ -101,6 +105,128 @@ def test_duplicate_certifications_in_competencies_fails_deterministic_blocker(tm
     assert any("credential" in b for b in review["blockers"])
     gate = gate_x2_full_resume_llm_coherence_aggregation(review, required=True)
     assert gate.pass_ is False
+
+
+def test_locked_experience_credential_is_not_competencies_duplication(tmp_path: Path):
+    final = {
+        "final_resume_hash": "f00d",
+        "candidate_identity": {"candidate_name": "Test", "header_contact": {}},
+        "sections": [
+            {
+                "section_id": "headline",
+                "assemble_order": 1,
+                "l2_output_snapshot": {"headline_line": "SVP Engineering | Agentic AI Platforms"},
+            },
+            {
+                "section_id": "executive_summary",
+                "assemble_order": 2,
+                "l2_output_snapshot": {
+                    "resume_display_text": "Executive leader building governed AI platforms."
+                },
+            },
+            {
+                "section_id": "competencies",
+                "assemble_order": 3,
+                "l2_output_snapshot": {
+                    "competencies": [
+                        {
+                            "category_label": "AI Platform Architecture",
+                            "terms": [
+                                {"text": "runtime governance", "source_fact_id": "f1"},
+                                {"text": "multi-agent orchestration", "source_fact_id": "f1"},
+                            ],
+                            "source_fact_ids": ["f1"],
+                        }
+                    ]
+                },
+            },
+            {
+                "section_id": "early_career",
+                "assemble_order": 12,
+                "copied_text_exact": json.dumps(
+                    {
+                        "employer": "Early Career Roles",
+                        "title": "Actuarial Consultant and Quantitative Roles",
+                        "location": "Philadelphia, PA",
+                        "start_date": "2002-10",
+                        "end_date": "2009-09",
+                        "bullets": [
+                            {
+                                "text": (
+                                    "As a Fellow of the Society of Actuaries (FSA), "
+                                    "priced derivatives and built stochastic capital models."
+                                )
+                            }
+                        ],
+                    }
+                ),
+            },
+            {
+                "section_id": "education",
+                "assemble_order": 13,
+                "copied_text_exact": json.dumps([]),
+            },
+            {
+                "section_id": "certifications",
+                "assemble_order": 14,
+                "copied_text_exact": json.dumps([{"name": "Fellow of the Society of Actuaries"}]),
+            },
+        ],
+    }
+    review = emit_full_resume_llm_coherence_review(
+        final_resume=final,
+        final_resume_path=tmp_path / "final_resume.json",
+        output_dir=tmp_path / "review",
+        mode="mocked",
+    )
+
+    assert not any("credential_name_in_competencies_block" in b for b in review["blockers"])
+
+
+def test_provider_artifact_write_recreates_missing_parent(tmp_path: Path):
+    artifact = tmp_path / "missing" / "x1d_provider_request.json"
+
+    written = _write_artifact(artifact, {"ok": True})
+
+    assert Path(written).is_file()
+    assert json.loads(artifact.read_text(encoding="utf-8")) == {"ok": True}
+
+
+def test_provider_artifact_write_handles_long_windows_path(tmp_path: Path):
+    base = tmp_path
+    filename = "x1d_gemini_provider_request_20260705_185523_857.json"
+    while len(str((base / filename).resolve(strict=False))) <= 260:
+        base = base / f"deep_segment_{len(base.parts):02d}"
+    artifact = base / filename
+
+    written = _write_artifact(artifact, {"ok": True})
+
+    assert json.loads(Path(_filesystem_path(Path(written))).read_text(encoding="utf-8")) == {"ok": True}
+
+
+def test_full_resume_coherence_judge_request_artifact_survives_long_run_root(
+    monkeypatch,
+    tmp_path: Path,
+):
+    base = tmp_path
+    filename = "x1d_gemini_provider_request_20260705_185523_857.json"
+    while len(str((base / filename).resolve(strict=False))) <= 260:
+        base = base / f"deep_segment_{len(base.parts):02d}"
+    artifact_base = base / "coherence_judge_providers"
+    monkeypatch.setenv("GOOGLE_API_KEY", "AIzaSyFakeSecret01234567890123456789012")
+
+    judges = run_full_resume_coherence_judges(
+        full_resume_text="SVP agentic AI platform engineering resume.",
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        judge_roster=["gemini_pro"],
+        artifact_base=artifact_base,
+    )
+
+    assert judges[0].provider_status == "NETWORK_TESTS_NOT_ENABLED"
+    assert "No such file or directory" not in str(judges[0].exact_provider_error)
+    request_artifacts = sorted(Path(_filesystem_path(artifact_base)).glob("*provider_request*.json"))
+    assert request_artifacts
 
 
 def test_strong_resume_passes_deterministic_preflight_when_judges_pass(tmp_path: Path):

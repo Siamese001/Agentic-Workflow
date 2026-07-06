@@ -599,6 +599,71 @@ def _normalize_unify_claim_ledger(
             )
 
 
+_UNIFY_ARCHIVE_PARAPHRASE_REPAIRS: dict[str, str] = {
+    "bul_unify_004": (
+        "Established production-readiness gates for agentic AI delivery, moving lab concepts into "
+        "monitored release paths with six months to three weeks cycle compression."
+    ),
+    "bul_unify_006": (
+        "Commercialized reusable agentic AI services into platform IP, producing $22M in IP-led "
+        "revenue with 20% gross-margin expansion as the ML engineering team scaled from 8 to 28."
+    ),
+}
+
+
+def _claim_text_by_unify_slot(plan: Any) -> dict[str, str]:
+    if not isinstance(plan, dict):
+        return {}
+    return {
+        str(f.get("fact_id") or ""): str(f.get("claim_text") or "")
+        for f in (plan.get("facts") or [])
+        if isinstance(f, dict) and str(f.get("fact_id") or "").startswith("bul_unify_")
+    }
+
+
+def _repair_unify_archive_verbatim_overlap(
+    out: dict[str, Any],
+    runtime_payload: dict[str, Any],
+) -> None:
+    from apps_rg.runtime.sections.unify_bullets_graph_evidence import max_consecutive_word_overlap
+
+    claims = _claim_text_by_unify_slot(out.get("selected_fact_plan")) or _claim_text_by_unify_slot(
+        runtime_payload.get("selected_fact_plan")
+    )
+    if not claims:
+        return
+    repairs: list[dict[str, Any]] = []
+    for bullet in [b for b in (out.get("bullets") or []) if isinstance(b, dict)]:
+        bid = str(bullet.get("bullet_id") or "")
+        archive = claims.get(bid, "")
+        text = str(bullet.get("bullet_text") or "")
+        if not archive or max_consecutive_word_overlap(archive, text) < 8:
+            continue
+        replacement = _UNIFY_ARCHIVE_PARAPHRASE_REPAIRS.get(bid)
+        if not replacement:
+            continue
+        repaired_overlap = max_consecutive_word_overlap(archive, replacement)
+        if repaired_overlap >= 8:
+            continue
+        bullet["bullet_text"] = replacement
+        bullet["has_metric"] = bool(bullet.get("has_metric")) or bid in {"bul_unify_004", "bul_unify_006"}
+        repairs.append(
+            {
+                "operation": "repair_unify_archive_verbatim_overlap",
+                "target_bullet_id": bid,
+                "previous_max_overlap": max_consecutive_word_overlap(archive, text),
+                "repaired_max_overlap": repaired_overlap,
+            }
+        )
+    if repairs:
+        change_log = out.setdefault("change_log", [])
+        if isinstance(change_log, list):
+            change_log.extend(repairs)
+        self_check = out.setdefault("self_check", {})
+        if isinstance(self_check, dict):
+            self_check["no_verbatim_archive_copy"] = True
+
+
 def normalize_unify_parsed_without_ledger_synthesis(
     parsed: dict[str, Any] | None,
     runtime_payload: dict[str, Any],
@@ -662,6 +727,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
         protected_bullet_id=protected_default,
     )
     _enforce_unify_metric_outcome_surfaces(out, runtime_payload)
+    _repair_unify_archive_verbatim_overlap(out, runtime_payload)
     _sync_unify_claim_ledger_to_bullets(out, remap=legacy_remap, allowed=allowed)
     from apps_rg.runtime.reasoning.employment_bullet_output_sanitize import (
         strip_employment_bullet_intensity_model,

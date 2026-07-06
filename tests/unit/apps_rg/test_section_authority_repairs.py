@@ -9,6 +9,8 @@ import pytest
 from apps_rg.runtime.sections.section_authority_repairs import (
     apply_exec_summary_display_authority_repairs,
     prune_competencies_rigor_failing_terms,
+    repair_exec_summary_cross_fact_conflation_rows,
+    repair_exec_summary_mechanism_inventory_sentences,
     repair_exec_summary_thin_sentence_weave,
     repair_exec_summary_orphan_rows_with_unused_required_facts,
     repair_required_brushstroke_citations_from_materialized_sentences,
@@ -18,6 +20,7 @@ from apps_rg.runtime.sections.section_authority_repairs import (
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
+    check_exec_summary_no_mechanism_inventory,
     check_exec_summary_meta_filler_patterns,
     check_exec_summary_paragraph_max_words,
     run_x2_gates,
@@ -215,6 +218,198 @@ def test_repair_exec_summary_thin_sentence_weave_updates_display_and_ledger() ->
     first = parsed["resume_display_text"].split(". ", 1)[0]
     assert "regulated enterprise operating models" in first.lower()
     assert parsed["claim_ledger"][0]["claim_text"] == first + "."
+
+
+def test_repair_exec_summary_mechanism_inventory_updates_display_and_ledger() -> None:
+    text = (
+        "An engineering and partnership executive directs cloud migration and modernization for regulated insurance and financial-services workloads, aligning insurer and regulatory adoption standards with delivery execution. "
+        "This leader architects a governed agentic AI control plane spanning distributed cloud and data infrastructure, deterministic routing, and policy-gated execution surfaces. "
+        "Alliance co-sell motions with AWS and IBM's modernization architecture convert on-prem constraints into cloud-native reference patterns reused across regulated client pursuits. "
+        "In parallel, decision-support data models and BI views connect those modernization programs directly to executive operating decisions, while regulator and NAIC data-security engagement keeps cloud adoption standards lineage-ready. "
+        "That same partner discipline extends into IBM-AWS joint go-to-market cadence, producing 20% joint revenue growth alongside AI-driven sales frameworks adopted across alliance teams. "
+        "This foundation positions the leader to scale partner-led AI solution architecture and enablement across cloud and GSI ecosystems for enterprise-wide adoption."
+    )
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim": "s1", "claim_text": "s1", "source_fact_ids": ["reb_insurtech_aws_migration_execution"]},
+            {
+                "claim": "s2",
+                "claim_text": "This leader architects a governed agentic AI control plane spanning distributed cloud and data infrastructure, deterministic routing, and policy-gated execution surfaces.",
+                "source_fact_ids": [
+                    "reb_unify_agentic_platform_architecture",
+                    "reb_unify_distributed_ecosystem_engineering",
+                ],
+            },
+            {"claim": "s3", "claim_text": "s3", "source_fact_ids": ["reb_ibm_aws_alliance_partner_cosell_gtm"]},
+            {"claim": "s4", "claim_text": "s4", "source_fact_ids": ["reb_ibm_data_modeling_bi_decision_support"]},
+            {"claim": "s5", "claim_text": "s5", "source_fact_ids": ["metric_ibm_20pct_joint_revenue_growth"]},
+            {"claim": "s6", "claim_text": "s6", "source_fact_ids": ["reb_unify_partner_channel_cosell"]},
+        ],
+        "change_log": [],
+    }
+
+    ok_before, reason_before = check_exec_summary_no_mechanism_inventory(text, parsed)
+    assert ok_before is False
+    assert reason_before is not None and "mechanism_inventory" in reason_before
+
+    repairs = repair_exec_summary_mechanism_inventory_sentences(parsed)
+
+    assert repairs
+    repaired_text = str(parsed["resume_display_text"])
+    ok_after, reason_after = check_exec_summary_no_mechanism_inventory(repaired_text, parsed)
+    assert ok_after is True, reason_after
+    assert "policy-gated" not in repaired_text
+    assert "deterministic" not in repaired_text
+    assert "route selection and governed execution surfaces" in repaired_text
+    assert parsed["claim_ledger"][1]["claim_text"].endswith(
+        "route selection and governed execution surfaces."
+    )
+
+
+def test_repair_exec_summary_mechanism_inventory_handles_live_route_selection_sentence() -> None:
+    live_sentence = (
+        "Deterministic route selection, graph-aware relationship grounding, and sandboxed execution "
+        "give agentic systems policy-gated, replayable runtime traceability across distributed cloud "
+        "and data infrastructure."
+    )
+    text = (
+        "Engineering leader who builds governed agentic AI platform architecture for regulated delivery. "
+        f"{live_sentence} "
+        "Alliance modernization work connected partner reference patterns to measured delivery outcomes."
+    )
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim": "s1", "claim_text": "s1", "source_fact_ids": ["reb_unify_agentic_platform_architecture"]},
+            {
+                "claim": "s2",
+                "claim_text": live_sentence,
+                "source_fact_ids": [
+                    "reb_unify_agentic_platform_architecture",
+                    "reb_unify_distributed_ecosystem_engineering",
+                ],
+            },
+            {"claim": "s3", "claim_text": "s3", "source_fact_ids": ["reb_ibm_aws_alliance_partner_cosell_gtm"]},
+        ],
+        "change_log": [],
+    }
+
+    ok_before, reason_before = check_exec_summary_no_mechanism_inventory(text, parsed)
+    assert ok_before is False
+    assert reason_before is not None and "mechanism_inventory:4_terms" in reason_before
+
+    repairs = repair_exec_summary_mechanism_inventory_sentences(parsed)
+
+    assert repairs
+    repaired_text = str(parsed["resume_display_text"])
+    ok_after, reason_after = check_exec_summary_no_mechanism_inventory(repaired_text, parsed)
+    assert ok_after is True, reason_after
+    assert "Deterministic" not in repaired_text
+    assert "sandboxed" not in repaired_text
+    assert "policy-gated" not in repaired_text
+    assert "replayable" not in repaired_text
+    assert "relationship-aware grounding" in repaired_text
+    assert "auditable runtime traceability" in repaired_text
+    assert parsed["claim_ledger"][1]["claim_text"] in repaired_text
+
+
+def test_repair_exec_summary_cross_fact_conflation_compacts_live_alliance_row() -> None:
+    text = (
+        "Enterprise technology executive aligning AWS modernization, governed agentic architecture, and hyperscaler co-sell into an applied-AI partnership model for regulated enterprises. "
+        "Insurance workloads were classified by cloud fit and moved into AWS-native modernization waves reused as reference architectures. "
+        "The governed agentic platform control plane pairs route selection with controlled execution and auditable runtime traceability. "
+        "Insurer and regulatory cloud-adoption standards were engaged directly through NAIC readiness across multiple regulatory bodies. "
+        "IBM-AWS alliance co-sell motions built on reusable offering accelerators and joint solution development, producing a 20% joint-revenue growth cadence. "
+        "Partner channel co-sell and joint solution development position this leader to scale partner solutions architecture across hyperscaler ecosystems."
+    )
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim_text": "s1", "source_fact_ids": ["reb_insurtech_aws_migration_execution"]},
+            {
+                "claim_text": "s2",
+                "source_fact_ids": [
+                    "reb_insurtech_aws_migration_execution",
+                    "metric_insurtech_workloads_classified_by_cloud_fit_count",
+                    "metric_ibm_onprem_to_aws_modernization_waves",
+                    "metric_ibm_regulated_reference_architecture_reuse",
+                ],
+            },
+            {"claim_text": "s3", "source_fact_ids": ["reb_unify_agentic_platform_architecture"]},
+            {"claim_text": "s4", "source_fact_ids": ["reb_insurtech_insurance_regulatory_cloud_adoption_standards"]},
+            {
+                "claim_text": "s5",
+                "source_fact_ids": [
+                    "reb_ibm_aws_alliance_partner_cosell_gtm",
+                    "metric_ibm_20pct_joint_revenue_growth",
+                    "reb_ibm_offering_accelerator_management",
+                    "skill_partner_joint_solution_development",
+                    "metric_ibm_ai_driven_sales_frameworks",
+                ],
+            },
+            {"claim_text": "s6", "source_fact_ids": ["reb_unify_partner_channel_cosell"]},
+        ],
+        "change_log": [],
+    }
+
+    repairs = repair_exec_summary_cross_fact_conflation_rows(parsed)
+
+    assert repairs
+    assert all(
+        len(row.get("source_fact_ids") or []) <= 3
+        for row in parsed["claim_ledger"]
+    )
+    assert any(
+        c.get("operation") == "repair_exec_summary_cross_fact_conflation_row"
+        for c in parsed.get("change_log") or []
+    )
+
+
+def test_apply_authority_repairs_compacts_mechanism_inventory_before_x2() -> None:
+    text = (
+        "An engineering and partnership executive directs cloud migration and modernization for regulated insurance and financial-services workloads, aligning insurer and regulatory adoption standards with delivery execution. "
+        "This leader architects a governed agentic AI control plane spanning distributed cloud and data infrastructure, deterministic routing, and policy-gated execution surfaces. "
+        "Alliance co-sell motions with AWS and IBM's modernization architecture convert on-prem constraints into cloud-native reference patterns reused across regulated client pursuits. "
+        "In parallel, decision-support data models and BI views connect those modernization programs directly to executive operating decisions, while regulator and NAIC data-security engagement keeps cloud adoption standards lineage-ready. "
+        "That same partner discipline extends into IBM-AWS joint go-to-market cadence, producing 20% joint revenue growth alongside AI-driven sales frameworks adopted across alliance teams. "
+        "This foundation positions the leader to scale partner-led AI solution architecture and enablement across cloud and GSI ecosystems for enterprise-wide adoption."
+    )
+    facts = [
+        {"fact_id": "reb_insurtech_aws_migration_execution", "claim_text": "Led AWS modernization execution for insurance platform workloads."},
+        {"fact_id": "reb_unify_agentic_platform_architecture", "claim_text": "Architected governed agentic AI control-plane architecture."},
+        {"fact_id": "reb_unify_distributed_ecosystem_engineering", "claim_text": "Distributed cloud and data execution infrastructure."},
+        {"fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm", "claim_text": "IBM-AWS alliance co-sell motions."},
+        {"fact_id": "reb_ibm_data_modeling_bi_decision_support", "claim_text": "Decision-support data models and BI views."},
+        {"fact_id": "metric_ibm_20pct_joint_revenue_growth", "claim_text": "20% joint revenue growth."},
+        {"fact_id": "reb_unify_partner_channel_cosell", "claim_text": "Partner channel co-sell foundation."},
+    ]
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {"claim": "s1", "claim_text": "s1", "source_fact_ids": ["reb_insurtech_aws_migration_execution"]},
+            {"claim": "s2", "claim_text": "s2", "source_fact_ids": ["reb_unify_agentic_platform_architecture", "reb_unify_distributed_ecosystem_engineering"]},
+            {"claim": "s3", "claim_text": "s3", "source_fact_ids": ["reb_ibm_aws_alliance_partner_cosell_gtm"]},
+            {"claim": "s4", "claim_text": "s4", "source_fact_ids": ["reb_ibm_data_modeling_bi_decision_support"]},
+            {"claim": "s5", "claim_text": "s5", "source_fact_ids": ["metric_ibm_20pct_joint_revenue_growth"]},
+            {"claim": "s6", "claim_text": "s6", "source_fact_ids": ["reb_unify_partner_channel_cosell"]},
+        ],
+        "selected_fact_plan": {"facts": facts},
+        "change_log": [],
+    }
+
+    out = apply_exec_summary_display_authority_repairs(
+        parsed,
+        allowed_fact_ids={f["fact_id"] for f in facts},
+        plan_facts=facts,
+    )
+
+    ok, reason = check_exec_summary_no_mechanism_inventory(str(out["resume_display_text"]), out)
+    assert ok is True, reason
+    assert any(
+        c.get("operation") == "repair_exec_summary_mechanism_inventory_sentence"
+        for c in out.get("change_log") or []
+    )
 
 
 def test_strip_credential_dump_removes_cert_sentence():
