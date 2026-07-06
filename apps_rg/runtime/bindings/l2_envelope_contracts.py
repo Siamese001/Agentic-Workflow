@@ -89,6 +89,52 @@ class DeterminismBundle:
 
 
 @dataclass(frozen=True)
+class AppsRgL2ExecutionPacket:
+    request_id: str
+    run_id: str
+    trace_id: str
+    route_id: str
+    workflow_id: str = ""
+    node_id: str = ""
+    step_id: str = ""
+    capability_token: str = ""
+    sandbox_envelope: str = ""
+    policy_hash: str = ""
+    blueprint_hash: str = ""
+    prompt_hash: str = ""
+    replay_key: str = ""
+    attempt_seed: str = ""
+    registry_digest_set: tuple[str, ...] = ()
+    compiled_prompt_artifact_ref: str = ""
+    final_evidence_contract_ref: str = ""
+    side_effect_class: str = "READ"
+    budget: dict[str, Any] = field(default_factory=dict)
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "request_id": self.request_id,
+            "run_id": self.run_id,
+            "trace_id": self.trace_id,
+            "route_id": self.route_id,
+            "workflow_id": self.workflow_id,
+            "node_id": self.node_id,
+            "step_id": self.step_id,
+            "capability_token": self.capability_token,
+            "sandbox_envelope": self.sandbox_envelope,
+            "policy_hash": self.policy_hash,
+            "blueprint_hash": self.blueprint_hash,
+            "prompt_hash": self.prompt_hash,
+            "replay_key": self.replay_key,
+            "attempt_seed": self.attempt_seed,
+            "registry_digest_set": list(self.registry_digest_set),
+            "compiled_prompt_artifact_ref": self.compiled_prompt_artifact_ref,
+            "final_evidence_contract_ref": self.final_evidence_contract_ref,
+            "side_effect_class": self.side_effect_class,
+            "budget": dict(self.budget),
+        }
+
+
+@dataclass(frozen=True)
 class AttemptReceipt:
     attempt_receipt_id: str
     validation_packet_id: str
@@ -147,6 +193,23 @@ class HealReceipt:
 
     def routes_back_to_e3(self) -> bool:
         return self.outcome is HealOutcomeStamp.PASS
+
+
+@dataclass(frozen=True)
+class H0RepairContext:
+    repair_tactic: str
+    failed_reason: str
+    failed_error: str
+    instruction: str
+
+
+@dataclass(frozen=True)
+class RepairInvocationPatch:
+    stage: str
+    repair_count: int
+    repair_tactic: str
+    parent_attempt_receipt_id: str
+    h0_context: H0RepairContext
 
 
 @dataclass(frozen=True)
@@ -269,6 +332,7 @@ class ValidationOutput:
     validation_status: str
     approved_work_order: ApprovedWorkOrder | None = None
     sealed_rejection_packet: SealedRejectionPacket | None = None
+    gate_refs: tuple[str, ...] = ()
     authority_scope: str = L2_ENVELOPE_AUTHORITY_SCOPE
     canonical_l2_artifact_authority: bool = False
 
@@ -326,6 +390,7 @@ def is_repair_allowed(tactic: str) -> bool:
 
 __all__ = [
     "ApprovedWorkOrder",
+    "AppsRgL2ExecutionPacket",
     "AttemptReceipt",
     "BudgetSnapshot",
     "CANONICAL_L2_ARTIFACT_AUTHORITY_SCOPE",
@@ -336,11 +401,13 @@ __all__ = [
     "ExecutionForm",
     "ExecutionLane",
     "FrozenExecutionContext",
+    "H0RepairContext",
     "HealOutcomeStamp",
     "HealReceipt",
     "LineageRoot",
     "L2_ENVELOPE_AUTHORITY_SCOPE",
     "PrepOutput",
+    "RepairInvocationPatch",
     "RepairStatus",
     "ReplayBindings",
     "ResultClass",

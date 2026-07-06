@@ -1,8 +1,8 @@
-# ProceduralPattern:L2E4RealHealingPromptPacketRepair
+# ProceduralPattern:L2E4RepairAuthorityModes
 
-- L2 E4 healing is only real when the repaired prompt packet is consumed by the retry, not when E4 only emits a `HealReceipt`.
-- Package-driven L2 repair must return a modified `CompiledPromptArtifact` with H0 bounded repair context, changed prompt hash, and `HealReceipt.before_prompt_hash` / `after_prompt_hash` / `repaired_packet_ref`.
-- `apps_rg` E4 safe-local repairs must carry a `repair_patch`; `run_apps_rg_l2_envelope()` applies that patch to the active CPA before `RETURN_TO_E3` retries and seals E5 with the repaired packet.
-- Verify with `python -m pytest tests/unit/agentic_core/L2_execution/test_l2_package_driven_repair.py tests/_apps_contract/test_w6_l2_package_driven_execution.py tests/_apps_contract/test_apps_rg_l2_envelope.py::TestE4AllowedRepairs tests/unit/agentic_core/L2_execution/test_l2_v3_pipeline.py::TestHealLoop tests/unit/agentic_core/L2_execution/test_l2_two_phase_healer.py -q`.
-- Do not treat raw-text unwrap inside E3 or a standalone app E4 module as proof that active L2 E4 healing happened; prove the retry consumed a changed prompt packet.
-- discovered: 2026-07-01, validated: 2026-07-01
+- L2 E4 repair proof is mode-specific: generic package-driven L2 proves repair by consuming a changed prompt packet; `apps_rg` v4 envelope proves repair by consuming the same prompt text with a sealed repair receipt and retry audit ref.
+- Package-driven L2 repair may return a modified `CompiledPromptArtifact` with H0 bounded repair context, changed prompt hash, and `HealReceipt.before_prompt_hash` / `after_prompt_hash` / `repaired_packet_ref`.
+- `apps_rg` v4 envelope E4 must not mutate `user_instruction`, `prompt_blocks`, or `compilation_hash`; safe-local repairs carry `repair_patch.h0_context` plus `bounded_context`, append `l2_e4_repair:<id>` to retry CPA audit refs, and keep `HealReceipt.before_hash == after_hash`.
+- Verify apps_rg v4 envelope with `python -m pytest tests/_apps_contract/test_apps_rg_l2_envelope.py::TestE4AllowedRepairs tests/_apps_contract/test_apps_rg_l2_envelope.py::TestW7FailClosed tests/_apps_contract/test_apps_rg_governed_l2_exit_w6.py -q`.
+- Do not apply the package-driven prompt-mutation law to `run_apps_rg_l2_envelope()`; do not accept an apps_rg repair unless the retry consumes the audit-linked CPA and E5 seals the heal ref.
+- discovered: 2026-07-01, updated: 2026-07-05, validated: 2026-07-05
