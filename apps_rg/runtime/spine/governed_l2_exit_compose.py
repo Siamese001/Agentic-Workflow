@@ -30,12 +30,17 @@ def governed_l2_exit_enabled() -> bool:
 
 
 def _stamp_sealed_governed_marker(sealed: SealedL2Artifact) -> SealedL2Artifact:
-    from dataclasses import replace
-
     refs = tuple(getattr(sealed, "gate_verdict_refs", ()) or ())
     if GOVERNED_EXIT_SPINE_MARKER in refs:
         return sealed
-    return replace(sealed, gate_verdict_refs=refs + (GOVERNED_EXIT_SPINE_MARKER,))
+    updated_refs = refs + (GOVERNED_EXIT_SPINE_MARKER,)
+    try:
+        object.__setattr__(sealed, "gate_verdict_refs", updated_refs)
+        return sealed
+    except (AttributeError, TypeError):
+        from dataclasses import replace
+
+        return replace(sealed, gate_verdict_refs=updated_refs)
 
 
 def governed_l2_seal_integrated(prompt: CompiledPromptArtifact) -> SealedL2Artifact:

@@ -16,14 +16,14 @@ C. Provider governance (AST scan for private calls, direct SDK/HTTP)
 D. Boundary checks (AST scan for unauthorized executable references)
 E. Mutation law (execute tests + AST inspection for state invariants)
 F. Core purity (deterministic agentic_core diff check with allowlist)
-G. Feature flag bridge (env var, legacy path, type validation)
+G. Feature flag bridge (env var, explicit dev legacy override, type validation)
 
 Exit codes:
-  0 = all checks PASS, or advisory mode with failures logged (default)
-  1 = one or more checks FAIL and ``APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1``
+  0 = all checks PASS, or advisory mode with failures logged
+  1 = one or more checks FAIL (default fail-closed behavior)
 
 Environment:
-  APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 — exit 1 when any check FAIL (default is advisory exit 0).
+  APPS_RG_L2_V4_ENVELOPE_ADVISORY=1 — exit 0 when failures are logged for local diagnostics.
 """
 
 import ast
@@ -41,6 +41,11 @@ GATE_VERSION = "W8.2-HARDENED-AST"
 REPO_ROOT = Path(__file__).parent.parent.parent.resolve()
 APPS_RG_PATH = REPO_ROOT / "apps_rg"
 TEST_FILE = REPO_ROOT / "tests" / "_apps_contract" / "test_apps_rg_l2_envelope.py"
+GOVERNED_EXIT_TEST_FILE = REPO_ROOT / "tests" / "_apps_contract" / "test_apps_rg_governed_l2_exit_w6.py"
+COLLECT_ONLY_TARGETS = (
+    TEST_FILE,
+    GOVERNED_EXIT_TEST_FILE,
+)
 
 # Hard-fail scope: L2 v4 envelope files only
 HARD_FAIL_FILES = [
@@ -215,13 +220,16 @@ def check_b_collect_only() -> dict:
     
     results = {"pass": True, "details": []}
     
-    # B1: pytest collect-only for entire _apps_contract directory
-    exit_code, stdout, stderr = run_command([
-        sys.executable, "-m", "pytest",
-        "tests/_apps_contract/",
+    # B1: pytest collect-only for the contract files owned by this gate.
+    cmd = [
+        sys.executable,
+        "-m",
+        "pytest",
+        *(str(path) for path in COLLECT_ONLY_TARGETS),
         "--collect-only",
-        "-q"
-    ])
+        "-q",
+    ]
+    exit_code, stdout, stderr = run_command(cmd)
     
     if exit_code != 0:
         results["pass"] = False
@@ -231,7 +239,9 @@ def check_b_collect_only() -> dict:
         if stderr:
             results["details"].append(f"stderr: {stderr[:500]}")
     else:
-        results["details"].append("PASS: pytest --collect-only exits 0 with zero collection errors")
+        results["details"].append(
+            "PASS: focused pytest --collect-only exits 0 with zero collection errors"
+        )
     
     for detail in results["details"]:
         print(f"  {detail}")
@@ -284,12 +294,12 @@ def check_b_feature_flag_bridge() -> dict:
         results["pass"] = False
         results["details"].append("FAIL: CompiledPromptArtifact type check not found")
     
-    # B5: Check legacy path is preserved
-    if "Legacy path" in source or "legacy path" in source.lower():
-        results["details"].append("PASS: Legacy path preserved")
+    # B5: Check explicit dev legacy override is preserved.
+    if "APPS_RG_L2_DEV_LEGACY_PACKAGE" in source and "_legacy_package_driven(prompt)" in source:
+        results["details"].append("PASS: Explicit dev legacy override preserved")
     else:
         results["pass"] = False
-        results["details"].append("FAIL: Legacy path not clearly preserved")
+        results["details"].append("FAIL: Explicit dev legacy override not clearly preserved")
     
     for detail in results["details"]:
         print(f"  {detail}")
@@ -546,12 +556,12 @@ def check_g_feature_flag_bridge() -> dict:
         results["pass"] = False
         results["details"].append("FAIL: CompiledPromptArtifact type check not found")
     
-    # G5: Check legacy path is preserved
-    if "Legacy path" in source or "legacy path" in source.lower():
-        results["details"].append("PASS: Legacy path preserved")
+    # G5: Check explicit dev legacy override is preserved.
+    if "APPS_RG_L2_DEV_LEGACY_PACKAGE" in source and "_legacy_package_driven(prompt)" in source:
+        results["details"].append("PASS: Explicit dev legacy override preserved")
     else:
         results["pass"] = False
-        results["details"].append("FAIL: Legacy path not clearly preserved")
+        results["details"].append("FAIL: Explicit dev legacy override not clearly preserved")
     
     # G6: Run specific feature flag tests using class selector
     exit_code, stdout, stderr = run_command([
@@ -613,7 +623,7 @@ def main() -> int:
     print(f"\n  Total: {total_pass} passed, {total_fail} failed")
     
     # Final verdict
-    fail_closed = os.environ.get("APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED", "").strip() == "1"
+    advisory = os.environ.get("APPS_RG_L2_V4_ENVELOPE_ADVISORY", "").strip() == "1"
 
     if total_fail == 0:
         print(f"\n{'='*60}")
@@ -623,18 +633,18 @@ def main() -> int:
     print(f"\n{'='*60}")
     print(f"FINAL: FAIL - {total_fail} check(s) failed")
     print(f"{'='*60}")
-    if fail_closed:
+    if advisory:
         print(
-            "  (fail-closed mode: APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 — exiting 1)",
+            "[check_apps_rg_l2_v4_envelope] Advisory mode — partial FAIL above; exiting 0.",
             file=sys.stderr,
         )
-        return 1
+        return 0
     print(
-        "[check_apps_rg_l2_v4_envelope] Advisory mode — partial FAIL above; exiting 0 "
-        "(set APPS_RG_L2_V4_ENVELOPE_FAIL_CLOSED=1 to fail closed).",
+        "[check_apps_rg_l2_v4_envelope] Fail-closed mode — exiting 1 "
+        "(set APPS_RG_L2_V4_ENVELOPE_ADVISORY=1 for local advisory diagnostics).",
         file=sys.stderr,
     )
-    return 0
+    return 1
 
 
 if __name__ == "__main__":
