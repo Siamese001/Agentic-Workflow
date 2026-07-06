@@ -664,6 +664,16 @@ _MACHINE_HEADLINE_SEGMENT_REWRITES: dict[str, str] = {
     "runtime spine": "Runtime Governance Architecture",
     "governed runtime backbone": "Runtime Governance Architecture",
     "runtime backbone": "Runtime Governance Architecture",
+    "partner alliance cosell": "Co-Sell Channel Alliance",
+    "partner alliance co-sell": "Co-Sell Channel Alliance",
+    "partner alliance co sell": "Co-Sell Channel Alliance",
+    "hyperscaler alliance revenue": "Hyperscaler Partner Ecosystem",
+    "policy administration migration": "Policy Administration Platforms",
+    "policy administration modernization": "Policy Administration Platforms",
+    "aws migration execution": "Policy Administration Platforms",
+    "aws migration modernization execution": "Policy Administration Platforms",
+    "aws modernization execution": "Policy Administration Platforms",
+    "insurance platform migration": "Regulated Insurance Platforms",
 }
 
 
@@ -681,6 +691,110 @@ def _rewrite_machine_headline_segments(headline_line: str) -> tuple[str, list[di
             changes.append({"from": parts[idx], "to": replacement})
             parts[idx] = replacement
     return " | ".join(parts), changes
+
+
+def _unique_strings(values: Any) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    iterable = values if isinstance(values, list) else [values]
+    for raw in iterable:
+        text = str(raw or "").strip()
+        if text and text not in seen:
+            seen.add(text)
+            out.append(text)
+    return out
+
+
+def _claim_ledger_source_fact_ids(rows: Any) -> list[str]:
+    ids: list[str] = []
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        ids.extend(_unique_strings(row.get("source_fact_ids")))
+    return _unique_strings(ids)
+
+
+def _selected_graph_skills_by_fact(selected_fact_plan: dict[str, Any]) -> dict[str, list[str]]:
+    by_fact: dict[str, list[str]] = {}
+
+    def add(fid: str, skills: Any) -> None:
+        fid_s = str(fid or "").strip()
+        if not fid_s:
+            return
+        current = by_fact.setdefault(fid_s, [])
+        for sid in _unique_strings(skills):
+            if sid not in current:
+                current.append(sid)
+
+    for fact in selected_fact_plan.get("facts") or []:
+        if not isinstance(fact, dict):
+            continue
+        fid = str(fact.get("fact_id") or fact.get("role_episode_bundle_id") or "").strip()
+        add(fid, fact.get("graph_skill_node_ids"))
+
+    for skill in selected_fact_plan.get("selected_skills") or []:
+        if not isinstance(skill, dict):
+            continue
+        fid = str(skill.get("role_episode_bundle_id") or "").strip()
+        sid = str(skill.get("skill_id") or "").strip()
+        if fid and sid:
+            add(fid, [sid])
+
+    return by_fact
+
+
+def bind_headline_graph_skill_lineage(parsed: dict[str, Any]) -> dict[str, Any] | None:
+    """Project selected graph skill lineage for the visible cited headline facts."""
+    selected_fact_plan = parsed.get("selected_fact_plan")
+    if not isinstance(selected_fact_plan, dict):
+        return None
+
+    cited_fact_ids = [
+        fid
+        for fid in _claim_ledger_source_fact_ids(parsed.get("claim_ledger"))
+        if fid.startswith(("reb_", "fact_"))
+    ]
+    if not cited_fact_ids:
+        cited_fact_ids = _unique_strings(selected_fact_plan.get("selected_claim_fact_ids"))
+    if not cited_fact_ids:
+        cited_fact_ids = _unique_strings(selected_fact_plan.get("selected_required_fact_ids"))
+    if not cited_fact_ids:
+        return None
+
+    by_fact = _selected_graph_skills_by_fact(selected_fact_plan)
+    skill_ids: list[str] = []
+    for fid in cited_fact_ids:
+        for sid in by_fact.get(fid, []):
+            if sid not in skill_ids:
+                skill_ids.append(sid)
+    if not skill_ids:
+        return None
+
+    lineage_refs = [
+        ref
+        for ref in _unique_strings(selected_fact_plan.get("graph_lineage_refs"))
+        if ref
+    ] or list(cited_fact_ids)
+    receipt = {
+        "operation": "headline_graph_skill_lineage_binding",
+        "reason": "project selected graph skills for visible cited headline facts",
+        "source_fact_ids": list(cited_fact_ids),
+        "graph_skill_node_ids": list(skill_ids),
+        "graph_lineage_refs": list(lineage_refs),
+    }
+    change_log = parsed.setdefault("change_log", [])
+    if isinstance(change_log, list):
+        already_bound = any(
+            isinstance(row, dict)
+            and row.get("operation") == "headline_graph_skill_lineage_binding"
+            for row in change_log
+        )
+        if not already_bound:
+            change_log.append(dict(receipt))
+    parsed.setdefault("graph_skill_node_ids", list(skill_ids))
+    parsed.setdefault("source_fact_ids", list(cited_fact_ids))
+    parsed.setdefault("graph_lineage_refs", list(lineage_refs))
+    return receipt
 
 
 def snapshot_raw_jd_alignment(parsed: dict[str, Any]) -> None:
@@ -822,6 +936,7 @@ def normalize_parsed_output(
             )
         ensure_claim_ledger(hl, out, allowed_fact_ids, retain_bullet_aliases=False)
     sync_selected_fact_plan_required_ids(out, runtime_payload, allowed_fact_ids)
+    bind_headline_graph_skill_lineage(out)
     empl = list(employer_names_lower or [])
     tc = str(runtime_payload.get("target_company") or "").strip()
     sc_in = out.get("self_check")

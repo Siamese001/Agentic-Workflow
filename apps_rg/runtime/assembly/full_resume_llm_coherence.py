@@ -285,14 +285,35 @@ def _deterministic_preflight_blockers(final_resume: dict[str, Any]) -> list[str]
         blockers.append(f"credential_duplication_in_competencies:{reason}")
 
     flat = flatten_final_resume_to_text(final_resume)
-    cert_heading_count = flat.upper().count("CERTIFICATIONS")
     comp_heading = "ENGINEERING & PLATFORM COMPETENCIES"
     if comp_heading in flat:
-        comp_block = flat.split(comp_heading, 1)[-1].split("EDUCATION")[0].split("CERTIFICATIONS")[0]
+        comp_block = _block_after_heading(
+            flat,
+            comp_heading,
+            stop_headings=(
+                "PROFESSIONAL EXPERIENCE",
+                "EDUCATION",
+                "CERTIFICATIONS",
+            ),
+        )
         for needle in ("AWS Certified", "Databricks Lakehouse Fundamentals", "Fellow of the Society"):
             if needle in comp_block:
                 blockers.append(f"credential_name_in_competencies_block:{needle}")
     return blockers
+
+
+def _block_after_heading(text: str, heading: str, *, stop_headings: tuple[str, ...]) -> str:
+    """Return text under one rendered heading without swallowing later resume sections."""
+    if heading not in text:
+        return ""
+    block = text.split(heading, 1)[-1]
+    block_upper = block.upper()
+    cut = len(block)
+    for stop in stop_headings:
+        idx = block_upper.find(stop.upper())
+        if idx >= 0:
+            cut = min(cut, idx)
+    return block[:cut]
 
 
 def aggregate_full_resume_coherence(
@@ -418,6 +439,8 @@ def emit_full_resume_llm_coherence_review(
             json.dumps(final_resume, sort_keys=True, ensure_ascii=False).encode()
         ).hexdigest()
 
+    provider_artifact_base = output_dir / "coherence_judge_providers"
+    provider_artifact_base.mkdir(parents=True, exist_ok=True)
     judges = run_full_resume_coherence_judges(
         full_resume_text=full_text,
         target_company=target_company,
@@ -429,7 +452,7 @@ def emit_full_resume_llm_coherence_review(
         # assembly X2 scan (final_resume_x2) iterates only top-level files of the
         # assembly dir, whose allowed set is the declared assembly artifacts plus
         # the two aggregate-judge summaries written below — not per-provider raws.
-        artifact_base=output_dir / "coherence_judge_providers",
+        artifact_base=provider_artifact_base,
     )
     det_blockers = _deterministic_preflight_blockers(final_resume)
     agg = aggregate_full_resume_coherence(judges, deterministic_blockers=det_blockers)

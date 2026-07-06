@@ -71,29 +71,33 @@ POOL_SELECTOR_SYSTEM_PROMPT = (
 )
 
 # W3: the Claude pool selector is itself a live external call inside the competencies/employment
-# orchestration. Keep the observability from the fix, but keep the default budget close to an
-# ordinary provider call. Operators can still opt in via env, bounded by the shared provider ceiling.
+# orchestration. Employment lanes keep the ordinary selector budget; the competencies graph pool
+# gets the same bounded long-form budget as competencies generation because it ranks a larger
+# structured candidate set. Operators can still opt in via env, bounded by the shared provider ceiling.
 DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS = 90.0
+DEFAULT_COMPETENCIES_POOL_SELECTOR_TIMEOUT_SECONDS = 240.0
 SELECTOR_TIMING_RECEIPT_FILENAME = "bullet_pool_claude_selector_timing.json"
 
 
-def pool_selector_timeout_s() -> float:
+def pool_selector_timeout_s(*, default_seconds: float | None = None) -> float:
     """Effective wall-clock budget (seconds) for the Claude pool selector HTTP call.
 
-    Reads ``APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS`` (default 90s), floored at 30s and bounded by
-    the shared ``external_provider_timeout_max_s`` ceiling. A malformed value falls back to the
-    default rather than failing the call.
+    Reads ``APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS`` (default 90s unless the caller passes a
+    lane-specific default), floored at 30s and bounded by the shared
+    ``external_provider_timeout_max_s`` ceiling. A malformed value falls back to the default rather
+    than failing the call.
     """
     from apps_rg.runtime.providers.external_provider import external_provider_timeout_max_s
 
     raw = os.environ.get("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", "").strip()
     ceiling = external_provider_timeout_max_s()
+    default = DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS if default_seconds is None else float(default_seconds)
     if not raw:
-        return min(DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS, ceiling)
+        return max(30.0, min(default, ceiling))
     try:
         return max(30.0, min(float(raw), ceiling))
     except (TypeError, ValueError):
-        return min(DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS, ceiling)
+        return max(30.0, min(default, ceiling))
 
 
 def _write_selector_timing_receipt(artifact_dir: Path | None, doc: dict[str, Any]) -> None:
@@ -845,6 +849,7 @@ def _call_anthropic_pool_selector(
     input_hash: str,
     model_source: str,
     artifact_dir: Path | None,
+    timeout_s: float | None = None,
 ) -> tuple[JudgeOutput, dict[str, Any] | None]:
     """Anthropic call for pool JSON (not GRADE_ONLY rubric schema)."""
     import time
@@ -864,7 +869,7 @@ def _call_anthropic_pool_selector(
         _write_artifact,
     )
 
-    timeout_s = pool_selector_timeout_s()
+    timeout_s = pool_selector_timeout_s(default_seconds=timeout_s)
     max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=1)
     selector_system_prompt = POOL_SELECTOR_SYSTEM_PROMPT
     cache_seed = (
@@ -1096,6 +1101,7 @@ def _call_openai_pool_selector(
     input_hash: str,
     model_source: str,
     artifact_dir: Path | None,
+    timeout_s: float | None = None,
 ) -> tuple[JudgeOutput, dict[str, Any] | None]:
     """OpenAI call for pool JSON (competencies only)."""
     import time
@@ -1111,7 +1117,7 @@ def _call_openai_pool_selector(
         _write_artifact,
     )
 
-    timeout_s = pool_selector_timeout_s()
+    timeout_s = pool_selector_timeout_s(default_seconds=timeout_s)
     max_tokens = _resolved_x1d_judge_max_output_tokens(attempt=1)
     payload: dict[str, Any] = {
         "model": model,
@@ -1683,6 +1689,13 @@ def run_claude_bullet_pool_selection(
         regen_note=regen_note,
     )
     input_hash = _sha16(prompt)
+    selector_timeout_s = pool_selector_timeout_s(
+        default_seconds=(
+            DEFAULT_COMPETENCIES_POOL_SELECTOR_TIMEOUT_SECONDS
+            if competencies_selector
+            else DEFAULT_POOL_SELECTOR_TIMEOUT_SECONDS
+        )
+    )
 
     if mode == "mocked" and not competencies_selector:
         return _fallback_first_complete_path(
@@ -1715,6 +1728,7 @@ def run_claude_bullet_pool_selection(
             input_hash=input_hash,
             model_source=model_source,
             artifact_dir=artifact_dir,
+            timeout_s=selector_timeout_s,
         )
     elif provider_key == "anthropic_claude":
         judge_out, parsed_sel = _call_anthropic_pool_selector(
@@ -1724,6 +1738,7 @@ def run_claude_bullet_pool_selection(
             input_hash=input_hash,
             model_source=model_source,
             artifact_dir=artifact_dir,
+            timeout_s=selector_timeout_s,
         )
     else:
         raise PoolSelectorUnavailableError(

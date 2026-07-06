@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -258,6 +259,74 @@ class TestCuratedTargetingFallback:
 
         assert "Building foundational teams" not in scrubbed
         assert "Partner ecosystem scale" in scrubbed
+
+    def test_unsupported_named_leadership_claim_scrub_is_deterministic(self, engine):
+        draft = "\n".join(
+            [
+                "## Leadership & Stakeholder Map",
+                "Dario Amodei is the CEO and a central strategic voice for Anthropic.",
+                "The likely stakeholder map spans partnerships, sales, product, and engineering.",
+            ]
+        )
+
+        scrubbed = engine._drop_unsupported_named_leadership_claims(
+            draft,
+            research_notes="Anthropic has public partner ecosystem and platform adoption signals.",
+        )
+
+        assert "## Leadership & Stakeholder Map" in scrubbed
+        assert "Dario Amodei" not in scrubbed
+        assert "likely stakeholder map spans partnerships" in scrubbed
+
+    def test_supported_named_leadership_claim_is_preserved(self, engine):
+        draft = "Dario Amodei is the CEO and a central strategic voice for Anthropic."
+
+        scrubbed = engine._drop_unsupported_named_leadership_claims(
+            draft,
+            research_notes="Anthropic leadership coverage names Dario Amodei as CEO.",
+        )
+
+        assert "Dario Amodei is the CEO" in scrubbed
+
+    def test_sidecar_reason_preserves_deterministic_semantic_block(self, engine):
+        semantics = SimpleNamespace(
+            score=0.9,
+            judge_name="gemini_pro",
+            judge_model="gemini-3.1-pro-preview",
+            handoff_eligible=False,
+            reason="missing_sections",
+            role_archetype="partnerships",
+            evidence_intents=("partnerships",),
+            required_sections_present=("jd complement",),
+            missing_sections=("leadership & stakeholder map",),
+            source_families_present=("partner_ecosystem",),
+            source_families_missing=(),
+            signal_terms_present=("co-sell",),
+            signal_terms_missing=(),
+            as_dict=lambda: {"handoff_eligible": False, "reason": "missing_sections"},
+        )
+        sidecar = engine._build_targeting_brief_sidecar(
+            company_name="Anthropic",
+            brief_text="## JD Complement\n- Valid targeting brief text.",
+            jd_text="Lead partner architecture.",
+            research_notes="Anthropic partner ecosystem and co-sell notes.",
+            findings={"partner_ecosystem": "co-sell notes"},
+            gate_verdict="PASS",
+            gate_reason="",
+            model_name="gpt-5.4-mini-2026-03-17",
+            semantic_override=semantics,
+            x2_judge_receipt={
+                "status": "PASS",
+                "model_backed": True,
+                "judge_model": "gemini-3.1-pro-preview",
+                "judge_provider": "gemini_pro",
+                "score": 1.0,
+                "threshold": 0.75,
+            },
+        )
+
+        assert sidecar["handoff_eligible"] is False
+        assert sidecar["reason"] == "missing_sections"
 
 
 class TestAssembleBrief:

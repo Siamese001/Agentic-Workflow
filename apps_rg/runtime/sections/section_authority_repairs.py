@@ -21,6 +21,25 @@ _CITATION_REPAIR_STOPWORDS = {
     "while",
 }
 
+_SOURCE_FACT_TOKEN_STOPWORDS = {
+    "ai",
+    "and",
+    "aws",
+    "by",
+    "cloud",
+    "fact",
+    "for",
+    "gtm",
+    "ibm",
+    "led",
+    "metric",
+    "reb",
+    "skill",
+    "the",
+    "to",
+    "unify",
+}
+
 
 def _sentence_fails_credential_dump(sentence: str) -> bool:
     from apps_rg.runtime.sections.competencies_certification_contract import (
@@ -96,6 +115,7 @@ def _exec_summary_shape_ok(resume_display_text: str, parsed: dict[str, Any]) -> 
     from apps_rg.runtime.validators.executive_summary_x2 import (
         check_exec_summary_meta_filler_patterns,
         check_exec_summary_no_credential_dump,
+        check_exec_summary_no_mechanism_inventory,
         check_exec_summary_paragraph_max_words,
         check_exec_summary_sentence_count_6,
     )
@@ -110,6 +130,12 @@ def _exec_summary_shape_ok(resume_display_text: str, parsed: dict[str, Any]) -> 
     cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
     if not cred_ok and cred_reason:
         failures.append(cred_reason)
+    mech_ok, mech_reason = check_exec_summary_no_mechanism_inventory(
+        resume_display_text,
+        parsed,
+    )
+    if not mech_ok and mech_reason:
+        failures.append(mech_reason)
     sent_ok, sent_reason = check_exec_summary_sentence_count_6(resume_display_text)
     if not sent_ok and sent_reason:
         failures.append(sent_reason)
@@ -398,6 +424,202 @@ def repair_exec_summary_thin_sentence_weave(parsed: dict[str, Any]) -> list[dict
     return repairs
 
 
+_MECHANISM_INVENTORY_REWRITES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"\bdeterministic\s+routing,?\s+and\s+policy[-\s]?gated\b", re.IGNORECASE),
+        "route selection and governed",
+    ),
+    (
+        re.compile(r"\bdeterministic\s+routing\b", re.IGNORECASE),
+        "route selection",
+    ),
+    (re.compile(r"\bdeterministic\s+route\s+selection\b", re.IGNORECASE), "route selection"),
+    (
+        re.compile(r"\bgraph-aware\s+relationship\s+grounding\b", re.IGNORECASE),
+        "relationship-aware grounding",
+    ),
+    (re.compile(r"\bpolicy[-\s]?gated\b", re.IGNORECASE), "controlled"),
+    (re.compile(r"\bpolicy\s+gating\b", re.IGNORECASE), "governed controls"),
+    (re.compile(r"\bmulti-agent\s+orchestration\b", re.IGNORECASE), "agent workflow coordination"),
+    (re.compile(r"\borchestration\b", re.IGNORECASE), "coordination"),
+    (re.compile(r"\bGraphRAG\s+retrieval\b", re.IGNORECASE), "graph-grounded evidence use"),
+    (re.compile(r"\bretrieval\b", re.IGNORECASE), "evidence search"),
+    (re.compile(r"\bvector\s+services\b", re.IGNORECASE), "embedding-backed services"),
+    (re.compile(r"\bsandboxed\s+execution\b", re.IGNORECASE), "isolated execution"),
+    (re.compile(r"\breplayable\s+runtime\s+traceability\b", re.IGNORECASE), "auditable runtime traceability"),
+    (re.compile(r"\breplayable\b", re.IGNORECASE), "auditable"),
+)
+
+
+def _normalize_mechanism_repair_text(text: str) -> str:
+    out = re.sub(r"\s{2,}", " ", text).strip()
+    return re.sub(r"\s+([.,;:])", r"\1", out)
+
+
+def _repair_mechanism_inventory_sentence(sentence: str) -> str:
+    """Compress stacked mechanism prose while preserving the sentence's proof theme."""
+    from apps_rg.runtime.sections.executive_summary_composition import (
+        is_mechanism_inventory_sentence,
+    )
+
+    original = str(sentence or "").strip()
+    if not original:
+        return original
+    inv, _ = is_mechanism_inventory_sentence(original)
+    if not inv:
+        return original
+    out = original
+    for _ in range(4):
+        changed = False
+        for pattern, replacement in _MECHANISM_INVENTORY_REWRITES:
+            candidate = _normalize_mechanism_repair_text(pattern.sub(replacement, out))
+            if candidate != out:
+                out = candidate
+                changed = True
+        inv_after, _ = is_mechanism_inventory_sentence(out)
+        if not inv_after:
+            return out
+        if not changed:
+            break
+    inv_after, _ = is_mechanism_inventory_sentence(out)
+    return original if inv_after else out
+
+
+def repair_exec_summary_mechanism_inventory_sentences(parsed: dict[str, Any]) -> list[dict[str, Any]]:
+    """Rewrite mechanism-inventory sentences and keep ledger rows display-aligned."""
+    if not isinstance(parsed, dict):
+        return []
+    text = str(parsed.get("resume_display_text") or "").strip()
+    ledger = parsed.get("claim_ledger")
+    if not text or not isinstance(ledger, list):
+        return []
+    sentences = [s for s in split_sentences(text) if str(s).strip()]
+    if len(sentences) != len(ledger):
+        return []
+
+    repairs: list[dict[str, Any]] = []
+    for idx, sentence in enumerate(sentences):
+        repaired = _repair_mechanism_inventory_sentence(sentence)
+        if repaired == sentence:
+            continue
+        sentences[idx] = repaired
+        row = ledger[idx]
+        if isinstance(row, dict):
+            row["claim"] = repaired[:72]
+            row["claim_text"] = repaired
+        repairs.append(
+            {
+                "operation": "repair_exec_summary_mechanism_inventory_sentence",
+                "reason": f"sentence_{idx + 1}_mechanism_inventory_compacted",
+                "sentence_index": idx + 1,
+            }
+        )
+
+    if repairs:
+        parsed["resume_display_text"] = " ".join(sentences).strip()
+        clog = list(parsed.get("change_log") or [])
+        clog.extend(repairs)
+        parsed["change_log"] = clog
+    return repairs
+
+
+def _source_fact_relevance_score(source_fact_id: str, sentence: str) -> int:
+    fid = str(source_fact_id or "").strip().lower()
+    if not fid:
+        return 0
+    sentence_tokens = set(_TOKEN_RE.findall(str(sentence or "").lower()))
+    fid_tokens = [
+        t
+        for t in re.split(r"[_\W]+", fid)
+        if t and len(t) > 2 and t not in _SOURCE_FACT_TOKEN_STOPWORDS
+    ]
+    score = sum(2 for token in fid_tokens if token in sentence_tokens)
+    if fid.startswith("reb_"):
+        score += 3
+    elif fid.startswith("metric_"):
+        score += 2
+    elif fid.startswith("skill_"):
+        score += 1
+    if re.search(r"[\d%$]", sentence) and fid.startswith("metric_"):
+        score += 2
+    return score
+
+
+def _compact_source_fact_ids_for_sentence(
+    source_fact_ids: list[Any],
+    sentence: str,
+    *,
+    max_ids: int = 3,
+) -> list[str]:
+    seen: set[str] = set()
+    normalized: list[str] = []
+    for raw in source_fact_ids:
+        fid = str(raw or "").strip()
+        if not fid or fid in seen:
+            continue
+        seen.add(fid)
+        normalized.append(fid)
+    if len(normalized) <= max_ids:
+        return normalized
+    ranked = sorted(
+        enumerate(normalized),
+        key=lambda item: (-_source_fact_relevance_score(item[1], sentence), item[0]),
+    )
+    keep_indexes = sorted(idx for idx, _fid in ranked[:max_ids])
+    return [normalized[idx] for idx in keep_indexes]
+
+
+def repair_exec_summary_cross_fact_conflation_rows(
+    parsed: dict[str, Any],
+    *,
+    max_ids_per_row: int = 3,
+) -> list[dict[str, Any]]:
+    """Reduce over-dense claim rows so each displayed sentence maps to direct proof."""
+    if not isinstance(parsed, dict):
+        return []
+    text = str(parsed.get("resume_display_text") or "").strip()
+    ledger = parsed.get("claim_ledger")
+    if not text or not isinstance(ledger, list):
+        return []
+    sentences = [s for s in split_sentences(text) if str(s).strip()]
+    if len(sentences) != len(ledger):
+        return []
+
+    repairs: list[dict[str, Any]] = []
+    for idx, row in enumerate(ledger):
+        if not isinstance(row, dict):
+            continue
+        original_ids = list(row.get("source_fact_ids") or [])
+        compacted = _compact_source_fact_ids_for_sentence(
+            original_ids,
+            sentences[idx],
+            max_ids=max_ids_per_row,
+        )
+        if len(compacted) == len({str(x).strip() for x in original_ids if str(x).strip()}):
+            continue
+        row["source_fact_ids"] = compacted
+        row["claim"] = str(row.get("claim") or row.get("claim_text") or sentences[idx])[:72]
+        row["claim_text"] = str(row.get("claim_text") or sentences[idx])
+        repairs.append(
+            {
+                "operation": "repair_exec_summary_cross_fact_conflation_row",
+                "reason": (
+                    f"sentence_{idx + 1}_source_fact_ids_compacted_to_"
+                    f"{len(compacted)}"
+                ),
+                "sentence_index": idx + 1,
+                "source_fact_ids_before": len(original_ids),
+                "source_fact_ids_after": len(compacted),
+            }
+        )
+
+    if repairs:
+        clog = list(parsed.get("change_log") or [])
+        clog.extend(repairs)
+        parsed["change_log"] = clog
+    return repairs
+
+
 def apply_exec_summary_display_authority_repairs(
     parsed: dict[str, Any],
     *,
@@ -479,6 +701,35 @@ def apply_exec_summary_display_authority_repairs(
                 replaced_l2=True,
             )
         text = str(parsed.get("resume_display_text") or "").strip()
+    _mechanism_repairs = repair_exec_summary_mechanism_inventory_sentences(parsed)
+    if _mechanism_repairs and artifact_dir is not None:
+        from apps_rg.runtime.section_repair_ledger import (
+            KIND_DETERMINISTIC_REWRITE,
+            record_repair,
+        )
+
+        record_repair(
+            artifact_dir,
+            kind=KIND_DETERMINISTIC_REWRITE,
+            operation="repair_exec_summary_mechanism_inventory_sentence",
+            reason=str(_mechanism_repairs[0].get("reason") or "")[:240],
+            replaced_l2=True,
+        )
+    _conflation_repairs = repair_exec_summary_cross_fact_conflation_rows(parsed)
+    if _conflation_repairs and artifact_dir is not None:
+        from apps_rg.runtime.section_repair_ledger import (
+            KIND_DETERMINISTIC_REWRITE,
+            record_repair,
+        )
+
+        record_repair(
+            artifact_dir,
+            kind=KIND_DETERMINISTIC_REWRITE,
+            operation="repair_exec_summary_cross_fact_conflation_row",
+            reason=str(_conflation_repairs[0].get("reason") or "")[:240],
+            replaced_l2=True,
+        )
+    text = str(parsed.get("resume_display_text") or "").strip()
     clog = list(parsed.get("change_log") or [])
     repaired, removed = strip_exec_summary_credential_dump_sentences(text)
     if removed and repaired != text:
@@ -716,6 +967,8 @@ def prune_competencies_rigor_failing_terms(parsed: dict[str, Any]) -> list[str]:
 __all__ = [
     "apply_exec_summary_display_authority_repairs",
     "prune_competencies_rigor_failing_terms",
+    "repair_exec_summary_cross_fact_conflation_rows",
+    "repair_exec_summary_mechanism_inventory_sentences",
     "repair_exec_summary_thin_sentence_weave",
     "repair_required_brushstroke_citations_from_materialized_sentences",
     "sanitize_ibm_narrative_display_text",

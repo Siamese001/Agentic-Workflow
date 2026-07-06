@@ -23,6 +23,7 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
     check_exec_summary_no_credential_dump,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
+    check_exec_summary_robotic_transition_stack,
     check_exec_summary_sentence_count_6,
     check_synthesis_quality,
 )
@@ -212,6 +213,9 @@ def _x2_critical_shape_failures(
     stack_ok, stack_reason = check_exec_summary_mechanical_opener_stack(resume)
     if not stack_ok and stack_reason:
         out["mechanical_opener_stack"] = stack_reason
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(resume)
+    if not transition_ok and transition_reason:
+        out["robotic_transition_stack"] = transition_reason
     synth_ok, synth_reason = check_synthesis_quality(resume)
     if not synth_ok and synth_reason:
         out["synthesis_quality"] = synth_reason
@@ -312,6 +316,7 @@ def detect_graph_only_synthesis_violations(
 
     cred_ok, _ = check_exec_summary_no_credential_dump(resume)
     mech_ok, mech_reason = check_exec_summary_mechanical_opener_stack(resume)
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(resume)
     conf_ok, conf_reason = check_cross_fact_display_conflation(resume, ledger)
 
     had_causal_merge = any(
@@ -336,8 +341,10 @@ def detect_graph_only_synthesis_violations(
         "had_bare_credential_inventory": bool(_CREDENTIAL_INVENTORY_RE.search(resume)) or not cred_ok,
         "had_causal_claim_merge_in_ledger": had_causal_merge,
         "mechanical_opener_stack": not mech_ok,
+        "robotic_transition_stack": not transition_ok,
         "cross_fact_display_conflation": not conf_ok,
         "mechanical_opener_stack_reason": mech_reason or "",
+        "robotic_transition_stack_reason": transition_reason or "",
         "cross_fact_conflation_reason": conf_reason or "",
         "mechanism_inventory_violation": mech_inv_fail,
         "mechanism_inventory_reason": x2_fail.get("mechanism_inventory", ""),
@@ -351,6 +358,7 @@ def detect_graph_only_synthesis_violations(
             flags["had_bare_credential_inventory"],
             flags["had_causal_claim_merge_in_ledger"],
             flags["mechanical_opener_stack"],
+            flags["robotic_transition_stack"],
             flags["cross_fact_display_conflation"],
             mech_inv_fail,
             util_fail,
@@ -402,6 +410,7 @@ def _flags_opener_only(flags: dict[str, Any]) -> bool:
             flags.get("had_unsupported_gross_margin"),
             flags.get("had_bare_credential_inventory"),
             flags.get("had_causal_claim_merge_in_ledger"),
+            flags.get("robotic_transition_stack"),
             flags.get("cross_fact_display_conflation"),
             flags.get("mechanism_inventory_violation"),
             flags.get("evidence_utilization_violation"),
@@ -421,6 +430,7 @@ def _flags_display_metric_echo_only(flags: dict[str, Any]) -> bool:
             flags.get("had_bare_credential_inventory"),
             flags.get("had_causal_claim_merge_in_ledger"),
             flags.get("mechanical_opener_stack"),
+            flags.get("robotic_transition_stack"),
             flags.get("cross_fact_display_conflation"),
             flags.get("mechanism_inventory_violation"),
             flags.get("evidence_utilization_violation"),

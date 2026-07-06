@@ -38,6 +38,7 @@ from apps_rg.runtime.sections.section_x2_x1d_contract import (
 SYNTHESIS_CHECK_TO_X2_GATE: dict[str, str] = {
     "check_synthesis_quality": "x2_executive_summary_synthesis_quality",
     "check_exec_summary_mechanical_opener_stack": "x2_exec_summary_mechanical_opener_stack_zero",
+    "check_exec_summary_robotic_transition_stack": "x2_exec_summary_robotic_transition_stack_zero",
     "check_cross_fact_display_conflation": "x2_exec_summary_cross_fact_conflation_zero",
     "check_exec_summary_meta_filler_patterns": "x2_exec_summary_meta_filler_zero",
     "check_resume_display_colon_space_discipline": "x2_exec_summary_colon_stitch_zero",
@@ -80,6 +81,7 @@ JUDGE_PACKET_REQUIRED_GATE_KEYS: frozenset[str] = frozenset(
         "x2_exec_summary_meta_filler_zero",
         "x2_executive_summary_synthesis_quality",
         "x2_exec_summary_mechanical_opener_stack_zero",
+        "x2_exec_summary_robotic_transition_stack_zero",
         "x2_schema_valid",
         "x2_claim_ledger_claim_text_non_empty",
         "x2_claim_ledger_orphan_zero",

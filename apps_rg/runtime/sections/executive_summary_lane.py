@@ -759,6 +759,7 @@ def _synthesis_shape_reject_reason(
         check_exec_summary_no_sentence_fragment,
         check_exec_summary_display_override_compliance,
         check_exec_summary_paragraph_max_words,
+        check_exec_summary_robotic_transition_stack,
         check_exec_summary_sentence_count_6,
         check_inferred_bridge_claims,
         check_north_star_style_example_echo_unsupported,
@@ -787,6 +788,9 @@ def _synthesis_shape_reject_reason(
     mech_stack_ok, mech_stack_reason = check_exec_summary_mechanical_opener_stack(text)
     if not mech_stack_ok and mech_stack_reason:
         failures.append(mech_stack_reason)
+    transition_ok, transition_reason = check_exec_summary_robotic_transition_stack(text)
+    if not transition_ok and transition_reason:
+        failures.append(transition_reason)
     stock_ok, stock_reason = check_exec_summary_stock_bridge_count(text, max_bridges=2)
     if not stock_ok and stock_reason:
         failures.append(stock_reason)
@@ -1015,20 +1019,28 @@ def _build_synthesis_repair_user(
             '"dynamic leader", "strategic leader" — use fact-backed outcomes instead. '
         )
     conflation_note = ""
-    if "cross_fact_display_conflation" in blob or "mechanical_opener_stack" in blob:
+    if (
+        "cross_fact_display_conflation" in blob
+        or "mechanical_opener_stack" in blob
+        or "too_many_source_fact_ids" in blob
+    ):
         conflation_note = (
             "ATTRIBUTION: one major proof theme per sentence — do NOT merge governed AI platform "
             "(fact_engineering_platform_001) with Basel/CCAR 40% reporting-error reduction "
             "(fact_governance_003) or margin expansion (fact_engineering_platform_006) in one causal line. "
+            "Do not pack more than three source_fact_ids into a single claim_ledger row; split over-compressed alliance, "
+            "platform architecture, and infrastructure themes into separate readable sentences. "
             "Weave team 8-to-28 scale (fact_exec_002) into commercialization when selected. "
             "Vary sentence openers; no Led/Successfully/Also/Built chains. "
         )
     stock_bridge_note = ""
-    if "stock_bridge_stack" in blob:
+    if "stock_bridge_stack" in blob or "robotic_transition_stack" in blob:
         stock_bridge_note = (
             "TRANSITIONS: At most TWO stock bridges in S2–S5 (From that / Against that / Complementing that / "
             "Building on that / Through that / With that governance). Use approved non-stock openers "
             "(From that commercial base / Against that lineage backdrop / In parallel). "
+            "Do not chain synthetic 'Through that...', 'That operating foundation...', and 'Building on that...' openers; "
+            "use concrete subjects and plain causal flow instead. "
         )
     s5_note = ""
     if "derivatives_inventory" in blob or "derivatives pricing" in blob:
@@ -1316,8 +1328,9 @@ def _build_word_budget_repair_user(words_pre: int, *, word_ceiling: int) -> str:
     return (
         f"Your paragraph is {words_pre} words; the hard ceiling is {word_ceiling} words "
         "AFTER deterministic post-processing adds a bridge sentence. "
-        "Rewrite the SAME content at 105-120 words, preserving every cited fact id and the "
-        "claim_ledger structure (same rows, same source_fact_ids; tighten claim wording only). "
+        "Rewrite the SAME evidence arc at 105-120 words, preserving the six-row claim_ledger "
+        "structure while keeping each row to at most three directly supporting source_fact_ids. "
+        "Do not preserve over-dense or indirect fact IDs just to keep the old ledger shape. "
         "Keep exactly six sentences and the same narrative arc. "
         "Return one NEW compact JSON object only — no markdown fences, no commentary. "
         "Keys: executive_strategy_thesis, resume_display_text, claim_ledger, jd_alignment, "

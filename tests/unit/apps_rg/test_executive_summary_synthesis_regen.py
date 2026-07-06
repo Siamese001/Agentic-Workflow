@@ -8,6 +8,7 @@ from apps_rg.runtime.sections.executive_summary_lane import (
     _build_synthesis_repair_user,
     _regen_candidate_preferred,
     _shape_failure_count,
+    _synthesis_shape_reject_reason,
 )
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
     SYNTHESIS_REGEN_MAX_ATTEMPTS,
@@ -83,6 +84,52 @@ def test_build_synthesis_repair_user_includes_conflation_guidance() -> None:
     )
     assert "fact_governance_003" in msg
     assert "Led/Successfully/Also/Built" in msg
+
+
+def test_synthesis_shape_rejects_robotic_transition_and_overcompression() -> None:
+    text = (
+        "Technology strategy executive who led AWS modernization execution for monolithic policy administration and insurance platform workloads across regulated cloud migration. "
+        "Through that migration discipline, IBM-AWS alliance co-sell motions for financial-services modernization pair with agentic AI platform control-plane architecture and distributed cloud and data execution infrastructure to align partner GTM with governed runtime delivery. "
+        "That operating foundation also connects decision-support data models and BI views to reusable offering accelerators packaging cloud, data, and AI modernization patterns for repeatable client pursuits. "
+        "In parallel, insurer and regulatory engagement on cloud controls and data security standards keeps partner-led deployment aligned with adoption requirements. "
+        "Building on that governance base, platform productization and IP-led revenue growth scale team capacity while expanding operating margins across partner-enabled programs. "
+        "AI partnerships and alliance GTM leadership position continued scale of partner-led AI solution architecture across cloud and GSI ecosystems."
+    )
+    parsed = {
+        "resume_display_text": text,
+        "claim_ledger": [
+            {
+                "claim_text": "s1",
+                "source_fact_ids": ["reb_insurtech_aws_migration_execution"],
+            },
+            {
+                "claim_text": "s2",
+                "source_fact_ids": [
+                    "reb_ibm_aws_alliance_partner_cosell_gtm",
+                    "reb_unify_agentic_platform_architecture",
+                    "reb_unify_distributed_ecosystem_engineering",
+                    "reb_ibm_aws_modernization_architecture",
+                ],
+            },
+        ],
+    }
+
+    ok, reason = _synthesis_shape_reject_reason(text, parsed, selected_facts=[])
+
+    assert ok is False
+    assert "robotic_transition_stack" in reason
+    assert "too_many_source_fact_ids" in reason
+
+
+def test_build_synthesis_repair_user_includes_robotic_transition_guidance() -> None:
+    msg = _build_synthesis_repair_user(
+        "robotic_transition_stack:3_in_s2_s5; cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence",
+        attempt_index=0,
+        prior_word_count=105,
+        prior_ledger_rows=6,
+    )
+    assert "That operating foundation" in msg
+    assert "more than three source_fact_ids" in msg
 
 
 def test_shape_failure_count_increases_with_more_issues() -> None:

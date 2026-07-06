@@ -63,7 +63,16 @@ IBM_BULLET_SLOT_SKILL_MAP: dict[str, list[dict[str, str]]] = {
 # Constraint: claim_text prose is EXCLUDED. Only the `technologies` list is used here.
 IBM_BULLET_MECHANISM_VOCAB: dict[str, list[str]] = {
     "bul_ibm_001": ["AI platforms", "analytics", "cloud-native"],
-    "bul_ibm_002": ["cloud migration", "modernization", "analytics", "ML"],
+    "bul_ibm_002": [
+        "cloud migration",
+        "modernization",
+        "analytics",
+        "ML",
+        "HPC",
+        "HPC stress testing",
+        "risk scenario analysis",
+        "scenario analysis",
+    ],
     "bul_ibm_003": ["SaaS platforms", "regulatory workflows", "shared services"],
     "bul_ibm_004": ["data lineage", "observability", "real-time ingestion"],
     "bul_ibm_005": ["hyperscaler alliances", "co-sell"],

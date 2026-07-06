@@ -1,4 +1,4 @@
-"""Contract tests for shared InsurTech/EY role-episode X1D rubric (role_episode_x1d_v1)."""
+"""Contract tests for shared InsurTech/EY role-episode X1D rubric (role_episode_x1d_v2)."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ def test_rubric_enforces_proof_namespace_discipline() -> None:
 
 
 def test_judge_metadata_constants() -> None:
-    assert JUDGE_RUBRIC_VERSION == "role_episode_x1d_v1"
+    assert JUDGE_RUBRIC_VERSION == "role_episode_x1d_v2"
     assert JUDGE_RUBRIC_REF.endswith("#ROLE_EPISODE_RUBRIC")
     assert DEFAULT_THRESHOLD == 0.80
 

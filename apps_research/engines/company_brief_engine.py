@@ -702,6 +702,10 @@ class CompanyBriefEngine(BaseResearchEngine):
             jd_text=jd_text,
             profile="apps_rg",
         )
+        normalized = self._drop_unsupported_named_leadership_claims(
+            normalized,
+            research_notes=research_notes,
+        )
         sealed = seal_targeting_brief(
             normalized,
             company_name=company_name,
@@ -732,6 +736,10 @@ class CompanyBriefEngine(BaseResearchEngine):
                     repaired,
                     jd_text=jd_text,
                     profile="apps_rg",
+                )
+                repaired_normalized = self._drop_unsupported_named_leadership_claims(
+                    repaired_normalized,
+                    research_notes=research_notes,
                 )
                 sealed = seal_targeting_brief(
                     repaired_normalized,
@@ -897,7 +905,8 @@ class CompanyBriefEngine(BaseResearchEngine):
             "Rules: preserve the same company and section structure; keep the metadata line; "
             "do not restate JD responsibilities or copy any 4-word JD phrase; keep bullets one "
             "level deep; wrap every line to 240 characters or less; remove citations, links, "
-            "placeholders, and code fences; output markdown only.\n\n"
+            "placeholders, and code fences; do not name specific executives unless the exact "
+            "person name appears in the research notes; output markdown only.\n\n"
             f"JD (context only):\n{jd_text}\n\n"
             f"Research notes:\n{research_notes}\n\n"
             f"Draft to repair:\n{draft_markdown}\n"
@@ -927,6 +936,69 @@ class CompanyBriefEngine(BaseResearchEngine):
                 if any(snippet and snippet in bullet for snippet in snippets):
                     continue
             kept_lines.append(raw_line)
+        return "\n".join(kept_lines).strip()
+
+    _UNSUPPORTED_LEADERSHIP_ROLE_RE = re.compile(
+        r"\b(?:ceo|cto|cfo|coo|founder|co-founder|cofounder|president|"
+        r"chief|executive|leadership|leader|strategic voice|stakeholder)\b",
+        re.IGNORECASE,
+    )
+    _MARKDOWN_HEADER_RE = re.compile(r"^\s{0,3}#{1,6}\s+")
+    _PERSON_NAME_RE = re.compile(r"\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,2})\b")
+    _NON_PERSON_NAME_PHRASES = {
+        "Amazon Web Services",
+        "Claude Partner Network",
+        "Google Cloud",
+        "Microsoft Azure",
+    }
+
+    @classmethod
+    def _unsupported_person_names(cls, text: str, *, research_notes: str) -> list[str]:
+        notes = str(research_notes or "").lower()
+        out: list[str] = []
+        for match in cls._PERSON_NAME_RE.finditer(str(text or "")):
+            name = match.group(1).strip()
+            if name in cls._NON_PERSON_NAME_PHRASES:
+                continue
+            if name.lower() in notes:
+                continue
+            if name not in out:
+                out.append(name)
+        return out
+
+    @classmethod
+    def _drop_unsupported_named_leadership_claims(
+        cls,
+        markdown: str,
+        *,
+        research_notes: str,
+    ) -> str:
+        """Remove named leadership claims when the retrieved notes do not contain the name."""
+
+        kept_lines: list[str] = []
+        for raw_line in str(markdown or "").splitlines():
+            line = raw_line.rstrip()
+            if cls._MARKDOWN_HEADER_RE.match(line):
+                kept_lines.append(raw_line)
+                continue
+            if not cls._UNSUPPORTED_LEADERSHIP_ROLE_RE.search(line):
+                kept_lines.append(raw_line)
+                continue
+
+            sentences = re.split(r"(?<=[.!?])\s+", line)
+            kept_sentences: list[str] = []
+            for sentence in sentences:
+                unsupported = cls._unsupported_person_names(
+                    sentence,
+                    research_notes=research_notes,
+                )
+                if unsupported and cls._UNSUPPORTED_LEADERSHIP_ROLE_RE.search(sentence):
+                    continue
+                kept_sentences.append(sentence)
+
+            rebuilt = " ".join(s.strip() for s in kept_sentences if s.strip()).strip()
+            if rebuilt:
+                kept_lines.append(rebuilt)
         return "\n".join(kept_lines).strip()
 
     def _build_targeting_brief_sidecar(
@@ -983,6 +1055,13 @@ class CompanyBriefEngine(BaseResearchEngine):
         judge_name = judge_receipt.get("judge_name", semantics.judge_name)
         judge_model = judge_receipt.get("judge_model", semantics.judge_model)
         handoff_eligible = bool(semantics.handoff_eligible and model_backed_x2_passed)
+        blocked_reason = "ok"
+        if not handoff_eligible:
+            blocked_reason = (
+                "x2_model_backed_judge_not_pass"
+                if not model_backed_x2_passed
+                else str(getattr(semantics, "reason", "") or "semantic_handoff_not_eligible")
+            )
         return {
             "schema_version": "apps_research.apps_rg_targeting_brief_sidecar/v1",
             "company_name": company_name,
@@ -995,7 +1074,7 @@ class CompanyBriefEngine(BaseResearchEngine):
             "briefing_semantic_score": semantic_score,
             "semantic_gate_mode": "model_backed_llm_judge",
             "handoff_eligible": handoff_eligible,
-            "reason": "ok" if handoff_eligible else "x2_model_backed_judge_not_pass",
+            "reason": blocked_reason,
             "x2_judge_receipt": judge_receipt,
             "deterministic_semantic_assessment": semantics.as_dict(),
             "role_archetype": semantics.role_archetype,

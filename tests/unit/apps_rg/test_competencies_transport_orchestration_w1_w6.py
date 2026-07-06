@@ -198,12 +198,27 @@ def test_w3_selector_timeout_env_resolved(monkeypatch):
     monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
     monkeypatch.delenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", raising=False)
     assert sel.pool_selector_timeout_s() == 90.0
+    assert (
+        sel.pool_selector_timeout_s(
+            default_seconds=sel.DEFAULT_COMPETENCIES_POOL_SELECTOR_TIMEOUT_SECONDS
+        )
+        == 240.0
+    )
 
     monkeypatch.setenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", "180")
     assert sel.pool_selector_timeout_s() == 180.0
 
     monkeypatch.setenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", "5")  # below floor
     assert sel.pool_selector_timeout_s() == 30.0
+
+    monkeypatch.delenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", raising=False)
+    monkeypatch.setenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", "180")
+    assert (
+        sel.pool_selector_timeout_s(
+            default_seconds=sel.DEFAULT_COMPETENCIES_POOL_SELECTOR_TIMEOUT_SECONDS
+        )
+        == 180.0
+    )
 
 
 def test_w3_selector_timing_receipt_written(tmp_path):
@@ -214,6 +229,101 @@ def test_w3_selector_timing_receipt_written(tmp_path):
     assert path.is_file()
     doc = json.loads(path.read_text(encoding="utf-8"))
     assert doc["outcome"] == "selector_timeout"
+
+
+def test_w3_competencies_selector_uses_extended_timeout_default(monkeypatch):
+    import apps_rg.runtime.judges.bullet_pool_claude_selector as sel
+    from apps_rg.runtime.reasoning.bullet_lane_self_consistency import SelfConsistencyPath
+    from apps_rg.runtime.reasoning.competencies_graph_pool import COMPETENCIES_FINAL_CATEGORY_COUNT
+
+    categories = [
+        {
+            "category_label": f"Category_{i}",
+            "terms": [
+                {
+                    "text": f"term-{i}",
+                    "source_fact_id": "bul_001",
+                    "source_fact_ids": ["bul_001"],
+                    "support_class": "FACT_ONLY",
+                }
+            ],
+            "source_fact_ids": ["bul_001"],
+        }
+        for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)
+    ]
+    paths = [
+        SelfConsistencyPath(
+            path_index=0,
+            temperature=0.35,
+            runtime_generation_status="REAL_LLM",
+            raw_output="",
+            parsed={"competencies": categories, "claim_ledger": []},
+            parse_error="",
+            provider_result=None,
+        )
+    ]
+    selections = [
+        {
+            "category_label": f"Category_{i}",
+            "path_index": 0,
+            "score": 0.9,
+            "passes": True,
+            "rationale": f"slot {i}",
+        }
+        for i in range(COMPETENCIES_FINAL_CATEGORY_COUNT)
+    ]
+    captured: dict[str, object] = {}
+
+    class FakeJudge:
+        provider_key = "openai_chatgpt"
+        provider_name = "OpenAI ChatGPT"
+        model_name = "gpt-test"
+        provider_status = "MODEL_BACKED_PASS"
+        exact_provider_error = None
+        pass_ = True
+        rationale = "test-model-source"
+
+        def to_dict(self):
+            return {
+                "provider_key": self.provider_key,
+                "provider_name": self.provider_name,
+                "model_name": self.model_name,
+                "provider_status": self.provider_status,
+                "exact_provider_error": self.exact_provider_error,
+                "pass": True,
+                "pass_": True,
+                "rationale": self.rationale,
+            }
+
+    monkeypatch.delenv("APPS_RG_POOL_SELECTOR_TIMEOUT_SECONDS", raising=False)
+    monkeypatch.delenv("APPS_RG_EXTERNAL_PROVIDER_TIMEOUT_MAX_SECONDS", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "fake-openai-key")
+    monkeypatch.setattr(sel, "bootstrap_apps_rg_env", lambda: None)
+    monkeypatch.setattr(
+        sel,
+        "resolve_selector_provider_model",
+        lambda _role: ("openai_chatgpt", "gpt-test", "test-model-source"),
+    )
+
+    def fake_openai_selector(**kwargs):
+        captured["timeout_s"] = kwargs["timeout_s"]
+        return FakeJudge(), {"selections": selections, "pool_summary": {}}
+
+    monkeypatch.setattr(sel, "_call_openai_pool_selector", fake_openai_selector)
+
+    sel.run_claude_bullet_pool_selection(
+        section_id="competencies",
+        slot_kind="competencies",
+        paths=paths,
+        targeting_context={
+            "allowed_fact_ids": ["bul_001"],
+            "allowed_skill_ids": [],
+            "resume_support_blob_lower": "bul_001 alpha beta",
+        },
+        mode="blocked_if_unavailable",
+    )
+
+    assert captured["timeout_s"] == sel.DEFAULT_COMPETENCIES_POOL_SELECTOR_TIMEOUT_SECONDS
 
 
 def test_w3_no_hardcoded_60s_selector_timeout():

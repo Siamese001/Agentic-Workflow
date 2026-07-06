@@ -124,7 +124,7 @@ GENERIC_CONSULTING_SUBSTITUTIONS: frozenset[str] = frozenset({
 _TECH_TOKEN_PATTERN = re.compile(
     r"\b(?:"
     r"aws|azure|gcp|databricks|kafka|kubernetes|docker|terraform|"
-    r"python|scala|spark|sql|api|rest|graphql|microservices|"
+    r"python|scala|spark|sql|api|rest|graphql|hpc|microservices|"
     r"llm|gpt|claude|ai|ml|nlp|rag|graphrag|vector|embedding|"
     r"lineage|observability|telemetry|latency|throughput|sla|uptime|"
     r"runtime|control.plane|route.policy|deterministic|policy.gate|"
