@@ -213,6 +213,23 @@ def _pid_from_heartbeat() -> int | None:
     return None
 
 
+def _configured_route(server: str) -> tuple[str, str]:
+    try:
+        data = json.loads((_REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return "", ""
+    servers = data.get("mcpServers")
+    cfg = servers.get(server) if isinstance(servers, dict) else None
+    if not isinstance(cfg, dict):
+        return "", ""
+    endpoint = str(cfg.get("url") or cfg.get("serverUrl") or "").strip()
+    if endpoint:
+        return "http", endpoint
+    if cfg.get("command"):
+        return "stdio", ""
+    return "", ""
+
+
 def _record_route_proof(
     *,
     server: str,
@@ -223,6 +240,7 @@ def _record_route_proof(
 ) -> Path | None:
     if server not in _REQUIRED_ROUTE_SERVERS or not tool:
         return None
+    route_kind, endpoint = _configured_route(server)
     return write_callability_proof(
         server_id=server,
         tool=tool,
@@ -230,6 +248,8 @@ def _record_route_proof(
         repo_root=_REPO_ROOT,
         session_id=_session_id(payload),
         pid=pid,
+        route_kind=route_kind,
+        endpoint=endpoint,
     )
 
 

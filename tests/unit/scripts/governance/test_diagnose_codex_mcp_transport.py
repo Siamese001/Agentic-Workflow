@@ -52,7 +52,7 @@ def _route(classification: str, **overrides: object) -> dict:
     return route
 
 
-def test_closed_transport_maps_to_server_healthy_transport_closed(tmp_path: Path) -> None:
+def test_closed_transport_maps_to_legacy_stdio_closed(tmp_path: Path) -> None:
     _write_registry(tmp_path, "adg_sqlite")
     report = _report(
         {
@@ -72,7 +72,7 @@ def test_closed_transport_maps_to_server_healthy_transport_closed(tmp_path: Path
         adg_transport_checker=lambda **kwargs: {"status": "closed_transport", "open": False},
     )
 
-    assert diagnosis["classification"] == "server_healthy_codex_transport_closed"
+    assert diagnosis["classification"] == "legacy_stdio_closed"
     assert diagnosis["shell_reopen_supported"] is False
     assert "Host/TUI MCP reconnect" in diagnosis["recommended_action"]
     assert diagnosis["degraded_fallback_available"] is False
@@ -193,7 +193,7 @@ def test_all_required_aggregate_summary_counts_core_route_classes(tmp_path: Path
     assert aggregate["counts"]["process_only_count"] == 1
     assert aggregate["counts"]["duplicate_cohort_count"] == 1
     assert aggregate["counts"]["stale_proof_count"] == 0
-    assert aggregate["servers"]["adg_sqlite"]["classification"] == "server_healthy_codex_transport_closed"
+    assert aggregate["servers"]["adg_sqlite"]["classification"] == "legacy_stdio_closed"
     assert aggregate["servers"]["GitKraken"]["classification"] == "process_only_callability_unproven"
     assert aggregate["servers"]["vector_db"]["classification"] == "duplicate_cohort"
     assert "recommended_action" in aggregate["servers"]["memory"]
@@ -217,6 +217,60 @@ def test_stale_historical_route_proof_is_separate_from_process_only(tmp_path: Pa
     assert aggregate["servers"]["memory"]["classification"] == "stale_callability_proof"
     assert aggregate["counts"]["stale_proof_count"] == 1
     assert aggregate["counts"]["process_only_count"] == 0
+
+
+def test_http_unproven_route_keeps_reload_and_tool_proof_action(tmp_path: Path) -> None:
+    _write_registry(tmp_path, "memory")
+    report = _report(
+        {
+            "memory": _route(
+                "codex_http_route_unproven",
+                route_kind="http",
+                configured_url="http://127.0.0.1:8766/mcp",
+            )
+        },
+        {"memory": {"classification": "single", "process_count": 1}},
+    )
+
+    diagnosis = mod.build_diagnosis("memory", report=report, root=tmp_path)
+
+    assert diagnosis["classification"] == "codex_http_route_unproven"
+    assert diagnosis["codex_restart_required"] is True
+    assert "fresh active-session tool-call proof" in diagnosis["recommended_action"]
+
+
+def test_http_service_down_is_not_treated_as_stdio_closed(tmp_path: Path) -> None:
+    _write_registry(tmp_path, "memory")
+    report = _report(
+        {"memory": _route("http_service_down", route_kind="http")},
+        {"memory": {"classification": "none", "process_count": 0}},
+    )
+
+    diagnosis = mod.build_diagnosis("memory", report=report, root=tmp_path)
+
+    assert diagnosis["classification"] == "http_service_down"
+    assert diagnosis["codex_restart_required"] is False
+    assert "Start or restart" in diagnosis["recommended_action"]
+
+
+def test_http_callable_route_counts_as_callable(tmp_path: Path) -> None:
+    _write_registry(tmp_path, "memory")
+    report = _report(
+        {
+            "memory": _route(
+                "codex_http_route_callable",
+                callable_status="healthy",
+                callability_proof={"status": "healthy"},
+            )
+        },
+        {"memory": {"classification": "single", "process_count": 1}},
+    )
+
+    diagnosis = mod.build_diagnosis("memory", report=report, root=tmp_path)
+
+    assert diagnosis["classification"] == "codex_http_route_callable"
+    assert diagnosis["codex_restart_required"] is False
+    assert "No recovery needed" in diagnosis["recommended_action"]
 
 
 def _diagnosis(
@@ -278,6 +332,22 @@ def test_recovery_receipt_rejects_process_only_after_state() -> None:
     assert receipt["recovery_status"] == "FAIL_CLOSED"
     assert receipt["validation"]["reason"] == "process_only_proof_rejected"
     assert receipt["after_proof_status"] == "absent"
+
+
+def test_recovery_receipt_passes_http_callable_after_state() -> None:
+    receipt = receipt_mod.build_recovery_receipt(
+        server_id="memory",
+        before_diagnosis=_diagnosis("codex_http_route_unproven", epoch_id="before", proof_status="absent"),
+        after_diagnosis=_diagnosis("codex_http_route_callable", epoch_id="after", proof_status="healthy"),
+        operator_action="codex_mcp_client_reload",
+        codex_restart_used=True,
+        host_tui_reconnect_used=False,
+        generated_at=datetime(2026, 7, 5, 12, 0, tzinfo=UTC),
+    )
+
+    assert receipt["recovery_status"] == "PASS"
+    assert receipt["after_classification"] == "codex_http_route_callable"
+    assert receipt["validation"]["reason"] == "fresh_active_tool_proof_present"
 
 
 def test_recovery_receipt_rejects_callable_without_fresh_proof() -> None:

@@ -40,10 +40,21 @@ STALE_PROOF_STATUSES = {
     "session_mismatch",
     "dead_pid",
 }
-CALLABLE_CLASSIFICATIONS = {"CALLABLE"}
+CALLABLE_CLASSIFICATIONS = {"CALLABLE", "CODEX_HTTP_ROUTE_CALLABLE"}
 PLUGIN_CLASSIFICATIONS = {"PLUGIN_SUBSTITUTE"}
 SUBSTITUTE_CLASSIFICATIONS = {"SUBSTITUTE_CALLABLE"}
-NON_BLOCKING_CLASSIFICATIONS = {"callable", "plugin_substitute", "substitute_callable"}
+HTTP_ROUTE_CLASSIFICATIONS = {
+    "http_service_down",
+    "http_protocol_unhealthy",
+    "codex_http_route_unproven",
+    "codex_http_route_callable",
+}
+NON_BLOCKING_CLASSIFICATIONS = {
+    "callable",
+    "codex_http_route_callable",
+    "plugin_substitute",
+    "substitute_callable",
+}
 
 
 def _load_configured_servers(root: Path = ROOT) -> set[str]:
@@ -124,6 +135,7 @@ def _is_closed_transport(route_state: dict[str, Any], adg_status: dict[str, Any]
         str(route_state.get("callable_status") or "").strip().lower() == "closed_transport"
         or str(route_state.get("fallback_message_key") or "").strip().lower() == "closed_transport"
         or str(route_state.get("classification") or "").strip().upper() == "EXPOSED_BLOCKED"
+        or str(route_state.get("classification") or "").strip().lower() == "legacy_stdio_closed"
         or str((adg_status or {}).get("status") or "").strip().lower() == "closed_transport"
     )
 
@@ -168,8 +180,12 @@ def _classify(
     if not route_state:
         return "no_route_contract"
 
-    route_classification = str(route_state.get("classification") or "").strip().upper()
+    route_classification_raw = str(route_state.get("classification") or "").strip()
+    route_classification = route_classification_raw.upper()
+    route_classification_lower = route_classification_raw.lower()
     callable_status = str(route_state.get("callable_status") or "").strip().lower()
+    if route_classification_lower in HTTP_ROUTE_CLASSIFICATIONS:
+        return route_classification_lower
     if route_classification in CALLABLE_CLASSIFICATIONS or callable_status == "healthy":
         return "callable"
     if route_classification in PLUGIN_CLASSIFICATIONS or callable_status == "plugin_callable":
@@ -177,7 +193,7 @@ def _classify(
     if route_classification in SUBSTITUTE_CLASSIFICATIONS or callable_status == "substitute_callable":
         return "substitute_callable"
     if _is_closed_transport(route_state, adg_status):
-        return "server_healthy_codex_transport_closed"
+        return "legacy_stdio_closed"
 
     stale_status = _stale_proof_status(route_state, epoch_proof, adg_status)
     if stale_status:
@@ -198,11 +214,28 @@ def _recommended_action(classification: str, server_id: str) -> str:
     proof_tool = "mcp__adg_sqlite.adg_health" if server_id == "adg_sqlite" else f"mcp__{server_id}.<health_or_identity_tool>"
     if classification == "callable":
         return "No recovery needed; active Codex MCP callability proof is present."
+    if classification == "codex_http_route_callable":
+        return "No recovery needed; the HTTP route has fresh active-session Codex tool-call proof for the configured endpoint."
+    if classification == "http_service_down":
+        return (
+            f"Start or restart the repo-managed HTTP MCP service for {server_id}, verify the configured URL, "
+            "then prove a live Codex MCP tool call before marking the route green."
+        )
+    if classification == "http_protocol_unhealthy":
+        return (
+            f"The {server_id} HTTP service is present but initialize/tools-list is not healthy. "
+            "Inspect the HTTP service log and protocol probe result; do not treat a listening port as callability proof."
+        )
+    if classification == "codex_http_route_unproven":
+        return (
+            f"The configured HTTP service may be running, but Codex has no fresh active-session tool-call proof for it. "
+            f"Reload/reconnect the MCP client if needed, then prove a live {proof_tool} call against the configured endpoint."
+        )
     if classification == "plugin_substitute":
         return "Use the documented Codex plugin substitute; no raw MCP transport recovery is required for this route."
     if classification == "substitute_callable":
         return "Use the documented callable substitute and do not claim raw MCP parity."
-    if classification == "server_healthy_codex_transport_closed":
+    if classification in {"server_healthy_codex_transport_closed", "legacy_stdio_closed"}:
         return (
             "Host/TUI MCP reconnect is required; a shell cannot reattach Codex to a closed stdio transport. "
             f"Use Codex host MCP management, then prove a live {proof_tool} call before setting callability overrides."
@@ -231,9 +264,18 @@ def _recommended_action(classification: str, server_id: str) -> str:
 
 
 def _codex_restart_required(classification: str) -> bool | str:
-    if classification in {"callable", "plugin_substitute", "substitute_callable", "degraded_fallback_available", "not_configured"}:
+    if classification in {
+        "callable",
+        "codex_http_route_callable",
+        "plugin_substitute",
+        "substitute_callable",
+        "degraded_fallback_available",
+        "not_configured",
+        "http_service_down",
+        "http_protocol_unhealthy",
+    }:
         return False
-    if classification == "host_mcp_required":
+    if classification in {"host_mcp_required", "codex_http_route_unproven"}:
         return True
     return "unknown"
 
@@ -300,7 +342,7 @@ def build_diagnosis(
     }
     if adg_status is not None:
         evidence["adg_transport_status"] = adg_status
-    if classification == "server_healthy_codex_transport_closed":
+    if classification in {"server_healthy_codex_transport_closed", "legacy_stdio_closed"}:
         evidence["transport_rca"] = codex_readiness._closed_transport_rca(server_id, route_state)  # noqa: SLF001
 
     return {
@@ -385,7 +427,8 @@ def _aggregate_counts(diagnoses: dict[str, dict[str, Any]], configured_servers: 
         "required_route_count": sum(1 for server_id in REQUIRED_CORE_SERVERS if server_id in diagnoses),
         "diagnosed_route_count": len(diagnoses),
         "configured_route_count": len(configured_servers),
-        "callable_count": classification_counts.get("callable", 0),
+        "callable_count": classification_counts.get("callable", 0)
+        + classification_counts.get("codex_http_route_callable", 0),
         "blocked_count": sum(
             1
             for diagnosis in diagnoses.values()
@@ -394,6 +437,10 @@ def _aggregate_counts(diagnoses: dict[str, dict[str, Any]], configured_servers: 
         "process_only_count": classification_counts.get("process_only_callability_unproven", 0),
         "duplicate_cohort_count": classification_counts.get("duplicate_cohort", 0),
         "stale_proof_count": classification_counts.get("stale_callability_proof", 0),
+        "http_service_down_count": classification_counts.get("http_service_down", 0),
+        "http_protocol_unhealthy_count": classification_counts.get("http_protocol_unhealthy", 0),
+        "codex_http_route_unproven_count": classification_counts.get("codex_http_route_unproven", 0),
+        "legacy_stdio_closed_count": classification_counts.get("legacy_stdio_closed", 0),
         "classification_counts": dict(sorted(classification_counts.items())),
     }
 

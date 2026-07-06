@@ -25,13 +25,44 @@ if str(REPO_ROOT) not in sys.path:
 
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("PYTHONUNBUFFERED", "1")
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
-logging.basicConfig(
-    level=logging.INFO,
-    stream=sys.stderr,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    force=True,
-)
+_STDERR_LEVELS: dict[str, int] = {
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+
+
+def _resolve_stderr_level(raw: str | None) -> int | None:
+    normalized = (raw or "WARNING").strip().upper()
+    if normalized == "QUIET":
+        return None
+    return _STDERR_LEVELS.get(normalized, logging.WARNING)
+
+
+def _configure_logging_from_env() -> None:
+    level = _resolve_stderr_level(os.environ.get("MCP_STDERR_LEVEL"))
+    if level is None:
+        logging.disable(logging.CRITICAL)
+        return
+
+    log_path = (os.environ.get("MCP_STDERR_LOG_PATH") or "").strip()
+    handler: logging.Handler
+    if log_path:
+        try:
+            path = Path(log_path)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            handler = logging.FileHandler(path, encoding="utf-8")
+        except OSError:
+            handler = logging.StreamHandler(sys.stderr)
+    else:
+        handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
+    logging.basicConfig(level=level, handlers=[handler], force=True)
+
+
+_configure_logging_from_env()
 
 # Lazy import to allow module to be imported without MCP installed
 # FastMCP will be imported on first use in create_mcp_server()

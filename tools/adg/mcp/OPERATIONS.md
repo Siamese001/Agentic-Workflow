@@ -3,21 +3,28 @@
 ## Canonical launch path
 
 ```
-python -m tools.mcp.launch_adg_sqlite_mcp
+python -m tools.mcp.launch_adg_sqlite_http_mcp
 ```
 
-This supervised launcher is the only supported launch path. It runs preflight
-checks, normalizes ADG environment variables, writes transport state under
-`artifacts/mcp_heartbeat/`, and then starts the stdio MCP server.
+This persistent Streamable HTTP launcher is the primary supported Codex route.
+It runs preflight checks, normalizes ADG environment variables, writes launcher
+state under `artifacts/mcp_heartbeat/`, writes service JSONL receipts under
+`artifacts/mcp/`, and then starts the FastMCP Streamable HTTP service.
 
 It is configured in root `.mcp.json` as:
 ```json
-"command": "python", "args": ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"]
+"url": "http://127.0.0.1:8765/mcp"
 ```
 
-For manual Windows launches, `tools\\adg\\mcp\\run_server.bat` delegates to the
-same supervised launcher after resolving the repository root and setting
-`PYTHONPATH` from that root. Do not pass `ADG_DIR` from a global
+The legacy stdio launcher remains available only as a fallback/probe:
+
+```
+python -m tools.mcp.launch_adg_sqlite_mcp
+```
+
+For manual Windows stdio fallback launches, `tools\\adg\\mcp\\run_server.bat`
+delegates to the supervised stdio launcher after resolving the repository root
+and setting `PYTHONPATH` from that root. Do not pass `ADG_DIR` from a global
 `AGENTIC_REPO_ROOT`; stale values can point the MCP at another checkout.
 
 `tools/adg/mcp/server.py` remains the internal FastMCP server implementation.
@@ -32,14 +39,19 @@ same-parent launchers from a Codex restart cannot keep owning heartbeat files
 or split the stdio route. A currently running broken transport must be restarted
 to load this launcher code.
 
+The HTTP launcher does not kill existing stdio processes. If the HTTP service is
+down, restart only the repo-managed HTTP MCP service and then prove a live Codex
+HTTP route call. Do not use process liveness, heartbeat files, or direct SQLite
+preflight as active-session proof.
+
 ## Restart decision table
 
 Two distinct restart types exist. Choosing the wrong one wastes time.
 
 | Change made | Action required | Why |
 |---|---|---|
-| Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Toggle adg_sqlite OFF then ON** in legacy editor MCP Settings | legacy editor kills and respawns the subprocess, loading fresh `.py` files |
-| Edited `.mcp.json` (command, args, **env**) | **Restart the MCP client session** | MCP clients read subprocess config at startup; per-server toggles can reuse a stale command. This includes `ADG_REDIS_URL` changes. |
+| Edited `server.py`, `service.py`, `sqlite_backend.py`, or `models.py` | **Restart the repo-managed ADG HTTP MCP service** | The persistent service must reload edited Python code |
+| Edited `.mcp.json` route URL | **Restart/reload the MCP client session once** | MCP clients read route URLs at startup; service restarts do not update client config |
 | New SQLite snapshot available (`adg_indexed_*.sqlite`) | Call **`adg_reload`** MCP tool | Data-only reload; does not restart the process or reload code |
 
 ## Verifying a restart took effect
@@ -48,20 +60,20 @@ Out-of-band transport check:
 
 ```
 python tools/mcp/check_adg_sqlite_transport.py --json
+python scripts/governance/probe_mcp_http_server.py --url http://127.0.0.1:8765/mcp --tool adg_health --json
 ```
 
 This check is fail-closed for Codex callability: heartbeat/process evidence is
-not enough for `status=open`. It reports open only when a fresh authoritative
-heartbeat is paired with active-session callability proof whose PID is alive and
-matches the heartbeat owner. Proof can come from either:
+not enough for `status=open`. For the HTTP route, ADG opens only when the
+current-session callability ledger
+`artifacts/mcp/codex_mcp_callability_proofs.json` contains a fresh
+`route_kind=http` proof for `adg_sqlite`, the proof endpoint matches
+`http://127.0.0.1:8765/mcp`, and the tool is one of
+`adg_health`, `adg_runtime_info`, or `adg_process_identity`.
 
-- `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` plus
-  `CODEX_MCP_ATTACHED_ADG_SQLITE_PID=<pid>`, set only after a live
-  `mcp__adg_sqlite.adg_health`, `adg_runtime_info`, or `adg_process_identity`
-  call succeeds in the active Codex session.
-- The Codex `PostToolUse` hook `.codex/hooks/after_mcp_execution.py`, which
-  records a short-lived proof file under `artifacts/mcp_heartbeat/` after one
-  of those ADG proof tools succeeds.
+Legacy `CODEX_MCP_CALLABLE_ADG_SQLITE=healthy` and attached-PID proof can help
+diagnose stdio fallback behavior, but it does not open the primary HTTP route
+because it cannot prove the active Codex client used the configured URL.
 
 Ordinary T2/T3 prompts are blocked while this check is not open; explicit ADG
 transport recovery/RCA prompts may proceed so the route can be repaired.
@@ -133,7 +145,20 @@ Root `.mcp.json` is the project MCP SSOT. After editing it, validate and sync
 generated references:
 
 ```
-python .codex/governance/scripts/sync_mcp_config.py
+python .codex/governance/scripts/sync_mcp_config.py --check
+python .codex/governance/scripts/sync_mcp_config.py --dry-run
+python .codex/governance/scripts/sync_mcp_config.py --sync-user-config
 ```
 
-Then restart the MCP client session so it reads the new command.
+Then perform one controlled MCP client config reload so it reads the new URL
+route.
+
+## HTTP recovery sequence
+
+Use this order when ADG reports `Transport closed` or `codex_http_route_unproven`:
+
+1. Run `python scripts/governance/diagnose_codex_mcp_transport.py --server adg_sqlite --json`.
+2. If the class is `http_service_down`, restart only `python -m tools.mcp.launch_adg_sqlite_http_mcp`.
+3. If the class is `http_protocol_unhealthy`, inspect `artifacts/mcp/adg_sqlite_http_service.jsonl` and rerun the HTTP probe above.
+4. If the class is `codex_http_route_unproven`, reload/reconnect the Codex MCP client once, then call live `mcp__adg_sqlite.adg_health` or `mcp__adg_sqlite.adg_process_identity`.
+5. Record the recovery receipt only after a fresh active-session proof exists. Process liveness, heartbeat freshness, direct SQLite, port-open, curl, and tools/list are diagnostics only.

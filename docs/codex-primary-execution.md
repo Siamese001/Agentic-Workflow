@@ -126,7 +126,7 @@ python scripts/governance/codex_publication_audit.py --json --require-publicatio
 The first form reports remaining branches as warnings for planning. The `--require-ancestor-cleanup`
 form is a closeout gate and fails while any branch remains outside `origin/main`.
 
-Every enabled server in root `.mcp.json` is part of the Codex startup MCP set for this repo. The repo-owned projection into Codex Desktop config marks those servers `required = true`, which is the host-owned spawn/reattach path: a new chat should fail startup/resume rather than silently omit a configured MCP.
+Every enabled server in root `.mcp.json` is part of the Codex startup MCP set for this repo. The repo-owned projection into Codex Desktop config marks those servers `required = true`, which is the host-owned spawn/reattach path: a new chat should fail startup/resume rather than silently omit a configured MCP. `adg_sqlite` and `memory` use persistent Streamable HTTP URL routes (`http://127.0.0.1:8765/mcp` and `http://127.0.0.1:8766/mcp`) instead of primary Python stdio commands; their stdio launchers are fallback/probe tools only.
 
 Keep the user-level Codex runtime projection synchronized before relying on a new chat:
 
@@ -135,9 +135,11 @@ python .codex/governance/scripts/sync_mcp_config.py --sync-user-config --json
 python .codex/governance/scripts/sync_mcp_config.py --check-user-config --json
 ```
 
-The SessionStart hook runs `.codex/hooks/session_start_mcp_bootstrap.py`, which refreshes that projection and runs advisory health probes. It does not claim detached stdio subprocesses as host-attached MCP parity.
+The SessionStart hook runs `.codex/hooks/session_start_mcp_bootstrap.py`, which refreshes that projection and runs advisory health probes. It does not claim detached stdio subprocesses, HTTP service process liveness, port-open checks, or protocol-only initialize/tools-list probes as host-attached MCP parity.
 
-Shell-side scripts cannot see the live Codex MCP namespace. When a core route is proven callable by the active Codex session, pass evidence through the existing environment convention:
+Shell-side scripts cannot see the live Codex MCP namespace. For legacy stdio routes,
+an operator may pass evidence through the existing environment convention only
+after a live Codex MCP tool call succeeds in the same verification context:
 
 ```text
 CODEX_MCP_CALLABLE_MEMORY=healthy
@@ -147,17 +149,17 @@ CODEX_MCP_CALLABLE_ADG_SQLITE=healthy
 
 Accepted status values are inherited from `scripts/governance/audit_codex_mcp_transports.py`: `healthy`, `closed_transport`, `plugin_callable`, `substitute_callable`, and `absent`.
 
-ADG has an additional hard per-turn and readiness gate: ordinary T2/T3 prompts require
-`tools.adg.mcp.supervisor.transport_status().status == "open"`. A readable
-SQLite snapshot and a live ADG process are necessary but not sufficient when the
-active Codex MCP route is closed. The ADG PostToolUse proof hook writes a
-short-lived proof file after `adg_health`, `adg_runtime_info`, or
-`adg_process_identity` succeeds; explicit ADG transport recovery/RCA prompts may
-proceed while the proof is absent so the route can be repaired.
+For HTTP routes, including `adg_sqlite` and `memory`, environment overrides are
+not sufficient because they cannot prove which endpoint the active Codex client
+used. The PostToolUse callability ledger at
+`artifacts/mcp/codex_mcp_callability_proofs.json` must show `route_kind=http`,
+the configured endpoint, and a fresh `healthy` proof.
+
+ADG has an additional hard per-turn and readiness gate: ordinary T2/T3 prompts require the configured route to be callable in the active Codex session. A readable SQLite snapshot, a live ADG process, an HTTP service heartbeat, port-open checks, and HTTP initialize/tools-list are necessary diagnostics but not sufficient green proof. The ADG PostToolUse proof hook writes a short-lived ledger entry after `adg_health`, `adg_runtime_info`, or `adg_process_identity` succeeds against the configured HTTP endpoint; explicit ADG transport recovery/RCA prompts may proceed while the proof is absent so the route can be repaired.
 
 ## MCP Lifecycle Cleanup Guard
 
-Process presence is not transport ownership. Do not kill Codex-owned MCP child processes by hand; the OS process table cannot prove which child owns the active stdio transport.
+Process presence is not transport ownership. Do not kill Codex-owned MCP child processes by hand; the OS process table cannot prove which child owns the active stdio transport or whether a Codex HTTP URL route is callable.
 
 Historical route-contract files under `docs/reports/codex/` are snapshots. They do not prove current-session callability unless the active session also provides live proof through `CODEX_MCP_CALLABLE_<SERVER_ID>=healthy`, or an operator deliberately sets `CODEX_MCP_TRUST_ROUTE_CONTRACT=1` for the same verification context.
 
@@ -167,7 +169,8 @@ Use the read-only audit first:
 python scripts/governance/audit_codex_mcp_transports.py --json
 ```
 
-When a specific server reports `Transport closed` or process-only callability,
+When a specific server reports `Transport closed`, process-only callability, or
+`codex_http_route_unproven`,
 use the read-only diagnosis wrapper before any cleanup decision:
 
 ```bash
@@ -175,9 +178,17 @@ python scripts/governance/diagnose_codex_mcp_transport.py --server adg_sqlite --
 ```
 
 The diagnosis command does not launch servers, kill processes, or call Codex MCP
-tools. It distinguishes host/TUI reconnect requirements from process-only
-evidence, stale callability proof, duplicate cohorts, and explicitly degraded
-fallbacks.
+tools. It distinguishes `http_service_down`, `http_protocol_unhealthy`,
+`codex_http_route_unproven`, `codex_http_route_callable`,
+`legacy_stdio_closed`, stale callability proof, duplicate cohorts, and
+explicitly degraded fallbacks.
+
+Recovery order for `adg_sqlite` and `memory` HTTP routes:
+
+1. If classification is `http_service_down`, restart only the repo-managed HTTP MCP service (`python -m tools.mcp.launch_adg_sqlite_http_mcp` or `python -m tools.mcp.launch_memory_http_mcp`) and rerun direct HTTP probe/stress.
+2. If classification is `http_protocol_unhealthy`, inspect the service JSONL log and rerun `python scripts/governance/probe_mcp_http_server.py --url <configured-url> --tool <health-tool> --json`.
+3. If classification is `codex_http_route_unproven`, perform one controlled MCP client reload/reconnect so Codex reads the URL route, then prove a live active-session tool call (`mcp__adg_sqlite.adg_health` or `mcp__memory.memory_health`). Do not count the direct probe as green.
+4. Record the recovery attempt with `python scripts/governance/record_codex_mcp_recovery_receipt.py --server <server-id> --before-diagnosis <before.json> --after-diagnosis <after.json> --operator-action <action>`. A receipt passes only when after-state has fresh active-session proof and no unsafe process kill.
 
 Then inspect the guarded cleanup plan:
 

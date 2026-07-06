@@ -425,9 +425,9 @@ def test_same_parent_older_sibling_pids_ignores_invalid_or_incomplete_rows() -> 
     assert result == []
 
 
-def test_root_mcp_config_uses_supervised_launcher() -> None:
+def test_root_mcp_config_uses_http_route() -> None:
     config = json.loads((REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
     adg_sqlite = config["mcpServers"]["adg_sqlite"]
 
-    assert adg_sqlite["command"] == "python"
-    assert adg_sqlite["args"] == ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"]
+    assert adg_sqlite["url"] == "http://127.0.0.1:8765/mcp"
+    assert "command" not in adg_sqlite

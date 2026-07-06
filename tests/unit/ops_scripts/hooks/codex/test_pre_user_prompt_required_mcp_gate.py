@@ -137,6 +137,32 @@ def test_protocol_green_still_blocks_when_callability_route_red(
     assert "classification=PROCESS_ONLY" in err
 
 
+def test_http_callable_route_classification_passes_callability_check(monkeypatch) -> None:
+    monkeypatch.delenv(gate.CALLABILITY_SERVER_LIST_ENV, raising=False)
+
+    def fake_build_report() -> dict[str, Any]:
+        return {
+            "route_evidence": {
+                "available": True,
+                "servers": {
+                    "memory": {"classification": "codex_http_route_callable"},
+                    "GitKraken": {"classification": "SUBSTITUTE_CALLABLE"},
+                    "adg_sqlite": {"classification": "codex_http_route_callable"},
+                    "vector_db": {"classification": "CALLABLE"},
+                },
+            }
+        }
+
+    class Audit:
+        @staticmethod
+        def build_report() -> dict[str, Any]:
+            return fake_build_report()
+
+    monkeypatch.setitem(sys.modules, "audit_codex_mcp_transports", Audit)
+
+    assert gate._check_required_route_callability(gate.DEFAULT_CALLABILITY_REQUIRED_SERVERS) == []
+
+
 def test_mcp_repair_prompt_allows_without_probing(tmp_path: Path, monkeypatch, capsys) -> None:
     config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)

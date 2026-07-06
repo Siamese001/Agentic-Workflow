@@ -38,6 +38,8 @@ SCRIPT_PATHS = [
     "tools/mcp/pytest_server.py",
     "tools/otel/otel_mcp_server.py",
     "tools/adg/adg_redis_ingest.py",
+    "tools/mcp/launch_adg_sqlite_http_mcp.py",
+    "tools/mcp/launch_memory_http_mcp.py",
 ]
 
 
@@ -51,12 +53,13 @@ PROCESS_MARKERS = {
             "tools.adg.mcp.server",
             "tools/adg/mcp/server.py",
             "tools.mcp.launch_adg_sqlite_mcp",
+            "tools.mcp.launch_adg_sqlite_http_mcp",
         ],
-        "expected": "single-python-stdio-server",
+        "expected": "single-python-mcp-service",
     },
     "memory": {
-        "markers": ["adg_memory_server.py"],
-        "expected": "single-python-stdio-server",
+        "markers": ["adg_memory_server.py", "tools.mcp.launch_memory_http_mcp"],
+        "expected": "single-python-mcp-service",
     },
     "vector_db": {
         "markers": ["vector_db_server.py"],
@@ -97,6 +100,13 @@ TRUST_ROUTE_CONTRACT_ENV = "CODEX_MCP_TRUST_ROUTE_CONTRACT"
 ROUTE_CONTRACT_GLOB = "codex_mcp_live_route_contract.json"
 ALWAYS_ON_CORE_SERVERS = frozenset({"GitKraken", "adg_sqlite", "memory"})
 PROVEN_CALLABLE_STATUSES = frozenset({"healthy"})
+ADG_HTTP_PROOF_TOOLS = frozenset({"adg_health", "adg_runtime_info", "adg_process_identity"})
+REPO_MANAGED_HTTP_SERVERS = frozenset({"adg_sqlite", "memory"})
+HTTP_SERVICE_DOWN = "http_service_down"
+HTTP_PROTOCOL_UNHEALTHY = "http_protocol_unhealthy"
+CODEX_HTTP_ROUTE_UNPROVEN = "codex_http_route_unproven"
+CODEX_HTTP_ROUTE_CALLABLE = "codex_http_route_callable"
+LEGACY_STDIO_CLOSED = "legacy_stdio_closed"
 
 
 def _safe_cmdline(cmdline: list[str]) -> list[str]:
@@ -195,7 +205,7 @@ def _processes() -> dict[str, Any]:
             classification = "unexpected_live_process"
         elif expected == "single-process-stdio-server":
             classification = "single" if len(rows) == 1 else "duplicate"
-        elif expected == "single-python-stdio-server":
+        elif expected in {"single-python-stdio-server", "single-python-mcp-service"}:
             classification = "single" if len(rows) == 1 else "duplicate"
         elif expected == "single-npx-launch-tree":
             classification = "single_launch_tree" if len(root_launchers) <= 1 else "duplicate_launch_tree"
@@ -245,9 +255,9 @@ def _env_callable_status(server_id: str) -> str:
     return "absent"
 
 
-def _file_callable_status(server_id: str) -> dict[str, Any]:
+def _file_callable_status(server_id: str, *, root: Path | None = None) -> dict[str, Any]:
     try:
-        status = mcp_callability_epoch.proof_status(server_id, repo_root=ROOT)
+        status = mcp_callability_epoch.proof_status(server_id, repo_root=root or ROOT)
     except (OSError, RuntimeError, ValueError, TypeError) as exc:
         return {
             "server_id": server_id,
@@ -257,9 +267,134 @@ def _file_callable_status(server_id: str) -> dict[str, Any]:
     return status
 
 
-def _callable_status(server_id: str) -> tuple[str, dict[str, Any]]:
+def _route_kind_from_config(config: dict[str, Any] | None) -> str:
+    if not isinstance(config, dict):
+        return "unknown"
+    if config.get("url") or config.get("serverUrl"):
+        return "http"
+    if config.get("command"):
+        return "stdio"
+    return "unknown"
+
+
+def _route_endpoint_from_config(config: dict[str, Any] | None) -> str:
+    if not isinstance(config, dict):
+        return ""
+    return str(config.get("url") or config.get("serverUrl") or "").strip()
+
+
+def _read_json_dict(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
+def _pid_alive(pid: Any) -> bool | None:
+    if not isinstance(pid, int) or pid <= 0:
+        return None
+    try:
+        import psutil  # type: ignore[import-not-found]
+    except Exception:  # pragma: no cover - environment dependent
+        return None
+    try:
+        return bool(psutil.pid_exists(pid))
+    except Exception:  # pragma: no cover - psutil backend dependent
+        return None
+
+
+def _http_service_state(server_id: str, configured_url: str, *, root: Path = ROOT) -> dict[str, Any]:
+    state_path = root / "artifacts" / "mcp_heartbeat" / f"{server_id}_http_launcher.json"
+    state = _read_json_dict(state_path)
+    if not state:
+        return {
+            "available": False,
+            "status": "absent",
+            "state_path": str(state_path),
+            "configured_url": configured_url,
+            "url_matches_config": False,
+        }
+    pid = state.get("pid")
+    pid_alive = _pid_alive(pid)
+    state_url = str(state.get("url") or "").strip()
+    return {
+        **state,
+        "available": True,
+        "state_path": str(state_path),
+        "configured_url": configured_url,
+        "url_matches_config": bool(configured_url and state_url == configured_url),
+        "pid_alive": pid_alive,
+    }
+
+
+def _http_service_down(service_state: dict[str, Any]) -> bool:
+    if not service_state.get("available"):
+        return True
+    if str(service_state.get("status") or "").strip().lower() != "running":
+        return True
+    if service_state.get("pid_alive") is False:
+        return True
+    if service_state.get("url_matches_config") is False:
+        return True
+    return False
+
+
+def _http_protocol_unhealthy(service_state: dict[str, Any]) -> bool:
+    explicit = str(service_state.get("protocol_status") or "").strip().lower()
+    if explicit in {"fail", "failed", "error", "unhealthy"}:
+        return True
+    protocol_probe = service_state.get("protocol_probe")
+    if isinstance(protocol_probe, dict):
+        status = str(protocol_probe.get("status") or "").strip().lower()
+        if status and status != "ok":
+            return True
+    preflight = service_state.get("preflight")
+    if isinstance(preflight, dict):
+        status = str(preflight.get("status") or "").strip().lower()
+        if status and status != "ok":
+            return True
+    return False
+
+
+def _http_proof_matches_route(server_id: str, configured_url: str, proof: dict[str, Any]) -> bool:
+    if str(proof.get("status") or "").strip().lower() != "healthy":
+        return False
+    if str(proof.get("route_kind") or "").strip().lower() != "http":
+        return False
+    if not configured_url or str(proof.get("endpoint") or "").strip() != configured_url:
+        return False
+    if server_id == "adg_sqlite":
+        tool = str(proof.get("tool") or "").strip()
+        if tool not in ADG_HTTP_PROOF_TOOLS:
+            return False
+    return True
+
+
+def http_route_acceptance(server_id: str, configured_url: str, proof: dict[str, Any]) -> dict[str, Any]:
+    """Explain whether a current-session proof is acceptable for a HTTP route."""
+    accepted = _http_proof_matches_route(server_id, configured_url, proof)
+    reasons: list[str] = []
+    if str(proof.get("status") or "").strip().lower() != "healthy":
+        reasons.append("proof_not_healthy")
+    if str(proof.get("route_kind") or "").strip().lower() != "http":
+        reasons.append("proof_route_kind_not_http")
+    if str(proof.get("endpoint") or "").strip() != configured_url:
+        reasons.append("proof_endpoint_mismatch")
+    if server_id == "adg_sqlite" and str(proof.get("tool") or "").strip() not in ADG_HTTP_PROOF_TOOLS:
+        reasons.append("adg_proof_tool_not_allowed")
+    return {
+        "accepted": accepted,
+        "required_route_kind": "http",
+        "required_endpoint": configured_url,
+        "required_tools": sorted(ADG_HTTP_PROOF_TOOLS) if server_id == "adg_sqlite" else [],
+        "reasons": [] if accepted else reasons,
+    }
+
+
+def _callable_status(server_id: str, *, root: Path | None = None) -> tuple[str, dict[str, Any]]:
     value = _env_callable_status(server_id)
-    file_status = _file_callable_status(server_id)
+    file_status = _file_callable_status(server_id, root=root)
     if value == "absent" and file_status.get("status") == "healthy":
         return "healthy", file_status
     return value, file_status
@@ -319,16 +454,37 @@ def _normalize_fallback_key(route: dict[str, Any]) -> str:
     return ""
 
 
-def classify_route(route: dict[str, Any], process_state: dict[str, Any], callable_status: str = "absent") -> str:
+def classify_route(
+    route: dict[str, Any],
+    process_state: dict[str, Any],
+    callable_status: str = "absent",
+    *,
+    route_kind: str = "stdio",
+    http_service_state: dict[str, Any] | None = None,
+    http_proof_accepted: bool = False,
+) -> str:
     """Classify a Codex MCP route without treating process presence as parity."""
     selected = _normalize_selected_route(route)
     fallback_key = _normalize_fallback_key(route)
+    server_id = str(route.get("server_id") or "").strip()
     process_count = int(process_state.get("process_count") or 0)
+    normalized_kind = str(route_kind or "stdio").strip().lower()
+
+    if normalized_kind == "http":
+        state = http_service_state or {}
+        if callable_status == "healthy" and http_proof_accepted:
+            return CODEX_HTTP_ROUTE_CALLABLE
+        if server_id in REPO_MANAGED_HTTP_SERVERS:
+            if _http_service_down(state):
+                return HTTP_SERVICE_DOWN
+            if _http_protocol_unhealthy(state):
+                return HTTP_PROTOCOL_UNHEALTHY
+        return CODEX_HTTP_ROUTE_UNPROVEN
 
     if callable_status == "healthy":
         return "CALLABLE"
     if callable_status == "closed_transport" or fallback_key == "closed_transport":
-        return "EXPOSED_BLOCKED"
+        return LEGACY_STDIO_CLOSED
     if selected == "raw_mcp_callable":
         return "PROCESS_ONLY" if process_count > 0 else "HOST_MCP_REQUIRED"
     if callable_status == "plugin_callable" or selected == "plugin_substitute":
@@ -349,34 +505,71 @@ def build_route_evidence(
     process_servers: dict[str, Any],
     *,
     trust_contract_callable_proof: bool = False,
+    registry_servers: dict[str, Any] | None = None,
+    http_service_states: dict[str, dict[str, Any]] | None = None,
+    root: Path | None = None,
 ) -> dict[str, Any]:
     if not contract:
         return {"available": False, "reason": "no route contract found", "servers": {}}
 
     classified: dict[str, Any] = {}
     counts: dict[str, int] = {}
+    registry = registry_servers if isinstance(registry_servers, dict) else {}
+    resolved_root = root or ROOT
     for route in contract.get("routes", []):
         server_id = str(route.get("server_id", ""))
         process_state = process_servers.get(server_id, {})
-        callable_status, file_callability_proof = _callable_status(server_id)
+        callable_status, file_callability_proof = _callable_status(server_id, root=resolved_root)
+        route_config = registry.get(server_id)
+        route_config = route_config if isinstance(route_config, dict) else {}
+        route_kind = _route_kind_from_config(route_config)
+        configured_url = _route_endpoint_from_config(route_config)
+        http_state = {}
+        http_acceptance: dict[str, Any] = {}
+        if route_kind == "http":
+            if http_service_states is not None and server_id in http_service_states:
+                http_state = dict(http_service_states[server_id])
+            else:
+                http_state = _http_service_state(server_id, configured_url, root=resolved_root)
+            http_acceptance = http_route_acceptance(
+                server_id,
+                configured_url,
+                file_callability_proof,
+            )
+            if http_acceptance.get("accepted"):
+                callable_status = "healthy"
+            elif callable_status == "healthy":
+                callable_status = "absent"
         if callable_status == "absent":
             callable_status = _route_callable_status(
                 route,
                 trust_contract_proof=trust_contract_callable_proof,
             )
-        classification = classify_route(route, process_state, callable_status)
+        classification = classify_route(
+            route,
+            process_state,
+            callable_status,
+            route_kind=route_kind,
+            http_service_state=http_state,
+            http_proof_accepted=bool(http_acceptance.get("accepted")),
+        )
         counts[classification] = counts.get(classification, 0) + 1
         classified[server_id] = {
             "classification": classification,
             "callable_status": callable_status,
             "selected_codex_route": route.get("selected_codex_route"),
             "fallback_message_key": route.get("fallback_message_key"),
+            "route_kind": route_kind,
+            "configured_url": configured_url,
             "process_classification": process_state.get("classification", "none"),
             "process_count": process_state.get("process_count", 0),
             "route_owner": route.get("route_owner"),
             "w2_decision": route.get("w2_decision"),
             "callability_proof": file_callability_proof,
         }
+        if route_kind == "http":
+            classified[server_id]["http_service_state"] = http_state
+            classified[server_id]["http_callability_acceptance"] = http_acceptance
 
     return {
         "available": True,
@@ -456,6 +649,8 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
             route_contract,
             processes.get("servers", {}),
             trust_contract_callable_proof=trust_contract_callable_proof,
+            registry_servers=servers,
+            root=ROOT,
         ),
     }
 
