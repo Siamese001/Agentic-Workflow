@@ -16,16 +16,14 @@ subclassing :class:`AuditLedger` and overriding ``_persist`` /
 from __future__ import annotations
 
 import threading
-import time
 import uuid
-from dataclasses import dataclass, field, replace
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass, replace
+from typing import Dict, List, Optional, Tuple
 
 from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 from agentic_core.L4_state.contracts.records import (
-    AuditLedgerRecord,
     L4_CONTRACT_SCHEMA_VERSION,
-    record_canonical_payload,
+    AuditLedgerRecord,
     stamp_digest,
 )
 

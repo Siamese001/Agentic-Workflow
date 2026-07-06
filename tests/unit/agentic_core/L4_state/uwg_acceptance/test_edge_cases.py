@@ -17,9 +17,6 @@ from agentic_core.L4_state.audit.audit_ledger import (
     AuditLedgerSequenceGapError,
 )
 from agentic_core.L4_state.contracts import (
-    AliasResolutionError,
-    BlueprintRecord,
-    CacheEntry,
     CacheInvalidationReceipt,
     CacheLookupReceipt,
     CapabilityRegistryRecord,
@@ -29,12 +26,10 @@ from agentic_core.L4_state.contracts import (
     ModelRegistryRecord,
     PolicyManifest,
     ReadSurfaceRefreshReceipt,
-    RegistrySnapshot,
     ReplaySnapshotRecord,
     SchemaRegistryRecord,
     SemanticCacheEntry,
     StateDiff,
-    TenantScopeError,
     ToolRegistryRecord,
     UnknownEntryError,
     UWGCommitReceipt,
@@ -47,9 +42,7 @@ from agentic_core.L4_state.contracts.records import stamp_digest
 from agentic_core.L4_state.refresh.refresh_coordinator import (
     REFRESH_ORDER,
     RefreshCoordinator,
-    RefreshExecutionError,
 )
-
 
 # =====================================================================
 # 00.1 — Record digest determinism + immutability boundaries

@@ -7,11 +7,10 @@ from pathlib import Path
 
 import pytest
 
-from apps_rg.cache.r1b_uwg_promotion import AppsRgR1BUwgGateway
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 from apps_rg.cache.r1b_uwg_promotion import (
+    AppsRgR1BUwgGateway,
     build_r1b_commit_bundle,
-    build_r1b_promotion_candidate,
     promote_r1b_cache_via_uwg,
 )
 from apps_rg.cache.r1b_uwg_receipt_contract import (
@@ -21,8 +20,6 @@ from apps_rg.cache.r1b_uwg_receipt_contract import (
 )
 from tests.unit.apps_rg.test_r1b_uwg_durable_persistence_w10 import (
     _candidate,
-    _chunks,
-    _record,
 )
 
 

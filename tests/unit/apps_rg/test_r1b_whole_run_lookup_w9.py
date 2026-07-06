@@ -11,8 +11,8 @@ from unittest.mock import patch
 import pytest
 
 from apps_rg.cache.r1b_constants import (
-    CACHE_GRAIN_ROLE_TARGET_RUN,
     C0_FACT_VECTORS_COLLECTION,
+    CACHE_GRAIN_ROLE_TARGET_RUN,
     R1B_REUSE_AUTHORITY_SCOPE,
     R1B_SECTION_REUSE_AUTHORITY,
 )

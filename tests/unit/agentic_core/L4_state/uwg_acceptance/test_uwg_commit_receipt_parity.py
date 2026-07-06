@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
+from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway
 from tests.unit.agentic_core.L4_state.uwg_acceptance.test_uwg_validation_fail_closed import (
     _bundle,
 )
-
-from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway
 
 
 def test_uwg_commit_receipt_carries_request_provenance() -> None:

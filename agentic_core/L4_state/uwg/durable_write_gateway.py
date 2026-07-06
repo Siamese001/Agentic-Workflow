@@ -24,11 +24,11 @@ from dataclasses import replace
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from agentic_core.L4_state.audit.audit_ledger import (
-    AuditAppendReceipt,
     AuditLedger,
     AuditLedgerUnavailableError,
     get_default_ledger,
 )
+from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 from agentic_core.L4_state.contracts.records import (
     CommitRequest,
     ReadSurfaceRefreshPlan,
@@ -39,13 +39,11 @@ from agentic_core.L4_state.contracts.records import (
     UWGRollbackReceipt,
     UWGValidationReceipt,
     WriteLockReceipt,
-    stamp_digest,
     record_canonical_payload,
+    stamp_digest,
 )
-from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 from agentic_core.L4_state.otel.spans import emit_uwg_span
 from agentic_core.L4_state.refresh.refresh_coordinator import RefreshCoordinator
-
 
 # Allowed StateDiff operation types per 00.6 §PHASE 3.
 ALLOWED_OPERATIONS: Tuple[str, ...] = (

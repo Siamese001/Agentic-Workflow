@@ -16,7 +16,6 @@ from agentic_core.L4_state.uwg.durable_write_gateway import (
     compute_state_diffs_digest,
 )
 
-
 TARGET = "l4.test.surface"
 
 

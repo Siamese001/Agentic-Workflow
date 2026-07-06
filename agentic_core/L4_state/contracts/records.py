@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
 from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 
-
 # Schema version for this canonical pack. Bump when fields change incompatibly.
 L4_CONTRACT_SCHEMA_VERSION = "L4-UWG-1.0.0"
 

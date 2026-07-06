@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 from typing import Any
 
-
 UNKNOWN = "MIGRATION_UNKNOWN"
 
 

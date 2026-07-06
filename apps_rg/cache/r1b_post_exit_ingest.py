@@ -94,8 +94,8 @@ def ingest_post_exit_from_run_dir(
     )
     st = store or R1BSemanticCacheStore(default_store_root())
     record_dict = assessment["record"]
-    from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
     from apps_rg.cache.r1b_ingest import _read_json
+    from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
     from apps_rg.cache.r1b_uwg_promotion import build_r1b_promotion_candidate
 
     record = HistoricalIntentRecord.from_dict(record_dict)
