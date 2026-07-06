@@ -29,7 +29,9 @@ import json
 import os
 import time
 import uuid
-from dataclasses import replace
+from dataclasses import asdict, is_dataclass, replace
+from enum import Enum
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, Optional
 
@@ -62,6 +64,7 @@ __all__ = [
     "_build_frozen_execution_context",
     "_build_work_order_inputs",
     "_build_determinism_bundle",
+    "_build_execution_packet",
     "_build_lineage_root",
     "_build_budget_snapshot",
     "_build_capability_scope_summary",
@@ -153,57 +156,38 @@ def _repair_instruction_for_tactic(tactic: str) -> str:
 
 def _repair_patch_for_tactic(tactic: str, failed_attempt: Any, repair_count: int) -> dict[str, Any]:
     instruction = _repair_instruction_for_tactic(tactic)
+    failed_reason = str(getattr(failed_attempt, "decisive_reason_code", "") or "")
+    failed_error = str(getattr(failed_attempt, "error_summary", "") or "")
     return {
         "stage": "E4_HEAL",
         "repair_count": repair_count,
         "repair_tactic": tactic,
         "parent_attempt_receipt_id": str(getattr(failed_attempt, "attempt_receipt_id", "") or ""),
+        "h0_context": {
+            "repair_tactic": tactic,
+            "failed_reason": failed_reason,
+            "failed_error": failed_error,
+            "instruction": instruction,
+        },
         "bounded_context": (
             "## H0 Bounded Repair Context\n"
             f"- tactic: {tactic}\n"
-            f"- failed_reason: {str(getattr(failed_attempt, 'decisive_reason_code', '') or '')}\n"
-            f"- failed_error: {str(getattr(failed_attempt, 'error_summary', '') or '')}\n"
+            f"- failed_reason: {failed_reason}\n"
+            f"- failed_error: {failed_error}\n"
             f"- instruction: {instruction}"
         ),
     }
 
 
 def _apply_heal_repair_patch(cpa: Any, heal_receipt: Any) -> Any:
-    patch = dict(getattr(heal_receipt, "repair_patch", {}) or {})
-    bounded_context = str(patch.get("bounded_context", "") or "").strip()
-    if not bounded_context:
-        return cpa
-
     updates: dict[str, Any] = {}
-    if hasattr(cpa, "user_instruction"):
-        current = str(getattr(cpa, "user_instruction", "") or "")
-        updates["user_instruction"] = f"{current}\n\n{bounded_context}".strip()
-
-    if hasattr(cpa, "prompt_blocks"):
-        blocks = tuple(getattr(cpa, "prompt_blocks", ()) or ())
-        try:
-            from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock  # noqa: PLC0415
-
-            updates["prompt_blocks"] = blocks + (
-                PromptBlock(role="system", content=bounded_context, block_index=len(blocks)),
-            )
-        except ImportError:
-            pass
-
     if hasattr(cpa, "audit_refs"):
         audit_refs = tuple(getattr(cpa, "audit_refs", ()) or ())
         updates["audit_refs"] = audit_refs + (
             f"l2_e4_repair:{str(getattr(heal_receipt, 'repair_attempt_id', '') or '')}",
         )
-
-    if hasattr(cpa, "compilation_hash"):
-        payload = {
-            "previous_hash": str(getattr(cpa, "compilation_hash", "") or ""),
-            "repair_patch": patch,
-            "prompt_text": _cpa_prompt_text(cpa),
-        }
-        updates["compilation_hash"] = f"sha256:{hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()}"
-
+    if not updates:
+        return cpa
     return replace(cpa, **updates)
 
 
@@ -223,7 +207,13 @@ def _build_lineage_root(prompt_artifact: Any) -> Any:
     )
 
 
-def _build_determinism_bundle(prompt_artifact: Any) -> Any:
+def _build_determinism_bundle(
+    prompt_artifact: Any,
+    *,
+    route_id: str = "",
+    node_id: str = "",
+    attempt_number: int = 1,
+) -> Any:
     from apps_rg.runtime.bindings.l2_envelope_contracts import DeterminismBundle
 
     comp = str(getattr(prompt_artifact, "compilation_hash", "") or "")
@@ -231,13 +221,55 @@ def _build_determinism_bundle(prompt_artifact: Any) -> Any:
     rk = str(getattr(prompt_artifact, "replay_key", "") or "")
     sig = str(getattr(prompt_artifact, "signature", "") or "")
     policy_hash = pol if pol else sig
+    seed_material = "|".join([rk, str(int(attempt_number)), comp, route_id, node_id])
     return DeterminismBundle(
         blueprint_hash=comp,
         policy_hash=policy_hash,
         prompt_hash=comp,
         input_hash=_identity_seed(prompt_artifact),
         replay_key=rk,
-        attempt_seed=str(uuid.uuid4()),
+        attempt_seed=hashlib.sha256(seed_material.encode("utf-8")).hexdigest(),
+    )
+
+
+def _build_execution_packet(
+    prompt_artifact: Any,
+    route_contract: Any,
+    *,
+    attempt_number: int = 1,
+) -> Any:
+    from apps_rg.runtime.bindings.l2_envelope_contracts import AppsRgL2ExecutionPacket
+
+    route_id = str(getattr(route_contract, "route_id", "") or "")
+    node_id = str(getattr(route_contract, "node_id", "") or "")
+    det = _build_determinism_bundle(
+        prompt_artifact,
+        route_id=route_id,
+        node_id=node_id,
+        attempt_number=attempt_number,
+    )
+    return AppsRgL2ExecutionPacket(
+        request_id=str(getattr(prompt_artifact, "request_id", "") or ""),
+        run_id=str(getattr(prompt_artifact, "run_id", "") or ""),
+        trace_id=str(getattr(prompt_artifact, "trace_id", "") or ""),
+        route_id=route_id,
+        workflow_id=str(getattr(route_contract, "workflow_id", "") or ""),
+        node_id=node_id,
+        step_id=str(getattr(route_contract, "step_id", "") or ""),
+        capability_token=str(getattr(route_contract, "capability_token", "") or "cap-apps-rg-v1"),
+        sandbox_envelope=str(getattr(prompt_artifact, "egress_policy_ref", "") or ""),
+        policy_hash=det.policy_hash,
+        blueprint_hash=det.blueprint_hash,
+        prompt_hash=det.prompt_hash,
+        replay_key=det.replay_key,
+        attempt_seed=det.attempt_seed,
+        registry_digest_set=tuple(
+            str(v) for v in (getattr(prompt_artifact, "component_hash_map", {}) or {}).values()
+        ),
+        compiled_prompt_artifact_ref=str(getattr(prompt_artifact, "compilation_hash", "") or ""),
+        final_evidence_contract_ref=str(getattr(prompt_artifact, "l5_certification_ref", "") or ""),
+        side_effect_class="READ",
+        budget=_build_budget_snapshot(prompt_artifact),
     )
 
 
@@ -254,7 +286,7 @@ def _build_frozen_execution_context(
         tm = "unknown"
     tp = str(getattr(prompt_artifact, "target_provider", "") or "").strip()
     if not tp:
-        tp = "external_claude"
+        tp = "local_local_model_server"
     roots = tuple(getattr(prompt_artifact, "allowed_file_roots", ()) or ())
     nets = tuple(getattr(prompt_artifact, "allowed_networks", ()) or ())
     return FrozenExecutionContext(
@@ -373,7 +405,9 @@ def _build_prep_output(
     refusal = "" if ready else "missing:" + ",".join(missing)
 
     fec = _build_frozen_execution_context(prompt_artifact, route_contract, validated_request)
-    det = _build_determinism_bundle(prompt_artifact)
+    route_id = str(getattr(route_contract, "route_id", "") or "") if route_contract is not None else ""
+    node_id = str(getattr(route_contract, "node_id", "") or "") if route_contract is not None else ""
+    det = _build_determinism_bundle(prompt_artifact, route_id=route_id, node_id=node_id)
     lineage = _build_lineage_root(prompt_artifact)
     replay = ReplayBindings(
         determinism=det,
@@ -1178,18 +1212,18 @@ def _heal_attempt_failure(
     elif drc == "E3_TRANSIENT_TIMEOUT" or "transient timeout" in err:
         tactic = "retry_same_transient_tool_call"
     else:
-        tactic = "json_repair_intact_source"
+        return _hr(
+            outcome=HealOutcomeStamp.NEEDS_HELP,
+            reason="E4_UNKNOWN_REPAIR_CAUSE",
+            delta="unknown soft-repairable failure cause",
+            nxt="SEND_TO_E5",
+            rstat=RepairStatus.NEEDS_HELP,
+        )
 
     if tactic in DISALLOWED_REPAIRS:
         return _hr(outcome=HealOutcomeStamp.FAIL_TERMINAL, reason="E4_DISALLOWED", delta=f"tactic {tactic} disallowed")
     assert tactic in SAFE_LOCAL_REPAIRS or is_repair_allowed(tactic)
     patch = _repair_patch_for_tactic(tactic, failed_attempt, repair_count)
-    repaired_cpa = _apply_heal_repair_patch(
-        cpa,
-        SimpleNamespace(repair_patch=patch, repair_attempt_id=rid),
-    )
-    after_hash = _prompt_packet_hash(repaired_cpa)
-
     return _hr(
         outcome=HealOutcomeStamp.PASS,
         reason="E4_REPAIRED",
@@ -1198,7 +1232,7 @@ def _heal_attempt_failure(
         nxt="RETURN_TO_E3",
         rstat=RepairStatus.REPAIRED,
         patch=patch,
-        after_hash=after_hash,
+        after_hash=before_hash,
     )
 
 
@@ -1213,9 +1247,18 @@ def _seal_digest_hex(
         "request_id": str(getattr(cpa, "request_id", "") or ""),
         "run_id": str(getattr(cpa, "run_id", "") or ""),
         "trace_id": str(getattr(cpa, "trace_id", "") or ""),
+        "route_id": str(getattr(prep_output.lineage_root, "parent_route_id", "") or ""),
+        "prompt_hash": str(getattr(attempt_receipt.determinism, "prompt_hash", "") or ""),
+        "policy_hash": str(getattr(attempt_receipt.determinism, "policy_hash", "") or ""),
+        "blueprint_hash": str(getattr(attempt_receipt.determinism, "blueprint_hash", "") or ""),
+        "replay_key": str(getattr(attempt_receipt.determinism, "replay_key", "") or ""),
+        "output_digest": str(getattr(attempt_receipt, "output_digest", "") or ""),
+        "proposed_state_diff": getattr(attempt_receipt, "proposed_state_diff", {}) or {},
+        "local_check_results": getattr(attempt_receipt, "local_check_results", {}) or {},
         "prep_receipt_id": str(getattr(prep_output, "prep_receipt_id", "") or ""),
         "validation_packet_id": str(getattr(validation_output, "validation_packet_id", "") or ""),
         "attempt_receipt_id": str(getattr(attempt_receipt, "attempt_receipt_id", "") or ""),
+        "model_refs": tuple(str(v) for v in getattr(attempt_receipt, "generated_artifacts", ()) or ()),
         "compilation_hash": str(getattr(cpa, "compilation_hash", "") or ""),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
@@ -1380,6 +1423,66 @@ def _seal_e2_rejection(*, cpa: Any, prep_output: Any, validation_output: Any) ->
     )
 
 
+def _jsonable(value: Any) -> Any:
+    if is_dataclass(value):
+        return _jsonable(asdict(value))
+    if isinstance(value, Enum):
+        return value.value
+    if isinstance(value, dict):
+        return {str(k): _jsonable(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(v) for v in value]
+    return value
+
+
+def _write_json(path: Path, payload: Any) -> None:
+    path.write_text(json.dumps(_jsonable(payload), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def _persist_l2_receipt_bundle(
+    *,
+    artifact_dir: str | None,
+    prep_output: Any,
+    validation_output: Any,
+    attempt_receipt: Any | None,
+    seal: Any,
+    heal_receipt: Any | None = None,
+    execution_packet: Any | None = None,
+) -> None:
+    if not artifact_dir:
+        return
+    root = Path(artifact_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    if execution_packet is not None:
+        _write_json(root / "l2_execution_packet.json", execution_packet)
+    _write_json(root / "prep_receipt.json", prep_output)
+    _write_json(root / "validation_receipt.json", validation_output)
+    if attempt_receipt is not None:
+        _write_json(root / "attempt_receipt.json", attempt_receipt)
+    if heal_receipt is not None:
+        _write_json(root / "heal_receipt.json", heal_receipt)
+    _write_json(root / "seal_receipt.json", seal)
+    _write_json(
+        root / "l2_receipt_bundle.json",
+        {
+            "schema_version": "apps_rg_l2_receipt_bundle.v1",
+            "request_id": str(getattr(seal, "request_id", "") or ""),
+            "run_id": str(getattr(seal, "run_id", "") or ""),
+            "trace_id": str(getattr(seal, "trace_id", "") or ""),
+            "receipt_refs": {
+                "l2_execution_packet": "l2_execution_packet.json" if execution_packet is not None else "",
+                "prep_receipt": "prep_receipt.json",
+                "validation_receipt": "validation_receipt.json",
+                "attempt_receipt": "attempt_receipt.json" if attempt_receipt is not None else "",
+                "heal_receipt": "heal_receipt.json" if heal_receipt is not None else "",
+                "seal_receipt": "seal_receipt.json",
+            },
+            "state_diff_authorized": False,
+            "is_uwg_write_authority": False,
+        },
+    )
+
+
 def run_apps_rg_l2_envelope(
     prompt_artifact: Any,
     route_contract: Any | None = None,
@@ -1391,18 +1494,84 @@ def run_apps_rg_l2_envelope(
     budget: Optional[dict] = None,
     resume_artifact_contract_mode: Any | None = None,
     artifact_dir: str | None = None,
+    product_mode: bool = False,
 ) -> Any:
     """Run E1→E2→(E3↔E4)→E5 for apps_rg."""
-    del route_contract, validated_request, budget
+    del budget
     active_prompt_artifact = prompt_artifact
-    prep = _build_prep_output(active_prompt_artifact)
-    val = _validate_work_order(prep, active_prompt_artifact)
-    if val.validation_status != "PASS" or val.approved_work_order is None:
-        return _seal_e2_rejection(
+    effective_route_contract = route_contract
+    effective_validated_request = validated_request
+
+    if product_mode and (route_contract is None or validated_request is None):
+        missing = ",".join(
+            name
+            for name, value in (
+                ("route_contract", route_contract),
+                ("validated_request", validated_request),
+            )
+            if value is None
+        )
+        prep = _build_prep_output(active_prompt_artifact)
+        from apps_rg.runtime.bindings.l2_envelope_contracts import ValidationOutput
+
+        val = ValidationOutput(
+            validation_packet_id=f"val-{uuid.uuid4().hex}",
+            validation_status="FAIL",
+            approved_work_order=None,
+            sealed_rejection_packet=_mk_sealed_rejection(
+                rule="V0_PRODUCT_REQUIRES_ROUTE_AND_VALIDATED_REQUEST",
+                missing_field=missing,
+                decisive="V0_PRODUCT_AUTHORITY_MISSING",
+            ),
+            gate_refs=("G11:FAIL", "G12:FAIL"),
+        )
+        sealed = _seal_e2_rejection(
             cpa=active_prompt_artifact,
             prep_output=prep,
             validation_output=val,
         )
+        _persist_l2_receipt_bundle(
+            artifact_dir=artifact_dir,
+            prep_output=prep,
+            validation_output=val,
+            attempt_receipt=None,
+            seal=sealed,
+        )
+        return sealed
+
+    if effective_route_contract is None:
+        effective_route_contract, effective_validated_request = _synth_route_and_vr_from_prompt_artifact(
+            active_prompt_artifact
+        )
+    elif effective_validated_request is None:
+        _, effective_validated_request = _synth_route_and_vr_from_prompt_artifact(active_prompt_artifact)
+
+    execution_packet = _build_execution_packet(
+        active_prompt_artifact,
+        effective_route_contract,
+        attempt_number=attempt_number,
+    )
+    prep = _build_prep_output(
+        active_prompt_artifact,
+        effective_route_contract,
+        effective_validated_request,
+    )
+    val = _validate_work_order(prep, active_prompt_artifact)
+    if val.validation_status != "PASS" or val.approved_work_order is None:
+        sealed = _seal_e2_rejection(
+            cpa=active_prompt_artifact,
+            prep_output=prep,
+            validation_output=val,
+        )
+        _persist_l2_receipt_bundle(
+            artifact_dir=artifact_dir,
+            prep_output=prep,
+            validation_output=val,
+            attempt_receipt=None,
+            seal=sealed,
+            execution_packet=execution_packet,
+        )
+        return sealed
 
     attempt = _execute_approved_work_order(
         cpa=active_prompt_artifact,
@@ -1442,10 +1611,20 @@ def run_apps_rg_l2_envelope(
             artifact_dir=artifact_dir,
         )
 
-    return _seal_l2_artifact(
+    sealed = _seal_l2_artifact(
         cpa=active_prompt_artifact,
         prep_output=prep,
         validation_output=val,
         attempt_receipt=attempt,
         heal_receipt=heal_r,
     )
+    _persist_l2_receipt_bundle(
+        artifact_dir=artifact_dir,
+        prep_output=prep,
+        validation_output=val,
+        attempt_receipt=attempt,
+        heal_receipt=heal_r,
+        seal=sealed,
+        execution_packet=execution_packet,
+    )
+    return sealed

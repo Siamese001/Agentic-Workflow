@@ -1,4 +1,6 @@
-"""Tests for apps_rg L2 v4 Envelope Adapter — E1 PREP Phase Only.
+"""apps-test-model: SPINE BINDING.
+
+Tests for apps_rg L2 v4 Envelope Adapter — E1 PREP Phase Only.
 
 Per plan apps-rg-l2-v4-envelope-adoption-e9f2b1 W2.
 
@@ -8,6 +10,7 @@ from CompiledPromptArtifact. E2-E5 tests are deferred to W3-W6.
 from __future__ import annotations
 
 import hashlib
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -31,6 +34,7 @@ from agentic_core.runtime.contracts.compiled_prompt_artifact import (
 from agentic_core.runtime.contracts.origin import Origin
 from apps_rg.runtime.bindings.l2_envelope_adapter import (
     _build_determinism_bundle,
+    _build_execution_packet,
     _build_frozen_execution_context,
     _build_lineage_root,
     _build_prep_output,
@@ -183,8 +187,56 @@ class TestE1DeterminismBundle:
         assert db.prompt_hash == cpa.compilation_hash
         assert db.policy_hash == cpa.l5_certification_ref
         assert db.replay_key == cpa.replay_key
-        assert db.attempt_seed  # Non-empty UUID
+        assert len(db.attempt_seed) == 64  # SHA-256 hex
         assert len(db.input_hash) == 64  # SHA-256 hex
+
+    def test_e1_attempt_seed_is_deterministic_for_same_execution_identity(self) -> None:
+        """Test attempt_seed is deterministic for same replay/route/node/attempt tuple."""
+        cpa = _make_minimal_cpa()
+
+        db1 = _build_determinism_bundle(cpa, route_id="route-a", node_id="node-a", attempt_number=1)
+        db2 = _build_determinism_bundle(cpa, route_id="route-a", node_id="node-a", attempt_number=1)
+
+        assert db1.attempt_seed == db2.attempt_seed
+
+    def test_e1_attempt_seed_changes_for_route_node_or_attempt(self) -> None:
+        """Test attempt_seed binds replay to route, node, and attempt identity."""
+        cpa = _make_minimal_cpa()
+        baseline = _build_determinism_bundle(cpa, route_id="route-a", node_id="node-a", attempt_number=1)
+
+        route_changed = _build_determinism_bundle(cpa, route_id="route-b", node_id="node-a", attempt_number=1)
+        node_changed = _build_determinism_bundle(cpa, route_id="route-a", node_id="node-b", attempt_number=1)
+        attempt_changed = _build_determinism_bundle(cpa, route_id="route-a", node_id="node-a", attempt_number=2)
+
+        assert baseline.attempt_seed != route_changed.attempt_seed
+        assert baseline.attempt_seed != node_changed.attempt_seed
+        assert baseline.attempt_seed != attempt_changed.attempt_seed
+
+    def test_e1_builds_execution_packet_from_route_contract(self) -> None:
+        """Test execution packet binds route authority to deterministic replay fields."""
+        cpa = _make_minimal_cpa()
+        route_contract = SimpleNamespace(
+            route_id="route-a",
+            workflow_id="workflow-a",
+            node_id="node-a",
+            step_id="step-a",
+            capability_token="cap-apps-rg-custom",
+        )
+
+        packet = _build_execution_packet(cpa, route_contract, attempt_number=1)
+
+        assert packet.route_id == "route-a"
+        assert packet.workflow_id == "workflow-a"
+        assert packet.node_id == "node-a"
+        assert packet.step_id == "step-a"
+        assert packet.capability_token == "cap-apps-rg-custom"
+        assert packet.prompt_hash == cpa.compilation_hash
+        assert packet.attempt_seed == _build_determinism_bundle(
+            cpa,
+            route_id="route-a",
+            node_id="node-a",
+            attempt_number=1,
+        ).attempt_seed
 
     def test_e1_input_hash_is_deterministic(self) -> None:
         """Test input_hash is deterministic for same CPA identity fields."""
@@ -1248,18 +1300,23 @@ class TestE4AllowedRepairs:
         assert heal_receipt.next_action == "RETURN_TO_E3"
         assert heal_receipt.before_hash
         assert heal_receipt.after_hash
-        assert heal_receipt.before_hash != heal_receipt.after_hash
+        assert heal_receipt.before_hash == heal_receipt.after_hash
         assert heal_receipt.repair_patch["stage"] == "E4_HEAL"
+        assert heal_receipt.repair_patch["h0_context"]["repair_tactic"] == "json_repair_intact_source"
+        assert "H0 Bounded Repair Context" in heal_receipt.repair_patch["bounded_context"]
         repaired_cpa = _apply_heal_repair_patch(cpa, heal_receipt)
-        assert "H0 Bounded Repair Context" in repaired_cpa.user_instruction
-        assert repaired_cpa.compilation_hash != cpa.compilation_hash
+        assert repaired_cpa.user_instruction == cpa.user_instruction
+        assert repaired_cpa.prompt_blocks == cpa.prompt_blocks
+        assert repaired_cpa.compilation_hash == cpa.compilation_hash
+        assert any(ref.startswith("l2_e4_repair:") for ref in repaired_cpa.audit_refs)
 
     def test_e4_retry_consumes_repaired_prompt_packet(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """E4 must modify the retry packet, not only emit a repair receipt."""
+        """E4 must retry with a repair audit ref without mutating prompt text."""
         import apps_rg.runtime.bindings.l2_envelope_adapter as adapter
 
         cpa = _make_minimal_cpa()
         seen_prompts: list[str] = []
+        seen_audit_refs: list[tuple[str, ...]] = []
 
         def fake_execute(
             *,
@@ -1272,6 +1329,7 @@ class TestE4AllowedRepairs:
         ) -> AttemptReceipt:
             del approved_work_order, resume_artifact_contract_mode, artifact_dir
             seen_prompts.append(adapter._cpa_prompt_text(cpa))
+            seen_audit_refs.append(tuple(getattr(cpa, "audit_refs", ()) or ()))
             result_class = ResultClass.SUCCESS if attempt_number == 2 else ResultClass.SOFT_REPAIRABLE
             return AttemptReceipt(
                 attempt_receipt_id=AttemptReceipt.new_id(),
@@ -1298,7 +1356,9 @@ class TestE4AllowedRepairs:
         assert sealed.execution_status == "completed"
         assert len(seen_prompts) == 2
         assert "H0 Bounded Repair Context" not in seen_prompts[0]
-        assert "H0 Bounded Repair Context" in seen_prompts[1]
+        assert seen_prompts[1] == seen_prompts[0]
+        assert not seen_audit_refs[0]
+        assert any(ref.startswith("l2_e4_repair:") for ref in seen_audit_refs[1])
         assert any(ref.startswith("heal:") for ref in sealed.audit_refs)
 
     def test_e4_trims_trailing_content_deterministically(self) -> None:
@@ -1379,6 +1439,35 @@ class TestE4AllowedRepairs:
         assert heal_receipt.repair_tactic == "retry_same_transient_tool_call"
         assert heal_receipt.outcome == HealOutcomeStamp.PASS
         assert heal_receipt.next_action == "RETURN_TO_E3"
+
+    def test_e4_unknown_soft_repairable_failure_needs_help(self) -> None:
+        """Test E4 does not guess a repair tactic for unknown soft-repairable failures."""
+        cpa = _make_minimal_cpa()
+        prep_output = _build_prep_output(cpa)
+        validation_output = _validate_work_order(prep_output, cpa)
+        assert validation_output.approved_work_order is not None
+
+        failed_attempt = _make_failed_attempt(
+            result_class=ResultClass.SOFT_REPAIRABLE,
+            error_summary="provider returned ambiguous malformed output",
+            decisive_reason="E3_UNKNOWN_SOFT_FAILURE",
+            determinism=prep_output.replay_bindings.determinism,
+        )
+
+        heal_receipt = _heal_attempt_failure(
+            failed_attempt=failed_attempt,
+            prep_output=prep_output,
+            approved_work_order=validation_output.approved_work_order,
+            cpa=cpa,
+            repair_count=1,
+        )
+
+        assert isinstance(heal_receipt, HealReceipt)
+        assert heal_receipt.outcome == HealOutcomeStamp.NEEDS_HELP
+        assert heal_receipt.repair_status == RepairStatus.NEEDS_HELP
+        assert heal_receipt.reason_code == "E4_UNKNOWN_REPAIR_CAUSE"
+        assert heal_receipt.next_action == "SEND_TO_E5"
+        assert heal_receipt.repair_tactic == ""
 
     def test_e4_populates_heal_receipt_same_authority_assertions(self) -> None:
         """Test E4 populates same-authority assertions in HealReceipt."""
@@ -2873,6 +2962,113 @@ class TestW7Integration:
 class TestW7FailClosed:
     """W7: Fail-closed path tests."""
 
+    def test_w7_product_mode_rejects_cpa_only_before_e3(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Any,
+    ) -> None:
+        """Test product mode requires route_contract and validated_request before E3."""
+        import json
+        import apps_rg.runtime.bindings.l2_envelope_adapter as adapter
+
+        cpa = _make_minimal_cpa()
+
+        def fail_execute(**_: Any) -> AttemptReceipt:
+            raise AssertionError("E3 must not execute without product authority inputs")
+
+        monkeypatch.setattr(adapter, "_execute_approved_work_order", fail_execute)
+
+        sealed = adapter.run_apps_rg_l2_envelope(
+            cpa,
+            artifact_dir=str(tmp_path),
+            product_mode=True,
+        )
+
+        assert isinstance(sealed, SealedL2Artifact)
+        assert sealed.execution_status == "rejected"
+        assert json.loads(sealed.generated_content)["rejection"] == (
+            "V0_PRODUCT_REQUIRES_ROUTE_AND_VALIDATED_REQUEST"
+        )
+        validation_receipt = json.loads((tmp_path / "validation_receipt.json").read_text(encoding="utf-8"))
+        assert validation_receipt["gate_refs"] == ["G11:FAIL", "G12:FAIL"]
+        assert not (tmp_path / "attempt_receipt.json").exists()
+
+    def test_w7_persists_l2_receipt_bundle_for_success(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Any,
+    ) -> None:
+        """Test W7 writes execution, prep, validation, attempt, seal, and bundle receipts."""
+        import json
+        import apps_rg.runtime.bindings.l2_envelope_adapter as adapter
+
+        cpa = _make_minimal_cpa()
+        route_contract = SimpleNamespace(
+            route_id="route-receipt",
+            workflow_id="workflow-receipt",
+            node_id="node-receipt",
+            step_id="step-receipt",
+            capability_token="cap-apps-rg-v1",
+        )
+        validated_request = SimpleNamespace(request_id=cpa.request_id)
+
+        def fake_execute(
+            *,
+            cpa: Any,
+            approved_work_order: Any,
+            prep_output: Any,
+            attempt_number: int,
+            resume_artifact_contract_mode: Any | None = None,
+            artifact_dir: str | None = None,
+        ) -> AttemptReceipt:
+            del approved_work_order, resume_artifact_contract_mode, artifact_dir
+            return AttemptReceipt(
+                attempt_receipt_id=AttemptReceipt.new_id(),
+                validation_packet_id="validation-test-001",
+                attempt_count=attempt_number,
+                determinism=prep_output.replay_bindings.determinism,
+                lineage=prep_output.lineage_root,
+                trace_id=cpa.trace_id,
+                span_id=f"e3-attempt-{attempt_number}",
+                latency_ms=1.0,
+                tokens_used=1,
+                return_code=0,
+                result_class=ResultClass.SUCCESS,
+                error_summary=None,
+                execution_lane=ExecutionLane.MODEL,
+                decisive_reason_code="E3_SUCCESS",
+                proposed_state_diff={"generated_resume": {"headline": "receipt ok"}},
+                local_check_results={"provider_lane": "stub", "model_or_tool_name": "stub-model"},
+            )
+
+        monkeypatch.setattr(adapter, "_execute_approved_work_order", fake_execute)
+
+        sealed = adapter.run_apps_rg_l2_envelope(
+            cpa,
+            route_contract=route_contract,
+            validated_request=validated_request,
+            artifact_dir=str(tmp_path),
+            product_mode=True,
+        )
+
+        assert sealed.execution_status == "completed"
+        expected_files = {
+            "l2_execution_packet.json",
+            "prep_receipt.json",
+            "validation_receipt.json",
+            "attempt_receipt.json",
+            "seal_receipt.json",
+            "l2_receipt_bundle.json",
+        }
+        assert expected_files <= {path.name for path in tmp_path.iterdir()}
+        packet = json.loads((tmp_path / "l2_execution_packet.json").read_text(encoding="utf-8"))
+        bundle = json.loads((tmp_path / "l2_receipt_bundle.json").read_text(encoding="utf-8"))
+        assert packet["route_id"] == "route-receipt"
+        assert packet["node_id"] == "node-receipt"
+        assert bundle["state_diff_authorized"] is False
+        assert bundle["is_uwg_write_authority"] is False
+        assert bundle["receipt_refs"]["attempt_receipt"] == "attempt_receipt.json"
+
     def test_w7_e2_rejection_for_missing_replay_key_blocks_e3(self) -> None:
         """Test W7 E2 rejects missing replay_key, blocks E3 provider call."""
         from dataclasses import replace
@@ -3217,42 +3413,42 @@ class TestW7Hardening:
 
 
 class TestW7BFeatureFlag:
-    """W7B: Feature flag bridge for v4 envelope integration."""
+    """W7B: Default-v4 bridge for canonical L2 envelope integration."""
 
-    def test_w7b_feature_flag_disabled_uses_legacy_path(self) -> None:
-        """Test W7B: When flag is disabled, l2_execute_apps_rg uses legacy path."""
+    def test_w7b_default_uses_v4_path(self) -> None:
+        """Product-visible default uses the canonical v4 envelope."""
         import os
         
-        # Ensure flag is not set
         if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
             del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
+        if "APPS_RG_L2_DEV_LEGACY_PACKAGE" in os.environ:
+            del os.environ["APPS_RG_L2_DEV_LEGACY_PACKAGE"]
         
         from apps_rg.runtime.bindings.l2_binding import _use_v4_l2_envelope
         
-        assert _use_v4_l2_envelope() is False
+        assert _use_v4_l2_envelope() is True
 
-    def test_w7b_feature_flag_enabled_calls_run_apps_rg_l2_envelope(self) -> None:
-        """Test W7B: When flag is enabled, _use_v4_l2_envelope returns True."""
+    def test_w7b_explicit_dev_legacy_override_disables_v4_path(self) -> None:
+        """Legacy package path is available only by explicit dev override."""
         import os
         
-        # Set flag to enable v4 envelope
-        os.environ["APPS_RG_L2_USE_V4_ENVELOPE"] = "1"
+        os.environ["APPS_RG_L2_DEV_LEGACY_PACKAGE"] = "1"
         
         try:
             from apps_rg.runtime.bindings.l2_binding import _use_v4_l2_envelope
             
-            assert _use_v4_l2_envelope() is True
+            assert _use_v4_l2_envelope() is False
         finally:
-            # Clean up
-            if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
-                del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
+            if "APPS_RG_L2_DEV_LEGACY_PACKAGE" in os.environ:
+                del os.environ["APPS_RG_L2_DEV_LEGACY_PACKAGE"]
 
     def test_w7b_feature_flag_bridge_delegates_to_v4_envelope(self) -> None:
-        """Test W7B: l2_execute_apps_rg delegates to run_apps_rg_l2_envelope when flag enabled."""
+        """Test W7B: l2_execute_apps_rg delegates to run_apps_rg_l2_envelope by default."""
         import os
         from unittest.mock import patch
         
-        os.environ["APPS_RG_L2_USE_V4_ENVELOPE"] = "1"
+        if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
+            del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
         
         try:
             from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
@@ -3295,11 +3491,12 @@ class TestW7BFeatureFlag:
                 del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
 
     def test_w7b_feature_flag_enabled_returns_sealed_l2_artifact(self) -> None:
-        """Test W7B: v4 envelope path returns SealedL2Artifact."""
+        """Test W7B: default v4 envelope path returns SealedL2Artifact."""
         import os
         from unittest.mock import patch
         
-        os.environ["APPS_RG_L2_USE_V4_ENVELOPE"] = "1"
+        if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
+            del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
         
         try:
             from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
@@ -3334,11 +3531,12 @@ class TestW7BFeatureFlag:
                 del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
 
     def test_w7b_feature_flag_enabled_blocks_e3_when_e2_fails(self) -> None:
-        """Test W7B: v4 envelope path returns rejection artifact when E2 fails."""
+        """Test W7B: default v4 envelope path returns rejection artifact when E2 fails."""
         import os
         from unittest.mock import patch
         
-        os.environ["APPS_RG_L2_USE_V4_ENVELOPE"] = "1"
+        if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
+            del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
         
         try:
             from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
@@ -3375,23 +3573,22 @@ class TestW7BFeatureFlag:
                 del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
 
     def test_w7b_feature_flag_disabled_preserves_existing_output_contract(self) -> None:
-        """Test W7B: legacy path preserves existing output contract."""
+        """Test W7B: explicit dev legacy path preserves existing output contract."""
         import os
-        
-        # Ensure flag is not set (legacy mode)
-        if "APPS_RG_L2_USE_V4_ENVELOPE" in os.environ:
-            del os.environ["APPS_RG_L2_USE_V4_ENVELOPE"]
-        
-        from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
-        
-        cpa = _make_minimal_cpa()
-        
-        # Legacy path should still accept CompiledPromptArtifact
-        # The function signature should remain unchanged
-        import inspect
-        sig = inspect.signature(l2_execute_apps_rg)
-        params = list(sig.parameters.keys())
-        assert "prompt" in params
+
+        os.environ["APPS_RG_L2_DEV_LEGACY_PACKAGE"] = "1"
+
+        try:
+            from apps_rg.runtime.bindings.l2_binding import l2_execute_apps_rg
+
+            # Legacy path should still accept CompiledPromptArtifact.
+            import inspect
+            sig = inspect.signature(l2_execute_apps_rg)
+            params = list(sig.parameters.keys())
+            assert "prompt" in params
+        finally:
+            if "APPS_RG_L2_DEV_LEGACY_PACKAGE" in os.environ:
+                del os.environ["APPS_RG_L2_DEV_LEGACY_PACKAGE"]
 
     def test_w7b_non_cpa_input_raises_type_error(self) -> None:
         """Test W7B: non-CompiledPromptArtifact input raises TypeError before feature flag check."""

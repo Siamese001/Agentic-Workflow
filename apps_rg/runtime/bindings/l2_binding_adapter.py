@@ -1,7 +1,8 @@
 """apps_rg L2 binding adapter — resume_generation execution surface.
 
-Thin adapter over the v4 envelope pipeline (``run_apps_rg_l2_envelope``) and,
-when the v4 feature flag is off, the generic package-driven L2 executor.
+Thin adapter over the v4 envelope pipeline (``run_apps_rg_l2_envelope``).
+The generic package-driven L2 executor is retained only for explicit dev
+diagnostics.
 
 Filename suffix ``_adapter.py`` is exempt from authority MV per phase-a routing.
 
@@ -51,7 +52,12 @@ def evaluate_apps_rg_l2_quality_precheck(_prompt: CompiledPromptArtifact) -> tup
 
 
 def _use_v4_l2_envelope() -> bool:
-    return os.environ.get("APPS_RG_L2_USE_V4_ENVELOPE", "").strip() == "1"
+    if os.environ.get("APPS_RG_L2_DEV_LEGACY_PACKAGE", "").strip() == "1":
+        return False
+    raw = os.environ.get("APPS_RG_L2_USE_V4_ENVELOPE", "").strip().lower()
+    if raw in ("0", "false", "no", "off"):
+        return False
+    return True
 
 
 def _stub_sealed_from_prompt(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
@@ -79,7 +85,7 @@ def _legacy_package_driven(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
 
 
 def _l2_execute_apps_rg_core(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
-    """Core L2 execution paths (stub / v4 envelope / package-driven)."""
+    """Core L2 execution paths (explicit stub/dev legacy or default v4 envelope)."""
     if os.environ.get("APPS_RG_L2_FORCE_STUB", "").strip() == "1":
         return _stub_sealed_from_prompt(prompt)
     if _use_v4_l2_envelope():
@@ -87,7 +93,7 @@ def _l2_execute_apps_rg_core(prompt: CompiledPromptArtifact) -> SealedL2Artifact
 
         out = run_apps_rg_l2_envelope(prompt)
         if out is None:
-            return _stub_sealed_from_prompt(prompt)
+            raise ValueError("APPS_RG_L2_V4_ENVELOPE_RETURNED_NONE")
         return out  # type: ignore[return-value]
     return _legacy_package_driven(prompt)
 
