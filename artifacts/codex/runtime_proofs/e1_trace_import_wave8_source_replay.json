@@ -1,0 +1,309 @@
+{
+  "candidate_count": 50,
+  "failed": 0,
+  "manifest": "artifacts\\codex\\runtime_proofs\\e1_trace_import_wave8_manifest.json",
+  "passed": 50,
+  "proof": "selected modules no longer import lifecycle trace symbols directly and use trace_contract alias instead",
+  "results": [
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/engines/call_formatting_router.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/engines/convergence_engine.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/engines/parallelization_engine.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/ptc/tool_invoker.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/cache/cache_key_builders.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/enforcement/readonly_retrieval_scope.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/enforcement/state_lifecycle_policy.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/utils/circuit_breaker_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/governance/lazy_seam_classifier.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/import_boundary_check_enforcer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/re_clear_loop_enforcer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/safety_eval_cache.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/security/side_effect_guard.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/vector_healing_strategy.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/core_contracts_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/simulation_schemas_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/agent_categorizer_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/canonical_truth_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/security_controls_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/validators/migration_helper_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_observability/utils/engines/semantic_clock_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_observability/utils/engines/vigilance_dispatcher.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/meta_learning/meta_learning_bus.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_rg/runtime/validators/achv_bullet_synthesizer_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_rg/runtime/validators/ats_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L1_cognition/reasoning/strategist_bio_writer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/types/blast_radius_controls_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/types/ml_pattern_record_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/utils/staging_buffer_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/utils/text_similarity_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/engines/orchestration_plan_cache.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/reasoning/engines/reflex_layer_pattern.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/utils/layer_gravity_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/utils/sanitize_telemetry_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/data_enforcer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/git_kraken_healing_strategy.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/enforcement/security/injection_regression_gate.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/reasoning/file_classification_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/reasoning/guardian_decision.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/heal_model_map_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/safety_profile_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/validation_result_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/types/verification_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/gravity_visitor_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/validation_utils_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/validators/budget_profile_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/validators/consensus_verdict_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    }
+  ]
+}

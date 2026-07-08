@@ -23,152 +23,86 @@ from typing import Any
 from typing import Protocol, runtime_checkable
 from typing import cast
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-_emit_records_execution_trace("p0", "evidence", "llm_judge")
-_emit_applies_guardrail("p0", "llm_judge", "p0_governance")
-_emit_reads_policy_state("p0", "llm_judge", "policy_binding")
-_emit_snapshots_state("p0", "llm_judge", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
+trace_contract._emit_records_execution_trace("p0", "evidence", "llm_judge")
+trace_contract._emit_applies_guardrail("p0", "llm_judge", "p0_governance")
+trace_contract._emit_reads_policy_state("p0", "llm_judge", "policy_binding")
+trace_contract._emit_snapshots_state("p0", "llm_judge", "state_snapshot")
 
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_1")
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_2")
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_3")
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_4")
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_5")
-_emit_emits_metric_event("llm_judge", "p4obs", "metric_6")
-_emit_records_incident_event("llm_judge", "p4obs", "incident")
-_emit_captures_runtime_anomaly("llm_judge", "p4obs", "anomaly")
-_emit_writes_observability_log("llm_judge", "p4obs", "obs_log")
-_emit_updates_monitoring_state("llm_judge", "p4obs", "mon_state")
-_emit_triggers_alert("llm_judge", "p4obs", "alert")
-_emit_links_incident_trace("llm_judge", "p4obs", "trace_link")
-_emit_captures_pattern("llm_judge", "p3lm", "pattern")
-_emit_records_learning_event("llm_judge", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("llm_judge", "p3lm", "snapshot")
-_emit_feeds_meta_learning("llm_judge", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("llm_judge", "p3lm", "routing")
-_emit_improves_agent_policy("llm_judge", "p3lm", "policy")
-_emit_stores_learning_state("llm_judge", "p3lm", "state")
-_emit_records_execution_trace("llm_judge", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("llm_judge", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("llm_judge", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("llm_judge", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("llm_judge", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("llm_judge", "env_read", "p2_env_1")
-_emit_reads_environ("llm_judge", "env_read", "p2_env_2")
-_emit_reads_runtime_state("llm_judge", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("llm_judge", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "llm_judge", "context_pull")
-_emit_pulls_context("p1", "llm_judge", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "llm_judge", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "llm_judge", "uwg_term_2")
-_emit_writes_through("p1", "llm_judge", "write_through")
-_emit_writes_through("p1", "llm_judge", "write_through_2")
-_emit_validated_by_safety_plane("p1", "llm_judge", "safety_validation")
-_emit_invokes_eval("p1", "llm_judge", "eval_call")
-_emit_proposal_commits_routing("p1", "llm_judge", "routing_commit")
-_emit_escalates_to_human("p1", "llm_judge", "human_escalation")
-_emit_routes_through("p1", "llm_judge", "route_through")
-_emit_checks_agent_registry("p1", "llm_judge", "agent_registry")
-_emit_validates_agent_capability("p1", "llm_judge", "capability")
-_emit_dispatches_execution_plan("p1", "llm_judge", "exec_plan")
-_emit_agent_executes_agent("p1", "llm_judge", "sub_agent")
-_emit_routes_to_agent("p1", "llm_judge", "target_agent")
-_emit_verifies_policy("p1", "llm_judge", "policy_check")
-_emit_observes_runtime_state("p1", "llm_judge", "runtime_state")
-_emit_verifies_boundary("p1", "llm_judge", "boundary_check")
-_emit_transcripts_response("p1", "llm_judge", "transcript")
-_emit_hard_fails_untranscripted("p1", "llm_judge")
-_emit_gated_by_confidence("p1", "llm_judge", "confidence_gate")
-emit_replay_key("p0", "llm_judge")
-emit_determinism_digest("p0", "llm_judge")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "llm_judge", "execution_auth")
-_emit_validates_capability("p2", "llm_judge", "capability_check")
-_emit_routes_to_capability("p2", "llm_judge", "capability_route")
-_emit_writes_via_uwg("p2", "llm_judge", "uwg_write")
-_emit_blocks_direct_write("p2", "llm_judge", "direct_write_block")
-_emit_records_tool_invocation("p2", "llm_judge", "tool_invocation")
-_emit_captures_execution_output("p2", "llm_judge", "exec_output")
-_emit_dispatches_agent("p3", "llm_judge", "agent_dispatch")
-_emit_coordinates_agents("p3", "llm_judge", "agent_coordination")
-_emit_records_workflow_lineage("p3", "llm_judge", "workflow_lineage")
-_emit_records_healing_outcome("p3", "llm_judge", "healing_outcome")
-_emit_escalates_failure("p3", "llm_judge", "failure_escalation")
-_emit_orchestrates_workflow("p3", "llm_judge", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "llm_judge", "healing_dispatch")
-_emit_invokes_evaluation("p3", "llm_judge", "evaluation_signal")
-_emit_records_telemetry_event("p4", "llm_judge", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "llm_judge", "eval_metric")
-_emit_stores_embedding("p4", "llm_judge", "embedding_store")
-_emit_updates_meta_learning_state("p4", "llm_judge", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "llm_judge", "exec_snapshot_link")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("llm_judge", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("llm_judge", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("llm_judge", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("llm_judge", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("llm_judge", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("llm_judge", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("llm_judge", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("llm_judge", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("llm_judge", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("llm_judge", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("llm_judge", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("llm_judge", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("llm_judge", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("llm_judge", "p3lm", "state")
+trace_contract._emit_records_execution_trace("llm_judge", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("llm_judge", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("llm_judge", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("llm_judge", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("llm_judge", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("llm_judge", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("llm_judge", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("llm_judge", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("llm_judge", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "llm_judge", "context_pull")
+trace_contract._emit_pulls_context("p1", "llm_judge", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "llm_judge", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "llm_judge", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "llm_judge", "write_through")
+trace_contract._emit_writes_through("p1", "llm_judge", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "llm_judge", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "llm_judge", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "llm_judge", "routing_commit")
+trace_contract._emit_escalates_to_human("p1", "llm_judge", "human_escalation")
+trace_contract._emit_routes_through("p1", "llm_judge", "route_through")
+trace_contract._emit_checks_agent_registry("p1", "llm_judge", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "llm_judge", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "llm_judge", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "llm_judge", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "llm_judge", "target_agent")
+trace_contract._emit_verifies_policy("p1", "llm_judge", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "llm_judge", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "llm_judge", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "llm_judge", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "llm_judge")
+trace_contract._emit_gated_by_confidence("p1", "llm_judge", "confidence_gate")
+trace_contract.emit_replay_key("p0", "llm_judge")
+trace_contract.emit_determinism_digest("p0", "llm_judge")
+trace_contract._emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+trace_contract._emit_authorize_and_execute("p2", "llm_judge", "execution_auth")
+trace_contract._emit_validates_capability("p2", "llm_judge", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "llm_judge", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "llm_judge", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "llm_judge", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "llm_judge", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "llm_judge", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "llm_judge", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "llm_judge", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "llm_judge", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "llm_judge", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "llm_judge", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "llm_judge", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "llm_judge", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "llm_judge", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "llm_judge", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "llm_judge", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "llm_judge", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "llm_judge", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "llm_judge", "exec_snapshot_link")
 
 # ---------------------------------------------------------------------------
 # Legacy combined rubric (DEPRECATED — retained for backward compat only).

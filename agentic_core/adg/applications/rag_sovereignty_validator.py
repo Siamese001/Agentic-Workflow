@@ -24,154 +24,89 @@ from typing import TYPE_CHECKING
 
 from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 from agentic_core.adg.contracts.schema_util import canonical_name
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-_emit_records_execution_trace("p0", "evidence", "rag_sovereignty")
-_emit_applies_guardrail("p0", "rag_sovereignty", "p0_governance")
-_emit_snapshots_state("p0", "rag_sovereignty", "state_snapshot")
-emit_replay_key("p0", "rag_sovereignty")
-emit_determinism_digest("p0", "rag_sovereignty")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "rag_sovereignty", "execution_auth")
-_emit_validates_capability("p2", "rag_sovereignty", "capability_check")
-_emit_routes_to_capability("p2", "rag_sovereignty", "capability_route")
-_emit_writes_via_uwg("p2", "rag_sovereignty", "uwg_write")
-_emit_blocks_direct_write("p2", "rag_sovereignty", "direct_write_block")
-_emit_records_tool_invocation("p2", "rag_sovereignty", "tool_invocation")
-_emit_captures_execution_output("p2", "rag_sovereignty", "exec_output")
-_emit_dispatches_agent("p3", "rag_sovereignty", "agent_dispatch")
-_emit_coordinates_agents("p3", "rag_sovereignty", "agent_coordination")
-_emit_records_workflow_lineage("p3", "rag_sovereignty", "workflow_lineage")
-_emit_records_healing_outcome("p3", "rag_sovereignty", "healing_outcome")
-_emit_escalates_failure("p3", "rag_sovereignty", "failure_escalation")
-_emit_orchestrates_workflow("p3", "rag_sovereignty", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "rag_sovereignty", "healing_dispatch")
-_emit_invokes_evaluation("p3", "rag_sovereignty", "evaluation_signal")
-_emit_records_telemetry_event("p4", "rag_sovereignty", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "rag_sovereignty", "eval_metric")
-_emit_stores_embedding("p4", "rag_sovereignty", "embedding_store")
-_emit_updates_meta_learning_state("p4", "rag_sovereignty", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "rag_sovereignty", "exec_snapshot_link")
+trace_contract._emit_records_execution_trace("p0", "evidence", "rag_sovereignty")
+trace_contract._emit_applies_guardrail("p0", "rag_sovereignty", "p0_governance")
+trace_contract._emit_snapshots_state("p0", "rag_sovereignty", "state_snapshot")
+trace_contract.emit_replay_key("p0", "rag_sovereignty")
+trace_contract.emit_determinism_digest("p0", "rag_sovereignty")
+trace_contract._emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+trace_contract._emit_authorize_and_execute("p2", "rag_sovereignty", "execution_auth")
+trace_contract._emit_validates_capability("p2", "rag_sovereignty", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "rag_sovereignty", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "rag_sovereignty", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "rag_sovereignty", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "rag_sovereignty", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "rag_sovereignty", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "rag_sovereignty", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "rag_sovereignty", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "rag_sovereignty", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "rag_sovereignty", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "rag_sovereignty", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "rag_sovereignty", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "rag_sovereignty", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "rag_sovereignty", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "rag_sovereignty", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "rag_sovereignty", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "rag_sovereignty", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "rag_sovereignty", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "rag_sovereignty", "exec_snapshot_link")
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 from tqdm import tqdm
 
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_1")
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_2")
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_3")
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_4")
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_5")
-_emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_6")
-_emit_records_incident_event("rag_sovereignty", "p4obs", "incident")
-_emit_captures_runtime_anomaly("rag_sovereignty", "p4obs", "anomaly")
-_emit_writes_observability_log("rag_sovereignty", "p4obs", "obs_log")
-_emit_updates_monitoring_state("rag_sovereignty", "p4obs", "mon_state")
-_emit_triggers_alert("rag_sovereignty", "p4obs", "alert")
-_emit_links_incident_trace("rag_sovereignty", "p4obs", "trace_link")
-_emit_captures_pattern("rag_sovereignty", "p3lm", "pattern")
-_emit_records_learning_event("rag_sovereignty", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("rag_sovereignty", "p3lm", "snapshot")
-_emit_feeds_meta_learning("rag_sovereignty", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("rag_sovereignty", "p3lm", "routing")
-_emit_improves_agent_policy("rag_sovereignty", "p3lm", "policy")
-_emit_stores_learning_state("rag_sovereignty", "p3lm", "state")
-_emit_records_execution_trace("rag_sovereignty", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("rag_sovereignty", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("rag_sovereignty", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("rag_sovereignty", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("rag_sovereignty", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("rag_sovereignty", "env_read", "p2_env_1")
-_emit_reads_environ("rag_sovereignty", "env_read", "p2_env_2")
-_emit_reads_runtime_state("rag_sovereignty", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("rag_sovereignty", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "rag_sovereignty", "context_pull")
-_emit_pulls_context("p1", "rag_sovereignty", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "rag_sovereignty", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "rag_sovereignty", "uwg_term_secondary")
-_emit_writes_through("p1", "rag_sovereignty", "write_through")
-_emit_writes_through("p1", "rag_sovereignty", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "rag_sovereignty", "safety_validation")
-_emit_invokes_eval("p1", "rag_sovereignty", "eval_call")
-_emit_proposal_commits_routing("p1", "rag_sovereignty", "routing_commit")
-_emit_escalates_to_human("p1", "rag_sovereignty", "human_escalation")
-_emit_routes_through("p1", "rag_sovereignty", "route_through")
-_emit_checks_agent_registry("p1", "rag_sovereignty", "agent_registry")
-_emit_validates_agent_capability("p1", "rag_sovereignty", "capability")
-_emit_dispatches_execution_plan("p1", "rag_sovereignty", "exec_plan")
-_emit_agent_executes_agent("p1", "rag_sovereignty", "sub_agent")
-_emit_routes_to_agent("p1", "rag_sovereignty", "target_agent")
-_emit_verifies_policy("p1", "rag_sovereignty", "policy_check")
-_emit_observes_runtime_state("p1", "rag_sovereignty", "runtime_state")
-_emit_verifies_boundary("p1", "rag_sovereignty", "boundary_check")
-_emit_transcripts_response("p1", "rag_sovereignty", "transcript")
-_emit_hard_fails_untranscripted("p1", "rag_sovereignty")
-_emit_gated_by_confidence("p1", "rag_sovereignty", "confidence_gate")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("rag_sovereignty", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("rag_sovereignty", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("rag_sovereignty", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("rag_sovereignty", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("rag_sovereignty", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("rag_sovereignty", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("rag_sovereignty", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("rag_sovereignty", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("rag_sovereignty", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("rag_sovereignty", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("rag_sovereignty", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("rag_sovereignty", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("rag_sovereignty", "p3lm", "state")
+trace_contract._emit_records_execution_trace("rag_sovereignty", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("rag_sovereignty", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("rag_sovereignty", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("rag_sovereignty", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("rag_sovereignty", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("rag_sovereignty", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("rag_sovereignty", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("rag_sovereignty", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("rag_sovereignty", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "rag_sovereignty", "context_pull")
+trace_contract._emit_pulls_context("p1", "rag_sovereignty", "context_pull_secondary")
+trace_contract._emit_execution_terminates_at_uwg("p1", "rag_sovereignty", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "rag_sovereignty", "uwg_term_secondary")
+trace_contract._emit_writes_through("p1", "rag_sovereignty", "write_through")
+trace_contract._emit_writes_through("p1", "rag_sovereignty", "write_through_secondary")
+trace_contract._emit_validated_by_safety_plane("p1", "rag_sovereignty", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "rag_sovereignty", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "rag_sovereignty", "routing_commit")
+trace_contract._emit_escalates_to_human("p1", "rag_sovereignty", "human_escalation")
+trace_contract._emit_routes_through("p1", "rag_sovereignty", "route_through")
+trace_contract._emit_checks_agent_registry("p1", "rag_sovereignty", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "rag_sovereignty", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "rag_sovereignty", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "rag_sovereignty", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "rag_sovereignty", "target_agent")
+trace_contract._emit_verifies_policy("p1", "rag_sovereignty", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "rag_sovereignty", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "rag_sovereignty", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "rag_sovereignty", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "rag_sovereignty")
+trace_contract._emit_gated_by_confidence("p1", "rag_sovereignty", "confidence_gate")
 logger = logging.getLogger(__name__)
 _POLICY_ID = "ADG::Policy::RAG_C0_INFORMATIONAL_ONLY"
 _DECISION_NODES: frozenset[str] = frozenset(
