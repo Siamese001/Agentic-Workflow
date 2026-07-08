@@ -27,6 +27,7 @@ from agentic_core.runtime.c0.c0_package_driven_grounding import FinalEvidenceCon
 from agentic_core.prompt_governance import (  # guardian: allow-layer-violation -- package-driven L2 consumes PA CompiledPromptArtifact at the L2 execution boundary; generic executor + app-owned profiles per ADR/app binding model
     CompiledPromptArtifact,
 )
+from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -234,17 +235,12 @@ def _append_h0_repair_context(
 
     if hasattr(compiled_prompt, "prompt_blocks"):
         blocks = tuple(getattr(compiled_prompt, "prompt_blocks", ()) or ())
-        try:
-            from agentic_core.runtime.contracts.compiled_prompt_artifact import PromptBlock  # noqa: PLC0415
-
-            repair_block = PromptBlock(
-                role="system",
-                content=repair_hints,
-                block_index=len(blocks),
-            )
-            updates["prompt_blocks"] = blocks + (repair_block,)
-        except ImportError:
-            pass
+        repair_block = PromptBlock(
+            role="system",
+            content=repair_hints,
+            block_index=len(blocks),
+        )
+        updates["prompt_blocks"] = blocks + (repair_block,)
 
     if hasattr(compiled_prompt, "metadata"):
         metadata = dict(getattr(compiled_prompt, "metadata", {}) or {})
@@ -268,10 +264,12 @@ def _append_h0_repair_context(
         updates["compilation_hash"] = f"sha256:{hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()}"
 
     if hasattr(compiled_prompt, "tokens"):
+        repair_tokens = max(1, len(repair_hints) // 4)
         try:
-            updates["tokens"] = int(getattr(compiled_prompt, "tokens", 0) or 0) + max(1, len(repair_hints) // 4)
+            current_tokens = int(getattr(compiled_prompt, "tokens", 0) or 0)
         except (TypeError, ValueError):
-            pass
+            current_tokens = 0
+        updates["tokens"] = current_tokens + repair_tokens
 
     return replace(compiled_prompt, **updates)
 

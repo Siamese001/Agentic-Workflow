@@ -92,8 +92,8 @@ def _partial_judge_payload(text: str) -> dict[str, Any] | None:
         return None
     try:
         score = float(score_match.group(1))
-    except ValueError:
-        return None
+    except ValueError as exc:
+        raise GraderError(f"judge partial score not numeric: {score_match.group(1)!r}") from exc
     return {
         "verdict": verdict_match.group(1).upper(),
         "score": score,
