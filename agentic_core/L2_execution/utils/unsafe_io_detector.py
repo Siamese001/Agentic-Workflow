@@ -9,97 +9,49 @@ import ast
 from dataclasses import dataclass
 from pathlib import Path
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
-    # noqa: E402,
-    # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,
-    # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-    # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,
-    # noqa: E402
-    emit_replay_key,
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-emit_replay_key("p0", "unsafe_io_detector")
-emit_determinism_digest("p0", "unsafe_io_detector")
+trace_contract.emit_replay_key("p0", "unsafe_io_detector")
+trace_contract.emit_determinism_digest("p0", "unsafe_io_detector")
 
-_emit_dispatches_healing_run("p1", "unsafe_io_detector", "L2")
-_emit_routes_through("p1", "unsafe_io_detector", "L2")
-_emit_checks_agent_registry("p1", "unsafe_io_detector", "agent_registry")
-_emit_validates_agent_capability("p1", "unsafe_io_detector", "capability")
-_emit_dispatches_execution_plan("p1", "unsafe_io_detector", "exec_plan")
-_emit_agent_executes_agent("p1", "unsafe_io_detector", "sub_agent")
-_emit_routes_to_agent("p1", "unsafe_io_detector", "target_agent")
-_emit_verifies_policy("p1", "unsafe_io_detector", "policy_check")
-_emit_observes_runtime_state("p1", "unsafe_io_detector", "runtime_state")
-_emit_verifies_boundary("p1", "unsafe_io_detector", "boundary_check")
-_emit_transcripts_response("p1", "unsafe_io_detector", "transcript")
-_emit_hard_fails_untranscripted("p1", "unsafe_io_detector")
-_emit_gated_by_confidence("p1", "unsafe_io_detector", "confidence_gate")
-_emit_escalates_to_human("p1", "unsafe_io_detector", "L2")
-_emit_reads_policy_state("p1", "unsafe_io_detector", "L2")
+trace_contract._emit_dispatches_healing_run("p1", "unsafe_io_detector", "L2")
+trace_contract._emit_routes_through("p1", "unsafe_io_detector", "L2")
+trace_contract._emit_checks_agent_registry("p1", "unsafe_io_detector", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "unsafe_io_detector", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "unsafe_io_detector", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "unsafe_io_detector", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "unsafe_io_detector", "target_agent")
+trace_contract._emit_verifies_policy("p1", "unsafe_io_detector", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "unsafe_io_detector", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "unsafe_io_detector", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "unsafe_io_detector", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "unsafe_io_detector")
+trace_contract._emit_gated_by_confidence("p1", "unsafe_io_detector", "confidence_gate")
+trace_contract._emit_escalates_to_human("p1", "unsafe_io_detector", "L2")
+trace_contract._emit_reads_policy_state("p1", "unsafe_io_detector", "L2")
 
-_emit_applies_guardrail("p0", "unsafe_io_detector", "p0_governance")
-_emit_snapshots_state("p0", "unsafe_io_detector", "state_snapshot")
-_emit_authorize_and_execute("p2", "unsafe_io_detector", "execution_auth")
-_emit_validates_capability("p2", "unsafe_io_detector", "capability_check")
-_emit_routes_to_capability("p2", "unsafe_io_detector", "capability_route")
-_emit_writes_via_uwg("p2", "unsafe_io_detector", "uwg_write")
-_emit_blocks_direct_write("p2", "unsafe_io_detector", "direct_write_block")
-_emit_records_tool_invocation("p2", "unsafe_io_detector", "tool_invocation")
-_emit_captures_execution_output("p2", "unsafe_io_detector", "exec_output")
-_emit_dispatches_agent("p3", "unsafe_io_detector", "agent_dispatch")
-_emit_coordinates_agents("p3", "unsafe_io_detector", "agent_coordination")
-_emit_records_workflow_lineage("p3", "unsafe_io_detector", "workflow_lineage")
-_emit_records_healing_outcome("p3", "unsafe_io_detector", "healing_outcome")
-_emit_escalates_failure("p3", "unsafe_io_detector", "failure_escalation")
-_emit_orchestrates_workflow("p3", "unsafe_io_detector", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "unsafe_io_detector", "healing_dispatch")
-_emit_invokes_evaluation("p3", "unsafe_io_detector", "evaluation_signal")
-_emit_records_telemetry_event("p4", "unsafe_io_detector", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "unsafe_io_detector", "eval_metric")
-_emit_stores_embedding("p4", "unsafe_io_detector", "embedding_store")
-_emit_updates_meta_learning_state("p4", "unsafe_io_detector", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "unsafe_io_detector", "exec_snapshot_link")
+trace_contract._emit_applies_guardrail("p0", "unsafe_io_detector", "p0_governance")
+trace_contract._emit_snapshots_state("p0", "unsafe_io_detector", "state_snapshot")
+trace_contract._emit_authorize_and_execute("p2", "unsafe_io_detector", "execution_auth")
+trace_contract._emit_validates_capability("p2", "unsafe_io_detector", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "unsafe_io_detector", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "unsafe_io_detector", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "unsafe_io_detector", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "unsafe_io_detector", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "unsafe_io_detector", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "unsafe_io_detector", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "unsafe_io_detector", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "unsafe_io_detector", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "unsafe_io_detector", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "unsafe_io_detector", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "unsafe_io_detector", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "unsafe_io_detector", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "unsafe_io_detector", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "unsafe_io_detector", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "unsafe_io_detector", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "unsafe_io_detector", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "unsafe_io_detector", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "unsafe_io_detector", "exec_snapshot_link")
 
 
 def _invoke_authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw):
@@ -136,82 +88,45 @@ from agentic_core.L0_routing.config.path_constants import (  # guardian: allow-l
     TESTS_DIR,
     TOOLS_DIR,
 )
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 from tqdm import tqdm
 
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_1")
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_2")
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_3")
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_4")
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_5")
-_emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_6")
-_emit_records_incident_event("unsafe_io_detector", "p4obs", "incident")
-_emit_captures_runtime_anomaly("unsafe_io_detector", "p4obs", "anomaly")
-_emit_writes_observability_log("unsafe_io_detector", "p4obs", "obs_log")
-_emit_updates_monitoring_state("unsafe_io_detector", "p4obs", "mon_state")
-_emit_triggers_alert("unsafe_io_detector", "p4obs", "alert")
-_emit_links_incident_trace("unsafe_io_detector", "p4obs", "trace_link")
-_emit_captures_pattern("unsafe_io_detector", "p3lm", "pattern")
-_emit_records_learning_event("unsafe_io_detector", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("unsafe_io_detector", "p3lm", "snapshot")
-_emit_feeds_meta_learning("unsafe_io_detector", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("unsafe_io_detector", "p3lm", "routing")
-_emit_improves_agent_policy("unsafe_io_detector", "p3lm", "policy")
-_emit_stores_learning_state("unsafe_io_detector", "p3lm", "state")
-_emit_records_execution_trace("unsafe_io_detector", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("unsafe_io_detector", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("unsafe_io_detector", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("unsafe_io_detector", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("unsafe_io_detector", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("unsafe_io_detector", "env_read", "p2_env_1")
-_emit_reads_environ("unsafe_io_detector", "env_read", "p2_env_2")
-_emit_reads_runtime_state("unsafe_io_detector", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("unsafe_io_detector", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "unsafe_io_detector", "context_pull")
-_emit_pulls_context("p1", "unsafe_io_detector", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "unsafe_io_detector", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "unsafe_io_detector", "uwg_term_2")
-_emit_writes_through("p1", "unsafe_io_detector", "write_through")
-_emit_writes_through("p1", "unsafe_io_detector", "write_through_2")
-_emit_validated_by_safety_plane("p1", "unsafe_io_detector", "safety_validation")
-_emit_invokes_eval("p1", "unsafe_io_detector", "eval_call")
-_emit_proposal_commits_routing("p1", "unsafe_io_detector", "routing_commit")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("unsafe_io_detector", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("unsafe_io_detector", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("unsafe_io_detector", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("unsafe_io_detector", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("unsafe_io_detector", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("unsafe_io_detector", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("unsafe_io_detector", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("unsafe_io_detector", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("unsafe_io_detector", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("unsafe_io_detector", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("unsafe_io_detector", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("unsafe_io_detector", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("unsafe_io_detector", "p3lm", "state")
+trace_contract._emit_records_execution_trace("unsafe_io_detector", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("unsafe_io_detector", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("unsafe_io_detector", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("unsafe_io_detector", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("unsafe_io_detector", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("unsafe_io_detector", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("unsafe_io_detector", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("unsafe_io_detector", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("unsafe_io_detector", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "unsafe_io_detector", "context_pull")
+trace_contract._emit_pulls_context("p1", "unsafe_io_detector", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "unsafe_io_detector", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "unsafe_io_detector", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "unsafe_io_detector", "write_through")
+trace_contract._emit_writes_through("p1", "unsafe_io_detector", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "unsafe_io_detector", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "unsafe_io_detector", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "unsafe_io_detector", "routing_commit")
 
 
 @dataclass
@@ -258,11 +173,11 @@ class UnsafePatternVisitor(ast.NodeVisitor):
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "UnsafePatternVisitor.visit_Call")
+        trace_contract._emit_records_execution_trace(_trace_id, trace_contract.LayerSegment.L2_EXECUTION, "UnsafePatternVisitor.visit_Call")
         import hashlib as _hashlib  # noqa: PLC0415
 
         _seg_hash = _hashlib.sha256(f"{_trace_id}:UnsafePatternVisitor.visit_Call".encode()).hexdigest()[:24]
-        _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
+        trace_contract._emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         # Check for open() with write modes
         if isinstance(node.func, ast.Name) and node.func.id == "open":

@@ -6,7 +6,10 @@ prompt = """
 Run the Agentic-Workflow P1 ADG ratchet burndown after P0 has been cleared and a fresh full ADG generation proves P0=0.
 
 Mission:
-Consume the fresh generate_full_adg handoff after P0 blocker publication and clear P1 to zero. Ordinary P1 high anti-pattern rows come first; P1 ratchet backlog follows only after ordinary P1 is clear or no safe ordinary P1 item remains. This lane is all-or-nothing: P1 must be 0 before merge or downstream unblocking.
+Consume the fresh generate_full_adg handoff after P0 blocker publication and clear P1 to zero. Ordinary P1 high anti-pattern rows come first; P1 ratchet backlog follows only after ordinary P1 is clear or no safe ordinary P1 item remains.
+- The lane is all-or-nothing for downstream unblocking: P1 must be 0 before P2/P3 may edit from this audit generation.
+- The lane is not allowed to stop after producing a plan only. It must automatically create the full-scope P1 wave refactor plan, execute the most critical safe wave with runtime proof, commit the branch, open/update the local-main PR, and execute the PR merge when publication gates pass.
+- Validated partial-wave publication is allowed when P1 remains nonzero, but it must close out as target_status=missed/BLOCKED and must not unblock downstream lanes.
 
 Generate-full-ADG dependency gate:
 - This automation is downstream of the generate_full_adg lane and the P0 blocker lane: weekly-adg-audit-and-burndown -> adg-p0-blocker-burndown.
@@ -28,7 +31,7 @@ Generate-full-ADG dependency gate:
 Severity-lane order:
 - This is the second downstream severity lane after generate_full_adg.
 - It must run only after the P0 blocker lane has merged and a fresh post-P0 full ADG receipt proving P0=0 exists for the same post-P0 generation.
-- P2, P3, and any future P4 automation must not edit from the same audit generation until this lane proves P1=0 or explicitly stops with a blocker.
+- P2, P3, and any future P4 automation must not edit from the same audit generation until this lane proves P1=0. A merged partial P1 wave is progress publication only, not downstream clearance.
 
 Authority:
 Follow AGENTS.md and docs/codex-primary-execution.md. Use bounded PowerShell-compatible commands. Use a clean main-derived worktree or branch before edits. If validated changes are produced, complete the end-of-run merge/publication step in this automation.
@@ -41,10 +44,12 @@ Startup gate:
 
 Automation-owned planning and approval:
 - This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
-- The automation must still create a concrete P1 execution and burndown plan before edits, but it must do so inside the run without waiting for user interaction.
+- The automation must create a concrete full-scope P1 wave refactor and burndown plan before source edits, but it must do so inside the run without waiting for user interaction.
 - Treat the generated P1 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P1 ratchet evidence, and gate artifacts consumed by the run.
+- Persist the generated plan as an active repo-root `plans/adg-p1-ratchet-burndown-wave-plan-<slug>.md` file, not only as a transient run artifact, and include the plan path in the JSON run receipt.
+- The generated plan must be executable wave-by-wave: ordinary P1 wave, all ratchet family waves to zero, validation commands, runtime proof command, PR/merge closeout commands, and stop/skip criteria.
 - Do not stop only to request plan approval when the selected P1 item stays within this TOML's standing approval scope.
-- If the generated plan reveals work outside standing approval, stop at that point and report the specific blocker instead of editing.
+- If the generated plan reveals work outside standing approval, select the highest-priority independent safe wave that remains inside standing approval. Stop only when no safe ordinary or ratchet wave remains.
 
 Required P1 burndown plan:
 - Read the exact ADG action queue/report and compute current ordinary P1 count plus P1 ratchet gate/floor backlog before edits.
@@ -56,22 +61,38 @@ Required P1 burndown plan:
 - Set target_rows = ordinary_p1_target + current_p1_ratchet_backlog_count.
 - P1=0 is the only target_status=met condition; if any ordinary P1 or P1 ratchet rows remain, stop as target_status=missed/BLOCKED with RCA and do not unblock P2/P3.
 - The plan must identify ratchet source artifact, current count/baseline, selected gate/family, ordinary_p1_target, ratchet_target, priority ordering, dependency grouping, estimated per-wave scope, estimated validation cost, timeout/deadline assumption, validation commands, rollback/skip criteria, and stop conditions.
-- Generate enough bounded waves to plausibly reach ordinary_p1_target and then ratchet_target while keeping each wave small enough to validate and recover.
-- Do not stop after a single successful batch while target_rows remains unmet and additional safe standing-scope P1 candidates remain.
+- The plan must also identify the most critical next executable wave, why it is highest priority, why it remains inside standing approval, the exact files/rows selected for that wave, the runtime proof command, the proof artifact path, branch/PR/merge command sequence, and downstream-unblock status.
+- Generate enough bounded waves to plausibly reach ordinary_p1_target and then ratchet_target while keeping each wave small enough to validate and recover. For each ratchet family, include wave count = ceil(current_family_rows / ratchet_target).
+- Do not stop after plan creation. After the plan is written, execute the most critical safe wave immediately.
+- Do not stop after a single successful batch while target_rows remains unmet and additional safe standing-scope P1 candidates remain. Continue executing waves until deadline, validation failure, or no safe standing-scope wave remains.
+- If a broad ratchet family is design-owned, record it in the plan but skip to the next highest-priority safe family/wave rather than stopping at the first design-owned family.
+
+Most-critical-wave execution:
+- After ordinary P1 is clear or no safe ordinary P1 row remains, select the most critical ratchet wave by this order: highest severity gate priority from the digest-bound burndown report, then largest row count, then highest fan-out/dependency centrality, then cheapest runtime proof.
+- Execute at least one ratchet wave when any safe ratchet candidate exists. The minimum ratchet wave size is ratchet_target for the selected family unless fewer rows remain or the safe mechanical subset is smaller and explicitly justified.
+- A wave is safe only when it is mechanically supported by the fresh queue/report and can be validated with focused static checks plus runtime proof without design choice, public contract change, migration receipt, or uncertain ownership decision.
+- Runtime proof means a deterministic command that exercises the changed behavior, not compile-only validation. Prefer focused pytest. If no focused test exists, add one or run an equivalent local proof script and store output or receipt under `artifacts/codex/runtime_proofs/`.
+- The wave is not complete until compile/static checks, runtime proof, and lightweight ADG/burndown replay for touched paths pass or are explicitly impossible with evidence.
 
 Standing approval and stop conditions:
 - Standing approval applies only to bounded, mechanical P1 ADG fixes directly supported by the fresh queue/report and small focused patches.
 - Stop before editing any item requiring design choice, broad cross-layer refactor, public contract change, migration receipt, uncertain ownership decision, repeated test failure, dirty unrelated user changes, or merge conflict.
 - If one item blocks, skip it only when other independent ordinary P1 or selected-ratchet items can safely proceed; otherwise stop and report the blocker.
+- Do not classify the whole lane blocked solely because the largest ratchet family is design-owned; the automation must try lower-risk independent families/waves before stopping.
 
 Validation:
 - Run targeted tests or static checks appropriate to touched files after each wave.
+- Run at least one runtime proof command for the most critical executed wave and capture the command, exit code, and output summary in the run receipt.
 - Run lightweight ADG/burndown validation when practical; otherwise clearly state why full ADG validation was deferred.
 - Re-read exact P1 evidence after validation when regenerated.
 
 End-of-run merge/publication:
 - If no source changes were made, do not merge; close out with the no-change RCA and remaining target status.
-- If source changes were made, validation passes, and regenerated or replayed evidence proves P1=0, commit the P1 changes on the automation branch, push the branch, open or update the PR to main when needed, and merge to main before final closeout.
+- If source changes were made and the most critical safe wave has passing compile/static checks plus runtime proof, commit the P1 changes on the automation branch even when final_p1_count remains nonzero. The commit/PR must clearly state whether it is full P1 clearance or partial P1 wave progress.
+- Open or update the PR to main after a validated commit. Add the `codex` label and, when available, the `codex-automation` label.
+- Execute the PR merge to local main before final closeout when validation passes and no merge blocker remains. This is required for both full P1 clearance and validated partial-wave progress.
+- If regenerated or replayed evidence proves P1=0, mark target_status=met and allow downstream unblock after merge/publication closeout.
+- If P1 remains nonzero after the merged wave, mark target_status=missed/BLOCKED, keep downstream lanes blocked, and report the next wave from the generated plan.
 - Use a non-squash merge method. Do not squash.
 - Any direct PR completion command (`gh pr merge`) or direct push to main must chain the local closeout checks in the same shell command.
 - After merging, push origin main and run:
@@ -81,7 +102,7 @@ End-of-run merge/publication:
 
 Closeout:
 - Emit a JSON run receipt when substantial edits occur.
-- Summarize selected P1 source artifacts, generated P1 burndown plan, ordinary_p1_target, ratchet_target, planned_rows, attempted_rows, cleared_rows, remaining_rows, final_p1_count, target_status, changed files, validation commands and results, artifact paths, branch/commit/PR status, merge/publication result, final main/origin state, and blockers.
+- Summarize selected P1 source artifacts, generated P1 burndown plan, most critical wave executed, ordinary_p1_target, ratchet_target, planned_rows, attempted_rows, cleared_rows, remaining_rows, final_p1_count, target_status, changed files, validation commands and results, runtime proof command/result/artifact, artifact paths, branch/commit/PR status, merge/publication result, final main/origin state, downstream unblock status, and blockers.
 - If final_p1_count > 0, P1=0 is not proven, or cleared_rows < target_rows, set target_status=missed and include an RCA block with blocker_type, blocker_evidence, why additional safe candidates were unavailable, and the next unblock action.
 """
 status = "ACTIVE"
@@ -94,7 +115,7 @@ cwds = [
   "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
 ]
 created_at = 1782309600000
-updated_at = 1782309600000
+updated_at = 1783521080667
 
 [handoff]
 chain = "adg-severity-lanes/v1"

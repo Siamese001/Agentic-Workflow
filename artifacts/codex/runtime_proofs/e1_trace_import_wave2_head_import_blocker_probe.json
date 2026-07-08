@@ -1,0 +1,30 @@
+{
+  "head_probe": true,
+  "head": "191efe1550a99a0465022c0ffce322071609c2a7",
+  "results": [
+    {
+      "module": "agentic_core.L1_cognition.enforcement.spiffe_validator",
+      "status": "fail",
+      "error_type": "ModuleNotFoundError",
+      "error": "No module named 'agentic_core.L1_cognition.identity'"
+    },
+    {
+      "module": "agentic_core.L3_orchestration.reasoning.engines.dag_manager",
+      "status": "fail",
+      "error_type": "NameError",
+      "error": "name 'RedisCacheMixin' is not defined"
+    },
+    {
+      "module": "agentic_core.L2_execution.types.mcp_client_types",
+      "status": "fail",
+      "error_type": "ModuleNotFoundError",
+      "error": "No module named 'agentic_core.L2_execution.types.providers'"
+    },
+    {
+      "module": "agentic_core.L2_execution.utils.archive_util",
+      "status": "fail",
+      "error_type": "ModuleNotFoundError",
+      "error": "No module named 'agentic_core.L2_execution.utils.client'"
+    }
+  ]
+}

@@ -31,165 +31,88 @@ from agentic_core.L1_cognition.reasoning.reasoning_plan import (
     StepStatus,
     get_plan_registry,
 )
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,  # noqa: E402
-    _emit_escalates_failure,
-    _emit_escalates_to_human,  # noqa: E402
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,  # noqa: E402
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-emit_replay_key("p0", "plan_creator")
-emit_determinism_digest("p0", "plan_creator")
+trace_contract.emit_replay_key("p0", "plan_creator")
+trace_contract.emit_determinism_digest("p0", "plan_creator")
 
-_emit_dispatches_healing_run("p1", "plan_creator", "L1")
-_emit_routes_through("p1", "plan_creator", "L1")
-_emit_checks_agent_registry("p1", "plan_creator", "agent_registry")
-_emit_validates_agent_capability("p1", "plan_creator", "capability")
-_emit_dispatches_execution_plan("p1", "plan_creator", "exec_plan")
-_emit_agent_executes_agent("p1", "plan_creator", "sub_agent")
-_emit_routes_to_agent("p1", "plan_creator", "target_agent")
-_emit_verifies_policy("p1", "plan_creator", "policy_check")
-_emit_observes_runtime_state("p1", "plan_creator", "runtime_state")
-_emit_verifies_boundary("p1", "plan_creator", "boundary_check")
-_emit_transcripts_response("p1", "plan_creator", "transcript")
-_emit_hard_fails_untranscripted("p1", "plan_creator")
-_emit_gated_by_confidence("p1", "plan_creator", "confidence_gate")
-_emit_escalates_to_human("p1", "plan_creator", "L1")
-_emit_reads_policy_state("p1", "plan_creator", "L1")
+trace_contract._emit_dispatches_healing_run("p1", "plan_creator", "L1")
+trace_contract._emit_routes_through("p1", "plan_creator", "L1")
+trace_contract._emit_checks_agent_registry("p1", "plan_creator", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "plan_creator", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "plan_creator", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "plan_creator", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "plan_creator", "target_agent")
+trace_contract._emit_verifies_policy("p1", "plan_creator", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "plan_creator", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "plan_creator", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "plan_creator", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "plan_creator")
+trace_contract._emit_gated_by_confidence("p1", "plan_creator", "confidence_gate")
+trace_contract._emit_escalates_to_human("p1", "plan_creator", "L1")
+trace_contract._emit_reads_policy_state("p1", "plan_creator", "L1")
 
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_applies_guardrail("p0", "plan_creator", "p0_governance")
-_emit_records_execution_trace("p0", "evidence", "plan_creator")
-_emit_authorize_and_execute("p2", "plan_creator", "execution_auth")
-_emit_validates_capability("p2", "plan_creator", "capability_check")
-_emit_routes_to_capability("p2", "plan_creator", "capability_route")
-_emit_writes_via_uwg("p2", "plan_creator", "uwg_write")
-_emit_blocks_direct_write("p2", "plan_creator", "direct_write_block")
-_emit_records_tool_invocation("p2", "plan_creator", "tool_invocation")
-_emit_captures_execution_output("p2", "plan_creator", "exec_output")
-_emit_dispatches_agent("p3", "plan_creator", "agent_dispatch")
-_emit_coordinates_agents("p3", "plan_creator", "agent_coordination")
-_emit_records_workflow_lineage("p3", "plan_creator", "workflow_lineage")
-_emit_records_healing_outcome("p3", "plan_creator", "healing_outcome")
-_emit_escalates_failure("p3", "plan_creator", "failure_escalation")
-_emit_orchestrates_workflow("p3", "plan_creator", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "plan_creator", "healing_dispatch")
-_emit_invokes_evaluation("p3", "plan_creator", "evaluation_signal")
-_emit_records_telemetry_event("p4", "plan_creator", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "plan_creator", "eval_metric")
-_emit_stores_embedding("p4", "plan_creator", "embedding_store")
-_emit_updates_meta_learning_state("p4", "plan_creator", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "plan_creator", "exec_snapshot_link")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
+trace_contract._emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+trace_contract._emit_applies_guardrail("p0", "plan_creator", "p0_governance")
+trace_contract._emit_records_execution_trace("p0", "evidence", "plan_creator")
+trace_contract._emit_authorize_and_execute("p2", "plan_creator", "execution_auth")
+trace_contract._emit_validates_capability("p2", "plan_creator", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "plan_creator", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "plan_creator", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "plan_creator", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "plan_creator", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "plan_creator", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "plan_creator", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "plan_creator", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "plan_creator", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "plan_creator", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "plan_creator", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "plan_creator", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "plan_creator", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "plan_creator", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "plan_creator", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "plan_creator", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "plan_creator", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "plan_creator", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "plan_creator", "exec_snapshot_link")
 
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_1")
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_2")
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_3")
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_4")
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_5")
-_emit_emits_metric_event("plan_creator", "p4obs", "metric_6")
-_emit_records_incident_event("plan_creator", "p4obs", "incident")
-_emit_captures_runtime_anomaly("plan_creator", "p4obs", "anomaly")
-_emit_writes_observability_log("plan_creator", "p4obs", "obs_log")
-_emit_updates_monitoring_state("plan_creator", "p4obs", "mon_state")
-_emit_triggers_alert("plan_creator", "p4obs", "alert")
-_emit_links_incident_trace("plan_creator", "p4obs", "trace_link")
-_emit_captures_pattern("plan_creator", "p3lm", "pattern")
-_emit_records_learning_event("plan_creator", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("plan_creator", "p3lm", "snapshot")
-_emit_feeds_meta_learning("plan_creator", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("plan_creator", "p3lm", "routing")
-_emit_improves_agent_policy("plan_creator", "p3lm", "policy")
-_emit_stores_learning_state("plan_creator", "p3lm", "state")
-_emit_records_execution_trace("plan_creator", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("plan_creator", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("plan_creator", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("plan_creator", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("plan_creator", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("plan_creator", "env_read", "p2_env_1")
-_emit_reads_environ("plan_creator", "env_read", "p2_env_2")
-_emit_reads_runtime_state("plan_creator", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("plan_creator", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "plan_creator", "context_pull")
-_emit_pulls_context("p1", "plan_creator", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "plan_creator", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "plan_creator", "uwg_term_2")
-_emit_writes_through("p1", "plan_creator", "write_through")
-_emit_writes_through("p1", "plan_creator", "write_through_2")
-_emit_validated_by_safety_plane("p1", "plan_creator", "safety_validation")
-_emit_invokes_eval("p1", "plan_creator", "eval_call")
-_emit_proposal_commits_routing("p1", "plan_creator", "routing_commit")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("plan_creator", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("plan_creator", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("plan_creator", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("plan_creator", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("plan_creator", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("plan_creator", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("plan_creator", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("plan_creator", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("plan_creator", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("plan_creator", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("plan_creator", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("plan_creator", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("plan_creator", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("plan_creator", "p3lm", "state")
+trace_contract._emit_records_execution_trace("plan_creator", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("plan_creator", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("plan_creator", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("plan_creator", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("plan_creator", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("plan_creator", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("plan_creator", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("plan_creator", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("plan_creator", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "plan_creator", "context_pull")
+trace_contract._emit_pulls_context("p1", "plan_creator", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "plan_creator", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "plan_creator", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "plan_creator", "write_through")
+trace_contract._emit_writes_through("p1", "plan_creator", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "plan_creator", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "plan_creator", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "plan_creator", "routing_commit")
 
 logger = logging.getLogger(__name__)
 _PLAN_LOG = logging.getLogger("adg.plan_creator")
@@ -416,7 +339,7 @@ def _create_checkpoint_policy(policy: PlanningPolicy) -> str:
     """Create checkpoint policy string."""
     import uuid  # noqa: PLC0415
 
-    _emit_snapshots_state(str(uuid.uuid4()), "Module._create_checkpoint_policy", "L1_REASONING")
+    trace_contract._emit_snapshots_state(str(uuid.uuid4()), "Module._create_checkpoint_policy", "L1_REASONING")
     checkpoints = []
     if policy.checkpoint_after_evidence:
         checkpoints.append("after_evidence")

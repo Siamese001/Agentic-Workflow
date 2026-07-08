@@ -2,14 +2,28 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from typing import Any
+
 from agentic_core.L2_execution.l2_package_driven_executor import (
     ExecutionValidationReceipt,
+    _append_h0_repair_context,
     _perform_same_authority_repair,
 )
 from agentic_core.runtime.contracts.compiled_prompt_artifact import (
     CompiledPromptArtifact,
     PromptBlock,
 )
+
+
+@dataclass(frozen=True)
+class _TokenRepairPrompt:
+    user_instruction: str = ""
+    prompt_blocks: tuple[PromptBlock, ...] = field(default_factory=tuple)
+    metadata: dict[str, Any] = field(default_factory=dict)
+    audit_refs: tuple[str, ...] = field(default_factory=tuple)
+    compilation_hash: str = "sha256:before"
+    tokens: Any = "not-an-int"
 
 
 def _compiled_prompt() -> CompiledPromptArtifact:
@@ -73,3 +87,13 @@ def test_same_authority_repair_returns_repaired_prompt_packet() -> None:
     assert receipt.after_prompt_hash
     assert receipt.before_prompt_hash != receipt.after_prompt_hash
     assert receipt.repaired_packet_ref == repaired.compilation_hash
+
+
+def test_append_h0_repair_context_recovers_invalid_token_metadata() -> None:
+    repaired = _append_h0_repair_context(
+        _TokenRepairPrompt(),
+        "H0 Bounded Repair Context",
+    )
+
+    assert repaired.tokens > 0
+    assert repaired.prompt_blocks[-1].content == "H0 Bounded Repair Context"

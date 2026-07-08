@@ -1,0 +1,311 @@
+{
+  "candidate_count": 50,
+  "failed": 3,
+  "manifest": "artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_manifest.json",
+  "passed": 47,
+  "results": [
+    {
+      "imported_name": "agentic_core.adg.extraction.graph_persister",
+      "module": "agentic_core.adg.extraction.graph_persister",
+      "path": "agentic_core/adg/extraction/graph_persister.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.enforcement.promotion_authority",
+      "module": "agentic_core.L4_state.enforcement.promotion_authority",
+      "path": "agentic_core/L4_state/enforcement/promotion_authority.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.ssot_guardrail",
+      "module": "agentic_core.L5_safety.enforcement.ssot_guardrail",
+      "path": "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.recursion_monitor_types",
+      "module": "agentic_core.L3_orchestration.types.recursion_monitor_types",
+      "path": "agentic_core/L3_orchestration/types/recursion_monitor_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.orchestrator_types",
+      "module": "agentic_core.L3_orchestration.types.orchestrator_types",
+      "path": "agentic_core/L3_orchestration/types/orchestrator_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.workflow_loader_types",
+      "module": "agentic_core.L3_orchestration.types.workflow_loader_types",
+      "path": "agentic_core/L3_orchestration/types/workflow_loader_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.reasoning.plan_creator",
+      "module": "agentic_core.L1_cognition.reasoning.plan_creator",
+      "path": "agentic_core/L1_cognition/reasoning/plan_creator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.reasoning.execute_command_executor",
+      "module": "agentic_core.L2_execution.reasoning.execute_command_executor",
+      "path": "agentic_core/L2_execution/reasoning/execute_command_executor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.context_pruning_types",
+      "module": "agentic_core.L3_orchestration.types.context_pruning_types",
+      "path": "agentic_core/L3_orchestration/types/context_pruning_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.shadow_eval.legacy_parallel.evaluation_record",
+      "module": "agentic_core.L6_observability.shadow_eval.legacy_parallel.evaluation_record",
+      "path": "agentic_core/L6_observability/shadow_eval/legacy_parallel/evaluation_record.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.module_collision_guardrail",
+      "module": "agentic_core.L5_safety.enforcement.module_collision_guardrail",
+      "path": "agentic_core/L5_safety/enforcement/module_collision_guardrail.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.enforcement.runtime_interceptor",
+      "module": "agentic_core.L2_execution.enforcement.runtime_interceptor",
+      "path": "agentic_core/L2_execution/enforcement/runtime_interceptor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.config.structure_blueprint.derived",
+      "module": "agentic_core.L5_safety.config.structure_blueprint.derived",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/derived.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.security.credential_guard",
+      "module": "agentic_core.L5_safety.enforcement.security.credential_guard",
+      "path": "agentic_core/L5_safety/enforcement/security/credential_guard.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.governance.cache_guard",
+      "module": "agentic_core.L5_safety.enforcement.governance.cache_guard",
+      "path": "agentic_core/L5_safety/enforcement/governance/cache_guard.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.utils.safe_subprocess",
+      "module": "agentic_core.L2_execution.utils.safe_subprocess",
+      "path": "agentic_core/L2_execution/utils/safe_subprocess.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.governance.logs_guard",
+      "module": "agentic_core.L5_safety.enforcement.governance.logs_guard",
+      "path": "agentic_core/L5_safety/enforcement/governance/logs_guard.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.__init__",
+      "module": "agentic_core.L4_state.utils.__init__",
+      "path": "agentic_core/L4_state/utils/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.validate_path_ssot_util",
+      "module": "agentic_core.L5_safety.utils.validate_path_ssot_util",
+      "path": "agentic_core/L5_safety/utils/validate_path_ssot_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.invariants.runtime_invariant_checker",
+      "module": "agentic_core.L5_safety.validators.invariants.runtime_invariant_checker",
+      "path": "agentic_core/L5_safety/validators/invariants/runtime_invariant_checker.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.keyword_classification_types",
+      "module": "agentic_core.L2_execution.types.keyword_classification_types",
+      "path": "agentic_core/L2_execution/types/keyword_classification_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.artifact_types",
+      "module": "agentic_core.L3_orchestration.types.artifact_types",
+      "path": "agentic_core/L3_orchestration/types/artifact_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.route_type_types",
+      "module": "agentic_core.L3_orchestration.types.route_type_types",
+      "path": "agentic_core/L3_orchestration/types/route_type_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.config.structure_blueprint.territories",
+      "module": "agentic_core.L5_safety.config.structure_blueprint.territories",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/territories.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.workflow_types",
+      "module": "agentic_core.L3_orchestration.types.workflow_types",
+      "path": "agentic_core/L3_orchestration/types/workflow_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.ssot_folder_check_util",
+      "module": "agentic_core.L5_safety.utils.ssot_folder_check_util",
+      "path": "agentic_core/L5_safety/utils/ssot_folder_check_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.budget_types",
+      "module": "agentic_core.L1_cognition.types.budget_types",
+      "path": "agentic_core/L1_cognition/types/budget_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.capability_types",
+      "module": "agentic_core.L1_cognition.types.capability_types",
+      "path": "agentic_core/L1_cognition/types/capability_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.types.sovereign_base_model_types",
+      "module": "agentic_core.L5_safety.types.sovereign_base_model_types",
+      "path": "agentic_core/L5_safety/types/sovereign_base_model_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.research_hop_phase_types",
+      "module": "agentic_core.L1_cognition.types.research_hop_phase_types",
+      "path": "agentic_core/L1_cognition/types/research_hop_phase_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.result_types",
+      "module": "agentic_core.L1_cognition.types.result_types",
+      "path": "agentic_core/L1_cognition/types/result_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.validation_types",
+      "module": "agentic_core.L1_cognition.types.validation_types",
+      "path": "agentic_core/L1_cognition/types/validation_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.bullet_format_types",
+      "module": "agentic_core.L2_execution.types.bullet_format_types",
+      "path": "agentic_core/L2_execution/types/bullet_format_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.hop_status_types",
+      "module": "agentic_core.L3_orchestration.types.hop_status_types",
+      "path": "agentic_core/L3_orchestration/types/hop_status_types.py",
+      "status": "PASS"
+    },
+    {
+      "error": "Required dependency missing: cannot import name 'FilesystemMCP' from partially initialized module 'agentic_core.L2_execution.enforcement.filesystem_mcp' (most likely due to a circular import) (C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\L2_execution\\enforcement\\filesystem_mcp.py)",
+      "error_type": "ImportError",
+      "module": "agentic_core.L2_execution.enforcement.filesystem_mcp",
+      "path": "agentic_core/L2_execution/enforcement/filesystem_mcp.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.pii_vault_enforcer",
+      "module": "agentic_core.L5_safety.enforcement.pii_vault_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.reasoning.memory_embedder",
+      "module": "agentic_core.L1_cognition.reasoning.memory_embedder",
+      "path": "agentic_core/L1_cognition/reasoning/memory_embedder.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.enforcement.firecracker_manager",
+      "module": "agentic_core.L2_execution.enforcement.firecracker_manager",
+      "path": "agentic_core/L2_execution/enforcement/firecracker_manager.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.reasoning.ptc.builtin_tools",
+      "module": "agentic_core.L3_orchestration.reasoning.ptc.builtin_tools",
+      "path": "agentic_core/L3_orchestration/reasoning/ptc/builtin_tools.py",
+      "status": "PASS"
+    },
+    {
+      "error": "No module named 'agentic_core.runtime.types.anomaly_report'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.L4_state.reasoning.CachedStateLedger",
+      "path": "agentic_core/L4_state/reasoning/CachedStateLedger.py",
+      "status": "FAIL"
+    },
+    {
+      "error": "No module named 'agentic_core.L4_state.types.memory_item_types'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.L4_state.utils.memory.in_memory_vector_store",
+      "path": "agentic_core/L4_state/utils/memory/in_memory_vector_store.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.versioning.commit_versioned_state_transition",
+      "module": "agentic_core.L4_state.utils.versioning.commit_versioned_state_transition",
+      "path": "agentic_core/L4_state/utils/versioning/commit_versioned_state_transition.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.governance.agent_heal_audit",
+      "module": "agentic_core.L5_safety.enforcement.governance.agent_heal_audit",
+      "path": "agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.mock_context_enforcer",
+      "module": "agentic_core.L5_safety.enforcement.mock_context_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/mock_context_enforcer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer",
+      "module": "agentic_core.L5_safety.enforcement.structural_namespace_fence_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/structural_namespace_fence_enforcer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.location_utils_util",
+      "module": "agentic_core.L5_safety.utils.location_utils_util",
+      "path": "agentic_core/L5_safety/utils/location_utils_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.gravity_validator",
+      "module": "agentic_core.L5_safety.validators.gravity_validator",
+      "path": "agentic_core/L5_safety/validators/gravity_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.reasoning.healing_memory_retriever",
+      "module": "agentic_core.L1_cognition.reasoning.healing_memory_retriever",
+      "path": "agentic_core/L1_cognition/reasoning/healing_memory_retriever.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.reasoning.engines.prompt_chain_engine",
+      "module": "agentic_core.L3_orchestration.reasoning.engines.prompt_chain_engine",
+      "path": "agentic_core/L3_orchestration/reasoning/engines/prompt_chain_engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.reasoning.engines.sub_atomic_engine_impl",
+      "module": "agentic_core.L3_orchestration.reasoning.engines.sub_atomic_engine_impl",
+      "path": "agentic_core/L3_orchestration/reasoning/engines/sub_atomic_engine_impl.py",
+      "status": "PASS"
+    }
+  ]
+}

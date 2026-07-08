@@ -1,0 +1,24 @@
+{
+  "base_probe": true,
+  "base": "f6489212c2fa25d5a0818a0c56b051008dd7e5dc",
+  "results": [
+    {
+      "module": "agentic_core.L2_execution.enforcement.filesystem_mcp",
+      "status": "fail",
+      "error_type": "ImportError",
+      "error": "Required dependency missing: cannot import name 'FilesystemMCP' from partially initialized module 'agentic_core.L2_execution.enforcement.filesystem_mcp' (most likely due to a circular import) (C:\\Users\\amita\\AppData\\Local\\Temp\\adg-p1-base-probe-f6489212c2fa\\agentic_core\\L2_execution\\enforcement\\filesystem_mcp.py)"
+    },
+    {
+      "module": "agentic_core.L4_state.reasoning.CachedStateLedger",
+      "status": "fail",
+      "error_type": "ModuleNotFoundError",
+      "error": "No module named 'agentic_core.runtime.types.anomaly_report'"
+    },
+    {
+      "module": "agentic_core.L4_state.utils.memory.in_memory_vector_store",
+      "status": "fail",
+      "error_type": "ModuleNotFoundError",
+      "error": "No module named 'agentic_core.L4_state.types.memory_item_types'"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p1_ratchet_burndown_20260708T135459Z",
+  "generated_at": "2026-07-08T13:54:59.8192445Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+    "branch": "codex/adg-p1-ratchet-burndown-20260708T094956",
+    "head": "f6489212c2fa25d5a0818a0c56b051008dd7e5dc",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Run ADG P1 ratchet burndown TOML in a Codex branch off local main.",
+    "plan_id": "automation:adg-p1-ratchet-burndown",
+    "files_changed": [
+      "agentic_core/L2_execution/l2_package_driven_executor.py",
+      "agentic_core/L3_orchestration/exit_eval/judges/_base_http_judge.py",
+      "tests/unit/agentic_core/L2_execution/test_l2_package_driven_repair.py",
+      "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md"
+    ]
+  },
+  "execution": {
+    "status": "BLOCKED",
+    "commands": [
+      {
+        "command": "git worktree add C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown -b codex/adg-p1-ratchet-burndown-20260708T094956 main",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m compileall -q agentic_core\\L2_execution\\l2_package_driven_executor.py agentic_core\\L3_orchestration\\exit_eval\\judges\\_base_http_judge.py tests\\unit\\agentic_core\\L2_execution\\test_l2_package_driven_repair.py tests\\unit\\agentic_core\\L3_orchestration\\exit_eval\\test_http_judges.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m pytest tests\\unit\\agentic_core\\L2_execution\\test_l2_package_driven_repair.py tests\\unit\\agentic_core\\L3_orchestration\\exit_eval\\test_http_judges.py -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "sample digest-bound P1 ratchet gate rows from adg_indexed_07072026_2307.sqlite",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "BLOCKED",
+        "exit_code": 1
+      },
+      {
+        "command": "create plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md from digest-bound P1 scope",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "fallbacks": []
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "handoff_validator",
+        "status": "PASS",
+        "evidence": "dependency_status=ready artifact_status=repair_ready adg_run_id=07072026_2307 P0_FIX=0 P0_WAVE=0 P1_FIX=0 P1_RATCHET_FLOOR_BACKLOG=7 P1_RATCHET_REGRESSION=0"
+      },
+      {
+        "name": "ordinary_p1_source_patch",
+        "status": "PASS",
+        "evidence": "Patched two silent_exception_swallow handlers at l2_package_driven_executor.py lines 246/273 and one return_none_swallow handler at _base_http_judge.py line 95 from the 07072026_2307 SQLite evidence."
+      },
+      {
+        "name": "focused_tests",
+        "status": "PASS",
+        "evidence": "compileall passed; pytest collected 6 focused tests and all 6 passed."
+      },
+      {
+        "name": "p1_ratchet_target",
+        "status": "BLOCKED",
+        "evidence": "Remaining P1 ratchet floor backlog is 7 gates / 3646 rows: B2=862, C3=125, E1=982, I1=695, M=688, N=88, O=206. Samples require cross-layer routing, trace-theater reduction, exit disposition coverage, schema binding, guardrail/write-target separation, or observability receipt design."
+      },
+      {
+        "name": "p1_wave_refactor_plan",
+        "status": "PASS",
+        "evidence": "Created plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md covering ordinary_p1_target=3, ratchet_target=3646, planned_rows=3649, 7 ratchet families, and 98 ratchet waves plus final P1=0 proof."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "P1=0 was not proven after the ordinary P1 source patch.",
+    "root_cause": "The remaining P1 work is ratchet floor backlog across seven broad structural/runtime families, not a bounded mechanical fix set under the automation standing approval.",
+    "evidence": "Digest-bound burndown report for 07072026_2307 reports P1 PASS with 7 burn-down gates / 3646 rows; sampled rows include B2 L0->L6 imports, E1 trace-theater modules, I1 missing exit disposition coverage, M missing structured output schema, N shared L5/L3 write targets, and O missing observability receipts.",
+    "fix_or_next": "next: execute plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md W2-W9 in bounded ratchet-family waves, then consume a fresh full ADG handoff proving P1=0.",
+    "recurrence_guard": "Keep the P1 automation gate all-or-nothing; ordinary P1 patches may be staged, but P2/P3 stay blocked until a fresh regenerated handoff proves P1=0."
+  }
+}
