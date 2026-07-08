@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import json
 import os
-from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterator, List, Tuple
-from unittest.mock import patch
+from typing import Any
 
 from apps_rg.cache.r1b_constants import (
     CACHE_GRAIN_ROLE_TARGET_RUN,
@@ -70,8 +68,10 @@ class R1BPromotionOutcome:
     blocked_reason_codes: tuple[str, ...] = field(default_factory=tuple)
     missing_contract_fields: tuple[str, ...] = field(default_factory=tuple)
     fixture_mirror_written: bool = False
+    fixture_mirror_written_reason: str = ""
     c0_fact_vectors_consulted: bool = False
     governance_receipt: dict[str, Any] | None = None
+    uwg_commit_receipt: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -84,8 +84,10 @@ class R1BPromotionOutcome:
             "blocked_reason_codes": list(self.blocked_reason_codes),
             "missing_contract_fields": list(self.missing_contract_fields),
             "fixture_mirror_written": self.fixture_mirror_written,
+            "fixture_mirror_written_reason": self.fixture_mirror_written_reason,
             "c0_fact_vectors_consulted": self.c0_fact_vectors_consulted,
             "governance_receipt": self.governance_receipt,
+            "uwg_commit_receipt": self.uwg_commit_receipt,
             "cache_grain": CACHE_GRAIN_ROLE_TARGET_RUN,
             "target_surface": R1B_UWG_TARGET_SURFACE,
         }
@@ -227,6 +229,19 @@ def build_r1b_commit_bundle(
             affected_state_surfaces=(R1B_UWG_TARGET_SURFACE,),
             expected_read_surface_refreshes=("r1b_semantic_cache_projection",),
             audit_refs=candidate.audit_refs,
+            registry_digest_set=(
+                f"registry:policy:{candidate.policy_hash}",
+                f"registry:blueprint:{candidate.blueprint_hash}",
+            ),
+            capability_token_ref=f"capability:apps_rg:r1b:{candidate.source_run_id}",
+            clearance_proof_id=candidate.cleared_exit_review_packet_ref,
+            validator_receipt_id=f"validator:r1b:post_exit:{candidate.source_run_id}",
+            staged_diff_hash=_state_diffs_digest([sd]),
+            commit_request_signature=_commit_request_signature(
+                commit_request_id=f"r1b_cr:{candidate.record.record_id}",
+                state_diff_hash=_state_diffs_digest([sd]),
+                clearance_proof_id=candidate.cleared_exit_review_packet_ref,
+            ),
         )
     )
     return cr, [sd], rollback, refresh
@@ -261,6 +276,29 @@ def governance_receipt_with_l5_packet(
         candidate.l5_certification_status or "L5_NOT_CERTIFIED"
     )
     return receipt
+
+
+def _state_diffs_digest(state_diffs: list[Any]) -> str:
+    from agentic_core.L4_state.uwg.durable_write_gateway import compute_state_diffs_digest
+
+    return compute_state_diffs_digest(state_diffs)
+
+
+def _commit_request_signature(
+    *,
+    commit_request_id: str,
+    state_diff_hash: str,
+    clearance_proof_id: str,
+) -> str:
+    from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
+
+    return compute_deterministic_digest(
+        {
+            "commit_request_id": commit_request_id,
+            "staged_diff_hash": state_diff_hash,
+            "clearance_proof_id": clearance_proof_id,
+        }
+    )
 
 
 def promote_r1b_cache_via_uwg(
@@ -344,6 +382,7 @@ def promote_r1b_cache_via_uwg(
             commit_request_id=cr.commit_request_id,
             uwg_commit_receipt_id=commit_receipt.commit_receipt_id,
             governance_receipt=governance_receipt,
+            uwg_commit_receipt=asdict(commit_receipt),
         )
     blocked_codes: tuple[str, ...] = ()
     blocked_id = ""
@@ -382,6 +421,7 @@ def write_uwg_admitted_projection(
     """Persist UWG-admitted R1B bundle under durable projection (not fixture SSOT)."""
     assert outcome.status == "ADMITTED"
     assert outcome.uwg_commit_receipt_id
+    core_receipt = outcome.uwg_commit_receipt or {}
 
     root = projection_root / "durable" / "uwg_admitted"
     intents = root / "intents"
@@ -413,8 +453,21 @@ def write_uwg_admitted_projection(
         "storage_tier": "uwg_admitted_durable_projection",
         "durable_write_path": outcome.durable_write_path,
         "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id,
+        "source_commit_receipt_ref": outcome.uwg_commit_receipt_id,
         "commit_request_id": outcome.commit_request_id,
+        "core_uwg_commit_receipt": core_receipt,
         "governance_receipt": outcome.governance_receipt,
+        "policy_hash": core_receipt.get("policy_hash") or candidate.policy_hash,
+        "blueprint_hash": core_receipt.get("blueprint_hash") or candidate.blueprint_hash,
+        "replay_key": core_receipt.get("replay_key") or "",
+        "registry_digest_set": core_receipt.get("registry_digest_set") or [],
+        "gate_verdict_refs": core_receipt.get("gate_verdict_refs") or [],
+        "l5_certification_ref": core_receipt.get("l5_certification_ref") or "",
+        "audit_append_receipt_ref": core_receipt.get("audit_append_receipt_ref") or "",
+        "content_hash": core_receipt.get("content_hash") or "",
+        "chain_hash": core_receipt.get("chain_hash") or "",
+        "snapshot_before": core_receipt.get("snapshot_before") or "",
+        "snapshot_after": core_receipt.get("snapshot_after") or "",
         "parent_intent_record": candidate.record.to_dict(),
         "child_chunks": [c.to_dict() for c in candidate.chunks],
         "child_chunk_embedding_metadata": chunk_embeddings,
@@ -472,7 +525,7 @@ def promote_and_project_r1b_cache(
     projection_root: Path,
     fixture_store: Any | None = None,
     gateway: Any | None = None,
-    mirror_fixture_on_blocked: bool = True,
+    mirror_fixture_on_blocked: bool = False,
 ) -> R1BPromotionOutcome:
     """UWG admission then durable projection; optional fixture mirror for tests."""
     outcome = promote_r1b_cache_via_uwg(candidate, gateway=gateway)
@@ -488,6 +541,7 @@ def promote_and_project_r1b_cache(
         if fixture_store is not None:
             _write_fixture_mirror(fixture_store, candidate)
             outcome.fixture_mirror_written = True
+            outcome.fixture_mirror_written_reason = "admitted_projection_test_mirror"
         return outcome
 
     write_blocked_promotion_receipt(
@@ -498,6 +552,7 @@ def promote_and_project_r1b_cache(
     if mirror_fixture_on_blocked and fixture_store is not None and candidate.cache_admissible:
         _write_fixture_mirror(fixture_store, candidate)
         outcome.fixture_mirror_written = True
+        outcome.fixture_mirror_written_reason = "blocked_projection_explicit_test_mirror"
     return outcome
 
 
@@ -508,40 +563,6 @@ def _write_fixture_mirror(store: Any, candidate: R1BCachePromotionCandidate) -> 
         store.write_chunk(ch)
 
 
-@contextmanager
-def _inject_uwg_commit_receipt_l5_fields(
-    *,
-    l5_ref: str,
-    affected_surfaces: tuple[str, ...],
-    audit_refs: tuple[str, ...],
-) -> Iterator[None]:
-    """Inject CommitRequest governance fields into UWGCommitReceipt construction.
-
-    Stock ``DurableWriteGateway.commit`` omits ``l5_certification_ref`` on receipt
-    construction (AG-W0-5). R1B promotion uses a scoped construction hook — not a
-    separate compatibility module.
-    """
-    from agentic_core.L4_state.contracts import records as records_mod
-
-    real_cls = records_mod.UWGCommitReceipt
-
-    class _R1bReceiptConstructor(real_cls):  # type: ignore[misc,valid-type]
-        def __new__(cls, *args, **kwargs):
-            if not kwargs.get("l5_certification_ref"):
-                kwargs = {**kwargs, "l5_certification_ref": l5_ref}
-            if affected_surfaces and not kwargs.get("affected_state_surfaces"):
-                kwargs = {**kwargs, "affected_state_surfaces": affected_surfaces}
-            if audit_refs and not kwargs.get("audit_refs"):
-                kwargs = {**kwargs, "audit_refs": audit_refs}
-            return real_cls(*args, **kwargs)
-
-    with patch(
-        "agentic_core.L4_state.uwg.durable_write_gateway.UWGCommitReceipt",
-        _R1bReceiptConstructor,
-    ):
-        yield
-
-
 def _durable_write_gateway_base() -> type:
     from agentic_core.L4_state.uwg.durable_write_gateway import DurableWriteGateway
 
@@ -549,30 +570,11 @@ def _durable_write_gateway_base() -> type:
 
 
 class R1bUwgPromotionGateway(_durable_write_gateway_base()):  # type: ignore[misc,valid-type]
-    """Canonical apps_rg UWG gateway — propagates l5_certification_ref to UWGCommitReceipt."""
+    """Canonical apps_rg UWG gateway.
 
-    def commit(
-        self,
-        *,
-        commit_request: Any,
-        state_diffs: List[Any],
-        rollback_plan: Any,
-        refresh_plan: Any,
-    ) -> Tuple[Any | None, Any | None, list]:
-        l5 = commit_request.l5_certification_ref or f"l5:r1b:{commit_request.run_id}"
-        surfaces = tuple(commit_request.affected_state_surfaces)
-        audit = tuple(commit_request.audit_refs)
-        with _inject_uwg_commit_receipt_l5_fields(
-            l5_ref=l5,
-            affected_surfaces=surfaces,
-            audit_refs=audit,
-        ):
-            return super().commit(
-                commit_request=commit_request,
-                state_diffs=state_diffs,
-                rollback_plan=rollback_plan,
-                refresh_plan=refresh_plan,
-            )
+    The core ``DurableWriteGateway`` now carries receipt provenance directly;
+    this subclass remains only as a stable import name for tests and callers.
+    """
 
 
 # Historical import name retained for tests/fixture emitters (same canonical class).

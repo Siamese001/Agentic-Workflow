@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 
 from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
 
-
 # Schema version for this canonical pack. Bump when fields change incompatibly.
 L4_CONTRACT_SCHEMA_VERSION = "L4-UWG-1.0.0"
 
@@ -740,6 +739,8 @@ class AuditLedgerRecord:
     state_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     reason_codes: Tuple[str, ...] = field(default_factory=_empty_tuple)
     supersedes_ref: Optional[str] = None  # for correction-via-append-record
+    prev_chain_hash: str = ""
+    chain_hash: str = ""
 
 
 @dataclass(frozen=True)
@@ -813,6 +814,12 @@ class CommitRequest:
     allowed_models: Tuple[str, ...] = field(default_factory=_empty_tuple)
     allowed_networks: Tuple[str, ...] = field(default_factory=_empty_tuple)
     allowed_file_roots: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    registry_digest_set: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    capability_token_ref: str = ""
+    clearance_proof_id: str = ""
+    validator_receipt_id: str = ""
+    staged_diff_hash: str = ""
+    commit_request_signature: str = ""
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
@@ -911,6 +918,19 @@ class UWGCommitReceipt:
     affected_state_surfaces: Tuple[str, ...] = field(default_factory=_empty_tuple)
     audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     l5_certification_ref: str = ""
+    source_surface: str = "Exit"
+    policy_hash: str = ""
+    blueprint_hash: str = ""
+    replay_key: str = ""
+    gate_verdict_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    cleared_exit_review_packet_ref: str = ""
+    registry_digest_set: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    clearance_proof_id: str = ""
+    staged_diff_hash: str = ""
+    content_hash: str = ""
+    prev_chain_hash: str = ""
+    chain_hash: str = ""
+    validator_receipt_id: str = ""
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref

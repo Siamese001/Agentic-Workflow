@@ -8,17 +8,19 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.cache.r1b_constants import (
-    CACHE_GRAIN_ROLE_TARGET_RUN,
     C0_FACT_VECTORS_COLLECTION,
+    CACHE_GRAIN_ROLE_TARGET_RUN,
     R1B_CHUNK_REUSE_AUTHORITY,
     R1B_NOT_C0_FACT_VECTORS,
     R1B_REUSE_AUTHORITY_SCOPE,
     R1B_SECTION_REUSE_AUTHORITY,
     r1b_reuse_authority_policy,
 )
-from apps_rg.cache.r1b_retrieval import R1BLookupHit, hit_to_probe_dict, lookup_r1b_role_target_run
-from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
-from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+from apps_rg.cache.r1b_retrieval import (
+    R1BLookupHit,
+    hit_to_probe_dict,
+)
+from apps_rg.cache.r1b_store import default_store_root
 
 # Canonical whole-run cache preflight order (R1A handled in apps_rg/__main__.py).
 PREFLIGHT_ORDER: tuple[str, ...] = (
@@ -168,12 +170,20 @@ def execute_whole_run_r1b_preflight(
     )
 
     if hit is None:
+        projection_unavailable = any(
+            "derived_index_unavailable" in (row.get("reason_codes") or [])
+            for row in report
+        )
         inadmissible_only = any(
             row.get("similarity", 0) >= threshold and not row.get("admissible")
             for row in report
         )
         return WholeRunR1BPreflightResult(
-            outcome="r1b_inadmissible_only" if inadmissible_only else "r1b_miss",
+            outcome=(
+                "r1b_read_projection_unavailable"
+                if projection_unavailable
+                else "r1b_inadmissible_only" if inadmissible_only else "r1b_miss"
+            ),
             r1b_hit=False,
             lookup_anchor="HistoricalIntentRecord.request_intent_vector",
             cache_grain=CACHE_GRAIN_ROLE_TARGET_RUN,

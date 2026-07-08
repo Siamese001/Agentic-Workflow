@@ -1,0 +1,346 @@
+# W0 static scan report
+commit=09fa01c93888531c330943a05e1e84777c380bda
+branch=codex-apps-rg-l4-best-practices-hardening
+generated_utc=2026-07-06T10:53:17.6753710Z
+
+docs\reports\_archive\hotspot\2026-05\test_hotspot_gaps_04252026.md:68:| 2 | L2_execution | `agentic_core.L2_execution.types.ml_write_intent_types` |
+tools\apps_rg\emit_r1b_w9_fixtures.py:15:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w9_fixtures.py:19:def _seed_w7_admissible(store: R1BSemanticCacheStore) -> None:
+tools\apps_rg\emit_r1b_w9_fixtures.py:24:    store.write_intent(record)
+tools\apps_rg\emit_r1b_w9_fixtures.py:26:        store.write_chunk(HistoricalOutputChunk.from_dict(row))
+tools\apps_rg\emit_r1b_w9_fixtures.py:48:    store = R1BSemanticCacheStore(store_root)
+tools\apps_rg\emit_r1b_w9b_fixtures.py:15:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w9b_fixtures.py:24:def _seed_w7(store: R1BSemanticCacheStore) -> None:
+tools\apps_rg\emit_r1b_w9b_fixtures.py:28:    store.write_intent(HistoricalIntentRecord.from_dict(intent))
+tools\apps_rg\emit_r1b_w9b_fixtures.py:30:        store.write_chunk(HistoricalOutputChunk.from_dict(row))
+tools\apps_rg\emit_r1b_w9b_fixtures.py:52:    store = R1BSemanticCacheStore(store_root)
+tools\apps_rg\emit_r1b_w7_fixtures.py:19:from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
+tools\apps_rg\emit_r1b_w7_fixtures.py:247:    from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w7_fixtures.py:249:    st = R1BSemanticCacheStore(store_root)
+tools\apps_rg\emit_r1b_w7_fixtures.py:250:    hit, report = lookup_r1b_with_compatibility_report(
+tools\apps_rg\emit_r1b_w11_w12_fixtures.py:26:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w11_w12_fixtures.py:45:    store = R1BSemanticCacheStore(out / "_projection_root")
+tools\apps_rg\emit_r1b_w10_fixtures.py:16:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w10_fixtures.py:90:    store = R1BSemanticCacheStore(out / "_fixture_mirror")
+tools\apps_rg\emit_r1b_w10b_fixtures.py:16:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tools\apps_rg\emit_r1b_w10b_fixtures.py:34:    store = R1BSemanticCacheStore(out / "_store")
+tools\debug\_l2_gap_w0_probe.py:22:    "ml_write_intent_types",
+docs\reports\plans\exit_eval_v6_requirements_matrix.md:225:write_intent_class, complete, bounded, capability authorizes, uwg_routed, blast_radius set, high-impact HITL, rollback present.
+docs\reports\plans\exit_eval_v6_requirements_matrix.md:236:| mutation.* | state_diff, write_intent_class, before_snapshot, after_proposed_snapshot, rollback_plan, blast_radius |
+tools\analysis\exit_v6_master_otel_probe.py:88:        write_intent_class="memory_promotion",
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:66:| 5.1-RF-28 | `write.proposed_state_diff / write_intent_class / blast_radius / rollback_plan_ref` (if mutation) | `state_diff`, `write_intent_class` fields; X1J validates | `test_x1_gates::test_x1j_*` (8 cases) | Validated in X1J |
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:403:| 5.4-X1J-T02 | `external action result that must be recorded` | `eval_x1j` reads `write_intent_class` | `test_x1_gates::test_x1j_*` | Tested |
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:404:| 5.4-X1J-T03 | `durable memory update` | same | same | Tested via `_COMMIT_OVERRIDES.write_intent_class="memory_promotion"` |
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:418:| 5.4-X1J-C02 | `write_intent_class declared` | `eval_x1j` WRITE_NOT_AUTHORIZED on missing | `test_x1_gates::test_x1j_write_not_authorized` | Tested |
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:468:| 5.4-CR-06 | `mutation.{state_diff_ref, write_intent_class, target_state_surfaces, operation_type, blast_radius, rollback_plan_ref, before_snapshot_ref, after_candidate_ref}` | from `packet.state_diff` | `test_uwg` + `test_rollback` | Carried |
+docs\reports\plans\exit_eval_v6_LINE_BY_LINE_matrix.md:674:| 5.6-H2-MI-01..22 | `Must include: reason for escalation, user/request summary, route_contract, policy_hash, blueprint_hash, sealed L2/L3/RET artifact, proposed action/diff, write_intent_class+blast_radius, rollback plan, grader composition, per-dimension scores+thresholds, abstain/UNKNOWN, trajectory snapshot, citation map, replay key+receipts, pass^k evidence, trace coverage, anomaly flags, L5 cert gaps, sensitive data minimized+labeled, allowed human decision enum` | `HumanReviewPacket` 14 fields cover all 22 logical items | `test_hitl_contracts::test_human_review_packet_*` (3) | All carried; `review_packet_hash_first16` set ✅ |
+tools\analysis\exit_v6_line_by_line_probe.py:252:        write_intent_class="memory_promotion",
+agentic_core\runtime\entrypoints\integrated_safe_reuse_run.py:539:        write_intent_class="",
+agentic_core\runtime\entrypoints\integrated_safe_reuse_run.py:1153:        "no_l4_write_assertion": (review.write_intent_class == "" and not review.state_diff),
+agentic_core\runtime\entrypoints\integrated_managed_workflow_run.py:201:        write_intent_class="",
+docs\archive\windsurf\recovered-plans-20260613\windsurf_plans\w6-emit-contract-enrichment-d8b2a4.md:121:| W6 | P6.1 — P6.3 | Concerns #3 + #7 — typed `RuntimePosture` struct (`read_only`, `external_call`, `write_intent`, `hitl_required`); typed `GateVerdictRef` array on every emit; reuse existing `gate_verdict_refs` on `CommitRequest` | #3, #7 | ~16k | D11=default-empty; new `runtime/contracts/posture.py` | Not Started | All 11 contracts carry posture + verdict refs; +25 tests |
+tools\cert\apps_e2e\run_app_safe_abstain_with_otel.py:89:        "write_intent_class": "",
+tools\cert\apps_e2e\run_app_negative_control_with_otel.py:89:        "write_intent_class": "",
+tools\cert\apps_e2e\run_app_cert_with_otel_capture.py:332:        "write_intent_class": "",
+agentic_core\runtime\contracts\posture.py:13:    (``sandbox_required``, ``write_intent_class``) but distilled to a
+agentic_core\runtime\contracts\posture.py:58:            ``write_intent``, and ``hitl_required`` SHOULD be False.
+agentic_core\runtime\contracts\posture.py:61:        write_intent: This transition produces a ``proposed_state_diff``
+agentic_core\runtime\contracts\posture.py:67:            ``"write_intent"`` | ``"break_glass"`` | ``""`` (unknown).
+agentic_core\runtime\contracts\posture.py:73:    write_intent: bool = False
+agentic_core\runtime\contracts\posture.py:85:    write_intent=False,
+agentic_core\runtime\contracts\posture.py:93:    write_intent=False,
+agentic_core\runtime\contracts\posture.py:101:    write_intent=False,
+agentic_core\runtime\contracts\posture.py:109:    write_intent=True,
+agentic_core\runtime\contracts\posture.py:111:    posture_class="write_intent",
+agentic_core\runtime\contracts\posture.py:117:    write_intent=True,
+agentic_core\runtime\contracts\posture.py:119:    posture_class="write_intent",
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:59:# --- L2 types: ml_write_intent_types ---
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:60:from agentic_core.L2_execution.types.ml_write_intent_types import (
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:67:def test_ml_write_intent_rejects_invalid_kind_and_false_requires_commit() -> None:
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:74:def test_ml_write_intent_hash_stable_for_same_payload() -> None:
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:91:def test_execute_ml_write_intent_outside_sandbox_raises() -> None:
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:94:        from agentic_core.L2_execution.types import ml_write_intent_types as mod
+tests\agentic_core\test_p3_w2_hotspot_behavior.py:96:        mod.execute_ml_write_intent_outside_sandbox(intent)
+docs\archive\windsurf\recovered-plans-20260613\windsurf_plans\l2-execute-best-practices-gap-b7c4e2.md:79:| **G9** | **Side-effect-class + reversibility taxonomy in the work order contract** | Google "validate before significant consequences" + codebridge | E2 | `types/ml_write_intent_types.py` and `types/blast_radius_controls_types.py` exist but there is no canonical `SideEffectClass` enum (`READ / WRITE / ACTION / IRREVERSIBLE`) attached to every tool contract. E2's "mutation type sanity" check is ad-hoc. | High | W1 |
+docs\archive\windsurf\recovered-plans-20260613\windsurf_plans\l2-execute-best-practices-gap-b7c4e2.md:114:| P1.2 | `SideEffectClass` + `Reversibility` enums on contract | `ptc_contract.py`, `execution_tool_contract.py`, `ml_write_intent_types.py`, `blast_radius_controls_types.py` | Default all existing tools to safest class + reversibility to keep behavior unchanged | 8k | Todo |
+docs\archive\windsurf\recovered-plans-20260613\windsurf_plans\l2-execute-best-practices-gap-b7c4e2.md:168:| `types/ml_write_intent_types.py` | STATE_NODE | 86 | 2 (LOW) | Write+State | 86 |
+tests\agentic_core\L2_execution\types\test_ml_write_intent_types.py:1:"""ADG-hotspot scaffold tests for `agentic_core.L2_execution.types.ml_write_intent_types` (fanin=2, band=P3).
+tests\agentic_core\L2_execution\types\test_ml_write_intent_types.py:13:MODULE_PATH = "agentic_core.L2_execution.types.ml_write_intent_types"
+tests\_apps_contract\test_ag8_fu2_apps_lic_shared_x3_return.py:212:            write_intent_class="",
+tests\_apps_contract\test_ag8_fu2_apps_lic_shared_x3_return.py:436:            write_intent_class="",
+agentic_core\mixins\meta_learning_client_mixin.py:179:def _get_ml_write_intent_types():
+agentic_core\mixins\meta_learning_client_mixin.py:180:    from agentic_core.L2_execution.types.ml_write_intent_types import (
+tests\apps_lic\test_adg_runtime_proxy_binding_negative_paths.py:101:    assert orchestration["posture"]["write_intent"] is False
+tests\apps_lic\test_adg_runtime_proxy_binding_negative_paths.py:114:    assert payload["posture"]["write_intent"] is False
+tests\unit\conftest.py:508:        "ml_write_intent_types_adg": _make_module("ml_write_intent_types_adg"),
+tests\unit\conftest.py:510:        "validate_ml_write_intent_types_adg": _make_callable("validate_ml_write_intent_types_adg"),
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:41:    assert fields == {"read_only", "external_call", "write_intent", "hitl_required", "posture_class"}
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:48:    assert p.write_intent is False
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:56:    assert POSTURE_READ_ONLY.write_intent is False
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:63:    assert POSTURE_RETRIEVAL.write_intent is False
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:72:def test_posture_write_intent_sentinel():
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:73:    assert POSTURE_WRITE_INTENT.write_intent is True
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:75:    assert POSTURE_WRITE_INTENT.posture_class == "write_intent"
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:80:    assert POSTURE_HITL_REQUIRED.write_intent is True
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:290:def test_sealed_posture_is_write_intent():
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:294:def test_x3_posture_is_write_intent():
+tests\unit\runtime_contracts\test_w6_posture_gate_verdict_refs.py:306:def test_commit_request_posture_is_write_intent():
+apps_rg\cache\r1b_whole_run_preflight.py:20:from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
+apps_rg\cache\r1b_whole_run_preflight.py:21:from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+apps_rg\cache\r1b_uwg_receipt_contract.py:191:            "notes": "Core gateway omits l5 on receipt; R1bUwgPromotionGateway enriches at construction",
+apps_rg\cache\r1b_uwg_receipt_contract.py:241:        "promotion_gateway_module": "apps_rg.cache.r1b_uwg_promotion.R1bUwgPromotionGateway",
+apps_rg\cache\r1b_uwg_receipt_contract.py:244:            "l5_certification_ref; R1bUwgPromotionGateway injects l5 from CommitRequest at "
+apps_rg\cache\r1b_uwg_promotion.py:452:    store.write_intent(candidate.record)
+apps_rg\cache\r1b_uwg_promotion.py:454:        store.write_chunk(ch)
+apps_rg\cache\r1b_uwg_promotion.py:458:def _inject_uwg_commit_receipt_l5_fields(
+apps_rg\cache\r1b_uwg_promotion.py:497:class R1bUwgPromotionGateway(_durable_write_gateway_base()):  # type: ignore[misc,valid-type]
+apps_rg\cache\r1b_uwg_promotion.py:511:        with _inject_uwg_commit_receipt_l5_fields(
+apps_rg\cache\r1b_uwg_promotion.py:525:AppsRgR1BUwgGateway = R1bUwgPromotionGateway
+apps_rg\cache\r1b_uwg_promotion.py:528:def default_r1b_promotion_gateway() -> R1bUwgPromotionGateway:
+apps_rg\cache\r1b_uwg_promotion.py:530:    return R1bUwgPromotionGateway()
+apps_rg\cache\r1b_uwg_promotion.py:537:    "R1bUwgPromotionGateway",
+apps_rg\cache\r1b_store.py:41:class R1BSemanticCacheStore:
+apps_rg\cache\r1b_store.py:60:    def write_intent(self, record: HistoricalIntentRecord) -> None:
+apps_rg\cache\r1b_store.py:79:    def write_chunk(self, chunk: HistoricalOutputChunk) -> None:
+apps_rg\cache\r1b_store.py:144:    "R1BSemanticCacheStore",
+apps_rg\cache\r1b_retrieval.py:24:from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+apps_rg\cache\r1b_retrieval.py:38:    store: R1BSemanticCacheStore | None = None,
+apps_rg\cache\r1b_retrieval.py:44:    st = store or R1BSemanticCacheStore(default_store_root())
+apps_rg\cache\r1b_retrieval.py:77:def lookup_r1b_with_compatibility_report(
+apps_rg\cache\r1b_retrieval.py:80:    store: R1BSemanticCacheStore | None = None,
+apps_rg\cache\r1b_retrieval.py:86:    st = store or R1BSemanticCacheStore(default_store_root())
+apps_rg\cache\r1b_retrieval.py:184:    "lookup_r1b_with_compatibility_report",
+apps_rg\cache\r1b_post_exit_ingest.py:21:from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+apps_rg\cache\r1b_post_exit_ingest.py:82:    store: R1BSemanticCacheStore | None = None,
+apps_rg\cache\r1b_post_exit_ingest.py:94:    st = store or R1BSemanticCacheStore(default_store_root())
+apps_rg\cache\r1b_post_exit_ingest.py:103:        st.write_intent(record)
+apps_rg\cache\r1b_post_exit_ingest.py:135:        st.write_intent(record)
+apps_rg\cache\r1b_post_exit_ingest.py:137:            st.write_chunk(ch)
+apps_rg\cache\r1b_post_exit_ingest.py:139:    st.write_intent(record)
+apps_rg\cache\r1b_post_exit_ingest.py:151:    store = R1BSemanticCacheStore(Path(runs_dir) if runs_dir else default_store_root())
+apps_rg\cache\r1b_ingest.py:25:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+apps_rg\cache\r1b_ingest.py:189:    store: R1BSemanticCacheStore,
+apps_rg\cache\r1b_derived_index.py:27:from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+apps_rg\cache\r1b_derived_index.py:256:        st = R1BSemanticCacheStore(root)
+apps_rg\cache\r1b_derived_index.py:257:        from apps_rg.cache.r1b_retrieval import lookup_r1b_with_compatibility_report
+apps_rg\cache\r1b_derived_index.py:259:        return lookup_r1b_with_compatibility_report(
+apps_rg\cache\r1b_derived_index.py:328:            "path": "intents/, chunks/ (R1BSemanticCacheStore)",
+docs\reports\apps_rg\r1b_uwg_durable_persistence_w10.md:45:`R1BSemanticCacheStore.storage_tier = fixture_proof_mirror` with `is_durable_production_truth: false` in `store_manifest()`.
+apps_rg\cache\r1b_adapter.py:26:from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+apps_rg\cache\r1b_adapter.py:65:def _store_for_runs_dir(runs_dir: str | Path | None) -> R1BSemanticCacheStore:
+apps_rg\cache\r1b_adapter.py:67:        return R1BSemanticCacheStore(Path(runs_dir))
+apps_rg\cache\r1b_adapter.py:68:    return R1BSemanticCacheStore(default_store_root())
+apps_rg\cache\r1b_adapter.py:206:        self._store.write_intent(record)
+apps_rg\cache\r1b_adapter.py:210:            self._store.write_chunk(ch)
+docs\reports\apps_rg\r1b_index_lifecycle_w11_w12.md:13:| Fixture mirror | Test/proof only | `R1BSemanticCacheStore` intents/chunks |
+tests\unit\agentic_core\runtime\contracts\test_x3_disposition.py:51:    def test_posture_default_write_intent(self) -> None:
+tests\unit\agentic_core\runtime\contracts\test_posture.py:31:        assert p.write_intent is False
+tests\unit\agentic_core\runtime\contracts\test_posture.py:37:            RuntimePosture().write_intent = True  # type: ignore[misc]
+tests\unit\agentic_core\runtime\contracts\test_posture.py:44:        assert RuntimePosture(write_intent=True) != RuntimePosture()
+tests\unit\agentic_core\runtime\contracts\test_posture.py:50:            read_only=True, external_call=False, write_intent=False,
+tests\unit\agentic_core\runtime\contracts\test_posture.py:57:        assert POSTURE_RETRIEVAL.write_intent is False
+tests\unit\agentic_core\runtime\contracts\test_posture.py:62:        assert POSTURE_GENERATION.write_intent is False
+tests\unit\agentic_core\runtime\contracts\test_posture.py:65:    def test_write_intent(self) -> None:
+tests\unit\agentic_core\runtime\contracts\test_posture.py:66:        assert POSTURE_WRITE_INTENT.write_intent is True
+tests\unit\agentic_core\runtime\contracts\test_posture.py:69:        assert POSTURE_WRITE_INTENT.posture_class == "write_intent"
+tests\unit\agentic_core\runtime\contracts\test_posture.py:73:        assert POSTURE_HITL_REQUIRED.write_intent is True
+tests\unit\agentic_core\runtime\contracts\test_posture.py:74:        assert POSTURE_HITL_REQUIRED.posture_class == "write_intent"
+tests\unit\apps_rg\test_apps_rg_shim_artifacts_deleted.py:53:    assert "R1bUwgPromotionGateway" in gaps["promotion_gateway_module"]
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:19:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:30:def _seed_admissible(store: R1BSemanticCacheStore) -> None:
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:45:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:64:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:88:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:101:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:116:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_lookup_w9.py:142:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_entrypoint_parity_w9b.py:13:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_whole_run_entrypoint_parity_w9b.py:30:def _seed(store: R1BSemanticCacheStore) -> None:
+tests\unit\apps_rg\test_r1b_whole_run_entrypoint_parity_w9b.py:59:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_entrypoint_parity_w9b.py:85:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_whole_run_entrypoint_parity_w9b.py:197:    store = R1BSemanticCacheStore(tmp_path / "r1b_store")
+tests\unit\apps_rg\test_r1b_uwg_receipt_contract_parity_w10b.py:11:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_uwg_receipt_contract_parity_w10b.py:115:    store = R1BSemanticCacheStore(tmp_path / "store")
+tests\unit\apps_rg\test_r1b_uwg_gateway_shim_deleted.py:16:    assert hasattr(mod, "R1bUwgPromotionGateway")
+tests\unit\apps_rg\test_r1b_uwg_gateway_shim_deleted.py:19:    assert mod.AppsRgR1BUwgGateway is mod.R1bUwgPromotionGateway
+tests\unit\apps_rg\test_r1b_uwg_durable_persistence_w10.py:23:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_uwg_durable_persistence_w10.py:121:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_uwg_durable_persistence_w10.py:161:    store = R1BSemanticCacheStore(tmp_path / "fixture")
+tests\unit\apps_rg\test_r1b_post_exit_ingestion_eligibility.py:198:        store=__import__("apps_rg.cache.r1b_store", fromlist=["R1BSemanticCacheStore"]).R1BSemanticCacheStore(
+tests\unit\apps_rg\test_r1b_index_lifecycle_w12.py:12:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_index_lifecycle_w12.py:36:    store = R1BSemanticCacheStore(tmp_path / "proj")
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:22:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:117:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:137:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:169:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:176:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_historical_intent_persistence.py:221:    store = R1BSemanticCacheStore(tmp_path)
+tests\unit\apps_rg\test_r1b_derived_index_projection_w11.py:20:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\test_r1b_derived_index_projection_w11.py:27:    store = R1BSemanticCacheStore(tmp_path / "proj")
+tests\unit\agentic_core\L5_safety\v5\test_g0_entry.py:68:def test_read_only_claim_with_write_intent_rejects():
+tests\unit\apps_rg\r1b_fixture_builders.py:20:from apps_rg.cache.r1b_store import R1BSemanticCacheStore
+tests\unit\apps_rg\r1b_fixture_builders.py:131:    store: R1BSemanticCacheStore,
+tests\unit\apps_rg\r1b_fixture_builders.py:137:    store.write_intent(record)
+tests\unit\apps_rg\r1b_fixture_builders.py:139:        store.write_chunk(chunk)
+agentic_core\L5_safety\contracts\registry.py:1069:    "write_intent_smuggling_report": WriteIntentSmugglingReport,
+agentic_core\L5_safety\contracts\authority.py:2164:    """L5 doctrine output ``write_intent_smuggling_report`` (kind=report).
+agentic_core\L5_safety\contracts\authority.py:2167:    Canonical doctrine names: write_intent_smuggling_report.
+agentic_core\L5_safety\contracts\authority.py:2170:    output_name: ClassVar[str] = "write_intent_smuggling_report"
+agentic_core\L5_safety\contracts\authority.py:2171:    output_names: ClassVar[tuple[str, ...]] = ("write_intent_smuggling_report",)
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\coverage_report_adg_03132026.md:158:- `tests/unit/agentic_core/L2_execution/types/test_ml_write_intent_types_adg.py`
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\coverage_report_adg_03132026.md:1632:- `agentic_core/L2_execution/types/ml_write_intent_types.py::MLWriteEnvelopeViolation`
+tests\unit\agentic_core\L1_cognition\test_l1_v5_doctrine.py:412:    def test_warn_overwrite_intent_without_preserve_in_rationale(self):
+tests\unit\agentic_core\L1_cognition\test_l1_v5_doctrine.py:421:    def test_warn_overwrite_intent_with_unrelated_rationale(self):
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\wave_13_30_placeholder_conversion_plan.md:374:- [ ] `tests\unit\agentic_core\L2_execution\types\test_ml_write_intent_types_adg.py`
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_requirements_matrix.md:225:write_intent_class, complete, bounded, capability authorizes, uwg_routed, blast_radius set, high-impact HITL, rollback present.
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_requirements_matrix.md:236:| mutation.* | state_diff, write_intent_class, before_snapshot, after_proposed_snapshot, rollback_plan, blast_radius |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:66:| 5.1-RF-28 | `write.proposed_state_diff / write_intent_class / blast_radius / rollback_plan_ref` (if mutation) | `state_diff`, `write_intent_class` fields; X1J validates | `test_x1_gates::test_x1j_*` (8 cases) | Validated in X1J |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:403:| 5.4-X1J-T02 | `external action result that must be recorded` | `eval_x1j` reads `write_intent_class` | `test_x1_gates::test_x1j_*` | Tested |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:404:| 5.4-X1J-T03 | `durable memory update` | same | same | Tested via `_COMMIT_OVERRIDES.write_intent_class="memory_promotion"` |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:418:| 5.4-X1J-C02 | `write_intent_class declared` | `eval_x1j` WRITE_NOT_AUTHORIZED on missing | `test_x1_gates::test_x1j_write_not_authorized` | Tested |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:468:| 5.4-CR-06 | `mutation.{state_diff_ref, write_intent_class, target_state_surfaces, operation_type, blast_radius, rollback_plan_ref, before_snapshot_ref, after_candidate_ref}` | from `packet.state_diff` | `test_uwg` + `test_rollback` | Carried |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\exit_eval_v6_LINE_BY_LINE_matrix.md:674:| 5.6-H2-MI-01..22 | `Must include: reason for escalation, user/request summary, route_contract, policy_hash, blueprint_hash, sealed L2/L3/RET artifact, proposed action/diff, write_intent_class+blast_radius, rollback plan, grader composition, per-dimension scores+thresholds, abstain/UNKNOWN, trajectory snapshot, citation map, replay key+receipts, pass^k evidence, trace coverage, anomaly flags, L5 cert gaps, sensitive data minimized+labeled, allowed human decision enum` | `HumanReviewPacket` 14 fields cover all 22 logical items | `test_hitl_contracts::test_human_review_packet_*` (3) | All carried; `review_packet_hash_first16` set ✅ |
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\phase4_meta_learning_governance_evidence.md:13:- `agentic_core/L2_execution/types/ml_write_intent_types.py` [NEW — Phase 4.0]
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\phase4_meta_learning_governance_evidence.md:28:- `ml_write_intent.py`: `MLWriteIntent` dataclass with `kind` ("pattern_store"|"cache_set"), `payload` (dict), `requires_commit=True` (enforced), `intent_hash` (sha256 of canonical_bytes, auto-computed)
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\phase4_meta_learning_governance_evidence.md:31:- `execute_ml_write_intent_outside_sandbox()`: explicit enforcement function — always raises if sandbox not active
+docs\reference\05_Exit_Evaluation_and_Control\05.6_Exit_HITL_Freeze_Review_and_Reclearance.md:168:- write_intent_class and blast_radius if mutation
+docs\reference\05_Exit_Evaluation_and_Control\05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md:152:- write_intent_class declared.
+docs\reference\05_Exit_Evaluation_and_Control\05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md:169:- write_intent_class
+docs\reference\05_Exit_Evaluation_and_Control\05.4_Exit_Write_Eligibility_and_UWG_Handoff_X1J_X3C.md:284:    write_intent_class,
+docs\reference\05_Exit_Evaluation_and_Control\05.1_Exit_Input_Normalization_and_Review_Packet.md:195:- write_intent_class if mutation requested
+docs\archive\windsurf\recovered-plans-20260613\docs_reports_plans\semantic_gap_analysis.md:519:| `agentic_core/L2_execution/types/ml_write_intent_types.py` | L2 | - | - | 0 | 0 |
+docs\reference\00A_L5_Governance_Safety\00A.2_L5_Authority_Context_and_Registry_Binding.md:1261:- write_intent_smuggling_report
+agentic_core\L4_state\contracts\records.py:802:    # W6 P6.2: risk/side-effect posture (concern #7; CommitRequest always write_intent)
+agentic_core\L3_orchestration\exit_eval\v6\x3_dispositions.py:160:        write_intent_class=packet.write_intent_class,
+agentic_core\L3_orchestration\exit_eval\v6\x1_gates.py:564:    if not packet.write_intent_class:
+agentic_core\L3_orchestration\exit_eval\v6\x1_gates.py:606:        metadata={"blast_radius": blast_radius, "write_intent_class": packet.write_intent_class},
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:83:    def is_authorized(self, *, tenant_id: str, write_intent_class: str, blast_radius: str) -> bool: ...
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:85:    def has_pending_conflict(self, *, write_intent_class: str) -> bool: ...
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:89:    """U3 backend — exclusive write-lock claim per write_intent_class."""
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:155:    def is_authorized(self, *, tenant_id: str, write_intent_class: str, blast_radius: str) -> bool:
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:157:        if write_intent_class in self._denied_intents:
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:163:    def has_pending_conflict(self, *, write_intent_class: str) -> bool:
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:164:        return write_intent_class in self._pending_intents
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:281:        write_intent_class=packet.write_intent_class,
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:285:            f"catalog rejected write_intent_class={packet.write_intent_class!r} "
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:288:    if catalog.has_pending_conflict(write_intent_class=packet.write_intent_class):
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:289:        raise CatalogConflict(f"pending write conflict on intent={packet.write_intent_class!r}")
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:298:    """U3 CLAIM WRITE LOCK — serialize commits per write_intent_class.
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:302:    key = f"uwg::{packet.write_intent_class}"
+agentic_core\L3_orchestration\exit_eval\v6\uwg.py:322:        "write_intent_class": packet.write_intent_class,
+agentic_core\L3_orchestration\exit_eval\v6\types.py:113:    write_intent_class: str = ""
+agentic_core\L3_orchestration\exit_eval\v6\types.py:304:    write_intent_class: str = ""
+agentic_core\L3_orchestration\exit_eval\v6\preflight.py:284:        write_intent_class=str(receipts.get("write_intent_class", "")),
+agentic_core\L3_orchestration\exit_eval\v6\hitl.py:111:        "write_intent_class": packet.write_intent_class,
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\_fixtures.py:51:        "write_intent_class": "",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x2_x3_hitl.py:80:        write_intent_class="user_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x2_x3_hitl.py:103:        write_intent_class="user_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x2_x3_hitl.py:154:        write_intent_class="user_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x2_x3_hitl.py:176:    assert pkt.write_intent_class == "user_update"
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x1_gates.py:497:            write_intent_class="user_data_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x1_gates.py:514:            write_intent_class="",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x1_gates.py:527:            write_intent_class="x",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_x1_gates.py:540:            write_intent_class="x",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_hardening_edges.py:81:    write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:541:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:555:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:569:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:704:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:712:    pkt.write_intent_class = ""
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:876:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:1137:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:1168:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_v6_exhaustive_edges.py:1249:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_uwg.py:46:        write_intent_class="user_data_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_uwg.py:263:    packet2.write_intent_class = "other_class"
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_rollback.py:156:        write_intent_class="user_data_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_return_payload.py:291:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_pipeline.py:122:        write_intent_class="user_data_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_pipeline.py:145:        write_intent_class="user_data_update",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_otel_emission.py:251:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:49:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:93:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:280:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:373:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:392:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:416:        write_intent_class="memory_promotion",
+tests\unit\agentic_core\L3_orchestration\exit_eval\v6\test_anti_bypass.py:502:        write_intent_class="memory_promotion",
+agentic_core\L2_execution\types\ml_write_intent_types.py:65:emit_replay_key("p0", "ml_write_intent_types")
+agentic_core\L2_execution\types\ml_write_intent_types.py:66:emit_determinism_digest("p0", "ml_write_intent_types")
+agentic_core\L2_execution\types\ml_write_intent_types.py:68:_emit_dispatches_healing_run("p1", "ml_write_intent_types", "L2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:69:_emit_routes_through("p1", "ml_write_intent_types", "L2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:70:_emit_checks_agent_registry("p1", "ml_write_intent_types", "agent_registry")
+agentic_core\L2_execution\types\ml_write_intent_types.py:71:_emit_validates_agent_capability("p1", "ml_write_intent_types", "capability")
+agentic_core\L2_execution\types\ml_write_intent_types.py:72:_emit_dispatches_execution_plan("p1", "ml_write_intent_types", "exec_plan")
+agentic_core\L2_execution\types\ml_write_intent_types.py:73:_emit_agent_executes_agent("p1", "ml_write_intent_types", "sub_agent")
+agentic_core\L2_execution\types\ml_write_intent_types.py:74:_emit_routes_to_agent("p1", "ml_write_intent_types", "target_agent")
+agentic_core\L2_execution\types\ml_write_intent_types.py:75:_emit_verifies_policy("p1", "ml_write_intent_types", "policy_check")
+agentic_core\L2_execution\types\ml_write_intent_types.py:76:_emit_observes_runtime_state("p1", "ml_write_intent_types", "runtime_state")
+agentic_core\L2_execution\types\ml_write_intent_types.py:77:_emit_verifies_boundary("p1", "ml_write_intent_types", "boundary_check")
+agentic_core\L2_execution\types\ml_write_intent_types.py:78:_emit_transcripts_response("p1", "ml_write_intent_types", "transcript")
+agentic_core\L2_execution\types\ml_write_intent_types.py:79:_emit_hard_fails_untranscripted("p1", "ml_write_intent_types")
+agentic_core\L2_execution\types\ml_write_intent_types.py:80:_emit_gated_by_confidence("p1", "ml_write_intent_types", "confidence_gate")
+agentic_core\L2_execution\types\ml_write_intent_types.py:81:_emit_escalates_to_human("p1", "ml_write_intent_types", "L2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:82:_emit_reads_policy_state("p1", "ml_write_intent_types", "L2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:84:_emit_applies_guardrail("p0", "ml_write_intent_types", "p0_governance")
+agentic_core\L2_execution\types\ml_write_intent_types.py:85:_emit_snapshots_state("p0", "ml_write_intent_types", "state_snapshot")
+agentic_core\L2_execution\types\ml_write_intent_types.py:86:_emit_authorize_and_execute("p2", "ml_write_intent_types", "execution_auth")
+agentic_core\L2_execution\types\ml_write_intent_types.py:87:_emit_validates_capability("p2", "ml_write_intent_types", "capability_check")
+agentic_core\L2_execution\types\ml_write_intent_types.py:88:_emit_routes_to_capability("p2", "ml_write_intent_types", "capability_route")
+agentic_core\L2_execution\types\ml_write_intent_types.py:89:_emit_writes_via_uwg("p2", "ml_write_intent_types", "uwg_write")
+agentic_core\L2_execution\types\ml_write_intent_types.py:90:_emit_blocks_direct_write("p2", "ml_write_intent_types", "direct_write_block")
+agentic_core\L2_execution\types\ml_write_intent_types.py:91:_emit_records_tool_invocation("p2", "ml_write_intent_types", "tool_invocation")
+agentic_core\L2_execution\types\ml_write_intent_types.py:92:_emit_captures_execution_output("p2", "ml_write_intent_types", "exec_output")
+agentic_core\L2_execution\types\ml_write_intent_types.py:93:_emit_dispatches_agent("p3", "ml_write_intent_types", "agent_dispatch")
+agentic_core\L2_execution\types\ml_write_intent_types.py:94:_emit_coordinates_agents("p3", "ml_write_intent_types", "agent_coordination")
+agentic_core\L2_execution\types\ml_write_intent_types.py:95:_emit_records_workflow_lineage("p3", "ml_write_intent_types", "workflow_lineage")
+agentic_core\L2_execution\types\ml_write_intent_types.py:96:_emit_records_healing_outcome("p3", "ml_write_intent_types", "healing_outcome")
+agentic_core\L2_execution\types\ml_write_intent_types.py:97:_emit_escalates_failure("p3", "ml_write_intent_types", "failure_escalation")
+agentic_core\L2_execution\types\ml_write_intent_types.py:98:_emit_orchestrates_workflow("p3", "ml_write_intent_types", "workflow_orchestration")
+agentic_core\L2_execution\types\ml_write_intent_types.py:99:_emit_dispatches_healing_run("p3", "ml_write_intent_types", "healing_dispatch")
+agentic_core\L2_execution\types\ml_write_intent_types.py:100:_emit_invokes_evaluation("p3", "ml_write_intent_types", "evaluation_signal")
+agentic_core\L2_execution\types\ml_write_intent_types.py:101:_emit_records_telemetry_event("p4", "ml_write_intent_types", "telemetry_event")
+agentic_core\L2_execution\types\ml_write_intent_types.py:102:_emit_captures_evaluation_metric("p4", "ml_write_intent_types", "eval_metric")
+agentic_core\L2_execution\types\ml_write_intent_types.py:103:_emit_stores_embedding("p4", "ml_write_intent_types", "embedding_store")
+agentic_core\L2_execution\types\ml_write_intent_types.py:104:_emit_updates_meta_learning_state("p4", "ml_write_intent_types", "meta_learning")
+agentic_core\L2_execution\types\ml_write_intent_types.py:105:_emit_links_execution_to_snapshot("p4", "ml_write_intent_types", "exec_snapshot_link")
+agentic_core\L2_execution\types\ml_write_intent_types.py:142:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_1")
+agentic_core\L2_execution\types\ml_write_intent_types.py:143:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:144:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_3")
+agentic_core\L2_execution\types\ml_write_intent_types.py:145:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_4")
+agentic_core\L2_execution\types\ml_write_intent_types.py:146:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_5")
+agentic_core\L2_execution\types\ml_write_intent_types.py:147:_emit_emits_metric_event("ml_write_intent_types", "p4obs", "metric_6")
+agentic_core\L2_execution\types\ml_write_intent_types.py:148:_emit_records_incident_event("ml_write_intent_types", "p4obs", "incident")
+agentic_core\L2_execution\types\ml_write_intent_types.py:149:_emit_captures_runtime_anomaly("ml_write_intent_types", "p4obs", "anomaly")
+agentic_core\L2_execution\types\ml_write_intent_types.py:150:_emit_writes_observability_log("ml_write_intent_types", "p4obs", "obs_log")
+agentic_core\L2_execution\types\ml_write_intent_types.py:151:_emit_updates_monitoring_state("ml_write_intent_types", "p4obs", "mon_state")
+agentic_core\L2_execution\types\ml_write_intent_types.py:152:_emit_triggers_alert("ml_write_intent_types", "p4obs", "alert")
+agentic_core\L2_execution\types\ml_write_intent_types.py:153:_emit_links_incident_trace("ml_write_intent_types", "p4obs", "trace_link")
+agentic_core\L2_execution\types\ml_write_intent_types.py:154:_emit_captures_pattern("ml_write_intent_types", "p3lm", "pattern")
+agentic_core\L2_execution\types\ml_write_intent_types.py:155:_emit_records_learning_event("ml_write_intent_types", "p3lm", "learning_event")
+agentic_core\L2_execution\types\ml_write_intent_types.py:156:_emit_writes_learning_snapshot("ml_write_intent_types", "p3lm", "snapshot")
+agentic_core\L2_execution\types\ml_write_intent_types.py:157:_emit_feeds_meta_learning("ml_write_intent_types", "p3lm", "meta_feed")
+agentic_core\L2_execution\types\ml_write_intent_types.py:158:_emit_updates_routing_strategy("ml_write_intent_types", "p3lm", "routing")
+agentic_core\L2_execution\types\ml_write_intent_types.py:159:_emit_improves_agent_policy("ml_write_intent_types", "p3lm", "policy")
+agentic_core\L2_execution\types\ml_write_intent_types.py:160:_emit_stores_learning_state("ml_write_intent_types", "p3lm", "state")
+agentic_core\L2_execution\types\ml_write_intent_types.py:161:_emit_records_execution_trace("ml_write_intent_types", "L0_ROUTING", "p2_trace_1")
+agentic_core\L2_execution\types\ml_write_intent_types.py:162:_emit_records_execution_trace("ml_write_intent_types", "L1_REASONING", "p2_trace_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:163:_emit_records_execution_trace("ml_write_intent_types", "L2_EXECUTION", "p2_trace_3")
+agentic_core\L2_execution\types\ml_write_intent_types.py:164:_emit_records_execution_trace("ml_write_intent_types", "L3_ORCHESTRATION", "p2_trace_4")
+agentic_core\L2_execution\types\ml_write_intent_types.py:165:_emit_records_execution_trace("ml_write_intent_types", "L4_STATE", "p2_trace_5")
+agentic_core\L2_execution\types\ml_write_intent_types.py:166:_emit_reads_environ("ml_write_intent_types", "env_read", "p2_env_1")
+agentic_core\L2_execution\types\ml_write_intent_types.py:167:_emit_reads_environ("ml_write_intent_types", "env_read", "p2_env_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:168:_emit_reads_runtime_state("ml_write_intent_types", "runtime_state", "p2_rt_1")
+agentic_core\L2_execution\types\ml_write_intent_types.py:169:_emit_reads_runtime_state("ml_write_intent_types", "runtime_state", "p2_rt_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:170:_emit_pulls_context("p1", "ml_write_intent_types", "context_pull")
+agentic_core\L2_execution\types\ml_write_intent_types.py:171:_emit_pulls_context("p1", "ml_write_intent_types", "context_pull_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:172:_emit_execution_terminates_at_uwg("p1", "ml_write_intent_types", "uwg_term")
+agentic_core\L2_execution\types\ml_write_intent_types.py:173:_emit_execution_terminates_at_uwg("p1", "ml_write_intent_types", "uwg_term_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:174:_emit_writes_through("p1", "ml_write_intent_types", "write_through")
+agentic_core\L2_execution\types\ml_write_intent_types.py:175:_emit_writes_through("p1", "ml_write_intent_types", "write_through_2")
+agentic_core\L2_execution\types\ml_write_intent_types.py:176:_emit_validated_by_safety_plane("p1", "ml_write_intent_types", "safety_validation")
+agentic_core\L2_execution\types\ml_write_intent_types.py:177:_emit_invokes_eval("p1", "ml_write_intent_types", "eval_call")
+agentic_core\L2_execution\types\ml_write_intent_types.py:178:_emit_proposal_commits_routing("p1", "ml_write_intent_types", "routing_commit")
+agentic_core\L2_execution\types\ml_write_intent_types.py:295:def execute_ml_write_intent_outside_sandbox(intent: MLWriteIntent) -> None:
+agentic_core\L2_execution\reasoning\tool_intent_executor.py:4:Reuses the existing L2.2 sandbox flag from Phase 4 (ml_write_intent.py).
+agentic_core\L2_execution\reasoning\tool_intent_executor.py:24:from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active

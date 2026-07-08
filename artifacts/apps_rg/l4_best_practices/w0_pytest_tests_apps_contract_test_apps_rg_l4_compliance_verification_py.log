@@ -1,0 +1,54 @@
+COMMAND: pytest tests/_apps_contract/test_apps_rg_l4_compliance_verification.py
+START_UTC: 2026-07-06T10:54:23.1590795Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 11 items
+
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoDirectCacheWriteInRuntime::test_write_section_to_semantic_cache_not_imported_in_runtime PASSED [  9%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoChromaMutationsInRuntime::test_no_chroma_mutation_calls_in_runtime FAILED [ 18%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoDirectFilesystemDurableWritesInRuntime::test_exit_binding_has_no_direct_writes PASSED [ 27%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoDirectFilesystemDurableWritesInRuntime::test_no_write_text_or_write_bytes_in_bindings FAILED [ 36%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestQuarantinedL6NotImportedInRuntime::test_l6_shadow_learning_not_imported_in_runtime FAILED [ 45%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoAppsRgLiteralsAddedToCore::test_agentic_core_has_no_apps_rg_resume_section_names PASSED [ 54%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestInertWritebackCandidateShape::test_inert_artifact_commit_candidate_has_inert_flag PASSED [ 63%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestInertWritebackCandidateShape::test_inert_artifact_commit_candidate_has_proposal_status PASSED [ 72%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestInertWritebackCandidateShape::test_inert_artifact_commit_candidate_non_durable_flags PASSED [ 81%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestL4NamespaceManifestExists::test_manifest_exists FAILED [ 90%]
+tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestL4NamespaceManifestExists::test_no_apps_rg_l4_manifest_in_agentic_core PASSED [100%]
+
+================================== FAILURES ===================================
+___ TestNoChromaMutationsInRuntime.test_no_chroma_mutation_calls_in_runtime ___
+tests\_apps_contract\test_apps_rg_l4_compliance_verification.py:106: in test_no_chroma_mutation_calls_in_runtime
+    self.assertFalse(
+E   AssertionError: ['apps_rg\\runtime\\c0\\c02_fact_vector_ingest.py:245 — .upsert()', 'apps_rg\\runtime\\c0\\fact_vector_write_back.py:665 — .upsert()', 'apps_rg\\runtime\\c0\\fact_vector_write_back.py:674 — .delete()', 'apps_rg\\runtime\\fact_vectors_bootstrap.py:625 — .delete_collection()', 'apps_rg\\runtime\\validators\\achv_bullet_synthesizer_validator.py:293 — .reset()', 'apps_rg\\cache\\r1b_chroma_read_surface_projection.py:324 — .upsert()'] is not false : Chroma mutation calls found in runtime: ['apps_rg\\runtime\\c0\\c02_fact_vector_ingest.py:245 — .upsert()', 'apps_rg\\runtime\\c0\\fact_vector_write_back.py:665 — .upsert()', 'apps_rg\\runtime\\c0\\fact_vector_write_back.py:674 — .delete()', 'apps_rg\\runtime\\fact_vectors_bootstrap.py:625 — .delete_collection()', 'apps_rg\\runtime\\validators\\achv_bullet_synthesizer_validator.py:293 — .reset()', 'apps_rg\\cache\\r1b_chroma_read_surface_projection.py:324 — .upsert()']
+_ TestNoDirectFilesystemDurableWritesInRuntime.test_no_write_text_or_write_bytes_in_bindings _
+tests\_apps_contract\test_apps_rg_l4_compliance_verification.py:124: in test_no_write_text_or_write_bytes_in_bindings
+    self.assertFalse(
+E   AssertionError: ['apps_rg\\runtime\\bindings\\c0_metrics_writer.py:281 — .write_text()', 'apps_rg\\runtime\\bindings\\l2_envelope_adapter.py:1439 — .write_text()', 'apps_rg\\runtime\\bindings\\section_lane_c0_metrics.py:237 — .write_text()', 'apps_rg\\runtime\\bindings\\section_lane_c0_metrics.py:274 — .write_text()'] is not false : Direct filesystem write calls found in bindings: ['apps_rg\\runtime\\bindings\\c0_metrics_writer.py:281 — .write_text()', 'apps_rg\\runtime\\bindings\\l2_envelope_adapter.py:1439 — .write_text()', 'apps_rg\\runtime\\bindings\\section_lane_c0_metrics.py:237 — .write_text()', 'apps_rg\\runtime\\bindings\\section_lane_c0_metrics.py:274 — .write_text()']
+_ TestQuarantinedL6NotImportedInRuntime.test_l6_shadow_learning_not_imported_in_runtime _
+tests\_apps_contract\test_apps_rg_l4_compliance_verification.py:155: in test_l6_shadow_learning_not_imported_in_runtime
+    self.assertFalse(
+E   AssertionError: ['apps_rg\\runtime\\sections\\executive_summary_lane.py:77', 'apps_rg\\runtime\\sections\\headline_lane.py:57', 'apps_rg\\runtime\\sections\\unify_narrative_lane.py:70'] is not false : Quarantined l6_shadow_learning imported in live runtime: ['apps_rg\\runtime\\sections\\executive_summary_lane.py:77', 'apps_rg\\runtime\\sections\\headline_lane.py:57', 'apps_rg\\runtime\\sections\\unify_narrative_lane.py:70']
+_____________ TestL4NamespaceManifestExists.test_manifest_exists ______________
+tests\_apps_contract\test_apps_rg_l4_compliance_verification.py:227: in test_manifest_exists
+    self.assertTrue(
+E   AssertionError: False is not true : apps_rg/config/l4_namespace_manifest.yaml must exist for W6 compliance
+=========================== short test summary info ===========================
+FAILED tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoChromaMutationsInRuntime::test_no_chroma_mutation_calls_in_runtime
+FAILED tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestNoDirectFilesystemDurableWritesInRuntime::test_no_write_text_or_write_bytes_in_bindings
+FAILED tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestQuarantinedL6NotImportedInRuntime::test_l6_shadow_learning_not_imported_in_runtime
+FAILED tests/_apps_contract/test_apps_rg_l4_compliance_verification.py::TestL4NamespaceManifestExists::test_manifest_exists
+========================= 4 failed, 7 passed in 3.52s =========================
+
+END_UTC: 2026-07-06T10:54:30.0480861Z
+EXIT_CODE: 1

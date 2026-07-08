@@ -22,6 +22,10 @@ REQUIRED_COMMIT_REQUEST_FIELDS: tuple[str, ...] = (
     "run_id",
     "trace_root",
     "tenant_id",
+    "registry_digest_set",
+    "clearance_proof_id",
+    "staged_diff_hash",
+    "commit_request_signature",
 )
 
 FORBIDDEN_PLACEHOLDER_HASHES: frozenset[str] = frozenset({"", "unknown", "UNKNOWN"})
@@ -61,6 +65,10 @@ class R1BGovernanceReceiptBundle:
     blocked_commit_receipt_id: str = ""
     core_receipt_l5_present: bool = False
     core_receipt_gate_verdict_present: bool = False
+    core_receipt_policy_hash_present: bool = False
+    core_receipt_blueprint_hash_present: bool = False
+    core_receipt_replay_key_present: bool = False
+    core_receipt_clearance_proof_present: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -80,6 +88,10 @@ class R1BGovernanceReceiptBundle:
             "blocked_commit_receipt_id": self.blocked_commit_receipt_id,
             "core_receipt_l5_present": self.core_receipt_l5_present,
             "core_receipt_gate_verdict_present": self.core_receipt_gate_verdict_present,
+            "core_receipt_policy_hash_present": self.core_receipt_policy_hash_present,
+            "core_receipt_blueprint_hash_present": self.core_receipt_blueprint_hash_present,
+            "core_receipt_replay_key_present": self.core_receipt_replay_key_present,
+            "core_receipt_clearance_proof_present": self.core_receipt_clearance_proof_present,
         }
 
 
@@ -126,6 +138,18 @@ def validate_commit_request_governance(commit_request: Any) -> R1BGovernanceRefV
         if not str(getattr(commit_request, fld, "") or "").strip():
             missing.append(fld)
             reasons.append(f"missing::{fld}")
+    if not tuple(getattr(commit_request, "registry_digest_set", ()) or ()):
+        missing.append("registry_digest_set")
+        reasons.append("missing_registry_digest_set")
+    if not str(getattr(commit_request, "clearance_proof_id", "") or "").strip():
+        missing.append("clearance_proof_id")
+        reasons.append("missing_clearance_proof_id")
+    if not str(getattr(commit_request, "staged_diff_hash", "") or "").strip():
+        missing.append("staged_diff_hash")
+        reasons.append("missing_staged_diff_hash")
+    if not str(getattr(commit_request, "commit_request_signature", "") or "").strip():
+        missing.append("commit_request_signature")
+        reasons.append("commit_request_signature_invalid")
 
     return R1BGovernanceRefValidation(
         valid=not missing,
@@ -143,8 +167,10 @@ def build_governance_receipt_bundle(
 ) -> R1BGovernanceReceiptBundle:
     sd = state_diffs[0] if state_diffs else None
     core_l5 = ""
+    core_gate_refs: tuple[str, ...] = ()
     if commit_receipt is not None:
         core_l5 = str(getattr(commit_receipt, "l5_certification_ref", "") or "")
+        core_gate_refs = tuple(getattr(commit_receipt, "gate_verdict_refs", ()) or ())
     return R1BGovernanceReceiptBundle(
         source_surface=str(commit_request.source_surface),
         l5_certification_ref=str(commit_request.l5_certification_ref),
@@ -167,7 +193,11 @@ def build_governance_receipt_bundle(
         if blocked_receipt
         else "",
         core_receipt_l5_present=bool(core_l5),
-        core_receipt_gate_verdict_present=False,
+        core_receipt_gate_verdict_present=bool(core_gate_refs),
+        core_receipt_policy_hash_present=bool(str(getattr(commit_receipt, "policy_hash", "") or "")) if commit_receipt else False,
+        core_receipt_blueprint_hash_present=bool(str(getattr(commit_receipt, "blueprint_hash", "") or "")) if commit_receipt else False,
+        core_receipt_replay_key_present=bool(str(getattr(commit_receipt, "replay_key", "") or "")) if commit_receipt else False,
+        core_receipt_clearance_proof_present=bool(str(getattr(commit_receipt, "clearance_proof_id", "") or "")) if commit_receipt else False,
     )
 
 
@@ -178,45 +208,45 @@ def build_receipt_field_parity_matrix() -> list[dict[str, Any]]:
             "field": "source_surface",
             "commit_request": True,
             "state_diff": "proposed_by_surface=Exit",
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
-            "notes": "Must be Exit on CommitRequest; core receipt has committed_by_surface=UWG only",
+            "notes": "Core receipt carries source_surface while committed_by_surface remains UWG",
         },
         {
             "field": "l5_certification_ref",
             "commit_request": True,
             "state_diff": False,
-            "uwg_commit_receipt_core": "promotion_gateway_enriched",
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
-            "notes": "Core gateway omits l5 on receipt; R1bUwgPromotionGateway enriches at construction",
+            "notes": "Core gateway copies l5 from CommitRequest",
         },
         {
             "field": "gate_verdict_refs",
             "commit_request": True,
             "state_diff": False,
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
-            "notes": "Not a UWGCommitReceipt field; preserved in apps_rg sidecar only",
+            "notes": "Core gateway copies gate refs from CommitRequest",
         },
         {
             "field": "replay_key",
             "commit_request": True,
             "state_diff": "replay_refs on StateDiff",
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
         },
         {
             "field": "policy_hash",
             "commit_request": True,
             "state_diff": "policy_refs optional",
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
         },
         {
             "field": "blueprint_hash",
             "commit_request": True,
             "state_diff": False,
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
         },
         {
@@ -230,7 +260,7 @@ def build_receipt_field_parity_matrix() -> list[dict[str, Any]]:
             "field": "cleared_exit_review_packet_ref",
             "commit_request": True,
             "state_diff": False,
-            "uwg_commit_receipt_core": False,
+            "uwg_commit_receipt_core": True,
             "apps_rg_governance_sidecar": True,
         },
     ]
@@ -239,22 +269,9 @@ def build_receipt_field_parity_matrix() -> list[dict[str, Any]]:
 def document_r1b_uwg_core_receipt_gaps() -> dict[str, Any]:
     return {
         "promotion_gateway_module": "apps_rg.cache.r1b_uwg_promotion.R1bUwgPromotionGateway",
-        "core_gap_summary": (
-            "Stock DurableWriteGateway.commit constructs UWGCommitReceipt without "
-            "l5_certification_ref; R1bUwgPromotionGateway injects l5 from CommitRequest at "
-            "receipt construction. gate_verdict_refs, replay_key, policy_hash, blueprint_hash, "
-            "and source_surface are NOT fields on UWGCommitReceipt — apps_rg durable projection "
-            "stores them in governance_receipt sidecar."
-        ),
-        "fields_core_cannot_carry": [
-            "gate_verdict_refs",
-            "replay_key",
-            "policy_hash",
-            "blueprint_hash",
-            "source_surface",
-            "cleared_exit_review_packet_ref",
-        ],
-        "fields_promotion_gateway_enriches": ["l5_certification_ref"],
+        "core_gap_summary": "No active core receipt parity gap for R1B UWG provenance.",
+        "fields_core_cannot_carry": [],
+        "fields_promotion_gateway_enriches": [],
         "fields_core_carries": ["affected_state_surfaces", "state_diff_refs", "audit_refs"],
         "apps_rg_sidecar_path": "durable/uwg_admitted/intents/<record_id>.json#governance_receipt",
         "agentic_core_edit_required_for_full_parity": False,

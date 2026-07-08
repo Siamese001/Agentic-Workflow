@@ -38,6 +38,22 @@ def _find_repo_root() -> Path:
     return Path.cwd()
 
 
+def assert_fixture_store_not_used_for_runtime_lookup(*, purpose: str = "") -> None:
+    """Fail closed if production code attempts to use fixture mirror as routing truth."""
+    if os.environ.get("APPS_RG_R1B_ALLOW_FIXTURE_FALLBACK_FOR_TESTS", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return
+    label = f" for {purpose}" if purpose else ""
+    raise RuntimeError(
+        "R1BSemanticCacheStore is a fixture/proof mirror and is not runtime read truth"
+        f"{label}; use UWG-admitted durable projection plus derived index instead."
+    )
+
+
 class R1BSemanticCacheStore:
     """Fixture/proof mirror for HistoricalIntentRecord + child chunks (ROLE_TARGET_RUN).
 
@@ -134,6 +150,9 @@ class R1BSemanticCacheStore:
             "durable_write_via_uwg": self.durable_write_status,
             "storage_tier": self.storage_tier,
             "is_durable_production_truth": False,
+            "runtime_read_eligible": False,
+            "routing_truth": False,
+            "requires_explicit_test_flag": True,
             "file_backed_ssot_note": FILE_BACKED_SSOT_NOTE,
             "root": str(self.root),
             "intent_count": len(self.list_intent_record_ids()),
@@ -142,5 +161,6 @@ class R1BSemanticCacheStore:
 
 __all__ = [
     "R1BSemanticCacheStore",
+    "assert_fixture_store_not_used_for_runtime_lookup",
     "default_store_root",
 ]

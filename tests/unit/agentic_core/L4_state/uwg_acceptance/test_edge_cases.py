@@ -17,9 +17,6 @@ from agentic_core.L4_state.audit.audit_ledger import (
     AuditLedgerSequenceGapError,
 )
 from agentic_core.L4_state.contracts import (
-    AliasResolutionError,
-    BlueprintRecord,
-    CacheEntry,
     CacheInvalidationReceipt,
     CacheLookupReceipt,
     CapabilityRegistryRecord,
@@ -29,12 +26,10 @@ from agentic_core.L4_state.contracts import (
     ModelRegistryRecord,
     PolicyManifest,
     ReadSurfaceRefreshReceipt,
-    RegistrySnapshot,
     ReplaySnapshotRecord,
     SchemaRegistryRecord,
     SemanticCacheEntry,
     StateDiff,
-    TenantScopeError,
     ToolRegistryRecord,
     UnknownEntryError,
     UWGCommitReceipt,
@@ -47,9 +42,7 @@ from agentic_core.L4_state.contracts.records import stamp_digest
 from agentic_core.L4_state.refresh.refresh_coordinator import (
     REFRESH_ORDER,
     RefreshCoordinator,
-    RefreshExecutionError,
 )
-
 
 # =====================================================================
 # 00.1 — Record digest determinism + immutability boundaries
@@ -588,6 +581,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         r = coord.issue_alias_refresh(
@@ -613,6 +607,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         r = coord.issue_index_refresh(
@@ -656,6 +651,7 @@ class TestRefreshEdgeCases:
                 read_surface_refresh_plan_ref="rfp:proof",
                 audit_append_receipt_ref="aar:proof",
                 committed_at="0",
+                l5_certification_ref="l5:proof",
             )
         )
         refs = ("src:1", "src:2", "src:3", "src:4", "src:5")

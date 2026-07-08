@@ -1,0 +1,32 @@
+COMMAND: pytest tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py
+START_UTC: 2026-07-06T10:54:07.3553190Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 3 items
+
+tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py::test_lifecycle_accepted_hit_requires_exit_review PASSED [ 33%]
+tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py::test_lifecycle_miss_fallthrough PASSED [ 66%]
+tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py::test_lifecycle_rejected_profile_mismatch PASSED [100%]
+
+============================== warnings summary ===============================
+tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py::test_lifecycle_accepted_hit_requires_exit_review
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py::test_lifecycle_accepted_hit_requires_exit_review
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 3 passed, 2 warnings in 6.60s ========================
+
+END_UTC: 2026-07-06T10:54:19.1642633Z
+EXIT_CODE: 0

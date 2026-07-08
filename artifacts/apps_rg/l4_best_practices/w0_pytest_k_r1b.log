@@ -1,0 +1,155 @@
+COMMAND: pytest -k r1b
+START_UTC: 2026-07-06T10:54:30.0490891Z
+
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0 -- C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe
+cachedir: .pytest_cache
+hypothesis profile 'default'
+rootdir: C:\Git\Agentic-Workflow-FRESH
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+testpaths: tests
+plugins: anyio-4.12.1, dash-4.1.0, hypothesis-6.151.10, asyncio-1.3.0, cov-7.0.0, rerunfailures-16.1, testmon-2.2.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 180.0s
+timeout method: thread
+timeout func_only: False
+collecting ... collected 58179 items / 5 errors / 57850 deselected / 31 skipped / 329 selected
+
+=================================== ERRORS ====================================
+_______ ERROR collecting tests/_apps_contract/test_exec_summary_cli.py ________
+ImportError while importing test module 'C:\Git\Agentic-Workflow-FRESH\tests\_apps_contract\test_exec_summary_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\_apps_contract\test_exec_summary_cli.py:20: in <module>
+    from apps_rg.runtime.section_cli_defaults import (
+E   ImportError: cannot import name 'CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_RETIRED_PROVIDER_PROFILE' from 'apps_rg.runtime.section_cli_defaults' (C:\Git\Agentic-Workflow-FRESH\apps_rg\runtime\section_cli_defaults.py)
+____________ ERROR collecting tests/apps_lic/test_lic_reasoning.py ____________
+ImportError while importing test module 'C:\Git\Agentic-Workflow-FRESH\tests\apps_lic\test_lic_reasoning.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\apps_lic\test_lic_reasoning.py:3: in <module>
+    from apps_lic.reasoning.LICValidationExecutor import (
+apps_lic\reasoning\LICValidationExecutor.py:77: in <module>
+    from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
+E   ModuleNotFoundError: No module named 'apps_lic.utils.lic_engine_validation_capability_util'; 'apps_lic.utils' is not a package
+_ ERROR collecting tests/unit/agentic_core/prompt_governance/test_apply_patch_validator_eq12.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\prompt_governance\test_apply_patch_validator_eq12.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\unit\agentic_core\prompt_governance\test_apply_patch_validator_eq12.py:7: in <module>
+    from agentic_core.prompt_governance.validation.apply_patch_validator import (
+E   ModuleNotFoundError: No module named 'agentic_core.prompt_governance.validation'
+_ ERROR collecting tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py _
+ImportError while importing test module 'C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\prompt_governance\test_mixin_bank_eq10.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\unit\agentic_core\prompt_governance\test_mixin_bank_eq10.py:11: in <module>
+    from agentic_core.prompt_governance.mixins import (
+E   ModuleNotFoundError: No module named 'agentic_core.prompt_governance.mixins'
+___ ERROR collecting tests/unit/apps_lic/engines/test_lic_x1d_llm_judge.py ____
+ImportError while importing test module 'C:\Git\Agentic-Workflow-FRESH\tests\unit\apps_lic\engines\test_lic_x1d_llm_judge.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\unit\apps_lic\engines\test_lic_x1d_llm_judge.py:11: in <module>
+    from apps_lic.engines.judges.lic_x1d_llm_judge import (
+E   ModuleNotFoundError: No module named 'apps_lic.engines.judges.lic_x1d_llm_judge'
+============================== warnings summary ===============================
+apps_lic\types\lic_types.py:127
+  C:\Git\Agentic-Workflow-FRESH\apps_lic\types\lic_types.py:127: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class CampaignRunSummary(BaseModel):
+
+agentic_core\L2_execution\healers\confidence_scorer.py:15
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\healers\confidence_scorer.py:15: DeprecationWarning: agentic_core.L2_execution.healers.heal_classifier_model routes its outputs through the unified heal_router.v1 OTEL schema (agentic_core.L6_observability.heal_router_otel). Direct telemetry hooks on classifier results are deprecated (ADR-025 Wave F2 M4).
+    from .heal_classifier_model import ClassifierFeatures, HealClassifierModel
+
+apps_research\types\research_types.py:174
+  C:\Git\Agentic-Workflow-FRESH\apps_research\types\research_types.py:174: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ResearchRunSummary(BaseModel):
+
+tests\e2e\conftest.py:69
+  C:\Git\Agentic-Workflow-FRESH\tests\e2e\conftest.py:69: PytestCollectionWarning: cannot collect test class 'TestExecutionContext' because it has a __init__ constructor (from: tests/e2e/agentic_core/test_layer_sovereignty_e2e.py)
+    @dataclass
+
+tests\e2e\conftest.py:69
+  C:\Git\Agentic-Workflow-FRESH\tests\e2e\conftest.py:69: PytestCollectionWarning: cannot collect test class 'TestExecutionContext' because it has a __init__ constructor (from: tests/e2e/data/test_bus_communications_e2e.py)
+    @dataclass
+
+tests\e2e\conftest.py:69
+  C:\Git\Agentic-Workflow-FRESH\tests\e2e\conftest.py:69: PytestCollectionWarning: cannot collect test class 'TestExecutionContext' because it has a __init__ constructor (from: tests/e2e/data/test_execution_paths_e2e.py)
+    @dataclass
+
+tests\e2e\conftest.py:69
+  C:\Git\Agentic-Workflow-FRESH\tests\e2e\conftest.py:69: PytestCollectionWarning: cannot collect test class 'TestExecutionContext' because it has a __init__ constructor (from: tests/e2e/data/test_full_integration_e2e.py)
+    @dataclass
+
+agentic_core\L2_execution\enforcement\key_source.py:190
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L2_execution\enforcement\key_source.py:190: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/e2e/data/test_ptc_aggressive_hardening.py)
+    class TestKeySource(KeySource):
+
+tests\e2e\retrieval_layers\test_graphrag_hardened.py:97
+  C:\Git\Agentic-Workflow-FRESH\tests\e2e\retrieval_layers\test_graphrag_hardened.py:97: PytestCollectionWarning: cannot collect test class 'TestEvidence' because it has a __init__ constructor (from: tests/e2e/retrieval_layers/test_graphrag_hardened.py)
+    @dataclass
+
+agentic_core\L3_orchestration\inference\qwen_vllm\__init__.py:13
+  C:\Git\Agentic-Workflow-FRESH\agentic_core\L3_orchestration\inference\qwen_vllm\__init__.py:13: DeprecationWarning: agentic_core.L3_orchestration.inference.qwen_vllm.telemetry is deprecated (ADR-025 Wave F2 M4). Use agentic_core.L6_observability.heal_router_otel HealRouterTelemetryEmitter for unified heal_router.v1 spans.
+    from .telemetry import (
+
+apps_shared\enforcement\ProvenancetrackerStrategy.py:285
+  C:\Git\Agentic-Workflow-FRESH\apps_shared\enforcement\ProvenancetrackerStrategy.py:285: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ArtifactLineage(BaseModel):
+
+ops_scripts\reports\async_eval_packet.py:18
+  C:\Git\Agentic-Workflow-FRESH\ops_scripts\reports\async_eval_packet.py:18: DeprecationWarning: agentic_core.L2_execution.providers is deprecated. Import from agentic_core.utils.providers instead.
+    from agentic_core.L2_execution.utils.providers import (
+
+tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:106
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:106: PytestUnknownMarkWarning: Unknown pytest.mark.healing - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.healing
+
+tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:145
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:145: PytestUnknownMarkWarning: Unknown pytest.mark.healing - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.healing
+
+tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:252
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:252: PytestUnknownMarkWarning: Unknown pytest.mark.stress - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.stress
+
+tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:270
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:270: PytestUnknownMarkWarning: Unknown pytest.mark.stress - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.stress
+
+tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:295
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\L3_orchestration\reasoning\territory_healing\test_territory_healing_stress.py:295: PytestUnknownMarkWarning: Unknown pytest.mark.stress - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.stress
+
+tests\unit\agentic_core\core\frameworks\test_quality_framework.py:26
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\core\frameworks\test_quality_framework.py:26: PytestCollectionWarning: cannot collect test class 'TestQualityIssue' because it has a __init__ constructor (from: tests/unit/agentic_core/core/frameworks/test_quality_framework.py)
+    @dataclass
+
+tests\unit\agentic_core\core\frameworks\test_quality_framework.py:39
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\core\frameworks\test_quality_framework.py:39: PytestCollectionWarning: cannot collect test class 'TestQualityAnalyzer' because it has a __init__ constructor (from: tests/unit/agentic_core/core/frameworks/test_quality_framework.py)
+    class TestQualityAnalyzer:
+
+tests\unit\agentic_core\core\frameworks\test_quality_framework.py:231
+  C:\Git\Agentic-Workflow-FRESH\tests\unit\agentic_core\core\frameworks\test_quality_framework.py:231: PytestCollectionWarning: cannot collect test class 'TestCoverageAnalyzer' because it has a __init__ constructor (from: tests/unit/agentic_core/core/frameworks/test_quality_framework.py)
+    class TestCoverageAnalyzer:
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+
+============================================================
+GUARDIAN SHIELD: BLOCKING
+============================================================
+JSON Report: C:\Git\Agentic-Workflow-FRESH\agentic_core\L0_routing\logs\guardian_report.json
+Violations: 0
+============================================================
+=========================== short test summary info ===========================
+ERROR tests/_apps_contract/test_exec_summary_cli.py
+ERROR tests/apps_lic/test_lic_reasoning.py
+ERROR tests/unit/agentic_core/prompt_governance/test_apply_patch_validator_eq12.py
+ERROR tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py
+ERROR tests/unit/apps_lic/engines/test_lic_x1d_llm_judge.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 5 errors during collection !!!!!!!!!!!!!!!!!!!
+======== 31 skipped, 57850 deselected, 20 warnings, 5 errors in 56.57s ========
+
+END_UTC: 2026-07-06T10:55:38.4408136Z
+EXIT_CODE: 2

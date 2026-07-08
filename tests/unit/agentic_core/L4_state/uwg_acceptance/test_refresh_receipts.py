@@ -31,6 +31,7 @@ def _commit_receipt(commit_id: str = "cr:proof") -> UWGCommitReceipt:
             read_surface_refresh_plan_ref="rfp:proof",
             audit_append_receipt_ref="aar:proof",
             committed_at="0",
+            l5_certification_ref="l5:proof",
         )
     )
 

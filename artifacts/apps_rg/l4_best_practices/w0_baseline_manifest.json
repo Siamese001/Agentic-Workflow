@@ -1,0 +1,69 @@
+{
+  "plan_id": "apps-rg-l4-best-practices-hardening",
+  "branch": "codex-apps-rg-l4-best-practices-hardening",
+  "commit_sha": "09fa01c93888531c330943a05e1e84777c380bda",
+  "generated_utc": "2026-07-06T10:55:47.2224345Z",
+  "adg_provenance": {
+    "status": "ok",
+    "snapshot_id": "07052026_2301",
+    "sqlite_path": "artifacts/adg/adg_indexed_07052026_2301.sqlite",
+    "graph_projection": "artifacts/adg/adg_graph_07052026_2301.sqlite"
+  },
+  "commands": [
+    {
+      "log": "artifacts/apps_rg/l4_best_practices/w0_run_contract_gates.log",
+      "exit_code": 1,
+      "command": "python ops_scripts/ci/run_contract_gates.py"
+    },
+    {
+      "command": "pytest tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py",
+      "exit_code": 0,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_uwg_durable_persistence_w10_py.log",
+      "start_utc": "2026-07-06T10:53:42.4076678Z",
+      "end_utc": "2026-07-06T10:53:55.2126725Z"
+    },
+    {
+      "command": "pytest tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py",
+      "exit_code": 1,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_whole_run_lookup_w9_py.log",
+      "start_utc": "2026-07-06T10:53:55.224071Z",
+      "end_utc": "2026-07-06T10:54:07.3540269Z"
+    },
+    {
+      "command": "pytest tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py",
+      "exit_code": 0,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_index_lifecycle_w12_py.log",
+      "start_utc": "2026-07-06T10:54:07.355319Z",
+      "end_utc": "2026-07-06T10:54:19.1642633Z"
+    },
+    {
+      "command": "pytest tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py",
+      "exit_code": 1,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_apps_contract_test_apps_rg_l4_namespace_manifest_py.log",
+      "start_utc": "2026-07-06T10:54:19.165444Z",
+      "end_utc": "2026-07-06T10:54:23.158216Z"
+    },
+    {
+      "command": "pytest tests/_apps_contract/test_apps_rg_l4_compliance_verification.py",
+      "exit_code": 1,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_apps_contract_test_apps_rg_l4_compliance_verification_py.log",
+      "start_utc": "2026-07-06T10:54:23.1590795Z",
+      "end_utc": "2026-07-06T10:54:30.0480861Z"
+    },
+    {
+      "command": "pytest -k r1b",
+      "exit_code": 2,
+      "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_k_r1b.log",
+      "start_utc": "2026-07-06T10:54:30.0490891Z",
+      "end_utc": "2026-07-06T10:55:38.4408136Z"
+    }
+  ],
+  "known_failures": [
+    "run_contract_gates: pre-existing plan graph-layer evidence violations",
+    "test_r1b_whole_run_lookup_w9.py::test_main_r1a_before_r1b_order baseline order assertion failure",
+    "apps_rg L4 namespace manifest/schema missing on baseline",
+    "apps_rg L4 compliance baseline direct Chroma/filesystem/L6 import findings",
+    "pytest -k r1b baseline collection errors outside R1B target surface"
+  ],
+  "static_scan_report": "artifacts/apps_rg/l4_best_practices/w0_static_scan_report.txt"
+}

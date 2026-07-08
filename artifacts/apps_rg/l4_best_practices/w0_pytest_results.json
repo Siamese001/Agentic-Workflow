@@ -1,0 +1,44 @@
+[
+  {
+    "command": "pytest tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py",
+    "exit_code": 0,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_uwg_durable_persistence_w10_py.log",
+    "start_utc": "2026-07-06T10:53:42.4076678Z",
+    "end_utc": "2026-07-06T10:53:55.2126725Z"
+  },
+  {
+    "command": "pytest tests/unit/apps_rg/test_r1b_whole_run_lookup_w9.py",
+    "exit_code": 1,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_whole_run_lookup_w9_py.log",
+    "start_utc": "2026-07-06T10:53:55.2240710Z",
+    "end_utc": "2026-07-06T10:54:07.3540269Z"
+  },
+  {
+    "command": "pytest tests/unit/apps_rg/test_r1b_index_lifecycle_w12.py",
+    "exit_code": 0,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_unit_apps_rg_test_r1b_index_lifecycle_w12_py.log",
+    "start_utc": "2026-07-06T10:54:07.3553190Z",
+    "end_utc": "2026-07-06T10:54:19.1642633Z"
+  },
+  {
+    "command": "pytest tests/_apps_contract/test_apps_rg_l4_namespace_manifest.py",
+    "exit_code": 1,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_apps_contract_test_apps_rg_l4_namespace_manifest_py.log",
+    "start_utc": "2026-07-06T10:54:19.1654440Z",
+    "end_utc": "2026-07-06T10:54:23.1582160Z"
+  },
+  {
+    "command": "pytest tests/_apps_contract/test_apps_rg_l4_compliance_verification.py",
+    "exit_code": 1,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_tests_apps_contract_test_apps_rg_l4_compliance_verification_py.log",
+    "start_utc": "2026-07-06T10:54:23.1590795Z",
+    "end_utc": "2026-07-06T10:54:30.0480861Z"
+  },
+  {
+    "command": "pytest -k r1b",
+    "exit_code": 2,
+    "log": "artifacts/apps_rg/l4_best_practices/w0_pytest_k_r1b.log",
+    "start_utc": "2026-07-06T10:54:30.0490891Z",
+    "end_utc": "2026-07-06T10:55:38.4408136Z"
+  }
+]

@@ -182,7 +182,7 @@ def run_whole_run_cache_preflight(
         and r1b_eligibility.get("probeable")
         and not r1b_eligibility.get("eligible")
     )
-    if r1b_eligibility.get("eligible") or r1b_probe_only:
+    if _semantic_cache_r1b_enabled() or r1b_eligibility.get("eligible") or r1b_probe_only:
         store_root = resolve_r1b_store_root(artifact_dir=artifact_dir)
         r1b_result = execute_whole_run_r1b_preflight(
             raw_request=raw_request,
