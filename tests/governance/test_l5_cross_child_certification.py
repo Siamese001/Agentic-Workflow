@@ -1,8 +1,8 @@
-"""GAP-010 / 00A.8a — cross-child L5 digest coherence (governance).
+"""GAP-010 / 00A.8a - cross-child L5 digest coherence (governance).
 
-Proves ``L5PacketProducer`` binds every child certifier that carries an
-``evidence_digest`` to the same canonical governance-context digest; digest
-mismatch fails closed with ``L5DigestMismatchError``.
+Proves ``L5PacketProducer`` keeps child evidence hashes separate from the
+canonical governance-context digest and fails closed when a child context digest
+does not match the packet context digest.
 """
 from __future__ import annotations
 
@@ -40,17 +40,23 @@ _DOMAINS_REQUIRED = (
 )
 
 
-def _child(domain: str, *, digest: str = "") -> ChildCertifierReceipt:
+def _child(
+    domain: str,
+    *,
+    digest: str = "",
+    context_digest: str = "",
+) -> ChildCertifierReceipt:
     return ChildCertifierReceipt(
         domain=domain,
         applicability="REQUIRED",
         certified=True,
         evidence_digest=digest,
+        l5_governance_context_digest=context_digest,
     )
 
 
 class TestCrossChildDigestCoherence:
-    """00A.8a — all applicable children share the same evidence_digest (or all omit it)."""
+    """00A.8a - child context digests bind to the packet context."""
 
     def test_all_children_empty_digest_certified(self) -> None:
         children = [_child(d, digest="") for d in _DOMAINS_REQUIRED]
@@ -61,27 +67,28 @@ class TestCrossChildDigestCoherence:
         )
         assert packet.certification_status == "L5_CERTIFIED"
         assert all(r.evidence_digest == "" for r in packet.child_receipts)
+        assert len(packet.l5_governance_context_digest) == 64
 
-    def test_single_non_empty_digest_mismatch_raises(self) -> None:
-        """Any non-empty child digest must equal the computed governance-context digest."""
+    def test_child_evidence_digest_is_not_context_digest(self) -> None:
+        """Child evidence hashes are accepted as child evidence, not packet context."""
 
-        tampered = [
+        children = [
             _child("safety_enforcement", digest="0" * 64),
             *[_child(d, digest="") for d in _DOMAINS_REQUIRED if d != "safety_enforcement"],
         ]
-        with pytest.raises(L5DigestMismatchError, match="safety_enforcement"):
-            _PRODUCER.produce_packet(
-                child_receipts=tampered,
-                egress_receipts=[],
-                **_COMMON_REFS,
-            )
+        packet = _PRODUCER.produce_packet(
+            child_receipts=children,
+            egress_receipts=[],
+            **_COMMON_REFS,
+        )
+        assert packet.certification_status == "L5_CERTIFIED"
+        assert packet.child_receipts[0].evidence_digest == "0" * 64
 
-    def test_mismatched_two_nonempty_child_digests_raises(self) -> None:
-        gov = "a" * 64
-        other = "b" * 64
+    def test_child_context_digest_mismatch_raises(self) -> None:
+        wrong_context = "b" * 64
         mixed = [
-            _child("safety_enforcement", digest=gov),
-            _child("authority_context_registry_binding", digest=other),
+            _child("safety_enforcement", digest="a" * 64, context_digest=wrong_context),
+            _child("authority_context_registry_binding", digest="b" * 64),
             *[
                 _child(d, digest="")
                 for d in _DOMAINS_REQUIRED
@@ -92,7 +99,7 @@ class TestCrossChildDigestCoherence:
                 )
             ],
         ]
-        with pytest.raises(L5DigestMismatchError):
+        with pytest.raises(L5DigestMismatchError, match="l5_governance_context_digest"):
             _PRODUCER.produce_packet(
                 child_receipts=mixed,
                 egress_receipts=[],

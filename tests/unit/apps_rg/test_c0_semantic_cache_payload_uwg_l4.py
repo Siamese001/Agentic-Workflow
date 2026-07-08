@@ -297,7 +297,13 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
         "admissible": True,
         "record": record.to_dict(),
         "chunks": [c.to_dict() for c in chunks],
-        "exit_metadata": {"source_run_id": "run_l4_e2e", "x3_disposition": "X3_ALLOW"},
+        "exit_metadata": {
+            "source_run_id": "run_l4_e2e",
+            "x3_disposition": "X3_ALLOW",
+            "l5_certification_packet_ref": "l5_packet:" + "d" * 64,
+            "l5_certification_packet_digest": "d" * 64,
+            "l5_certification_status": "L5_CERTIFIED",
+        },
     }
     candidate = build_r1b_promotion_candidate(
         record=record,
@@ -324,3 +330,5 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     assert pl["c0_query_output"]
     assert pl["c0_query_output_count"] >= 1
     assert pl["c0_dense_search_refs"] == ["dense:fact_vectors:/x"]
+    assert pl["l5_certification_packet_digest"] == "d" * 64
+    assert pl["governance_receipt"]["l5_certification_packet_digest"] == "d" * 64

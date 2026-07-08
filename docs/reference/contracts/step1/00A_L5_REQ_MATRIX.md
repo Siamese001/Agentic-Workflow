@@ -19,3 +19,19 @@ Step 1 aggregation only. Implementation mapping and proof are Phase 2.
 | REQ-L5-RISK-TIER-BANDS-001 | risk_tier_bands.md | Risk Tier Bands | L5 | RiskTier | schema | Risk tier band assignment MUST use the published bands and never an ad-hoc score. | ONLY | TBD_REQUIRED_RUNTIME_EVIDENCE | TBD_REQUIRED_SPAN | TBD_REQUIRED_ARTIFACT | TBD_REQUIRED_VALIDATOR | TBD_REQUIRED_TEST | TBD_REQUIRED_NEGATIVE_CONTROL | TBD_EXPECTED_FAIL_REASON | TBD_REQUIRED_REPLAY_CHECK | RELEASE_BLOCKING | |
 | REQ-L5-CALIBRATION-ASSURANCE-001 | calibration_assurance_planes.md | Calibration / Assurance Planes | L5 | CalibrationAssurance | reference | Calibration assurance planes are the reference surface for judge / rubric calibration. | REFERENCE | TBD_REQUIRED_RUNTIME_EVIDENCE | TBD_REQUIRED_SPAN | TBD_REQUIRED_ARTIFACT | TBD_REQUIRED_VALIDATOR | TBD_REQUIRED_TEST | NOT_APPLICABLE: reference plane | NOT_APPLICABLE: same reason as negative control (reference plane) | TBD_REQUIRED_REPLAY_CHECK | NON_BLOCKING_REFERENCE | |
 | REQ-L5-V5-COVERAGE-MATRIX-REF-001 | v5_coverage_matrix.md | v5 Coverage Matrix | L5 | Traceability | traceability | v5 coverage matrix is referenced as L5 traceability surface (no claims carried into Step 1). | REFERENCE | TBD_REQUIRED_RUNTIME_EVIDENCE | TBD_REQUIRED_SPAN | TBD_REQUIRED_ARTIFACT | TBD_REQUIRED_VALIDATOR | TBD_REQUIRED_TEST | NOT_APPLICABLE: reference matrix | NOT_APPLICABLE: same reason as negative control (reference matrix) | TBD_REQUIRED_REPLAY_CHECK | NON_BLOCKING_REFERENCE | historical_note=source had prior status language, not carried into Step 1 |
+
+## apps_rg Runtime Certification Evidence Mapping
+
+This closeout maps the Step 1 aggregation rows to apps_rg runtime evidence without changing L5 authority semantics.
+
+| REQ_ID | apps_rg Runtime Evidence | Validator/Test |
+|---|---|---|
+| REQ-L5-SAFETY-ENFORCE-PLANE-001 | `L5CertificationPacket.certification_status` evidence-only; Exit consumes status as a blocker, not as a GateVerdict. | `ops_scripts/ci/check_apps_rg_l5_no_authority_widening.py`, `tests/governance/test_apps_rg_l5_authority_boundaries.py` |
+| REQ-L5-AUTHORITY-REGISTRY-BIND-001 | `authority_context_registry_binding` child receipt from `rg_l5_governance_profile.yaml`. | `tests/unit/apps_rg/test_l5_child_receipts.py` |
+| REQ-L5-ORIGIN-TRUST-BOUNDARY-001 | `origin_trust_content_boundary` child receipt from profile refs and run context. | `tests/unit/apps_rg/test_l5_child_receipts.py` |
+| REQ-L5-HITL-RECLEARANCE-001 | Disabled HITL emits justified `NOT_APPLICABLE`; human-modified payload requires valid `ReClearedHITLPacket`. | `tests/unit/apps_rg/test_l5_hitl_reclearance.py` |
+| REQ-L5-EGRESS-PROVIDER-GOV-001 | Metadata-only `EgressCertificationReceipt` with typed request/response/redaction/context fields. | `tests/unit/apps_rg/test_l5_egress_receipts.py`, `tests/evals/apps_rg/test_l5_lane_eval.py` |
+| REQ-L5-REPLAY-AUDIT-CERT-001 | Replay/audit child receipt includes deterministic replay/audit refs; L2 attempt seed uses replay key and prompt hash. | `tests/unit/apps_rg/test_l5_replay_audit_receipts.py` |
+| REQ-L5-GOV-CONTEXT-INVARIANT-001 | Packet context digest is distinct from child evidence digests and is validated on child/egress receipts. | `tests/governance/test_l5_cross_child_certification.py` |
+| REQ-L5-STATIC-GOV-DRIFT-001 | Static governance child receipt and direct durable-write scanner enforce structural boundaries. | `ops_scripts/ci/check_apps_rg_no_direct_durable_writes.py` |
+| REQ-L5-RUNTIME-CERT-BIND-001 | Governed L2 attaches packet ref/digest/status; Exit blocks missing/malformed/not-certified packet evidence. | `tests/_apps_contract/test_apps_rg_l5_runtime_wiring.py` |

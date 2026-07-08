@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""CI gate: apps_rg binding-layer L5 certification refs (GAP-009).
+"""CI gate: apps_rg L5 certification refs (GAP-009).
 
-Scans ``apps_rg/runtime/bindings/*.py`` for ``APPS_RG_*_CERT_REF`` assignments,
+Scans governed apps_rg runtime surfaces for ``APPS_RG_*_CERT_REF`` assignments,
 verifies each value is a non-empty string (``verify_certification_ref``), and
-that all discovered values are unique (no accidental copy-paste collisions).
+that all discovered values are unique.
 
-Advisory by default; fail-closed via ``APPS_RG_L5_CERT_REFS_FAIL_CLOSED=1``.
-Bypass: ``APPS_RG_L5_CERT_REFS_BYPASS=1``.
+Fail-closed in CI or via ``APPS_RG_L5_CERT_REFS_FAIL_CLOSED=1``.
+``APPS_RG_L5_CERT_REFS_BYPASS=1`` is forbidden in CI/fail-closed mode.
 """
 from __future__ import annotations
 
 import ast
+import argparse
 import os
 import re
 import sys
@@ -19,7 +20,11 @@ from pathlib import Path
 from agentic_core.L5_safety.contracts.verify import verify_certification_ref
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-BINDINGS = REPO_ROOT / "apps_rg" / "runtime" / "bindings"
+SCAN_ROOTS = (
+    REPO_ROOT / "apps_rg" / "runtime" / "bindings",
+    REPO_ROOT / "apps_rg" / "runtime" / "spine",
+    REPO_ROOT / "apps_rg" / "runtime" / "l5",
+)
 _NAME_RE = re.compile(r"^APPS_RG_[A-Z0-9_]+_CERT_REF$")
 
 
@@ -53,23 +58,42 @@ def _collect_refs(tree: ast.AST) -> list[tuple[str, str, int]]:
     return out
 
 
-def main() -> int:
+def _iter_python_files(roots: tuple[Path, ...]) -> list[Path]:
+    files: list[Path] = []
+    for root in roots:
+        if root.is_file() and root.suffix == ".py":
+            files.append(root)
+        elif root.is_dir():
+            files.extend(path for path in root.rglob("*.py") if path.is_file())
+    return sorted(set(files))
+
+
+def _ci_mode() -> bool:
+    return os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--extra-path", action="append", default=[])
+    args = parser.parse_args(argv)
+
+    fail_closed = os.getenv("APPS_RG_L5_CERT_REFS_FAIL_CLOSED") == "1" or _ci_mode()
+
     if os.getenv("APPS_RG_L5_CERT_REFS_BYPASS") == "1":
+        if fail_closed:
+            print("ERROR: APPS_RG_L5_CERT_REFS_BYPASS=1 is forbidden in CI/fail-closed mode")
+            return 1
         print("WARNING: APPS-RG-L5-CREFS bypassed via APPS_RG_L5_CERT_REFS_BYPASS=1")
         return 0
 
-    fail_closed = os.getenv("APPS_RG_L5_CERT_REFS_FAIL_CLOSED") == "1"
-
-    if not BINDINGS.is_dir():
-        msg = f"[APPS-RG-L5-CREFS] bindings directory missing: {BINDINGS}"
-        print(msg)
-        return 1 if fail_closed else 0
+    roots = SCAN_ROOTS + tuple((REPO_ROOT / p).resolve() for p in args.extra_path)
 
     errors: list[str] = []
     all_pairs: list[tuple[str, str, str, int]] = []  # file, name, value, line
 
-    for path in sorted(BINDINGS.glob("*.py")):
-        rel = path.relative_to(REPO_ROOT).as_posix()
+    files = _iter_python_files(roots)
+    for path in files:
+        rel = path.relative_to(REPO_ROOT).as_posix() if path.is_relative_to(REPO_ROOT) else str(path)
         try:
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=rel)
         except SyntaxError as exc:
@@ -91,25 +115,25 @@ def main() -> int:
                 errors.append(f"DUPLICATE_VALUE {rel}:{lineno} {name}={value!r}")
 
     if not all_pairs:
-        errors.append("NO_CERT_REFS_FOUND expected APPS_RG_*_CERT_REF in bindings")
+        errors.append("NO_CERT_REFS_FOUND expected APPS_RG_*_CERT_REF in governed runtime paths")
 
     print(
-        f"[APPS-RG-L5-CREFS] scanned bindings: {len(all_pairs)} ref(s), "
+        f"[APPS-RG-L5-CREFS] scanned {len(files)} file(s): {len(all_pairs)} ref(s), "
         f"{len(errors)} issue(s)"
     )
     if errors:
         for e in errors:
             print(f"  ERROR  {e}")
         if fail_closed:
-            print("[APPS-RG-L5-CREFS] fail-closed — exiting 1")
+            print("[APPS-RG-L5-CREFS] fail-closed - exiting 1")
             return 1
         print(
-            "[APPS-RG-L5-CREFS] advisory — exiting 0 "
+            "[APPS-RG-L5-CREFS] advisory - exiting 0 "
             "(set APPS_RG_L5_CERT_REFS_FAIL_CLOSED=1 to enforce)"
         )
         return 0
 
-    print("[APPS-RG-L5-CREFS] all apps_rg binding cert refs OK — gate GREEN")
+    print("[APPS-RG-L5-CREFS] all apps_rg L5 cert refs OK - gate GREEN")
     return 0
 
 

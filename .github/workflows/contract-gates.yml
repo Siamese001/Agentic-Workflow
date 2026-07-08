@@ -262,6 +262,15 @@ jobs:
           python ops_scripts/ci/verify_runtime_certification_matrix_schema.py
           python ops_scripts/ci/verify_runtime_certification_acceptance.py
           python ops_scripts/ci/verify_source_divergence.py
+      - name: apps_rg L5 fail-closed governance gates
+        env:
+          APPS_RG_L5_CERT_REFS_FAIL_CLOSED: "1"
+          APPS_RG_L5_CERT_REFS_BYPASS: "0"
+        run: |
+          python ops_scripts/ci/check_apps_rg_l5_cert_refs.py
+          python ops_scripts/ci/check_apps_rg_l5_no_authority_widening.py
+          python ops_scripts/ci/check_apps_rg_l5_packet_runtime_wiring.py
+          python ops_scripts/ci/check_apps_rg_no_direct_durable_writes.py
 
   uwg-block:
     name: uwg-block

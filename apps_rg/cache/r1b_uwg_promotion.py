@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import os
-import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -48,6 +47,10 @@ class R1BCachePromotionCandidate:
     cleared_exit_review_packet_ref: str
     x3_disposition_ref: str
     proof_eligibility_ref: str
+    l5_certification_packet_digest: str = ""
+    l5_certification_packet_ref: str = ""
+    l5_certification_status: str = ""
+    l5_not_certified_blocked_reason: str = ""
     replay_refs: tuple[str, ...] = field(default_factory=tuple)
     audit_refs: tuple[str, ...] = field(default_factory=tuple)
 
@@ -108,6 +111,12 @@ def build_r1b_promotion_candidate(
     cleared_exit = f"exit_packet:{source_run_id}"
     if run_path and (run_path / "x3_disposition.json").is_file():
         cleared_exit = f"exit_packet_digest:{_digest_file(run_path / 'x3_disposition.json')}"
+    l5_blocked_reason = str(
+        exit_meta.get("l5_not_certified_blocked_reason")
+        or exit_meta.get("l5_blocking_reason")
+        or exit_meta.get("blocking_reason")
+        or ""
+    ).strip()
     return R1BCachePromotionCandidate(
         record=record,
         chunks=chunks,
@@ -121,6 +130,14 @@ def build_r1b_promotion_candidate(
         cleared_exit_review_packet_ref=cleared_exit,
         x3_disposition_ref=x3_ref,
         proof_eligibility_ref=proof_ref,
+        l5_certification_packet_digest=str(
+            exit_meta.get("l5_certification_packet_digest") or ""
+        ).strip(),
+        l5_certification_packet_ref=str(
+            exit_meta.get("l5_certification_packet_ref") or ""
+        ).strip(),
+        l5_certification_status=str(exit_meta.get("l5_certification_status") or "").strip(),
+        l5_not_certified_blocked_reason=l5_blocked_reason,
         replay_refs=(str(record.record_id), source_run_id),
         audit_refs=(x3_ref, proof_ref),
     )
@@ -215,6 +232,37 @@ def build_r1b_commit_bundle(
     return cr, [sd], rollback, refresh
 
 
+def governance_receipt_with_l5_packet(
+    governance_receipt: dict[str, Any] | None,
+    candidate: R1BCachePromotionCandidate,
+) -> dict[str, Any]:
+    """Attach L5 packet evidence to the apps_rg UWG governance sidecar."""
+
+    receipt = dict(governance_receipt or {})
+    digest = str(candidate.l5_certification_packet_digest or "").strip()
+    if digest:
+        receipt["l5_certification_packet_digest"] = digest
+        receipt["l5_certification_packet_ref"] = str(
+            candidate.l5_certification_packet_ref or ""
+        )
+        receipt["l5_certification_status"] = str(
+            candidate.l5_certification_status or "L5_CERTIFIED"
+        )
+        receipt.pop("l5_not_certified_blocked_reason", None)
+        return receipt
+
+    reason = str(candidate.l5_not_certified_blocked_reason or "").strip()
+    if not reason:
+        reason = "L5_NOT_CERTIFIED:packet_digest_missing_or_not_certified"
+    if "L5_NOT_CERTIFIED" not in reason:
+        reason = f"L5_NOT_CERTIFIED:{reason}"
+    receipt["l5_not_certified_blocked_reason"] = reason
+    receipt["l5_certification_status"] = str(
+        candidate.l5_certification_status or "L5_NOT_CERTIFIED"
+    )
+    return receipt
+
+
 def promote_r1b_cache_via_uwg(
     candidate: R1BCachePromotionCandidate,
     *,
@@ -251,6 +299,7 @@ def promote_r1b_cache_via_uwg(
             commit_request=cr,
             state_diffs=state_diffs,
         )
+        governance_receipt = governance_receipt_with_l5_packet(bundle.to_dict(), candidate)
         return R1BPromotionOutcome(
             status="BLOCKED",
             record_id=candidate.record.record_id,
@@ -258,7 +307,7 @@ def promote_r1b_cache_via_uwg(
             commit_request_id=cr.commit_request_id,
             blocked_reason_codes=gov_check.reason_codes,
             missing_contract_fields=gov_check.missing_fields,
-            governance_receipt=bundle.to_dict(),
+            governance_receipt=governance_receipt,
         )
     try:
         commit_receipt, blocked_receipt, _refresh = gw.commit(
@@ -284,13 +333,17 @@ def promote_r1b_cache_via_uwg(
             state_diffs=state_diffs,
             commit_receipt=commit_receipt,
         )
+        governance_receipt = governance_receipt_with_l5_packet(
+            gov_bundle.to_dict(),
+            candidate,
+        )
         return R1BPromotionOutcome(
             status="ADMITTED",
             record_id=candidate.record.record_id,
             durable_write_path="UWG→L4",
             commit_request_id=cr.commit_request_id,
             uwg_commit_receipt_id=commit_receipt.commit_receipt_id,
-            governance_receipt=gov_bundle.to_dict(),
+            governance_receipt=governance_receipt,
         )
     blocked_codes: tuple[str, ...] = ()
     blocked_id = ""
@@ -307,6 +360,7 @@ def promote_r1b_cache_via_uwg(
         state_diffs=state_diffs,
         blocked_receipt=blocked_receipt,
     )
+    governance_receipt = governance_receipt_with_l5_packet(gov_bundle.to_dict(), candidate)
     return R1BPromotionOutcome(
         status="BLOCKED",
         record_id=candidate.record.record_id,
@@ -315,7 +369,7 @@ def promote_r1b_cache_via_uwg(
         blocked_commit_receipt_id=blocked_id,
         blocked_reason_codes=blocked_codes,
         missing_contract_fields=tuple(missing),
-        governance_receipt=gov_bundle.to_dict(),
+        governance_receipt=governance_receipt,
     )
 
 
@@ -538,6 +592,7 @@ __all__ = [
     "build_r1b_commit_bundle",
     "build_r1b_promotion_candidate",
     "default_r1b_promotion_gateway",
+    "governance_receipt_with_l5_packet",
     "promote_and_project_r1b_cache",
     "promote_r1b_cache_via_uwg",
     "write_blocked_promotion_receipt",

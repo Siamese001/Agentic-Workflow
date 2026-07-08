@@ -18,6 +18,8 @@ class SectionCacheWriteProposal:
     content_digest: str
     metadata_ref: str
     proposal_status: str = "PENDING_UWG"
+    l5_certification_packet_digest: str = ""
+    l5_certification_packet_ref: str = ""
 
 
 __all__ = ["SectionCacheWriteProposal"]

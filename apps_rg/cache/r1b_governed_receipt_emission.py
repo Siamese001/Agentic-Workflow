@@ -21,6 +21,7 @@ from apps_rg.cache.r1b_uwg_promotion import (
     R1BPromotionOutcome,
     build_r1b_commit_bundle,
     build_r1b_promotion_candidate,
+    governance_receipt_with_l5_packet,
 )
 
 SCHEMA_GOVERNED_CHAIN = "r1b_governed_receipt_chain_v1"
@@ -195,6 +196,16 @@ def _write_l4_namespace_ref(
         "uwg_commit_receipt_id": outcome.uwg_commit_receipt_id or None,
         "blocked_commit_receipt_id": outcome.blocked_commit_receipt_id or None,
     }
+    if outcome.governance_receipt:
+        l4_payload["governance_receipt"] = outcome.governance_receipt
+        if outcome.governance_receipt.get("l5_certification_packet_digest"):
+            l4_payload["l5_certification_packet_digest"] = outcome.governance_receipt[
+                "l5_certification_packet_digest"
+            ]
+        elif outcome.governance_receipt.get("l5_not_certified_blocked_reason"):
+            l4_payload["l5_not_certified_blocked_reason"] = outcome.governance_receipt[
+                "l5_not_certified_blocked_reason"
+            ]
     if candidate is not None:
         from apps_rg.cache.r1b_bge_embedding import intent_vector_payload
 
@@ -359,6 +370,16 @@ def _materialize_uwg_receipts(
 
     gov_check = validate_commit_request_governance(cr)
     if not gov_check.valid:
+        from apps_rg.cache.r1b_uwg_receipt_contract import build_governance_receipt_bundle
+
+        gov_bundle = build_governance_receipt_bundle(
+            commit_request=cr,
+            state_diffs=state_diffs,
+        )
+        governance_receipt = governance_receipt_with_l5_packet(
+            gov_bundle.to_dict(),
+            candidate,
+        )
         outcome = R1BPromotionOutcome(
             status="BLOCKED",
             record_id=candidate.record.record_id,
@@ -366,6 +387,7 @@ def _materialize_uwg_receipts(
             commit_request_id=cr.commit_request_id,
             blocked_reason_codes=gov_check.reason_codes,
             missing_contract_fields=gov_check.missing_fields,
+            governance_receipt=governance_receipt,
         )
         chain.promotion_outcome = outcome
         chain.uwg_commit_or_block_status = "BLOCKED"
@@ -377,6 +399,7 @@ def _materialize_uwg_receipts(
                 "blocked_reason_codes": list(gov_check.reason_codes),
                 "validation_status": val_status,
                 "governance_pre_uwg": True,
+                "governance_receipt": governance_receipt,
             },
             artifact_name=BLOCKED_WRITE_RECEIPT_ARTIFACT,
             section_id=section_id,
@@ -399,6 +422,16 @@ def _materialize_uwg_receipts(
     except ValueError as exc:
         msg = str(exc)
         missing = ("UWGCommitReceipt.l5_certification_ref",) if "l5_certification_ref" in msg else (msg,)
+        from apps_rg.cache.r1b_uwg_receipt_contract import build_governance_receipt_bundle
+
+        gov_bundle = build_governance_receipt_bundle(
+            commit_request=cr,
+            state_diffs=state_diffs,
+        )
+        governance_receipt = governance_receipt_with_l5_packet(
+            gov_bundle.to_dict(),
+            candidate,
+        )
         outcome = R1BPromotionOutcome(
             status="BLOCKED",
             record_id=candidate.record.record_id,
@@ -406,6 +439,7 @@ def _materialize_uwg_receipts(
             commit_request_id=cr.commit_request_id,
             blocked_reason_codes=(msg,),
             missing_contract_fields=missing,
+            governance_receipt=governance_receipt,
         )
         chain.promotion_outcome = outcome
         chain.uwg_commit_or_block_status = "BLOCKED"
@@ -415,6 +449,7 @@ def _materialize_uwg_receipts(
                 "commit_request_ref": cr.commit_request_id,
                 "blocked_reason_codes": [msg],
                 "validation_status": val_status,
+                "governance_receipt": governance_receipt,
             },
             artifact_name=BLOCKED_WRITE_RECEIPT_ARTIFACT,
             section_id=section_id,
@@ -435,13 +470,17 @@ def _materialize_uwg_receipts(
             state_diffs=state_diffs,
             commit_receipt=commit_receipt,
         )
+        governance_receipt = governance_receipt_with_l5_packet(
+            gov_bundle.to_dict(),
+            candidate,
+        )
         outcome = R1BPromotionOutcome(
             status="ADMITTED",
             record_id=candidate.record.record_id,
             durable_write_path="UWG→L4",
             commit_request_id=cr.commit_request_id,
             uwg_commit_receipt_id=commit_receipt.commit_receipt_id,
-            governance_receipt=gov_bundle.to_dict(),
+            governance_receipt=governance_receipt,
         )
         chain.promotion_outcome = outcome
         chain.uwg_commit_or_block_status = "ADMITTED"
@@ -502,6 +541,10 @@ def _materialize_uwg_receipts(
             state_diffs=state_diffs,
             blocked_receipt=blocked_receipt,
         )
+        governance_receipt = governance_receipt_with_l5_packet(
+            gov_bundle.to_dict(),
+            candidate,
+        )
         outcome = R1BPromotionOutcome(
             status="BLOCKED",
             record_id=candidate.record.record_id,
@@ -510,7 +553,7 @@ def _materialize_uwg_receipts(
             blocked_commit_receipt_id=blocked_id,
             blocked_reason_codes=blocked_codes,
             missing_contract_fields=tuple(missing),
-            governance_receipt=gov_bundle.to_dict(),
+            governance_receipt=governance_receipt,
         )
         chain.promotion_outcome = outcome
         chain.uwg_commit_or_block_status = "BLOCKED"

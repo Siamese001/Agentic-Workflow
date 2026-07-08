@@ -255,25 +255,20 @@ class MetadataOnlyEgressCertifier:
 
         certified = egress_status == "EGRESS_CERTIFIED"
 
-        prompt_artifact_ref = call_purpose_ref if call_purpose_ref else ""
-
         notes_parts = []
         if notes:
             notes_parts.append(notes)
-        if redaction_receipt_ref:
-            notes_parts.append(f"redaction_receipt_ref={redaction_receipt_ref}")
-        if l5_governance_context_digest:
-            notes_parts.append(
-                f"l5_governance_context_digest={l5_governance_context_digest}"
-            )
-        if request_digest:
-            notes_parts.append(f"request_digest={request_digest}")
 
         return EgressCertificationReceipt(
             provider_ref=provider_ref,
             response_digest=response_digest,
             redaction_policy_ref=redaction_policy_ref,
-            prompt_artifact_ref=prompt_artifact_ref,
+            request_digest=request_digest,
+            call_purpose_ref=call_purpose_ref,
+            redaction_receipt_ref=redaction_receipt_ref,
+            l5_governance_context_digest=l5_governance_context_digest,
+            egress_status=egress_status,
+            prompt_artifact_ref=call_purpose_ref if call_purpose_ref else "",
             egress_policy_ref=egress_policy_ref,
             schema_version=schema_version,
             certified=certified,

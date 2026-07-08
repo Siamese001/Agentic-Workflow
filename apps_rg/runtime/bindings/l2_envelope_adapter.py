@@ -221,11 +221,13 @@ def _build_determinism_bundle(
     rk = str(getattr(prompt_artifact, "replay_key", "") or "")
     sig = str(getattr(prompt_artifact, "signature", "") or "")
     policy_hash = pol if pol else sig
-    seed_material = "|".join([rk, str(int(attempt_number)), comp, route_id, node_id])
+    prompt_hash = comp or _prompt_packet_hash(prompt_artifact)
+    lane_id = f"{route_id}:{node_id}"
+    seed_material = "|".join([rk, prompt_hash, str(int(attempt_number)), lane_id])
     return DeterminismBundle(
         blueprint_hash=comp,
         policy_hash=policy_hash,
-        prompt_hash=comp,
+        prompt_hash=prompt_hash,
         input_hash=_identity_seed(prompt_artifact),
         replay_key=rk,
         attempt_seed=hashlib.sha256(seed_material.encode("utf-8")).hexdigest(),
@@ -832,6 +834,23 @@ def _execute_approved_work_order(
         "provider_temperature": temp_val,
         "provider_top_p": top_p_val,
     }
+    from apps_rg.runtime.l5.egress_receipts import (
+        receipt_digest as _l5_egress_digest,
+        receipt_from_provider_exchange as _l5_egress_from_exchange,
+        receipt_ref as _l5_egress_ref,
+    )
+
+    egress_receipt = _l5_egress_from_exchange(
+        provider_profile=profile,
+        provider_request=req,
+        provider_response=resp,
+        latency_ms=latency,
+        call_purpose_ref=str(getattr(cpa, "compilation_hash", "") or ""),
+        egress_policy_ref=str(getattr(cpa, "egress_policy_ref", "") or ""),
+    )
+    local_check["l5_egress_receipts"] = [asdict(egress_receipt)]
+    local_check["l5_egress_receipt_refs"] = [_l5_egress_ref(egress_receipt)]
+    local_check["l5_egress_receipt_digests"] = [_l5_egress_digest(egress_receipt)]
     tm = str(getattr(cpa, "target_model", "") or "").strip()
     if tm:
         local_check["model_id"] = tm
@@ -1305,6 +1324,26 @@ def _seal_l2_artifact(
     if isinstance(lcr, dict):
         prov_lane = str(lcr.get("provider_lane", "") or "")
         model_ref = str(lcr.get("model_or_tool_name", "") or "")
+    l5_egress_receipts: tuple[Any, ...] = ()
+    l5_egress_receipt_refs: tuple[str, ...] = ()
+    l5_egress_receipt_digests: tuple[str, ...] = ()
+    if isinstance(lcr, dict):
+        from agentic_core.L5_safety.contracts.l5_certification_contracts import (
+            EgressCertificationReceipt,
+        )
+
+        raw_receipts = tuple(lcr.get("l5_egress_receipts") or ())
+        parsed_receipts: list[EgressCertificationReceipt] = []
+        for raw in raw_receipts:
+            if isinstance(raw, dict):
+                parsed_receipts.append(EgressCertificationReceipt(**raw))
+        l5_egress_receipts = tuple(parsed_receipts)
+        l5_egress_receipt_refs = tuple(
+            str(v) for v in (lcr.get("l5_egress_receipt_refs") or ())
+        )
+        l5_egress_receipt_digests = tuple(
+            str(v) for v in (lcr.get("l5_egress_receipt_digests") or ())
+        )
     provider_receipts: tuple[str, ...] = ()
     model_call_refs: tuple[str, ...] = ()
     if prov_lane:
@@ -1370,6 +1409,9 @@ def _seal_l2_artifact(
         snapshot_refs=tuple(getattr(cpa, "snapshot_refs", ()) or ()),
         is_uwg_write_authority=False,
         l5_certification_ref=str(getattr(cpa, "l5_certification_ref", "") or ""),
+        l5_egress_receipts=l5_egress_receipts,
+        l5_egress_receipt_refs=l5_egress_receipt_refs,
+        l5_egress_receipt_digests=l5_egress_receipt_digests,
         evidence_refs=ev_refs,
         prompt_refs=pr_refs,
         provider_receipts=provider_receipts,
