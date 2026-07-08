@@ -769,6 +769,9 @@ def run_whole_run_with_route_governance(
     if is_integrated_whole_run_artifact_dir(art):
         try:
             from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
+            from apps_rg.runtime.section_failure_forensics import (
+                E2E_SECTION_FORENSICS_GATE_ID,
+            )
 
             mandatory_emit = emit_mandatory_run_outputs(
                 art,
@@ -783,8 +786,33 @@ def run_whole_run_with_route_governance(
                 "bcg_executive_output_md": str(mandatory_emit["bcg_markdown_path"]),
             }
             payload.update(mandatory_outputs)
+            emitted_payload = (
+                mandatory_emit.get("payload") if isinstance(mandatory_emit, dict) else {}
+            )
+            forensics_gate = (
+                emitted_payload.get("section_failure_forensics")
+                if isinstance(emitted_payload, dict)
+                and isinstance(emitted_payload.get("section_failure_forensics"), dict)
+                else {}
+            )
+            if forensics_gate.get("required") and not bool(forensics_gate.get("pass")):
+                payload["exit_status"] = "error"
+                payload["execution_status"] = "failed"
+                payload["outcome_authorized"] = False
+                payload["fault"] = E2E_SECTION_FORENSICS_GATE_ID
+                payload["x3_disposition"] = "X3_BLOCK"
+                payload["section_failure_forensics_gate"] = forensics_gate
         except OSError:
             mandatory_outputs = {}
+            from apps_rg.runtime.section_failure_forensics import (
+                E2E_SECTION_FORENSICS_GATE_ID,
+            )
+
+            payload["exit_status"] = "error"
+            payload["execution_status"] = "failed"
+            payload["outcome_authorized"] = False
+            payload["fault"] = E2E_SECTION_FORENSICS_GATE_ID
+            payload["x3_disposition"] = "X3_BLOCK"
     review_zip = None
     if is_integrated_whole_run_artifact_dir(art):
         try:

@@ -18,6 +18,7 @@ from apps_rg.runtime.targeting_context_authority import (
     evaluate_targeting_parity,
     sha256_hex64,
 )
+from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
 
 MANIFEST_SCHEMA = "generation_grade_contract_manifest_v1"
 MANIFEST_SCHEMA_PATH = (
@@ -49,7 +50,7 @@ def generation_law_digest_text() -> str:
         "- Credential policy: omit AWS/Databricks/vendor cert inventories; at most one FSA rigor mention "
         "(C0.3 phase-1) when woven into quantitative narrative — not equivalent to AWS Associate labels.\n"
         "- SVP ATS: translate JD themes into executive concepts via allowed facts; document gap_notes when proof IDs absent.\n"
-        "- Exactly 6 sentences, one paragraph, max 140 words; S6 forward synthesis grounded in source_fact_ids, not thin recap.\n"
+        f"- Exactly 6 sentences, one paragraph, max {EXEC_SUMMARY_MAX_WORDS} words; S6 forward synthesis grounded in source_fact_ids, not thin recap.\n"
         "- S1 thesis-body promise: only name capability threads (e.g. 'commercialization', 'innovation delivery') "
         "that at least one of S2–S6 substantiates via source_fact_ids; a thesis thread with no body delivery is a "
         "thesis-body gap that Claude-class judges penalise severely — resolve the gap before writing S1.\n"

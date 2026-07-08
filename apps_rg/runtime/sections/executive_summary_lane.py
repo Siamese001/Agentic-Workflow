@@ -62,7 +62,11 @@ from apps_rg.runtime.sections.section_generation import (
     generate_section,
     tag_reasoning_lane,
 )
-from apps_rg.runtime.validators.executive_summary_x2 import build_sentence_claim_coverage, run_x2_gates
+from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
+    build_sentence_claim_coverage,
+    run_x2_gates,
+)
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
     build_executive_summary_judge_packet,
     write_executive_summary_judge_packet,
@@ -953,7 +957,7 @@ def _build_synthesis_repair_user(
     length_note = ""
     if "exceeds maximum" in blob:
         length_note = (
-            "LENGTH: trim to one executive paragraph (exactly 6 sentences, max 140 words) without dropping supported proof; "
+            f"LENGTH: trim to one executive paragraph (exactly 6 sentences, max {EXEC_SUMMARY_MAX_WORDS} words) without dropping supported proof; "
             "do not remove claim_ledger rows. "
         )
     else:
@@ -1060,7 +1064,7 @@ def _build_synthesis_repair_user(
         f"SYNTHESIS REJECTED: {reject_reason}. {attempt_note}{sentence_count_note}{length_note}{utilization_note}"
         f"{mechanism_note}{meta_note}{jd_copy_note}{filler_note}{conflation_note}{stock_bridge_note}{s5_note}{svp_note}"
         "Return a NEW complete JSON object (RAW JSON only; first char {, last char }). "
-        "Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max 140 words), "
+        f"Rewrite resume_display_text as exactly 6 period-delimited sentences (one executive paragraph, max {EXEC_SUMMARY_MAX_WORDS} words), "
         "fit_to_evidence integrated narrative — not 4 compressed sentences; do not pad with filler. "
         "Sentence 1 must be grammatically complete; vary openers (avoid six Led/Built/Delivered chains). "
         "No certification labels in display text. "
@@ -3810,7 +3814,7 @@ def run_executive_summary_execution(
         x3.to_dict() if hasattr(x3, "to_dict") else dict(x3),
         _pub_disp,
     )
-    persist_section_x3_mirror(artifact_dir, x3_doc)
+    x3_doc = persist_section_x3_mirror(artifact_dir, x3_doc)
     x3 = x3_doc
     write_json(
         artifact_dir / "fact_check_result.json",

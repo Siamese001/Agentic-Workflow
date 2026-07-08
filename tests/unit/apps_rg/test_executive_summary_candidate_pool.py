@@ -29,7 +29,14 @@ def _model_judge(pk: str, score: float, *, major_fails: int = 0) -> dict[str, An
     return {
         "provider_key": pk,
         "evaluator_mode": "MODEL_BACKED",
+        "provider_status": (
+            "MODEL_BACKED_PASS" if score >= 4.0 and major_fails == 0 else "MODEL_BACKED_FAIL"
+        ),
+        "pass": score >= 4.0 and major_fails == 0,
         "score": score,
+        "normalized_score": score,
+        "normalized_threshold": 4.0,
+        "decisive_failure": major_fails > 0,
         "dimension_verdicts": dims,
     }
 
@@ -39,6 +46,7 @@ def _minimal_snapshot(
     *,
     resume: str = "Line one. Line two. Line three. Line four. Line five. Line six.",
     publish_eligible: bool = True,
+    x2_pass: bool = True,
 ) -> Any:
     parsed = {
         "resume_display_text": resume,
@@ -50,7 +58,7 @@ def _minimal_snapshot(
             },
         ],
     }
-    x2 = [{"gate_id": "x2_test", "pass": True}]
+    x2 = [{"gate_id": "x2_test", "pass": x2_pass}]
     x1d = [_model_judge("claude", 4.0), _model_judge("openai", 4.0)]
     return freeze_candidate_snapshot(
         candidate_id=candidate_id,
@@ -120,6 +128,52 @@ def test_pool_only_scratch_when_regen_not_eligible() -> None:
     pool.add(_minimal_snapshot("scratch", publish_eligible=True))
     pool.add(_minimal_snapshot("regen_cycle_1", publish_eligible=False))
     assert [s.candidate_id for s in pool.publish_eligible()] == ["scratch"]
+
+
+def test_pool_publish_eligible_requires_final_x2_pass() -> None:
+    pool = CandidatePool()
+    pool.add(_minimal_snapshot("scratch", publish_eligible=True, x2_pass=True))
+    pool.add(_minimal_snapshot("regen_cycle_1", publish_eligible=True, x2_pass=False))
+
+    assert [s.candidate_id for s in pool.publish_eligible()] == ["scratch"]
+
+
+def test_finalize_publish_excludes_uncertified_full_panel(tmp_path: Any) -> None:
+    pool = CandidatePool()
+    pool.add(_minimal_snapshot("regen_cycle_1", publish_eligible=True, x2_pass=True))
+
+    def _rescore(_snap: Any) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+        return (
+            [_model_judge("claude", 3.6), _model_judge("openai", 4.2)],
+            {"rescore_mode": "full_panel"},
+        )
+
+    result = finalize_pool_publish(
+        pool,
+        artifact_dir=tmp_path,
+        write_json_fn=lambda p, d: p.write_text(__import__("json").dumps(d), encoding="utf-8"),
+        rescore_full_panel=_rescore,
+        enrich_parsed_for_x2_fn=lambda parsed, **_: dict(parsed),
+        build_coverage_fn=lambda _t, _l, _a: {"rows": []},
+        allowed_fact_ids={"f1"},
+        input_payload_hash="h",
+        runtime_payload={},
+        write_x2_fn=lambda _p, _g: None,
+        write_x1d_fn=lambda _d, _j: None,
+        l2_output={},
+        scratch_anchor_resume="",
+    )
+
+    assert result.selected is None
+    summary = __import__("json").loads(
+        (tmp_path / "candidate_pool_summary.json").read_text(encoding="utf-8")
+    )
+    assert summary["publish_selected_snapshot_id"] is None
+    assert summary["x2_publish_eligible"] is False
+    assert (
+        summary["full_panel_rescore"][0]["publish_excluded_reason"]
+        == "full_panel_judges_not_certified"
+    )
 
 
 def test_w3_brown_070105_rank_publishes_scratch_not_regressed_regen() -> None:

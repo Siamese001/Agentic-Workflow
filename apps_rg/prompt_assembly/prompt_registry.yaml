@@ -271,7 +271,7 @@ templates:
     template_id: executive_summary.generate_scratch_v1
     description: >
       Executive summary section PA SSOT — canonical ``python -m apps_rg --section executive_summary``.
-      North-star synthesis (exactly six sentences, one executive paragraph, max 140 words); claim_ledger proof; no selected_fact_plan model echo.
+      North-star synthesis (exactly six sentences, one executive paragraph, max 150 words); claim_ledger proof; no selected_fact_plan model echo.
     path: templates/executive_summary.generate_scratch_v1.yaml
     version: "1.0"
     allowed_stage: L2_EXEC

@@ -12,6 +12,7 @@ from apps_rg.runtime.sections.executive_summary_generation_grade_contract import
     generation_law_digest_text,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     check_claim_ledger_orphan_source_ids,
     check_exec_summary_evidence_utilization,
     check_exec_summary_mechanical_opener_stack,
@@ -55,8 +56,8 @@ Mandatory rules:
 - Return ONLY the required structured judge JSON schema (no markdown fences, no prose).
 """.strip()
 
-SRFS_GRADE_ONLY_RUBRIC = """
-Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentences**, one paragraph, max 140 words):
+SRFS_GRADE_ONLY_RUBRIC = f"""
+Rubric dimensions (SRFS executive summary — product shape **exactly 6 sentences**, one paragraph, max {EXEC_SUMMARY_MAX_WORDS} words):
 1. factual_support: claims supported by allowed_fact_packet and candidate claim_ledger source_fact_ids.
 2. executive_signal: SVP-level platform/governance/partner-motion synthesis, not bullet stacks.
 3. resume_voice: credible third-person executive prose; penalize recruiter filler, "this individual", "Additionally/Furthermore" chains, generic AI-company prose, and anything that would fail a Head of Talent Acquisition screen.
@@ -314,7 +315,7 @@ def build_deterministic_gate_summary(
     claim_ledger: list[dict[str, Any]],
     allowed_fact_ids: set[str],
 ) -> dict[str, Any]:
-    """Pre-judge X2 gate snapshot aligned with live product-shape gates (exactly six sentences, max 140 words)."""
+    """Pre-judge X2 gate snapshot aligned with live product-shape gates."""
     sent_ok, sent_reason = check_exec_summary_sentence_count_6(resume_display_text)
     cred_ok, cred_reason = check_exec_summary_no_credential_dump(resume_display_text)
     mechanism_ok, mechanism_reason = check_exec_summary_no_mechanism_inventory(resume_display_text)

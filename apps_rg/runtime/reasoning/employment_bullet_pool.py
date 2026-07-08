@@ -71,6 +71,10 @@ FINAL_BULLET_COUNT: Final[dict[str, int]] = {
     "ey_bullets": 3,
 }
 
+PROOF_UNIQUE_SOURCE_FACT_LANES: Final[frozenset[str]] = frozenset(
+    {"insurtech_bullets", "ey_bullets"}
+)
+
 REQUIRED_BULLET_IDS: Final[dict[str, tuple[str, ...]]] = {
     "unify_bullets": UNIFY_BULLET_IDS,
     "ibm_bullets": IBM_BULLET_IDS,
@@ -91,6 +95,10 @@ class EmploymentSelectionGate:
     slots_below_threshold: tuple[str, ...]
     slots_missing: tuple[str, ...]
     bullets_in_merged: int
+    unique_source_fact_ids: tuple[str, ...] = ()
+    duplicate_source_fact_ids: tuple[str, ...] = ()
+    slots_missing_source_fact_ids: tuple[str, ...] = ()
+    proof_unique_source_fact_gate_active: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -102,6 +110,11 @@ class EmploymentSelectionGate:
             "slots_below_threshold": list(self.slots_below_threshold),
             "slots_missing": list(self.slots_missing),
             "bullets_in_merged": self.bullets_in_merged,
+            "unique_source_fact_ids": list(self.unique_source_fact_ids),
+            "unique_source_fact_count": len(self.unique_source_fact_ids),
+            "duplicate_source_fact_ids": list(self.duplicate_source_fact_ids),
+            "slots_missing_source_fact_ids": list(self.slots_missing_source_fact_ids),
+            "proof_unique_source_fact_gate_active": self.proof_unique_source_fact_gate_active,
         }
 
 
@@ -229,6 +242,27 @@ def _selection_row_passes(row: dict[str, Any]) -> bool:
     return str(val).strip().lower() in ("true", "1", "yes")
 
 
+def _root_source_fact_id(value: Any) -> str:
+    return str(value or "").strip().split("_metric_")[0]
+
+
+def _bullet_source_fact_ids_by_slot(bullets: list[Any]) -> dict[str, list[str]]:
+    out: dict[str, list[str]] = {}
+    for row in bullets:
+        if not isinstance(row, dict):
+            continue
+        bid = str(row.get("bullet_id") or "").strip()
+        if not bid:
+            continue
+        ids: list[str] = []
+        for raw in row.get("source_fact_ids") or []:
+            fid = _root_source_fact_id(raw)
+            if fid and fid not in ids:
+                ids.append(fid)
+        out[bid] = ids
+    return out
+
+
 def evaluate_employment_selection_quality(
     *,
     section_lane: str,
@@ -243,6 +277,7 @@ def evaluate_employment_selection_quality(
     n_final = FINAL_BULLET_COUNT.get(lane, len(required_bullet_ids))
     bullets = merged_parsed.get("bullets") or []
     bullets_n = len(bullets) if isinstance(bullets, list) else 0
+    source_ids_by_slot = _bullet_source_fact_ids_by_slot(bullets if isinstance(bullets, list) else [])
 
     by_bullet: dict[str, dict[str, Any]] = {}
     for row in selections:
@@ -255,6 +290,7 @@ def evaluate_employment_selection_quality(
     passing: list[str] = []
     below: list[str] = []
     missing: list[str] = []
+    slots_missing_source_fact_ids: list[str] = []
 
     for bid in required_bullet_ids:
         sel = by_bullet.get(bid)
@@ -269,14 +305,36 @@ def evaluate_employment_selection_quality(
             below.append(bid)
         elif bullet_present:
             passing.append(bid)
+            if lane in PROOF_UNIQUE_SOURCE_FACT_LANES and not source_ids_by_slot.get(bid):
+                slots_missing_source_fact_ids.append(bid)
         else:
             missing.append(bid)
+
+    unique_source_fact_ids: list[str] = []
+    duplicate_source_fact_ids: list[str] = []
+    if lane in PROOF_UNIQUE_SOURCE_FACT_LANES:
+        for bid in required_bullet_ids:
+            for fid in source_ids_by_slot.get(bid, []):
+                if fid in unique_source_fact_ids:
+                    if fid not in duplicate_source_fact_ids:
+                        duplicate_source_fact_ids.append(fid)
+                    continue
+                unique_source_fact_ids.append(fid)
+
+    proof_unique_ok = True
+    if lane in PROOF_UNIQUE_SOURCE_FACT_LANES:
+        proof_unique_ok = (
+            len(unique_source_fact_ids) >= n_final
+            and not duplicate_source_fact_ids
+            and not slots_missing_source_fact_ids
+        )
 
     ok = (
         len(passing) == n_final
         and bullets_n == n_final
         and not below
         and not missing
+        and proof_unique_ok
     )
     return EmploymentSelectionGate(
         ok=ok,
@@ -287,6 +345,10 @@ def evaluate_employment_selection_quality(
         slots_below_threshold=tuple(below),
         slots_missing=tuple(missing),
         bullets_in_merged=bullets_n,
+        unique_source_fact_ids=tuple(unique_source_fact_ids),
+        duplicate_source_fact_ids=tuple(duplicate_source_fact_ids),
+        slots_missing_source_fact_ids=tuple(slots_missing_source_fact_ids),
+        proof_unique_source_fact_gate_active=lane in PROOF_UNIQUE_SOURCE_FACT_LANES,
     )
 
 

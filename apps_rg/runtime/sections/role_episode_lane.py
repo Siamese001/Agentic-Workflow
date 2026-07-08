@@ -87,6 +87,7 @@ ROLE_EPISODE_MAX_OUTPUT_TOKENS_BY_SECTION: dict[str, int] = {
 }
 ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION = "deterministic_graph_bullet_render.v1"
 ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION = "proof_authorized_fact_claim_render.v1"
+ROLE_EPISODE_FINAL_BULLET_COUNT = 3
 
 
 @dataclass(frozen=True)
@@ -583,38 +584,114 @@ def _ordered_ids_from_bullets(
     facts: list[dict[str, Any]],
     allowed: list[str],
 ) -> list[str]:
+    selected, _contract = _ordered_ids_from_bullets_with_contract(
+        bullets,
+        facts=facts,
+        allowed=allowed,
+        expected_count=ROLE_EPISODE_FINAL_BULLET_COUNT,
+        allow_deterministic_reselect=False,
+    )
+    return selected
+
+
+def _ordered_ids_from_bullets_with_contract(
+    bullets: list[dict[str, Any]],
+    *,
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+    expected_count: int,
+    allow_deterministic_reselect: bool,
+) -> tuple[list[str], dict[str, Any]]:
     proof_by_id = _proof_fact_by_id(facts, allowed)
     seen: set[str] = set()
     out: list[str] = []
+    duplicate_source_fact_ids: list[str] = []
+    rejected_source_fact_ids: list[str] = []
     for bullet in bullets:
         if not isinstance(bullet, dict):
             continue
         for raw in bullet.get("source_fact_ids") or []:
             fid = str(raw or "").strip()
+            if not fid:
+                continue
+            if fid not in proof_by_id:
+                if fid not in rejected_source_fact_ids:
+                    rejected_source_fact_ids.append(fid)
+                continue
+            if fid in seen:
+                if fid not in duplicate_source_fact_ids:
+                    duplicate_source_fact_ids.append(fid)
+                continue
+            seen.add(fid)
+            out.append(fid)
+            if len(out) >= expected_count:
+                break
+        if len(out) >= expected_count:
+            break
+    deterministic_reselect_source_fact_ids: list[str] = []
+    if out and len(out) < expected_count and allow_deterministic_reselect:
+        for fact in facts:
+            fid = _fact_id_from_row(fact)
             if fid and fid in proof_by_id and fid not in seen:
                 seen.add(fid)
                 out.append(fid)
-    if out:
-        return out
+                deterministic_reselect_source_fact_ids.append(fid)
+                if len(out) >= expected_count:
+                    break
     for fact in facts:
+        if out:
+            break
         fid = _fact_id_from_row(fact)
         if fid and fid in proof_by_id and fid not in seen:
             seen.add(fid)
             out.append(fid)
-    return out
+            if len(out) >= expected_count:
+                break
+    contract = {
+        "schema_version": "role_episode_final_materialized_selection_contract.v1",
+        "expected_bullet_count": expected_count,
+        "model_bullet_count": len([b for b in bullets if isinstance(b, dict)]),
+        "selected_source_fact_ids": list(out),
+        "selected_unique_source_fact_count": len(set(out)),
+        "duplicate_source_fact_ids_ignored": duplicate_source_fact_ids,
+        "rejected_source_fact_ids": rejected_source_fact_ids,
+        "deterministic_reselect_source_fact_ids": deterministic_reselect_source_fact_ids,
+        "deterministic_reselect_applied": bool(deterministic_reselect_source_fact_ids),
+    }
+    return out, contract
 
 
-def _proof_authorized_bullets_from_selection(
+def _proof_authorized_bullets_from_selection_with_contract(
     *,
     cfg: RoleEpisodeLaneConfig,
     model_bullets: list[dict[str, Any]],
     facts: list[dict[str, Any]],
     allowed: list[str],
-) -> list[dict[str, Any]]:
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    contract: dict[str, Any] = {
+        "schema_version": "role_episode_final_materialized_selection_contract.v1",
+        "expected_bullet_count": ROLE_EPISODE_FINAL_BULLET_COUNT,
+        "model_bullet_count": 0,
+        "selected_source_fact_ids": [],
+        "selected_unique_source_fact_count": 0,
+        "duplicate_source_fact_ids_ignored": [],
+        "rejected_source_fact_ids": [],
+        "deterministic_reselect_source_fact_ids": [],
+        "deterministic_reselect_applied": False,
+        "rendered_bullet_count": 0,
+        "rendered_source_fact_ids": [],
+        "final_materialized_acceptance_ok": False,
+    }
     if not model_bullets:
-        return []
+        return [], contract
     proof_by_id = _proof_fact_by_id(facts, allowed)
-    selected_ids = _ordered_ids_from_bullets(model_bullets, facts=facts, allowed=allowed)
+    selected_ids, contract = _ordered_ids_from_bullets_with_contract(
+        model_bullets,
+        facts=facts,
+        allowed=allowed,
+        expected_count=ROLE_EPISODE_FINAL_BULLET_COUNT,
+        allow_deterministic_reselect=cfg.allow_deterministic_graph_render,
+    )
     out: list[dict[str, Any]] = []
     for fid in selected_ids:
         fact = proof_by_id.get(fid)
@@ -631,9 +708,36 @@ def _proof_authorized_bullets_from_selection(
                 "source_fact_ids": [fid],
             }
         )
-        if len(out) >= 3:
+        if len(out) >= ROLE_EPISODE_FINAL_BULLET_COUNT:
             break
-    return out
+    rendered_source_fact_ids = _source_fact_ids_from_bullets(out)
+    contract.update(
+        {
+            "rendered_bullet_count": len(out),
+            "rendered_source_fact_ids": rendered_source_fact_ids,
+            "final_materialized_acceptance_ok": (
+                len(out) == ROLE_EPISODE_FINAL_BULLET_COUNT
+                and len(set(rendered_source_fact_ids)) == ROLE_EPISODE_FINAL_BULLET_COUNT
+            ),
+        }
+    )
+    return out, contract
+
+
+def _proof_authorized_bullets_from_selection(
+    *,
+    cfg: RoleEpisodeLaneConfig,
+    model_bullets: list[dict[str, Any]],
+    facts: list[dict[str, Any]],
+    allowed: list[str],
+) -> list[dict[str, Any]]:
+    bullets, _contract = _proof_authorized_bullets_from_selection_with_contract(
+        cfg=cfg,
+        model_bullets=model_bullets,
+        facts=facts,
+        allowed=allowed,
+    )
+    return bullets
 
 
 def _source_ids_from_parsed_claim_ledger(parsed: dict[str, Any], allowed: list[str]) -> list[str]:
@@ -711,17 +815,32 @@ def _materialize_bullet_generation(
         model_bullets=model_bullets,
     )
     if model_bullets:
-        bullets = _proof_authorized_bullets_from_selection(
+        bullets, final_contract = _proof_authorized_bullets_from_selection_with_contract(
             cfg=cfg,
             model_bullets=model_bullets,
             facts=facts,
             allowed=allowed,
         )
-        generation_method = "llm_selected_proof_render" if bullets else "model_output_invalid"
+        final_ok = bool(final_contract.get("final_materialized_acceptance_ok"))
+        generation_method = "llm_selected_proof_render" if final_ok else "model_output_invalid"
         llm_output_used = False
-        renderer_version = ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION if bullets else ""
+        renderer_version = ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION if final_ok else ""
     else:
         bullets = []
+        final_contract = {
+            "schema_version": "role_episode_final_materialized_selection_contract.v1",
+            "expected_bullet_count": ROLE_EPISODE_FINAL_BULLET_COUNT,
+            "model_bullet_count": 0,
+            "selected_source_fact_ids": [],
+            "selected_unique_source_fact_count": 0,
+            "duplicate_source_fact_ids_ignored": [],
+            "rejected_source_fact_ids": [],
+            "deterministic_reselect_source_fact_ids": [],
+            "deterministic_reselect_applied": False,
+            "rendered_bullet_count": 0,
+            "rendered_source_fact_ids": [],
+            "final_materialized_acceptance_ok": False,
+        }
         generation_method = (
             "model_output_invalid"
             if provider_runtime_generation_status == "REAL_LLM"
@@ -736,9 +855,13 @@ def _materialize_bullet_generation(
         "generation_method": generation_method,
         "llm_generation_status": llm_status,
         "llm_output_used": llm_output_used,
-        "llm_selection_used": bool(model_bullets and bullets),
+        "llm_selection_used": bool(model_bullets and final_contract.get("final_materialized_acceptance_ok")),
         "model_display_text_discarded": bool(model_bullets),
-        "display_text_authority": "selected_fact_plan_claim_text" if bullets else "",
+        "display_text_authority": (
+            "selected_fact_plan_claim_text"
+            if final_contract.get("final_materialized_acceptance_ok")
+            else ""
+        ),
         "evidence_authority": "augmented_skills_graph",
         "source_fact_ids": source_fact_ids,
         "graph_packet_digest": str(graph_packet_digest or ""),
@@ -748,6 +871,11 @@ def _materialize_bullet_generation(
         ),
         "allowed_graph_packet_fact_count": len(allowed_set),
         "rendered_source_fact_ids_within_allowed_packet": set(source_fact_ids).issubset(allowed_set),
+        "final_materialized_selection_contract": final_contract,
+        "final_materialized_acceptance_ok": bool(
+            final_contract.get("final_materialized_acceptance_ok")
+            and set(source_fact_ids).issubset(allowed_set)
+        ),
     }
     return bullets, receipt
 

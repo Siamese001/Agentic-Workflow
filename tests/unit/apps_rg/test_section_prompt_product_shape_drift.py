@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
+import yaml
 
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.sections.section_product_shape_ssot import (
@@ -104,6 +106,20 @@ def test_product_shape_block_format() -> None:
     assert "x2_exec_summary_sentence_count_6" in block
     assert "x2_exec_summary_paragraph_max_words" in block
     assert "fit_to_evidence" in block
+    assert f"max {EXEC_SUMMARY_MAX_WORDS} words" in block
+
+
+def test_exec_summary_declarative_contract_word_cap_matches_ssot() -> None:
+    path = (
+        Path(__file__).resolve().parents[3]
+        / "apps_rg"
+        / "prompt_assembly"
+        / "section_contracts"
+        / "executive_summary_contract.yaml"
+    )
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+
+    assert data["length"]["paragraph_max_words"] == EXEC_SUMMARY_MAX_WORDS
 
 
 @pytest.mark.parametrize("lane", list(GENERATED_LANES))

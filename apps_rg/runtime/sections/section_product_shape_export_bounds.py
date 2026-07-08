@@ -22,8 +22,8 @@ EXEC_SUMMARY_EXPORT_MAX_SENTENCES = EXEC_SUMMARY_MAX_SENTENCES
 EXEC_SUMMARY_EXPORT_MIN_SENTENCES = EXEC_SUMMARY_MIN_SENTENCES
 # Char ceiling DERIVED from the word authority (9 chars/word incl. whitespace —
 # observed executive prose runs ~7.7). The previous literal 900 contradicted the
-# 140-word lane cap it claims to mirror: a lane-accepted, dual-judge-passed
-# 140-word summary is ~1075 chars, so product export could never succeed (first
+# lane word cap it claims to mirror: a lane-accepted, dual-judge-passed
+# summary near the cap is ~1075 chars, so product export could never succeed (first
 # export attempt, patch_run_19, 2026-06-11). rg_output_schema.json
 # sections.summary.text.maxLength moves in lockstep — enforced by
 # tests/_apps_contract/test_schema_export_bounds_match_ssot.py. The word cap

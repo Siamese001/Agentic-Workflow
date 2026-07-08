@@ -246,7 +246,7 @@ def format_graph_proof_pool_appendix(runtime_payload: dict[str, Any]) -> str:
         "- Numeric evidence must still map to ledger metric-hash IDs when ALLOWED_SOURCE_FACT_IDS includes *_metric_* lines.\n"
         "- Credential facts (for example fact_certs_001) are optional supporting context, not mandatory paragraph filler "
         "(waived from utilization). Prefer platform, governance, lifecycle, and commercial facts when the "
-        "six-sentence / 140-word budget is tight. "
+        "six-sentence budget is tight. "
         "Cite every non-credential allowed fact_id across the claim_ledger / resume_display_text; "
         "enforced by x2_exec_summary_allowed_fact_utilization.\n"
         "- Section ownership: named certifications (AWS, Databricks, FSA, Basel, CCAR labels, "

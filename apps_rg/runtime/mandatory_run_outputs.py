@@ -41,6 +41,11 @@ from apps_rg.runtime.run_output_contract import (
     FULL_RUN_SECTION_STATUS_JSON,
     REVIEW_BUNDLE_FILENAME,
 )
+from apps_rg.runtime.section_failure_forensics import (
+    E2E_SECTION_FORENSICS_GATE_ID,
+    SECTION_FAILURE_FORENSICS_DIR,
+    emit_section_failure_forensics,
+)
 
 MANDATORY_RUN_OUTPUT_JSON = APPS_RG_MANDATORY_RUN_OUTPUT_JSON
 MANDATORY_RUN_OUTPUT_MD = APPS_RG_MANDATORY_RUN_OUTPUT_MD
@@ -1492,6 +1497,11 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
     )
     resume_inline_authorized, resume_inline_blockers = _resume_inline_authorization(doc)
     shape_errors = _inline_required_output_shape_errors(inline)
+    forensics = (
+        doc.get("section_failure_forensics")
+        if isinstance(doc.get("section_failure_forensics"), dict)
+        else {}
+    )
     gates = [
         {
             "gate_id": "mandatory_bcg_inline_output_present",
@@ -1609,9 +1619,31 @@ def _inline_output_gates(doc: dict[str, Any]) -> list[dict[str, Any]]:
             },
             "threshold": "resume_docx_full_version_inline.text is current-run authorized resume content",
         },
+        {
+            "gate_id": E2E_SECTION_FORENSICS_GATE_ID,
+            "pass": bool(forensics.get("pass", True)),
+            "observed_value": {
+                "required": bool(forensics.get("required")),
+                "failed_section_count": forensics.get("failed_section_count"),
+                "artifact_dir": forensics.get("artifact_dir"),
+                "missing_or_incomplete": forensics.get("missing_or_incomplete") or [],
+            },
+            "threshold": (
+                "every non-X3_ALLOW, cascaded, or aggregation-failed section has complete "
+                "section_failure_forensics/<section>.json and .md"
+            ),
+        },
     ]
     for gate in gates:
-        gate["failure_reason"] = "" if gate["pass"] else "mandatory post-run inline output missing"
+        gate["failure_reason"] = (
+            ""
+            if gate["pass"]
+            else (
+                E2E_SECTION_FORENSICS_GATE_ID
+                if gate["gate_id"] == E2E_SECTION_FORENSICS_GATE_ID
+                else "mandatory post-run inline output missing"
+            )
+        )
     return gates
 
 
@@ -2712,6 +2744,110 @@ def _active_bcg_evidence(doc: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _forensic_gate(doc: dict[str, Any]) -> dict[str, Any]:
+    gate = doc.get("section_failure_forensics")
+    return gate if isinstance(gate, dict) else {}
+
+
+def _forensic_artifacts(doc: dict[str, Any]) -> list[dict[str, Any]]:
+    gate = _forensic_gate(doc)
+    artifacts = gate.get("artifacts")
+    return [row for row in artifacts if isinstance(row, dict)] if isinstance(artifacts, list) else []
+
+
+def _forensic_artifact_by_section(doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    return {
+        str(row.get("section_id") or ""): row
+        for row in _forensic_artifacts(doc)
+        if str(row.get("section_id") or "").strip()
+    }
+
+
+def _forensic_evidence_map_rows(doc: dict[str, Any]) -> list[dict[str, str]]:
+    gate = _forensic_gate(doc)
+    if not gate.get("required"):
+        return []
+    rows: list[dict[str, str]] = []
+    artifact_dir = str(gate.get("artifact_dir") or "").strip()
+    if artifact_dir:
+        rows.append(
+            {
+                "label": "Section failure forensics index",
+                "path": f"@{artifact_dir}/index.json; @{artifact_dir}/index.md",
+            }
+        )
+    for artifact in _forensic_artifacts(doc):
+        section_id = str(artifact.get("section_id") or "unknown_section")
+        json_path = str(artifact.get("json_path") or "").strip()
+        md_path = str(artifact.get("md_path") or "").strip()
+        refs = "; ".join(f"@{path}" for path in (json_path, md_path) if path)
+        rows.append(
+            {
+                "label": f"Section forensic RCA: {section_id}",
+                "path": refs or f"missing_forensic_artifact:{section_id}",
+            }
+        )
+    return rows
+
+
+def _truthy_signal(value: Any) -> str:
+    text = str(value or "").strip()
+    return "" if text.lower() in {"", "not_observed", "n/a", "none"} else text
+
+
+def _clean_pass_hardening_rows(doc: dict[str, Any], evidence: dict[str, Any]) -> list[dict[str, str]]:
+    summary = doc.get("result_summary") if isinstance(doc.get("result_summary"), dict) else {}
+    final_pass = evidence.get("final_status") == "PASS"
+    if not (bool(summary.get("outcome_authorized")) and final_pass):
+        return []
+    lane_rows = doc.get("section_lane_table") if isinstance(doc.get("section_lane_table"), list) else []
+    retry_signals: list[str] = []
+    l6_signals: list[str] = []
+    warning_signals: list[str] = []
+    for row in lane_rows:
+        if not isinstance(row, dict) or str(row.get("section") or "") == "research_briefing_input":
+            continue
+        section_id = str(row.get("section") or "unknown_section")
+        retry = _truthy_signal(row.get("judge_retry_fallback"))
+        if retry:
+            retry_signals.append(f"{section_id}: {retry}")
+        l6 = _truthy_signal(row.get("l6_evidence"))
+        if l6:
+            l6_signals.append(f"{section_id}: {l6}")
+        x2 = str(row.get("x2") or "")
+        if "WARN" in x2.upper():
+            warning_signals.append(f"{section_id}: {x2}")
+    rows: list[dict[str, str]] = []
+    if retry_signals:
+        rows.append(
+            _bcg_row(
+                "PX",
+                "Review retry and judge fallback signals before promoting the passing run pattern.",
+                " | ".join(retry_signals[:6]),
+                "Passing run stays authorized; capture hardening backlog from observed retries.",
+            )
+        )
+    if warning_signals:
+        rows.append(
+            _bcg_row(
+                "PX",
+                "Review warning-level gates before treating the passing run as a hardened baseline.",
+                " | ".join(warning_signals[:6]),
+                "Passing run stays authorized; warnings remain hardening opportunities.",
+            )
+        )
+    if l6_signals:
+        rows.append(
+            _bcg_row(
+                "PX",
+                "Review L6 shadow observations as future-run hardening inputs, not product blockers.",
+                " | ".join(l6_signals[:6]),
+                "Passing run stays authorized; L6 remains advisory unless promoted by policy.",
+            )
+        )
+    return rows
+
+
 def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
     evidence = _active_bcg_evidence(doc)
     research = evidence["research"]
@@ -2814,6 +2950,7 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "Surface regression automatically.",
             )
         )
+    rows.extend(_clean_pass_hardening_rows(doc, evidence))
     return rows
 
 
@@ -2885,6 +3022,61 @@ def _bcg_truth_errors(doc: dict[str, Any], recommendations: list[dict[str, str]]
             errors.append("bcg.recommended_next_move.missing_active_p0_evidence")
     elif "P0" in joined_next:
         errors.append("bcg.recommended_next_move.stale_p0_reference")
+    inline = doc.get("inline_required_output") if isinstance(doc.get("inline_required_output"), dict) else {}
+    bcg = inline.get("bcg") if isinstance(inline.get("bcg"), dict) else {}
+    issue_tree = bcg.get("issue_tree") if isinstance(bcg.get("issue_tree"), list) else []
+    evidence_map = bcg.get("evidence_map") if isinstance(bcg.get("evidence_map"), list) else []
+    errors.extend(_bcg_forensics_truth_errors(doc, issue_tree, evidence_map))
+    return errors
+
+
+def _bcg_forensics_truth_errors(
+    doc: dict[str, Any],
+    issue_tree: list[Any],
+    evidence_map: list[Any],
+) -> list[str]:
+    gate = _forensic_gate(doc)
+    if not gate.get("required"):
+        return []
+    artifacts = _forensic_artifact_by_section(doc)
+    required_sections = set(artifacts)
+    evidence_blob = "\n".join(
+        f"{row.get('label') or ''} {row.get('path') or ''}"
+        for row in evidence_map
+        if isinstance(row, dict)
+    )
+    issue_sections = {
+        str(row.get("section") or "")
+        for row in issue_tree
+        if isinstance(row, dict) and str(row.get("section") or "")
+    }
+    errors: list[str] = []
+    if not required_sections:
+        errors.append("bcg.forensics.required_without_artifacts")
+    for section_id in sorted(required_sections):
+        artifact = artifacts[section_id]
+        json_path = str(artifact.get("json_path") or "")
+        md_path = str(artifact.get("md_path") or "")
+        represented = section_id in issue_sections or section_id in evidence_blob
+        if not represented:
+            errors.append(f"bcg.forensics.missing_failed_section:{section_id}")
+        if not json_path or json_path not in evidence_blob:
+            errors.append(f"bcg.forensics.missing_json_ref:{section_id}")
+        if not md_path or md_path not in evidence_blob:
+            errors.append(f"bcg.forensics.missing_md_ref:{section_id}")
+        if artifact.get("complete") is not True:
+            errors.append(f"bcg.forensics.incomplete_artifact:{section_id}")
+    for row in issue_tree:
+        if not isinstance(row, dict):
+            continue
+        section_id = str(row.get("section") or "")
+        if not section_id or section_id == "research_briefing_input":
+            continue
+        artifact = artifacts.get(section_id)
+        if artifact is None:
+            errors.append(f"bcg.issue_tree.missing_forensic_artifact:{section_id}")
+        elif artifact.get("complete") is not True:
+            errors.append(f"bcg.issue_tree.incomplete_forensic_artifact:{section_id}")
     return errors
 
 
@@ -2913,12 +3105,23 @@ def _build_bcg_issue_tree(doc: dict[str, Any]) -> list[dict[str, Any]]:
     for finding in doc.get("rca_findings", []):
         if not isinstance(finding, dict):
             continue
+        section_id = str(finding.get("section") or "")
+        artifact = _forensic_artifact_by_section(doc).get(section_id)
+        evidence = [str(finding.get("evidence") or "")]
+        if isinstance(artifact, dict):
+            evidence.extend(
+                [
+                    f"forensics_json={artifact.get('json_path') or ''}",
+                    f"forensics_md={artifact.get('md_path') or ''}",
+                    f"forensics_complete={artifact.get('complete')}",
+                ]
+            )
         issue_rows.append(
             {
-                "section": str(finding.get("section") or ""),
+                "section": section_id,
                 "classification": str(finding.get("classification") or ""),
                 "root_cause": str(finding.get("root_cause") or ""),
-                "evidence": [str(finding.get("evidence") or "")],
+                "evidence": evidence,
                 "causal_allocation": finding.get("causal_allocation"),
                 "required_implementation_plan": _validated_plan_items(finding),
             }
@@ -2975,6 +3178,7 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         {"label": "Final resume output contract", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_OUTPUT_JSON}"},
         {"label": "Resume DOCX", "path": f"@{doc['run_root_abs']}\\{FINAL_RESUME_DOCX_RELPATH}"},
     ]
+    evidence_map.extend(_forensic_evidence_map_rows(doc))
     return {
         "schema_version": INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION,
         "immutable_section_order": list(INLINE_REQUIRED_OUTPUT_SECTION_ORDER),
@@ -3281,6 +3485,34 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
             lines.append("   - Required implementation plan:")
             for item in _validated_plan_items(finding):
                 lines.append(f"     - {item}")
+    forensics = (
+        doc.get("section_failure_forensics")
+        if isinstance(doc.get("section_failure_forensics"), dict)
+        else {}
+    )
+    lines.extend(["", "## Section Failure Forensics", ""])
+    lines.append(
+        f"Gate `{forensics.get('gate_id') or E2E_SECTION_FORENSICS_GATE_ID}`: "
+        f"`{'PASS' if forensics.get('pass', True) else 'FAIL'}`"
+    )
+    lines.append(f"- Required: `{bool(forensics.get('required'))}`")
+    lines.append(f"- Failed section count: `{forensics.get('failed_section_count') or 0}`")
+    lines.append(f"- Artifact directory: `{forensics.get('artifact_dir') or '-'}`")
+    lines.append(f"- Baseline confidence: `{forensics.get('baseline_confidence') or '-'}`")
+    artifacts = forensics.get("artifacts") if isinstance(forensics.get("artifacts"), list) else []
+    if artifacts:
+        lines.extend(["", "| Section | Failure type | Complete | JSON | MD |", "|---|---|---:|---|---|"])
+        for artifact in artifacts:
+            if not isinstance(artifact, dict):
+                continue
+            lines.append(
+                "| "
+                f"`{artifact.get('section_id')}` | "
+                f"`{artifact.get('failure_type')}` | "
+                f"`{artifact.get('complete')}` | "
+                f"`{artifact.get('json_path')}` | "
+                f"`{artifact.get('md_path')}` |"
+            )
     lines.extend(["", "## L6 Shadow Observability", ""])
     lines.append("| Section | L6 files | Authority |")
     lines.append("|---|---:|---|")
@@ -3546,6 +3778,12 @@ def build_mandatory_run_output(
     if not final_output:
         final_output = build_final_resume_output_contract(root, repo_root=repo, required=final_required)
     section_lane_table = _build_section_lane_table(root, sections, repo_root=repo)
+    section_failure_forensics = emit_section_failure_forensics(
+        root,
+        repo_root=repo,
+        sections=sections,
+        result=result_summary,
+    )
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),
@@ -3557,10 +3795,12 @@ def build_mandatory_run_output(
         "section_lane_table": section_lane_table,
         "final_resume_output": final_output,
         "rca_findings": _top_rca_sections(sections),
+        "section_failure_forensics": section_failure_forensics,
         "mandatory_artifacts": {
             "bcg_executive_output_md": BCG_EXECUTIVE_OUTPUT_MD,
             "mandatory_run_output_md": MANDATORY_RUN_OUTPUT_MD,
             "mandatory_run_output_json": MANDATORY_RUN_OUTPUT_JSON,
+            "section_failure_forensics_dir": SECTION_FAILURE_FORENSICS_DIR,
             "final_resume_output_txt": FINAL_RESUME_OUTPUT_TXT,
             "final_resume_output_json": FINAL_RESUME_OUTPUT_JSON,
             "final_resume_docx": FINAL_RESUME_DOCX_RELPATH,
