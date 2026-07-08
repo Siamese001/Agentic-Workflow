@@ -1,0 +1,236 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p1_ratchet_burndown_wave5_20260708T204026Z",
+  "generated_at": "2026-07-08T20:40:26.6950998Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+    "branch": "codex/adg-p1-ratchet-burndown-20260708T163522",
+    "head": "2b8fc50e88b8ef25341e2b122d64c2b4a133526f",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Burn down next P1 ratchet wave, commit files to P1 ratchet branch, generate PR to local main, and execute.",
+    "plan_id": "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md",
+    "files_changed": [
+      "agentic_core/L0_routing/utils/canonical_truth_seam.py",
+      "agentic_core/L1_cognition/enforcement/dark_reasoning_visitor_validator.py",
+      "agentic_core/L1_cognition/reasoning/reasoning_knowledge.py",
+      "agentic_core/L1_cognition/types/execution_phase_types.py",
+      "agentic_core/L2_execution/enforcement/key_source.py",
+      "agentic_core/L2_execution/reasoning/StructuredEngineAgent.py",
+      "agentic_core/L2_execution/types/capability_token_types.py",
+      "agentic_core/L2_execution/types/llm_replay_types.py",
+      "agentic_core/L2_execution/types/resource_prediction_types.py",
+      "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint_types.py",
+      "agentic_core/L2_execution/types/vllm_invariant_verifier_types.py",
+      "agentic_core/L2_execution/utils/tool_chain_executor.py",
+      "agentic_core/L2_execution/utils/tool_registry_util.py",
+      "agentic_core/L3_orchestration/reasoning/coordination/lease_coordinator.py",
+      "agentic_core/L3_orchestration/reasoning/engines/bounded_task_decomposer.py",
+      "agentic_core/L3_orchestration/reasoning/engines/context_curator_engine.py",
+      "agentic_core/L3_orchestration/reasoning/engines/omni_context_engine.py",
+      "agentic_core/L3_orchestration/reasoning/engines/reflexion_engine.py",
+      "agentic_core/L3_orchestration/reasoning/ptc/tool_contract.py",
+      "agentic_core/L3_orchestration/types/approval_contract_types.py",
+      "agentic_core/L3_orchestration/types/healer_types.py",
+      "agentic_core/L3_orchestration/types/injection_result_types.py",
+      "agentic_core/L3_orchestration/types/rag_provider_types.py",
+      "agentic_core/L3_orchestration/types/rewoo_types.py",
+      "agentic_core/L3_orchestration/types/scenario_type_types.py",
+      "agentic_core/L4_state/cache/policy_registry_cache.py",
+      "agentic_core/L4_state/enforcement/phase_lock_store.py",
+      "agentic_core/L4_state/enforcement/replay_bundle_store.py",
+      "agentic_core/L4_state/enforcement/telemetry_recorder.py",
+      "agentic_core/L4_state/reasoning/replay_bundle_emitter.py",
+      "agentic_core/L4_state/utils/context/execution_context.py",
+      "agentic_core/L4_state/utils/get_existing_file_hashes_util.py",
+      "agentic_core/L4_state/utils/memory/unified_memory_facade.py",
+      "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
+      "agentic_core/L5_safety/enforcement/governance/artifacts_guard.py",
+      "agentic_core/L5_safety/enforcement/hitl_gate.py",
+      "agentic_core/L5_safety/enforcement/hitl/decision_logger.py",
+      "agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py",
+      "agentic_core/L5_safety/types/healing_orchestration_types.py",
+      "agentic_core/L5_safety/types/meta_learning_types.py",
+      "agentic_core/L5_safety/types/security_validation_types.py",
+      "agentic_core/L5_safety/types/surgical_context_types.py",
+      "agentic_core/L5_safety/utils/cache_invalidation_util.py",
+      "agentic_core/L5_safety/utils/cognitive_batch_processor_util.py",
+      "agentic_core/L5_safety/utils/fix_inherited_invocation_util.py",
+      "agentic_core/L5_safety/validators/golden_state_test_case_validator.py",
+      "agentic_core/L5_safety/validators/structure_drift_validator.py",
+      "agentic_core/L5_safety/validators/test_skip_detector_validator.py",
+      "agentic_core/L6_observability/types/dpo_types.py",
+      "agentic_core/L6_observability/utils/telemetry_emitter.py",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_base_import_blocker_probe.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_dry_run.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_importable_subset_manifest.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_importable_subset_runtime_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_manifest.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_runtime_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_source_replay.json",
+      "ops_scripts/ci/baselines/wiring_trace_stub_ratchet.json",
+      "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "mcp__adg_sqlite.adg_health",
+        "cwd": "Codex MCP",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\refactor_e1_trace_imports.py --snapshot C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite --repo-root C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown --limit 50 --apply --manifest artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_manifest.json --exclude-manifest wave1 --exclude-manifest wave2 --exclude-manifest wave3 --exclude-manifest wave4 --wave-id W2.E1.5",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_source_replay.py <repo-root> artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_source_replay.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_runtime_proof.py artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_runtime_proof.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "FAIL",
+        "exit_code": 1
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_runtime_proof.py artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_importable_subset_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_importable_subset_runtime_proof.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m compileall -q <50 changed python files>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m pytest tests\\unit\\agentic_core\\L2_execution\\test_l2_package_driven_repair.py tests\\unit\\agentic_core\\L3_orchestration\\exit_eval\\test_http_judges.py -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "$env:ADG_SNAPSHOT=\"C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite\"; python ops_scripts\\ci\\check_trace_stub_modules.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python ops_scripts\\ci\\check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref 2b8fc50e88b8ef25341e2b122d64c2b4a133526f",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python scripts\\governance\\verify_codex_primary.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "status": "FAIL",
+        "exit_code": 1
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "adg_sqlite",
+        "reason": "ADG MCP health passed; detailed E1 candidate extraction required ad hoc SQL not exposed by current MCP tools.",
+        "substitute": "immutable digest-bound SQLite snapshot adg_indexed_07072026_2307.sqlite"
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "handoff_validator",
+        "status": "PASS",
+        "evidence": "dependency_status=ready artifact_status=repair_ready P0_FIX=0 P0_WAVE=0 P1_FIX=0 P1_RATCHET_FLOOR_BACKLOG=7 P1_RATCHET_REGRESSION=0"
+      },
+      {
+        "name": "e1_wave5_source_replay",
+        "status": "PASS",
+        "evidence": "50 selected modules now use trace_contract alias and have zero direct lifecycle trace symbol imports."
+      },
+      {
+        "name": "e1_wave5_runtime_full",
+        "status": "BLOCKED",
+        "evidence": "Branch proof passed 47/50 and failed 3 modules for the same import blockers reproduced by local main before wave 5."
+      },
+      {
+        "name": "e1_wave5_runtime_importable_subset",
+        "status": "PASS",
+        "evidence": "Runtime subset proof passed 47/47 for importable selected modules."
+      },
+      {
+        "name": "compileall",
+        "status": "PASS",
+        "evidence": "compileall passed for 50 changed Python files."
+      },
+      {
+        "name": "focused_pytest",
+        "status": "PASS",
+        "evidence": "6 collected, 6 passed."
+      },
+      {
+        "name": "trace_stub_gate_pinned_snapshot",
+        "status": "PASS",
+        "evidence": "Pinned consumed snapshot stayed current=982 baseline=982; no regression against released ADG evidence."
+      },
+      {
+        "name": "codex_primary",
+        "status": "FAIL",
+        "evidence": "Local user-profile automation TOML exists outside repo: C:\\Users\\amita\\.codex\\automations\\adg-p1-ratchet-burndown\\automation.toml."
+      },
+      {
+        "name": "target_status",
+        "status": "BLOCKED",
+        "evidence": "P1=0 is not proven; expected cumulative E1 reduction after regeneration is 250 modules, with remaining ratchet backlog still requiring follow-on waves."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "Wave 5 is implemented and locally validated, but final P1=0 is not proven and Codex primary local verifier reports user-profile mirror drift.",
+    "root_cause": "This run intentionally applied only the next bounded 50-row E1 wave; the consumed ADG snapshot remains pinned until a fresh full ADG regeneration, and local user-profile launcher mirrors are outside this branch payload.",
+    "evidence": "Source replay passed 50/50; branch full runtime import proof passed 47/50 with the same 3 blockers reproduced by local main; importable subset proof passed 47/47; pinned trace-stub gate stayed pass at current=982 baseline=982; verify_codex_primary failed only on C:\\Users\\amita\\.codex\\automations\\adg-p1-ratchet-burndown\\automation.toml.",
+    "fix_or_next": "next: publish this partial wave through PR if branch and merge gates allow, then run the next E1 wave or regenerate full ADG when enough waves are complete to prove updated P1 counts.",
+    "recurrence_guard": "Keep downstream lanes blocked until a fresh or replayed digest-bound ADG handoff proves P1_FIX=0, P1_RATCHET_REGRESSION=0, and P1_RATCHET_FLOOR_BACKLOG=0."
+  },
+  "p1_wave": {
+    "wave": "W2.E1.5",
+    "gate": "E1_trace_stub_module",
+    "selected_rows": 50,
+    "expected_e1_reduction_on_regen": 50,
+    "expected_cumulative_e1_reduction_on_regen": 250,
+    "target_status": "missed/BLOCKED",
+    "downstream_unblock": false,
+    "artifacts": [
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_base_import_blocker_probe.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_dry_run.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_importable_subset_manifest.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_importable_subset_runtime_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_manifest.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_runtime_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave5_source_replay.json"
+    ]
+  }
+}
