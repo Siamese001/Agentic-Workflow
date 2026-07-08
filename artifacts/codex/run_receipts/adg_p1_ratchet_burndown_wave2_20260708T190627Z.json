@@ -1,0 +1,217 @@
+{
+  "execution": {
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "mcp__adg_sqlite.adg_health",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\refactor_e1_trace_imports.py --snapshot C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite --repo-root . --limit 50 --exclude-manifest artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_manifest.json --wave-id W2.E1.2 --apply --manifest artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_manifest.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_source_replay.py . artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_source_replay.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m compileall -q <wave2 changed python files>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_runtime_proof.py artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_runtime_importable_subset_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_runtime_importable_subset_proof.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_runtime_proof.py artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_manifest.json artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_runtime_proof.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "clean-HEAD import probe for four wave2 full-import blockers at 191efe1550a99a0465022c0ffce322071609c2a7",
+        "cwd": "%TEMP%\\adg-p1-wave2-head-probe-191efe1550a9",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts\\ci\\check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref 2acff50883eb631c66d7b4d88c6c58ac0b6d000a",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests\\unit\\agentic_core\\L2_execution\\test_l2_package_driven_repair.py tests\\unit\\agentic_core\\L3_orchestration\\exit_eval\\test_http_judges.py -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "$env:ADG_SNAPSHOT='C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite'; python ops_scripts\\ci\\check_trace_stub_modules.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts\\governance\\verify_codex_primary.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "reason": "ADG MCP health passed, but exposed tools do not include ad hoc SQL for detailed E1 candidate ranking; immutable digest-bound SQLite was used for row extraction.",
+        "route": "adg_sqlite",
+        "substitute": "sqlite_with_mcp_health snapshot adg_indexed_07072026_2307.sqlite"
+      }
+    ],
+    "status": "PARTIAL"
+  },
+  "generated_at": "2026-07-08T19:06:27.617350Z",
+  "p1_wave": {
+    "artifacts": [
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave2_manifest.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave2_source_replay.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave2_runtime_importable_subset_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave2_runtime_proof.json",
+      "artifacts/codex/runtime_proofs/e1_trace_import_wave2_head_import_blocker_probe.json"
+    ],
+    "downstream_unblock": false,
+    "expected_cumulative_e1_reduction_on_regen": 100,
+    "gate": "E1_trace_stub_module",
+    "selected_rows": 50,
+    "target_status": "missed/BLOCKED",
+    "wave": "W2.E1.2"
+  },
+  "rca": {
+    "evidence": "Source replay passed 50/50; importable runtime subset passed 46/46; full import proof captured four inherited blockers reproduced from branch HEAD; terminal-cleanup, compileall, focused pytest, diff check, and Codex primary verification passed.",
+    "fix_or_next": "next: commit and push W2.E1.2, then continue E1 wave 3 or run regenerated ADG evidence when available to confirm cumulative reduction.",
+    "recurrence_guard": "Keep downstream P2/P3 blocked until fresh/replayed ADG evidence reports P1_FIX=0, P1_RATCHET_REGRESSION=0, and P1_RATCHET_FLOOR_BACKLOG=0.",
+    "root_cause": "This wave intentionally reduces only the next 50 E1 trace-stub modules and repairs a first-wave CI gate issue; the full ratchet backlog still requires additional waves and regenerated ADG proof.",
+    "symptom": "Second E1 wave is implemented but P1=0 is not proven."
+  },
+  "repo": {
+    "branch": "codex/adg-p1-ratchet-burndown-20260708T094956",
+    "dirty_after": true,
+    "dirty_before": false,
+    "head": "191efe1550a99a0465022c0ffce322071609c2a7",
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown"
+  },
+  "run_id": "adg_p1_ratchet_burndown_wave2_20260708T190627Z",
+  "schema_version": "codex-run-receipt/v1",
+  "scope": {
+    "files_changed": [
+      "agentic_core/L0_routing/enforcement/safety_enforcement_seam.py",
+      "agentic_core/L1_cognition/enforcement/spiffe_validator.py",
+      "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py",
+      "agentic_core/L1_cognition/reasoning/meta_observability.py",
+      "agentic_core/L1_cognition/reasoning/reasoning_evaluation.py",
+      "agentic_core/L1_cognition/reasoning/semantic_manager.py",
+      "agentic_core/L1_cognition/types/react_trace_types.py",
+      "agentic_core/L1_cognition/utils/guardrails_util.py",
+      "agentic_core/L2_execution/config/transform_config.py",
+      "agentic_core/L2_execution/types/l2_instruction_packet.py",
+      "agentic_core/L2_execution/types/mcp_client_types.py",
+      "agentic_core/L2_execution/types/typed_tool_contract.py",
+      "agentic_core/L2_execution/utils/archive_util.py",
+      "agentic_core/L2_execution/utils/execution_proof_emitter.py",
+      "agentic_core/L2_execution/utils/replay_guard.py",
+      "agentic_core/L2_execution/utils/safe_subprocess.py",
+      "agentic_core/L2_execution/utils/unsafe_io_detector.py",
+      "agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py",
+      "agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py",
+      "agentic_core/L3_orchestration/reasoning/engines/agent_gym_engine.py",
+      "agentic_core/L3_orchestration/reasoning/engines/dag_manager.py",
+      "agentic_core/L3_orchestration/reasoning/engines/reasoning_intensity_enforcer.py",
+      "agentic_core/L3_orchestration/reasoning/engines/rewoo_engine.py",
+      "agentic_core/L3_orchestration/types/human_decision_artifact_types.py",
+      "agentic_core/L3_orchestration/utils/replay/deterministic_replay.py",
+      "agentic_core/L4_state/utils/experience_buffer_util.py",
+      "agentic_core/L4_state/utils/memory/bm25_store.py",
+      "agentic_core/L4_state/utils/memory/graph_neighborhood_memory.py",
+      "agentic_core/L5_safety/config/structure_blueprint/artifacts.py",
+      "agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py",
+      "agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py",
+      "agentic_core/L5_safety/enforcement/hitl/hitl_escalation_activator.py",
+      "agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py",
+      "agentic_core/L5_safety/enforcement/pytest_config_guardrail.py",
+      "agentic_core/L5_safety/enforcement/secure_error_handler_enforcer.py",
+      "agentic_core/L5_safety/enforcement/ssot_import_enforcer.py",
+      "agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py",
+      "agentic_core/L5_safety/reasoning/ResourceManagerAgent.py",
+      "agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py",
+      "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py",
+      "agentic_core/L5_safety/reasoning/SecurityManagerAgent.py",
+      "agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py",
+      "agentic_core/L5_safety/utils/fca_safety_gates_util.py",
+      "agentic_core/L5_safety/utils/force_app_depth_util.py",
+      "agentic_core/L5_safety/utils/forge_fortress_util.py",
+      "agentic_core/L5_safety/utils/runners/orchestrator_runner.py",
+      "agentic_core/L5_safety/validators/ddd_alignment_validator.py",
+      "agentic_core/L5_safety/validators/hop_validator.py",
+      "agentic_core/L5_safety/validators/report_location_validator.py",
+      "agentic_core/L6_observability/utils/engines/provider_binding_fingerprint.py",
+      "agentic_core/L6_observability/utils/metrics/performance_metrics_emitter.py",
+      "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md"
+    ],
+    "plan_id": "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md",
+    "request": "Implement the next P1 ratchet burndown wave."
+  },
+  "verification": {
+    "checks": [
+      {
+        "evidence": "dependency_status=ready artifact_status=repair_ready adg_run_id=07072026_2307 P0_FIX=0 P0_WAVE=0 P1_FIX=0 P1_RATCHET_FLOOR_BACKLOG=7 P1_RATCHET_REGRESSION=0",
+        "name": "handoff_validator",
+        "status": "PASS"
+      },
+      {
+        "evidence": "status=ok mode=full sqlite=healthy redis=healthy adg_snapshot_id=07072026_2307",
+        "name": "adg_mcp_health",
+        "status": "PASS"
+      },
+      {
+        "evidence": "50 selected W2.E1.2 modules now use trace_contract alias and source replay reports passed=50 failed=0.",
+        "name": "e1_wave2_source_replay",
+        "status": "PASS"
+      },
+      {
+        "evidence": "Runtime import proof for importable subset reports passed=46 failed=0; full manifest import proof captured 4 inherited import-time blockers reproduced from HEAD.",
+        "name": "e1_wave2_runtime_import_subset",
+        "status": "PASS"
+      },
+      {
+        "evidence": "check_terminal_cleanup.py --fail-on-new-only passed after safe_subprocess timeout/Popen guardian repair.",
+        "name": "terminal_cleanup",
+        "status": "PASS"
+      },
+      {
+        "evidence": "P1=0 is not proven; cumulative expected E1 reduction is 100 rows on next ADG generation and remaining ratchet backlog still requires follow-on waves.",
+        "name": "target_status",
+        "status": "BLOCKED"
+      }
+    ]
+  }
+}
