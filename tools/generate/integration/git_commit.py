@@ -98,16 +98,30 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             print("[ADG] WARNING: Repository is not a git worktree; skipping auto-commit")
             return
 
-        # Stage deletions of old artifacts (moved to _archive/)
-        # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
-        subprocess.run(
-            ["git", "add", "-u", ADG_ARTIFACTS_DIR + "/"],
+        # Stage deletions of old artifacts only when Git knows this ignored tree.
+        # Otherwise `git add -u artifacts/adg/` fails with a pathspec error.
+        tracked_check = subprocess.run(
+            ["git", "ls-files", "--", ADG_ARTIFACTS_DIR + "/"],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
-            check=True,
             timeout=30,
         )
+        if tracked_check.returncode != 0:
+            print("[ADG] WARNING: git ls-files failed; skipping artifact deletion staging")
+            return
+        if tracked_check.stdout.strip():
+            # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
+            subprocess.run(
+                ["git", "add", "-u", ADG_ARTIFACTS_DIR + "/"],
+                cwd=str(ROOT),
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=30,
+            )
+        else:
+            print("[ADG] Git: no tracked ADG artifacts to stage for deletion")
 
         if skipped_ignored_count:
             print(

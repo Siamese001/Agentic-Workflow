@@ -31,6 +31,7 @@ def temp_artifacts(tmp_path, monkeypatch):
     """Redirect the wrapper's manifest/receipt paths into a sandbox."""
     monkeypatch.setattr(wrapper, "ARTIFACTS_ADG", tmp_path / "artifacts" / "adg")
     monkeypatch.setattr(wrapper, "RECEIPT_PATH", tmp_path / "docs" / "receipt.json")
+    monkeypatch.setattr(wrapper, "HANDOFF_CONTRACT_PATH", tmp_path / "missing-automation.toml")
     wrapper.ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
 
     import tools.reports.adg_burndown_report as burndown_mod
@@ -973,7 +974,7 @@ def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
     assert Path(handoff["artifacts"]["action_queue"]["path"]).is_file()
     assert handoff["counts"] == {
         "P0_FIX": 1,
-        "P0_WAVE": 0,
+        "P0_WAVE": 3,
         "P0_TRACKED_BACKLOG": 0,
         "P1_FIX": 0,
         "P1_RATCHET_REGRESSION": 0,
@@ -1024,6 +1025,58 @@ def test_repair_handoff_pointer_validates_exact_receipt(temp_artifacts, monkeypa
     assert '"ok": true' in captured.out
     assert '"dependency_status": "ready"' in captured.out
     assert '"handoff_pointer":' in captured.out
+
+
+def test_repair_handoff_pointer_publishes_to_contract_producer_root(temp_artifacts, monkeypatch):
+    producer_root = temp_artifacts / "producer-root"
+    producer_root.mkdir()
+    contract = temp_artifacts / "automation.toml"
+    contract.write_text(
+        "\n".join(
+            [
+                "[handoff]",
+                'handoff_pointer_base = "producer_repo_root"',
+                f"producer_repo_root = {json.dumps(str(producer_root))}",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(wrapper, "HANDOFF_CONTRACT_PATH", contract)
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+
+    pointer = producer_root / "artifacts" / "adg" / "handoffs" / "adg_repair_handoff_latest.json"
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
+    handoff_path = Path(pointer_payload["handoff_path"])
+    receipt_path = Path(pointer_payload["receipt_path"])
+    handoff_payload = json.loads(handoff_path.read_text(encoding="utf-8"))
+    receipt_payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+    assert pointer_payload["artifact_status"] == "repair_ready"
+    assert pointer_payload["downstream_release_status"] == "released"
+    assert handoff_path.parent == producer_root / "artifacts" / "adg" / "handoffs"
+    assert receipt_path.parent == producer_root / "artifacts" / "adg" / "handoffs"
+    assert receipt_payload["repair_handoff"] == handoff_payload["repair_handoff"]
+    for ref in handoff_payload["repair_handoff"]["artifacts"].values():
+        artifact_path = Path(ref["path"])
+        assert artifact_path.parent == producer_root / "artifacts" / "adg"
+        assert wrapper._sha256(artifact_path) == ref["sha256"]
+    generation_manifest = json.loads(
+        Path(handoff_payload["repair_handoff"]["artifacts"]["generation_manifest"]["path"]).read_text(encoding="utf-8")
+    )
+    assert Path(generation_manifest["sqlite_path"]).parent == producer_root / "artifacts" / "adg"
+    assert Path(generation_manifest["snapshot_path"]).parent == producer_root / "artifacts" / "adg"
+    assert Path(generation_manifest["gate_manifest_path"]).parent == producer_root / "artifacts" / "adg"
+
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+    assert errors == []
 
 
 def test_repair_handoff_pointer_rejects_legacy_ready_release_status(temp_artifacts, monkeypatch):

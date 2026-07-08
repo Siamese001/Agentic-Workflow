@@ -24,7 +24,7 @@ import shutil
 import subprocess
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -34,6 +34,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 RECEIPT_PATH = REPO_ROOT / "docs" / "reports" / "adg" / "AUDIT_PIPELINE_RECEIPT.json"
+HANDOFF_CONTRACT_PATH = REPO_ROOT / ".codex" / "automations" / "adg-audit-and-burndown" / "automation.toml"
 RECEIPT_SCHEMA_VERSION = "adg-audit-pipeline-receipt/v1"
 REPAIR_HANDOFF_SCHEMA_VERSION = "adg-repair-handoff/v1"
 REPAIR_HANDOFF_POINTER_SCHEMA_VERSION = "adg-repair-handoff-pointer/v1"
@@ -166,6 +167,114 @@ def _artifact_ref(key: str, path: Path) -> dict[str, Any]:
         "path": str(resolved),
         "sha256": _sha256(resolved),
     }
+
+
+def _load_handoff_contract() -> dict[str, Any]:
+    if not HANDOFF_CONTRACT_PATH.is_file():
+        return {}
+    try:
+        import tomllib  # noqa: PLC0415
+    except ModuleNotFoundError:
+        return {}
+    try:
+        payload = tomllib.loads(HANDOFF_CONTRACT_PATH.read_text(encoding="utf-8"))
+    except (OSError, tomllib.TOMLDecodeError):
+        return {}
+    handoff = payload.get("handoff")
+    return handoff if isinstance(handoff, dict) else {}
+
+
+def _producer_artifacts_adg(producer_root: Path) -> Path:
+    return producer_root / "artifacts" / "adg"
+
+
+def _handoff_producer_artifacts_adg() -> Path:
+    handoff = _load_handoff_contract()
+    if handoff.get("handoff_pointer_base") != "producer_repo_root":
+        return ARTIFACTS_ADG
+    raw_root = handoff.get("producer_repo_root")
+    if not isinstance(raw_root, str) or not raw_root.strip():
+        return ARTIFACTS_ADG
+    return _producer_artifacts_adg(Path(raw_root).resolve())
+
+
+def _write_immutable_text(path: Path, text: str, *, label: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        existing = path.read_text(encoding="utf-8")
+        if existing != text:
+            raise RuntimeError(f"immutable {label} already exists with different content: {path}")
+        return
+    path.write_text(text, encoding="utf-8")
+
+
+def _copy_immutable_artifact(source: Path, destination: Path, *, key: str) -> Path:
+    source_resolved = source.resolve()
+    destination_resolved = destination.resolve()
+    if source_resolved == destination_resolved:
+        return source_resolved
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    source_sha256 = _sha256(source_resolved)
+    if destination.exists():
+        if _sha256(destination) != source_sha256:
+            raise RuntimeError(f"immutable {key} artifact already exists with different content: {destination}")
+        return destination_resolved
+    shutil.copy2(source_resolved, destination)
+    if _sha256(destination) != source_sha256:
+        raise RuntimeError(f"copied {key} artifact sha256 mismatch: {destination}")
+    return destination_resolved
+
+
+def _published_generation_manifest_text(source: Path, destinations: dict[str, Path]) -> str | None:
+    try:
+        payload = _load_json(source)
+    except (OSError, json.JSONDecodeError):
+        return None
+    snapshot = destinations.get("snapshot")
+    if snapshot is not None:
+        if "sqlite_path" in payload or "snapshot_path" in payload:
+            payload["sqlite_path"] = str(snapshot.resolve())
+            payload["snapshot_path"] = str(snapshot.resolve())
+    gate_manifest = destinations.get("gate_manifest")
+    if gate_manifest is not None and "gate_manifest_path" in payload:
+        payload["gate_manifest_path"] = str(gate_manifest.resolve())
+    return json.dumps(payload, indent=2) + "\n"
+
+
+def _copy_result_for_handoff_root(result: WrapperResult, *, producer_artifacts: Path) -> WrapperResult:
+    current_artifacts = ARTIFACTS_ADG.resolve()
+    if producer_artifacts.resolve() == current_artifacts:
+        return result
+    handoff = json.loads(json.dumps(result.repair_handoff or _default_incomplete_handoff()))
+    artifacts = handoff.get("artifacts")
+    if not isinstance(artifacts, dict):
+        return replace(result, repair_handoff=handoff)
+    sources: dict[str, Path] = {}
+    destinations: dict[str, Path] = {}
+    for key, ref in list(artifacts.items()):
+        if not isinstance(ref, dict):
+            continue
+        raw_path = ref.get("path")
+        if not isinstance(raw_path, str) or not raw_path:
+            continue
+        source = Path(raw_path)
+        if not source.is_file():
+            continue
+        sources[key] = source
+        destinations[key] = producer_artifacts / source.name
+    for key, source in sources.items():
+        destination = destinations[key]
+        if key == "generation_manifest":
+            manifest_text = _published_generation_manifest_text(source, destinations)
+            if manifest_text is not None:
+                _write_immutable_text(destination, manifest_text, label="generation manifest artifact")
+                copied = destination.resolve()
+            else:
+                copied = _copy_immutable_artifact(source, destination, key=key)
+        else:
+            copied = _copy_immutable_artifact(source, destination, key=key)
+        artifacts[key] = _artifact_ref(key, copied)
+    return replace(result, repair_handoff=handoff)
 
 
 def _repair_handoff_counts() -> dict[str, int]:
@@ -1216,16 +1325,16 @@ def _downstream_release_status(result: WrapperResult) -> str:
     return "released"
 
 
-def _handoff_paths(adg_run_id: str) -> tuple[Path, Path]:
-    directory = ARTIFACTS_ADG / "handoffs"
+def _handoff_paths(adg_run_id: str, *, artifacts_adg: Path | None = None) -> tuple[Path, Path]:
+    directory = (artifacts_adg or ARTIFACTS_ADG) / "handoffs"
     return (
         directory / f"adg_repair_handoff_{adg_run_id}.json",
         directory / "adg_repair_handoff_latest.json",
     )
 
 
-def _immutable_receipt_path(adg_run_id: str) -> Path:
-    return ARTIFACTS_ADG / "handoffs" / f"adg_audit_pipeline_receipt_{adg_run_id}.json"
+def _immutable_receipt_path(adg_run_id: str, *, artifacts_adg: Path | None = None) -> Path:
+    return (artifacts_adg or ARTIFACTS_ADG) / "handoffs" / f"adg_audit_pipeline_receipt_{adg_run_id}.json"
 
 
 def _write_repair_handoff_pointer(
@@ -1233,10 +1342,11 @@ def _write_repair_handoff_pointer(
     *,
     receipt_path: Path,
     receipt_sha256: str,
+    artifacts_adg: Path | None = None,
 ) -> None:
     if not result.adg_run_id:
         return
-    handoff_path, latest_pointer_path = _handoff_paths(result.adg_run_id)
+    handoff_path, latest_pointer_path = _handoff_paths(result.adg_run_id, artifacts_adg=artifacts_adg)
     handoff_path.parent.mkdir(parents=True, exist_ok=True)
     receipt_resolved = receipt_path.resolve()
     handoff_doc = {
@@ -1253,7 +1363,11 @@ def _write_repair_handoff_pointer(
         "completed_at_utc": result.completed_at_utc,
         "repair_handoff": result.repair_handoff or _default_incomplete_handoff(),
     }
-    handoff_path.write_text(json.dumps(handoff_doc, indent=2) + "\n", encoding="utf-8")
+    _write_immutable_text(
+        handoff_path,
+        json.dumps(handoff_doc, indent=2) + "\n",
+        label="repair handoff",
+    )
     handoff_sha256 = _sha256(handoff_path)
     latest_pointer = {
         "schema_version": REPAIR_HANDOFF_POINTER_SCHEMA_VERSION,
@@ -1274,33 +1388,36 @@ def _write_repair_handoff_pointer(
 
 
 def _write_receipt(result: WrapperResult) -> None:
+    producer_artifacts = _handoff_producer_artifacts_adg()
+    handoff_result = _copy_result_for_handoff_root(result, producer_artifacts=producer_artifacts)
     RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": RECEIPT_SCHEMA_VERSION,
         "run_state": {
-            "certification_status": result.certification_status,
-            "generator_exit_code": result.generator_exit_code,
-            "report_exit_code": result.report_exit_code,
-            "runtime_proof_status": result.runtime_proof_status,
-            "reasons": result.reasons,
+            "certification_status": handoff_result.certification_status,
+            "generator_exit_code": handoff_result.generator_exit_code,
+            "report_exit_code": handoff_result.report_exit_code,
+            "runtime_proof_status": handoff_result.runtime_proof_status,
+            "reasons": handoff_result.reasons,
         },
-        "artifact_status": result.artifact_status,
-        "artifact_status_source": result.artifact_status_source,
-        "adg_run_id": result.adg_run_id,
-        "started_at_utc": result.started_at_utc,
-        "completed_at_utc": result.completed_at_utc,
-        "repair_handoff": result.repair_handoff or _default_incomplete_handoff(),
+        "artifact_status": handoff_result.artifact_status,
+        "artifact_status_source": handoff_result.artifact_status_source,
+        "adg_run_id": handoff_result.adg_run_id,
+        "started_at_utc": handoff_result.started_at_utc,
+        "completed_at_utc": handoff_result.completed_at_utc,
+        "repair_handoff": handoff_result.repair_handoff or _default_incomplete_handoff(),
     }
     receipt_text = json.dumps(payload, indent=2) + "\n"
     RECEIPT_PATH.write_text(receipt_text, encoding="utf-8")
-    if result.adg_run_id:
-        immutable_receipt = _immutable_receipt_path(result.adg_run_id)
+    if handoff_result.adg_run_id:
+        immutable_receipt = _immutable_receipt_path(handoff_result.adg_run_id, artifacts_adg=producer_artifacts)
         immutable_receipt.parent.mkdir(parents=True, exist_ok=True)
-        immutable_receipt.write_text(receipt_text, encoding="utf-8")
+        _write_immutable_text(immutable_receipt, receipt_text, label="audit pipeline receipt")
         _write_repair_handoff_pointer(
-            result,
+            handoff_result,
             receipt_path=immutable_receipt,
             receipt_sha256=_sha256(immutable_receipt),
+            artifacts_adg=producer_artifacts,
         )
     try:
         display = RECEIPT_PATH.relative_to(REPO_ROOT)
