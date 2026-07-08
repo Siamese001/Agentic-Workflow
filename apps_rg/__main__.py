@@ -462,6 +462,106 @@ _PINNED_SECTION_TEXT_FILES: tuple[tuple[str, str, str], ...] = (
 )
 _SECTION_PIN_MANIFEST_FILENAME = "section_pin_manifest.json"
 _SECTION_PIN_CLEANUP_RECEIPT_FILENAME = "section_pin_cleanup_receipt.json"
+_FRESH_E2E_ARTIFACT_DIR_RECEIPT_FILENAME = "fresh_e2e_artifact_dir_receipt.json"
+_FRESH_E2E_FACT_VECTOR_BOOTSTRAP_RECEIPT_FILENAME = "fresh_e2e_fact_vector_bootstrap_receipt.json"
+_MANAGED_FULL_RESUME_E2E_ROUTE_FLAG = "APPS_RG_ENABLE_MANAGED_WORKFLOW_L0"
+
+
+def _resolve_repo_relative_path(repo_root: Path, path_text: str) -> Path:
+    path = Path(str(path_text or "").strip())
+    if path.is_absolute():
+        return path
+    return repo_root / path
+
+
+def _prepare_fresh_e2e_run(repo_root: Path, artifact_root: str) -> dict[str, Any]:
+    """Activate managed full-resume E2E mode and allocate a clean child run dir."""
+    repo = Path(repo_root).resolve()
+    root = (
+        _resolve_repo_relative_path(repo, artifact_root)
+        if str(artifact_root or "").strip()
+        else repo / "artifacts" / "apps_rg" / "runs"
+    )
+    root = root.resolve()
+    _wg.ensure_dir(root)
+
+    previous_flag = os.environ.get(_MANAGED_FULL_RESUME_E2E_ROUTE_FLAG)
+    os.environ[_MANAGED_FULL_RESUME_E2E_ROUTE_FLAG] = "1"
+
+    stamp = datetime.now(timezone.utc).strftime("e2e_%Y%m%dT%H%M%SZ")
+    for _ in range(100):
+        run_dir = root / f"{stamp}_{uuid.uuid4().hex[:8]}"
+        if not run_dir.exists():
+            _wg.ensure_dir(run_dir)
+            break
+    else:
+        raise SystemExit("unable to allocate fresh E2E artifact directory")
+
+    receipt = {
+        "schema": "apps_rg.fresh_e2e_artifact_dir.v1",
+        "reason": "fresh_e2e_run_started",
+        "artifact_root": root.as_posix(),
+        "artifact_dir": run_dir.as_posix(),
+        "stale_artifact_policy": "isolate_new_child_run_dir",
+        "managed_route_flag": _MANAGED_FULL_RESUME_E2E_ROUTE_FLAG,
+        "managed_route_flag_previous_value": previous_flag,
+        "managed_route_flag_effective_value": os.environ.get(
+            _MANAGED_FULL_RESUME_E2E_ROUTE_FLAG,
+            "",
+        ),
+        "created_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    for receipt_path in (
+        root / _FRESH_E2E_ARTIFACT_DIR_RECEIPT_FILENAME,
+        run_dir / _FRESH_E2E_ARTIFACT_DIR_RECEIPT_FILENAME,
+    ):
+        _wg.write_text(
+            receipt_path,
+            json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+    return receipt
+
+
+def _bootstrap_fact_vectors_for_fresh_e2e(repo_root: Path, artifact_dir: str) -> dict[str, Any]:
+    """Build the mandatory dense+sparse fact-vector state before fresh E2E U0."""
+    repo = Path(repo_root).resolve()
+    art = _resolve_repo_relative_path(repo, artifact_dir).resolve()
+    chroma_path = (repo / "data" / "cache" / "chromadb").resolve()
+    previous_chroma = os.environ.get("CHROMA_PERSIST_DIR")
+    os.environ["CHROMA_PERSIST_DIR"] = str(chroma_path)
+
+    from apps_rg.runtime.fact_vectors_bootstrap import run_bootstrap_fact_vectors
+
+    manifest, exit_code = run_bootstrap_fact_vectors(
+        strict=True,
+        reset=False,
+        dry_run=False,
+        chroma_path=str(chroma_path),
+        repo_root=repo,
+        allow_existing_index_fallback=True,
+    )
+    receipt = {
+        "schema": "apps_rg.fresh_e2e_fact_vector_bootstrap.v1",
+        "status": "PASS" if int(exit_code) == 0 else "FAIL",
+        "exit_code": int(exit_code),
+        "chroma_path": str(chroma_path),
+        "previous_chroma_persist_dir": previous_chroma,
+        "manifest_path": str(manifest.get("manifest_path") or ""),
+        "manifest_checksum": str(manifest.get("manifest_checksum") or ""),
+        "upserted_count": int(manifest.get("upserted_count") or 0),
+        "collection_count_after": int(manifest.get("collection_count_after") or 0),
+        "sparse_sidecar_built": bool(manifest.get("sparse_sidecar_built") is True),
+        "missing_required_lane_targets": list(manifest.get("missing_required_lane_targets") or []),
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+    }
+    receipt_path = art / _FRESH_E2E_FACT_VECTOR_BOOTSTRAP_RECEIPT_FILENAME
+    _wg.write_text(
+        receipt_path,
+        json.dumps(receipt, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return receipt
 
 
 def _integrated_run_id_for_path(path: Path) -> str | None:
@@ -823,6 +923,14 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument("--artifact-dir", default="", help="Override artifact output directory")
+    p.add_argument(
+        "--fresh-e2e",
+        action="store_true",
+        help=(
+            "Fresh source-to-end full-resume proof mode: force the managed R3R4 route "
+            "and allocate a clean child run directory under --artifact-dir."
+        ),
+    )
     # In-process best-of-N pin loop (collapses ops_scripts/apps_rg/best_of_n_section_harness.py).
     # Runs the section pipeline up to N times and stops on the first attempt whose runtime
     # disposition matches --accept. No subprocess parsing, no out-of-band re-scanning of
@@ -928,6 +1036,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if getattr(args, "competencies", False):
         args.section = "competencies"
     args.non_interactive = not args.interactive
+    fresh_e2e_receipt: dict[str, Any] | None = None
+    fresh_e2e_fact_vector_bootstrap_receipt: dict[str, Any] | None = None
 
     if not str(getattr(args, "resume", "") or "").strip():
         dr = _default_resume_path()
@@ -954,6 +1064,33 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
         from apps_rg.runtime.orchestration.patch_run import run_patch_from_cli
 
         return run_patch_from_cli(args)
+
+    if bool(getattr(args, "fresh_e2e", False)):
+        fresh_e2e_receipt = _prepare_fresh_e2e_run(
+            find_repo_root(),
+            str(getattr(args, "artifact_dir", "") or ""),
+        )
+        args.artifact_dir = str(fresh_e2e_receipt.get("artifact_dir") or "")
+        print(
+            "FRESH_E2E_ARTIFACT_DIR "
+            f"root={fresh_e2e_receipt.get('artifact_root', '')} "
+            f"run_dir={fresh_e2e_receipt.get('artifact_dir', '')} "
+            f"route_flag={fresh_e2e_receipt.get('managed_route_flag', '')}",
+            flush=True,
+        )
+        fresh_e2e_fact_vector_bootstrap_receipt = _bootstrap_fact_vectors_for_fresh_e2e(
+            find_repo_root(),
+            str(getattr(args, "artifact_dir", "") or ""),
+        )
+        print(
+            "FRESH_E2E_FACT_VECTOR_BOOTSTRAP "
+            f"status={fresh_e2e_fact_vector_bootstrap_receipt.get('status', '')} "
+            f"exit_code={fresh_e2e_fact_vector_bootstrap_receipt.get('exit_code', '')} "
+            "collection_count_after="
+            f"{fresh_e2e_fact_vector_bootstrap_receipt.get('collection_count_after', '')} "
+            f"sparse_sidecar_built={fresh_e2e_fact_vector_bootstrap_receipt.get('sparse_sidecar_built', '')}",
+            flush=True,
+        )
 
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
@@ -1441,6 +1578,12 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             )
             if pin_cleanup_receipt is not None and isinstance(result, dict):
                 result["section_pin_cleanup_receipt"] = pin_cleanup_receipt
+            if fresh_e2e_receipt is not None and isinstance(result, dict):
+                result["fresh_e2e_artifact_dir_receipt"] = fresh_e2e_receipt
+            if fresh_e2e_fact_vector_bootstrap_receipt is not None and isinstance(result, dict):
+                result["fresh_e2e_fact_vector_bootstrap_receipt"] = (
+                    fresh_e2e_fact_vector_bootstrap_receipt
+                )
         status = result.get("exit_status", "unknown") if isinstance(result, dict) else "unknown"
         authorized = (
             bool(result.get("outcome_authorized"))

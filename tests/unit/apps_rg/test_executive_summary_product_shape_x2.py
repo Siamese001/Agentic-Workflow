@@ -224,6 +224,22 @@ def test_north_star_echo_gate_counts_role_episode_metric_values_as_support():
     assert ok, reason
 
 
+def test_north_star_echo_gate_counts_gross_margin_wording_variant_as_support():
+    text = (
+        "Platform commercialization leadership generated $22M in IP-led revenue, "
+        "expanding gross margins by 20%, and scaling the engineering team from 8 to 28 specialists."
+    )
+    facts = [
+        {
+            "fact_id": "reb_unify_platform_commercialization_leadership",
+            "claim_text": "Platform productization, IP-led revenue, margin expansion, team scale",
+            "metric_values": ["$22M IP-led revenue", "20% gross margin expansion"],
+        }
+    ]
+    ok, reason = check_north_star_style_example_echo_unsupported(text, facts)
+    assert ok, reason
+
+
 def test_synthesis_quality_requires_six_sentences():
     short = (
         "An experienced engineering executive with a strong background in platforms. "

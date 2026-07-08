@@ -589,6 +589,96 @@ def test_live_aws_migration_execution_repair_clears_headline_floors() -> None:
     assert _failed_ids(gates) == []
 
 
+def test_live_regulated_aws_migration_repair_adds_execution_for_grounding() -> None:
+    hl = (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Regulated AWS Migration | Hyperscaler Alliance Co-Sell"
+    )
+    fact_ids = [
+        "reb_unify_distributed_ecosystem_engineering",
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "reb_insurtech_aws_migration_execution",
+        "skill_aws_migration_readiness_assessment",
+        "skill_partner_hyperscaler_cosell",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+    ]
+    selected_fact_plan = {
+        "section_id": "headline",
+        "required_fact_ids": list(fact_ids),
+        "selected_claim_fact_ids": list(fact_ids),
+        "selected_required_fact_ids": list(fact_ids),
+        "facts": [
+            {
+                "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                "claim_text": "Distributed cloud and data execution infrastructure",
+                "graph_skill_node_ids": ["skill_sr_cloud_data_platform_engineering"],
+            },
+            {
+                "fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+                "claim_text": "Led IBM-AWS alliance co-sell motions for financial-services modernization opportunities",
+                "graph_skill_node_ids": ["skill_partner_hyperscaler_cosell"],
+            },
+            {
+                "fact_id": "reb_insurtech_aws_migration_execution",
+                "claim_text": (
+                    "Led AWS modernization execution for monolithic policy administration "
+                    "and insurance platform workloads."
+                ),
+                "graph_skill_node_ids": ["skill_aws_migration_readiness_assessment"],
+            },
+        ],
+    }
+    parsed = {
+        "headline_line": hl,
+        "selected_fact_plan": selected_fact_plan,
+        "claim_ledger": [
+            {"claim_text": "Distributed Cloud Infrastructure", "source_fact_ids": fact_ids},
+            {"claim_text": "Regulated AWS Migration", "source_fact_ids": fact_ids},
+            {"claim_text": "Hyperscaler Alliance Co-Sell", "source_fact_ids": fact_ids},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+            "selected_theme": "distributed cloud infrastructure, regulated AWS migration, hyperscaler co-sell",
+            "anti_stuffing_check": "passed",
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {"word_count": 11},
+    }
+    runtime_payload = {"target_company": "", "selected_fact_plan": selected_fact_plan}
+
+    out = normalize_parsed_output(parsed, runtime_payload, set(fact_ids), hl)
+
+    assert out is not None
+    assert out["headline_line"] == (
+        "SVP Engineering | Distributed Cloud Infrastructure | "
+        "Regulated AWS Migration Execution | Hyperscaler Alliance Co-Sell"
+    )
+    assert out["self_check"]["word_count"] == 12
+    gates = run_headline_x2_gates(
+        headline_line=out["headline_line"],
+        parsed_output=out,
+        claim_ledger=out["claim_ledger"],
+        jd_text="enterprise platform delivery",
+        target_company="",
+        target_title="SVP Engineering",
+        resume_support_blob=json.dumps({"employment": [], "header": {"name": "A B"}}),
+        employer_names_lower=[],
+        allowed_fact_ids=set(fact_ids),
+        runtime_generation_status="REAL_LLM",
+        provider_requested="external_claude",
+        provider_attempted="external_claude",
+        raw_output=json.dumps(out),
+        raw_model_parsed_before_normalize=parsed,
+        x1d_judges=_fake_judges(),
+        companion_context="",
+        text_claim_coverage={"schema": "headline_text_claim_coverage_v1", "overall_pass": True, "segments": []},
+    )
+    assert _failed_ids(gates) == []
+
+
 def test_live_aws_migration_modernization_execution_repair_clears_headline_floors() -> None:
     hl = (
         "SVP Engineering | Distributed Cloud Infrastructure | "

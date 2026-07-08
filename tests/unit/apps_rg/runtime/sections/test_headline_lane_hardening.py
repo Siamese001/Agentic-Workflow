@@ -24,7 +24,11 @@ from apps_rg.runtime.validators.headline_positioning_x2 import (
     run_headline_positioning_x2_gates,
 )
 from apps_rg.runtime.validators.headline_quality_x2 import POSITIONING_FAMILIES
-from apps_rg.runtime.validators.headline_x2 import headline_word_count, run_headline_x2_gates
+from apps_rg.runtime.validators.headline_x2 import (
+    check_headline_xyz_literal_grounding,
+    headline_word_count,
+    run_headline_x2_gates,
+)
 from apps_rg.runtime.w3_execution_path_labels import BUCKET_GOVERNED_PA_L2_EXIT
 
 HL = "SVP Engineering | Governed Agentic Platforms | Runtime Infrastructure | Regulated Delivery"
@@ -202,6 +206,92 @@ def test_normalize_repairs_runtime_spine_and_short_cosell_headline() -> None:
     }
     assert any(e.get("operation") == "headline_machine_phrase_repair" for e in out["change_log"])
     assert any(e.get("operation") == "headline_word_count_deterministic_expand" for e in out["change_log"])
+
+
+def test_normalize_repairs_governed_data_infrastructure_headline_segment() -> None:
+    hl = (
+        "SVP Engineering | Governed Data Infrastructure | "
+        "Hyperscaler Alliance Co-Sell | Regulated Insurance Platforms"
+    )
+    expected = (
+        "SVP Engineering | Distributed Cloud Data Governance | "
+        "Hyperscaler Alliance Co-Sell | Regulated Insurance Platforms"
+    )
+    allowed = {
+        "reb_ibm_aws_alliance_partner_cosell_gtm",
+        "reb_insurtech_aws_migration_execution",
+        "reb_unify_distributed_ecosystem_engineering",
+        "skill_aws_migration_readiness_assessment",
+        "skill_provider_and_egress_governance",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+    }
+    payload = {
+        "target_company": "",
+        "selected_fact_plan": {
+            "section_id": "headline",
+            "required_fact_ids": sorted(allowed),
+            "selected_skill_ids": [
+                "skill_aws_migration_readiness_assessment",
+                "skill_provider_and_egress_governance",
+                "skill_sr_w12_hyperscaler_alliance_co_sell",
+            ],
+            "facts": [
+                {
+                    "fact_id": "reb_unify_distributed_ecosystem_engineering",
+                    "claim_text": "Distributed cloud and data execution infrastructure",
+                },
+                {
+                    "fact_id": "reb_ibm_aws_alliance_partner_cosell_gtm",
+                    "claim_text": "IBM-AWS alliance co-sell motions",
+                },
+                {
+                    "fact_id": "reb_insurtech_aws_migration_execution",
+                    "claim_text": "Regulated insurance platform migration execution",
+                },
+            ],
+        },
+        "proof_pool_metadata": {"proof_pool_type": "augmented_skills_graph"},
+    }
+    parsed = {
+        "headline_line": hl,
+        "claim_ledger": [
+            {"claim_text": "Governed Data Infrastructure", "source_fact_ids": sorted(allowed)},
+            {"claim_text": "Hyperscaler Alliance Co-Sell", "source_fact_ids": sorted(allowed)},
+            {"claim_text": "Regulated Insurance Platforms", "source_fact_ids": sorted(allowed)},
+        ],
+        "jd_alignment": {
+            "targeting_only": True,
+            "jd_used_as_proof": False,
+            "briefing_used_as_proof": False,
+        },
+        "gap_notes": [],
+        "change_log": [],
+        "self_check": {},
+    }
+
+    out = normalize_parsed_output(parsed, payload, allowed, hl)
+
+    assert out is not None
+    assert out["headline_line"] == expected
+    assert {row["claim_text"] for row in out["claim_ledger"]} == {
+        "Distributed Cloud Data Governance",
+        "Hyperscaler Alliance Co-Sell",
+        "Regulated Insurance Platforms",
+    }
+    fact_text = {
+        "reb_unify_distributed_ecosystem_engineering": "Distributed cloud and data execution infrastructure",
+        "reb_ibm_aws_alliance_partner_cosell_gtm": "IBM-AWS alliance co-sell motions",
+        "reb_insurtech_aws_migration_execution": "Regulated insurance platform migration execution",
+        "skill_aws_migration_readiness_assessment": "aws migration readiness assessment",
+        "skill_provider_and_egress_governance": "provider and egress governance",
+        "skill_sr_w12_hyperscaler_alliance_co_sell": "hyperscaler alliance co sell",
+    }
+    ok, _observed, failure = check_headline_xyz_literal_grounding(
+        headline_line=out["headline_line"],
+        claim_ledger=out["claim_ledger"],
+        fact_id_to_text=fact_text,
+    )
+    assert ok is True, failure
 
 
 def test_build_headline_allowed_fact_packet_includes_facts_and_anchor() -> None:

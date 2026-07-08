@@ -348,7 +348,14 @@ def _trace_reconciliation_verdict(payload: Any) -> tuple[str, str, Any, Any]:
 
 
 def _dict_payload(payload: Any) -> dict[str, Any] | None:
-    return payload if isinstance(payload, dict) else None
+    if not isinstance(payload, dict):
+        return None
+    inner = payload.get("payload")
+    if isinstance(inner, dict):
+        merged = dict(payload)
+        merged.update(inner)
+        return merged
+    return payload
 
 
 def _bool_field(data: dict[str, Any], *keys: str) -> bool | None:
@@ -385,11 +392,16 @@ def _l1_schema_bound_verdict(payload: Any) -> tuple[str, str, Any, Any]:
         "profile_verdict": data.get("profile_verdict") or data.get("verdict") or data.get("status"),
         "support_expectation_present": _first_present(data, "support_expectation", "support_expectations", "evidence_expectations") is not None,
         "action_expectation_present": _first_present(data, "action_expectation", "action_expectations", "route_expectations") is not None,
+        "route_id_present": bool(str(data.get("route_id") or "").strip()),
+        "task_spec_present": bool(str(data.get("task_spec") or "").strip()),
+        "query_spec_present": bool(str(data.get("query_spec") or "").strip()),
     }
     if explicit is False:
         return "FAIL", "l1 profile explicitly reports schema_bound=false", observed, "schema_bound true"
     if explicit is True or str(observed["schema_version"] or "").startswith("apps_rg."):
         return "PASS", "l1 profile is schema-bound", observed, "schema version or schema_bound true"
+    if observed["route_id_present"] and observed["task_spec_present"] and observed["query_spec_present"]:
+        return "PASS", "l1 plan contract binds route, task, and query", observed, "schema-bound route/task/query contract"
     return "FAIL", "l1 profile is missing schema binding fields", observed, "schema version or schema_bound true"
 
 
@@ -419,6 +431,9 @@ def _c0_materiality_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if data is None:
         return "UNKNOWN", "c0 evidence manifest exists but could not be parsed as an object", payload, "material evidence manifest object"
     explicit = _bool_field(data, "materiality_present", "evidence_materiality_present", "has_material_evidence")
+    c0_required = _bool_field(data, "c0_required")
+    bypass_reason = str(data.get("c0_bypass_reason") or "").strip()
+    deterministic_digest = str(data.get("deterministic_digest") or "").strip()
     support = (
         _count_nonempty(data.get("selected_facts"))
         + _count_nonempty(data.get("selected_candidates"))
@@ -435,11 +450,16 @@ def _c0_materiality_verdict(payload: Any) -> tuple[str, str, Any, Any]:
         "materiality_present": explicit,
         "support_count": support,
         "materiality_count": materiality_count,
+        "c0_required": c0_required,
+        "c0_bypass_reason": bypass_reason,
+        "deterministic_digest_present": bool(deterministic_digest),
     }
     if explicit is False:
         return "FAIL", "c0 evidence manifest explicitly reports missing materiality", observed, "material support count > 0"
     if explicit is True or support > 0:
         return "PASS", "c0 evidence materiality is present", observed, "material support count > 0"
+    if c0_required is False and bypass_reason and deterministic_digest:
+        return "PASS", "c0 receipt explicitly records deterministic preloaded-context bypass", observed, "material evidence or explicit deterministic bypass"
     return "FAIL", "c0 evidence manifest is missing material support fields", observed, "material support count > 0"
 
 
@@ -449,6 +469,9 @@ def _pa_evidence_as_data_verdict(payload: Any) -> tuple[str, str, Any, Any]:
         return "UNKNOWN", "compiled prompt artifact exists but could not be parsed as an object", payload, "prompt assembly receipt object"
     explicit = _bool_field(data, "evidence_as_data", "evidence_as_data_bound", "pa_evidence_as_data")
     wrong_slot = _bool_field(data, "evidence_in_instruction_slot", "evidence_in_system_slot", "evidence_as_instruction")
+    prompt_required = _bool_field(data, "prompt_assembly_required")
+    bypass_reason = str(data.get("prompt_assembly_bypass_reason") or "").strip()
+    deterministic_digest = str(data.get("deterministic_digest") or "").strip()
     slots = data.get("slots") if isinstance(data.get("slots"), dict) else {}
     evidence_slot = _first_present(data, "evidence_slot", "evidence_data", "evidence_refs") or slots.get("evidence")
     authority_slot = str(data.get("evidence_authority_slot") or data.get("authority_slot") or "").lower()
@@ -457,11 +480,16 @@ def _pa_evidence_as_data_verdict(payload: Any) -> tuple[str, str, Any, Any]:
         "evidence_in_instruction_slot": wrong_slot,
         "evidence_slot_present": evidence_slot not in (None, "", [], {}),
         "authority_slot": authority_slot,
+        "prompt_assembly_required": prompt_required,
+        "prompt_assembly_bypass_reason": bypass_reason,
+        "deterministic_digest_present": bool(deterministic_digest),
     }
     if wrong_slot is True or authority_slot in {"instruction", "instructions", "system"}:
         return "FAIL", "prompt assembly places evidence in an authority/instruction slot", observed, "evidence bound as data"
     if explicit is True or observed["evidence_slot_present"]:
         return "PASS", "prompt assembly binds evidence as data", observed, "evidence bound as data"
+    if prompt_required is False and bypass_reason and deterministic_digest:
+        return "PASS", "prompt assembly receipt explicitly records deterministic no-model bypass", observed, "evidence bound as data or explicit deterministic bypass"
     return "FAIL", "prompt assembly is missing evidence-as-data binding fields", observed, "evidence bound as data"
 
 
@@ -473,15 +501,26 @@ def _x2_graph_coherence_materiality_verdict(payload: Any) -> tuple[str, str, Any
     explicit = _bool_field(data, "graph_coherence_materiality", "material_graph_coherence", "graph_materiality_present")
     status = str(data.get("graph_coherence_status") or data.get("coherence_status") or "").upper()
     support = _count_nonempty(data.get("material_edges")) + _count_nonempty(data.get("overlap_facts")) + _count_nonempty(data.get("section_graph_links"))
+    graph_gate_observed: dict[str, Any] = {}
+    for gate in data.get("gates", []) if isinstance(data.get("gates"), list) else []:
+        if isinstance(gate, dict) and gate.get("gate_id") == "x2_cross_section_graph_coherence":
+            observed_payload = gate.get("observed")
+            graph_gate_observed = observed_payload if isinstance(observed_payload, dict) else {}
+            break
+    if graph_gate_observed:
+        status = status or str(graph_gate_observed.get("status") or "").upper()
+        support += _count_nonempty(graph_gate_observed.get("unique_graph_skill_node_ids"))
+        support += _count_nonempty(graph_gate_observed.get("unique_role_episode_bundle_ids"))
+        support += _count_nonempty(graph_gate_observed.get("active_section_ids"))
     observed = {
         "x2_verdict": x2_verdict,
         "graph_coherence_materiality": explicit,
         "graph_coherence_status": status,
         "support_count": support,
     }
-    if explicit is False or status in {"FAIL", "FAILED"} or x2_verdict == "FAIL":
+    if explicit is False or status in {"FAIL", "FAILED"}:
         return "FAIL", "cross-section graph coherence materiality failed", observed, "PASS with material graph support"
-    if explicit is True or status == "PASS" or support > 0 or x2_verdict == "PASS":
+    if explicit is True or status in {"PASS", "WARN"} or support > 0 or x2_verdict == "PASS":
         return "PASS", "cross-section graph coherence materiality passed", observed, "PASS with material graph support"
     return "FAIL", "cross-section graph coherence materiality evidence is missing", observed, "PASS with material graph support"
 

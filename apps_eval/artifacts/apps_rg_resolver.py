@@ -64,6 +64,22 @@ def as_list(value: Any) -> list[Any]:
     return [value]
 
 
+def _index_artifact_ref(value: Any) -> str:
+    if isinstance(value, dict):
+        return str(value.get("artifact_ref") or value.get("path") or value.get("ref") or "").strip()
+    return str(value or "").strip()
+
+
+def _index_evidence_ref(value: Any, fallback: str) -> str:
+    if isinstance(value, dict):
+        return str(value.get("evidence_ref") or value.get("artifact_ref") or value.get("path") or fallback).strip()
+    return fallback
+
+
+def _index_payload(value: Any) -> Any:
+    return value.get("payload") if isinstance(value, dict) and "payload" in value else value
+
+
 def expected_relative_paths(
     *,
     role: str,
@@ -115,12 +131,15 @@ def resolve_apps_rg_artifact(
         if index_value in (None, "", [], {}):
             continue
         first = as_list(index_value)[0]
+        artifact_ref = _index_artifact_ref(first)
+        if not artifact_ref:
+            continue
         return ResolvedAppsRgArtifact(
             artifact_role=role,
-            artifact_ref=str(first),
-            evidence_ref=str(first),
+            artifact_ref=artifact_ref,
+            evidence_ref=_index_evidence_ref(first, artifact_ref),
             evidence_digest=canonical_digest(index_value),
-            payload=index_value,
+            payload=_index_payload(first),
             resolution_source="snapshot_artifact_index",
             source_artifact_schema=source_schema,
             expected_refs=expected_refs,

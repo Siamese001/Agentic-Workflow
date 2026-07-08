@@ -204,6 +204,91 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
 
 
+def test_whole_run_research_failure_falls_back_to_manual_brief(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
+
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    class _FakeResult:
+        run_id = "draft-run-research-fallback"
+        request_id = "req-research-fallback"
+        x3_disposition = "X3A"
+        fault = "L2_EXECUTION_ERROR:test"
+        terminal_r5 = False
+
+    from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
+
+    captured: dict[str, object] = {}
+
+    def _fake_spine(**kwargs: object) -> _FakeResult:
+        captured["raw_request"] = kwargs["raw_request"]
+        art = Path(kwargs["artifact_dir"])
+        art.mkdir(parents=True, exist_ok=True)
+        (art / "r4_run_manifest.json").write_text(
+            json.dumps({"chain_kind": "R4_SINGLE_ACTION", "route_family": "R4_SINGLE_ACTION"}),
+            encoding="utf-8",
+        )
+        return _FakeResult()
+
+    monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)
+    monkeypatch.setattr(
+        orch,
+        "_run_r3r4_research_hop",
+        lambda **kwargs: (False, "APPS_RESEARCH_BLOCKED", ""),
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.run_whole_run_cache_preflight",
+        lambda **kwargs: WholeRunCachePreflightOutcome(
+            entrypoint="canonical_dispatch",
+            generation_required=True,
+        ),
+    )
+    monkeypatch.setattr(orch, "emit_integrated_run_bundle_index", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "apps_rg.cache.whole_run_entrypoint_preflight.maybe_ingest_r1b_post_exit",
+        lambda **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.full_resume_review_bundle.emit_full_resume_review_bundle",
+        lambda run_root: run_root / "review_bundle.zip",
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_whole_run_cache_preflight_artifact",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_cache_miss_receipt",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "fallback_run")
+
+    brief = tmp_path / "manual_brief.md"
+    brief.write_text("Manual Anthropic partner briefing with usable targeting context.", encoding="utf-8")
+    jd = tmp_path / "jd.txt"
+    jd.write_text("Run-specific JD for applied AI architecture partnerships.", encoding="utf-8")
+    result = orch.run_whole_run_with_route_governance(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd=str(jd),
+        manual_brief=str(brief),
+        generation_mode="strategic_tailor",
+        auto_research_internal=True,
+        artifact_dir=str(tmp_path / "fallback_run"),
+    )
+
+    raw_request = captured["raw_request"]
+    assert isinstance(raw_request, dict)
+    assert raw_request["manual_brief"] == str(brief)
+    assert result["route_decision"]["research_delegation_executed"] is True
+    assert result["route_decision"]["research_fallback_to_manual_brief"] is True
+    assert result["route_decision"]["research_failure_nonterminal"] == "APPS_RESEARCH_BLOCKED"
+    assert result["route_decision"]["research_outcome"] == "ManualBriefFallbackAfter_APPS_RESEARCH_BLOCKED"
+    assert (tmp_path / "fallback_run" / "research" / "manual_brief_fallback_receipt.json").is_file()
+
+
 def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("APPS_RG_MOCK_RESEARCH", "1")
     monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
@@ -516,9 +601,34 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         return _FakeResult()
 
     post_x3_calls: list[Path] = []
+    output_contract_calls: list[Path] = []
+
+    def _fake_emit_final_resume_product_outputs(run_root: Path, **kwargs: object) -> dict[str, object]:
+        root = Path(run_root)
+        output_contract_calls.append(root)
+        (root / "outputs").mkdir(parents=True, exist_ok=True)
+        (root / "outputs" / "resume.docx").write_bytes(b"fake-docx")
+        (root / "apps_rg_output_manifest.json").write_text(
+            json.dumps(
+                {
+                    "schema_version": "apps_rg_output_manifest.v1",
+                    "resume_docx_relpath": "outputs/resume.docx",
+                    "docx_verified": True,
+                    "required_artifacts": {
+                        "resume_docx": "verified",
+                        "docx_verified": True,
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+        return {"status": "PASS", "manifest_path": str(root / "apps_rg_output_manifest.json")}
 
     def _fake_post_x3(**kwargs: object) -> dict[str, object]:
         art = Path(kwargs["artifact_dir"])
+        manifest = json.loads((art / "apps_rg_output_manifest.json").read_text(encoding="utf-8"))
+        assert manifest["docx_verified"] is True
+        assert manifest["required_artifacts"]["resume_docx"] == "verified"
         post_x3_calls.append(art)
         return {
             "completed": True,
@@ -540,6 +650,10 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
     monkeypatch.setattr(
         "apps_rg.cache.whole_run_entrypoint_preflight.maybe_ingest_r1b_post_exit",
         lambda **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.final_resume_outputs.emit_final_resume_product_outputs",
+        _fake_emit_final_resume_product_outputs,
     )
     monkeypatch.setattr(
         "apps_rg.runtime.full_run_section_status.emit_full_run_section_status",
@@ -581,6 +695,7 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
 
     assert result["exit_status"] == "success"
     assert result["outcome_authorized"] is True
+    assert output_contract_calls == [tmp_path / "full_resume_success01"]
     assert post_x3_calls == [tmp_path / "full_resume_success01"]
     assert result["uwg_commit_receipt_ref"] == "uwg/uwg_commit_receipt.json"
     assert Path(result["apps_eval_record_ref"]).name == "eval_record.json"

@@ -3,8 +3,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from apps_eval.adapters.apps_rg import run_apps_rg_live
+from apps_eval.adapters.apps_rg import normalize_existing_apps_rg_run_snapshot, run_apps_rg_live
+from apps_eval.artifacts.apps_rg_resolver import resolve_apps_rg_artifact
 from apps_eval.contracts import AppOutputSnapshot, EvalRequest
+from apps_eval.coverage.apps_rg import load_apps_rg_contracts
 from apps_eval.runner import core as runner
 
 
@@ -107,6 +109,57 @@ def test_apps_rg_live_normalizes_generated_resume(monkeypatch, tmp_path: Path) -
     assert "AI strategy" in snapshot.output["sections"]["skills"]
     assert snapshot.provenance["evidence_refs"] == ["resume:leadership"]
     assert (tmp_path / "run" / "resume.md").is_file()
+
+
+def test_existing_run_snapshot_indexes_modular_section_pointer_artifacts(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "run"
+    (artifact_dir / "outputs").mkdir(parents=True)
+    (artifact_dir / "outputs" / "generated_resume.json").write_text(
+        json.dumps({"sections": {"summary": {"text": "summary"}}}),
+        encoding="utf-8",
+    )
+    lane_root = tmp_path / "runtime_proofs" / "full_resume_headline"
+    lane_root.mkdir(parents=True)
+    payloads = {
+        "l2_output.json": {"runtime_generation_status": "REAL_LLM"},
+        "runtime_payload.json": {"proof_pool_metadata": {}},
+        "x2_gate_outputs.json": {"all_pass": True},
+        "x1d_llm_judge_outputs.json": {"overall": "PASS"},
+        "x3_disposition.json": {"x3_code": "X3D"},
+        "l6_shadow_eval_package.json": {"current_run_mutated": False},
+    }
+    for name, payload in payloads.items():
+        (lane_root / name).write_text(json.dumps(payload), encoding="utf-8")
+    pointer_dir = artifact_dir / "modular_r4" / "sections" / "headline"
+    pointer_dir.mkdir(parents=True)
+    (pointer_dir / "latest_successful_real_run.json").write_text(
+        json.dumps(
+            {
+                "section_id": "headline",
+                "artifact_links": {
+                    name: (lane_root / name).as_posix()
+                    for name in payloads
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    snapshot = normalize_existing_apps_rg_run_snapshot(
+        scenario_id="apps_rg_current_run_post_x3",
+        result={"x3_disposition": "X3D"},
+        artifact_dir=artifact_dir,
+    )
+    resolved = resolve_apps_rg_artifact(
+        snapshot=snapshot,
+        role="lane_x3_disposition",
+        lane_id="headline",
+        artifact_contract=load_apps_rg_contracts()["artifact_contract"],
+    )
+
+    assert snapshot.artifact_index["headline:lane_l2_output"]["payload"]["runtime_generation_status"] == "REAL_LLM"
+    assert resolved.artifact_ref == (lane_root / "x3_disposition.json").as_posix()
+    assert resolved.payload["x3_code"] == "X3D"
 
 
 def test_apps_rg_live_runner_uses_compact_artifact_paths(monkeypatch, tmp_path: Path) -> None:

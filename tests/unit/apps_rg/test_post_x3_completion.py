@@ -199,6 +199,83 @@ def test_post_x3_completion_commits_generated_resume_and_binds_eval(
     assert (tmp_path / "uwg_validation_receipt.json").is_file()
 
 
+def test_l6_section_bindings_follow_modular_section_latest_run_pointer(tmp_path: Path) -> None:
+    lane_run = tmp_path / "runtime_proofs" / "full_resume_headline"
+    _write_json(
+        lane_run / "l6_v40_shadow_eval_package.json",
+        {
+            "schema_version": "apps_rg.l6_v40_shadow_eval.v1",
+            "grain_parity_status": "PASS",
+            "alignment_source": "apps_eval_scorecard_rows",
+        },
+    )
+    pointer_dir = tmp_path / "modular_r4" / "sections" / "headline"
+    _write_json(
+        pointer_dir / "latest_successful_real_run.json",
+        {
+            "section_id": "headline",
+            "run_dir": lane_run.as_posix(),
+        },
+    )
+    row = _scorecard_row()
+    eval_record = SimpleNamespace(
+        record_id="eval-1",
+        artifact_paths={"eval_record": "apps_eval/fake/eval_record.json"},
+        scorecard=SimpleNamespace(scorecard_rows=[row]),
+    )
+
+    result = subject._emit_l6_section_apps_eval_bindings(
+        artifact_dir=tmp_path,
+        eval_record=eval_record,
+    )
+    payload = json.loads((tmp_path / result["l6_section_apps_eval_bindings_ref"]).read_text(encoding="utf-8"))
+    headline = next(item for item in payload["bindings"] if item["section_id"] == "headline")
+
+    assert headline["binding_status"] == "PASS"
+    assert headline["l6_v40_shadow_eval_package_ref"].endswith("runtime_proofs/full_resume_headline/l6_v40_shadow_eval_package.json")
+    assert payload["summary"]["sections_bound"] == 1
+
+
+def test_l6_section_bindings_accept_legacy_l6_pointer_when_v40_absent(tmp_path: Path) -> None:
+    lane_run = tmp_path / "runtime_proofs" / "full_resume_headline"
+    _write_json(
+        lane_run / "l6_shadow_eval_package.json",
+        {
+            "schema_version": "apps_rg.l6_shadow_eval_package.v1",
+            "current_run_mutated": False,
+        },
+    )
+    pointer_dir = tmp_path / "modular_r4" / "sections" / "headline"
+    _write_json(
+        pointer_dir / "latest_successful_real_run.json",
+        {
+            "section_id": "headline",
+            "artifact_links": {
+                "l6_shadow_eval_package.json": (lane_run / "l6_shadow_eval_package.json").as_posix(),
+            },
+        },
+    )
+    row = _scorecard_row()
+    eval_record = SimpleNamespace(
+        record_id="eval-1",
+        artifact_paths={"eval_record": "apps_eval/fake/eval_record.json"},
+        scorecard=SimpleNamespace(scorecard_rows=[row]),
+    )
+
+    result = subject._emit_l6_section_apps_eval_bindings(
+        artifact_dir=tmp_path,
+        eval_record=eval_record,
+    )
+    payload = json.loads((tmp_path / result["l6_section_apps_eval_bindings_ref"]).read_text(encoding="utf-8"))
+    headline = next(item for item in payload["bindings"] if item["section_id"] == "headline")
+
+    assert headline["binding_status"] == "PASS"
+    assert headline["l6_package_tier"] == "legacy"
+    assert headline["l6_v40_shadow_eval_package_ref"] == ""
+    assert headline["l6_shadow_eval_package_ref"].endswith("runtime_proofs/full_resume_headline/l6_shadow_eval_package.json")
+    assert payload["summary"]["sections_bound"] == 1
+
+
 def test_post_x3_uwg_failure_emits_failure_l6_bridge(tmp_path: Path, monkeypatch) -> None:
     _seed_success_artifacts(tmp_path)
 

@@ -673,6 +673,8 @@ _MACHINE_HEADLINE_SEGMENT_REWRITES: dict[str, str] = {
     "aws migration execution": "Policy Administration Platforms",
     "aws migration modernization execution": "Policy Administration Platforms",
     "aws modernization execution": "Policy Administration Platforms",
+    "regulated aws migration": "Regulated AWS Migration Execution",
+    "governed data infrastructure": "Distributed Cloud Data Governance",
     "insurance platform migration": "Regulated Insurance Platforms",
 }
 

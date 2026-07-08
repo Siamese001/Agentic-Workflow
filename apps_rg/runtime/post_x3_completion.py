@@ -91,6 +91,17 @@ def _repo_rel(path: Path, root: Path) -> str:
         return path.as_posix()
 
 
+def _artifact_or_repo_rel(path: Path, artifact_dir: Path) -> str:
+    try:
+        return path.relative_to(artifact_dir).as_posix()
+    except ValueError:
+        pass
+    try:
+        return path.relative_to(REPO_ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
 def _artifact_ref(root: Path, path: Path) -> str:
     return f"artifact://{_repo_rel(path, root)}"
 
@@ -575,12 +586,69 @@ def _lane_ids_from_contract_or_rows(scorecard_rows: list[Mapping[str, Any]]) -> 
     return lane_ids
 
 
+def _resolve_section_pointer_ref(ref: str, artifact_dir: Path) -> Path:
+    path = Path(ref)
+    if path.is_absolute():
+        return path
+    repo_candidate = (REPO_ROOT / path).resolve()
+    if repo_candidate.exists():
+        return repo_candidate
+    return (artifact_dir / path).resolve()
+
+
+def _section_pointer_payload(artifact_dir: Path, lane_id: str) -> dict[str, Any]:
+    lane_dir = artifact_dir / "modular_r4" / "sections" / lane_id
+    for name in ("latest_successful_real_run.json", "latest_real_run.json"):
+        payload = _read_json(lane_dir / name)
+        if payload:
+            return payload
+    return {}
+
+
 def _section_package_candidates(artifact_dir: Path, lane_id: str) -> list[Path]:
-    return [
+    candidates = [
         artifact_dir / "lanes" / lane_id / "l6_v40_shadow_eval_package.json",
         artifact_dir / "modular_r4" / "sections" / lane_id / "l6_v40_shadow_eval_package.json",
         artifact_dir / lane_id / "l6_v40_shadow_eval_package.json",
     ]
+    pointer = _section_pointer_payload(artifact_dir, lane_id)
+    links: dict[str, Any] = {}
+    for key in ("artifact_links", "artifact_links_compact"):
+        raw_links = pointer.get(key)
+        if isinstance(raw_links, dict):
+            links.update(raw_links)
+    linked_ref = str(links.get("l6_v40_shadow_eval_package.json") or "").strip()
+    if linked_ref:
+        candidates.insert(0, _resolve_section_pointer_ref(linked_ref, artifact_dir))
+    run_dir_ref = str(pointer.get("run_dir_repo_relative") or pointer.get("run_dir") or "").strip()
+    if run_dir_ref:
+        candidates.insert(0, _resolve_section_pointer_ref(run_dir_ref, artifact_dir) / "l6_v40_shadow_eval_package.json")
+    return candidates
+
+
+def _section_legacy_package_candidates(artifact_dir: Path, lane_id: str) -> list[Path]:
+    candidates = [
+        artifact_dir / "lanes" / lane_id / "l6_shadow_eval_package.json",
+        artifact_dir / "modular_r4" / "sections" / lane_id / "l6_shadow_eval_package.json",
+        artifact_dir / lane_id / "l6_shadow_eval_package.json",
+    ]
+    pointer = _section_pointer_payload(artifact_dir, lane_id)
+    links: dict[str, Any] = {}
+    for key in ("artifact_links", "artifact_links_compact"):
+        raw_links = pointer.get(key)
+        if isinstance(raw_links, dict):
+            links.update(raw_links)
+    linked_ref = str(links.get("l6_shadow_eval_package.json") or "").strip()
+    if linked_ref:
+        candidates.insert(0, _resolve_section_pointer_ref(linked_ref, artifact_dir))
+    run_dir_ref = str(pointer.get("run_dir_repo_relative") or pointer.get("run_dir") or "").strip()
+    if run_dir_ref:
+        candidates.insert(0, _resolve_section_pointer_ref(run_dir_ref, artifact_dir) / "l6_shadow_eval_package.json")
+    return candidates
+
+
+def _first_existing_path(candidates: list[Path]) -> Path | None:
+    return next((path for path in candidates if path.is_file()), None)
 
 
 def _row_grain_key(row: Mapping[str, Any]) -> dict[str, str]:
@@ -600,11 +668,14 @@ def _emit_l6_section_apps_eval_bindings(
     bindings: list[dict[str, Any]] = []
     for lane_id in _lane_ids_from_contract_or_rows(scorecard_rows):
         lane_rows = [row for row in scorecard_rows if str(row.get("lane_id") or "") == lane_id]
-        package_path = next((path for path in _section_package_candidates(artifact_dir, lane_id) if path.is_file()), None)
+        v40_package_path = _first_existing_path(_section_package_candidates(artifact_dir, lane_id))
+        legacy_package_path = _first_existing_path(_section_legacy_package_candidates(artifact_dir, lane_id))
+        package_path = v40_package_path or legacy_package_path
+        package_tier = "v40" if v40_package_path is not None else "legacy" if legacy_package_path is not None else ""
         package = _read_json(package_path) if package_path is not None else {}
         proof_gaps: list[str] = []
         if package_path is None:
-            proof_gaps.append("missing_l6_v40_shadow_eval_package")
+            proof_gaps.append("missing_l6_shadow_eval_package")
         if not lane_rows:
             proof_gaps.append("missing_apps_eval_scorecard_rows")
         evidence_class = (
@@ -615,9 +686,12 @@ def _emit_l6_section_apps_eval_bindings(
         bindings.append(
             {
                 "section_id": lane_id,
-                "artifact_dir_ref": _repo_rel(package_path.parent, artifact_dir) if package_path is not None else "",
-                "l6_v40_shadow_eval_package_ref": _repo_rel(package_path, artifact_dir) if package_path is not None else "",
-                "l6_v40_shadow_eval_package_sha256": f"sha256:{_sha256_file(package_path)}" if package_path is not None else "",
+                "artifact_dir_ref": _artifact_or_repo_rel(package_path.parent, artifact_dir) if package_path is not None else "",
+                "l6_package_tier": package_tier,
+                "l6_v40_shadow_eval_package_ref": _artifact_or_repo_rel(v40_package_path, artifact_dir) if v40_package_path is not None else "",
+                "l6_v40_shadow_eval_package_sha256": f"sha256:{_sha256_file(v40_package_path)}" if v40_package_path is not None else "",
+                "l6_shadow_eval_package_ref": _artifact_or_repo_rel(package_path, artifact_dir) if package_path is not None else "",
+                "l6_shadow_eval_package_sha256": f"sha256:{_sha256_file(package_path)}" if package_path is not None else "",
                 "apps_eval_row_count": len(lane_rows),
                 "apps_eval_row_ids": [str(row.get("row_id") or "") for row in lane_rows],
                 "apps_eval_grain_keys": [_row_grain_key(row) for row in lane_rows],

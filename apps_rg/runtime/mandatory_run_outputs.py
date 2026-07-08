@@ -3579,6 +3579,7 @@ def emit_mandatory_run_outputs(
     result: dict[str, Any] | None = None,
     section_id: str | None = None,
     print_stdout: bool = False,
+    emit_final_outputs: bool = True,
 ) -> dict[str, Any]:
     """Write mandatory apps_rg run output artifacts."""
     root = Path(run_root).resolve()
@@ -3586,11 +3587,12 @@ def emit_mandatory_run_outputs(
     root.mkdir(parents=True, exist_ok=True)
     pre_summary = _result_summary(result, root)
     final_required = _final_resume_output_required(root, pre_summary)
-    emit_final_resume_product_outputs(
-        root,
-        repo_root=repo,
-        required=final_required,
-    )
+    if emit_final_outputs:
+        emit_final_resume_product_outputs(
+            root,
+            repo_root=repo,
+            required=final_required,
+        )
     doc = build_mandatory_run_output(
         root,
         repo_root=repo,
