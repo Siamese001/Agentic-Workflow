@@ -212,9 +212,9 @@ def safe_popen(
     guard = ProcessGuard.get_instance()
     guard.validate_command(command)
     logger.debug(f"safe_popen: Spawning command: {command}")
-    process = subprocess.Popen(
+    process = subprocess.Popen(  # guardian: allow-popen-leak -- safe_popen wrapper: caller owns the returned Popen and its lifecycle via ProcessGuard-registered PID
         command, stdout=stdout, stderr=stderr, cwd=cwd, env=env, **kwargs
-    )  # guardian: allow-popen-leak -- safe_popen wrapper: caller owns the returned Popen and its lifecycle via ProcessGuard-registered PID
+    )
     guard.register_pid(process.pid)
     logger.debug(f"safe_popen: Spawned PID {process.pid}")
     return process

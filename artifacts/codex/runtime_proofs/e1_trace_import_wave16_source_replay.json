@@ -1,0 +1,309 @@
+{
+  "candidate_count": 50,
+  "failed": 0,
+  "manifest": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave16_manifest.json",
+  "passed": 50,
+  "proof": "selected modules no longer import lifecycle trace symbols directly and use trace_contract alias instead",
+  "results": [
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/reasoning/ParameterizedValidator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/scripts/fix_syntax_errors.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/types/cost_alert_level_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/types/execution_tool_contract.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/types/self_healing_trigger_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/types/token_enforcement_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/types/cognitive_diff_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L3_orchestration/types/route_decision_artifact_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L4_state/reasoning/readonly_retrieval_orchestrator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/reasoning/core_kernel/__init__.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/adapters/l4_meta_prior_provider.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/confidence/types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/engines/l4_audit_reader.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/engines/rlhf_optimizer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/engines/telemetry_consumer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/engines/trace_feature_extractor.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/invariants/freeze_gate.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/pipelines/approval_gates.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/ports/l4_meta_prior_provider.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/types/pattern_analysis_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_system_learning/validators/shadow_replay_validator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/adg/analysis/symbol_index.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/config/rag_config.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/mixins/context_propagation_mixin.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/mixins/hallucination_detection_mixin.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/prompt_governance/core/evaluation_loader.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/prompt_governance/core/prompt_loader.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/runtime/engine/ast_relocator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/runtime/types/claim_type_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/utils/workflow_engines/completeness_feedback.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/utils/workflow_engines/completeness_monitors.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/utils/workflow_engines/completeness_scorer.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/utils/workflow_engines/meta_learning_bridge.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/utils/workflow_engines/reranker.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_lic/reasoning/LICValidationExecutor.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_lic/types/k1_router_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_lic/utils/hop_stage_capability_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_lic/validators/PersonaPlannerValidator.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/scripts/find_long_lines.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/scripts/manage_false_positives.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/types/adaptive_recovery_loop_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/types/k_node_type_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "apps_shared/types/service_container_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L1_cognition/reasoning/react_engine.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L1_cognition/types/observability_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L2_execution/reasoning/definitions.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L5_safety/utils/pre_deploy_check_util.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_observability/reasoning/__init__.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_observability/types/monitor_types.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    },
+    {
+      "has_trace_contract_alias": true,
+      "path": "agentic_core/L6_observability/utils/engines/TieredVigilanceEmitter.py",
+      "remaining_trace_symbol_imports": [],
+      "status": "PASS"
+    }
+  ]
+}

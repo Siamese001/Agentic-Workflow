@@ -1,0 +1,1393 @@
+{
+  "snapshot": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite",
+  "repo_root": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+  "wave_id": "W2.E1.16-20.importable-subset",
+  "applied": true,
+  "candidate_count": 224,
+  "changed_count": 224,
+  "source_manifest": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_waves16_20_manifest.json",
+  "excluded_runtime_blockers": [
+    {
+      "error": "No module named 'agentic_core.L4_state.types.retrieval_anchor_types'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.L4_state.reasoning.readonly_retrieval_orchestrator",
+      "path": "agentic_core/L4_state/reasoning/readonly_retrieval_orchestrator.py",
+      "status": "FAIL"
+    },
+    {
+      "error": "cannot import name 'ReviewRubric' from 'agentic_core.evaluation.feedback.schemas' (C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\evaluation\\feedback\\schemas.py)",
+      "error_type": "ImportError",
+      "module": "agentic_core.utils.workflow_engines.completeness_feedback",
+      "path": "agentic_core/utils/workflow_engines/completeness_feedback.py",
+      "status": "FAIL"
+    },
+    {
+      "error": "No module named 'agentic_core.runtime.sovereignty_exceptions'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.runtime.enforcement.boundary_validator",
+      "path": "agentic_core/runtime/enforcement/boundary_validator.py",
+      "status": "FAIL"
+    },
+    {
+      "error": "name '_emit_records_execution_trace' is not defined",
+      "error_type": "NameError",
+      "module": "agentic_core.L6_system_learning.ports.meta_outcome_bus_hook",
+      "path": "agentic_core/L6_system_learning/ports/meta_outcome_bus_hook.py",
+      "status": "FAIL"
+    },
+    {
+      "error": "name '_emit_validated_by_safety_plane' is not defined",
+      "error_type": "NameError",
+      "module": "agentic_core.L2_execution.enforcement.transcript_freezer",
+      "path": "agentic_core/L2_execution/enforcement/transcript_freezer.py",
+      "status": "FAIL"
+    }
+  ],
+  "candidates": [
+    {
+      "path": "apps_shared/reasoning/ParameterizedValidator.py",
+      "ratio": 0.886,
+      "total_imports": 70,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/fix_syntax_errors.py",
+      "ratio": 0.886,
+      "total_imports": 70,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/types/cost_alert_level_types.py",
+      "ratio": 0.886,
+      "total_imports": 70,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/execution_tool_contract.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/self_healing_trigger_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/token_enforcement_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L3_orchestration/types/cognitive_diff_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L3_orchestration/types/route_decision_artifact_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/core_kernel/__init__.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/adapters/l4_meta_prior_provider.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/confidence/types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/l4_audit_reader.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/rlhf_optimizer.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/telemetry_consumer.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/trace_feature_extractor.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/invariants/freeze_gate.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/pipelines/approval_gates.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/ports/l4_meta_prior_provider.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/pattern_analysis_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/validators/shadow_replay_validator.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/adg/analysis/symbol_index.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/config/rag_config.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/context_propagation_mixin.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/hallucination_detection_mixin.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/core/evaluation_loader.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/core/prompt_loader.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/engine/ast_relocator.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/types/claim_type_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/completeness_monitors.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/completeness_scorer.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/meta_learning_bridge.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/reranker.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/reasoning/LICValidationExecutor.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/types/k1_router_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/utils/hop_stage_capability_util.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/validators/PersonaPlannerValidator.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/find_long_lines.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/manage_false_positives.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/types/adaptive_recovery_loop_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/types/k_node_type_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/types/service_container_types.py",
+      "ratio": 0.899,
+      "total_imports": 69,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/reasoning/react_engine.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/types/observability_types.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/reasoning/definitions.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/pre_deploy_check_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/reasoning/__init__.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/types/monitor_types.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/utils/engines/TieredVigilanceEmitter.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/l4_version_store.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_proposal.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/invariants/commit_proof_invariant.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/pipelines/approval_gate_impl.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/healing_outcome_intake_types.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/healing_outcome_types.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/seed_embedding_pack_types.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/adg/analysis/ModuleOwnership.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/adg/analysis/ownership.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/adg/client/InMemoryStore.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/config/agent_defaults_config.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/config/complexity_metrics_config.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/embeddings/embedding_input_guard.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/knowledge/document_loaders/csv_document_loader_config.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/embedding_mixin.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/semantic_cache_mixin.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/scripts/detect_template_drift.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/scripts/import_violation_visitor.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/scripts/template_render_visitor.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/config/feature_flags_config.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/config/shared_infrastructure_config.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/utils/dynamic_loader_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/runtime/utils/runtime_bootstrapper_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/schemas/schemas.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/fusion.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/groundedness.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/reasoning/LicTemplateOptimizerAgent.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/tools/validation_tools.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/enforcement/AdaptiveretrievalgateStrategy.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/enforcement/ReasoningrouterStrategy.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/utils/determinism_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/utils/model_visitor_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/utils/underscore_visitor_util.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/validators/enforcement/AdaptiveretrievalgateStrategy.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/validators/enforcement/ReasoningrouterStrategy.py",
+      "ratio": 0.912,
+      "total_imports": 68,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/InspectorExecutor.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/correlation/types.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/change_package_impl.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/healing_outcome_intake_adapter.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/in_memory_scoring_report_store.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_manager.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/index_build_metadata_types.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/golden_context_mixin.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/healer_agent_mixin.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/safety_mixin.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/validator_mixin.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/mrr.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/ndcg.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/precision_at_k.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/recall_at_k.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/utils/lic_engine_validation_capability_util.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_lic/validators/MessageDiversityValidator.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/fix_long_lines.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/fix_specific_long_lines.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/types/prompt_optimizer_types.py",
+      "ratio": 0.925,
+      "total_imports": 67,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L0_routing/types/boundary_types.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/types/cache_types.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/gateway_types.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/utils/memory/runtime_models.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/types/heal_policy_types.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/decorators_util.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_invariant_checker.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/surface_isolation_validator.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/configuration_mixin.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/mixins/healing_mixin.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/core/governance_hub.py",
+      "ratio": 0.939,
+      "total_imports": 66,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/surgical_context_types_util.py",
+      "ratio": 0.954,
+      "total_imports": 65,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/__init__.py",
+      "ratio": 0.954,
+      "total_imports": 65,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/validators/lineage_validator.py",
+      "ratio": 0.954,
+      "total_imports": 65,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/security/detectors/pii_scrubber.py",
+      "ratio": 0.954,
+      "total_imports": 65,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/prompt_governance/security/utils/injection_scan_util.py",
+      "ratio": 0.954,
+      "total_imports": 65,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/tool_args_types.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/utils/telemetry_sanitizer_util.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry_enforcer.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/check_output_quality_util.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/enforce_length_limits_util.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/validate_generated_content_util.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/reasoning/PilotOrchestrator.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "apps_shared/scripts/fix_all_violations.py",
+      "ratio": 0.969,
+      "total_imports": 64,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/infra_error_types.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/types/l2_phase_spec.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/types/hardening_errors.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/utils/state_util.py",
+      "ratio": 0.984,
+      "total_imports": 63,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L0_routing/reasoning/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L0_routing/utils/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/config/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/enforcement/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/reasoning/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L1_cognition/types/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/config/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L2_execution/enforcement/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/cache/redis_cache_client.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/enforcement/authority/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/reasoning/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/utils/context/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/utils/memory/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L4_state/utils/versioning/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/audit/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/error_recovery_strategy.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/gates/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/governance/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/hitl/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/enforcement/security/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/reasoning/adaptation/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/types/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/utils/location_constants_util.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/invariants/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/enforcement/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/types/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/utils/engines/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_observability/utils/metrics/__init__.py",
+      "ratio": 1.0,
+      "total_imports": 62,
+      "trace_imports": 62
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/semantic_memory_registry.py",
+      "ratio": 0.803,
+      "total_imports": 76,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/policy_guardrail_embedder.py",
+      "ratio": 0.813,
+      "total_imports": 75,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/prompt_safety_validator.py",
+      "ratio": 0.813,
+      "total_imports": 75,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/rca_cluster_engine.py",
+      "ratio": 0.813,
+      "total_imports": 75,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/governance_reward_model.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/incident_bundle_embedder.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/mutation_diff_embedder.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/optimization_proposal_engine.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/mixins/redis_cache_mixin.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/policies.py",
+      "ratio": 0.824,
+      "total_imports": 74,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/l0_routing_confidence_monitor.py",
+      "ratio": 0.836,
+      "total_imports": 73,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/openai_embedder.py",
+      "ratio": 0.836,
+      "total_imports": 73,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/applications/architecture_verifier.py",
+      "ratio": 0.836,
+      "total_imports": 73,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/applications/architecture_verifier_validator.py",
+      "ratio": 0.836,
+      "total_imports": 73,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/adapters/system_learning_memory_bridge.py",
+      "ratio": 0.847,
+      "total_imports": 72,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/arbitration/engine.py",
+      "ratio": 0.847,
+      "total_imports": 72,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/proposal_validation_engine.py",
+      "ratio": 0.847,
+      "total_imports": 72,
+      "trace_imports": 61
+    },
+    {
+      "path": "apps_shared/enforcement/CircuitbreakerStrategy.py",
+      "ratio": 0.847,
+      "total_imports": 72,
+      "trace_imports": 61
+    },
+    {
+      "path": "apps_shared/validators/enforcement/CircuitbreakerStrategy.py",
+      "ratio": 0.847,
+      "total_imports": 72,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/apply_attempt_types.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/rollout_types.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/analysis/policy_hash_validator.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/runtime/policy_state_observer.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/runtime/safety_observer.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/runtime/enforcement/mathematical_determinism.py",
+      "ratio": 0.859,
+      "total_imports": 71,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L4_state/utils/lifecycle/state_lifecycle.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/l5_policy_proposer.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/prompt_outcome_bus_adapter.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/meta_learning_types.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/trace_feature_types.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/late_chunking.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/validators.py",
+      "ratio": 0.871,
+      "total_imports": 70,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/correlation/engine.py",
+      "ratio": 0.884,
+      "total_imports": 69,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py",
+      "ratio": 0.884,
+      "total_imports": 69,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_proposal_manager.py",
+      "ratio": 0.91,
+      "total_imports": 67,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/stage_barrier_enforcer.py",
+      "ratio": 0.91,
+      "total_imports": 67,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/snapshots/snapshot_factory.py",
+      "ratio": 0.91,
+      "total_imports": 67,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/optimization_types.py",
+      "ratio": 0.91,
+      "total_imports": 67,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/adg/client/mcp_client.py",
+      "ratio": 0.91,
+      "total_imports": 67,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/case_memory_types.py",
+      "ratio": 0.924,
+      "total_imports": 66,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L6_system_learning/types/prompt_artifact_types.py",
+      "ratio": 0.938,
+      "total_imports": 65,
+      "trace_imports": 61
+    },
+    {
+      "path": "agentic_core/L3_orchestration/reasoning/ptc/ptc_hitl_integration.py",
+      "ratio": 0.833,
+      "total_imports": 72,
+      "trace_imports": 60
+    },
+    {
+      "path": "agentic_core/cache/core/redis_coordination_fabric.py",
+      "ratio": 0.845,
+      "total_imports": 71,
+      "trace_imports": 60
+    },
+    {
+      "path": "apps_shared/utils/app_base_util.py",
+      "ratio": 0.845,
+      "total_imports": 71,
+      "trace_imports": 60
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/magic_validator.py",
+      "ratio": 0.808,
+      "total_imports": 73,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/global_mutation_validator.py",
+      "ratio": 0.868,
+      "total_imports": 68,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/path_fragility_validator.py",
+      "ratio": 0.868,
+      "total_imports": 68,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/L5_safety/validators/type_erasure_validator.py",
+      "ratio": 0.868,
+      "total_imports": 68,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/cache/redis_coordination_fabric.py",
+      "ratio": 0.922,
+      "total_imports": 64,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/utils/workflow_engines/answer_support.py",
+      "ratio": 0.937,
+      "total_imports": 63,
+      "trace_imports": 59
+    },
+    {
+      "path": "agentic_core/L6_system_learning/engines/historical_backfill_engine.py",
+      "ratio": 0.829,
+      "total_imports": 70,
+      "trace_imports": 58
+    },
+    {
+      "path": "agentic_core/L0_routing/utils/elevator_shaft_seam.py",
+      "ratio": 0.814,
+      "total_imports": 43,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/L4_state/utils/memory/template_registry.py",
+      "ratio": 0.854,
+      "total_imports": 41,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/prompt_governance/contracts/prompt_bom_types.py",
+      "ratio": 0.854,
+      "total_imports": 41,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/L0_routing/types/l0_instruction_packet.py",
+      "ratio": 0.875,
+      "total_imports": 40,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/prompt_governance/contracts/template_manifest_types.py",
+      "ratio": 0.875,
+      "total_imports": 40,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/prompt_governance/contracts/compiled_artifact_types.py",
+      "ratio": 0.897,
+      "total_imports": 39,
+      "trace_imports": 35
+    },
+    {
+      "path": "agentic_core/L1_cognition/types/rag_types.py",
+      "ratio": 0.828,
+      "total_imports": 29,
+      "trace_imports": 24
+    },
+    {
+      "path": "agentic_core/L1_cognition/types/search_types.py",
+      "ratio": 0.828,
+      "total_imports": 29,
+      "trace_imports": 24
+    },
+    {
+      "path": "infrastructure/__init__.py",
+      "ratio": 0.944,
+      "total_imports": 18,
+      "trace_imports": 17
+    }
+  ],
+  "proof_basis": "Subset includes only branch-runtime importable modules; excluded branch failures were checked against local-main base import blocker probe."
+}

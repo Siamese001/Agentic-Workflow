@@ -210,6 +210,10 @@ def _excluded_paths_from_manifests(manifests: list[Path]) -> set[str]:
             path = candidate.get("path")
             if isinstance(path, str):
                 excluded.add(path)
+        for skipped in payload.get("skipped", []):
+            path = skipped.get("path")
+            if isinstance(path, str):
+                excluded.add(path)
     return excluded
 
 
@@ -227,8 +231,19 @@ def main() -> int:
     exclude_paths = _excluded_paths_from_manifests(args.exclude_manifest)
     selected: list[Candidate] = []
     results: list[RewriteResult] = []
+    skipped: list[dict[str, str]] = []
     for candidate in _candidate_rows(args.snapshot, args.limit + len(exclude_paths) + 100, exclude_paths):
-        result = rewrite_file(args.repo_root, candidate.path, apply=args.apply)
+        try:
+            result = rewrite_file(args.repo_root, candidate.path, apply=args.apply)
+        except (SyntaxError, ValueError) as exc:
+            skipped.append(
+                {
+                    "path": candidate.path,
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                }
+            )
+            continue
         if not result.changed:
             continue
         selected.append(candidate)
@@ -245,6 +260,8 @@ def main() -> int:
         "changed_count": sum(1 for result in results if result.changed),
         "excluded_count": len(exclude_paths),
         "exclude_manifests": [str(path) for path in args.exclude_manifest],
+        "skipped_count": len(skipped),
+        "skipped": skipped,
         "candidates": [candidate.__dict__ for candidate in selected],
         "results": [result.__dict__ for result in results],
         "adg_provenance": {

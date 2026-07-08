@@ -11,6 +11,7 @@ Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T161101
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T162958
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T163522
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T164300
+Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T174118
 
 ## Scope
 
@@ -277,6 +278,43 @@ Wave 6-15 batch proof:
 - Local `verify_codex_primary.py` failed only on user-profile automation mirror drift at `C:\Users\amita\.codex\automations\adg-p1-ratchet-burndown\automation.toml`, outside this branch payload.
 - Validation status is partial until the waves 6-15 branch finishes receipt, PR, and publication checks.
 
+Wave 16-35 requested batch plan:
+
+- Branch: `codex/adg-p1-ratchet-burndown-20260708T174118`
+- Base commit: `4b62b132e4c77a6173534cce56314fda0dbac0b3`
+- Requested waves: 20 next E1 waves, `W2.E1.16` through `W2.E1.35`
+- Safe mechanical family: continue `E1_trace_stub_module` because the established helper and runtime proof path are already validated and reversible.
+- Selection rule: each wave excludes wave-1 through latest wave manifests plus `e1_trace_import_wave12_blocked_candidates.json`, then selects the next highest-fanout E1 candidates from `adg_indexed_07072026_2307.sqlite`.
+- Per-wave target: 50 candidates where available.
+- Expected pre-run E1 progress baseline: 750 selected candidates from waves 1-15, pending fresh ADG regeneration.
+- Expected maximum E1 candidates remaining before this batch: 232 safe candidates plus any blocked/skipped rows from the original 982-row family.
+- Stop/skip criteria: if the helper reports zero candidates before 20 waves, stop E1 as mechanically exhausted; do not start B2/I1/M/O/C3/N in the same branch unless a safe mechanical plan and proof harness exists.
+- Validation: per-wave source replay, combined source replay, branch runtime import proof, base/main runtime blocker probe, importable-subset runtime proof, compileall for changed Python files, focused ordinary-P1 pytest, pinned trace-stub gate, handoff re-consumption, terminal-cleanup new-only gate, `git diff --check`, run receipt validation, and PR/local-main publication closeout.
+- Publication target: commit all branch payload files, push this P1 branch, open/update a PR to `main`, then execute a non-squash local-main merge when validation passes.
+
+Wave 16-20 batch status: implemented in follow-on branch `codex/adg-p1-ratchet-burndown-20260708T174118`.
+
+Wave 16-20 batch scope:
+
+- Requested 20 additional E1 waves.
+- Applied 5 bounded E1 waves: `W2.E1.16` through `W2.E1.20`.
+- Selected 229 additional `E1_trace_stub_module` candidates: waves 16-19 selected 50 each, wave 20 selected 29, and wave 21 returned zero candidates.
+- Updated `refactor_e1_trace_imports.py` to persist parse-invalid skips and exclude skipped candidates from later waves; no new skipped candidates were found in this batch.
+- Repaired two touched `Popen` guardian comments so `check_terminal_cleanup.py --fail-on-new-only` recognizes the existing safe-popen lifecycle rationale.
+- Stopped before B2 because the safe E1 mechanical pool was exhausted and the next ratchet families require structural ownership/design choices not covered by the established E1 helper.
+- Expected cumulative E1 reduction on next ADG generation: 979 modules, pending regenerated ADG proof.
+
+Wave 16-20 batch proof:
+
+- ADG MCP health: `status=ok`, `adg_snapshot_id=07072026_2307`; detailed candidate extraction used the immutable SQLite snapshot because the exposed MCP tools do not include ad hoc SQL.
+- Per-wave source replay: `artifacts/codex/runtime_proofs/e1_trace_import_wave16_source_replay.json` through `artifacts/codex/runtime_proofs/e1_trace_import_wave20_source_replay.json` report `passed=229`, `failed=0` in aggregate.
+- Combined source replay: `artifacts/codex/runtime_proofs/e1_trace_import_waves16_20_source_replay.json` reports `passed=229`, `failed=0`.
+- Full runtime import proof: `artifacts/codex/runtime_proofs/e1_trace_import_waves16_20_runtime_proof.json` reports `passed=224`, `failed=5`.
+- Base import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_waves16_20_base_import_blocker_probe.json` reproduces the same 5 import-time blockers from local `main` before waves 16-20.
+- Runtime importable subset proof: `artifacts/codex/runtime_proofs/e1_trace_import_waves16_20_importable_subset_runtime_proof.json` reports `passed=224`, `failed=0`.
+- Compileall passed for 232 changed Python files; focused ordinary-P1 pytest passed `6/6`; pinned trace-stub gate stayed pass at `current=982 baseline=982`; handoff re-consumption, terminal cleanup, and `git diff --check` passed.
+- Local `verify_codex_primary.py` failed only on user-profile automation mirror drift at `C:\Users\amita\.codex\automations\adg-p1-ratchet-burndown\automation.toml`, outside this branch payload.
+
 Selection policy:
 
 - Select the highest-fanout trace stub family first.
@@ -529,10 +567,10 @@ Current run reporting values:
 - `ordinary_p1_target = 3`
 - `ratchet_target = 3646`
 - `planned_rows = 3649`
-- `attempted_rows = 753`
+- `attempted_rows = 982 cumulative rows: 3 ordinary P1 rows plus 979 E1 ratchet rows selected across waves 1-20`
 - `cleared_rows = not proven until regenerated/replayed ADG evidence`
-- `remaining_rows = 2896 ratchet rows expected before regeneration, assuming 750 E1 rows clear after ADG refresh`
+- `remaining_rows = 2667 ratchet rows expected before regeneration, assuming 979 E1 rows clear after ADG refresh`
 - `final_p1_count = not zero / not proven`
 - `target_status = missed`
-- `blocker_type = RATCHET_SCOPE_REQUIRES_WAVE_REFACTOR_EXECUTION`
-- `next_unblock_action = execute W2 through W9 in bounded family waves, then consume a fresh full ADG handoff proving P1=0`
+- `blocker_type = E1_MECHANICAL_POOL_EXHAUSTED_NEXT_FAMILIES_REQUIRE_STRUCTURAL_PLAN`
+- `next_unblock_action = regenerate ADG to prove E1 reduction, then select the next safe structural family wave with its own helper/proof harness before continuing W3 through W9`
