@@ -7,6 +7,8 @@ Worktree: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p1-ratchet-burndown
 Branch: codex/adg-p1-ratchet-burndown-20260708T094956
 Status: corrective plan generated after the run identified the missing full-scope P1 wave plan
 
+Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T161101
+
 ## Scope
 
 This plan is the concrete P1 execution and burndown plan required by the automation TOML. It is grounded in the validated producer-root ADG handoff for run `07072026_2307` and covers the whole current P1 scope:
@@ -191,6 +193,25 @@ Wave 2 proof:
 - Compile proof passed for all wave-2 changed Python files.
 - Terminal cleanup proof passed for changed files: `check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref 2acff50883eb631c66d7b4d88c6c58ac0b6d000a`.
 - Focused pytest passed for ordinary P1 repairs: 6 collected, 6 passed.
+
+Wave 3 status: implemented in follow-on branch `codex/adg-p1-ratchet-burndown-20260708T161101`.
+
+Wave 3 scope:
+
+- Selected the next 50 E1 candidates from `adg_indexed_07072026_2307.sqlite`, excluding wave-1 and wave-2 manifest candidates.
+- Replaced direct lifecycle trace symbol imports with one `trace_contract` module alias import in each selected module.
+- Preserved existing trace emissions by rewriting each local trace function reference to `trace_contract.<symbol>`.
+- Expected cumulative E1 reduction on next ADG generation: 150 modules, pending regenerated ADG proof.
+
+Wave 3 proof:
+
+- ADG MCP health: `status=ok`, `adg_snapshot_id=07072026_2307`; detailed candidate extraction used the immutable SQLite snapshot because the exposed MCP tools do not include ad hoc SQL.
+- Source replay: `artifacts/codex/runtime_proofs/e1_trace_import_wave3_source_replay.json` reports `passed=50`, `failed=0`.
+- Runtime import proof: `artifacts/codex/runtime_proofs/e1_trace_import_wave3_runtime_importable_subset_proof.json` reports `passed=48`, `failed=0` for importable modules.
+- Full import blocker capture: `artifacts/codex/runtime_proofs/e1_trace_import_wave3_runtime_proof.json` reports 2 import-time blockers unrelated to the trace import rewrite.
+- Base import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_wave3_base_import_blocker_probe.json` reproduces the same 2 import-time blockers from local `main` before wave 3.
+- Pinned legacy E1 gate against the consumed snapshot remains pass: `current=982 baseline=982`.
+- Validation status is partial until the wave-3 branch finishes compile, static, pytest, receipt, PR, and publication checks.
 
 Selection policy:
 
@@ -444,9 +465,9 @@ Current run reporting values:
 - `ordinary_p1_target = 3`
 - `ratchet_target = 3646`
 - `planned_rows = 3649`
-- `attempted_rows = 3`
+- `attempted_rows = 153`
 - `cleared_rows = not proven until regenerated/replayed ADG evidence`
-- `remaining_rows = 3646 ratchet rows before regeneration`
+- `remaining_rows = 3496 ratchet rows expected before regeneration, assuming 150 E1 rows clear after ADG refresh`
 - `final_p1_count = not zero / not proven`
 - `target_status = missed`
 - `blocker_type = RATCHET_SCOPE_REQUIRES_WAVE_REFACTOR_EXECUTION`
