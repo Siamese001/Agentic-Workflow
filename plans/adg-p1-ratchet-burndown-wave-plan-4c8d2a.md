@@ -10,6 +10,7 @@ Status: corrective plan generated after the run identified the missing full-scop
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T161101
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T162958
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T163522
+Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T164300
 
 ## Scope
 
@@ -253,6 +254,28 @@ Wave 5 proof:
 - Pinned legacy E1 gate against the consumed snapshot remains pass: `current=982 baseline=982`.
 - Compileall passed for 50 changed Python files; focused ordinary-P1 pytest passed `6/6`; terminal cleanup and `git diff --check` passed.
 - Local `verify_codex_primary.py` failed only on user-profile automation mirror drift at `C:\Users\amita\.codex\automations\adg-p1-ratchet-burndown\automation.toml`, outside this branch payload.
+
+Wave 6-15 batch status: implemented in follow-on branch `codex/adg-p1-ratchet-burndown-20260708T164300`.
+
+Wave 6-15 batch scope:
+
+- Selected 10 additional 50-row E1 waves from `adg_indexed_07072026_2307.sqlite`, excluding wave-1 through wave-5 manifest candidates and then excluding each newly generated wave manifest before selecting the next wave.
+- Replaced direct lifecycle trace symbol imports with one `trace_contract` module alias import in each selected module.
+- Preserved existing trace emissions by rewriting each local trace function reference to `trace_contract.<symbol>`.
+- Skipped `agentic_core/adg/runtime/determinism_control.py` after W2.E1.12 dry-run showed the mechanical rewrite would parse-invalid that file; the skip is recorded in `artifacts/codex/runtime_proofs/e1_trace_import_wave12_blocked_candidates.json`.
+- Expected cumulative E1 reduction on next ADG generation: 750 modules, pending regenerated ADG proof.
+
+Wave 6-15 batch proof:
+
+- ADG MCP health: `status=ok`, `adg_snapshot_id=07072026_2307`; detailed candidate extraction used the immutable SQLite snapshot because the exposed MCP tools do not include ad hoc SQL.
+- Per-wave source replay: `artifacts/codex/runtime_proofs/e1_trace_import_wave6_source_replay.json` through `artifacts/codex/runtime_proofs/e1_trace_import_wave15_source_replay.json` each report `passed=50`, `failed=0`.
+- Combined source replay: `artifacts/codex/runtime_proofs/e1_trace_import_waves6_15_source_replay.json` reports `passed=500`, `failed=0`.
+- Full runtime import proof: `artifacts/codex/runtime_proofs/e1_trace_import_waves6_15_runtime_proof.json` reports `passed=472`, `failed=28`.
+- Base import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_waves6_15_base_import_blocker_probe.json` reproduces the same 28 import-time blockers from local `main` before waves 6-15.
+- Runtime importable subset proof: `artifacts/codex/runtime_proofs/e1_trace_import_waves6_15_importable_subset_runtime_proof.json` reports `passed=472`, `failed=0`.
+- Compileall passed for 500 changed Python files; focused ordinary-P1 pytest passed `6/6`; pinned trace-stub gate stayed pass at `current=982 baseline=982`; handoff re-consumption, terminal cleanup, and `git diff --check` passed.
+- Local `verify_codex_primary.py` failed only on user-profile automation mirror drift at `C:\Users\amita\.codex\automations\adg-p1-ratchet-burndown\automation.toml`, outside this branch payload.
+- Validation status is partial until the waves 6-15 branch finishes receipt, PR, and publication checks.
 
 Selection policy:
 
@@ -506,9 +529,9 @@ Current run reporting values:
 - `ordinary_p1_target = 3`
 - `ratchet_target = 3646`
 - `planned_rows = 3649`
-- `attempted_rows = 253`
+- `attempted_rows = 753`
 - `cleared_rows = not proven until regenerated/replayed ADG evidence`
-- `remaining_rows = 3396 ratchet rows expected before regeneration, assuming 250 E1 rows clear after ADG refresh`
+- `remaining_rows = 2896 ratchet rows expected before regeneration, assuming 750 E1 rows clear after ADG refresh`
 - `final_p1_count = not zero / not proven`
 - `target_status = missed`
 - `blocker_type = RATCHET_SCOPE_REQUIRES_WAVE_REFACTOR_EXECUTION`

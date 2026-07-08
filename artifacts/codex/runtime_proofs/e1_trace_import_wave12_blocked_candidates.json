@@ -1,0 +1,8 @@
+{
+  "reason": "W2.E1.12 mechanical rewrite would parse-invalid this module; skip under standing rollback criteria and continue independent E1 candidates.",
+  "candidates": [
+    {
+      "path": "agentic_core/adg/runtime/determinism_control.py"
+    }
+  ]
+}

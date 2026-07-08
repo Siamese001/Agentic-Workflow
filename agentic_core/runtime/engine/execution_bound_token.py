@@ -21,150 +21,84 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_through,
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-_emit_applies_guardrail("p0", "execution_bound_token", "p0_governance")
-_emit_snapshots_state("p0", "execution_bound_token", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
+trace_contract._emit_applies_guardrail("p0", "execution_bound_token", "p0_governance")
+trace_contract._emit_snapshots_state("p0", "execution_bound_token", "state_snapshot")
 
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_1")
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_2")
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_3")
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_4")
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_5")
-_emit_emits_metric_event("execution_bound_token", "p4obs", "metric_6")
-_emit_records_incident_event("execution_bound_token", "p4obs", "incident")
-_emit_captures_runtime_anomaly("execution_bound_token", "p4obs", "anomaly")
-_emit_writes_observability_log("execution_bound_token", "p4obs", "obs_log")
-_emit_updates_monitoring_state("execution_bound_token", "p4obs", "mon_state")
-_emit_triggers_alert("execution_bound_token", "p4obs", "alert")
-_emit_links_incident_trace("execution_bound_token", "p4obs", "trace_link")
-_emit_captures_pattern("execution_bound_token", "p3lm", "pattern")
-_emit_records_learning_event("execution_bound_token", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("execution_bound_token", "p3lm", "snapshot")
-_emit_feeds_meta_learning("execution_bound_token", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("execution_bound_token", "p3lm", "routing")
-_emit_improves_agent_policy("execution_bound_token", "p3lm", "policy")
-_emit_stores_learning_state("execution_bound_token", "p3lm", "state")
-_emit_records_execution_trace("execution_bound_token", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("execution_bound_token", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("execution_bound_token", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("execution_bound_token", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("execution_bound_token", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("execution_bound_token", "env_read", "p2_env_1")
-_emit_reads_environ("execution_bound_token", "env_read", "p2_env_2")
-_emit_reads_runtime_state("execution_bound_token", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("execution_bound_token", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "execution_bound_token", "context_pull")
-_emit_pulls_context("p1", "execution_bound_token", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "execution_bound_token", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "execution_bound_token", "uwg_term_2")
-_emit_writes_through("p1", "execution_bound_token", "write_through")
-_emit_writes_through("p1", "execution_bound_token", "write_through_2")
-_emit_validated_by_safety_plane("p1", "execution_bound_token", "safety_validation")
-_emit_invokes_eval("p1", "execution_bound_token", "eval_call")
-_emit_proposal_commits_routing("p1", "execution_bound_token", "routing_commit")
-_emit_escalates_to_human("p1", "execution_bound_token", "human_escalation")
-_emit_routes_through("p1", "execution_bound_token", "route_through")
-_emit_checks_agent_registry("p1", "execution_bound_token", "agent_registry")
-_emit_validates_agent_capability("p1", "execution_bound_token", "capability")
-_emit_dispatches_execution_plan("p1", "execution_bound_token", "exec_plan")
-_emit_agent_executes_agent("p1", "execution_bound_token", "sub_agent")
-_emit_routes_to_agent("p1", "execution_bound_token", "target_agent")
-_emit_verifies_policy("p1", "execution_bound_token", "policy_check")
-_emit_observes_runtime_state("p1", "execution_bound_token", "runtime_state")
-_emit_verifies_boundary("p1", "execution_bound_token", "boundary_check")
-_emit_transcripts_response("p1", "execution_bound_token", "transcript")
-_emit_hard_fails_untranscripted("p1", "execution_bound_token")
-_emit_gated_by_confidence("p1", "execution_bound_token", "confidence_gate")
-emit_replay_key("p0", "execution_bound_token")
-emit_determinism_digest("p0", "execution_bound_token")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "execution_bound_token", "execution_auth")
-_emit_validates_capability("p2", "execution_bound_token", "capability_check")
-_emit_routes_to_capability("p2", "execution_bound_token", "capability_route")
-_emit_writes_via_uwg("p2", "execution_bound_token", "uwg_write")
-_emit_blocks_direct_write("p2", "execution_bound_token", "direct_write_block")
-_emit_records_tool_invocation("p2", "execution_bound_token", "tool_invocation")
-_emit_captures_execution_output("p2", "execution_bound_token", "exec_output")
-_emit_dispatches_agent("p3", "execution_bound_token", "agent_dispatch")
-_emit_coordinates_agents("p3", "execution_bound_token", "agent_coordination")
-_emit_records_workflow_lineage("p3", "execution_bound_token", "workflow_lineage")
-_emit_records_healing_outcome("p3", "execution_bound_token", "healing_outcome")
-_emit_escalates_failure("p3", "execution_bound_token", "failure_escalation")
-_emit_orchestrates_workflow("p3", "execution_bound_token", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "execution_bound_token", "healing_dispatch")
-_emit_invokes_evaluation("p3", "execution_bound_token", "evaluation_signal")
-_emit_records_telemetry_event("p4", "execution_bound_token", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "execution_bound_token", "eval_metric")
-_emit_stores_embedding("p4", "execution_bound_token", "embedding_store")
-_emit_updates_meta_learning_state("p4", "execution_bound_token", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "execution_bound_token", "exec_snapshot_link")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("execution_bound_token", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("execution_bound_token", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("execution_bound_token", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("execution_bound_token", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("execution_bound_token", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("execution_bound_token", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("execution_bound_token", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("execution_bound_token", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("execution_bound_token", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("execution_bound_token", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("execution_bound_token", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("execution_bound_token", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("execution_bound_token", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("execution_bound_token", "p3lm", "state")
+trace_contract._emit_records_execution_trace("execution_bound_token", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("execution_bound_token", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("execution_bound_token", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("execution_bound_token", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("execution_bound_token", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("execution_bound_token", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("execution_bound_token", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("execution_bound_token", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("execution_bound_token", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "execution_bound_token", "context_pull")
+trace_contract._emit_pulls_context("p1", "execution_bound_token", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "execution_bound_token", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "execution_bound_token", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "execution_bound_token", "write_through")
+trace_contract._emit_writes_through("p1", "execution_bound_token", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "execution_bound_token", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "execution_bound_token", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "execution_bound_token", "routing_commit")
+trace_contract._emit_escalates_to_human("p1", "execution_bound_token", "human_escalation")
+trace_contract._emit_routes_through("p1", "execution_bound_token", "route_through")
+trace_contract._emit_checks_agent_registry("p1", "execution_bound_token", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "execution_bound_token", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "execution_bound_token", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "execution_bound_token", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "execution_bound_token", "target_agent")
+trace_contract._emit_verifies_policy("p1", "execution_bound_token", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "execution_bound_token", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "execution_bound_token", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "execution_bound_token", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "execution_bound_token")
+trace_contract._emit_gated_by_confidence("p1", "execution_bound_token", "confidence_gate")
+trace_contract.emit_replay_key("p0", "execution_bound_token")
+trace_contract.emit_determinism_digest("p0", "execution_bound_token")
+trace_contract._emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+trace_contract._emit_authorize_and_execute("p2", "execution_bound_token", "execution_auth")
+trace_contract._emit_validates_capability("p2", "execution_bound_token", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "execution_bound_token", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "execution_bound_token", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "execution_bound_token", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "execution_bound_token", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "execution_bound_token", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "execution_bound_token", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "execution_bound_token", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "execution_bound_token", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "execution_bound_token", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "execution_bound_token", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "execution_bound_token", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "execution_bound_token", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "execution_bound_token", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "execution_bound_token", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "execution_bound_token", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "execution_bound_token", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "execution_bound_token", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "execution_bound_token", "exec_snapshot_link")
 
 
 class CapabilityType(Enum):
@@ -264,8 +198,8 @@ class SecureCapabilityAuthority:
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecureCapabilityAuthority.issue_token"
+        trace_contract._emit_records_execution_trace(
+            _trace_id, trace_contract.LayerSegment.L3_ORCHESTRATION, "SecureCapabilityAuthority.issue_token"
         )
 
         token_id = str(uuid.uuid4())
@@ -309,40 +243,40 @@ def get_capability_authority() -> SecureCapabilityAuthority:
     return _capability_authority
 
 
-_emit_reads_through("l4", "execution_bound_token", "urg_read_1")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_2")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_3")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_4")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_5")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_6")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_7")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_8")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_9")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_10")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_11")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_12")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_13")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_14")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_15")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_16")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_17")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_18")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_19")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_20")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_21")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_22")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_23")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_24")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_25")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_26")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_27")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_28")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_29")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_30")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_31")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_32")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_33")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_34")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_35")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_36")
-_emit_reads_through("l4", "execution_bound_token", "urg_read_37")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_1")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_2")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_3")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_4")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_5")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_6")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_7")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_8")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_9")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_10")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_11")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_12")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_13")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_14")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_15")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_16")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_17")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_18")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_19")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_20")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_21")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_22")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_23")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_24")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_25")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_26")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_27")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_28")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_29")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_30")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_31")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_32")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_33")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_34")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_35")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_36")
+trace_contract._emit_reads_through("l4", "execution_bound_token", "urg_read_37")
