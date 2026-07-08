@@ -20,6 +20,14 @@ refactors spanning files, ADG / dependency analysis, test-strategy design. NOT r
 
 - T2/T3 ⇒ `EnterPlanMode`, gather evidence (reads only), present the plan via `ExitPlanMode`, and make
   **no edits until the plan is approved**.
+- One explicit approval for the presented plan authorizes execution of that unchanged scope through
+  implementation, verification, and requested local git closeout. Do **not** ask for separate
+  "design approval", "implementation approval", "refactor approval", or "commit/merge approval" unless
+  the user limited the approval, the scope materially changes, a new Author-Gate-class decision appears,
+  or the next action is destructive, external publication, or credential/security sensitive.
+- A direct user instruction such as "implement", "fix it", "remove it", "commit", "merge to local main",
+  or "execute PR" counts as approval for that named action when it stays inside the current approved
+  scope. Ask again only when the requested action would exceed that scope.
 - T0/T1 ⇒ proceed directly.
 
 ## Retrieval discipline at T2/T3 (unchanged)
