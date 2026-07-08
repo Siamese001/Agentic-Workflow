@@ -1,7 +1,7 @@
 version: "1.0"
 section: executive_summary
 description: >
-  Multishot examples for the executive_summary section (product band exactly 6 sentences, max 140 words).
+  Multishot examples for the executive_summary section (product band exactly 6 sentences, max 150 words).
   Proof substrate is always selected base-résumé facts + claim_ledger in runtime artifacts;
   examples teach voice and structure only unless marked as STYLE_EXAMPLE_NOT_PROOF.
 

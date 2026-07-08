@@ -68,13 +68,13 @@
             "text": {
               "type": "string",
               "minLength": 10,
-              "maxLength": 1260,
-              "description": "Professional summary text (exactly six sentences; SSOT max 140 words)"
+              "maxLength": 1350,
+              "description": "Professional summary text (exactly six sentences; SSOT max 150 words)"
             },
             "word_count": {
               "type": "integer",
               "minimum": 10,
-              "maximum": 140,
+              "maximum": 150,
               "description": "Word count for validation (SSOT EXEC_SUMMARY_MAX_WORDS)"
             }
           }

@@ -1,4 +1,4 @@
-"""Executive summary product shape: exactly six sentences, max 140 words, quality gates, briefing, prompt authority."""
+"""Executive summary product shape: exactly six sentences, SSOT max words, quality gates, briefing, prompt authority."""
 
 from __future__ import annotations
 

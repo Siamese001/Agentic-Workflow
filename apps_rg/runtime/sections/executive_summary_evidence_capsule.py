@@ -18,6 +18,7 @@ from apps_rg.runtime.sections.graph_evidence_contract import (
     build_allowed_fact_ids_for_plan_facts,
     metric_derivative_fact_id,
 )
+from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
 
 SECTION_ID = "executive_summary"
 CAPSULE_VERSION = "executive_summary_evidence_capsule_v1"
@@ -316,7 +317,8 @@ def format_evidence_capsule_c0_block(
             f"blocked={counts.get('blocked_facts', 0)} "
             f"confirmation={counts.get('facts_requiring_human_confirmation', 0)} "
             f"unsupported_jd={counts.get('unsupported_jd_needs', 0)}",
-            "PRODUCT_ARC_CONTRACT: exactly 6 sentences, fit_to_evidence, max 140 words; responsibility separation per X2 gates. "
+            "PRODUCT_ARC_CONTRACT: exactly 6 sentences, fit_to_evidence, max "
+            f"{EXEC_SUMMARY_MAX_WORDS} words; responsibility separation per X2 gates. "
             "Style exemplar/appendix prose omitted from capsule (proof IDs unchanged).",
             "",
         ]

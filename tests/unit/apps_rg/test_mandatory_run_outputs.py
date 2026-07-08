@@ -12,11 +12,19 @@ from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
     MANDATORY_RUN_OUTPUT_JSON,
     MANDATORY_RUN_OUTPUT_MD,
+    _bcg_forensics_truth_errors,
     _causal_allocation,
     _classify_failure,
     _top_rca_sections,
     build_mandatory_run_output,
     emit_mandatory_run_outputs,
+)
+from apps_rg.runtime.section_failure_forensics import (
+    E2E_SECTION_FORENSICS_GATE_ID,
+    REQUIRED_RCA_FIELDS,
+    SECTION_FAILURE_FORENSICS_DIR,
+    emit_section_failure_forensics,
+    validate_section_failure_rca,
 )
 from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
@@ -25,6 +33,8 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_TXT,
 )
 from tools.apps_rg.render_run_summary import render
+
+# apps-test-model: APP CONTRACT
 
 
 def _write_json(path: Path, payload: dict) -> None:
@@ -56,6 +66,223 @@ def _valid_causal_allocation() -> dict:
             },
         ],
     }
+
+
+def test_section_failure_forensics_emits_independent_failure_rca(tmp_path: Path) -> None:
+    run = tmp_path / "headline_failed"
+    run.mkdir()
+    (run / "headline_output.txt").write_text("AWS Migration Modernization Execution\n", encoding="utf-8")
+    _write_json(
+        run / "x3_disposition.json",
+        {
+            "x3_code": "X3_BLOCK",
+            "product_quality_status": "FAIL",
+            "runtime_generation_status": "REAL_LLM",
+        },
+    )
+    _write_json(
+        run / "x2_gate_outputs.json",
+        {
+            "gates": [
+                {
+                    "gate_id": "x2_headline_executive_abstraction_floor",
+                    "pass": False,
+                    "failure_reason": "missing executive abstraction",
+                }
+            ]
+        },
+    )
+    _write_json(run / "selected_fact_plan.json", {"facts": [{"fact_id": "f1"}]})
+    _write_json(run / "provider_request.json", {"provider_requested": "external_claude"})
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False, "fault": "headline"},
+        section_id="headline",
+    )
+
+    gate = emitted["payload"]["section_failure_forensics"]
+    assert gate["gate_id"] == E2E_SECTION_FORENSICS_GATE_ID
+    assert gate["required"] is True
+    assert gate["pass"] is True
+    assert gate["failed_section_count"] == 1
+    rca_path = run / SECTION_FAILURE_FORENSICS_DIR / "headline.json"
+    md_path = run / SECTION_FAILURE_FORENSICS_DIR / "headline.md"
+    assert rca_path.is_file()
+    assert md_path.is_file()
+    rca = json.loads(rca_path.read_text(encoding="utf-8"))
+    assert all(field in rca for field in REQUIRED_RCA_FIELDS)
+    assert rca["failure_type"] == "independent_failure"
+    assert rca["failed_gate_ids"] == ["x2_headline_executive_abstraction_floor"]
+    assert rca["final_materialized_output"]["present"] is True
+    assert rca["baseline_confidence"] == "not_found"
+    gates_by_id = {row["gate_id"]: row for row in emitted["payload"]["mandatory_inline_output_gates"]}
+    assert gates_by_id[E2E_SECTION_FORENSICS_GATE_ID]["pass"] is True
+    assert "Section Failure Forensics" in (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
+
+
+def test_section_failure_forensics_emits_upstream_cascade_rca(tmp_path: Path) -> None:
+    run = tmp_path / "cascade_failed"
+    lane = run / "modular_r4" / "sections" / "headline"
+    lane.mkdir(parents=True)
+    _write_json(
+        lane / "integrated_lane_pre_run_failure.json",
+        {
+            "blocker": "UPSTREAM_X3_BLOCK",
+            "lane_exec_status": "executive_summary did not authorize",
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False, "fault": "cascade"},
+    )
+
+    rca = json.loads(
+        (run / SECTION_FAILURE_FORENSICS_DIR / "headline.json").read_text(encoding="utf-8")
+    )
+    assert rca["failure_type"] == "upstream_cascade"
+    assert "upstream" in rca["why_it_failed_now"].lower()
+    assert emitted["payload"]["section_failure_forensics"]["pass"] is True
+
+
+def test_section_failure_forensics_marks_dirty_successful_baseline(tmp_path: Path) -> None:
+    baseline = tmp_path / "baseline_success"
+    baseline_lane = baseline / "lanes" / "headline"
+    baseline_lane.mkdir(parents=True)
+    (baseline / "ingress_raw.json").write_text(
+        json.dumps({"target_company": "Anthropic", "target_role": "Partnerships"}) + "\n",
+        encoding="utf-8",
+    )
+    _write_json(
+        baseline / MANDATORY_RUN_OUTPUT_JSON,
+        {"result_summary": {"exit_status": "success", "outcome_authorized": True}},
+    )
+    _write_json(baseline / "worktree_status.json", {"worktree_dirty": True})
+    (baseline_lane / "headline_output.txt").write_text("SVP AI Partnerships\n", encoding="utf-8")
+    _write_json(baseline_lane / "x3_disposition.json", {"x3_code": "X3_ALLOW", "pass": True})
+
+    run = tmp_path / "current_failed"
+    run.mkdir()
+    (run / "ingress_raw.json").write_text(
+        json.dumps({"target_company": "Anthropic", "target_role": "Partnerships"}) + "\n",
+        encoding="utf-8",
+    )
+    (run / "headline_output.txt").write_text("AWS Migration Modernization Execution\n", encoding="utf-8")
+    _write_json(run / "x3_disposition.json", {"x3_code": "X3_BLOCK", "pass": False})
+    _write_json(
+        run / "x2_gate_outputs.json",
+        {"gates": [{"gate_id": "x2_headline_vendor_terms_proof_only", "pass": False}]},
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+        section_id="headline",
+    )
+
+    rca = json.loads((run / SECTION_FAILURE_FORENSICS_DIR / "headline.json").read_text(encoding="utf-8"))
+    assert rca["baseline_confidence"] == "dirty"
+    assert "dirty" in rca["why_it_passed_before"].lower()
+    assert rca["last_successful_output"]["present"] is True
+    assert emitted["payload"]["section_failure_forensics"]["baseline_confidence"] == "dirty"
+
+
+def test_incomplete_section_failure_forensics_is_hard_gate_defect() -> None:
+    rca = {
+        "section_id": "headline",
+        "failure_type": "independent_failure",
+        "failed_gate_ids": ["x2_headline_vendor_terms_proof_only"],
+    }
+
+    errors = validate_section_failure_rca(rca)
+
+    assert "missing:current_output" in errors
+    assert "missing:required_fix" in errors
+    assert E2E_SECTION_FORENSICS_GATE_ID == "E2E_FAIL_WITHOUT_SECTION_FORENSICS"
+
+
+def test_clean_pass_does_not_emit_fake_section_failure_forensics(tmp_path: Path) -> None:
+    run = tmp_path / "clean_pass"
+    run.mkdir()
+
+    gate = emit_section_failure_forensics(
+        run,
+        repo_root=tmp_path,
+        sections=[
+            {
+                "section": "headline",
+                "status_bucket": "ran_real_llm",
+                "x3_code": "X3_ALLOW",
+                "failed_gates": [],
+            }
+        ],
+        result={"exit_status": "success", "outcome_authorized": True},
+    )
+
+    assert gate["required"] is False
+    assert gate["artifacts"] == []
+    assert not (run / SECTION_FAILURE_FORENSICS_DIR).exists()
+
+
+def test_bcg_forensics_truth_gate_requires_artifact_refs() -> None:
+    doc = {
+        "section_failure_forensics": {
+            "required": True,
+            "artifacts": [
+                {
+                    "section_id": "headline",
+                    "json_path": "artifacts/apps_rg/runs/run1/section_failure_forensics/headline.json",
+                    "md_path": "artifacts/apps_rg/runs/run1/section_failure_forensics/headline.md",
+                    "complete": True,
+                }
+            ],
+        },
+    }
+
+    errors = _bcg_forensics_truth_errors(
+        doc,
+        [{"section": "headline"}],
+        [{"label": "Mandatory run ledger", "path": "@artifacts/apps_rg/runs/run1/APPS_RG_MANDATORY_RUN_OUTPUT.json"}],
+    )
+
+    assert "bcg.forensics.missing_json_ref:headline" in errors
+    assert "bcg.forensics.missing_md_ref:headline" in errors
+
+
+def test_bcg_forensics_truth_gate_rejects_issue_tree_without_artifact() -> None:
+    doc = {
+        "section_failure_forensics": {
+            "required": True,
+            "artifacts": [
+                {
+                    "section_id": "executive_summary",
+                    "json_path": "section_failure_forensics/executive_summary.json",
+                    "md_path": "section_failure_forensics/executive_summary.md",
+                    "complete": True,
+                }
+            ],
+        },
+    }
+
+    errors = _bcg_forensics_truth_errors(
+        doc,
+        [{"section": "headline"}],
+        [
+            {
+                "label": "Section forensic RCA: executive_summary",
+                "path": (
+                    "@section_failure_forensics/executive_summary.json; "
+                    "@section_failure_forensics/executive_summary.md"
+                ),
+            }
+        ],
+    )
+
+    assert "bcg.issue_tree.missing_forensic_artifact:headline" in errors
 
 
 def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
@@ -172,6 +399,14 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert allocation["dominant_cause"]
     assert allocation["allocation"]
     assert all(row["root_cause_link"] != row["domain"] for row in allocation["allocation"])
+    issue = next(row for row in inline["bcg"]["issue_tree"] if row["section"] == "competencies")
+    issue_evidence = "\n".join(issue["evidence"])
+    assert "forensics_json=" in issue_evidence
+    assert "section_failure_forensics/competencies.json" in issue_evidence
+    evidence_map = inline["bcg"]["evidence_map"]
+    forensic_paths = "\n".join(row["path"] for row in evidence_map)
+    assert "section_failure_forensics/competencies.json" in forensic_paths
+    assert "section_failure_forensics/competencies.md" in forensic_paths
     bcg = (run / BCG_EXECUTIVE_OUTPUT_MD).read_text(encoding="utf-8")
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
     assert "BCG Executive Output - apps_rg Run" in bcg
@@ -181,6 +416,7 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert "Retry recoverability" in bcg
     assert "Required implementation plan" in bcg
     assert "Change the section enrichment step" in bcg
+    assert "Section forensic RCA: competencies" in bcg
     assert "Section Lane Summary Table" in mandatory
     assert "Resume DOCX Full Version Inline" in mandatory
     assert "NO_AUTHORIZED_RESUME_OUTPUT" in mandatory
@@ -240,6 +476,103 @@ def test_blocked_run_does_not_inline_stale_final_resume_text(tmp_path: Path) -> 
     assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
         "current_run_authorized"
     ] is False
+
+
+def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path: Path) -> None:
+    run = tmp_path / "anthropic_partnership_clean"
+    for lane_name in GENERATED_LANES:
+        lane = run / "lanes" / lane_name
+        lane.mkdir(parents=True)
+        (lane / "command_output.txt").write_text(f"{lane_name} authorized output\n", encoding="utf-8")
+        if lane_name == "headline":
+            (lane / "l6_shadow_eval_package.json").write_text("{}\n", encoding="utf-8")
+        _write_json(
+            lane / "x3_disposition.json",
+            {
+                "x3_code": "X3_ALLOW",
+                "product_quality_status": "PASS",
+                "runtime_generation_status": "REAL_LLM",
+            },
+        )
+        _write_json(lane / "x2_gate_outputs.json", {"gates": []})
+    final_resume_text = "Authorized resume output."
+    (run / FINAL_RESUME_OUTPUT_TXT).write_text(final_resume_text, encoding="utf-8")
+    (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).parent.mkdir(parents=True, exist_ok=True)
+    (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).write_text('{"status":"PASS"}\n', encoding="utf-8")
+    assembly_dir = run / "modular_r4" / "final_resume_assembly"
+    _write_json(assembly_dir / "final_resume_x2_gate_outputs.json", {"gates": [{"gate_id": "x2_final_resume", "pass": True}]})
+    _write_json(
+        assembly_dir / "full_resume_llm_coherence_review.json",
+        {
+            "full_resume_coherence_pass": True,
+            "aggregation_method": "unit_fixture",
+            "judge_verdicts": [
+                {
+                    "judge_id": "openai",
+                    "provider_name": "OpenAI",
+                    "model_name": "gpt-test",
+                    "score": 4.8,
+                    "threshold": 4.0,
+                    "pass": True,
+                    "provider_status": "MODEL_BACKED",
+                }
+            ],
+        },
+    )
+    (run / FINAL_RESUME_DOCX_RELPATH).parent.mkdir(parents=True, exist_ok=True)
+    (run / FINAL_RESUME_DOCX_RELPATH).write_text("docx-bytes", encoding="utf-8")
+    _write_json(
+        run / FINAL_RESUME_OUTPUT_JSON,
+        {
+            "schema_version": "apps_rg.final_resume_output.v1",
+            "required": True,
+            "status": "PASS",
+            "failed_gate_ids": [],
+            "gates": [],
+            "final_resume_json": {
+                "relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+                "exists": True,
+                "bytes": 18,
+                "sha256": "spine",
+            },
+            "rendered_resume_text": {
+                "relpath": FINAL_RESUME_OUTPUT_TXT,
+                "exists": True,
+                "bytes": len(final_resume_text),
+                "sha256": "resume",
+            },
+            "resume_docx": {
+                "relpath": FINAL_RESUME_DOCX_RELPATH,
+                "exists": True,
+                "bytes": 10,
+                "sha256": "docx",
+            },
+        },
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "success", "outcome_authorized": True},
+        emit_final_outputs=False,
+    )
+
+    payload = emitted["payload"]
+    assert payload["section_failure_forensics"]["required"] is False
+    assert not (run / SECTION_FAILURE_FORENSICS_DIR).exists()
+    recommendations = payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
+    assert any(
+        row["priority"] == "PX"
+        and row["recommendation"] == "Review L6 shadow observations as future-run hardening inputs, not product blockers."
+        and "headline: future_run_advisory_only" in row["evidence"]
+        for row in recommendations
+    )
+    evidence_map_text = "\n".join(
+        row["path"] for row in payload["inline_required_output"]["bcg"]["evidence_map"]
+    )
+    assert "section_failure_forensics" not in evidence_map_text
+    gates_by_id = {gate["gate_id"]: gate for gate in payload["mandatory_inline_output_gates"]}
+    assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is True
 
 
 def test_failed_lane_table_hydrates_provider_proof_from_current_run(tmp_path: Path) -> None:

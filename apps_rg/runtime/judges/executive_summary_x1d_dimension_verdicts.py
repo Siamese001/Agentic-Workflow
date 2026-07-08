@@ -6,6 +6,8 @@ import json
 import re
 from typing import Any, Callable
 
+from apps_rg.runtime.validators.executive_summary_x2 import EXEC_SUMMARY_MAX_WORDS
+
 EXEC_SUMMARY_RUBRIC_DIMENSION_IDS: tuple[str, ...] = (
     "factual_support",
     "executive_signal",
@@ -204,7 +206,7 @@ def build_executive_summary_x1d_rubric_text(*, include_score_schema: str = "") -
     lines.extend(
         [
             "",
-            "**Target shape:** **exactly six dense sentences** (one executive paragraph, max 140 words); "
+            f"**Target shape:** **exactly six dense sentences** (one executive paragraph, max {EXEC_SUMMARY_MAX_WORDS} words); "
             "metrics/credentials only when ledger-backed; prefer distinct proof themes over repeated metrics.",
             "",
             "Decisive failure triggers:",

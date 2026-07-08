@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     check_exec_summary_no_mechanism_inventory,
     check_exec_summary_paragraph_max_words,
     check_prompt_template_authority,
@@ -56,6 +57,21 @@ def test_paragraph_max_words_fails_when_over_cap() -> None:
     ok, reason = check_exec_summary_paragraph_max_words(long_text, parsed_output={})
     assert ok is False
     assert reason is not None and "exceeds maximum" in reason
+
+
+def test_paragraph_max_words_uses_150_word_ssot_boundary() -> None:
+    assert EXEC_SUMMARY_MAX_WORDS == 150
+    for count in (143, 147, 150):
+        ok, reason = check_exec_summary_paragraph_max_words(
+            " ".join(["word"] * count), parsed_output={}
+        )
+        assert ok is True, reason
+
+    ok, reason = check_exec_summary_paragraph_max_words(
+        " ".join(["word"] * 151), parsed_output={}
+    )
+    assert ok is False
+    assert reason == "executive summary word count 151 exceeds maximum 150"
 
 
 def test_paragraph_max_words_passes_for_short_four_sentence_paragraph() -> None:

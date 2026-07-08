@@ -11,6 +11,7 @@ from apps_rg.runtime.sections.executive_summary_voice_repair import (
     polish_executive_summary_judge_alignment,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     _resume_word_count,
     check_exec_summary_allowed_fact_utilization,
     check_exec_summary_no_sentence_fragment,
@@ -20,6 +21,14 @@ from apps_rg.runtime.validators.executive_summary_x2 import (
 
 def _word_count(sentences: list[str]) -> int:
     return len(re.findall(r"\S+", " ".join(sentences)))
+
+
+def _sentence_with_word_count(prefix: str, count: int, *, start: int = 0) -> str:
+    words = str(prefix).strip().rstrip(".").split()
+    if len(words) > count:
+        raise AssertionError(f"prefix already has {len(words)} words > {count}")
+    filler = [f"scope{idx}" for idx in range(start, start + count - len(words))]
+    return " ".join([*words, *filler]) + "."
 
 
 def test_trim_paragraph_word_budget_removes_established_through_on_fsa_sentence() -> None:
@@ -65,6 +74,48 @@ def test_trim_paragraph_word_budget_noop_when_under_cap() -> None:
     ]
     trimmed = _trim_paragraph_word_budget(sentences, max_words=140)
     assert trimmed == sentences
+
+
+def test_trim_paragraph_word_budget_default_uses_exec_summary_ssot() -> None:
+    sentences = [
+        _sentence_with_word_count("Enterprise platform leader builds governed AI delivery systems", 20, start=0),
+        _sentence_with_word_count("Through that foundation, cloud modernization teams align delivery standards", 20, start=20),
+        _sentence_with_word_count("Building on that base, solution architects convert reusable patterns", 20, start=40),
+        _sentence_with_word_count("In parallel, governance routines keep security and rollback ownership visible", 20, start=60),
+        _sentence_with_word_count("That delivery system also supports alliance co-sell motions", 20, start=80),
+        _sentence_with_word_count("Strategic partnership leadership scales partner ecosystems", 47, start=100),
+    ]
+    assert _word_count(sentences) == 147
+
+    trimmed = _trim_paragraph_word_budget(sentences)
+
+    assert EXEC_SUMMARY_MAX_WORDS == 150
+    assert trimmed == sentences
+
+
+def test_trim_paragraph_word_budget_151_word_near_miss_trims_to_ssot() -> None:
+    tail = (
+        ", reference architectures, enablement motions, solution guidance, adoption governance, "
+        "operating discipline, executive trust, field readiness, technical sponsorship, and partner credibility."
+    )
+    s6_prefix = "Strategic partnership leadership scales partner ecosystems"
+    s6_base_words = len(re.findall(r"\S+", s6_prefix + tail))
+    s6_filler = " ".join(f"scope{idx}" for idx in range(100, 100 + 51 - s6_base_words))
+    sentences = [
+        _sentence_with_word_count("Enterprise platform leader builds governed AI delivery systems", 20, start=0),
+        _sentence_with_word_count("Through that foundation, cloud modernization teams align delivery standards", 20, start=20),
+        _sentence_with_word_count("Building on that base, solution architects convert reusable patterns", 20, start=40),
+        _sentence_with_word_count("In parallel, governance routines keep security and rollback ownership visible", 20, start=60),
+        _sentence_with_word_count("That delivery system also supports alliance co-sell motions", 20, start=80),
+        f"{s6_prefix} {s6_filler}{tail}",
+    ]
+    assert _word_count(sentences) == 151
+
+    trimmed = _trim_paragraph_word_budget(sentences)
+    text = " ".join(trimmed)
+
+    assert _resume_word_count(text) <= EXEC_SUMMARY_MAX_WORDS
+    assert trimmed != sentences
 
 
 def test_trim_paragraph_word_budget_preserves_runtime_control_finite_verb() -> None:

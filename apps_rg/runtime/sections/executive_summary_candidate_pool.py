@@ -48,6 +48,11 @@ def _dimension_verdicts_snapshot(x1d_judges: list[dict[str, Any]]) -> dict[str, 
     return out
 
 
+def _x2_gates_all_pass(x2_gates: tuple[dict[str, Any], ...] | list[dict[str, Any]]) -> bool:
+    rows = [g for g in x2_gates if isinstance(g, dict)]
+    return bool(rows) and not any(not bool(g.get("pass")) for g in rows)
+
+
 @dataclass(frozen=True)
 class CandidateSnapshot:
     """Frozen publish candidate (H-1)."""
@@ -75,6 +80,7 @@ class CandidateSnapshot:
             "candidate_id": self.candidate_id,
             "candidate_digest": self.candidate_digest,
             "publish_eligible": self.publish_eligible,
+            "x2_all_pass": _x2_gates_all_pass(self.x2_gate_outputs),
             "scores_freshness": self.scores_freshness,
             "model_backed_scores_snapshot": self.model_backed_scores_snapshot,
         }
@@ -171,7 +177,7 @@ class CandidatePool:
         return list(self._entries)
 
     def publish_eligible(self) -> list[CandidateSnapshot]:
-        return [s for s in self._entries if s.publish_eligible]
+        return [s for s in self._entries if s.publish_eligible and _x2_gates_all_pass(s.x2_gate_outputs)]
 
 
 def _model_backed_judges(judges: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -245,6 +251,9 @@ def finalize_pool_publish(
 ) -> PoolPublishResult:
     """Full-panel rescore publish-eligible snapshots, argmax, rebind artifacts (H-3/H-6)."""
     from pathlib import Path
+    from apps_rg.runtime.sections.executive_summary_judge_remediation import (
+        all_model_backed_judges_pass,
+    )
 
     eligible = pool.publish_eligible()
     receipt: dict[str, Any] = {
@@ -286,15 +295,45 @@ def finalize_pool_publish(
             scores_freshness=SCORES_FRESHNESS_FULL_PANEL,
             publish_eligible=True,
         )
-        full_panel_rows.append(
+        row = {
+            "candidate_id": snap.candidate_id,
+            "pre_rank_digest": snap.candidate_digest,
+            "full_panel_digest": ranked_snap.candidate_digest,
+            "rescore_receipt": rescore_receipt,
+            "final_materialized_x2_all_pass": _x2_gates_all_pass(ranked_snap.x2_gate_outputs),
+            "judge_certified": all_model_backed_judges_pass(judges),
+        }
+        if not row["final_materialized_x2_all_pass"]:
+            row["publish_excluded_reason"] = "final_materialized_x2_failed"
+            full_panel_rows.append(row)
+            continue
+        if not row["judge_certified"]:
+            row["publish_excluded_reason"] = "full_panel_judges_not_certified"
+            full_panel_rows.append(row)
+            continue
+        full_panel_rows.append(row)
+        ranked.append((ranked_snap, judges))
+
+    adir = Path(artifact_dir)
+    if not ranked:
+        receipt["skipped"] = "no_final_materialized_publish_eligible_candidates"
+        receipt["full_panel_rescore"] = full_panel_rows
+        write_json_fn(
+            adir / "candidate_pool_summary.json",
             {
-                "candidate_id": snap.candidate_id,
-                "pre_rank_digest": snap.candidate_digest,
-                "full_panel_digest": ranked_snap.candidate_digest,
-                "rescore_receipt": rescore_receipt,
+                "schema": "executive_summary_candidate_pool_summary_v1",
+                "candidates": [s.to_summary_row() for s in pool.entries()],
+                "publish_eligible_ids": [s.candidate_id for s in eligible],
+                "full_panel_rescore": full_panel_rows,
+                "publish_selected_snapshot_id": None,
+                "published_candidate_digest": "",
+                "publish_reason": receipt["skipped"],
+                "rank": {"rank_comparison": [], "winning_key": []},
+                "x2_publish_eligible": False,
+                "judge_certified": False,
             },
         )
-        ranked.append((ranked_snap, judges))
+        return empty_result
 
     selected, selected_judges, rank_receipt = select_best_publish_candidate(ranked)
     publish_reason = "argmax_full_panel_min_holistic"
@@ -305,10 +344,6 @@ def finalize_pool_publish(
         elif str(scratch_anchor_resume or "").strip() == str(selected.resume_display_text or "").strip():
             publish_reason = "regen_regressed_or_rejected_publish_scratch"
 
-    from apps_rg.runtime.sections.executive_summary_judge_remediation import (
-        all_model_backed_judges_pass,
-    )
-
     pool_summary = {
         "schema": "executive_summary_candidate_pool_summary_v1",
         "candidates": [s.to_summary_row() for s in pool.entries()],
@@ -318,10 +353,9 @@ def finalize_pool_publish(
         "published_candidate_digest": selected.candidate_digest,
         "publish_reason": publish_reason,
         "rank": rank_receipt,
-        "x2_publish_eligible": True,
+        "x2_publish_eligible": _x2_gates_all_pass(selected.x2_gate_outputs),
         "judge_certified": all_model_backed_judges_pass(selected_judges),
     }
-    adir = Path(artifact_dir)
     write_json_fn(adir / "candidate_pool_summary.json", pool_summary)
 
     claim_ledger = [dict(r) for r in selected.claim_ledger]

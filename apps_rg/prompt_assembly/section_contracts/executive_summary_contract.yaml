@@ -27,7 +27,7 @@ length:
   display_text_sentence_band:
     min: 6
     max: 6
-  paragraph_max_words: 140
+  paragraph_max_words: 150
   max_words_per_sentence: 45
   length_policy: fit_to_evidence
   x2_bounds_gate_ids:
@@ -35,7 +35,7 @@ length:
     - x2_exec_summary_paragraph_max_words
   note: >
     Product shape: **exactly six period-delimited sentences** forming one polished executive
-    paragraph (fit_to_evidence; max 140 words — ceiling only, no word minimum). Legacy
+    paragraph (fit_to_evidence; max 150 words — ceiling only, no word minimum). Legacy
     4–5 and 2–3 sentence modes are retired. SelectedRoleFactSet controls allowed facts only.
 
 naturalness_guidance_ref: "forbidden_ai_phrases.yaml#generic_openers"

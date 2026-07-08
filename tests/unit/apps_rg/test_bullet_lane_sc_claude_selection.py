@@ -25,6 +25,7 @@ from apps_rg.runtime.reasoning.bullet_lane_self_consistency import (
     self_consistency_parallel_enabled,
     temperature_ladder,
 )
+# apps-test-model: APP CONTRACT
 from apps_rg.runtime.reasoning.employment_bullet_pool import (
     EMPLOYMENT_BULLET_JUDGE_PROVIDERS,
     SC_PATH_COUNT_BY_LANE,
@@ -147,6 +148,51 @@ def test_evaluate_employment_gate_requires_score_floor() -> None:
     )
     assert gate_fail.ok is False
     assert UNIFY_BULLET_IDS[0] in gate_fail.slots_below_threshold or UNIFY_BULLET_IDS[0] in gate_fail.slots_missing
+
+
+def test_role_episode_employment_gate_requires_three_unique_source_facts() -> None:
+    required = ("bul_ey_001", "bul_ey_002", "bul_ey_003")
+    selections = [
+        {"bullet_id": bid, "path_index": 0, "score": 0.9, "passes": True}
+        for bid in required
+    ]
+    duplicate_fact = {
+        "bullets": [
+            {"bullet_id": "bul_ey_001", "bullet_text": "a", "source_fact_ids": ["reb_ey_a"]},
+            {"bullet_id": "bul_ey_002", "bullet_text": "b", "source_fact_ids": ["reb_ey_a"]},
+            {"bullet_id": "bul_ey_003", "bullet_text": "c", "source_fact_ids": ["reb_ey_c"]},
+        ]
+    }
+    gate = evaluate_employment_selection_quality(
+        section_lane="ey_bullets",
+        required_bullet_ids=required,
+        selections=selections,
+        merged_parsed=duplicate_fact,
+        min_score=0.72,
+    )
+
+    assert gate.ok is False
+    assert gate.proof_unique_source_fact_gate_active is True
+    assert gate.unique_source_fact_ids == ("reb_ey_a", "reb_ey_c")
+    assert gate.duplicate_source_fact_ids == ("reb_ey_a",)
+
+    unique_facts = {
+        "bullets": [
+            {"bullet_id": "bul_ey_001", "bullet_text": "a", "source_fact_ids": ["reb_ey_a"]},
+            {"bullet_id": "bul_ey_002", "bullet_text": "b", "source_fact_ids": ["reb_ey_b"]},
+            {"bullet_id": "bul_ey_003", "bullet_text": "c", "source_fact_ids": ["reb_ey_c"]},
+        ]
+    }
+    gate_ok = evaluate_employment_selection_quality(
+        section_lane="ey_bullets",
+        required_bullet_ids=required,
+        selections=selections,
+        merged_parsed=unique_facts,
+        min_score=0.72,
+    )
+
+    assert gate_ok.ok is True
+    assert gate_ok.unique_source_fact_ids == ("reb_ey_a", "reb_ey_b", "reb_ey_c")
 
 
 def test_generate_singleton_when_sc_disabled(monkeypatch: pytest.MonkeyPatch) -> None:

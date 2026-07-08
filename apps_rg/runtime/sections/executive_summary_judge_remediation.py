@@ -759,7 +759,7 @@ def collect_judge_remediation_delta_lines(
 
     if allowed_fact_count >= 1:
         sections["guards"].append(
-            "Shape: exactly 6 sentences (max 140 words); same JSON schema as first turn.",
+            f"Shape: exactly 6 sentences (max {EXEC_SUMMARY_MAX_WORDS} words); same JSON schema as first turn.",
         )
     sections["guards"].extend(
         [
@@ -828,9 +828,9 @@ def build_judge_remediation_legacy_user_message(
         )
     prefer_five = ""
     if allowed_fact_count >= 6:
-        prefer_five = "Shape: exactly 6 sentences (max 140 words); integrate additional allowed facts across the six-sentence arc.\n"
+        prefer_five = f"Shape: exactly 6 sentences (max {EXEC_SUMMARY_MAX_WORDS} words); integrate additional allowed facts across the six-sentence arc.\n"
     else:
-        prefer_five = "Shape: exactly 6 sentences (max 140 words); fit_to_evidence integrated narrative.\n"
+        prefer_five = f"Shape: exactly 6 sentences (max {EXEC_SUMMARY_MAX_WORDS} words); fit_to_evidence integrated narrative.\n"
     composition_note = ""
     plan = composition_plan or {}
     arc = plan.get("sentence_arc") or []

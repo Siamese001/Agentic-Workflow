@@ -15,7 +15,7 @@ from apps_rg.runtime.validators.executive_summary_sentence_utils import split_se
 
 EXEC_SUMMARY_MIN_SENTENCES = 6
 EXEC_SUMMARY_MAX_SENTENCES = 6
-EXEC_SUMMARY_MAX_WORDS = 140
+EXEC_SUMMARY_MAX_WORDS = 150
 EXEC_SUMMARY_MAX_WORDS_PER_SENTENCE = 45
 EXPECTED_PROMPT_TEMPLATE_REF = "apps_rg/prompt_assembly/templates/executive_summary.generate_scratch_v1.yaml"
 EXPECTED_PROMPT_ID = "executive_summary.generate_scratch_v1"
@@ -1961,7 +1961,7 @@ def check_exec_summary_allowed_fact_utilization(
     """Each required brushstroke must be represented in claim_ledger / text_claim_coverage.
 
     Post graph-era migration the ALLOWED_SOURCE_FACT_IDS pool is the union of every lane's promoted
-    facts (~50+), which a six-sentence / 140-word summary cannot all cite — grading utilization as
+    facts (~50+), which a six-sentence summary cannot all cite — grading utilization as
     "cite every allowed fact" is unsatisfiable by construction. When the composition's brushstroke
     groups are supplied (``required_brushstroke_groups`` = the per-B1..B4 ``required_fact_ids``),
     utilization is graded as COVERAGE: every non-empty required brushstroke must have >=1 of its

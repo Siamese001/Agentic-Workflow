@@ -7,6 +7,7 @@ import re
 from typing import Any
 
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     EXEC_SUMMARY_FORBIDDEN_META_PHRASES,
     EXEC_SUMMARY_FORBIDDEN_META_PHRASES_LOOSE,
     GENERIC_FILLER,
@@ -1483,7 +1484,7 @@ def _sentence_fragment_gate_ok(sentence: str) -> bool:
 def _trim_paragraph_word_budget(
     sentences: list[str],
     *,
-    max_words: int = 140,
+    max_words: int = EXEC_SUMMARY_MAX_WORDS,
 ) -> list[str]:
     """Trim display prose when polish steps push over the X2 paragraph word ceiling."""
     out = list(sentences)
@@ -2230,13 +2231,13 @@ def finalize_executive_summary_coherence(
     if strategy_comm_receipt.get("applied"):
         receipt["ledger_reconciled"] = True
     # Final hard cap pass: downstream polish/anchor/commercialization substitutions can
-    # re-expand text after an earlier trim. Enforce the 140-word ceiling at function end
-    # so x2_exec_summary_paragraph_max_words cannot regress.
+    # re-expand text after an earlier trim. Enforce the validator-owned word ceiling at
+    # function end so x2_exec_summary_paragraph_max_words cannot regress.
     from apps_rg.runtime.validators.executive_summary_x2 import split_sentences
 
     _final_text = str(out.get("resume_display_text") or "")
     _final_sents = split_sentences(_final_text)
-    _final_trimmed = _trim_paragraph_word_budget(_final_sents, max_words=140)
+    _final_trimmed = _trim_paragraph_word_budget(_final_sents, max_words=EXEC_SUMMARY_MAX_WORDS)
     if _final_trimmed != _final_sents:
         out["resume_display_text"] = " ".join(s.strip() for s in _final_trimmed if s.strip())
         out = reconcile_claim_ledger_after_voice_repair(out)

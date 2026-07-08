@@ -1,4 +1,5 @@
 """Unit tests for InsurTech/EY role-episode deterministic X2 gates."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -438,6 +439,59 @@ def test_ey_model_bullet_target_overwrite_is_discarded_before_display() -> None:
 
     gate = _gate_by_id(gates)["x2_ey_bullets_display_text_proof_authorized"]
     assert gate["pass"] is True
+
+
+def test_ey_duplicate_selected_source_fact_reselects_unique_proof_fact_before_display() -> None:
+    cfg = role_episode_lane._ROLE_LANES["ey_bullets"]
+    facts = [
+        {
+            "fact_id": "reb_ey_ccar_capital_liquidity_stress_testing",
+            "claim_text": "Led CCAR-era capital, liquidity, and stress-testing initiatives with audit-ready governance evidence.",
+        },
+        {
+            "fact_id": "reb_ey_erm_risk_governance",
+            "claim_text": "Architected enterprise risk-governance operating models aligned to BCBS 239 accountability.",
+        },
+        {
+            "fact_id": "reb_ey_regulatory_analytics_modernization",
+            "claim_text": "Led regulatory analytics modernization by linking predictive risk analytics and lineage-backed workflows.",
+        },
+    ]
+    allowed = [str(f["fact_id"]) for f in facts]
+    parsed = {
+        "bullets": [
+            {
+                "bullet_text": "Duplicate path variant A.",
+                "source_fact_ids": [allowed[0]],
+            },
+            {
+                "bullet_text": "Duplicate path variant B.",
+                "source_fact_ids": [allowed[0]],
+            },
+            {
+                "bullet_text": "Regulatory analytics variant.",
+                "source_fact_ids": [allowed[2]],
+            },
+        ],
+        "claim_ledger": [],
+    }
+
+    bullets, receipt = role_episode_lane._materialize_bullet_generation(
+        cfg=cfg,
+        parsed=parsed,
+        parse_error="",
+        provider_runtime_generation_status="REAL_LLM",
+        facts=facts,
+        allowed=allowed,
+        graph_packet_digest="digest://ey-proof",
+    )
+
+    contract = receipt["final_materialized_selection_contract"]
+    assert receipt["final_materialized_acceptance_ok"] is True
+    assert contract["duplicate_source_fact_ids_ignored"] == [allowed[0]]
+    assert contract["deterministic_reselect_source_fact_ids"] == [allowed[1]]
+    assert [b["source_fact_ids"][0] for b in bullets] == [allowed[0], allowed[2], allowed[1]]
+    assert len({b["source_fact_ids"][0] for b in bullets}) == 3
 
 
 def test_role_episode_display_text_gate_rejects_valid_id_with_unbacked_phrase() -> None:
