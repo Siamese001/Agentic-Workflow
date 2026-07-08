@@ -167,6 +167,10 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
     #   already-materialized executive_summary sentence; no visible prose is introduced.
     # - repair_exec_summary_thin_sentence_weave: deterministic phrase expansion of an already
     #   supported executive_summary sentence to satisfy structural weave density.
+    # - repair_exec_summary_cross_fact_conflation_row: ledger-only compaction of over-dense
+    #   executive_summary source_fact_ids to the direct proof for each already-written sentence.
+    # - repair_unify_bullet_seniority_tense: visible tense-only normalization on unify_bullets;
+    #   source facts and claim semantics are unchanged, and full X2 still runs afterward.
     # - bullet_judge_feedback_reselection (W4.1/G14): judge-feedback pool reselection on the
     #   employment bullet lanes. Honest because the swap (a) re-runs the FULL X2 gate set on
     #   the swapped doc and fully reverts on any regression, (b) re-judges the new content
@@ -178,6 +182,8 @@ def ledger_blocks_product_pass(ledger: dict[str, Any] | None) -> tuple[bool, str
             "repair_protected_unify_bullet_metrics",
             "repair_required_brushstroke_citation",
             "repair_exec_summary_thin_sentence_weave",
+            "repair_exec_summary_cross_fact_conflation_row",
+            "repair_unify_bullet_seniority_tense",
             "bullet_judge_feedback_reselection",
         }
     )

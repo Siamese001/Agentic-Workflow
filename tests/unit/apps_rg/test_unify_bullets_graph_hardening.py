@@ -36,7 +36,10 @@ from apps_rg.runtime.spine.front_contracts import (
     activate_fixture_dev_bypass,
     deactivate_fixture_dev_bypass,
 )
-from apps_rg.runtime.validators.bullet_quality_floor_x2 import check_bullet_technical_specificity_floor
+from apps_rg.runtime.validators.bullet_quality_floor_x2 import (
+    check_bullet_seniority_floor,
+    check_bullet_technical_specificity_floor,
+)
 from apps_rg.runtime.validators.unify_bullets_x2 import UNIFY_BULLET_IDS, run_unify_bullets_x2_gates
 from apps_rg.runtime.sections.role_episode_metric_registry import metric_outcome_nodes_from_path
 from apps_rg.runtime.sections.unify_graph_role_episode_registry import BUNDLES_PATH as UNIFY_BUNDLES_PATH
@@ -302,6 +305,28 @@ def test_unify_normalization_repairs_metric_surface_visibility_from_registry() -
     by_id = {g.gate_id: g for g in gates}
     assert by_id["x2_unify_each_bullet_metric_outcome_surface_visible"].passed is True
     assert by_id["x2_unify_metric_outcomes_distributed_by_slot"].passed is True
+
+
+def test_unify_normalization_repairs_present_tense_ownership_for_seniority_floor() -> None:
+    _bullets, parsed, meta = _partner_metric_surface_payload()
+    parsed["bullets"][0]["bullet_text"] = (
+        "Own governed agentic systems architecture at Unify, defining L0 route-policy dispatch "
+        "for deterministic agent workflow selection across multi-agent orchestration handoffs."
+    )
+    parsed["claim_ledger"][0]["claim_text"] = parsed["bullets"][0]["bullet_text"]
+    runtime_payload = {
+        "allowed_fact_ids": list(UNIFY_BULLET_IDS),
+        "selected_fact_plan": {"facts": []},
+        "proof_pool_metadata": meta,
+    }
+
+    normalized = normalize_unify_parsed_without_ledger_synthesis(parsed, runtime_payload)
+    assert normalized is not None
+    text = normalized["bullets"][0]["bullet_text"]
+
+    assert text.startswith("Owned governed agentic systems architecture")
+    assert normalized["claim_ledger"][0]["claim_text"] == text
+    assert check_bullet_seniority_floor("bul_unify_001", text).passed is True
 
 
 def test_agentic_runtime_terms_count_for_bullet_technical_specificity() -> None:

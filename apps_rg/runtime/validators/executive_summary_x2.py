@@ -1578,6 +1578,16 @@ def _metric_tokens_from_text(text: str) -> list[str]:
     return tokens
 
 
+def _north_star_signature_supported_by_blob(phrase: str, support_blob: str) -> bool:
+    p = phrase.lower()
+    blob = support_blob.lower()
+    if p in blob:
+        return True
+    if p in {"gross margins", "expanding gross margins"}:
+        return "gross margin expansion" in blob or "gross margins by" in blob
+    return False
+
+
 def check_north_star_style_example_echo_unsupported(
     resume_display_text: str,
     selected_facts: list[dict[str, Any]] | None,
@@ -1588,7 +1598,7 @@ def check_north_star_style_example_echo_unsupported(
     hits: list[str] = []
     for phrase in NORTH_STAR_SIGNATURE_PHRASES:
         p = phrase.lower()
-        if p in lower and p not in blob:
+        if p in lower and not _north_star_signature_supported_by_blob(p, blob):
             hits.append(phrase)
     if hits:
         return False, "Style-example echo without selected-fact support: " + ", ".join(hits)

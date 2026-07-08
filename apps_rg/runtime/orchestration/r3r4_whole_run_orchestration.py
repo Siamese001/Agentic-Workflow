@@ -503,6 +503,7 @@ def run_whole_run_with_route_governance(
     manual_brief_eff = manual_brief
     research_ran = False
     research_note = ""
+    delegated_briefing_ref: str | None = None
 
     if should_delegate_apps_research(
         route_family=route.route_family,
@@ -524,15 +525,34 @@ def run_whole_run_with_route_governance(
         route_decision["research_delegation_executed"] = True
         route_decision["research_outcome"] = research_note
         if not ok:
-            route_decision["research_failure"] = research_note
-            return _failure_payload(
-                artifact_dir=art,
-                route=route,
-                reason=research_note,
-                route_decision=route_decision,
-            )
-        manual_brief_eff = brief_path
-        route_decision["delegated_briefing_path"] = brief_path
+            if briefing_input_present(manual_brief):
+                route_decision["research_failure_nonterminal"] = research_note
+                route_decision["research_fallback_to_manual_brief"] = True
+                route_decision["research_fallback_reason"] = "manual_brief_input_present"
+                sr.write_stage_receipt(
+                    art / "research" / "manual_brief_fallback_receipt.json",
+                    {
+                        "schema_version": "apps_rg.research_manual_brief_fallback.v1",
+                        "apps_research_outcome": research_note,
+                        "fallback": "manual_brief",
+                        "manual_brief": manual_brief,
+                        "reason": "manual_brief_input_present",
+                    },
+                )
+                research_note = f"ManualBriefFallbackAfter_{research_note}"
+                route_decision["research_outcome"] = research_note
+            else:
+                route_decision["research_failure"] = research_note
+                return _failure_payload(
+                    artifact_dir=art,
+                    route=route,
+                    reason=research_note,
+                    route_decision=route_decision,
+                )
+        else:
+            manual_brief_eff = brief_path
+            delegated_briefing_ref = sr.FILENAME_DELEGATED_BRIEFING
+            route_decision["delegated_briefing_path"] = brief_path
     else:
         route_decision["research_delegation_executed"] = False
         if (
@@ -560,7 +580,7 @@ def run_whole_run_with_route_governance(
             "route_contract": sr.FILENAME_ROUTE_CONTRACT,
             "research_bridge_request": sr.FILENAME_RESEARCH_BRIDGE_REQUEST,
             "research_bridge_response": sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
-            "delegated_briefing": sr.FILENAME_DELEGATED_BRIEFING if research_ran else None,
+            "delegated_briefing": delegated_briefing_ref,
         },
     }
     sr.write_stage_receipt(art / sr.FILENAME_SPINE_MANIFEST, spine_pre_draft)
@@ -648,6 +668,12 @@ def run_whole_run_with_route_governance(
     rid = str(getattr(result, "run_id", "") or "").strip()
     emit_integrated_run_bundle_index(repo, art, run_id=rid or None, correlation_id=rid or None)
     maybe_ingest_r1b_post_exit(raw_request=raw_request, artifact_dir=art, runs_dir=art.parent)
+    final_resume_outputs_pre_emitted = False
+    if result.fault == "":
+        from apps_rg.runtime.final_resume_outputs import emit_final_resume_product_outputs
+
+        emit_final_resume_product_outputs(art, repo_root=repo, required=True)
+        final_resume_outputs_pre_emitted = True
 
     section_status_md: str | None = None
     if is_integrated_whole_run_artifact_dir(art):
@@ -749,6 +775,7 @@ def run_whole_run_with_route_governance(
                 repo_root=repo,
                 result=payload,
                 print_stdout=False,
+                emit_final_outputs=not final_resume_outputs_pre_emitted,
             )
             mandatory_outputs = {
                 "mandatory_run_output_json": str(mandatory_emit["json_path"]),

@@ -30,6 +30,7 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from apps_eval.contracts import CURRENT_EVAL_RECORD_SCHEMA_VERSION, CompletedEvalRecord
 
 L6_SHADOW_BRIDGE_ARTIFACT = "l6_shadow_bridge.json"
@@ -64,19 +65,19 @@ def _hash_ref(value: object) -> str:
 
 
 def _write_json_artifact(path: Path, payload: Any) -> Path:
-    path.write_text(
+    _wg.write_text(
+        path,
         json.dumps(payload, indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
-        newline="\n",
     )
     return path
 
 
 def _write_jsonl_artifact(path: Path, rows: list[Mapping[str, Any]]) -> Path:
-    path.write_text(
+    _wg.write_text(
+        path,
         "".join(json.dumps(row, sort_keys=True, default=str) + "\n" for row in rows),
         encoding="utf-8",
-        newline="\n",
     )
     return path
 

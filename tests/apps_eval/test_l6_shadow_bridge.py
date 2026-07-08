@@ -54,6 +54,10 @@ def test_completed_eval_bridge_emits_real_apps_eval_grain_parity(tmp_path: Path)
     assert parity["apps_eval_rows_bound"] is True
     assert parity["grain_parity_status"] == "PASS"
 
+    proposals_path = Path(record.artifact_paths["l6_microstep_future_run_proposals"])
+    proposals = json.loads(proposals_path.read_text(encoding="utf-8"))
+    assert proposals["schema_version"] == "agentic_core.l6_microstep_future_run_proposals.v1"
+
 
 def test_apps_eval_live_adapter_cannot_disable_l6_handoff(tmp_path: Path) -> None:
     with pytest.raises(PermissionError, match="L6 shadow handoff is required"):

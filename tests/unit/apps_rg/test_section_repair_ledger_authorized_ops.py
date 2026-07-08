@@ -62,6 +62,19 @@ def test_repair_protected_unify_bullet_metrics_is_authorized() -> None:
     )
 
 
+def test_repair_unify_bullet_seniority_tense_is_authorized() -> None:
+    ledger = _make_ledger(
+        operations=[
+            (KIND_DETERMINISTIC_REWRITE, "repair_unify_bullet_seniority_tense", True),
+        ]
+    )
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert not blocked, (
+        f"repair_unify_bullet_seniority_tense is a tense-only surface repair. "
+        f"Got reason: {reason!r}"
+    )
+
+
 def test_repair_required_brushstroke_citation_is_authorized() -> None:
     ledger = _make_ledger(
         operations=[
@@ -85,6 +98,19 @@ def test_repair_exec_summary_thin_sentence_weave_is_authorized() -> None:
     assert not blocked, (
         f"repair_exec_summary_thin_sentence_weave is deterministic density repair. "
         f"Got reason: {reason!r}"
+    )
+
+
+def test_repair_exec_summary_cross_fact_conflation_row_is_authorized() -> None:
+    ledger = _make_ledger(
+        operations=[
+            (KIND_DETERMINISTIC_REWRITE, "repair_exec_summary_cross_fact_conflation_row", True),
+        ]
+    )
+    blocked, reason = ledger_blocks_product_pass(ledger)
+    assert not blocked, (
+        "repair_exec_summary_cross_fact_conflation_row only compacts source_fact_ids "
+        f"for already-written sentences. Got reason: {reason!r}"
     )
 
 
@@ -168,8 +194,10 @@ def test_all_authorized_ops_together_do_not_block() -> None:
             ),
             (KIND_DETERMINISTIC_REWRITE, "finalize_competencies_v3_output", True),
             (KIND_DETERMINISTIC_REWRITE, "repair_protected_unify_bullet_metrics", True),
+            (KIND_DETERMINISTIC_REWRITE, "repair_unify_bullet_seniority_tense", True),
             (KIND_DETERMINISTIC_REWRITE, "repair_required_brushstroke_citation", True),
             (KIND_DETERMINISTIC_REWRITE, "repair_exec_summary_thin_sentence_weave", True),
+            (KIND_DETERMINISTIC_REWRITE, "repair_exec_summary_cross_fact_conflation_row", True),
         ]
     )
     blocked, reason = ledger_blocks_product_pass(ledger)

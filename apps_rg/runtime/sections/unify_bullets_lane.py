@@ -611,6 +611,11 @@ _UNIFY_ARCHIVE_PARAPHRASE_REPAIRS: dict[str, str] = {
 }
 
 
+_UNIFY_SENIORITY_TENSE_REPAIRS: dict[str, str] = {
+    "Own ": "Owned ",
+}
+
+
 def _claim_text_by_unify_slot(plan: Any) -> dict[str, str]:
     if not isinstance(plan, dict):
         return {}
@@ -726,6 +731,7 @@ def normalize_unify_parsed_without_ledger_synthesis(
         runtime_payload,
         protected_bullet_id=protected_default,
     )
+    _repair_unify_bullet_seniority_tense(out)
     _enforce_unify_metric_outcome_surfaces(out, runtime_payload)
     _repair_unify_archive_verbatim_overlap(out, runtime_payload)
     _sync_unify_claim_ledger_to_bullets(out, remap=legacy_remap, allowed=allowed)
@@ -803,6 +809,32 @@ def _repair_protected_unify_bullet_metrics(
             }
         )
     _sync_unify_claim_ledger_to_bullets(out)
+
+
+def _repair_unify_bullet_seniority_tense(out: dict[str, Any]) -> bool:
+    """Normalize present-tense executive ownership verbs to resume past tense."""
+    changed = False
+    for bullet in out.get("bullets") or []:
+        if not isinstance(bullet, dict):
+            continue
+        text = str(bullet.get("bullet_text") or "")
+        for prefix, replacement in _UNIFY_SENIORITY_TENSE_REPAIRS.items():
+            if text.startswith(prefix):
+                bullet["bullet_text"] = f"{replacement}{text[len(prefix):]}"
+                changed = True
+                break
+    if not changed:
+        return False
+    changelog = out.setdefault("change_log", [])
+    if isinstance(changelog, list):
+        changelog.append(
+            {
+                "operation": "repair_unify_bullet_seniority_tense",
+                "reason": "normalize_present_tense_ownership_verb_for_resume_seniority_floor",
+            }
+        )
+    _sync_unify_claim_ledger_to_bullets(out)
+    return True
 
 
 def parse_model_json(raw: str) -> tuple[dict[str, Any] | None, str]:

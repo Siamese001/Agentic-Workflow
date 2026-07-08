@@ -29,6 +29,14 @@ _X3_CANONICAL = {
     "X3D": "X3D_ALLOW_FINISH",
     "X3E": "X3E_SAFE_ABSTAIN",
 }
+_LANE_ARTIFACT_ROLE_BY_NAME = {
+    "l2_output.json": "lane_l2_output",
+    "runtime_payload.json": "lane_runtime_payload",
+    "x2_gate_outputs.json": "lane_x2_gate_outputs",
+    "x1d_llm_judge_outputs.json": "lane_x1d_llm_judge_outputs",
+    "x3_disposition.json": "lane_x3_disposition",
+    "l6_shadow_eval_package.json": "lane_l6_shadow_eval_package",
+}
 
 
 def _as_text(value: Any) -> str:
@@ -252,6 +260,59 @@ def _artifact_names(artifact_dir: Path, sections: dict[str, str]) -> list[str]:
     return sorted(names)
 
 
+def _resolve_artifact_ref(ref: str, artifact_dir: Path) -> Path:
+    path = Path(ref)
+    if path.is_absolute():
+        return path
+    candidate = (_REPO_ROOT / path).resolve()
+    if candidate.is_file():
+        return candidate
+    return (artifact_dir / path).resolve()
+
+
+def _artifact_index_entry(ref: str, artifact_dir: Path) -> dict[str, Any]:
+    path = _resolve_artifact_ref(ref, artifact_dir)
+    payload = _json_object(path) if path.suffix.lower() == ".json" else {}
+    return {
+        "artifact_ref": path.as_posix(),
+        "evidence_ref": ref.replace("\\", "/"),
+        "payload": payload,
+    }
+
+
+def _lane_artifact_index(artifact_dir: Path) -> dict[str, Any]:
+    sections_root = artifact_dir / "modular_r4" / "sections"
+    if not sections_root.is_dir():
+        return {}
+    index: dict[str, Any] = {}
+    for lane_dir in sorted(path for path in sections_root.iterdir() if path.is_dir()):
+        pointer = next(
+            (
+                candidate
+                for candidate in (
+                    lane_dir / "latest_successful_real_run.json",
+                    lane_dir / "latest_real_run.json",
+                )
+                if candidate.is_file()
+            ),
+            None,
+        )
+        if pointer is None:
+            continue
+        pointer_payload = _json_object(pointer)
+        links: dict[str, Any] = {}
+        for key in ("artifact_links", "artifact_links_compact"):
+            raw_links = pointer_payload.get(key)
+            if isinstance(raw_links, dict):
+                links.update(raw_links)
+        for file_name, role in _LANE_ARTIFACT_ROLE_BY_NAME.items():
+            ref = _as_text(links.get(file_name))
+            if not ref:
+                continue
+            index[f"{lane_dir.name}:{role}"] = _artifact_index_entry(ref, artifact_dir)
+    return index
+
+
 def _normalize_live_snapshot(
     *,
     scenario_id: str,
@@ -264,6 +325,7 @@ def _normalize_live_snapshot(
     sections = _normalize_sections(generated_resume) if generated_resume else {}
     claims = _claims_from_resume(generated_resume)
     evidence_refs = sorted({ref for claim in claims for ref in claim.get("source_ids", [])})
+    artifact_index = _lane_artifact_index(artifact_dir)
     output: dict[str, Any] = {
         "runtime": {
             "exit_status": _as_text(result.get("exit_status")),
@@ -287,10 +349,12 @@ def _normalize_live_snapshot(
             "preflight_ref": "apps_rg_live_preflight.json",
             "generated_resume_ref": str(resume_path.relative_to(artifact_dir)).replace("\\", "/") if resume_path else "",
             "evidence_refs": evidence_refs,
+            "lane_artifact_index_count": len(artifact_index),
             "resolved_inputs": preflight.get("resolved_inputs", {}),
         },
         side_effects={"product_state_mutated": False, "writes": []},
         run_root=str(artifact_dir),
+        artifact_index=artifact_index,
         raw_artifact_refs=_raw_artifact_refs(artifact_dir),
     )
 

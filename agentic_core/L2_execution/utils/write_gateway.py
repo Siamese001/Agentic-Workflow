@@ -275,9 +275,9 @@ def _check_write_amplification(path: Path, content: str, encoding: str = "utf-8"
     proposed_bytes = len(content.encode(encoding, errors="strict"))
     if proposed_bytes > MAX_WRITE_BYTES:
         raise WriteSizeCapError(path, proposed_bytes, MAX_WRITE_BYTES)
-    if path.exists():
+    if _path_exists(path):
         try:
-            original_content = path.read_text(encoding=encoding)
+            original_content = _read_text(path, encoding=encoding)
             original_bytes = len(original_content.encode(encoding, errors="strict"))
             growth_ratio = proposed_bytes / max(original_bytes, 1)
             if growth_ratio > MAX_GROWTH_RATIO:
@@ -401,7 +401,7 @@ def _append_ledger_entry(
         "trace_id": _TRACE_ID or "UNKNOWN",
         "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "operation": operation,
-        "path": str(path.resolve()).replace("\\", "/"),
+        "path": str(_resolved_for_display(path)).replace("\\", "/"),
         "before_hash": before_hash,
         "after_hash": after_hash,
         "gateway": "L2.WriteGateway",
@@ -409,18 +409,51 @@ def _append_ledger_entry(
         "result": result,
         "error": error,
     }
-    with open(_MUTATION_LEDGER_PATH, "a", encoding="utf-8") as f:
+    with open(_extended_path(_MUTATION_LEDGER_PATH), "a", encoding="utf-8") as f:
         f.write(json.dumps(entry, separators=(",", ":"), ensure_ascii=True) + "\n")
 
 
+def _extended_path(path: str | Path) -> str:
+    raw = os.fspath(path)
+    if os.name != "nt":
+        return raw
+    absolute = os.path.abspath(raw)
+    if absolute.startswith("\\\\?\\"):
+        return absolute
+    if absolute.startswith("\\\\"):
+        return "\\\\?\\UNC\\" + absolute.lstrip("\\")
+    return "\\\\?\\" + absolute
+
+
+def _resolved_for_display(path: Path) -> Path:
+    try:
+        return path.resolve()
+    except OSError:
+        return Path(os.path.abspath(os.fspath(path)))
+
+
+def _path_exists(path: Path) -> bool:
+    return os.path.exists(_extended_path(path))
+
+
+def _read_bytes(path: Path) -> bytes:
+    with open(_extended_path(path), "rb") as fh:
+        return fh.read()
+
+
+def _read_text(path: Path, *, encoding: str) -> str:
+    with open(_extended_path(path), "r", encoding=encoding) as fh:
+        return fh.read()
+
+
 def _atomic_write_bytes(path: Path, payload: bytes) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp", prefix=f".{path.stem}_")
+    os.makedirs(_extended_path(path.parent), exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=_extended_path(path.parent), suffix=".tmp", prefix=".wg_")
     with os.fdopen(fd, "wb") as fh:
         fh.write(payload)
         fh.flush()
         os.fsync(fh.fileno())
-    os.replace(tmp, path)
+    os.replace(tmp, _extended_path(path))
 
 
 def write_text(
@@ -457,8 +490,8 @@ def write_text(
     )
     p = Path(path)
     before_hash: str | None = None
-    if p.exists():
-        before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    if _path_exists(p):
+        before_hash = hashlib.sha256(_read_bytes(p)).hexdigest()
     if substitution_count is not None:
         expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
         if substitution_count > expected_max:
@@ -468,7 +501,7 @@ def write_text(
     enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
     _atomic_write_bytes(p, content.encode(encoding))
-    after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    after_hash = hashlib.sha256(_read_bytes(p)).hexdigest()
     _append_ledger_entry(
         operation="write_text",
         path=p,
@@ -486,13 +519,13 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
     """Write binary content to a file, creating parent dirs as needed."""
     p = Path(path)
     before_hash: str | None = None
-    if p.exists():
-        before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    if _path_exists(p):
+        before_hash = hashlib.sha256(_read_bytes(p)).hexdigest()
     gateway_approved = True
     enforce_protected_root(p, allow_override=allow_override)
     _deny_writes_into_source_roots(p, "write")
     _atomic_write_bytes(p, data)
-    after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+    after_hash = hashlib.sha256(_read_bytes(p)).hexdigest()
     _append_ledger_entry(
         operation="write_bytes",
         path=p,
