@@ -10,80 +10,55 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-    emit_determinism_digest,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-_emit_emits_metric_event("search_types", "p4obs", "metric_1")
-_emit_emits_metric_event("search_types", "p4obs", "metric_2")
-_emit_emits_metric_event("search_types", "p4obs", "metric_3")
-_emit_emits_metric_event("search_types", "p4obs", "metric_4")
-_emit_emits_metric_event("search_types", "p4obs", "metric_5")
-_emit_emits_metric_event("search_types", "p4obs", "metric_6")
-_emit_records_incident_event("search_types", "p4obs", "incident")
-_emit_captures_runtime_anomaly("search_types", "p4obs", "anomaly")
-_emit_writes_observability_log("search_types", "p4obs", "obs_log")
-_emit_updates_monitoring_state("search_types", "p4obs", "mon_state")
-_emit_triggers_alert("search_types", "p4obs", "alert")
-_emit_links_incident_trace("search_types", "p4obs", "trace_link")
-_emit_captures_pattern("search_types", "p3lm", "pattern")
-_emit_records_learning_event("search_types", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("search_types", "p3lm", "snapshot")
-_emit_feeds_meta_learning("search_types", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("search_types", "p3lm", "routing")
-_emit_improves_agent_policy("search_types", "p3lm", "policy")
-_emit_stores_learning_state("search_types", "p3lm", "state")
-_emit_records_execution_trace("search_types", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("search_types", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("search_types", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("search_types", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("search_types", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("search_types", "env_read", "p2_env_1")
-_emit_reads_environ("search_types", "env_read", "p2_env_2")
-_emit_reads_runtime_state("search_types", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("search_types", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "search_types", "context_pull")
-_emit_pulls_context("p1", "search_types", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "search_types", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "search_types", "uwg_term_2")
-_emit_writes_through("p1", "search_types", "write_through")
-_emit_writes_through("p1", "search_types", "write_through_2")
-_emit_validated_by_safety_plane("p1", "search_types", "safety_validation")
-_emit_invokes_eval("p1", "search_types", "eval_call")
-_emit_proposal_commits_routing("p1", "search_types", "routing_commit")
-emit_determinism_digest("trace_search_types", "search_types_dispatch_entry")
-emit_determinism_digest("trace_search_types", "search_types_dispatch_exit")
-emit_determinism_digest("trace_search_types", "search_types_tool_invoke")
-emit_determinism_digest("trace_search_types", "search_types_tool_complete")
-emit_determinism_digest("trace_search_types", "search_types_agent_entry")
-emit_determinism_digest("trace_search_types", "search_types_agent_exit")
-emit_determinism_digest("trace_search_types", "search_types_uwg_write")
-emit_determinism_digest("trace_search_types", "search_types_trace_sign")
-emit_determinism_digest("trace_search_types", "search_types_guardrail_check")
-emit_determinism_digest("trace_search_types", "search_types_policy_verify")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("search_types", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("search_types", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("search_types", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("search_types", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("search_types", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("search_types", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("search_types", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("search_types", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("search_types", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("search_types", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("search_types", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("search_types", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("search_types", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("search_types", "p3lm", "state")
+trace_contract._emit_records_execution_trace("search_types", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("search_types", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("search_types", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("search_types", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("search_types", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("search_types", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("search_types", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("search_types", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("search_types", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "search_types", "context_pull")
+trace_contract._emit_pulls_context("p1", "search_types", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "search_types", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "search_types", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "search_types", "write_through")
+trace_contract._emit_writes_through("p1", "search_types", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "search_types", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "search_types", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "search_types", "routing_commit")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_dispatch_entry")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_dispatch_exit")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_tool_invoke")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_tool_complete")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_agent_entry")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_agent_exit")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_uwg_write")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_trace_sign")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_guardrail_check")
+trace_contract.emit_determinism_digest("trace_search_types", "search_types_policy_verify")
 
 
 @dataclass

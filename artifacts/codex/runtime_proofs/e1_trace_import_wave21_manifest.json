@@ -1,0 +1,42 @@
+{
+  "adg_provenance": {
+    "backend_used": "sqlite_with_mcp_health",
+    "reason": "ADG MCP health passed for snapshot 07072026_2307; detailed E1 candidate extraction used immutable digest-bound SQLite snapshot because exposed MCP tools do not include ad hoc SQL.",
+    "snapshot": "adg_indexed_07072026_2307.sqlite"
+  },
+  "applied": true,
+  "candidate_count": 0,
+  "candidates": [],
+  "changed_count": 0,
+  "exclude_manifests": [
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave1_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave2_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave3_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave4_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave5_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave6_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave7_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave8_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave9_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave10_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave11_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave12_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave13_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave14_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave15_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave12_blocked_candidates.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave16_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave17_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave18_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave19_manifest.json",
+    "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_wave20_manifest.json"
+  ],
+  "excluded_count": 982,
+  "limit": 50,
+  "repo_root": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+  "results": [],
+  "skipped": [],
+  "skipped_count": 0,
+  "snapshot": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite",
+  "wave_id": "W2.E1.21"
+}

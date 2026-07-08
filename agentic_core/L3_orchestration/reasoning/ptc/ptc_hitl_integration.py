@@ -18,155 +18,93 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_emits_metric_event,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_policy_state,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
-    _emit_stores_embedding,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_meta_learning_state,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,
-    emit_replay_key,
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
 # Emit lifecycle trace signals for this module
-emit_replay_key("p0", "ptc_hitl_integration")
-emit_determinism_digest("p0", "ptc_hitl_integration")
+trace_contract.emit_replay_key("p0", "ptc_hitl_integration")
+trace_contract.emit_determinism_digest("p0", "ptc_hitl_integration")
 
-_emit_applies_guardrail("p0", "ptc_hitl_integration", "p0_governance")
-_emit_snapshots_state("p0", "ptc_hitl_integration", "state_snapshot")
-_emit_authorize_and_execute("p2", "ptc_hitl_integration", "execution_auth")
-_emit_validates_capability("p2", "ptc_hitl_integration", "capability_check")
-_emit_routes_to_capability("p2", "ptc_hitl_integration", "capability_route")
-_emit_writes_via_uwg("p2", "ptc_hitl_integration", "uwg_write")
-_emit_blocks_direct_write("p2", "ptc_hitl_integration", "direct_write_block")
-_emit_records_tool_invocation("p2", "ptc_hitl_integration", "tool_invocation")
-_emit_captures_execution_output("p2", "ptc_hitl_integration", "exec_output")
-_emit_dispatches_agent("p3", "ptc_hitl_integration", "agent_dispatch")
-_emit_coordinates_agents("p3", "ptc_hitl_integration", "agent_coordination")
-_emit_records_workflow_lineage("p3", "ptc_hitl_integration", "workflow_lineage")
-_emit_records_healing_outcome("p3", "ptc_hitl_integration", "healing_outcome")
-_emit_escalates_failure("p3", "ptc_hitl_integration", "failure_escalation")
-_emit_orchestrates_workflow("p3", "ptc_hitl_integration", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "ptc_hitl_integration", "healing_dispatch")
-_emit_invokes_evaluation("p3", "ptc_hitl_integration", "evaluation_signal")
-_emit_records_telemetry_event("p4", "ptc_hitl_integration", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "ptc_hitl_integration", "eval_metric")
-_emit_stores_embedding("p4", "ptc_hitl_integration", "embedding_store")
-_emit_updates_meta_learning_state("p4", "ptc_hitl_integration", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "ptc_hitl_integration", "exec_snapshot_link")
+trace_contract._emit_applies_guardrail("p0", "ptc_hitl_integration", "p0_governance")
+trace_contract._emit_snapshots_state("p0", "ptc_hitl_integration", "state_snapshot")
+trace_contract._emit_authorize_and_execute("p2", "ptc_hitl_integration", "execution_auth")
+trace_contract._emit_validates_capability("p2", "ptc_hitl_integration", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "ptc_hitl_integration", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "ptc_hitl_integration", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "ptc_hitl_integration", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "ptc_hitl_integration", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "ptc_hitl_integration", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "ptc_hitl_integration", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "ptc_hitl_integration", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "ptc_hitl_integration", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "ptc_hitl_integration", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "ptc_hitl_integration", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "ptc_hitl_integration", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "ptc_hitl_integration", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "ptc_hitl_integration", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "ptc_hitl_integration", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "ptc_hitl_integration", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "ptc_hitl_integration", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "ptc_hitl_integration", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "ptc_hitl_integration", "exec_snapshot_link")
 
 # P1 orchestration signals
-_emit_dispatches_healing_run("p1", "ptc_hitl_integration", "L3")
-_emit_routes_through("p1", "ptc_hitl_integration", "L3")
-_emit_checks_agent_registry("p1", "ptc_hitl_integration", "agent_registry")
-_emit_validates_agent_capability("p1", "ptc_hitl_integration", "capability")
-_emit_dispatches_execution_plan("p1", "ptc_hitl_integration", "exec_plan")
-_emit_agent_executes_agent("p1", "ptc_hitl_integration", "sub_agent")
-_emit_routes_to_agent("p1", "ptc_hitl_integration", "target_agent")
-_emit_verifies_policy("p1", "ptc_hitl_integration", "policy_check")
-_emit_observes_runtime_state("p1", "ptc_hitl_integration", "runtime_state")
-_emit_verifies_boundary("p1", "ptc_hitl_integration", "boundary_check")
-_emit_transcripts_response("p1", "ptc_hitl_integration", "transcript")
-_emit_hard_fails_untranscripted("p1", "ptc_hitl_integration")
-_emit_gated_by_confidence("p1", "ptc_hitl_integration", "confidence_gate")
-_emit_escalates_to_human("p1", "ptc_hitl_integration", "L3")
-_emit_reads_policy_state("p1", "ptc_hitl_integration", "L3")
+trace_contract._emit_dispatches_healing_run("p1", "ptc_hitl_integration", "L3")
+trace_contract._emit_routes_through("p1", "ptc_hitl_integration", "L3")
+trace_contract._emit_checks_agent_registry("p1", "ptc_hitl_integration", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "ptc_hitl_integration", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "ptc_hitl_integration", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "ptc_hitl_integration", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "ptc_hitl_integration", "target_agent")
+trace_contract._emit_verifies_policy("p1", "ptc_hitl_integration", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "ptc_hitl_integration", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "ptc_hitl_integration", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "ptc_hitl_integration", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "ptc_hitl_integration")
+trace_contract._emit_gated_by_confidence("p1", "ptc_hitl_integration", "confidence_gate")
+trace_contract._emit_escalates_to_human("p1", "ptc_hitl_integration", "L3")
+trace_contract._emit_reads_policy_state("p1", "ptc_hitl_integration", "L3")
 
 # P4 observability signals
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_1")
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_2")
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_3")
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_4")
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_5")
-_emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_6")
-_emit_records_incident_event("ptc_hitl_integration", "p4obs", "incident")
-_emit_captures_runtime_anomaly("ptc_hitl_integration", "p4obs", "anomaly")
-_emit_writes_observability_log("ptc_hitl_integration", "p4obs", "obs_log")
-_emit_updates_monitoring_state("ptc_hitl_integration", "p4obs", "mon_state")
-_emit_triggers_alert("ptc_hitl_integration", "p4obs", "alert")
-_emit_links_incident_trace("ptc_hitl_integration", "p4obs", "trace_link")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("ptc_hitl_integration", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("ptc_hitl_integration", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("ptc_hitl_integration", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("ptc_hitl_integration", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("ptc_hitl_integration", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("ptc_hitl_integration", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("ptc_hitl_integration", "p4obs", "trace_link")
 
 # P3 learning maturity signals
-_emit_captures_pattern("ptc_hitl_integration", "p3lm", "pattern")
-_emit_records_learning_event("ptc_hitl_integration", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("ptc_hitl_integration", "p3lm", "snapshot")
-_emit_feeds_meta_learning("ptc_hitl_integration", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("ptc_hitl_integration", "p3lm", "routing")
-_emit_improves_agent_policy("ptc_hitl_integration", "p3lm", "policy")
-_emit_stores_learning_state("ptc_hitl_integration", "p3lm", "state")
+trace_contract._emit_captures_pattern("ptc_hitl_integration", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("ptc_hitl_integration", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("ptc_hitl_integration", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("ptc_hitl_integration", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("ptc_hitl_integration", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("ptc_hitl_integration", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("ptc_hitl_integration", "p3lm", "state")
 
 # P1 specific signals
-_emit_records_execution_trace("ptc_hitl_integration", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("ptc_hitl_integration", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("ptc_hitl_integration", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("ptc_hitl_integration", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("ptc_hitl_integration", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("ptc_hitl_integration", "env_read", "p2_env_1")
-_emit_reads_environ("ptc_hitl_integration", "env_read", "p2_env_2")
-_emit_reads_runtime_state("ptc_hitl_integration", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("ptc_hitl_integration", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "ptc_hitl_integration", "context_pull")
-_emit_pulls_context("p1", "ptc_hitl_integration", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "ptc_hitl_integration", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "ptc_hitl_integration", "uwg_term_2")
-_emit_writes_through("p1", "ptc_hitl_integration", "write_through")
-_emit_writes_through("p1", "ptc_hitl_integration", "write_through_2")
-_emit_validated_by_safety_plane("p1", "ptc_hitl_integration", "safety_validation")
-_emit_invokes_evaluation("p1", "ptc_hitl_integration", "eval_call")
+trace_contract._emit_records_execution_trace("ptc_hitl_integration", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("ptc_hitl_integration", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("ptc_hitl_integration", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("ptc_hitl_integration", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("ptc_hitl_integration", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("ptc_hitl_integration", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("ptc_hitl_integration", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("ptc_hitl_integration", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("ptc_hitl_integration", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "ptc_hitl_integration", "context_pull")
+trace_contract._emit_pulls_context("p1", "ptc_hitl_integration", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "ptc_hitl_integration", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "ptc_hitl_integration", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "ptc_hitl_integration", "write_through")
+trace_contract._emit_writes_through("p1", "ptc_hitl_integration", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "ptc_hitl_integration", "safety_validation")
+trace_contract._emit_invokes_evaluation("p1", "ptc_hitl_integration", "eval_call")
 
 
 class PTCScriptRiskLevel(Enum):
@@ -316,8 +254,8 @@ class PTCHITLIntegration:
         import uuid as _uuid
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PTCHITLIntegration.__init__")
-        _emit_signs_execution_trace(_trace_id, _trace_id[:12], "ptc_hitl_init", 0)
+        trace_contract._emit_records_execution_trace(_trace_id, trace_contract.LayerSegment.L3_ORCHESTRATION, "PTCHITLIntegration.__init__")
+        trace_contract._emit_signs_execution_trace(_trace_id, _trace_id[:12], "ptc_hitl_init", 0)
 
         self._assessment_history: list[PTCSafetyAssessment] = []
         self._review_history: list[PTCHumanReviewRecord] = []
@@ -350,8 +288,8 @@ class PTCHITLIntegration:
         import uuid as _uuid
 
         trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.assess_script_safety"
+        trace_contract._emit_records_execution_trace(
+            trace_id, trace_contract.LayerSegment.L5_POLICY, "PTCHITLIntegration.assess_script_safety"
         )
 
         # Detect patterns in code
@@ -411,12 +349,12 @@ class PTCHITLIntegration:
 
         # Emit signals
         if confidence_score < self.LOW_CONFIDENCE_THRESHOLD:
-            _emit_gated_by_confidence(trace_id, script_id, f"low_confidence:{confidence_score:.2f}")
+            trace_contract._emit_gated_by_confidence(trace_id, script_id, f"low_confidence:{confidence_score:.2f}")
 
         if requires_human_review:
-            _emit_escalates_to_human(trace_id, script_id, "safety_assessment")
+            trace_contract._emit_escalates_to_human(trace_id, script_id, "safety_assessment")
 
-        _emit_validated_by_safety_plane(trace_id, script_id, "l5_safety_assessment")
+        trace_contract._emit_validated_by_safety_plane(trace_id, script_id, "l5_safety_assessment")
 
         # Check for policy violations
         policy_violations = self._check_policy_violations(code, tools, context or {})
@@ -502,10 +440,10 @@ class PTCHITLIntegration:
         from datetime import datetime, timezone
 
         trace_id = assessment.trace_id
-        _emit_records_execution_trace(
-            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.request_human_review"
+        trace_contract._emit_records_execution_trace(
+            trace_id, trace_contract.LayerSegment.L5_POLICY, "PTCHITLIntegration.request_human_review"
         )
-        _emit_escalates_to_human(trace_id, assessment.script_id, "review_requested")
+        trace_contract._emit_escalates_to_human(trace_id, assessment.script_id, "review_requested")
 
         # In a real implementation, this would:
         # 1. Create a human review request in the HITL system
@@ -543,10 +481,10 @@ class PTCHITLIntegration:
         self._review_history.append(record)
 
         # Emit signals
-        _emit_transcripts_response(trace_id, reviewer, f"decision:{decision.value}")
+        trace_contract._emit_transcripts_response(trace_id, reviewer, f"decision:{decision.value}")
 
         if decision == PTCHumanDecision.REJECT:
-            _emit_records_incident_event(trace_id, assessment.script_id, "human_rejection")
+            trace_contract._emit_records_incident_event(trace_id, assessment.script_id, "human_rejection")
 
         return record
 
@@ -582,8 +520,8 @@ class PTCHITLIntegration:
         """
 
         trace_id = review_record.trace_id
-        _emit_records_execution_trace(
-            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear"
+        trace_contract._emit_records_execution_trace(
+            trace_id, trace_contract.LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear"
         )
 
         if review_record.decision != PTCHumanDecision.MODIFY_DIFF:
@@ -591,7 +529,7 @@ class PTCHITLIntegration:
             return True
 
         if not review_record.modified_script:
-            _emit_records_incident_event(trace_id, review_record.script_id, "missing_modified_script")
+            trace_contract._emit_records_incident_event(trace_id, review_record.script_id, "missing_modified_script")
             return False
 
         # Validate modified script against policy
@@ -602,10 +540,10 @@ class PTCHITLIntegration:
         )
 
         if validation_passed:
-            _emit_validated_by_safety_plane(trace_id, review_record.script_id, "l5_reclear_passed")
+            trace_contract._emit_validated_by_safety_plane(trace_id, review_record.script_id, "l5_reclear_passed")
             return True
         else:
-            _emit_records_incident_event(trace_id, review_record.script_id, "l5_reclear_failed")
+            trace_contract._emit_records_incident_event(trace_id, review_record.script_id, "l5_reclear_failed")
             return False
 
     def _validate_modified_script(self, modified_script: str, policy_hash: str) -> bool:
@@ -636,8 +574,8 @@ class PTCHITLIntegration:
         """
 
         trace_id = assessment.trace_id
-        _emit_records_execution_trace(
-            trace_id, LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair"
+        trace_contract._emit_records_execution_trace(
+            trace_id, trace_contract.LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair"
         )
 
         # Create example ID with hashes
@@ -661,9 +599,9 @@ class PTCHITLIntegration:
         }
 
         # Emit learning signals
-        _emit_captures_pattern(trace_id, assessment.script_id, f"risk:{assessment.risk_level.value}")
-        _emit_records_learning_event(trace_id, assessment.script_id, f"dpo_{review_record.decision.value}")
-        _emit_writes_learning_snapshot(trace_id, assessment.script_id, "dpo_pair_generated")
+        trace_contract._emit_captures_pattern(trace_id, assessment.script_id, f"risk:{assessment.risk_level.value}")
+        trace_contract._emit_records_learning_event(trace_id, assessment.script_id, f"dpo_{review_record.decision.value}")
+        trace_contract._emit_writes_learning_snapshot(trace_id, assessment.script_id, "dpo_pair_generated")
 
         return dpo_pair
 

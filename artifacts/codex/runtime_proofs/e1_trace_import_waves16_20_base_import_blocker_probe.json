@@ -1,0 +1,1387 @@
+{
+  "candidate_count": 229,
+  "failed": 5,
+  "manifest": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\e1_trace_import_waves16_20_manifest.json",
+  "passed": 224,
+  "results": [
+    {
+      "imported_name": "apps_shared.reasoning.ParameterizedValidator",
+      "module": "apps_shared.reasoning.ParameterizedValidator",
+      "path": "apps_shared/reasoning/ParameterizedValidator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.fix_syntax_errors",
+      "module": "apps_shared.scripts.fix_syntax_errors",
+      "path": "apps_shared/scripts/fix_syntax_errors.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.types.cost_alert_level_types",
+      "module": "apps_shared.types.cost_alert_level_types",
+      "path": "apps_shared/types/cost_alert_level_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.execution_tool_contract",
+      "module": "agentic_core.L2_execution.types.execution_tool_contract",
+      "path": "agentic_core/L2_execution/types/execution_tool_contract.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.self_healing_trigger_types",
+      "module": "agentic_core.L2_execution.types.self_healing_trigger_types",
+      "path": "agentic_core/L2_execution/types/self_healing_trigger_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.token_enforcement_types",
+      "module": "agentic_core.L2_execution.types.token_enforcement_types",
+      "path": "agentic_core/L2_execution/types/token_enforcement_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.cognitive_diff_types",
+      "module": "agentic_core.L3_orchestration.types.cognitive_diff_types",
+      "path": "agentic_core/L3_orchestration/types/cognitive_diff_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.types.route_decision_artifact_types",
+      "module": "agentic_core.L3_orchestration.types.route_decision_artifact_types",
+      "path": "agentic_core/L3_orchestration/types/route_decision_artifact_types.py",
+      "status": "PASS"
+    },
+    {
+      "error": "No module named 'agentic_core.L4_state.types.retrieval_anchor_types'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.L4_state.reasoning.readonly_retrieval_orchestrator",
+      "path": "agentic_core/L4_state/reasoning/readonly_retrieval_orchestrator.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.reasoning.core_kernel.__init__",
+      "module": "agentic_core.L5_safety.reasoning.core_kernel.__init__",
+      "path": "agentic_core/L5_safety/reasoning/core_kernel/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.adapters.l4_meta_prior_provider",
+      "module": "agentic_core.L6_system_learning.adapters.l4_meta_prior_provider",
+      "path": "agentic_core/L6_system_learning/adapters/l4_meta_prior_provider.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.confidence.types",
+      "module": "agentic_core.L6_system_learning.confidence.types",
+      "path": "agentic_core/L6_system_learning/confidence/types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.l4_audit_reader",
+      "module": "agentic_core.L6_system_learning.engines.l4_audit_reader",
+      "path": "agentic_core/L6_system_learning/engines/l4_audit_reader.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.rlhf_optimizer",
+      "module": "agentic_core.L6_system_learning.engines.rlhf_optimizer",
+      "path": "agentic_core/L6_system_learning/engines/rlhf_optimizer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.telemetry_consumer",
+      "module": "agentic_core.L6_system_learning.engines.telemetry_consumer",
+      "path": "agentic_core/L6_system_learning/engines/telemetry_consumer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.trace_feature_extractor",
+      "module": "agentic_core.L6_system_learning.engines.trace_feature_extractor",
+      "path": "agentic_core/L6_system_learning/engines/trace_feature_extractor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.invariants.freeze_gate",
+      "module": "agentic_core.L6_system_learning.invariants.freeze_gate",
+      "path": "agentic_core/L6_system_learning/invariants/freeze_gate.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.pipelines.approval_gates",
+      "module": "agentic_core.L6_system_learning.pipelines.approval_gates",
+      "path": "agentic_core/L6_system_learning/pipelines/approval_gates.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.ports.l4_meta_prior_provider",
+      "module": "agentic_core.L6_system_learning.ports.l4_meta_prior_provider",
+      "path": "agentic_core/L6_system_learning/ports/l4_meta_prior_provider.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.pattern_analysis_types",
+      "module": "agentic_core.L6_system_learning.types.pattern_analysis_types",
+      "path": "agentic_core/L6_system_learning/types/pattern_analysis_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.validators.shadow_replay_validator",
+      "module": "agentic_core.L6_system_learning.validators.shadow_replay_validator",
+      "path": "agentic_core/L6_system_learning/validators/shadow_replay_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.analysis.symbol_index",
+      "module": "agentic_core.adg.analysis.symbol_index",
+      "path": "agentic_core/adg/analysis/symbol_index.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.config.rag_config",
+      "module": "agentic_core.config.rag_config",
+      "path": "agentic_core/config/rag_config.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.context_propagation_mixin",
+      "module": "agentic_core.mixins.context_propagation_mixin",
+      "path": "agentic_core/mixins/context_propagation_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.hallucination_detection_mixin",
+      "module": "agentic_core.mixins.hallucination_detection_mixin",
+      "path": "agentic_core/mixins/hallucination_detection_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.core.evaluation_loader",
+      "module": "agentic_core.prompt_governance.core.evaluation_loader",
+      "path": "agentic_core/prompt_governance/core/evaluation_loader.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.core.prompt_loader",
+      "module": "agentic_core.prompt_governance.core.prompt_loader",
+      "path": "agentic_core/prompt_governance/core/prompt_loader.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.engine.ast_relocator",
+      "module": "agentic_core.runtime.engine.ast_relocator",
+      "path": "agentic_core/runtime/engine/ast_relocator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.types.claim_type_types",
+      "module": "agentic_core.runtime.types.claim_type_types",
+      "path": "agentic_core/runtime/types/claim_type_types.py",
+      "status": "PASS"
+    },
+    {
+      "error": "cannot import name 'ReviewRubric' from 'agentic_core.evaluation.feedback.schemas' (C:\\Git\\Agentic-Workflow-FRESH\\agentic_core\\evaluation\\feedback\\schemas.py)",
+      "error_type": "ImportError",
+      "module": "agentic_core.utils.workflow_engines.completeness_feedback",
+      "path": "agentic_core/utils/workflow_engines/completeness_feedback.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.completeness_monitors",
+      "module": "agentic_core.utils.workflow_engines.completeness_monitors",
+      "path": "agentic_core/utils/workflow_engines/completeness_monitors.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.completeness_scorer",
+      "module": "agentic_core.utils.workflow_engines.completeness_scorer",
+      "path": "agentic_core/utils/workflow_engines/completeness_scorer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.meta_learning_bridge",
+      "module": "agentic_core.utils.workflow_engines.meta_learning_bridge",
+      "path": "agentic_core/utils/workflow_engines/meta_learning_bridge.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.reranker",
+      "module": "agentic_core.utils.workflow_engines.reranker",
+      "path": "agentic_core/utils/workflow_engines/reranker.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.reasoning.LICValidationExecutor",
+      "module": "apps_lic.reasoning.LICValidationExecutor",
+      "path": "apps_lic/reasoning/LICValidationExecutor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.types.k1_router_types",
+      "module": "apps_lic.types.k1_router_types",
+      "path": "apps_lic/types/k1_router_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.utils.hop_stage_capability_util",
+      "module": "apps_lic.utils.hop_stage_capability_util",
+      "path": "apps_lic/utils/hop_stage_capability_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.validators.PersonaPlannerValidator",
+      "module": "apps_lic.validators.PersonaPlannerValidator",
+      "path": "apps_lic/validators/PersonaPlannerValidator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.find_long_lines",
+      "module": "apps_shared.scripts.find_long_lines",
+      "path": "apps_shared/scripts/find_long_lines.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.manage_false_positives",
+      "module": "apps_shared.scripts.manage_false_positives",
+      "path": "apps_shared/scripts/manage_false_positives.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.types.adaptive_recovery_loop_types",
+      "module": "apps_shared.types.adaptive_recovery_loop_types",
+      "path": "apps_shared/types/adaptive_recovery_loop_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.types.k_node_type_types",
+      "module": "apps_shared.types.k_node_type_types",
+      "path": "apps_shared/types/k_node_type_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.types.service_container_types",
+      "module": "apps_shared.types.service_container_types",
+      "path": "apps_shared/types/service_container_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.reasoning.react_engine",
+      "module": "agentic_core.L1_cognition.reasoning.react_engine",
+      "path": "agentic_core/L1_cognition/reasoning/react_engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.observability_types",
+      "module": "agentic_core.L1_cognition.types.observability_types",
+      "path": "agentic_core/L1_cognition/types/observability_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.reasoning.definitions",
+      "module": "agentic_core.L2_execution.reasoning.definitions",
+      "path": "agentic_core/L2_execution/reasoning/definitions.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.pre_deploy_check_util",
+      "module": "agentic_core.L5_safety.utils.pre_deploy_check_util",
+      "path": "agentic_core/L5_safety/utils/pre_deploy_check_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.reasoning.__init__",
+      "module": "agentic_core.L6_observability.reasoning.__init__",
+      "path": "agentic_core/L6_observability/reasoning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.types.monitor_types",
+      "module": "agentic_core.L6_observability.types.monitor_types",
+      "path": "agentic_core/L6_observability/types/monitor_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.utils.engines.TieredVigilanceEmitter",
+      "module": "agentic_core.L6_observability.utils.engines.TieredVigilanceEmitter",
+      "path": "agentic_core/L6_observability/utils/engines/TieredVigilanceEmitter.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.l4_version_store",
+      "module": "agentic_core.L6_system_learning.engines.l4_version_store",
+      "path": "agentic_core/L6_system_learning/engines/l4_version_store.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.retrieval_profile_proposal",
+      "module": "agentic_core.L6_system_learning.engines.retrieval_profile_proposal",
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_proposal.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.invariants.commit_proof_invariant",
+      "module": "agentic_core.L6_system_learning.invariants.commit_proof_invariant",
+      "path": "agentic_core/L6_system_learning/invariants/commit_proof_invariant.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.pipelines.approval_gate_impl",
+      "module": "agentic_core.L6_system_learning.pipelines.approval_gate_impl",
+      "path": "agentic_core/L6_system_learning/pipelines/approval_gate_impl.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.healing_outcome_intake_types",
+      "module": "agentic_core.L6_system_learning.types.healing_outcome_intake_types",
+      "path": "agentic_core/L6_system_learning/types/healing_outcome_intake_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.healing_outcome_types",
+      "module": "agentic_core.L6_system_learning.types.healing_outcome_types",
+      "path": "agentic_core/L6_system_learning/types/healing_outcome_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.seed_embedding_pack_types",
+      "module": "agentic_core.L6_system_learning.types.seed_embedding_pack_types",
+      "path": "agentic_core/L6_system_learning/types/seed_embedding_pack_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.analysis.ModuleOwnership",
+      "module": "agentic_core.adg.analysis.ModuleOwnership",
+      "path": "agentic_core/adg/analysis/ModuleOwnership.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.analysis.ownership",
+      "module": "agentic_core.adg.analysis.ownership",
+      "path": "agentic_core/adg/analysis/ownership.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.client.InMemoryStore",
+      "module": "agentic_core.adg.client.InMemoryStore",
+      "path": "agentic_core/adg/client/InMemoryStore.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.config.agent_defaults_config",
+      "module": "agentic_core.config.agent_defaults_config",
+      "path": "agentic_core/config/agent_defaults_config.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.config.complexity_metrics_config",
+      "module": "agentic_core.config.complexity_metrics_config",
+      "path": "agentic_core/config/complexity_metrics_config.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.embeddings.embedding_input_guard",
+      "module": "agentic_core.embeddings.embedding_input_guard",
+      "path": "agentic_core/embeddings/embedding_input_guard.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.knowledge.document_loaders.csv_document_loader_config",
+      "module": "agentic_core.knowledge.document_loaders.csv_document_loader_config",
+      "path": "agentic_core/knowledge/document_loaders/csv_document_loader_config.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.embedding_mixin",
+      "module": "agentic_core.mixins.embedding_mixin",
+      "path": "agentic_core/mixins/embedding_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.semantic_cache_mixin",
+      "module": "agentic_core.mixins.semantic_cache_mixin",
+      "path": "agentic_core/mixins/semantic_cache_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.scripts.detect_template_drift",
+      "module": "agentic_core.prompt_governance.scripts.detect_template_drift",
+      "path": "agentic_core/prompt_governance/scripts/detect_template_drift.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.scripts.import_violation_visitor",
+      "module": "agentic_core.prompt_governance.scripts.import_violation_visitor",
+      "path": "agentic_core/prompt_governance/scripts/import_violation_visitor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.scripts.template_render_visitor",
+      "module": "agentic_core.prompt_governance.scripts.template_render_visitor",
+      "path": "agentic_core/prompt_governance/scripts/template_render_visitor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.config.feature_flags_config",
+      "module": "agentic_core.runtime.config.feature_flags_config",
+      "path": "agentic_core/runtime/config/feature_flags_config.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.config.shared_infrastructure_config",
+      "module": "agentic_core.runtime.config.shared_infrastructure_config",
+      "path": "agentic_core/runtime/config/shared_infrastructure_config.py",
+      "status": "PASS"
+    },
+    {
+      "error": "No module named 'agentic_core.runtime.sovereignty_exceptions'",
+      "error_type": "ModuleNotFoundError",
+      "module": "agentic_core.runtime.enforcement.boundary_validator",
+      "path": "agentic_core/runtime/enforcement/boundary_validator.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.runtime.utils.dynamic_loader_util",
+      "module": "agentic_core.runtime.utils.dynamic_loader_util",
+      "path": "agentic_core/runtime/utils/dynamic_loader_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.utils.runtime_bootstrapper_util",
+      "module": "agentic_core.runtime.utils.runtime_bootstrapper_util",
+      "path": "agentic_core/runtime/utils/runtime_bootstrapper_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.schemas.schemas",
+      "module": "agentic_core.utils.schemas.schemas",
+      "path": "agentic_core/utils/schemas/schemas.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.fusion",
+      "module": "agentic_core.utils.workflow_engines.fusion",
+      "path": "agentic_core/utils/workflow_engines/fusion.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.groundedness",
+      "module": "agentic_core.utils.workflow_engines.groundedness",
+      "path": "agentic_core/utils/workflow_engines/groundedness.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.reasoning.LicTemplateOptimizerAgent",
+      "module": "apps_lic.reasoning.LicTemplateOptimizerAgent",
+      "path": "apps_lic/reasoning/LicTemplateOptimizerAgent.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.tools.validation_tools",
+      "module": "apps_lic.tools.validation_tools",
+      "path": "apps_lic/tools/validation_tools.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.enforcement.AdaptiveretrievalgateStrategy",
+      "module": "apps_shared.enforcement.AdaptiveretrievalgateStrategy",
+      "path": "apps_shared/enforcement/AdaptiveretrievalgateStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.enforcement.ReasoningrouterStrategy",
+      "module": "apps_shared.enforcement.ReasoningrouterStrategy",
+      "path": "apps_shared/enforcement/ReasoningrouterStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.utils.determinism_util",
+      "module": "apps_shared.utils.determinism_util",
+      "path": "apps_shared/utils/determinism_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.utils.model_visitor_util",
+      "module": "apps_shared.utils.model_visitor_util",
+      "path": "apps_shared/utils/model_visitor_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.utils.underscore_visitor_util",
+      "module": "apps_shared.utils.underscore_visitor_util",
+      "path": "apps_shared/utils/underscore_visitor_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.validators.enforcement.AdaptiveretrievalgateStrategy",
+      "module": "apps_shared.validators.enforcement.AdaptiveretrievalgateStrategy",
+      "path": "apps_shared/validators/enforcement/AdaptiveretrievalgateStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.validators.enforcement.ReasoningrouterStrategy",
+      "module": "apps_shared.validators.enforcement.ReasoningrouterStrategy",
+      "path": "apps_shared/validators/enforcement/ReasoningrouterStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.config.structure_blueprint.semantics",
+      "module": "agentic_core.L5_safety.config.structure_blueprint.semantics",
+      "path": "agentic_core/L5_safety/config/structure_blueprint/semantics.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.reasoning.InspectorExecutor",
+      "module": "agentic_core.L5_safety.reasoning.InspectorExecutor",
+      "path": "agentic_core/L5_safety/reasoning/InspectorExecutor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.correlation.types",
+      "module": "agentic_core.L6_system_learning.correlation.types",
+      "path": "agentic_core/L6_system_learning/correlation/types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.change_package_impl",
+      "module": "agentic_core.L6_system_learning.engines.change_package_impl",
+      "path": "agentic_core/L6_system_learning/engines/change_package_impl.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.healing_outcome_intake_adapter",
+      "module": "agentic_core.L6_system_learning.engines.healing_outcome_intake_adapter",
+      "path": "agentic_core/L6_system_learning/engines/healing_outcome_intake_adapter.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.in_memory_scoring_report_store",
+      "module": "agentic_core.L6_system_learning.engines.in_memory_scoring_report_store",
+      "path": "agentic_core/L6_system_learning/engines/in_memory_scoring_report_store.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.retrieval_profile_manager",
+      "module": "agentic_core.L6_system_learning.engines.retrieval_profile_manager",
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_manager.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.index_build_metadata_types",
+      "module": "agentic_core.L6_system_learning.types.index_build_metadata_types",
+      "path": "agentic_core/L6_system_learning/types/index_build_metadata_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.golden_context_mixin",
+      "module": "agentic_core.mixins.golden_context_mixin",
+      "path": "agentic_core/mixins/golden_context_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.healer_agent_mixin",
+      "module": "agentic_core.mixins.healer_agent_mixin",
+      "path": "agentic_core/mixins/healer_agent_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.safety_mixin",
+      "module": "agentic_core.mixins.safety_mixin",
+      "path": "agentic_core/mixins/safety_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.validator_mixin",
+      "module": "agentic_core.mixins.validator_mixin",
+      "path": "agentic_core/mixins/validator_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.mrr",
+      "module": "agentic_core.utils.workflow_engines.mrr",
+      "path": "agentic_core/utils/workflow_engines/mrr.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.ndcg",
+      "module": "agentic_core.utils.workflow_engines.ndcg",
+      "path": "agentic_core/utils/workflow_engines/ndcg.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.precision_at_k",
+      "module": "agentic_core.utils.workflow_engines.precision_at_k",
+      "path": "agentic_core/utils/workflow_engines/precision_at_k.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.recall_at_k",
+      "module": "agentic_core.utils.workflow_engines.recall_at_k",
+      "path": "agentic_core/utils/workflow_engines/recall_at_k.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.utils.lic_engine_validation_capability_util",
+      "module": "apps_lic.utils.lic_engine_validation_capability_util",
+      "path": "apps_lic/utils/lic_engine_validation_capability_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_lic.validators.MessageDiversityValidator",
+      "module": "apps_lic.validators.MessageDiversityValidator",
+      "path": "apps_lic/validators/MessageDiversityValidator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.fix_long_lines",
+      "module": "apps_shared.scripts.fix_long_lines",
+      "path": "apps_shared/scripts/fix_long_lines.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.fix_specific_long_lines",
+      "module": "apps_shared.scripts.fix_specific_long_lines",
+      "path": "apps_shared/scripts/fix_specific_long_lines.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.types.prompt_optimizer_types",
+      "module": "apps_shared.types.prompt_optimizer_types",
+      "path": "apps_shared/types/prompt_optimizer_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L0_routing.types.boundary_types",
+      "module": "agentic_core.L0_routing.types.boundary_types",
+      "path": "agentic_core/L0_routing/types/boundary_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.cache_types",
+      "module": "agentic_core.L1_cognition.types.cache_types",
+      "path": "agentic_core/L1_cognition/types/cache_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.gateway_types",
+      "module": "agentic_core.L2_execution.types.gateway_types",
+      "path": "agentic_core/L2_execution/types/gateway_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.memory.runtime_models",
+      "module": "agentic_core.L4_state.utils.memory.runtime_models",
+      "path": "agentic_core/L4_state/utils/memory/runtime_models.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.types.heal_policy_types",
+      "module": "agentic_core.L5_safety.types.heal_policy_types",
+      "path": "agentic_core/L5_safety/types/heal_policy_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.decorators_util",
+      "module": "agentic_core.L5_safety.utils.decorators_util",
+      "path": "agentic_core/L5_safety/utils/decorators_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.retrieval_profile_invariant_checker",
+      "module": "agentic_core.L6_system_learning.engines.retrieval_profile_invariant_checker",
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_invariant_checker.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.surface_isolation_validator",
+      "module": "agentic_core.L6_system_learning.engines.surface_isolation_validator",
+      "path": "agentic_core/L6_system_learning/engines/surface_isolation_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.configuration_mixin",
+      "module": "agentic_core.mixins.configuration_mixin",
+      "path": "agentic_core/mixins/configuration_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.healing_mixin",
+      "module": "agentic_core.mixins.healing_mixin",
+      "path": "agentic_core/mixins/healing_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.core.governance_hub",
+      "module": "agentic_core.prompt_governance.core.governance_hub",
+      "path": "agentic_core/prompt_governance/core/governance_hub.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.surgical_context_types_util",
+      "module": "agentic_core.L5_safety.utils.surgical_context_types_util",
+      "path": "agentic_core/L5_safety/utils/surgical_context_types_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.__init__",
+      "module": "agentic_core.L5_safety.validators.__init__",
+      "path": "agentic_core/L5_safety/validators/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.validators.lineage_validator",
+      "module": "agentic_core.L6_system_learning.validators.lineage_validator",
+      "path": "agentic_core/L6_system_learning/validators/lineage_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.security.detectors.pii_scrubber",
+      "module": "agentic_core.prompt_governance.security.detectors.pii_scrubber",
+      "path": "agentic_core/prompt_governance/security/detectors/pii_scrubber.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.security.utils.injection_scan_util",
+      "module": "agentic_core.prompt_governance.security.utils.injection_scan_util",
+      "path": "agentic_core/prompt_governance/security/utils/injection_scan_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.tool_args_types",
+      "module": "agentic_core.L2_execution.types.tool_args_types",
+      "path": "agentic_core/L2_execution/types/tool_args_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.telemetry_sanitizer_util",
+      "module": "agentic_core.L4_state.utils.telemetry_sanitizer_util",
+      "path": "agentic_core/L4_state/utils/telemetry_sanitizer_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.sovereign_policy_registry_enforcer",
+      "module": "agentic_core.L5_safety.enforcement.sovereign_policy_registry_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry_enforcer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.check_output_quality_util",
+      "module": "agentic_core.L5_safety.utils.check_output_quality_util",
+      "path": "agentic_core/L5_safety/utils/check_output_quality_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.enforce_length_limits_util",
+      "module": "agentic_core.L5_safety.utils.enforce_length_limits_util",
+      "path": "agentic_core/L5_safety/utils/enforce_length_limits_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.validate_generated_content_util",
+      "module": "agentic_core.L5_safety.utils.validate_generated_content_util",
+      "path": "agentic_core/L5_safety/utils/validate_generated_content_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.reasoning.PilotOrchestrator",
+      "module": "apps_shared.reasoning.PilotOrchestrator",
+      "path": "apps_shared/reasoning/PilotOrchestrator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.scripts.fix_all_violations",
+      "module": "apps_shared.scripts.fix_all_violations",
+      "path": "apps_shared/scripts/fix_all_violations.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.infra_error_types",
+      "module": "agentic_core.L2_execution.types.infra_error_types",
+      "path": "agentic_core/L2_execution/types/infra_error_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.types.l2_phase_spec",
+      "module": "agentic_core.L2_execution.types.l2_phase_spec",
+      "path": "agentic_core/L2_execution/types/l2_phase_spec.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
+      "module": "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
+      "path": "agentic_core/L3_orchestration/reasoning/DagRuntimeInspectorAgent.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
+      "module": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
+      "path": "agentic_core/L5_safety/reasoning/GravityLeakHealerAgent.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.types.hardening_errors",
+      "module": "agentic_core.L5_safety.types.hardening_errors",
+      "path": "agentic_core/L5_safety/types/hardening_errors.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.state_util",
+      "module": "agentic_core.utils.state_util",
+      "path": "agentic_core/utils/state_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L0_routing.reasoning.__init__",
+      "module": "agentic_core.L0_routing.reasoning.__init__",
+      "path": "agentic_core/L0_routing/reasoning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L0_routing.utils.__init__",
+      "module": "agentic_core.L0_routing.utils.__init__",
+      "path": "agentic_core/L0_routing/utils/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.config.__init__",
+      "module": "agentic_core.L1_cognition.config.__init__",
+      "path": "agentic_core/L1_cognition/config/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.enforcement.__init__",
+      "module": "agentic_core.L1_cognition.enforcement.__init__",
+      "path": "agentic_core/L1_cognition/enforcement/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.reasoning.__init__",
+      "module": "agentic_core.L1_cognition.reasoning.__init__",
+      "path": "agentic_core/L1_cognition/reasoning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.__init__",
+      "module": "agentic_core.L1_cognition.types.__init__",
+      "path": "agentic_core/L1_cognition/types/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.config.__init__",
+      "module": "agentic_core.L2_execution.config.__init__",
+      "path": "agentic_core/L2_execution/config/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L2_execution.enforcement.__init__",
+      "module": "agentic_core.L2_execution.enforcement.__init__",
+      "path": "agentic_core/L2_execution/enforcement/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.cache.redis_cache_client",
+      "module": "agentic_core.L4_state.cache.redis_cache_client",
+      "path": "agentic_core/L4_state/cache/redis_cache_client.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.enforcement.authority.__init__",
+      "module": "agentic_core.L4_state.enforcement.authority.__init__",
+      "path": "agentic_core/L4_state/enforcement/authority/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.reasoning.__init__",
+      "module": "agentic_core.L4_state.reasoning.__init__",
+      "path": "agentic_core/L4_state/reasoning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.context.__init__",
+      "module": "agentic_core.L4_state.utils.context.__init__",
+      "path": "agentic_core/L4_state/utils/context/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.memory.__init__",
+      "module": "agentic_core.L4_state.utils.memory.__init__",
+      "path": "agentic_core/L4_state/utils/memory/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.versioning.__init__",
+      "module": "agentic_core.L4_state.utils.versioning.__init__",
+      "path": "agentic_core/L4_state/utils/versioning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.__init__",
+      "module": "agentic_core.L5_safety.enforcement.__init__",
+      "path": "agentic_core/L5_safety/enforcement/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.audit.__init__",
+      "module": "agentic_core.L5_safety.enforcement.audit.__init__",
+      "path": "agentic_core/L5_safety/enforcement/audit/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.error_recovery_strategy",
+      "module": "agentic_core.L5_safety.enforcement.error_recovery_strategy",
+      "path": "agentic_core/L5_safety/enforcement/error_recovery_strategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.gates.__init__",
+      "module": "agentic_core.L5_safety.enforcement.gates.__init__",
+      "path": "agentic_core/L5_safety/enforcement/gates/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.governance.__init__",
+      "module": "agentic_core.L5_safety.enforcement.governance.__init__",
+      "path": "agentic_core/L5_safety/enforcement/governance/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.hitl.__init__",
+      "module": "agentic_core.L5_safety.enforcement.hitl.__init__",
+      "path": "agentic_core/L5_safety/enforcement/hitl/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.enforcement.security.__init__",
+      "module": "agentic_core.L5_safety.enforcement.security.__init__",
+      "path": "agentic_core/L5_safety/enforcement/security/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.reasoning.__init__",
+      "module": "agentic_core.L5_safety.reasoning.__init__",
+      "path": "agentic_core/L5_safety/reasoning/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.reasoning.adaptation.__init__",
+      "module": "agentic_core.L5_safety.reasoning.adaptation.__init__",
+      "path": "agentic_core/L5_safety/reasoning/adaptation/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.types.__init__",
+      "module": "agentic_core.L5_safety.types.__init__",
+      "path": "agentic_core/L5_safety/types/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.utils.location_constants_util",
+      "module": "agentic_core.L5_safety.utils.location_constants_util",
+      "path": "agentic_core/L5_safety/utils/location_constants_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.invariants.__init__",
+      "module": "agentic_core.L5_safety.validators.invariants.__init__",
+      "path": "agentic_core/L5_safety/validators/invariants/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.enforcement.__init__",
+      "module": "agentic_core.L6_observability.enforcement.__init__",
+      "path": "agentic_core/L6_observability/enforcement/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.types.__init__",
+      "module": "agentic_core.L6_observability.types.__init__",
+      "path": "agentic_core/L6_observability/types/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.utils.engines.__init__",
+      "module": "agentic_core.L6_observability.utils.engines.__init__",
+      "path": "agentic_core/L6_observability/utils/engines/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_observability.utils.metrics.__init__",
+      "module": "agentic_core.L6_observability.utils.metrics.__init__",
+      "path": "agentic_core/L6_observability/utils/metrics/__init__.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.semantic_memory_registry",
+      "module": "agentic_core.L6_system_learning.engines.semantic_memory_registry",
+      "path": "agentic_core/L6_system_learning/engines/semantic_memory_registry.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.policy_guardrail_embedder",
+      "module": "agentic_core.L6_system_learning.engines.policy_guardrail_embedder",
+      "path": "agentic_core/L6_system_learning/engines/policy_guardrail_embedder.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.prompt_safety_validator",
+      "module": "agentic_core.L6_system_learning.engines.prompt_safety_validator",
+      "path": "agentic_core/L6_system_learning/engines/prompt_safety_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.rca_cluster_engine",
+      "module": "agentic_core.L6_system_learning.engines.rca_cluster_engine",
+      "path": "agentic_core/L6_system_learning/engines/rca_cluster_engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.governance_reward_model",
+      "module": "agentic_core.L6_system_learning.engines.governance_reward_model",
+      "path": "agentic_core/L6_system_learning/engines/governance_reward_model.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.incident_bundle_embedder",
+      "module": "agentic_core.L6_system_learning.engines.incident_bundle_embedder",
+      "path": "agentic_core/L6_system_learning/engines/incident_bundle_embedder.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.mutation_diff_embedder",
+      "module": "agentic_core.L6_system_learning.engines.mutation_diff_embedder",
+      "path": "agentic_core/L6_system_learning/engines/mutation_diff_embedder.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.optimization_proposal_engine",
+      "module": "agentic_core.L6_system_learning.engines.optimization_proposal_engine",
+      "path": "agentic_core/L6_system_learning/engines/optimization_proposal_engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.mixins.redis_cache_mixin",
+      "module": "agentic_core.mixins.redis_cache_mixin",
+      "path": "agentic_core/mixins/redis_cache_mixin.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.policies",
+      "module": "agentic_core.utils.workflow_engines.policies",
+      "path": "agentic_core/utils/workflow_engines/policies.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.l0_routing_confidence_monitor",
+      "module": "agentic_core.L6_system_learning.engines.l0_routing_confidence_monitor",
+      "path": "agentic_core/L6_system_learning/engines/l0_routing_confidence_monitor.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.openai_embedder",
+      "module": "agentic_core.L6_system_learning.engines.openai_embedder",
+      "path": "agentic_core/L6_system_learning/engines/openai_embedder.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.applications.architecture_verifier",
+      "module": "agentic_core.adg.applications.architecture_verifier",
+      "path": "agentic_core/adg/applications/architecture_verifier.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.applications.architecture_verifier_validator",
+      "module": "agentic_core.adg.applications.architecture_verifier_validator",
+      "path": "agentic_core/adg/applications/architecture_verifier_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.adapters.system_learning_memory_bridge",
+      "module": "agentic_core.L6_system_learning.adapters.system_learning_memory_bridge",
+      "path": "agentic_core/L6_system_learning/adapters/system_learning_memory_bridge.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.arbitration.engine",
+      "module": "agentic_core.L6_system_learning.arbitration.engine",
+      "path": "agentic_core/L6_system_learning/arbitration/engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.proposal_validation_engine",
+      "module": "agentic_core.L6_system_learning.engines.proposal_validation_engine",
+      "path": "agentic_core/L6_system_learning/engines/proposal_validation_engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.enforcement.CircuitbreakerStrategy",
+      "module": "apps_shared.enforcement.CircuitbreakerStrategy",
+      "path": "apps_shared/enforcement/CircuitbreakerStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.validators.enforcement.CircuitbreakerStrategy",
+      "module": "apps_shared.validators.enforcement.CircuitbreakerStrategy",
+      "path": "apps_shared/validators/enforcement/CircuitbreakerStrategy.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.apply_attempt_types",
+      "module": "agentic_core.L6_system_learning.types.apply_attempt_types",
+      "path": "agentic_core/L6_system_learning/types/apply_attempt_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.rollout_types",
+      "module": "agentic_core.L6_system_learning.types.rollout_types",
+      "path": "agentic_core/L6_system_learning/types/rollout_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.analysis.policy_hash_validator",
+      "module": "agentic_core.adg.analysis.policy_hash_validator",
+      "path": "agentic_core/adg/analysis/policy_hash_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.runtime.policy_state_observer",
+      "module": "agentic_core.adg.runtime.policy_state_observer",
+      "path": "agentic_core/adg/runtime/policy_state_observer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.runtime.safety_observer",
+      "module": "agentic_core.adg.runtime.safety_observer",
+      "path": "agentic_core/adg/runtime/safety_observer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.runtime.enforcement.mathematical_determinism",
+      "module": "agentic_core.runtime.enforcement.mathematical_determinism",
+      "path": "agentic_core/runtime/enforcement/mathematical_determinism.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.lifecycle.state_lifecycle",
+      "module": "agentic_core.L4_state.utils.lifecycle.state_lifecycle",
+      "path": "agentic_core/L4_state/utils/lifecycle/state_lifecycle.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.l5_policy_proposer",
+      "module": "agentic_core.L6_system_learning.engines.l5_policy_proposer",
+      "path": "agentic_core/L6_system_learning/engines/l5_policy_proposer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.prompt_outcome_bus_adapter",
+      "module": "agentic_core.L6_system_learning.engines.prompt_outcome_bus_adapter",
+      "path": "agentic_core/L6_system_learning/engines/prompt_outcome_bus_adapter.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.meta_learning_types",
+      "module": "agentic_core.L6_system_learning.types.meta_learning_types",
+      "path": "agentic_core/L6_system_learning/types/meta_learning_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.trace_feature_types",
+      "module": "agentic_core.L6_system_learning.types.trace_feature_types",
+      "path": "agentic_core/L6_system_learning/types/trace_feature_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.late_chunking",
+      "module": "agentic_core.utils.workflow_engines.late_chunking",
+      "path": "agentic_core/utils/workflow_engines/late_chunking.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.validators",
+      "module": "agentic_core.utils.workflow_engines.validators",
+      "path": "agentic_core/utils/workflow_engines/validators.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.correlation.engine",
+      "module": "agentic_core.L6_system_learning.correlation.engine",
+      "path": "agentic_core/L6_system_learning/correlation/engine.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.embedding_retention_scheduler",
+      "module": "agentic_core.L6_system_learning.engines.embedding_retention_scheduler",
+      "path": "agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.retrieval_profile_proposal_manager",
+      "module": "agentic_core.L6_system_learning.engines.retrieval_profile_proposal_manager",
+      "path": "agentic_core/L6_system_learning/engines/retrieval_profile_proposal_manager.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.stage_barrier_enforcer",
+      "module": "agentic_core.L6_system_learning.engines.stage_barrier_enforcer",
+      "path": "agentic_core/L6_system_learning/engines/stage_barrier_enforcer.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.snapshots.snapshot_factory",
+      "module": "agentic_core.L6_system_learning.snapshots.snapshot_factory",
+      "path": "agentic_core/L6_system_learning/snapshots/snapshot_factory.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.optimization_types",
+      "module": "agentic_core.L6_system_learning.types.optimization_types",
+      "path": "agentic_core/L6_system_learning/types/optimization_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.adg.client.mcp_client",
+      "module": "agentic_core.adg.client.mcp_client",
+      "path": "agentic_core/adg/client/mcp_client.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.case_memory_types",
+      "module": "agentic_core.L6_system_learning.types.case_memory_types",
+      "path": "agentic_core/L6_system_learning/types/case_memory_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.types.prompt_artifact_types",
+      "module": "agentic_core.L6_system_learning.types.prompt_artifact_types",
+      "path": "agentic_core/L6_system_learning/types/prompt_artifact_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration",
+      "module": "agentic_core.L3_orchestration.reasoning.ptc.ptc_hitl_integration",
+      "path": "agentic_core/L3_orchestration/reasoning/ptc/ptc_hitl_integration.py",
+      "status": "PASS"
+    },
+    {
+      "error": "name '_emit_records_execution_trace' is not defined",
+      "error_type": "NameError",
+      "module": "agentic_core.L6_system_learning.ports.meta_outcome_bus_hook",
+      "path": "agentic_core/L6_system_learning/ports/meta_outcome_bus_hook.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.cache.core.redis_coordination_fabric",
+      "module": "agentic_core.cache.core.redis_coordination_fabric",
+      "path": "agentic_core/cache/core/redis_coordination_fabric.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "apps_shared.utils.app_base_util",
+      "module": "apps_shared.utils.app_base_util",
+      "path": "apps_shared/utils/app_base_util.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.magic_validator",
+      "module": "agentic_core.L5_safety.validators.magic_validator",
+      "path": "agentic_core/L5_safety/validators/magic_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.global_mutation_validator",
+      "module": "agentic_core.L5_safety.validators.global_mutation_validator",
+      "path": "agentic_core/L5_safety/validators/global_mutation_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.path_fragility_validator",
+      "module": "agentic_core.L5_safety.validators.path_fragility_validator",
+      "path": "agentic_core/L5_safety/validators/path_fragility_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L5_safety.validators.type_erasure_validator",
+      "module": "agentic_core.L5_safety.validators.type_erasure_validator",
+      "path": "agentic_core/L5_safety/validators/type_erasure_validator.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.cache.redis_coordination_fabric",
+      "module": "agentic_core.cache.redis_coordination_fabric",
+      "path": "agentic_core/cache/redis_coordination_fabric.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.utils.workflow_engines.answer_support",
+      "module": "agentic_core.utils.workflow_engines.answer_support",
+      "path": "agentic_core/utils/workflow_engines/answer_support.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L6_system_learning.engines.historical_backfill_engine",
+      "module": "agentic_core.L6_system_learning.engines.historical_backfill_engine",
+      "path": "agentic_core/L6_system_learning/engines/historical_backfill_engine.py",
+      "status": "PASS"
+    },
+    {
+      "error": "name '_emit_validated_by_safety_plane' is not defined",
+      "error_type": "NameError",
+      "module": "agentic_core.L2_execution.enforcement.transcript_freezer",
+      "path": "agentic_core/L2_execution/enforcement/transcript_freezer.py",
+      "status": "FAIL"
+    },
+    {
+      "imported_name": "agentic_core.L0_routing.utils.elevator_shaft_seam",
+      "module": "agentic_core.L0_routing.utils.elevator_shaft_seam",
+      "path": "agentic_core/L0_routing/utils/elevator_shaft_seam.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L4_state.utils.memory.template_registry",
+      "module": "agentic_core.L4_state.utils.memory.template_registry",
+      "path": "agentic_core/L4_state/utils/memory/template_registry.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.contracts.prompt_bom_types",
+      "module": "agentic_core.prompt_governance.contracts.prompt_bom_types",
+      "path": "agentic_core/prompt_governance/contracts/prompt_bom_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L0_routing.types.l0_instruction_packet",
+      "module": "agentic_core.L0_routing.types.l0_instruction_packet",
+      "path": "agentic_core/L0_routing/types/l0_instruction_packet.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.contracts.template_manifest_types",
+      "module": "agentic_core.prompt_governance.contracts.template_manifest_types",
+      "path": "agentic_core/prompt_governance/contracts/template_manifest_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.prompt_governance.contracts.compiled_artifact_types",
+      "module": "agentic_core.prompt_governance.contracts.compiled_artifact_types",
+      "path": "agentic_core/prompt_governance/contracts/compiled_artifact_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.rag_types",
+      "module": "agentic_core.L1_cognition.types.rag_types",
+      "path": "agentic_core/L1_cognition/types/rag_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "agentic_core.L1_cognition.types.search_types",
+      "module": "agentic_core.L1_cognition.types.search_types",
+      "path": "agentic_core/L1_cognition/types/search_types.py",
+      "status": "PASS"
+    },
+    {
+      "imported_name": "infrastructure.__init__",
+      "module": "infrastructure.__init__",
+      "path": "infrastructure/__init__.py",
+      "status": "PASS"
+    }
+  ]
+}

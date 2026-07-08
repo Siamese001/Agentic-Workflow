@@ -44,149 +44,84 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.adg.runtime.event_graph import RuntimeGraph, RuntimeGraphCollector
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
-_emit_applies_guardrail("p0", "safety_observer", "p0_governance")
-_emit_snapshots_state("p0", "safety_observer", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
+trace_contract._emit_applies_guardrail("p0", "safety_observer", "p0_governance")
+trace_contract._emit_snapshots_state("p0", "safety_observer", "state_snapshot")
 
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_1")
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_2")
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_3")
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_4")
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_5")
-_emit_emits_metric_event("safety_observer", "p4obs", "metric_6")
-_emit_records_incident_event("safety_observer", "p4obs", "incident")
-_emit_captures_runtime_anomaly("safety_observer", "p4obs", "anomaly")
-_emit_writes_observability_log("safety_observer", "p4obs", "obs_log")
-_emit_updates_monitoring_state("safety_observer", "p4obs", "mon_state")
-_emit_triggers_alert("safety_observer", "p4obs", "alert")
-_emit_links_incident_trace("safety_observer", "p4obs", "trace_link")
-_emit_captures_pattern("safety_observer", "p3lm", "pattern")
-_emit_records_learning_event("safety_observer", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("safety_observer", "p3lm", "snapshot")
-_emit_feeds_meta_learning("safety_observer", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("safety_observer", "p3lm", "routing")
-_emit_improves_agent_policy("safety_observer", "p3lm", "policy")
-_emit_stores_learning_state("safety_observer", "p3lm", "state")
-_emit_records_execution_trace("safety_observer", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("safety_observer", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("safety_observer", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("safety_observer", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("safety_observer", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("safety_observer", "env_read", "p2_env_1")
-_emit_reads_environ("safety_observer", "env_read", "p2_env_2")
-_emit_reads_runtime_state("safety_observer", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("safety_observer", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "safety_observer", "context_pull")
-_emit_pulls_context("p1", "safety_observer", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "safety_observer", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "safety_observer", "uwg_term_2")
-_emit_writes_through("p1", "safety_observer", "write_through")
-_emit_writes_through("p1", "safety_observer", "write_through_2")
-_emit_validated_by_safety_plane("p1", "safety_observer", "safety_validation")
-_emit_invokes_eval("p1", "safety_observer", "eval_call")
-_emit_proposal_commits_routing("p1", "safety_observer", "routing_commit")
-_emit_escalates_to_human("p1", "safety_observer", "human_escalation")
-_emit_routes_through("p1", "safety_observer", "route_through")
-_emit_checks_agent_registry("p1", "safety_observer", "agent_registry")
-_emit_validates_agent_capability("p1", "safety_observer", "capability")
-_emit_dispatches_execution_plan("p1", "safety_observer", "exec_plan")
-_emit_agent_executes_agent("p1", "safety_observer", "sub_agent")
-_emit_routes_to_agent("p1", "safety_observer", "target_agent")
-_emit_verifies_policy("p1", "safety_observer", "policy_check")
-_emit_observes_runtime_state("p1", "safety_observer", "runtime_state")
-_emit_verifies_boundary("p1", "safety_observer", "boundary_check")
-_emit_transcripts_response("p1", "safety_observer", "transcript")
-_emit_hard_fails_untranscripted("p1", "safety_observer")
-_emit_gated_by_confidence("p1", "safety_observer", "confidence_gate")
-emit_replay_key("p0", "safety_observer")
-emit_determinism_digest("p0", "safety_observer")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "safety_observer", "execution_auth")
-_emit_validates_capability("p2", "safety_observer", "capability_check")
-_emit_routes_to_capability("p2", "safety_observer", "capability_route")
-_emit_writes_via_uwg("p2", "safety_observer", "uwg_write")
-_emit_blocks_direct_write("p2", "safety_observer", "direct_write_block")
-_emit_records_tool_invocation("p2", "safety_observer", "tool_invocation")
-_emit_captures_execution_output("p2", "safety_observer", "exec_output")
-_emit_dispatches_agent("p3", "safety_observer", "agent_dispatch")
-_emit_coordinates_agents("p3", "safety_observer", "agent_coordination")
-_emit_records_workflow_lineage("p3", "safety_observer", "workflow_lineage")
-_emit_records_healing_outcome("p3", "safety_observer", "healing_outcome")
-_emit_escalates_failure("p3", "safety_observer", "failure_escalation")
-_emit_orchestrates_workflow("p3", "safety_observer", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "safety_observer", "healing_dispatch")
-_emit_invokes_evaluation("p3", "safety_observer", "evaluation_signal")
-_emit_records_telemetry_event("p4", "safety_observer", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "safety_observer", "eval_metric")
-_emit_stores_embedding("p4", "safety_observer", "embedding_store")
-_emit_updates_meta_learning_state("p4", "safety_observer", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "safety_observer", "exec_snapshot_link")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_1")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_2")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_3")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_4")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_5")
+trace_contract._emit_emits_metric_event("safety_observer", "p4obs", "metric_6")
+trace_contract._emit_records_incident_event("safety_observer", "p4obs", "incident")
+trace_contract._emit_captures_runtime_anomaly("safety_observer", "p4obs", "anomaly")
+trace_contract._emit_writes_observability_log("safety_observer", "p4obs", "obs_log")
+trace_contract._emit_updates_monitoring_state("safety_observer", "p4obs", "mon_state")
+trace_contract._emit_triggers_alert("safety_observer", "p4obs", "alert")
+trace_contract._emit_links_incident_trace("safety_observer", "p4obs", "trace_link")
+trace_contract._emit_captures_pattern("safety_observer", "p3lm", "pattern")
+trace_contract._emit_records_learning_event("safety_observer", "p3lm", "learning_event")
+trace_contract._emit_writes_learning_snapshot("safety_observer", "p3lm", "snapshot")
+trace_contract._emit_feeds_meta_learning("safety_observer", "p3lm", "meta_feed")
+trace_contract._emit_updates_routing_strategy("safety_observer", "p3lm", "routing")
+trace_contract._emit_improves_agent_policy("safety_observer", "p3lm", "policy")
+trace_contract._emit_stores_learning_state("safety_observer", "p3lm", "state")
+trace_contract._emit_records_execution_trace("safety_observer", "L0_ROUTING", "p2_trace_1")
+trace_contract._emit_records_execution_trace("safety_observer", "L1_REASONING", "p2_trace_2")
+trace_contract._emit_records_execution_trace("safety_observer", "L2_EXECUTION", "p2_trace_3")
+trace_contract._emit_records_execution_trace("safety_observer", "L3_ORCHESTRATION", "p2_trace_4")
+trace_contract._emit_records_execution_trace("safety_observer", "L4_STATE", "p2_trace_5")
+trace_contract._emit_reads_environ("safety_observer", "env_read", "p2_env_1")
+trace_contract._emit_reads_environ("safety_observer", "env_read", "p2_env_2")
+trace_contract._emit_reads_runtime_state("safety_observer", "runtime_state", "p2_rt_1")
+trace_contract._emit_reads_runtime_state("safety_observer", "runtime_state", "p2_rt_2")
+trace_contract._emit_pulls_context("p1", "safety_observer", "context_pull")
+trace_contract._emit_pulls_context("p1", "safety_observer", "context_pull_2")
+trace_contract._emit_execution_terminates_at_uwg("p1", "safety_observer", "uwg_term")
+trace_contract._emit_execution_terminates_at_uwg("p1", "safety_observer", "uwg_term_2")
+trace_contract._emit_writes_through("p1", "safety_observer", "write_through")
+trace_contract._emit_writes_through("p1", "safety_observer", "write_through_2")
+trace_contract._emit_validated_by_safety_plane("p1", "safety_observer", "safety_validation")
+trace_contract._emit_invokes_eval("p1", "safety_observer", "eval_call")
+trace_contract._emit_proposal_commits_routing("p1", "safety_observer", "routing_commit")
+trace_contract._emit_escalates_to_human("p1", "safety_observer", "human_escalation")
+trace_contract._emit_routes_through("p1", "safety_observer", "route_through")
+trace_contract._emit_checks_agent_registry("p1", "safety_observer", "agent_registry")
+trace_contract._emit_validates_agent_capability("p1", "safety_observer", "capability")
+trace_contract._emit_dispatches_execution_plan("p1", "safety_observer", "exec_plan")
+trace_contract._emit_agent_executes_agent("p1", "safety_observer", "sub_agent")
+trace_contract._emit_routes_to_agent("p1", "safety_observer", "target_agent")
+trace_contract._emit_verifies_policy("p1", "safety_observer", "policy_check")
+trace_contract._emit_observes_runtime_state("p1", "safety_observer", "runtime_state")
+trace_contract._emit_verifies_boundary("p1", "safety_observer", "boundary_check")
+trace_contract._emit_transcripts_response("p1", "safety_observer", "transcript")
+trace_contract._emit_hard_fails_untranscripted("p1", "safety_observer")
+trace_contract._emit_gated_by_confidence("p1", "safety_observer", "confidence_gate")
+trace_contract.emit_replay_key("p0", "safety_observer")
+trace_contract.emit_determinism_digest("p0", "safety_observer")
+trace_contract._emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+trace_contract._emit_authorize_and_execute("p2", "safety_observer", "execution_auth")
+trace_contract._emit_validates_capability("p2", "safety_observer", "capability_check")
+trace_contract._emit_routes_to_capability("p2", "safety_observer", "capability_route")
+trace_contract._emit_writes_via_uwg("p2", "safety_observer", "uwg_write")
+trace_contract._emit_blocks_direct_write("p2", "safety_observer", "direct_write_block")
+trace_contract._emit_records_tool_invocation("p2", "safety_observer", "tool_invocation")
+trace_contract._emit_captures_execution_output("p2", "safety_observer", "exec_output")
+trace_contract._emit_dispatches_agent("p3", "safety_observer", "agent_dispatch")
+trace_contract._emit_coordinates_agents("p3", "safety_observer", "agent_coordination")
+trace_contract._emit_records_workflow_lineage("p3", "safety_observer", "workflow_lineage")
+trace_contract._emit_records_healing_outcome("p3", "safety_observer", "healing_outcome")
+trace_contract._emit_escalates_failure("p3", "safety_observer", "failure_escalation")
+trace_contract._emit_orchestrates_workflow("p3", "safety_observer", "workflow_orchestration")
+trace_contract._emit_dispatches_healing_run("p3", "safety_observer", "healing_dispatch")
+trace_contract._emit_invokes_evaluation("p3", "safety_observer", "evaluation_signal")
+trace_contract._emit_records_telemetry_event("p4", "safety_observer", "telemetry_event")
+trace_contract._emit_captures_evaluation_metric("p4", "safety_observer", "eval_metric")
+trace_contract._emit_stores_embedding("p4", "safety_observer", "embedding_store")
+trace_contract._emit_updates_meta_learning_state("p4", "safety_observer", "meta_learning")
+trace_contract._emit_links_execution_to_snapshot("p4", "safety_observer", "exec_snapshot_link")
 
 
 @dataclass(frozen=True)
@@ -304,8 +239,8 @@ class RuntimeSafetyReport:
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyReport.guardrail_pass_rate"
+        trace_contract._emit_records_execution_trace(
+            _trace_id, trace_contract.LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyReport.guardrail_pass_rate"
         )
 
         if not self.guardrail_executions:
@@ -370,8 +305,8 @@ class RuntimeSafetyObserver(RuntimeGraphCollector):
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyObserver.guardrail_check"
+        trace_contract._emit_records_execution_trace(
+            _trace_id, trace_contract.LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyObserver.guardrail_check"
         )
 
         record = GuardrailExecution(
