@@ -170,6 +170,28 @@ Wave 1 proof:
 - Compile proof passed for all changed Python files.
 - Focused pytest passed for ordinary P1 repairs: 6 collected, 6 passed.
 
+Wave 2 status: implemented in branch.
+
+Wave 2 scope:
+
+- Selected the next 50 E1 candidates from `adg_indexed_07072026_2307.sqlite`, excluding wave-1 manifest candidates.
+- Replaced direct lifecycle trace symbol imports with one `trace_contract` module alias import in each selected module.
+- Preserved existing trace emissions by rewriting each local trace function reference to `trace_contract.<symbol>`.
+- Repaired the inherited PR terminal-cleanup failure in `agentic_core/L2_execution/utils/safe_subprocess.py` by adding an explicit default timeout and placing the `Popen` lifecycle guardian on the call line expected by the gate.
+- Expected cumulative E1 reduction on next ADG generation: 100 modules, pending regenerated ADG proof.
+
+Wave 2 proof:
+
+- ADG MCP health: `status=ok`, `adg_snapshot_id=07072026_2307`; detailed candidate extraction used the immutable SQLite snapshot because the exposed MCP tools do not include ad hoc SQL.
+- Source replay: `artifacts/codex/runtime_proofs/e1_trace_import_wave2_source_replay.json` reports `passed=50`, `failed=0`.
+- Runtime import proof: `artifacts/codex/runtime_proofs/e1_trace_import_wave2_runtime_importable_subset_proof.json` reports `passed=46`, `failed=0` for importable modules.
+- Full import blocker capture: `artifacts/codex/runtime_proofs/e1_trace_import_wave2_runtime_proof.json` reports 4 import-time blockers unrelated to the trace import rewrite.
+- Clean-HEAD import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_wave2_head_import_blocker_probe.json` reproduces the same 4 import-time blockers from branch HEAD `191efe1550a99a0465022c0ffce322071609c2a7`.
+- Pinned legacy E1 gate against the consumed snapshot remains pass: `current=982 baseline=982`.
+- Compile proof passed for all wave-2 changed Python files.
+- Terminal cleanup proof passed for changed files: `check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref 2acff50883eb631c66d7b4d88c6c58ac0b6d000a`.
+- Focused pytest passed for ordinary P1 repairs: 6 collected, 6 passed.
+
 Selection policy:
 
 - Select the highest-fanout trace stub family first.

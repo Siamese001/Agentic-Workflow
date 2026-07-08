@@ -127,6 +127,7 @@ def safe_subprocess_run(
     capture_output: bool = False,
     text: bool = False,
     check: bool = False,
+    timeout: float | None = 30.0,
     allow_protected_root_mutation: bool = False,
     **kwargs: Any,
 ) -> subprocess.CompletedProcess:
@@ -139,6 +140,7 @@ def safe_subprocess_run(
         capture_output: Whether to capture stdout/stderr
         text: Whether to decode output as text
         check: Whether to raise exception on non-zero exit
+        timeout: Maximum runtime in seconds; pass None only for explicitly owned long-running commands
         allow_protected_root_mutation: Whether to allow commands that can mutate protected roots
         **kwargs: Additional arguments passed to subprocess.run
 
@@ -186,8 +188,14 @@ def safe_subprocess_run(
         target_name="safe_subprocess.safe_subprocess_run",
     )
     return subprocess.run(
-        argv, cwd=cwd, capture_output=capture_output, text=text, check=check, **kwargs
-    )  # guardian: allow-unbounded-subprocess -- canonical wrapper: caller supplies timeout via **kwargs; adding a default here would override caller intent
+        argv,
+        cwd=cwd,
+        capture_output=capture_output,
+        text=text,
+        check=check,
+        timeout=timeout,
+        **kwargs,
+    )
 
 
 def safe_subprocess_call(
@@ -281,6 +289,5 @@ def safe_subprocess_popen(
                     )
     if not isinstance(argv, list):
         raise TypeError("argv must be a list of strings")
-    return subprocess.Popen(
-        argv, cwd=cwd, **kwargs
-    )  # guardian: allow-popen-leak -- canonical Popen wrapper: caller owns process lifecycle (wait/terminate/with-block)
+    # guardian: allow-popen-leak -- canonical Popen wrapper: caller owns process lifecycle (wait/terminate/with-block)
+    return subprocess.Popen(argv, cwd=cwd, **kwargs)
