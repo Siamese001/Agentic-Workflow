@@ -8,6 +8,7 @@ Branch: codex/adg-p1-ratchet-burndown-20260708T094956
 Status: corrective plan generated after the run identified the missing full-scope P1 wave plan
 
 Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T161101
+Follow-on branch: codex/adg-p1-ratchet-burndown-20260708T162958
 
 ## Scope
 
@@ -212,6 +213,25 @@ Wave 3 proof:
 - Base import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_wave3_base_import_blocker_probe.json` reproduces the same 2 import-time blockers from local `main` before wave 3.
 - Pinned legacy E1 gate against the consumed snapshot remains pass: `current=982 baseline=982`.
 - Validation status is partial until the wave-3 branch finishes compile, static, pytest, receipt, PR, and publication checks.
+
+Wave 4 status: implemented in follow-on branch `codex/adg-p1-ratchet-burndown-20260708T162958`.
+
+Wave 4 scope:
+
+- Selected the next 50 E1 candidates from `adg_indexed_07072026_2307.sqlite`, excluding wave-1, wave-2, and wave-3 manifest candidates.
+- Replaced direct lifecycle trace symbol imports with one `trace_contract` module alias import in each selected module.
+- Preserved existing trace emissions by rewriting each local trace function reference to `trace_contract.<symbol>`.
+- Expected cumulative E1 reduction on next ADG generation: 200 modules, pending regenerated ADG proof.
+
+Wave 4 proof:
+
+- ADG MCP health: `status=ok`, `adg_snapshot_id=07072026_2307`; detailed candidate extraction used the immutable SQLite snapshot because the exposed MCP tools do not include ad hoc SQL.
+- Source replay: `artifacts/codex/runtime_proofs/e1_trace_import_wave4_source_replay.json` reports `passed=50`, `failed=0`.
+- Runtime import proof: `artifacts/codex/runtime_proofs/e1_trace_import_wave4_runtime_proof.json` reports `passed=50`, `failed=0` for the full selected manifest.
+- Base import blocker probe: `artifacts/codex/runtime_proofs/e1_trace_import_wave4_base_import_blocker_probe.json` also reports `passed=50`, `failed=0`.
+- Runtime importable subset proof: `artifacts/codex/runtime_proofs/e1_trace_import_wave4_runtime_importable_subset_proof.json` reports `passed=50`, `failed=0`.
+- Pinned legacy E1 gate against the consumed snapshot remains pass: `current=982 baseline=982`.
+- Validation status is partial until the wave-4 branch finishes compile, static, pytest, receipt, PR, and publication checks.
 
 Selection policy:
 
@@ -465,9 +485,9 @@ Current run reporting values:
 - `ordinary_p1_target = 3`
 - `ratchet_target = 3646`
 - `planned_rows = 3649`
-- `attempted_rows = 153`
+- `attempted_rows = 203`
 - `cleared_rows = not proven until regenerated/replayed ADG evidence`
-- `remaining_rows = 3496 ratchet rows expected before regeneration, assuming 150 E1 rows clear after ADG refresh`
+- `remaining_rows = 3446 ratchet rows expected before regeneration, assuming 200 E1 rows clear after ADG refresh`
 - `final_p1_count = not zero / not proven`
 - `target_status = missed`
 - `blocker_type = RATCHET_SCOPE_REQUIRES_WAVE_REFACTOR_EXECUTION`
