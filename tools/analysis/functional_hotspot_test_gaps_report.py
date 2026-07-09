@@ -48,6 +48,36 @@ class FunctionalContract:
     hotspot_globs: tuple[str, ...]
     nodeid_scope_terms: tuple[str, ...]
     required_groups: tuple[RequiredTestGroup, ...]
+    nodeid_path_globs: tuple[str, ...] = ()
+
+
+APPS_RG_SECTION_NODEID_PATH_GLOBS = (
+    "tests/_apps_contract/test_*apps_rg*.py",
+    "tests/_apps_contract/test_*exec_summary*.py",
+    "tests/_apps_contract/test_*executive_summary*.py",
+    "tests/_apps_contract/test_*headline*.py",
+    "tests/_apps_contract/test_*competenc*.py",
+    "tests/_apps_contract/test_*unify*.py",
+    "tests/_apps_contract/test_*ibm*.py",
+    "tests/_apps_contract/test_*final_resume*.py",
+    "tests/_apps_contract/test_*generated_lane*.py",
+    "tests/unit/apps_rg/*.py",
+    "tests/unit/apps_rg/*/*.py",
+    "tests/unit/apps_rg/*/*/*.py",
+)
+
+
+APPS_RG_RUNTIME_NODEID_PATH_GLOBS = (
+    "tests/_apps_contract/test_*apps_rg*.py",
+    "tests/_apps_contract/test_*rg_*.py",
+    "tests/_apps_contract/test_rg_*.py",
+    "tests/_apps_contract/test_runtime_path_inventory.py",
+    "tests/_apps_contract/test_single_runtime_entry_surface.py",
+    "tests/_apps_contract/test_w5_ingress_only.py",
+    "tests/unit/apps_rg/*.py",
+    "tests/unit/apps_rg/*/*.py",
+    "tests/unit/apps_rg/*/*/*.py",
+)
 
 
 DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
@@ -69,6 +99,7 @@ DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
             RequiredTestGroup("x2_gate", "deterministic X2 gate", ("x2", "product_shape", "composition")),
             RequiredTestGroup("x1d_or_judge", "judge/X1D arbitration", ("x1d", "judge")),
         ),
+        nodeid_path_globs=APPS_RG_SECTION_NODEID_PATH_GLOBS,
     ),
     FunctionalContract(
         contract_id="apps_rg.headline.functional_chain",
@@ -87,6 +118,7 @@ DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
             RequiredTestGroup("x2_gate", "deterministic X2 gate", ("x2", "quality_x2", "positioning")),
             RequiredTestGroup("x1d_or_judge", "judge/X1D arbitration", ("x1d", "judge")),
         ),
+        nodeid_path_globs=APPS_RG_SECTION_NODEID_PATH_GLOBS,
     ),
     FunctionalContract(
         contract_id="apps_rg.competencies.functional_chain",
@@ -105,6 +137,7 @@ DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
             RequiredTestGroup("graph_traversal", "graph traversal/proof pool", ("graph", "proof_pool", "capability_bundle")),
             RequiredTestGroup("x2_gate", "deterministic X2/rigor gate", ("x2", "rigor", "proof_quality")),
         ),
+        nodeid_path_globs=APPS_RG_SECTION_NODEID_PATH_GLOBS,
     ),
     FunctionalContract(
         contract_id="apps_rg.role_episode.functional_chain",
@@ -128,6 +161,7 @@ DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
             RequiredTestGroup("x2_or_judge", "X2 or judge gate", ("x2", "x1d", "judge")),
             RequiredTestGroup("same_run_binding", "same-run companion artifact binding", ("fingerprint", "companion", "finalization", "aggregation")),
         ),
+        nodeid_path_globs=APPS_RG_SECTION_NODEID_PATH_GLOBS,
     ),
     FunctionalContract(
         contract_id="apps_rg.final_aggregation.functional_chain",
@@ -145,6 +179,107 @@ DEFAULT_CONTRACTS: tuple[FunctionalContract, ...] = (
             RequiredTestGroup("aggregation_contract", "final aggregation behavior", ("aggregation", "final_resume", "aggregate")),
             RequiredTestGroup("same_run_fingerprint", "same-run fingerprint binding", ("fingerprint", "current_run", "same_run")),
             RequiredTestGroup("no_latest_successful", "no latest-successful inference", ("latest_successful", "no_latest", "manifest")),
+        ),
+        nodeid_path_globs=(
+            "tests/_apps_contract/test_*apps_rg*.py",
+            "tests/_apps_contract/test_*final_resume*.py",
+            "tests/_apps_contract/test_*generated_lane*.py",
+            "tests/unit/apps_rg/*.py",
+            "tests/unit/apps_rg/runtime/aggregation/*.py",
+            "tests/unit/apps_rg/l2_recipe/*.py",
+        ),
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.runtime_entrypoint.functional_chain",
+        app="apps_rg",
+        section_id="runtime_entrypoint",
+        description="apps_rg CLI ingress stays canonical, bounded, and receipt-producing.",
+        hotspot_globs=("apps_rg/__main__.py",),
+        nodeid_scope_terms=("apps_rg", "__main__", "entrypoint", "ingress", "runtime_path", "single_runtime"),
+        required_groups=(
+            RequiredTestGroup("canonical_cli", "python -m apps_rg canonical CLI surface", ("__main__", "python -m apps_rg", "main", "entrypoint", "cli")),
+            RequiredTestGroup("dispatch_boundary", "ingress-to-dispatch boundary", ("canonical", "dispatch", "ingress", "single_runtime", "runtime_path")),
+            RequiredTestGroup("artifact_contract", "mandatory artifact and receipt behavior", ("artifact", "receipt", "mandatory", "output", "company")),
+        ),
+        nodeid_path_globs=APPS_RG_RUNTIME_NODEID_PATH_GLOBS,
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.c0_fact_vector.functional_chain",
+        app="apps_rg",
+        section_id="c0_fact_vector",
+        description="C0 fact-vector retrieval/preflight fails closed and emits evidence-trace proof.",
+        hotspot_globs=(
+            "apps_rg/runtime/bindings/c0_binding.py",
+            "apps_rg/runtime/c0/fact_vector_*.py",
+            "apps_rg/runtime/fact_vectors_bootstrap.py",
+        ),
+        nodeid_scope_terms=("c0", "fact_vector", "retrieval", "evidence_room", "hybrid"),
+        required_groups=(
+            RequiredTestGroup("retrieval_fail_closed", "missing or stale C0 evidence blocks product proof", ("fail", "gap", "missing", "block", "preflight")),
+            RequiredTestGroup("evidence_trace", "retrieval evidence trace and source-fact proof", ("trace", "receipt", "evidence", "source_fact")),
+            RequiredTestGroup("hybrid_preflight", "fact-vector index preflight and hybrid tiering", ("fact_vector", "preflight", "hybrid", "tiering")),
+        ),
+        nodeid_path_globs=APPS_RG_RUNTIME_NODEID_PATH_GLOBS,
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.pool_selector.functional_chain",
+        app="apps_rg",
+        section_id="pool_selector",
+        description="Pool selection enforces provider authority, source eligibility, and fail-closed behavior.",
+        hotspot_globs=("apps_rg/runtime/judges/bullet_pool_claude_selector.py",),
+        nodeid_scope_terms=("pool", "selector", "bullet", "competenc", "judge"),
+        required_groups=(
+            RequiredTestGroup("provider_authority", "provider/judge authority is section-appropriate", ("openai", "anthropic", "provider", "claude", "judge")),
+            RequiredTestGroup("fail_closed", "selector fails closed when provider/candidate proof is unavailable", ("unavailable", "fail", "disabled", "without_credentials")),
+            RequiredTestGroup("selection_integrity", "selected rows preserve allowed source and claim integrity", ("source", "allowed", "positional", "claim", "line_discipline")),
+        ),
+        nodeid_path_globs=APPS_RG_RUNTIME_NODEID_PATH_GLOBS,
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.l2_envelope.functional_chain",
+        app="apps_rg",
+        section_id="l2_envelope",
+        description="L2 envelope uses ProviderGateway under sealed fail-closed authenticity controls.",
+        hotspot_globs=("apps_rg/runtime/bindings/l2_envelope_adapter.py",),
+        nodeid_scope_terms=("l2_envelope", "provider_authenticity", "gateway", "provider"),
+        required_groups=(
+            RequiredTestGroup("provider_gateway", "ProviderGateway invocation and authenticity proof", ("providergateway", "gateway", "invoke", "authenticity")),
+            RequiredTestGroup("sealed_fail_closed", "sealed rejection or terminal failure on invalid envelope", ("fail", "rejection", "terminal", "sealed")),
+            RequiredTestGroup("secret_redaction", "provider diagnostics redact credentials and bearer values", ("secret", "redact", "bearer", "api_key")),
+        ),
+        nodeid_path_globs=APPS_RG_RUNTIME_NODEID_PATH_GLOBS,
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.patch_run.functional_chain",
+        app="apps_rg",
+        section_id="patch_run",
+        description="Patch runs derive targeting, dispatch only selected lanes, and fail closed on missing lanes.",
+        hotspot_globs=("apps_rg/runtime/orchestration/patch_run.py",),
+        nodeid_scope_terms=("patch_run", "patch", "lane"),
+        required_groups=(
+            RequiredTestGroup("plan_derivation", "patch targeting and lane plan derivation", ("derive", "plan", "targeting")),
+            RequiredTestGroup("dispatch_receipt", "dispatch order and patch receipt", ("dispatch", "receipt", "order")),
+            RequiredTestGroup("missing_lane_fail_closed", "missing or blocked lanes fail aggregation", ("missing_lane", "missing", "blocked", "fail")),
+        ),
+        nodeid_path_globs=APPS_RG_RUNTIME_NODEID_PATH_GLOBS,
+    ),
+    FunctionalContract(
+        contract_id="apps_rg.fact_inventory_closeout.functional_chain",
+        app="apps_rg",
+        section_id="fact_inventory_closeout",
+        description="Graph-skills closeout validates inventories, receipts, and C0.3 proof bindings.",
+        hotspot_globs=("apps_rg/fact_inventory/p2_graph_skills_accelerated_closeout.py",),
+        nodeid_scope_terms=("p2_graph_skills", "fact_inventory", "graph_skills", "closeout"),
+        required_groups=(
+            RequiredTestGroup("inventory_validation", "graph-skill inventory validates without broad authority", ("inventory", "validate", "gap", "hardening")),
+            RequiredTestGroup("closeout_receipt", "closeout summary and receipt proof", ("closeout", "receipt", "accelerated")),
+            RequiredTestGroup("c03_binding", "C0.3 graph skill proof binding", ("c03", "graph", "proof", "skill")),
+        ),
+        nodeid_path_globs=(
+            "tests/unit/apps_rg/fact_inventory/*.py",
+            "tests/unit/apps_rg/*.py",
+            "tests/_apps_contract/test_*graph_skills*.py",
+            "tests/_apps_contract/test_*apps_rg*.py",
         ),
     ),
 )
@@ -309,13 +444,21 @@ def _contracts_for_path(path: str, contracts: tuple[FunctionalContract, ...]) ->
     ]
 
 
+def _nodeid_in_contract_path_scope(nodeid: str, contract: FunctionalContract) -> bool:
+    if not contract.nodeid_path_globs:
+        return True
+    test_path = nodeid.split("::", 1)[0].replace("\\", "/")
+    return any(fnmatch.fnmatch(test_path, pattern) for pattern in contract.nodeid_path_globs)
+
+
 def _nodeids_for_group(nodeids: list[str], contract: FunctionalContract, group: RequiredTestGroup) -> list[str]:
     lowered_terms = tuple(term.lower() for term in group.nodeid_terms)
     scope_terms = tuple(term.lower() for term in contract.nodeid_scope_terms)
     return [
         nodeid
         for nodeid in nodeids
-        if any(scope in nodeid.lower() for scope in scope_terms)
+        if _nodeid_in_contract_path_scope(nodeid, contract)
+        and any(scope in nodeid.lower() for scope in scope_terms)
         and any(term in nodeid.lower() for term in lowered_terms)
     ]
 
