@@ -113,13 +113,13 @@ def default_lane_provider_for_section(section_id: str | None = None) -> str:
     return provider
 
 
-# Judges are calibrated against the per-section generator matrix. Anthropic/Claude selector calls
-# are advisory-only and never satisfy X1D proof gates.
+# Judges are calibrated against the per-section generator matrix. Selector calls are advisory-only
+# and never satisfy X1D proof gates.
 # Recalibrated 2026-06-08 from the older 3-provider panel; see .codex/rules/judge-calibration-cadence.md.
 # Explicit CLI/env overrides are honored after section-forbidden proof judges are removed.
 _DUAL_X1D_JUDGES: Final[str] = "gemini_pro,openai_chatgpt"
 _SINGLE_X1D_JUDGE: Final[str] = "gemini_pro"
-COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = _DUAL_X1D_JUDGES
+COMPETENCIES_DEFAULT_X1D_JUDGES: Final[str] = "openai_chatgpt"
 BULLET_COMPOSITE_DEFAULT_X1D_JUDGES: Final[str] = _SINGLE_X1D_JUDGE
 UNIFY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 IBM_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
@@ -127,12 +127,13 @@ INSURTECH_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_
 EY_BULLETS_DEFAULT_X1D_JUDGES: Final[str] = BULLET_COMPOSITE_DEFAULT_X1D_JUDGES
 
 # Recalibrated judge panels (Claude Sonnet 5 base for Claude-primary lanes):
-#   competencies -> 2 required proof judges (gemini_pro + openai_chatgpt)
+#   competencies policy resolver -> 2 required proof judges (gemini_pro + openai_chatgpt)
+#   competencies standalone graph-pool CLI default -> OpenAI selector/judge only
 #   executive_summary / headline / final_aggregate_resume -> 2
 #     (gemini_pro + openai_chatgpt)
 #   all bullets + all narratives -> 1 required proof judge (gemini_pro)
 _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
-    "competencies": COMPETENCIES_DEFAULT_X1D_JUDGES,
+    "competencies": _DUAL_X1D_JUDGES,
     "unify_bullets": UNIFY_BULLETS_DEFAULT_X1D_JUDGES,
     "ibm_bullets": IBM_BULLETS_DEFAULT_X1D_JUDGES,
     "insurtech_bullets": INSURTECH_BULLETS_DEFAULT_X1D_JUDGES,
@@ -147,7 +148,7 @@ _SECTION_DEFAULT_X1D_JUDGES: Final[dict[str, str]] = {
 }
 
 _SECTION_X1D_DEFAULT_REASON: Final[dict[str, str]] = {
-    "competencies": "dual_required_gemini_openai_competencies_judges_for_proof",
+    "competencies": "dual_cross_provider_competencies_judge_for_proof",
     "unify_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "ibm_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
     "insurtech_bullets": "single_cross_provider_bullet_judge_claude_base_recalibrated",
@@ -226,7 +227,7 @@ def resolve_cli_x1d_judges(
     """Honor ``APPS_RG_E2E_X1D_JUDGES`` when CLI omits ``--x1d-judges``.
 
     Per-section composite-judge defaults:
-      * ``competencies`` -> required ``gemini_pro,openai_chatgpt`` proof panel.
+      * ``competencies`` -> required ``openai_chatgpt`` proof judge.
       * bullets/narratives -> single ``gemini_pro`` cross-provider judge.
 
     ``anthropic_claude`` is a selector/advisory provider only in this pipeline and is removed

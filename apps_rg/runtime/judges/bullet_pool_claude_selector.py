@@ -1710,8 +1710,9 @@ def run_claude_bullet_pool_selection(
     api_key = os.environ.get(str(meta.get("env") or ""), "").strip()
     if not api_key:
         if competencies_selector:
+            provider_label = "OpenAI" if provider_key == "openai_chatgpt" else provider_key
             raise PoolSelectorUnavailableError(
-                f"competencies selector unavailable: missing {provider_key} credentials"
+                f"competencies selector unavailable: missing {provider_label} credentials"
             )
         return _fallback_first_complete_path(
             valid_paths,

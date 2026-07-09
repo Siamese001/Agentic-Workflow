@@ -905,9 +905,41 @@ def run_full_closeout(
         "global_c03_bound_claimed": False,
     }
     _write_json(CLOSEOUT_JSON, closeout)
+    md_lines = [
+        "# P2 accelerated closeout",
+        "",
+        f"**Generated:** {closeout['generated_at']}",
+        f"**Status:** {overall}",
+        "",
+        "## Waves",
+        "",
+    ]
+    for wave, ref in closeout["waves"].items():
+        md_lines.append(f"- **{wave}**: {ref}")
+    md_lines.extend(
+        [
+            "",
+            "## Live proof summary",
+            "",
+        ]
+    )
+    for sec in ALL_SECTIONS:
+        r = (w9.get("sections") or {}).get(sec) or {}
+        md_lines.append(
+            f"- **{sec}**: {r.get('status')} | provider={r.get('provider_classification')} | "
+            f"X3={r.get('x3_disposition')} | C0.3={r.get('c03_graph_bound_status')} | "
+            f"ledger_authority={r.get('broad_skills_ledger_used_as_authority')}"
+        )
+    md_lines.extend(
+        [
+            "",
+            f"- live_x3_allow_claimed: {closeout['live_x3_allow_claimed']}",
+            f"- global_c03_bound_claimed: {closeout['global_c03_bound_claimed']}",
+        ]
+    )
     _wg.write_text(
         CLOSEOUT_MD,
-        f"# P2 accelerated closeout\n\nStatus: **{overall}**\n\nGenerated: {closeout['generated_at']}\n",
+        "\n".join(md_lines) + "\n",
         encoding="utf-8",
     )
     return closeout

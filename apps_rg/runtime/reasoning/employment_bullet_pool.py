@@ -354,7 +354,9 @@ def evaluate_employment_selection_quality(
 
 def is_employment_pool_generation(gen_meta: dict[str, Any] | None) -> bool:
     mode = str((gen_meta or {}).get("generation_mode") or "")
-    return mode.startswith("model_employment_pool")
+    return mode.startswith("model_employment_pool") or mode.startswith(
+        "retired_provider_employment_pool"
+    )
 
 
 def _selector_model_row(section_id: str, *, slot_kind: str) -> tuple[str, str, str]:

@@ -34,7 +34,7 @@
         "skill_svp_it_strategy_innovation",
         "skill_commercial_board_level_stakeholder_alignment"
       ],
-      "linked_source_fact_ids": ["fact_exec_001"],
+      "linked_source_fact_ids": ["fact_exec_001", "fact_consulting_001"],
       "graph_lineage_refs": ["ccb_engineering_leadership"],
       "seniority_signal": "svp_engineering_operating_model",
       "technical_specificity_signal": "medium",

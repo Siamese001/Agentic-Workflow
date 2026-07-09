@@ -35,6 +35,10 @@ from apps_rg.runtime.section_evidence_package import (
     SUBPHASE_COVERAGE_INDEX_ARTIFACT,
 )
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
+from apps_rg.runtime.spine.section_x3_finalize import (
+    FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
+    FINAL_MATERIALIZED_ACCEPTANCE_GATE_ID,
+)
 
 pytestmark = pytest.mark.e2e
 
@@ -222,14 +226,30 @@ def _seed_modular_lane(repo: Path, integrated: Path, lane: str) -> Path:
     run_id = "r1"
     run_dir = integrated / "modular_r4" / "sections" / lane / "real" / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
+    x2_payload = _x2_payload(lane)
+    x2_pass = not bool(x2_payload["failed_gates"])
 
     _write_json(run_dir / "l2_output.json", _l2_payload(lane, run_id))
     _write_json(run_dir / "run_manifest.json", _run_manifest(lane, run_id=run_id))
     _write_json(run_dir / "provider_request.json", _run_manifest(lane, run_id=run_id))
-    _write_json(run_dir / "x2_gate_outputs.json", _x2_payload(lane))
+    _write_json(run_dir / "x2_gate_outputs.json", x2_payload)
     _write_json(run_dir / "x1d_llm_judge_outputs.json", _x1d_payload())
     _write_json(run_dir / "x3_disposition.json", _x3_payload(lane))
     _write_json(run_dir / EXIT_DISPOSITION_RECEIPT_ARTIFACT, _x3_payload(lane))
+    _write_json(
+        run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
+        {
+            "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
+            "section_id": lane,
+            "gate_id": FINAL_MATERIALIZED_ACCEPTANCE_GATE_ID,
+            "pass": x2_pass,
+            "failure_reasons": [] if x2_pass else ["x2_gate_outputs_failed"],
+            "x2_all_pass": x2_pass,
+            "runtime_generation_status": "MOCKED",
+            "test_harness_only": True,
+            "product_proof_claimed": False,
+        },
+    )
     _write_json(
         run_dir / "l6_shadow_eval_package.json",
         {"offline_only": True, "runtime_generation_status": "MOCKED", "test_harness_only": True},

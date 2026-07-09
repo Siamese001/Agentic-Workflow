@@ -302,6 +302,29 @@ def _rows_digest(rows: Sequence[PromotedFactRow]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
+def _state_diffs_digest(state_diffs: list[Any]) -> str:
+    from agentic_core.L4_state.uwg.durable_write_gateway import compute_state_diffs_digest
+
+    return compute_state_diffs_digest(state_diffs)
+
+
+def _commit_request_signature(
+    *,
+    commit_request_id: str,
+    state_diff_hash: str,
+    clearance_proof_id: str,
+) -> str:
+    from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
+
+    return compute_deterministic_digest(
+        {
+            "commit_request_id": commit_request_id,
+            "staged_diff_hash": state_diff_hash,
+            "clearance_proof_id": clearance_proof_id,
+        }
+    )
+
+
 def _build_fact_vectors_uwg_commit_bundle(
     *,
     rows: Sequence[PromotedFactRow],
@@ -372,12 +395,15 @@ def _build_fact_vectors_uwg_commit_bundle(
     ]
     if request.x3_code:
         gate_refs.append(f"x3:{request.x3_code}")
+    commit_request_id = f"cr:apps-rg-fact-vectors:{row_digest[:16]}"
+    clearance_proof_id = (
+        "x3_disposition.json" if request.x3_code else "fact_vectors_promotion_gate"
+    )
+    state_diff_hash = _state_diffs_digest([state_diff])
     commit_request = stamp_digest(
         CommitRequest(
-            commit_request_id=f"cr:apps-rg-fact-vectors:{row_digest[:16]}",
-            cleared_exit_review_packet_ref="x3_disposition.json"
-            if request.x3_code
-            else "fact_vectors_promotion_gate",
+            commit_request_id=commit_request_id,
+            cleared_exit_review_packet_ref=clearance_proof_id,
             request_id=request_id,
             run_id=run_id,
             trace_root=trace_root,
@@ -394,6 +420,19 @@ def _build_fact_vectors_uwg_commit_bundle(
             affected_state_surfaces=(FACT_VECTORS_UWG_TARGET_SURFACE,),
             expected_read_surface_refreshes=("fact_vectors_chroma_projection",),
             audit_refs=(request.receipt_path or PROMOTION_RECEIPT_NAME,),
+            registry_digest_set=(
+                f"registry:policy:{policy_hash}",
+                f"registry:blueprint:{blueprint_hash}",
+            ),
+            capability_token_ref=f"capability:apps_rg:fact-vectors:{run_id}",
+            clearance_proof_id=clearance_proof_id,
+            validator_receipt_id=f"validator:apps-rg-fact-vectors:{run_id}",
+            staged_diff_hash=state_diff_hash,
+            commit_request_signature=_commit_request_signature(
+                commit_request_id=commit_request_id,
+                state_diff_hash=state_diff_hash,
+                clearance_proof_id=clearance_proof_id,
+            ),
         )
     )
     return commit_request, [state_diff], rollback, refresh

@@ -117,8 +117,8 @@ judge_models:
 # They are advisory/non-proof receipts and must never satisfy X1D proof gates.
 selector_models:
   competencies_graph_pool_selector:
-    provider_key: anthropic_claude
-    model: claude-sonnet-5
+    provider_key: openai_chatgpt
+    model: gpt-5.5
   employment_bullet_pool_selector:
     provider_key: anthropic_claude
     model: claude-sonnet-5

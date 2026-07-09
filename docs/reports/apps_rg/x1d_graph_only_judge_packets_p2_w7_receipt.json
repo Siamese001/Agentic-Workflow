@@ -1,6 +1,6 @@
 {
   "schema": "x1d_graph_only_judge_packets_p2_w7_v1",
-  "generated_at": "2026-06-17T16:09:49Z",
+  "generated_at": "2026-07-09T10:04:08Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P2-W7",
   "executive_summary_judge_packet": "apps_rg/runtime/judges/executive_summary_judge_packet.py",

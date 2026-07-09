@@ -14,7 +14,7 @@
     ],
     "w4a_hardened": true,
     "pillar_count": 29,
-    "skill_row_count": 223,
+    "skill_row_count": 254,
     "deep_agentic_row_count": 78,
     "capability_domain_count": 14,
     "last_updated": "2026-06-12",
@@ -336,7 +336,7 @@
     "graph_skills_quality_w3": {
       "plan_id": "graph-skills-quality-enhancement-c4e8a1",
       "schema_tag": "master_skills_arsenal_graph_v2_quality",
-      "applied_at": "2026-06-12T11:31:00Z"
+      "applied_at": "2026-07-09T09:45:09Z"
     },
     "draft_skill_promotion_brown_wave": {
       "applied_at": "2026-05-27T12:26:11Z",
@@ -488,7 +488,7 @@
     {
       "node_id": "identity_amit_ayer_governed_ai_platform_leader",
       "node_type": "identity_north_star",
-      "label": "Amit Ayer — Governed AI Platform Leader",
+      "label": "Amit Ayer \u2014 Governed AI Platform Leader",
       "description": "Governed AI platform and agentic runtime engineering leader with actuarial, derivatives, risk, governance, AWS/cloud, partner GTM, revenue, and commercialization depth.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -613,7 +613,7 @@
       "node_id": "pillar_partner_gtm_alliances",
       "node_type": "domain_pillar",
       "label": "Partner GTM / Alliances",
-      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM–AWS alliance motions.",
+      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM\u2013AWS alliance motions.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -714,7 +714,7 @@
       "node_id": "pillar_actuarial_foundation",
       "node_type": "domain_pillar",
       "label": "Actuarial Foundation",
-      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software—not credential label only.",
+      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software\u2014not credential label only.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -926,7 +926,7 @@
       "node_id": "pillar_insurance_carrier_transformation",
       "node_type": "domain_pillar",
       "label": "Insurance Carrier Technology Transformation",
-      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption — middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
+      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption \u2014 middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -943,7 +943,7 @@
       "node_id": "pillar_underwriting_claims_ops_ai",
       "node_type": "domain_pillar",
       "label": "Insurance Systems Resilience (Internal Traversal)",
-      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals — does not assert underwriting/claims/policy-admin AI product ownership.",
+      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals \u2014 does not assert underwriting/claims/policy-admin AI product ownership.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -958,7 +958,7 @@
       "node_id": "pillar_insurer_it_strategy_ai_enablement",
       "node_type": "domain_pillar",
       "label": "Insurer IT Strategy & AI Enablement",
-      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts — not brokerage distribution.",
+      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts \u2014 not brokerage distribution.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -975,7 +975,7 @@
       "node_id": "pillar_enterprise_portfolio_governance",
       "node_type": "domain_pillar",
       "label": "Enterprise Portfolio & Data Governance",
-      "description": "Enterprise portfolio governance, data catalogs, and executive alignment — EY/regulatory program and governance facts.",
+      "description": "Enterprise portfolio governance, data catalogs, and executive alignment \u2014 EY/regulatory program and governance facts.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -991,7 +991,7 @@
       "node_id": "pillar_banking_platform_responsible_ai",
       "node_type": "domain_pillar",
       "label": "Banking Platform & Responsible AI (Regulated)",
-      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance — not transaction banking product lines.",
+      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance \u2014 not transaction banking product lines.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -1007,7 +1007,7 @@
       "node_id": "pillar_interoperability_integration_ecosystem",
       "node_type": "domain_pillar",
       "label": "Interoperability & Integration Platform",
-      "description": "Microservices and integration-platform patterns for regulated enterprises — not insurance brokerage distribution.",
+      "description": "Microservices and integration-platform patterns for regulated enterprises \u2014 not insurance brokerage distribution.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -1022,7 +1022,7 @@
       "node_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "node_type": "domain_pillar",
       "label": "Hyperscaler Alliance & Co-Sell GTM",
-      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue — not cloud marketplace listing GTM (no marketplace evidence).",
+      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue \u2014 not cloud marketplace listing GTM (no marketplace evidence).",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -1040,7 +1040,7 @@
       "node_id": "pillar_applied_ai_partner_architecture",
       "node_type": "domain_pillar",
       "label": "Applied AI Partner Architecture",
-      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture — distinct from generic quota-carrying partner sales.",
+      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture \u2014 distinct from generic quota-carrying partner sales.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -1687,7 +1687,7 @@
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "IBM–AWS alliance for financial services"
+        "IBM\u2013AWS alliance for financial services"
       ],
       "user_confirmed": true,
       "role_family_weights": {
@@ -1695,7 +1695,7 @@
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "forbidden_phrases": [],
@@ -3484,7 +3484,7 @@
       "human_confirmation_required": false,
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "regulated_financial_institutions_fluency",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -5301,7 +5301,7 @@
       "node_id": "track_actuarial_risk_derivatives",
       "node_type": "career_track",
       "label": "Track Actuarial Risk Derivatives",
-      "description": "Career track TRACK_ACTUARIAL_RISK_DERIVATIVES (2002–2010)",
+      "description": "Career track TRACK_ACTUARIAL_RISK_DERIVATIVES (2002\u20132010)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5320,7 +5320,7 @@
       "node_id": "track_data_tech_cloud_ml",
       "node_type": "career_track",
       "label": "Track Data Tech Cloud Ml",
-      "description": "Career track TRACK_DATA_TECH_CLOUD_ML (2010–2022)",
+      "description": "Career track TRACK_DATA_TECH_CLOUD_ML (2010\u20132022)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5339,7 +5339,7 @@
       "node_id": "track_genai_agentic",
       "node_type": "career_track",
       "label": "Track Genai Agentic",
-      "description": "Career track TRACK_GENAI_AGENTIC (2022–present)",
+      "description": "Career track TRACK_GENAI_AGENTIC (2022\u2013present)",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -5357,7 +5357,7 @@
     {
       "node_id": "employment_exp_unify_001",
       "node_type": "employment",
-      "label": "Unify Consulting — SVP Engineering, Agentic AI Platforms",
+      "label": "Unify Consulting \u2014 SVP Engineering, Agentic AI Platforms",
       "description": "Led the platform roadmap, core systems architecture, and commercialization of a production-grade generative AI Solution Accelerator within a consulting firm, serving Fortune 500 financial institutions and converting bespoke client delivery into reusable IP deployed across enterprise lines of business.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5380,7 +5380,7 @@
     {
       "node_id": "employment_exp_ibm_001",
       "node_type": "employment",
-      "label": "IBM — Partner",
+      "label": "IBM \u2014 Partner",
       "description": "Led architecture and commercial ownership of a $30M cloud and AI transformation portfolio, serving as systems architect for Fortune 500 financial institutions migrating to distributed cloud-native data platforms enabling governed analytics and enterprise AI adoption.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5403,7 +5403,7 @@
     {
       "node_id": "employment_exp_insurtech_001",
       "node_type": "employment",
-      "label": "InsurTech Cloud Solutions — Chief Technology Officer",
+      "label": "InsurTech Cloud Solutions \u2014 Chief Technology Officer",
       "description": "Founded and led a cloud-native engineering firm modernizing legacy insurance technology stacks for middle-market insurers, enabling faster delivery, stronger controls, and greater operating agility.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5426,7 +5426,7 @@
     {
       "node_id": "employment_exp_ey_001",
       "node_type": "employment",
-      "label": "Ernst & Young — Principal",
+      "label": "Ernst & Young \u2014 Principal",
       "description": "Led a $18M regulatory analytics modernization program for global banks, transforming cost-center audit functions into value-added predictive risk capabilities with stronger lineage and controls.",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
@@ -5449,8 +5449,8 @@
     {
       "node_id": "employment_exp_early_career_001",
       "node_type": "employment",
-      "label": "Early Career Roles — Actuarial Consultant and Quantitative Roles",
-      "description": "Early Career Roles — Actuarial Consultant and Quantitative Roles",
+      "label": "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
+      "description": "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
       "support_level": "DERIVED_SUPPORTED",
       "visibility_rule": "role_family_match",
       "activation_status": "DRAFT",
@@ -20210,7 +20210,7 @@
       "edge_type": "pillar_phase_bridge",
       "source_node_id": "pillar_insurance_carrier_transformation",
       "target_node_id": "pillar_underwriting_claims_ops_ai",
-      "rationale": "Directional internal bridge to resilience pillar — external claims blocked.",
+      "rationale": "Directional internal bridge to resilience pillar \u2014 external claims blocked.",
       "projection_behavior": "graph_traversal_forward",
       "external_claim_policy": "internal_traversal_only",
       "validation_status": "validated",
@@ -20331,7 +20331,7 @@
       "edge_type": "pillar_phase_bridge",
       "source_node_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "target_node_id": "pillar_partner_gtm_alliances",
-      "rationale": "Co-sell/alliance traversal to partner GTM pillar — not cloud marketplace listing (marketplace phrase blocked on pillar).",
+      "rationale": "Co-sell/alliance traversal to partner GTM pillar \u2014 not cloud marketplace listing (marketplace phrase blocked on pillar).",
       "projection_behavior": "graph_traversal_forward",
       "external_claim_policy": "internal_traversal_only",
       "validation_status": "validated",
@@ -28061,7 +28061,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Layered L0–L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
+        "Layered L0\u2013L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
       ],
       "fact_id_links": [
         "fact_engineering_platform_001"
@@ -28838,7 +28838,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Multi-step quality loops: L2 propose → X2 gates → X1D judges → X3 disposition."
+        "Multi-step quality loops: L2 propose \u2192 X2 gates \u2192 X1D judges \u2192 X3 disposition."
       ],
       "fact_id_links": [
         "fact_engineering_platform_003"
@@ -32264,7 +32264,7 @@
     {
       "pillar_id": "pillar_partner_gtm_alliances",
       "name": "Partner GTM / Alliances",
-      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM–AWS alliance motions.",
+      "description": "Channel programs, strategic alliances, ecosystem GTM, IBM\u2013AWS alliance motions.",
       "subskills": [
         "channel_program_build",
         "strategic_alliances",
@@ -32280,7 +32280,7 @@
       ],
       "allowed_phrases": [
         "global AI channel program",
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "strategic alliances",
         "partner-derived revenue"
       ],
@@ -32304,7 +32304,7 @@
       },
       "archive_snippets": [
         "Built a global AI channel program from inception",
-        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance",
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance",
         "generate 3 million dollars in partner-derived revenue"
       ],
       "evidence_sources": [
@@ -32586,7 +32586,7 @@
     {
       "pillar_id": "pillar_actuarial_foundation",
       "name": "Actuarial Foundation",
-      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software—not credential label only.",
+      "description": "FSA, early-career actuarial depth, stochastic modeling, actuarial software\u2014not credential label only.",
       "subskills": [
         "fsa_credential",
         "stochastic_modeling",
@@ -32626,7 +32626,7 @@
         "early_career": true
       },
       "archive_snippets": [
-        "eight years cultivating quant rigor—earning my Fellow of the Society of Actuaries credential",
+        "eight years cultivating quant rigor\u2014earning my Fellow of the Society of Actuaries credential",
         "sale and rollout of specialized actuarial software",
         "stochastic modeling, multi-Greek hedging, and pricing of complex derivatives while completing Fellowship requirements"
       ],
@@ -33289,7 +33289,7 @@
     {
       "pillar_id": "pillar_insurance_carrier_transformation",
       "name": "Insurance Carrier Technology Transformation",
-      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption — middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
+      "description": "Legacy insurance technology modernization and regulated insurer cloud adoption \u2014 middle-market carrier fluency from InsurTech employment; not carrier underwriting/claims ownership.",
       "subskills": [
         "legacy_cloud_modernization",
         "regulated_insurer_controls",
@@ -33343,7 +33343,7 @@
     {
       "pillar_id": "pillar_underwriting_claims_ops_ai",
       "name": "Insurance Systems Resilience (Internal Traversal)",
-      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals — does not assert underwriting/claims/policy-admin AI product ownership.",
+      "description": "Internal-only traversal pillar for legacy insurance platform resilience signals \u2014 does not assert underwriting/claims/policy-admin AI product ownership.",
       "subskills": [
         "platform_resilience_internal"
       ],
@@ -33386,7 +33386,7 @@
     {
       "pillar_id": "pillar_insurer_it_strategy_ai_enablement",
       "name": "Insurer IT Strategy & AI Enablement",
-      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts — not brokerage distribution.",
+      "description": "Insurer IT strategy, cloud data platforms, and AI enablement from InsurTech CTO and engineering platform facts \u2014 not brokerage distribution.",
       "subskills": [
         "it_strategy",
         "cloud_enablement",
@@ -33435,7 +33435,7 @@
     {
       "pillar_id": "pillar_enterprise_portfolio_governance",
       "name": "Enterprise Portfolio & Data Governance",
-      "description": "Enterprise portfolio governance, data catalogs, and executive alignment — EY/regulatory program and governance facts.",
+      "description": "Enterprise portfolio governance, data catalogs, and executive alignment \u2014 EY/regulatory program and governance facts.",
       "subskills": [
         "portfolio_governance",
         "data_catalogs",
@@ -33477,7 +33477,7 @@
     {
       "pillar_id": "pillar_banking_platform_responsible_ai",
       "name": "Banking Platform & Responsible AI (Regulated)",
-      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance — not transaction banking product lines.",
+      "description": "Regulated financial-institutions platform fluency, Basel/CCAR lineage, and responsible AI governance \u2014 not transaction banking product lines.",
       "subskills": [
         "basel_ccar_lineage",
         "responsible_ai_governance",
@@ -33529,7 +33529,7 @@
     {
       "pillar_id": "pillar_interoperability_integration_ecosystem",
       "name": "Interoperability & Integration Platform",
-      "description": "Microservices and integration-platform patterns for regulated enterprises — not insurance brokerage distribution.",
+      "description": "Microservices and integration-platform patterns for regulated enterprises \u2014 not insurance brokerage distribution.",
       "subskills": [
         "microservices_integration",
         "cloud_native_integration"
@@ -33574,7 +33574,7 @@
     {
       "pillar_id": "pillar_hyperscaler_marketplace_partner_gtm",
       "name": "Hyperscaler Alliance & Co-Sell GTM",
-      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue — not cloud marketplace listing GTM (no marketplace evidence).",
+      "description": "Hyperscaler alliances (IBM/AWS), AWS partner accreditations, alliance co-sell motions, and partner-derived revenue \u2014 not cloud marketplace listing GTM (no marketplace evidence).",
       "subskills": [
         "aws_partner_accreditation",
         "hyperscaler_alliance_co_sell",
@@ -33592,7 +33592,7 @@
         "hyperscaler alliances",
         "co-sell",
         "co-selling",
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "partner-derived revenue",
         "Databricks Lakehouse Fundamentals"
       ],
@@ -33642,7 +33642,7 @@
     {
       "pillar_id": "pillar_applied_ai_partner_architecture",
       "name": "Applied AI Partner Architecture",
-      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture — distinct from generic quota-carrying partner sales.",
+      "description": "Partner-applied reference architectures, joint AI solution development, solution accelerators, and presales solution architecture \u2014 distinct from generic quota-carrying partner sales.",
       "subskills": [
         "reference_architectures",
         "joint_ai_solutions",
@@ -35172,7 +35172,7 @@
         "Partnerships & Alliances - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "IBM–AWS alliance for financial services"
+        "IBM\u2013AWS alliance for financial services"
       ],
       "user_confirmed": true,
       "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
@@ -35181,7 +35181,7 @@
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "forbidden_phrases": [],
@@ -36685,17 +36685,17 @@
         "Partnerships_Alliances_-_Amit_Ayer.txt"
       ],
       "source_snippets": [
-        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
+        "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%"
       ],
       "user_confirmed": true,
-      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "support_level": "DERIVED_SUPPORTED",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "SALES_STRATEGIC_ACCOUNTS": 1.0,
         "AI_SOLUTIONS_ARCHITECTURE": 1.0
       },
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "20% joint revenue",
         "AI-driven sales frameworks"
       ],
@@ -36765,7 +36765,7 @@
         "Forged relationships with leading cloud and AI vendors, combining market influence with innovative solution roadmaps"
       ],
       "user_confirmed": true,
-      "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+      "support_level": "DERIVED_SUPPORTED",
       "role_family_weights": {
         "PARTNERSHIPS_GTM": 1.0,
         "PRODUCT_TECHNICAL_STRATEGY": 1.0,
@@ -38922,7 +38922,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_legacy_cloud_modernization",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -38988,7 +38988,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_regulated_insurer_controls",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39028,7 +39028,7 @@
         "apps_rg/resume/base/amit_ayer_base_resume_v1.json"
       ],
       "source_snippets": [
-        "Re-architected systems for high availability (99.99% uptime) and real-time ingestion — internal traversal only; no underwriting/claims ops AI ownership."
+        "Re-architected systems for high availability (99.99% uptime) and real-time ingestion \u2014 internal traversal only; no underwriting/claims ops AI ownership."
       ],
       "user_confirmed": true,
       "support_level": "INTERNAL_ONLY",
@@ -39051,7 +39051,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurance_systems_resilience_internal",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39119,7 +39119,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "insurtech_cto_it_enablement",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39183,7 +39183,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "cloud_data_platform_engineering",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39248,7 +39248,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "enterprise_portfolio_data_governance",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39315,7 +39315,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "basel_ccar_lineage_regulatory",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39379,7 +39379,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "banking_ai_governance_controls",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39445,7 +39445,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "regulated_financial_institutions_fluency",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39520,7 +39520,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "microservices_integration_platform",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -39928,7 +39928,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Layered L0–L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
+        "Layered L0\u2013L6 spine: L2 proposes, Exit clears, UWG commits, L4 stores, L6 learns after run boundary."
       ],
       "fact_id_links": [
         "fact_engineering_platform_001"
@@ -40847,7 +40847,7 @@
       ],
       "source_resume_files": [],
       "source_snippets": [
-        "Multi-step quality loops: L2 propose → X2 gates → X1D judges → X3 disposition."
+        "Multi-step quality loops: L2 propose \u2192 X2 gates \u2192 X1D judges \u2192 X3 disposition."
       ],
       "fact_id_links": [
         "fact_engineering_platform_003"
@@ -44670,7 +44670,7 @@
       "projection_behavior": "rank_and_project_facts",
       "career_epoch": "epoch_enterprise_risk_governance",
       "domain_id": "domain_senior_role_w8_w11",
-      "domain": "Senior Role W8–W11 Graph",
+      "domain": "Senior Role W8\u2013W11 Graph",
       "capability": "svp_it_strategy_innovation",
       "source_concepts": [],
       "repo_evidence_files": [],
@@ -44952,7 +44952,7 @@
         "Revenue Operations - Amit Ayer.docx"
       ],
       "source_snippets": [
-        "SaaS metric optimization (ARR, churn, LTV/CAC), enterprise data governance — driving recurring revenue growth",
+        "SaaS metric optimization (ARR, churn, LTV/CAC), enterprise data governance \u2014 driving recurring revenue growth",
         "Drove an additional 5 million dollars in annual recurring subscription contract value by forging multi-year deals aligned with CFO priorities"
       ],
       "user_confirmed": false,
@@ -45601,7 +45601,7 @@
         "DevOps",
         "container orchestration"
       ],
-      "achievement_framing_guidance": "Frame automated_release_pipelines with IBM scope, scanning mechanism, and reliability outcome; metrics only from linked fact_id — do not use 35% or 40% unanchored.",
+      "achievement_framing_guidance": "Frame automated_release_pipelines with IBM scope, scanning mechanism, and reliability outcome; metrics only from linked fact_id \u2014 do not use 35% or 40% unanchored.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
       "narrative_synthesis_guidance": "Synthesize from IBM-employer archive snippets and approved bundles; skill_id is not proof. No archive prose recitation.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
@@ -45872,11 +45872,11 @@
         "fraud detection",
         "financial crime analytics"
       ],
-      "achievement_framing_guidance": "Frame watson_studio_analytics with IBM scope and use case (fraud/AML); single-source — medium confidence only; verify with base resume before metric claims.",
+      "achievement_framing_guidance": "Frame watson_studio_analytics with IBM scope and use case (fraud/AML); single-source \u2014 medium confidence only; verify with base resume before metric claims.",
       "quantification_policy": "No invented numbers; require metric-bound fact_id or approved derivative.",
       "narrative_synthesis_guidance": "Synthesize from single source (Head of Customer Success); verify before use.",
       "claim_verification_policy": "External resume claims allowed only when external_claim_policy permits and fact_id backs metrics.",
-      "zero_hallucination_guardrail": "Do not claim Watson Studio beyond single archive source; medium confidence — fail closed if second source missing.",
+      "zero_hallucination_guardrail": "Do not claim Watson Studio beyond single archive source; medium confidence \u2014 fail closed if second source missing.",
       "confidence_grade": "MEDIUM",
       "confidence_grade_derived": "MEDIUM",
       "graph_hop_path": [
@@ -50881,9 +50881,7 @@
       ],
       "allowed_sections": [
         "competencies",
-        "executive_summary",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "visibility_rule": "internal_runtime_and_resume_when_fact_backed",
       "evidence_risk": "LOW",
@@ -50891,7 +50889,19 @@
       "human_confirmation_required": false,
       "external_claim_policy": "allowed_with_fact_link",
       "metric_bucket": "risk_governance",
-      "business_outcome_bucket": "evidence_quality"
+      "business_outcome_bucket": "evidence_quality",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_agentic_runtime_governance",
+        "skill_c03_metric_heterogeneity_selection",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary",
+        "fact_engineering_platform_003": "primary",
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_c03_reverse_traversal_receipts",
@@ -50926,8 +50936,7 @@
       ],
       "allowed_sections": [
         "competencies",
-        "executive_summary",
-        "experience"
+        "executive_summary"
       ],
       "visibility_rule": "internal_runtime_and_resume_when_fact_backed",
       "evidence_risk": "LOW",
@@ -50935,7 +50944,18 @@
       "human_confirmation_required": false,
       "external_claim_policy": "allowed_with_fact_link",
       "metric_bucket": "platform_scale",
-      "business_outcome_bucket": "evidence_binding"
+      "business_outcome_bucket": "evidence_binding",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_agentic_runtime_governance",
+        "skill_c03_reverse_traversal_receipts",
+        "fact_engineering_platform_001"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_001": "primary",
+        "fact_engineering_platform_006": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_001"
     },
     {
       "skill_id": "skill_c03_sibling_skill_rejection_reasoning",
@@ -50970,8 +50990,7 @@
       ],
       "allowed_sections": [
         "competencies",
-        "executive_summary",
-        "experience"
+        "executive_summary"
       ],
       "visibility_rule": "internal_runtime_and_resume_when_fact_backed",
       "evidence_risk": "LOW",
@@ -50979,7 +50998,18 @@
       "human_confirmation_required": false,
       "external_claim_policy": "allowed_with_fact_link",
       "metric_bucket": "delivery_velocity",
-      "business_outcome_bucket": "selection_quality"
+      "business_outcome_bucket": "selection_quality",
+      "graph_hop_path": [
+        "track_unknown",
+        "pillar_agentic_runtime_governance",
+        "skill_c03_sibling_skill_rejection_reasoning",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary",
+        "fact_engineering_platform_004": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill:c03:agentic_runtime_orchestration",
@@ -50990,10 +51020,8 @@
         "runtime observability"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51036,7 +51064,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_agentic_runtime_governance",
+        "skill:c03:agentic_runtime_orchestration",
+        "fact_engineering_platform_006"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_006": "primary",
+        "fact_engineering_platform_001": "primary",
+        "fact_governance_003": "primary",
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_006"
     },
     {
       "skill_id": "skill:c03:agentic_policy_gate_design",
@@ -51047,10 +51088,8 @@
         "agent authorization boundaries"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51094,7 +51133,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_agentic_runtime_governance",
+        "skill:c03:agentic_policy_gate_design",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary",
+        "fact_quant_hpc_001": "primary",
+        "fact_insurance_software_001": "primary",
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill:c03:agent_trace_observability",
@@ -51105,10 +51157,8 @@
         "shadow evaluation"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51151,7 +51201,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_agentic_runtime_governance",
+        "skill:c03:agent_trace_observability",
+        "bul_insurtech_003"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_003": "primary",
+        "fact_consulting_001": "primary",
+        "fact_engineering_platform_003": "primary",
+        "fact_ey_guidewire_001": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_003"
     },
     {
       "skill_id": "skill:c03:graph_retrieval_traversal_design",
@@ -51162,10 +51225,8 @@
         "frontier expansion"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51208,7 +51269,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_graph_retrieval_evidence",
+        "skill:c03:graph_retrieval_traversal_design",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary",
+        "fact_revenue_ops_001": "primary",
+        "fact_exec_001": "primary",
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill:c03:evidence_binding_provenance",
@@ -51219,10 +51293,8 @@
         "source authority"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51265,7 +51337,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_graph_retrieval_evidence",
+        "skill:c03:evidence_binding_provenance",
+        "bul_insurtech_002"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_002": "primary",
+        "fact_governance_004": "primary",
+        "fact_governance_001": "primary",
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_002"
     },
     {
       "skill_id": "skill:c03:retrieval_quality_guardrails",
@@ -51276,10 +51361,8 @@
         "citation contracts"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51321,7 +51404,18 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_graph_retrieval_evidence",
+        "skill:c03:retrieval_quality_guardrails",
+        "fact_engineering_platform_003"
+      ],
+      "link_class_by_fact": {
+        "fact_engineering_platform_003": "primary",
+        "fact_credit_001": "primary"
+      },
+      "source_ledger_ref": "fact_engineering_platform_003"
     },
     {
       "skill_id": "skill:c03:llm_platform_latency_engineering",
@@ -51332,10 +51426,8 @@
         "serving efficiency"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51376,7 +51468,17 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_ai_platform_engineering",
+        "skill:c03:llm_platform_latency_engineering",
+        "fact_quant_hpc_002"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_002": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_002"
     },
     {
       "skill_id": "skill:c03:mlops_release_governance",
@@ -51387,10 +51489,8 @@
         "deployment acceleration"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51433,7 +51533,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_ai_platform_engineering",
+        "skill:c03:mlops_release_governance",
+        "fact_consulting_002"
+      ],
+      "link_class_by_fact": {
+        "fact_consulting_002": "primary",
+        "bul_insurtech_001": "primary",
+        "fact_sales_accounts_001": "primary",
+        "fact_partnerships_gtm_004": "primary"
+      },
+      "source_ledger_ref": "fact_consulting_002"
     },
     {
       "skill_id": "skill:c03:data_platform_lineage_architecture",
@@ -51444,10 +51557,8 @@
         "audit-ready data flow"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51490,7 +51601,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_ai_platform_engineering",
+        "skill:c03:data_platform_lineage_architecture",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary",
+        "fact_revenue_ops_001": "primary",
+        "fact_exec_001": "primary",
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill:c03:model_risk_control_design",
@@ -51501,10 +51625,8 @@
         "regulated AI"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51548,7 +51670,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_regulated_ai_controls",
+        "skill:c03:model_risk_control_design",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary",
+        "fact_quant_hpc_001": "primary",
+        "fact_insurance_software_001": "primary",
+        "fact_governance_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     },
     {
       "skill_id": "skill:c03:actuarial_ai_risk_translation",
@@ -51559,10 +51694,8 @@
         "insurance AI governance"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51605,7 +51738,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_regulated_ai_controls",
+        "skill:c03:actuarial_ai_risk_translation",
+        "fact_partnerships_gtm_005"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_005": "primary",
+        "fact_governance_004": "primary",
+        "fact_governance_001": "primary",
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_005"
     },
     {
       "skill_id": "skill:c03:compliance_audit_readiness",
@@ -51616,10 +51762,8 @@
         "regulatory defensibility"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51662,7 +51806,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_regulated_ai_controls",
+        "skill:c03:compliance_audit_readiness",
+        "bul_insurtech_002"
+      ],
+      "link_class_by_fact": {
+        "bul_insurtech_002": "primary",
+        "fact_governance_004": "primary",
+        "fact_governance_001": "primary",
+        "fact_engineering_platform_003": "primary"
+      },
+      "source_ledger_ref": "bul_insurtech_002"
     },
     {
       "skill_id": "skill:c03:hyperscaler_partner_cosell",
@@ -51673,10 +51830,8 @@
         "partner pipeline"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51719,7 +51874,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_partner_gtm_commercialization",
+        "skill:c03:hyperscaler_partner_cosell",
+        "fact_partnerships_gtm_002"
+      ],
+      "link_class_by_fact": {
+        "fact_partnerships_gtm_002": "primary",
+        "fact_partnerships_gtm_001": "primary",
+        "fact_partnerships_gtm_003": "primary",
+        "fact_solutions_001": "primary"
+      },
+      "source_ledger_ref": "fact_partnerships_gtm_002"
     },
     {
       "skill_id": "skill:c03:ai_solution_value_story",
@@ -51730,10 +51898,8 @@
         "commercial framing"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51777,7 +51943,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_partner_gtm_commercialization",
+        "skill:c03:ai_solution_value_story",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary",
+        "fact_partnerships_gtm_001": "primary",
+        "fact_revenue_ops_001": "primary",
+        "fact_revenue_ops_002": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill:c03:enterprise_adoption_enablement",
@@ -51788,10 +51967,8 @@
         "change leadership"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51834,7 +52011,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_enterprise_delivery_operating_model",
+        "skill:c03:enterprise_adoption_enablement",
+        "fact_sales_accounts_001"
+      ],
+      "link_class_by_fact": {
+        "fact_sales_accounts_001": "primary",
+        "fact_partnerships_gtm_004": "primary",
+        "fact_solutions_001": "primary",
+        "fact_exec_002": "primary"
+      },
+      "source_ledger_ref": "fact_sales_accounts_001"
     },
     {
       "skill_id": "skill:c03:delivery_governance_operating_rhythm",
@@ -51845,10 +52035,8 @@
         "execution cadence"
       ],
       "allowed_sections": [
-        "executive_summary",
         "competencies",
-        "experience",
-        "selected_achievements"
+        "executive_summary"
       ],
       "activation_status": "ACTIVE_CONFIRMED",
       "support_level": "INTERNAL_ONLY",
@@ -51892,7 +52080,20 @@
       ],
       "visibility_rule": "never_external",
       "evidence_risk": "low",
-      "human_confirmation_required": false
+      "human_confirmation_required": false,
+      "graph_hop_path": [
+        "track_unknown",
+        "domain_enterprise_delivery_operating_model",
+        "skill:c03:delivery_governance_operating_rhythm",
+        "fact_quant_hpc_003"
+      ],
+      "link_class_by_fact": {
+        "fact_quant_hpc_003": "primary",
+        "fact_quant_hpc_001": "primary",
+        "fact_sales_accounts_002": "primary",
+        "fact_engineering_platform_001": "primary"
+      },
+      "source_ledger_ref": "fact_quant_hpc_003"
     }
   ],
   "actuarial_career_matrix": [
@@ -52407,12 +52608,12 @@
     },
     {
       "skill": "cloud_partner_ecosystem",
-      "description": "IBM–AWS and multi-vendor ecosystem",
+      "description": "IBM\u2013AWS and multi-vendor ecosystem",
       "source_resume_file": "Partnerships & Alliances - Amit Ayer.docx",
-      "source_evidence": "IBM–AWS alliance for financial services",
+      "source_evidence": "IBM\u2013AWS alliance for financial services",
       "support_status": "DIRECT_FROM_RESUME_ARCHIVE",
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "cloud transformations"
       ],
       "role_relevance": [
@@ -52692,7 +52893,7 @@
       "where_to_use": [
         "executive_summary"
       ],
-      "risk_notes": "Partial P&L wording in archive—do not upgrade to full P&L owner.",
+      "risk_notes": "Partial P&L wording in archive\u2014do not upgrade to full P&L owner.",
       "linked_fact_id": null,
       "skill_id": "skill_partner_pnl_oversight"
     },
@@ -52886,12 +53087,12 @@
     },
     {
       "skill": "ibm_aws_alliance_joint_revenue",
-      "description": "IBM–AWS alliance joint revenue growth frameworks",
+      "description": "IBM\u2013AWS alliance joint revenue growth frameworks",
       "source_resume_file": "Partnerships_Alliances_-_Amit_Ayer.txt",
-      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM–AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
+      "source_evidence": "Held executive responsibility for expanding AI and cloud-focused revenue streams within the IBM\u2013AWS alliance for financial services and designed AI-driven sales frameworks that boosted joint revenue by 20%",
       "support_status": "DERIVED_SUPPORTED",
       "allowed_phrases": [
-        "IBM–AWS alliance",
+        "IBM\u2013AWS alliance",
         "20% joint revenue",
         "AI-driven sales frameworks"
       ],
@@ -53001,7 +53202,7 @@
         "executive_summary",
         "unify_narrative"
       ],
-      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact — not linked to fact_customer_success_001 (LOW).",
+      "risk_notes": "Archive-only; no MEDIUM/HIGH candidate fact \u2014 not linked to fact_customer_success_001 (LOW).",
       "linked_fact_id": null,
       "skill_id": "skill_customer_nrr_predictive_analytics_20pct",
       "target_pillar": "pillar_customer_stakeholder"
@@ -53123,7 +53324,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "MEDIUM; fact_solutions_001 BLOCKED in SRFS audit — graph skill anchor only.",
+      "risk_notes": "MEDIUM; fact_solutions_001 BLOCKED in SRFS audit \u2014 graph skill anchor only.",
       "linked_fact_id": "fact_solutions_001",
       "skill_id": "skill_p2_gtm_solution_mapping",
       "target_pillar": "pillar_gtm_presales_motion",
@@ -53297,7 +53498,7 @@
         "competencies",
         "ibm_bullets"
       ],
-      "risk_notes": "MEDIUM; fact_solutions_002 BLOCKED in SRFS audit — graph anchor only.",
+      "risk_notes": "MEDIUM; fact_solutions_002 BLOCKED in SRFS audit \u2014 graph anchor only.",
       "linked_fact_id": "fact_solutions_002",
       "skill_id": "skill_p2_tech_reference_architecture",
       "target_pillar": "pillar_technical_presales_accelerators",
@@ -53474,7 +53675,7 @@
         "competencies",
         "ibm_bullets"
       ],
-      "risk_notes": "Policy-admin systems mentioned as legacy modernization target only — not ownership of policy-admin product.",
+      "risk_notes": "Policy-admin systems mentioned as legacy modernization target only \u2014 not ownership of policy-admin product.",
       "linked_fact_id": "bul_insurtech_001",
       "evidence_confidence": "HIGH"
     },
@@ -53510,14 +53711,14 @@
       "target_pillar": "pillar_underwriting_claims_ops_ai",
       "career_epoch": "epoch_cloud_data_platform_engineering",
       "source_resume_file": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
-      "source_evidence": "Re-architected systems for high availability (99.99% uptime) and real-time ingestion — internal traversal only; no underwriting/claims ops AI ownership.",
+      "source_evidence": "Re-architected systems for high availability (99.99% uptime) and real-time ingestion \u2014 internal traversal only; no underwriting/claims ops AI ownership.",
       "support_status": "INTERNAL_ONLY",
       "allowed_phrases": [],
       "role_relevance": [
         "INSURANCE_CARRIER_TRANSFORMATION"
       ],
       "where_to_use": [],
-      "risk_notes": "Source bullet references underwriting systems — forbidden for external claims; INTERNAL_ONLY.",
+      "risk_notes": "Source bullet references underwriting systems \u2014 forbidden for external claims; INTERNAL_ONLY.",
       "linked_fact_id": "bul_insurtech_003",
       "evidence_confidence": "LOW"
     },
@@ -53543,7 +53744,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "InsurTech employment spine — exp_insurtech_001.",
+      "risk_notes": "InsurTech employment spine \u2014 exp_insurtech_001.",
       "linked_fact_id": "exp_insurtech_001",
       "evidence_confidence": "HIGH"
     },
@@ -53592,7 +53793,7 @@
         "executive_summary",
         "competencies"
       ],
-      "risk_notes": "fact_governance_004 MEDIUM — DRAFT until human confirm.",
+      "risk_notes": "fact_governance_004 MEDIUM \u2014 DRAFT until human confirm.",
       "linked_fact_id": "fact_governance_004",
       "evidence_confidence": "MEDIUM"
     },
@@ -53619,7 +53820,7 @@
         "competencies",
         "unify_bullets"
       ],
-      "risk_notes": "fact_governance_003 HIGH candidate — human_confirm per ledger policy.",
+      "risk_notes": "fact_governance_003 HIGH candidate \u2014 human_confirm per ledger policy.",
       "linked_fact_id": "fact_governance_003",
       "evidence_confidence": "HIGH"
     },
@@ -53643,7 +53844,7 @@
       "where_to_use": [
         "executive_summary"
       ],
-      "risk_notes": "fact_governance_001 MEDIUM — not transaction-banking product scope.",
+      "risk_notes": "fact_governance_001 MEDIUM \u2014 not transaction-banking product scope.",
       "linked_fact_id": "fact_governance_001",
       "evidence_confidence": "MEDIUM"
     },
@@ -53669,7 +53870,7 @@
         "competencies",
         "ibm_narrative"
       ],
-      "risk_notes": "Broad regulated-enterprise fluency — not payments/liquidity/trade claims.",
+      "risk_notes": "Broad regulated-enterprise fluency \u2014 not payments/liquidity/trade claims.",
       "linked_fact_id": null,
       "evidence_confidence": "HIGH"
     },
@@ -53694,7 +53895,7 @@
         "competencies",
         "unify_bullets"
       ],
-      "risk_notes": "W11 interoperability via platform integration evidence — not brokerage distribution.",
+      "risk_notes": "W11 interoperability via platform integration evidence \u2014 not brokerage distribution.",
       "linked_fact_id": "fact_engineering_platform_002",
       "evidence_confidence": "MEDIUM"
     },
@@ -55061,7 +55262,7 @@
         "unify_bullets",
         "competencies"
       ],
-      "risk_notes": "fact_partnerships_gtm_001 MEDIUM — human confirmation before external MEDIUM claim.",
+      "risk_notes": "fact_partnerships_gtm_001 MEDIUM \u2014 human confirmation before external MEDIUM claim.",
       "linked_fact_id": "fact_partnerships_gtm_001",
       "evidence_confidence": "MEDIUM"
     },
@@ -55101,17 +55302,17 @@
     },
     {
       "item_id": "skill_partner_cloud_partner_ecosystem",
-      "topic": "IBM–AWS alliance",
+      "topic": "IBM\u2013AWS alliance",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "Partnerships archive IBM–AWS alliance line."
+      "notes": "Partnerships archive IBM\u2013AWS alliance line."
     },
     {
       "item_id": "skill_partner_co_selling",
       "topic": "Co-sell with SI/ISV",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM — not marketplace co-sell."
+      "notes": "Archive co-selling frameworks; fact_partnerships_gtm_003 MEDIUM \u2014 not marketplace co-sell."
     },
     {
       "item_id": "skill_partner_partner_engineering",
@@ -55139,7 +55340,7 @@
       "topic": "Hyperscaler alliance co-sell",
       "evidence_class": "DIRECT_EVIDENCE",
       "activation_decision": "DRAFT",
-      "notes": "bul_ibm_005 base resume; co-sell/alliance — forbidden: marketplace listing."
+      "notes": "bul_ibm_005 base resume; co-sell/alliance \u2014 forbidden: marketplace listing."
     },
     {
       "item_id": "skill_sr_w12_joint_ai_solution_development",
@@ -55231,7 +55432,7 @@
       "evidence_sources": [
         "internal_only_resilience_signal"
       ],
-      "rationale": "Directional internal bridge to resilience pillar — external claims blocked.",
+      "rationale": "Directional internal bridge to resilience pillar \u2014 external claims blocked.",
       "external_claim_policy": "internal_traversal_only",
       "edge_id": "edge_bridge_insurance_to_underwriting_claims_ops_pillar_insurance_carrier_transformation_to_pillar_underwriting_claims_ops_ai"
     },
@@ -55333,7 +55534,7 @@
       "evidence_fact_ids": [
         "fact_partnerships_gtm_003"
       ],
-      "rationale": "Co-sell/alliance traversal to partner GTM pillar — not cloud marketplace listing (marketplace phrase blocked on pillar).",
+      "rationale": "Co-sell/alliance traversal to partner GTM pillar \u2014 not cloud marketplace listing (marketplace phrase blocked on pillar).",
       "external_claim_policy": "internal_traversal_only",
       "edge_id": "edge_bridge_marketplace_to_partner_gtm_pillar_hyperscaler_marketplace_partner_gtm_to_pillar_partner_gtm_alliances"
     },

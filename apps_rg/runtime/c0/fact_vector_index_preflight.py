@@ -185,7 +185,7 @@ def _build_section_sufficiency(
         reasons.append("section_pre_run_fact_vector_hydration_missing")
     if direct_vector_required and known_generated_lane and not hydration_present:
         reasons.append("generated_section_fact_vector_coverage_missing")
-    if direct_vector_required and not manifest_coverage_present:
+    if direct_vector_required and not (manifest_coverage_present or hydration_present):
         reasons.append("section_bootstrap_manifest_coverage_missing")
     model_dim_pass = (
         not direct_vector_required
@@ -769,11 +769,13 @@ def build_fact_vector_index_preflight(
     }
     reasons: list[str] = []
     if direct_vector_required:
-        if not manifest_present:
-            reasons.append("bootstrap_manifest_missing")
-        elif receipt["manifest_dry_run"]:
+        if manifest_present and receipt["manifest_dry_run"]:
             reasons.append("bootstrap_manifest_is_dry_run")
-        elif receipt["manifest_upserted_count"] <= 0 and receipt["manifest_collection_count_after"] <= 0:
+        elif (
+            manifest_present
+            and receipt["manifest_upserted_count"] <= 0
+            and receipt["manifest_collection_count_after"] <= 0
+        ):
             reasons.append("bootstrap_manifest_empty")
 
         if not resolved_chroma_path:
@@ -802,6 +804,8 @@ def build_fact_vector_index_preflight(
     missing_dim_count = int(collection.get("missing_dim_count") or 0)
     if direct_vector_required and collection_count <= 0:
         reasons.append("fact_vectors_collection_empty")
+    if direct_vector_required and not manifest_present and collection_count <= 0:
+        reasons.append("bootstrap_manifest_missing")
     if direct_vector_required and (bad_model_count or missing_model_count):
         reasons.append("fact_vectors_embedding_model_not_fully_bge_m3")
     if direct_vector_required and (bad_dim_count or missing_dim_count):

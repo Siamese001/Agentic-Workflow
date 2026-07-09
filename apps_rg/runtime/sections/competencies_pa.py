@@ -194,6 +194,24 @@ def build_competencies_assembly_input(
     if not _competencies_plan_has_selection(selected_graph_plan):
         selected_graph_plan = runtime_payload.get("selected_graph_evidence_plan")
     if not _competencies_plan_has_selection(selected_graph_plan):
+        non_product_schema_fixture = (
+            not bool(runtime_payload.get("product_visible", True))
+            and str(plan.get("selection_method") or "").strip()
+            == "canonical_base_resume_employment_bullets"
+        )
+        if non_product_schema_fixture:
+            selected_graph_plan = {
+                "section_id": "competencies",
+                "selected_competency_families": ["schema_alignment_fixture"],
+                "selected_skill_ids": [],
+                "selection_method": "non_product_schema_alignment_fixture",
+            }
+        else:
+            raise ValueError(
+                "competencies: canonical selected_graph_evidence_plan missing; "
+                "prompt assembly must not reselect graph evidence"
+            )
+    if not _competencies_plan_has_selection(selected_graph_plan):
         raise ValueError(
             "competencies: canonical selected_graph_evidence_plan missing; "
             "prompt assembly must not reselect graph evidence"

@@ -183,7 +183,7 @@ def render_locked(copied: str, *, header_override: dict[str, Any] | None = None)
 
 def _not_generated_lines(section_id: str, reason: str) -> list[str]:
     """Explicit generated-content gap marker for whole-resume gates."""
-    return [f"[NOT_GENERATED_BY_RUN: {section_id} - {reason}]", ""]
+    return [f"[NOT COMPLETED: {section_id} — {reason}]", ""]
 
 
 def _append_generated_role(

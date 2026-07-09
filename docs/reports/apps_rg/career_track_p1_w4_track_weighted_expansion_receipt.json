@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-17T23:04:01Z",
+  "generated_at": "2026-07-09T10:04:13Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -1403,164 +1403,68 @@
         "reason": "not_active:DRAFT"
       },
       {
-        "id": "skill_derivatives_structured_derivatives",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:agentic_runtime_orchestration",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_insurance_liabilities_embedded_options",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:agentic_policy_gate_design",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_insurance_liabilities_insurance_liabilities",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:agent_trace_observability",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_greeks_delta",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:graph_retrieval_traversal_design",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_greeks_rho",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:evidence_binding_provenance",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_greeks_convexity",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:retrieval_quality_guardrails",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_capital_reserving",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:llm_platform_latency_engineering",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_partner_partner_engineering",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:mlops_release_governance",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_partner_product_feedback_loops",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:data_platform_lineage_architecture",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_customer_nrr_predictive_analytics_20pct",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:model_risk_control_design",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_customer_satisfaction_nps_25pct",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:actuarial_ai_risk_translation",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_sr_insurance_systems_resilience_internal",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:compliance_audit_readiness",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_meddpicc_sales_qualification",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:hyperscaler_partner_cosell",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_cpq_deal_velocity_automation",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:ai_solution_value_story",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_saas_arr_ltv_cac_metrics",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:enterprise_adoption_enablement",
+        "reason": "not_eligible_for_external_claim"
       },
       {
-        "id": "skill_nps_customer_health_scoring",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_aws_config_change_auditability",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_aws_modernization_pipeline_generation",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_aws_shared_responsibility_model_framing",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_claimcenter_billingcenter_integration",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_cloudwatch_operational_monitoring",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_cost_explorer_budget_forecasting",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_customer_vs_aws_security_raci",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_database_migration_dms_sct",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_early_adopter_insurer_customer_development",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_founder_led_insurtech_sales",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_founder_market_thesis_development",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_guidewire_datahub_infocenter_bi",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_guidewire_insurancesuite_modernization",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_insurance_commissioner_exam_readiness",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_insurance_regulator_cloud_adoption_engagement",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_insurer_executive_buyer_discovery",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_naic_data_security_model_law_readiness",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_nydfs_23nycrr500_cloud_control_alignment",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_policycenter_workflow_mapping",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_pricing_loss_ratio_reporting",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_private_cloud_complexity_objection_handling",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_proposal_sow_development_for_insurers",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_public_vs_private_cloud_tco_framing",
-        "reason": "not_active:DRAFT"
-      },
-      {
-        "id": "skill_reserved_instance_rightsizing_strategy",
-        "reason": "not_active:DRAFT"
+        "id": "skill:c03:delivery_governance_operating_rhythm",
+        "reason": "not_eligible_for_external_claim"
       },
       {
         "id": "skill_derivatives_structured_derivatives",
@@ -1721,6 +1625,294 @@
       {
         "id": "skill_reserved_instance_rightsizing_strategy",
         "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill:c03:agentic_runtime_orchestration",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:agentic_policy_gate_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:agent_trace_observability",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:graph_retrieval_traversal_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:evidence_binding_provenance",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:retrieval_quality_guardrails",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:llm_platform_latency_engineering",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:mlops_release_governance",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:data_platform_lineage_architecture",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:model_risk_control_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:actuarial_ai_risk_translation",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:compliance_audit_readiness",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:hyperscaler_partner_cosell",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:ai_solution_value_story",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:enterprise_adoption_enablement",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:delivery_governance_operating_rhythm",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill_derivatives_structured_derivatives",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_liabilities_embedded_options",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_liabilities_insurance_liabilities",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_greeks_delta",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_greeks_rho",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_greeks_convexity",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_capital_reserving",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_partner_partner_engineering",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_partner_product_feedback_loops",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_nrr_predictive_analytics_20pct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_satisfaction_nps_25pct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_sr_insurance_systems_resilience_internal",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_meddpicc_sales_qualification",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cpq_deal_velocity_automation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_saas_arr_ltv_cac_metrics",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nps_customer_health_scoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_config_change_auditability",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_modernization_pipeline_generation",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_aws_shared_responsibility_model_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_claimcenter_billingcenter_integration",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cloudwatch_operational_monitoring",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_cost_explorer_budget_forecasting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_customer_vs_aws_security_raci",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_database_migration_dms_sct",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_early_adopter_insurer_customer_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_led_insurtech_sales",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_founder_market_thesis_development",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_datahub_infocenter_bi",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_guidewire_insurancesuite_modernization",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_commissioner_exam_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurance_regulator_cloud_adoption_engagement",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_insurer_executive_buyer_discovery",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_naic_data_security_model_law_readiness",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_nydfs_23nycrr500_cloud_control_alignment",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_policycenter_workflow_mapping",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_pricing_loss_ratio_reporting",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_private_cloud_complexity_objection_handling",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_proposal_sow_development_for_insurers",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_public_vs_private_cloud_tco_framing",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill_reserved_instance_rightsizing_strategy",
+        "reason": "not_active:DRAFT"
+      },
+      {
+        "id": "skill:c03:agentic_runtime_orchestration",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:agentic_policy_gate_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:agent_trace_observability",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:graph_retrieval_traversal_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:evidence_binding_provenance",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:retrieval_quality_guardrails",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:llm_platform_latency_engineering",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:mlops_release_governance",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:data_platform_lineage_architecture",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:model_risk_control_design",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:actuarial_ai_risk_translation",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:compliance_audit_readiness",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:hyperscaler_partner_cosell",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:ai_solution_value_story",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:enterprise_adoption_enablement",
+        "reason": "not_eligible_for_external_claim"
+      },
+      {
+        "id": "skill:c03:delivery_governance_operating_rhythm",
+        "reason": "not_eligible_for_external_claim"
       }
     ],
     "graph_hop_paths_sample": [
@@ -1839,7 +2031,7 @@
     },
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:71434de8331de06e",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:f8ccac05a5c1c561",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
@@ -1894,7 +2086,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-06-17T23:04:01.745679+00:00",
+      "generated_at_utc": "2026-07-09T10:04:13.049301+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -1982,9 +2174,9 @@
         "ref:graph:fact_lineage:fact_quant_act_001",
         "ref:graph:fact_lineage:fact_rag_insurance_001"
       ],
-      "graph_sig": "12d3523812b075341f2d421cacc9ca5c",
+      "graph_sig": "9ec718e63acd0e5ba6a238db267160d1",
       "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-      "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
+      "graph_digest": "f8ccac05a5c1c56169088bc6e46fe4317199c2209370a27c41d0fcd083459883",
       "graph_version": "master_skills_arsenal_graph_v1",
       "evidence_items_count": 13,
       "final_evidence_contract_snapshot": {
@@ -2080,9 +2272,9 @@
           "ref:graph:fact_lineage:fact_quant_act_001",
           "ref:graph:fact_lineage:fact_rag_insurance_001"
         ],
-        "graph_sig": "12d3523812b075341f2d421cacc9ca5c",
+        "graph_sig": "9ec718e63acd0e5ba6a238db267160d1",
         "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-        "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
+        "graph_digest": "f8ccac05a5c1c56169088bc6e46fe4317199c2209370a27c41d0fcd083459883",
         "graph_version": "master_skills_arsenal_graph_v1",
         "evidence_items": [
           {
@@ -2203,7 +2395,7 @@
             "career_track": "track_genai_agentic"
           }
         ],
-        "evidence_collection_timestamp": "2026-06-17T23:04:01.745679+00:00",
+        "evidence_collection_timestamp": "2026-07-09T10:04:13.049301+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"
@@ -2261,13 +2453,13 @@
       "graph_hop_bounds_policy_note": "graph_hop_bounds in native_c03_final_evidence.json is ACL policy max depth; exec-summary c03_graphrag_bound materializes TRACK_WEIGHTED_MULTI_HOP paths when pool resolves"
     },
     "graph_ref": "apps_rg\\fact_inventory\\master_skills_arsenal_ledger.json",
-    "graph_digest": "71434de8331de06e171a6cb5a8d52f6f13c01407868eb96392846524a2f310ea",
+    "graph_digest": "f8ccac05a5c1c56169088bc6e46fe4317199c2209370a27c41d0fcd083459883",
     "graph_version": "master_skills_arsenal_graph_v1"
   },
   "c03_binding_proof": {
     "c03_graph_bound_status": "BOUND",
     "c03_binding_surface": "apps_rg/fact_inventory/track_weighted_graph_expansion",
-    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:71434de8331de06e",
+    "c03_graph_expansion_ref": "ref:graph:track_weighted_expansion:f8ccac05a5c1c561",
     "c03_graph_hop_paths_count": 22,
     "c03_selected_tracks": [
       "track_actuarial_risk_derivatives",
