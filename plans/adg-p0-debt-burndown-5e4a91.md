@@ -25,12 +25,12 @@ targets, not by pretending every row can be repaired safely in one patch.
 
 Target sequence:
 
-1. Reduce `2971 -> <= 2614` by removing confirmed scanner false positives
+1. Reduce `2971 -> <= 2347` by removing confirmed scanner false positives
    and non-durable generated-artifact writer rows from the write-sovereignty
    MV producer.
-2. Reduce `<= 2614 -> <= 2500` by promoting high-confidence write-sovereignty
+2. Reduce `<= 2347 -> <= 2000` by promoting high-confidence write-sovereignty
    clusters into owned source-routing waves.
-3. Reduce `<= 2500 -> <= 2000` by addressing G_REACH clusters with real runtime
+3. Reduce `<= 2000 -> <= 1500` by addressing G_REACH clusters with real runtime
    ownership or approved deletion/deprecation.
 4. Continue lowering floors only after source or MV proof reduces actual rows.
 
@@ -41,6 +41,10 @@ with Wave 1's 53 rows, the projected post-regeneration tracked P0 inventory is
 Waves 7-16 remove 80 additional site-scoped rows on the released
 `07082026_2319` snapshot. Combined with Waves 1-6, the projected
 post-regeneration tracked P0 inventory is `2971 - 357 = 2614`.
+
+Waves 17-116 remove 267 additional site-scoped rows on the released
+`07082026_2319` snapshot. Combined with Waves 1-16, the projected
+post-regeneration tracked P0 inventory is `2971 - 624 = 2347`.
 
 ## Waves
 
@@ -404,7 +408,129 @@ Exit:
 - Site-scoped MV test proves configured sites are excluded.
 - Same-symbol different-file test proves future generic writes remain flagged.
 
-### Wave 17: Source Routing for Real Write Clusters
+### Waves 17-116: Site-Scoped Artifact, Proof, and Output Sites
+
+Goal: Remove the next 100 released write-sovereignty rows that are exact
+artifact/proof/output sites, without excluding generic symbols globally.
+
+Selection guard:
+
+- Exclude only exact `(write_symbol, writer_file)` pairs listed below.
+- Keep same-symbol writes in other files visible.
+- Do not include cache stores, secrets, audit trails, HITL replay stores,
+  training stores, or generic file APIs without artifact-site evidence.
+
+Expected reduction on `07082026_2319`: about 267 write-sovereignty rows.
+
+| Wave | Rows | Symbol | Writer file |
+| --- | ---: | --- | --- |
+| W17 | 10 | `write_text` | `apps_rg/runtime/reasoning/bullet_lane_self_consistency.py` |
+| W18 | 10 | `write_text` | `apps_rg/runtime/sections/competencies_lane_execution.py` |
+| W19 | 10 | `write_text` | `apps_rg/runtime/sections/ibm_narrative_lane_execution.py` |
+| W20 | 10 | `write_text` | `apps_rg/runtime/sections/role_episode_lane.py` |
+| W21 | 6 | `path.write_text` | `apps_rg/cache/cache_preflight_evidence.py` |
+| W22 | 6 | `write_text` | `apps_rg/fact_inventory/materialize_career_tracks_p1.py` |
+| W23 | 6 | `write_text` | `apps_rg/runtime/judges/bullet_pool_claude_selector.py` |
+| W24 | 6 | `path.write_text` | `apps_rg/runtime/post_x3_completion.py` |
+| W25 | 6 | `write_text` | `apps_rg/runtime/sections/executive_summary_proof_bundle.py` |
+| W26 | 4 | `path.write_text` | `agentic_core/runtime/entrypoints/integrated_fallback_run.py` |
+| W27 | 4 | `path.write_text` | `agentic_core/runtime/entrypoints/integrated_grounded_read_run.py` |
+| W28 | 4 | `path.write_text` | `agentic_core/runtime/entrypoints/integrated_managed_workflow_real_run.py` |
+| W29 | 4 | `path.write_text` | `agentic_core/runtime/entrypoints/integrated_single_action_run.py` |
+| W30 | 4 | `write_text` | `apps_research/__main__.py` |
+| W31 | 4 | `path.write_text` | `apps_rg/runtime/bindings/section_lane_c0_metrics.py` |
+| W32 | 4 | `write_text` | `apps_rg/runtime/integrated_lane_evidence_packaging.py` |
+| W33 | 4 | `path.write_text` | `apps_rg/runtime/observability/trace_reconciliation.py` |
+| W34 | 4 | `write_text` | `apps_rg/runtime/pre_dispatch_preflight.py` |
+| W35 | 4 | `path.write_text` | `apps_rg/runtime/section_failure_forensics.py` |
+| W36 | 4 | `write_text` | `apps_rg/runtime/sections/executive_summary_candidate_pool.py` |
+| W37 | 4 | `path.write_text` | `apps_rg/runtime/shadow/l6_microstep_observability.py` |
+| W38 | 4 | `write_text` | `apps_underwriting_ai/tools/run_underwriting.py` |
+| W39 | 2 | `path.write_text` | `agentic_core/L2_execution/utils/determinism.py` |
+| W40 | 2 | `target.write_text` | `agentic_core/L3_orchestration/managed_workflow_runner.py` |
+| W41 | 2 | `target.write_text` | `agentic_core/runtime/entry/apps_rg_w9_managed_workflow_e2e.py` |
+| W42 | 2 | `path.write_text` | `agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py` |
+| W43 | 2 | `path.write_text` | `apps_eval/adapters/apps_rg.py` |
+| W44 | 2 | `target.write_text` | `apps_eval/adapters/apps_rg.py` |
+| W45 | 2 | `path.write_text` | `apps_eval/scenarios.py` |
+| W46 | 2 | `path.write_text` | `apps_lic/runtime/dispatch/runtime_proof_bundle.py` |
+| W47 | 2 | `path.write_text` | `apps_lic/runtime/dispatch/stage_receipts.py` |
+| W48 | 2 | `path.write_text` | `apps_research/engines/company_brief_engine.py` |
+| W49 | 2 | `path.write_text` | `apps_research/utils/research_artifact_util.py` |
+| W50 | 2 | `path.write_text` | `apps_rg/cache/r1b_whole_run_preflight.py` |
+| W51 | 2 | `path.write_text` | `apps_rg/fact_inventory/apply_c03_graph_full_zero_loss_overwrite.py` |
+| W52 | 2 | `path.write_text` | `apps_rg/fact_inventory/apply_c03_graph_skill_granularity_hardening.py` |
+| W53 | 2 | `OUT_LEDGER.write_text` | `apps_rg/fact_inventory/apply_commercial_skills_expansion.py` |
+| W54 | 2 | `OUT_LEDGER.write_text` | `apps_rg/fact_inventory/apply_cro_projection_hardening.py` |
+| W55 | 2 | `tmp.write_text` | `apps_rg/fact_inventory/apply_phase1_new_skill_nodes.py` |
+| W56 | 2 | `tmp.write_text` | `apps_rg/fact_inventory/apply_phase1_resume_linkage_remediation.py` |
+| W57 | 2 | `path.write_text` | `apps_rg/fact_inventory/run_w14_senior_role_offline_traversal.py` |
+| W58 | 2 | `write_text` | `apps_rg/fact_inventory/run_w14_senior_role_offline_traversal.py` |
+| W59 | 2 | `path.write_text` | `apps_rg/l2_recipe/modular_resume_generation.py` |
+| W60 | 2 | `path.write_text` | `apps_rg/l2_recipe/modular_rg_output_builder.py` |
+| W61 | 2 | `write_text` | `apps_rg/l2_recipe/steps.py` |
+| W62 | 2 | `path.write_text` | `apps_rg/runtime/c0/evidence_room.py` |
+| W63 | 2 | `write_text` | `apps_rg/runtime/c0/fact_vector_index_preflight.py` |
+| W64 | 2 | `path.write_text` | `apps_rg/runtime/dispatch/spine_stage_receipts.py` |
+| W65 | 2 | `path.write_text` | `apps_rg/runtime/final_resume_outputs.py` |
+| W66 | 2 | `write_text` | `apps_rg/runtime/final_resume_outputs.py` |
+| W67 | 2 | `path.write_text` | `apps_rg/runtime/graph_selection_rationale.py` |
+| W68 | 2 | `path.write_text` | `apps_rg/runtime/graph_skills_run_artifacts.py` |
+| W69 | 2 | `path.write_text` | `apps_rg/runtime/internal/locked_copy_builder.py` |
+| W70 | 2 | `path.write_text` | `apps_rg/runtime/judges/bullet_pool_claude_selector.py` |
+| W71 | 2 | `open` | `apps_rg/runtime/judges/executive_summary_judge_packet.py` |
+| W72 | 2 | `path.write_text` | `apps_rg/runtime/judges/grade_only_judge_packet.py` |
+| W73 | 2 | `path.write_text` | `apps_rg/runtime/locked_copy/locked_copy_x2.py` |
+| W74 | 2 | `path.write_text` | `apps_rg/runtime/mandatory_run_outputs.py` |
+| W75 | 2 | `path.write_text` | `apps_rg/runtime/orchestration/canonical_dispatch.py` |
+| W76 | 2 | `path.write_text` | `apps_rg/runtime/orchestration/patch_run.py` |
+| W77 | 2 | `path.write_text` | `apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py` |
+| W78 | 2 | `write_text` | `apps_rg/runtime/orchestration/section_lane_executor.py` |
+| W79 | 2 | `path.write_text` | `apps_rg/runtime/pre_dispatch_preflight.py` |
+| W80 | 2 | `write_text` | `apps_rg/runtime/providers/section_provider_call.py` |
+| W81 | 2 | `path.write_text` | `apps_rg/runtime/reasoning/bullet_pool_reselection.py` |
+| W82 | 2 | `path.write_text` | `apps_rg/runtime/reasoning/competencies_graph_pool.py` |
+| W83 | 2 | `path.write_text` | `apps_rg/runtime/run_bundle_index.py` |
+| W84 | 2 | `path.write_text` | `apps_rg/runtime/run_correlation_links.py` |
+| W85 | 2 | `path.write_text` | `apps_rg/runtime/runtime_proof_layout.py` |
+| W86 | 2 | `path.write_text` | `apps_rg/runtime/section_l2_spine_receipt.py` |
+| W87 | 2 | `path.write_text` | `apps_rg/runtime/section_l7_binding_lane_integration.py` |
+| W88 | 2 | `path.write_text` | `apps_rg/runtime/section_repair_ledger.py` |
+| W89 | 2 | `path.write_text` | `apps_rg/runtime/sections/executive_summary_evidence_capsule.py` |
+| W90 | 2 | `path.write_text` | `apps_rg/runtime/sections/executive_summary_operator_reporting.py` |
+| W91 | 2 | `path.write_text` | `apps_rg/runtime/sections/executive_summary_regen_dispatch.py` |
+| W92 | 2 | `path.write_text` | `apps_rg/runtime/sections/executive_summary_token_budget.py` |
+| W93 | 2 | `write_text` | `apps_rg/runtime/sections/ibm_narrative_lane_runtime.py` |
+| W94 | 2 | `path.write_text` | `apps_rg/runtime/sections/lane_artifact_io.py` |
+| W95 | 2 | `path.write_text` | `apps_rg/runtime/sections/section_x2_gate_outputs.py` |
+| W96 | 2 | `path.write_text` | `apps_rg/runtime/sections_root_manifest.py` |
+| W97 | 2 | `path.write_text` | `apps_rg/runtime/spine/c0_graph_lane_receipt.py` |
+| W98 | 2 | `path.write_text` | `apps_rg/runtime/spine/l2_handoff_receipt.py` |
+| W99 | 2 | `path.write_text` | `apps_rg/runtime/spine/l6_eval_before_learn_receipt.py` |
+| W100 | 2 | `path.write_text` | `apps_rg/runtime/spine/l6_shadow_eval_runner.py` |
+| W101 | 2 | `path.write_text` | `apps_rg/runtime/spine/section_c0_retrieve.py` |
+| W102 | 2 | `path.write_text` | `apps_rg/runtime/spine/section_x3_finalize.py` |
+| W103 | 2 | `path.write_text` | `apps_rg/runtime/spine/spine_span_emit.py` |
+| W104 | 2 | `path.write_text` | `apps_shared/contracts/cross_app/base.py` |
+| W105 | 2 | `path.write_text` | `apps_shared/spine_emission/context.py` |
+| W106 | 1 | `out_path.open` | `agentic_core/L0_routing/types/routing_contracts_types.py` |
+| W107 | 1 | `brief_path.open` | `agentic_core/runtime/exit/apps_research_exit_binding.py` |
+| W108 | 1 | `metadata_path.open` | `agentic_core/runtime/exit/apps_research_exit_binding.py` |
+| W109 | 1 | `open` | `apps_rg/runtime/judges/executive_summary_x1d.py` |
+| W110 | 1 | `open` | `apps_rg/runtime/judges/executive_summary_x1d_dimension_verdicts.py` |
+| W111 | 1 | `path.write_bytes` | `apps_rg/runtime/reasoning/bullet_pool_reselection.py` |
+| W112 | 1 | `open` | `apps_rg/runtime/sections/executive_summary_generation_grade_contract.py` |
+| W113 | 1 | `open` | `apps_rg/runtime/sections/executive_summary_judge_variance.py` |
+| W114 | 1 | `open` | `apps_rg/runtime/sections/executive_summary_upstream_triangulation.py` |
+| W115 | 1 | `path.open` | `apps_rg/runtime/spine/spine_span_emit.py` |
+| W116 | 1 | `out_path.open` | `apps_rg/tools/fact_vector_ingest.py` |
+
+Exit:
+
+- Site-scoped MV test proves every configured site is excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 117: Source Routing for Real Write Clusters
 
 Goal: Route high-confidence real writes through UWG or sanctioned layer
 authorities.
@@ -418,7 +544,7 @@ Candidate clusters:
 Stop condition: stop for design review if routing changes public contracts,
 runtime persistence semantics, or migration receipts.
 
-### Wave 18: G_REACH Owned Runtime Wiring
+### Wave 118: G_REACH Owned Runtime Wiring
 
 Goal: Reduce L0 reachability debt by wiring or retiring real orphan clusters.
 
