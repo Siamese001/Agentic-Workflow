@@ -261,9 +261,8 @@ Success requires:
 - selected publication work contained in GitHub main
 - origin/main == GitHub main
 - HEAD == origin/main in C:\Git\Agentic-Workflow-FRESH
-- git status --short --branch shows only ## main...origin/main
-- git diff --stat has no output
-- git diff --cached --stat has no output
+- git status --short --branch has no unresolved conflict rows
+- ordinary dirty files on local main are workspace_topology_closeout evidence, not publication failure
 - every completed source branch exact-tip ancestor-contained in origin/main
 - git branch --no-merged origin/main empty, or only explicitly retained branches listed with reason
 - CI green before PR merge
@@ -297,7 +296,7 @@ Include:
 - ancestry-recording merge commits for every superseded/transplanted branch
 - cherry-pick/restore/ours-merge commands and results
 - checks and CI table for every pushed head SHA
-- a proof table with columns requirement, runtime evidence, and result; render the columns as `requirement`, `runtime evidence`, and `result`; include one row for each exact closeout requirement proven by direct runtime evidence. The table must explicitly include rows proving: GitHub PR exists and is merged; selected publication work is contained in GitHub main; origin/main equals GitHub main; HEAD equals origin/main in `C:\Git\Agentic-Workflow-FRESH`; publication_closeout.status is PASS; `git status --short --branch` shows only `## main...origin/main`; `git diff --stat` has no output; `git diff --cached --stat` has no output; every completed source branch exact-tip ancestor-contained in `origin/main`; `git branch --no-merged origin/main` is empty or only explicitly retained branches with reason; CI was green before PR merge; publication readiness with --require-publication-closeout PASS; and workspace_topology_closeout.status PASS or retained-worktree RCA
+- a proof table with columns requirement, runtime evidence, and result; render the columns as `requirement`, `runtime evidence`, and `result`; include one row for each exact closeout requirement proven by direct runtime evidence. The table must explicitly include rows proving: GitHub PR exists and is merged; selected publication work is contained in GitHub main; origin/main equals GitHub main; HEAD equals origin/main in `C:\Git\Agentic-Workflow-FRESH`; publication_closeout.status is PASS; `git status --short --branch` has no unresolved conflict rows; ordinary dirty root files and unrelated retained branches are absent or reported as workspace_topology_closeout evidence/RCA; every completed source branch exact-tip ancestor-contained in `origin/main`; `git branch --no-merged origin/main` is empty or only explicitly retained branches with reason; CI was green before PR merge; publication readiness with --require-publication-closeout PASS; and workspace_topology_closeout.status PASS or retained-worktree RCA
 - failed CI RCA and fixes, if any
 - publication method or stop gate
 - all state checkpoint tables

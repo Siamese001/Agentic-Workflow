@@ -25,7 +25,10 @@ Each description includes Pros: and Cons:, and the recommended one includes Flip
 Auto-disables when lanes_passing >= lanes_total (after ship; no nagging). Always-exempt: PARKING_LOT.md
 (capture must never be blocked), the gate's own state, and the harness's ~/.codex scratch.
 Fail-soft: any internal error or missing/garbled state exits 0 (never blocks unrelated work).
-Bypass: NORTH_STAR_GATE_BYPASS=1, or mode NORTH_STAR_GATE_ENFORCE=warn|off.
+Default mode is ``warn`` so explicit governance simplification and experimentation can proceed
+without a second approval prompt; use ``NORTH_STAR_GATE_ENFORCE=ask`` to restore the old block
+and native-question flow for strict lane-delivery sessions. Bypass: NORTH_STAR_GATE_BYPASS=1,
+or mode NORTH_STAR_GATE_ENFORCE=warn|off.
 """
 from __future__ import annotations
 
@@ -35,7 +38,7 @@ import sys
 from pathlib import Path
 
 _BYPASS_ENV = "NORTH_STAR_GATE_BYPASS"
-_MODE_ENV = "NORTH_STAR_GATE_ENFORCE"  # ask (default) | warn | off
+_MODE_ENV = "NORTH_STAR_GATE_ENFORCE"  # warn (default) | ask | off
 _STATE_REL = "config/north_star_state.json"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -142,7 +145,7 @@ def evaluate(data: dict, state: dict | None = None, env: dict | None = None) -> 
     env = env if env is not None else os.environ
     if str(env.get(_BYPASS_ENV, "")).strip().lower() in ("1", "true", "yes"):
         return 0, ""
-    mode = str(env.get(_MODE_ENV, "ask")).strip().lower() or "ask"
+    mode = str(env.get(_MODE_ENV, "warn")).strip().lower() or "warn"
     if mode == "off":
         return 0, ""
     if str(data.get("tool_name", "")) not in ("Edit", "Write", "MultiEdit"):

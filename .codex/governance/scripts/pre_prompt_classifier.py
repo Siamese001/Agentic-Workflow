@@ -9,9 +9,9 @@ Classifies the prompt as T0/T1/T2/T3 based on keyword heuristics and writes
 tier tag + mandatory requirements to stderr so Codex sees them (show_output: true).
 
 Exits 0 for T0/T1.
-Exits 2 (BLOCK) for T2/T3 when ADG health is red or Redis is down (hard gate).
-Exits 0 for T2/T3 when healthy — but emits MANDATORY structured reasoning requirements
-so Codex is instructed to call mcp8_create_task before proceeding.
+Exits 2 (BLOCK) for T2/T3 when the ADG SQLite SSOT is red.
+Exits 0 for T2/T3 when the SSOT is healthy — but emits native plan-mode guidance
+so Codex keeps evidence gathering and plan approval ahead of edits.
 
 Fail policy: OPEN for infrastructure errors (probe missing/timeout), CLOSED for T2/T3 with confirmed red ADG/Redis.
 Zero hardcoded paths.
@@ -287,10 +287,10 @@ def _detect_semantic_retrieval(prompt: str) -> bool:
     return any(sig in lower for sig in _SEMANTIC_SIGNALS)
 
 
-# Structured reasoning mandate injected into Codex context for every T2/T3 prompt.
+# Native plan-mode guidance injected into Codex context for every T2/T3 prompt.
 # show_output: true ensures Codex sees this output before responding.
 _sr_mandate = """
-[pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
+[pre_prompt_classifier] NATIVE PLAN MODE REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
   0. ADG-FIRST TOOL ROUTING (MANDATORY — check BEFORE every grep_search call):
      IF query involves import/from/consumer/reference/blast-radius/who-uses/depends-on → USE ADG MCP:
@@ -340,11 +340,14 @@ _sr_mandate = """
      Rules: adg-canonical-invariants.md, adg-analysis-procedures.md
      CI gate: ops_scripts/ci/check_graph_layer_evidence.py
   1. Read native file memory (`memory/MEMORY.md`, plus `memory/codex/memory_summary.md` when needed)
-  2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
-  3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
-  4. Emit SR_PLAN: numbered verb-first steps + tools needed + risks
-  5. Emit SR_APPROVAL: APPROVED before any writes
-  Sequential Thinking MCP is RETIRED. Use: native plan mode, file memory, and task_manager only when explicitly tracked work is needed.
+  2. Use native plan mode for T2/T3 work: gather evidence read-only, present a numbered plan,
+     and make no edits until the plan is approved or the user has already explicitly approved
+     the named implementation scope.
+  3. Do not emit retired marker packets or require task_manager registration for ordinary
+     in-session decomposition. Use task_manager only when the user explicitly requests durable
+     tracked tasks across sessions.
+  Sequential Thinking MCP and marker packets are RETIRED. Use: native plan mode, file memory,
+  and task_manager only when explicitly tracked work is needed.
   Rule: .codex/rules/plan-first-enforcement.md
   Workflow: /structured-reasoning
 """.strip()

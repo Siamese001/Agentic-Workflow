@@ -595,6 +595,45 @@ class TestPhaseAAuthority:
                 f"`.run` symbol {symbol!r} MUST be excluded (scanner false positive)"
             )
 
+    def test_write_sovereignty_excludes_non_mutating_helper_symbols(self, tmp_path: Path) -> None:
+        """Read/check/helper symbols are scanner false positives, not writes.
+
+        These symbols are emitted by the broad governance edge scanner on the
+        07082026_2319 snapshot, but they return paths, hashes, stores, or
+        boolean guard state. They should reduce P0 write-sovereignty debt
+        without hiding actual write calls.
+        """
+        false_positive_symbols = [
+            "assert_no_persistent_write",
+            "compute_content_hash",
+            "get_bm25_store",
+            "get_default_store",
+            "get_validated_project_root",
+            "is_commit_sandbox_active",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for idx, symbol in enumerate(false_positive_symbols, start=1):
+            _node(conn, idx, f"caller{idx}", "L2", f"agentic_core/L2_execution/utils/helper_{idx}.py")
+            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+        _node(conn, 50, "real_writer", "L2", "agentic_core/L2_execution/utils/real_writer.py")
+        _edge(conn, 50, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol in false_positive_symbols:
+            assert symbol not in flagged, f"{symbol!r} is not a durable write"
+        assert "path.write_text" in flagged
+
     def test_write_sovereignty_excludes_pascalcase_class_instantiation(
         self, tmp_path: Path
     ) -> None:

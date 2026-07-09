@@ -8,14 +8,15 @@ Gap 1: Subprocess timeout not enforced
   - Must block all five subprocess variants.
   - Multi-line calls with timeout= on a later line: allowed.
 
-Gap 2: Structured reasoning mandate not injected for T2/T3
-  - pre_prompt_classifier must emit the SR mandate to stderr for T2/T3 prompts
+Gap 2: Native plan-mode guidance not injected for T2/T3
+  - pre_prompt_classifier must emit the plan-mode guidance to stderr for T2/T3 prompts
     when infrastructure is healthy.
-  - Mandate must contain the key action words Cursor Agent needs:
-    mcp8_create_task, SR_INTAKE, SR_PLAN, SR_APPROVAL.
-  - T0/T1 must NOT emit the mandate.
-  - Mandate must reference the retired Sequential Thinking MCP so Cursor Agent
-    knows NOT to use it.
+  - Guidance must require evidence gathering, numbered plan, and plan approval
+    before edits.
+  - Guidance must not resurrect task_manager create_task or SR marker packets
+    for ordinary in-session decomposition.
+  - T0/T1 must NOT emit the guidance.
+  - Guidance must reference the retired Sequential Thinking MCP and marker packets.
 
 Gap 3: Redis health not checked before T2/T3 work
   - pre_prompt_classifier must exit 2 (BLOCK) when Redis is down for T2/T3.
@@ -202,35 +203,35 @@ class TestGap1SubprocessTimeoutEnforcement:
 
 
 # ---------------------------------------------------------------------------
-# Gap 2: Structured reasoning mandate injected for T2/T3
+# Gap 2: Native plan-mode guidance injected for T2/T3
 # ---------------------------------------------------------------------------
 
 
 class TestGap2StructuredReasoningMandateInjection:
     """
-    Gap: pre_prompt_classifier never injected the SR mandate, so Cursor Agent
-    continued using the retired Sequential Thinking MCP pattern.
+    Gap: pre_prompt_classifier never injected the T2/T3 planning guidance, so
+    Codex could skip the native plan-first boundary.
     Fix: _SR_MANDATE printed to stderr for T2/T3 when infra is healthy.
     """
 
-    def test_t3_mandate_contains_mcp8_create_task(self):
+    def test_t3_guidance_requires_native_plan_mode(self):
         _, stderr = _run_classifier_healthy("refactor the authentication architecture")
-        assert "create_task" in stderr, (
-            "SR mandate must instruct Cursor Agent to call create_task (task_manager MCP) for T3"
-        )
+        assert "NATIVE PLAN MODE REQUIRED" in stderr
+        assert "Use native plan mode" in stderr
 
-    def test_t3_mandate_contains_sr_intake(self):
+    def test_t3_guidance_rejects_retired_marker_packets(self):
         _, stderr = _run_classifier_healthy("restructure the layer boundaries")
-        assert "SR_INTAKE" in stderr, "SR mandate must contain SR_INTAKE block instruction"
+        assert "Do not emit retired marker packets" in stderr
+        assert "SR_INTAKE" not in stderr
 
-    def test_t3_mandate_contains_sr_plan(self):
+    def test_t3_guidance_requires_numbered_plan(self):
         # Use a reliable T3 prompt — keyword "architecture" or "refactor"
         _, stderr = _run_classifier_healthy("refactor the architecture to restructure modules")
-        assert "SR_PLAN" in stderr, "SR mandate must contain SR_PLAN block instruction"
+        assert "present a numbered plan" in stderr
 
-    def test_t3_mandate_contains_sr_approval(self):
+    def test_t3_guidance_requires_plan_approval(self):
         _, stderr = _run_classifier_healthy("consolidate the duplicate registries")
-        assert "SR_APPROVAL" in stderr, "SR mandate must contain SR_APPROVAL gate instruction"
+        assert "make no edits until the plan is approved" in stderr
 
     def test_t3_mandate_mentions_retired_sequential_thinking(self):
         _, stderr = _run_classifier_healthy("refactor the governance model")
@@ -238,23 +239,25 @@ class TestGap2StructuredReasoningMandateInjection:
             "SR mandate must reference that Sequential Thinking MCP is retired"
         )
 
-    def test_t3_mandate_mentions_task_manager(self):
+    def test_t3_guidance_scopes_task_manager_to_explicit_tracking(self):
         _, stderr = _run_classifier_healthy("architectural redesign of L0 routing")
-        assert "Task Manager" in stderr or "mcp8" in stderr or "task_manager" in stderr.lower(), (
-            "SR mandate must reference Task Manager MCP as replacement"
-        )
+        assert "task_manager only when explicitly tracked work is needed" in stderr
 
     def test_t2_mandate_injected(self):
         _, stderr = _run_classifier_healthy("fix and update the hook implementation")
-        assert "create_task" in stderr, "SR mandate must also be injected for T2 prompts"
+        assert "NATIVE PLAN MODE REQUIRED" in stderr, "plan-mode guidance must also be injected for T2 prompts"
 
     def test_t0_mandate_not_injected(self):
         _, stderr = _run_classifier_healthy("explain how the pre_run_gate works")
-        assert "create_task" not in stderr, "SR mandate must NOT be injected for T0 (question) prompts"
+        assert "NATIVE PLAN MODE REQUIRED" not in stderr, (
+            "plan-mode guidance must NOT be injected for T0 (question) prompts"
+        )
 
     def test_t1_mandate_not_injected(self):
         _, stderr = _run_classifier_healthy("fix the typo in the docstring")
-        assert "create_task" not in stderr, "SR mandate must NOT be injected for T1 (trivial) prompts"
+        assert "NATIVE PLAN MODE REQUIRED" not in stderr, (
+            "plan-mode guidance must NOT be injected for T1 (trivial) prompts"
+        )
 
     def test_mandate_not_injected_when_adg_red(self):
         from pre_prompt_classifier import main
@@ -273,7 +276,7 @@ class TestGap2StructuredReasoningMandateInjection:
                     stderr_cap = io.StringIO()
                     with patch("sys.stderr", stderr_cap):
                         main()
-        assert "create_task" not in stderr_cap.getvalue(), (
+        assert "NATIVE PLAN MODE REQUIRED" not in stderr_cap.getvalue(), (
             "SR mandate must NOT be injected when BOTH ADG and Redis are red (blocked before reaching that code)"
         )
 
@@ -294,7 +297,7 @@ class TestGap2StructuredReasoningMandateInjection:
                     stderr_cap = io.StringIO()
                     with patch("sys.stderr", stderr_cap):
                         main()
-        assert "create_task" not in stderr_cap.getvalue(), (
+        assert "NATIVE PLAN MODE REQUIRED" not in stderr_cap.getvalue(), (
             "SR mandate must NOT be injected when BOTH red (blocked before reaching that code)"
         )
 

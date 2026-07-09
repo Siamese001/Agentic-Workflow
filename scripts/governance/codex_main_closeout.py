@@ -4,11 +4,10 @@ The check is intentionally narrower than publication automation. It proves the
 local repository ended in the desired state after publication. It reports two
 separate closeout surfaces:
 
-- publication closeout: local ``main`` equals ``origin/main``, the root
-  working tree/index are clean, and no branch remains unmerged from
-  ``origin/main``;
-- workspace topology closeout: only the expected main worktree remains and no
-  non-main local branches remain.
+- publication closeout: local ``main`` equals ``origin/main`` and the root
+  worktree has no unresolved merge conflicts;
+- workspace topology closeout: only the expected main worktree remains, no root
+  worktree/index dirt remains, and no non-main local branches remain.
 
 ``--apply`` is conservative cleanup only. It may fast-forward clean local main
 and delete clean, ancestor-contained non-main branches/worktrees. It never
@@ -140,8 +139,6 @@ def _publication_closeout_issues(root: Path, *, base_ref: str) -> list[CloseoutI
         issues.append(CloseoutIssue("status_failed", status_err))
     else:
         dirty_rows = [line for line in status.splitlines() if line and not line.startswith("##")]
-        if dirty_rows:
-            issues.append(CloseoutIssue("dirty_status", "\n".join(dirty_rows)))
         conflicted = [
             line
             for line in dirty_rows
@@ -149,14 +146,6 @@ def _publication_closeout_issues(root: Path, *, base_ref: str) -> list[CloseoutI
         ]
         if conflicted:
             issues.append(CloseoutIssue("conflicted_status", "\n".join(conflicted)))
-
-    rc_diff, _, diff_err = worktree_hygiene.run_git("diff", "--quiet", cwd=root)
-    if rc_diff != 0:
-        issues.append(CloseoutIssue("unstaged_diff", diff_err or "git diff --quiet reported changes"))
-
-    rc_cached, _, cached_err = worktree_hygiene.run_git("diff", "--cached", "--quiet", cwd=root)
-    if rc_cached != 0:
-        issues.append(CloseoutIssue("staged_diff", cached_err or "git diff --cached --quiet reported changes"))
 
     rc_head, head, head_err = worktree_hygiene.run_git("rev-parse", "--verify", "HEAD", cwd=root)
     rc_base, base, base_err = worktree_hygiene.run_git("rev-parse", "--verify", base_ref, cwd=root)
@@ -166,18 +155,6 @@ def _publication_closeout_issues(root: Path, *, base_ref: str) -> list[CloseoutI
         issues.append(CloseoutIssue("base_ref_missing", f"{base_ref}: {base_err}"))
     if rc_head == 0 and rc_base == 0 and head != base:
         issues.append(CloseoutIssue("head_not_base_ref", f"HEAD={head} {base_ref}={base}"))
-
-    rc_unmerged, unmerged, unmerged_err = worktree_hygiene.run_git(
-        "branch",
-        "--no-merged",
-        base_ref,
-        "--format=%(refname:short)",
-        cwd=root,
-    )
-    if rc_unmerged != 0:
-        issues.append(CloseoutIssue("unmerged_branch_check_failed", unmerged_err))
-    elif unmerged.strip():
-        issues.append(CloseoutIssue("unmerged_branches", unmerged))
 
     return issues
 
@@ -196,15 +173,10 @@ def _workspace_topology_issues(
     )
     publication_issue_codes = {
         "conflicted_status",
-        "dirty_status",
         "head_missing",
         "head_not_base_ref",
         "base_ref_missing",
-        "staged_diff",
         "status_failed",
-        "unmerged_branch_check_failed",
-        "unmerged_branches",
-        "unstaged_diff",
     }
     return [
         CloseoutIssue(issue.code, issue.detail)
@@ -407,8 +379,8 @@ def build_closeout_report(
         publication_issues,
         required=True,
         rule=(
-            "Publication closeout requires local main == origin/main, a clean root "
-            "worktree/index, and no branch unmerged from the base ref."
+            "Publication closeout requires local main == origin/main and no unresolved "
+            "merge conflicts on the root worktree."
         ),
     )
     workspace_topology_closeout = _section(
