@@ -634,6 +634,139 @@ class TestPhaseAAuthority:
             assert symbol not in flagged, f"{symbol!r} is not a durable write"
         assert "path.write_text" in flagged
 
+    def test_write_sovereignty_excludes_non_durable_artifact_writer_symbols(
+        self, tmp_path: Path
+    ) -> None:
+        """Generated report/proof artifact writes are not durable state writes.
+
+        These exact symbols come from the 07082026_2319 P0 backlog. The MV must
+        exclude them without weakening generic writer detection.
+        """
+        artifact_writer_symbols = [
+            "CLOSEOUT_JSON.write_text",
+            "CLOSEOUT_MD.write_text",
+            "DESIGN_PATH.write_text",
+            "OUT_JSON.write_text",
+            "OUT_MD.write_text",
+            "OUT_PATH.write_text",
+            "OUT_RECEIPT_JSON.write_text",
+            "OUT_RECEIPT_MD.write_text",
+            "P1_W5_RECEIPT_JSON.write_text",
+            "P1_W5_RECEIPT_MD.write_text",
+            "artifact.write_text",
+            "artifact_path.write_text",
+            "assertion_path.write_text",
+            "baseline_file.write_text",
+            "brief_path.write_text",
+            "briefing_path.write_text",
+            "company_brief_path.write_text",
+            "contract_path.write_text",
+            "coverage_path.write_text",
+            "json_path.write_text",
+            "man_path.write_text",
+            "manifest_path.write_text",
+            "md_path.write_text",
+            "meta_path.write_text",
+            "mf_path.write_text",
+            "out.write_text",
+            "out_json.write_text",
+            "out_md.write_text",
+            "out_path.write_text",
+            "output_file.write_text",
+            "output_path.write_text",
+            "p_receipt.write_text",
+            "rc_path.write_text",
+            "rca_path.write_text",
+            "receipt_json_path.write_text",
+            "receipt_md_path.write_text",
+            "receipt_path.write_text",
+            "report_path.write_text",
+            "requirements_path.write_text",
+            "summary_path.write_text",
+            "wizard_brief_path.write_text",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for idx, symbol in enumerate(artifact_writer_symbols, start=1):
+            _node(
+                conn,
+                idx,
+                f"artifact_writer{idx}",
+                "L2",
+                f"agentic_core/L2_execution/artifact_{idx}.py",
+            )
+            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+        _node(
+            conn,
+            80,
+            "real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/real_writer.py",
+        )
+        _edge(conn, 80, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol in artifact_writer_symbols:
+            assert symbol not in flagged, (
+                f"{symbol!r} is report/proof output, not durable state"
+            )
+        assert "path.write_text" in flagged
+
+    def test_write_sovereignty_excludes_non_durable_artifact_helper_symbols(
+        self, tmp_path: Path
+    ) -> None:
+        """Factory/process scanner hits are not durable write paths."""
+        helper_symbols = [
+            "TraceFeatureRecord.from_bundle",
+            "create_artifact",
+            "create_legacy_import_healer",
+            "subprocess.Popen",
+        ]
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for idx, symbol in enumerate(helper_symbols, start=1):
+            _node(
+                conn,
+                idx,
+                f"helper_writer{idx}",
+                "L2",
+                f"agentic_core/L2_execution/helper_{idx}.py",
+            )
+            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+        _node(
+            conn,
+            80,
+            "real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/real_writer.py",
+        )
+        _edge(conn, 80, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {r[0] for r in rows}
+        for symbol in helper_symbols:
+            assert symbol not in flagged, f"{symbol!r} is a scanner false positive"
+        assert "path.write_text" in flagged
+
     def test_write_sovereignty_excludes_pascalcase_class_instantiation(
         self, tmp_path: Path
     ) -> None:
