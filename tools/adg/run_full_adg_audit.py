@@ -755,7 +755,6 @@ def _p0_p1_fix_count(action_queue: dict[str, Any]) -> int:
 
 def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -> dict[str, int]:
     from tools.reports.gate_signal_catalog import display_verdict, display_verdict_sub  # noqa: PLC0415
-    from tools.reports.adg_bcg_adapter import normalize_bcg_gate_row  # noqa: PLC0415
 
     counts = _repair_handoff_counts()
     for action in action_queue.get("actions") or []:
@@ -770,11 +769,7 @@ def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -
         elif action.get("sort_band") == "P1":
             counts["P1_FIX"] += 1
     for gate in gate_results.get("gates") or []:
-        if (
-            gate.get("band") == "P0"
-            and display_verdict(gate) == "TRACK"
-            and normalize_bcg_gate_row(gate).get("section") == "burn_down"
-        ):
+        if gate.get("band") == "P0" and display_verdict(gate) == "TRACK":
             counts["P0_TRACKED_BACKLOG"] += 1
         if gate.get("band") != "P1" or gate.get("enforcement") != "ratchet":
             continue

@@ -205,12 +205,11 @@ def test_bcg_gate_adapter_separates_kpi_from_burndown() -> None:
 
     assert adapter["artifact_kind"] == "adg_bcg_gate_adapter"
     assert adapter["sections"]["fix_now"]["gate_count"] == 2
-    assert adapter["sections"]["burn_down"]["gate_count"] == 0
-    assert adapter["sections"]["kpi_watchlist"]["gate_count"] == 3
-    assert adapter["summary"]["priority_queue_gate_count"] == 2
-    assert adapter["summary"]["report_only_gate_count"] == 3
+    assert adapter["sections"]["burn_down"]["gate_count"] == 1
+    assert adapter["sections"]["kpi_watchlist"]["gate_count"] == 2
+    assert adapter["summary"]["priority_queue_gate_count"] == 3
+    assert adapter["summary"]["report_only_gate_count"] == 2
     assert {row["gate_id"] for row in adapter["sections"]["kpi_watchlist"]["rows"]} == {
-        "G_REACH_l0_reachability",
         "S4_unused_imports_ratchet",
         "D2_role_duplication_warn",
     }
