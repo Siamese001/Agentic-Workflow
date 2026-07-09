@@ -775,30 +775,33 @@ class TestPhaseAAuthority:
         """Site-scoped artifact exclusions do not hide same-symbol writes elsewhere."""
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
-        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        target_node_id = len(_NON_DURABLE_ARTIFACT_WRITE_SITES) + 10
+        _node(conn, target_node_id, "target", "L4", "agentic_core/L4_state/store.py")
         for idx, (symbol, writer_file) in enumerate(
             _NON_DURABLE_ARTIFACT_WRITE_SITES,
             start=1,
         ):
             _node(conn, idx, f"artifact_site{idx}", "L2", writer_file)
-            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+            _edge(conn, idx, target_node_id, "writes_to", symbol=symbol)
         non_exempt_symbol = _NON_DURABLE_ARTIFACT_WRITE_SITES[0][0]
+        non_exempt_node_id = target_node_id + 1
+        real_writer_node_id = non_exempt_node_id + 1
         _node(
             conn,
-            80,
+            non_exempt_node_id,
             "same_symbol_real_writer",
             "L2",
             "agentic_core/L2_execution/utils/non_exempt_artifact_site.py",
         )
-        _edge(conn, 80, 99, "writes_to", symbol=non_exempt_symbol)
+        _edge(conn, non_exempt_node_id, target_node_id, "writes_to", symbol=non_exempt_symbol)
         _node(
             conn,
-            81,
+            real_writer_node_id,
             "real_writer",
             "L2",
             "agentic_core/L2_execution/utils/real_writer.py",
         )
-        _edge(conn, 81, 99, "writes_to", symbol="path.write_text")
+        _edge(conn, real_writer_node_id, target_node_id, "writes_to", symbol="path.write_text")
         conn.commit()
         conn.close()
 
@@ -826,30 +829,33 @@ class TestPhaseAAuthority:
         """Site-scoped helper exclusions leave same-symbol writes elsewhere visible."""
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
-        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        target_node_id = len(_NON_DURABLE_ARTIFACT_HELPER_SITES) + 10
+        _node(conn, target_node_id, "target", "L4", "agentic_core/L4_state/store.py")
         for idx, (symbol, writer_file) in enumerate(
             _NON_DURABLE_ARTIFACT_HELPER_SITES,
             start=1,
         ):
             _node(conn, idx, f"helper_site{idx}", "L2", writer_file)
-            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+            _edge(conn, idx, target_node_id, "writes_to", symbol=symbol)
         non_exempt_symbol = _NON_DURABLE_ARTIFACT_HELPER_SITES[0][0]
+        non_exempt_node_id = target_node_id + 1
+        real_writer_node_id = non_exempt_node_id + 1
         _node(
             conn,
-            80,
+            non_exempt_node_id,
             "same_symbol_real_writer",
             "L2",
             "agentic_core/L2_execution/utils/non_exempt_helper_site.py",
         )
-        _edge(conn, 80, 99, "writes_to", symbol=non_exempt_symbol)
+        _edge(conn, non_exempt_node_id, target_node_id, "writes_to", symbol=non_exempt_symbol)
         _node(
             conn,
-            81,
+            real_writer_node_id,
             "real_writer",
             "L2",
             "agentic_core/L2_execution/utils/real_writer.py",
         )
-        _edge(conn, 81, 99, "writes_to", symbol="path.write_text")
+        _edge(conn, real_writer_node_id, target_node_id, "writes_to", symbol="path.write_text")
         conn.commit()
         conn.close()
 
