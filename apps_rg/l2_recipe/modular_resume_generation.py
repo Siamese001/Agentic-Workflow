@@ -11,6 +11,7 @@ See ``.codex/plans/apps-rg-r4-modular-section-migration-d4e8a1.md``.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -59,6 +60,7 @@ from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_execution_plan import BULLET_LANES, NARRATIVE_LANES
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
 from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 # Canonical lane modules as ``apps_rg.runtime.internal.lane_batch`` (single SSOT).
 # competencies_dispatch remains listed for legacy argparse/import tooling parity — canonical lane runtime:
@@ -368,6 +370,19 @@ def _write_synthetic_lane_bundle(repo: Path, modular_root: Path, lane: str) -> s
     _write_json(run_dir / "x2_gate_outputs.json", _minimal_x2_blob())
     _write_json(run_dir / "x1d_llm_judge_outputs.json", _minimal_judge_blob())
     _write_json(
+        run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
+        {
+            "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
+            "section_id": lane,
+            "gate_id": "x3_final_materialized_acceptance_contract",
+            "pass": True,
+            "x2_final_materialized_binding_pass": True,
+            "phase0_synthetic": True,
+            "authorization_scope": "PHASE0_SYNTHETIC",
+            "enforcement": "Synthetic phase0 plumbing contract; forbidden as product-shape proof.",
+        },
+    )
+    _write_json(
         run_dir / "x3_disposition.json",
         {
             "x3_code": "X3_ALLOW",
@@ -386,6 +401,7 @@ def _write_synthetic_lane_bundle(repo: Path, modular_root: Path, lane: str) -> s
 
 def _synthetic_lane_row(repo: Path, modular_root: Path, lane: str) -> dict[str, Any]:
     rel_run = _write_synthetic_lane_bundle(repo, modular_root, lane)
+    contract_path = repo / rel_run / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
     return {
         "lane_key": lane,
         "section_id": lane,
@@ -403,6 +419,12 @@ def _synthetic_lane_row(repo: Path, modular_root: Path, lane: str) -> dict[str, 
         "soft_failed_judges": [],
         "blocked_judges": [],
         "x3_code": "X3_ALLOW",
+        "final_materialized_acceptance_ok": True,
+        "final_materialized_acceptance_contract_ref": f"{rel_run}/{FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT}",
+        "final_materialized_acceptance_contract_digest": hashlib.sha256(
+            contract_path.read_bytes()
+        ).hexdigest(),
+        "final_materialized_acceptance_failure_reasons": [],
         "authorization_scope": "PHASE0_SYNTHETIC",
         "proceed_to_runtime": True,
         "l6_offline_only": True,
@@ -411,6 +433,7 @@ def _synthetic_lane_row(repo: Path, modular_root: Path, lane: str) -> dict[str, 
             "x2_gate_outputs.json",
             "x1d_llm_judge_outputs.json",
             "x3_disposition.json",
+            FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
             "l6_shadow_eval_package.json",
         ]},
     }

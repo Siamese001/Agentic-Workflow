@@ -76,6 +76,9 @@ from apps_rg.runtime.sections.section_product_shape_ssot import (
     product_shape_gate_ids_for_lane,
 )
 from apps_rg.runtime.sections.section_generation import build_section_request
+from apps_rg.runtime.sections.section_final_materialized_binding import (
+    augment_x2_payload_with_final_materialized_binding,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MAX_OUTPUT_TOKENS = 900
@@ -88,6 +91,9 @@ ROLE_EPISODE_MAX_OUTPUT_TOKENS_BY_SECTION: dict[str, int] = {
 ROLE_EPISODE_GRAPH_BULLET_RENDERER_VERSION = "deterministic_graph_bullet_render.v1"
 ROLE_EPISODE_PROOF_TEXT_RENDERER_VERSION = "proof_authorized_fact_claim_render.v1"
 ROLE_EPISODE_FINAL_BULLET_COUNT = 3
+ROLE_EPISODE_FINAL_MATERIALIZED_SELECTION_CONTRACT = (
+    "role_episode_final_materialized_selection_contract.json"
+)
 
 
 @dataclass(frozen=True)
@@ -1479,12 +1485,43 @@ def _write_blocked_artifacts(
     write_json(artifact_dir / "provider_request.json", provider_req)
     write_json(artifact_dir / "provider_response.json", provider_resp)
     write_json(artifact_dir / "l2_output.json", l2)
+    if cfg.is_bullet_lane:
+        write_json(
+            artifact_dir / ROLE_EPISODE_FINAL_MATERIALIZED_SELECTION_CONTRACT,
+            {
+                "schema_version": "role_episode_final_materialized_selection_contract.v1",
+                "expected_bullet_count": ROLE_EPISODE_FINAL_BULLET_COUNT,
+                "model_bullet_count": 0,
+                "selected_source_fact_ids": [],
+                "selected_unique_source_fact_count": 0,
+                "duplicate_source_fact_ids_ignored": [],
+                "rejected_source_fact_ids": [],
+                "deterministic_reselect_source_fact_ids": [],
+                "deterministic_reselect_applied": False,
+                "rendered_bullet_count": 0,
+                "rendered_source_fact_ids": [],
+                "final_materialized_acceptance_ok": False,
+                "blocked_reason": reason,
+            },
+        )
     write_json(artifact_dir / "parsed_output.json", {"parsed": None, "parse_error": reason})
     write_json(artifact_dir / "claim_ledger.json", [])
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", build_canonical_claim_ledger_v2_payload([], parse_status="BLOCKED", invalid_reason=reason))
     write_json(artifact_dir / "selected_fact_plan.json", {})
     write_json(artifact_dir / "text_claim_coverage.json", {"status": "BLOCKED", "reason": reason})
-    write_json(artifact_dir / "x2_gate_outputs.json", {"gates": x2, "x2_failed": 1, "x2_passed": 0, "failed_gates": [x2[0]["gate_id"]]})
+    write_json(
+        artifact_dir / "x2_gate_outputs.json",
+        augment_x2_payload_with_final_materialized_binding(
+            {
+                "gates": x2,
+                "x2_failed": 1,
+                "x2_passed": 0,
+                "failed_gates": [x2[0]["gate_id"]],
+            },
+            artifact_dir=artifact_dir,
+            section_id=cfg.section_id,
+        ),
+    )
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": []})
     # Single-spine authority (E2E-14): route the x3 mirror through the spine finalize helper
     # rather than writing x3_disposition.json raw. No sealed L2 exists on this pre-provider block
@@ -1888,6 +1925,11 @@ def run_role_episode_lane_execution(
 
     failed = [g["gate_id"] for g in x2 if not g.get("pass")]
     write_json(artifact_dir / "l2_output.json", l2)
+    if cfg.is_bullet_lane:
+        write_json(
+            artifact_dir / ROLE_EPISODE_FINAL_MATERIALIZED_SELECTION_CONTRACT,
+            l2.get("final_materialized_selection_contract") or {},
+        )
     write_json(artifact_dir / "selected_fact_plan.json", selected_fact_plan)
     write_json(artifact_dir / "claim_ledger.json", claim_ledger)
     write_json(artifact_dir / "canonical_claim_ledger_v2.json", canon_doc)
@@ -1900,6 +1942,15 @@ def run_role_episode_lane_execution(
         if isinstance(proof_display_gate.get("observed_value"), dict)
         else {}
     )
+    output_text = _display_text(l2, cfg)
+    (artifact_dir / cfg.output_filename).write_text(
+        output_text + ("\n" if output_text else ""),
+        encoding="utf-8",
+    )
+    (artifact_dir / "command_output.txt").write_text(
+        output_text + ("\n" if output_text else ""),
+        encoding="utf-8",
+    )
     write_json(
         artifact_dir / "text_claim_coverage.json",
         {
@@ -1911,7 +1962,19 @@ def run_role_episode_lane_execution(
         },
     )
     write_json(artifact_dir / "parsed_output.json", {"parsed": parsed, "parse_error": parse_error})
-    write_json(artifact_dir / "x2_gate_outputs.json", {"gates": x2, "x2_failed": len(failed), "x2_passed": len(x2) - len(failed), "failed_gates": failed})
+    write_json(
+        artifact_dir / "x2_gate_outputs.json",
+        augment_x2_payload_with_final_materialized_binding(
+            {
+                "gates": x2,
+                "x2_failed": len(failed),
+                "x2_passed": len(x2) - len(failed),
+                "failed_gates": failed,
+            },
+            artifact_dir=artifact_dir,
+            section_id=sid,
+        ),
+    )
     write_json(artifact_dir / "x1d_llm_judge_outputs.json", {"judges": x1d})
     # Single-spine authority (E2E-14): aggregate_x3 above is judge math only; the spine finalize
     # helper owns the x3_disposition.json mirror. The real ExitEvalPipeline runs after sealed L2
@@ -1989,9 +2052,6 @@ def run_role_episode_lane_execution(
                 }
             )
             write_json(pool_receipt_path, pool_receipt)
-    output_text = _display_text(l2, cfg)
-    (artifact_dir / cfg.output_filename).write_text(output_text + ("\n" if output_text else ""), encoding="utf-8")
-    (artifact_dir / "command_output.txt").write_text(output_text + ("\n" if output_text else ""), encoding="utf-8")
     write_json(
         artifact_dir / "l6_shadow_eval_package.json",
         {
@@ -2034,6 +2094,7 @@ def run_role_episode_lane_execution(
 __all__ = [
     "ROLE_EPISODE_X2_GATE_IDS_BY_RUN_FUNCTION",
     "ROLE_EPISODE_X2_RUN_FUNCTION_BY_SECTION",
+    "ROLE_EPISODE_FINAL_MATERIALIZED_SELECTION_CONTRACT",
     "build_role_episode_lane_args",
     "run_ey_bullets_x2_gates",
     "run_ey_narrative_x2_gates",

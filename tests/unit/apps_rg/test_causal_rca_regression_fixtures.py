@@ -16,6 +16,7 @@ from apps_rg.runtime.aggregation.preflight import (
     assert_preflight_pass,
     run_aggregation_preflight,
 )
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
 from apps_rg.runtime.sections.role_episode_lane import (
     RoleEpisodeLaneConfig,
@@ -240,7 +241,22 @@ def _write_minimal_required_proof_tree(
         run_dir = repo / "runs" / lane
         run_dir.mkdir(parents=True, exist_ok=True)
         for filename in REQUIRED_PROOF_FILES:
-            (run_dir / filename).write_text("{}\n", encoding="utf-8")
+            if filename == FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT:
+                (run_dir / filename).write_text(
+                    json.dumps(
+                        {
+                            "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
+                            "section_id": lane,
+                            "gate_id": "x3_final_materialized_acceptance_contract",
+                            "pass": True,
+                            "x2_final_materialized_binding_pass": True,
+                        }
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+            else:
+                (run_dir / filename).write_text("{}\n", encoding="utf-8")
         x3_code = overrides.get(lane, "X3_ALLOW")
         rel_run_dir = f"runs/{lane}"
         lanes[lane] = {

@@ -366,6 +366,16 @@ def test_role_episode_bullet_path_has_no_fallback_bullet_symbol() -> None:
     assert "deterministic_graph_render" in source
 
 
+def test_role_episode_display_file_is_written_before_x2_and_x3_binding() -> None:
+    source = Path(role_episode_lane.__file__).read_text(encoding="utf-8")
+    main_idx = source.index("def run_role_episode_lane_execution")
+    output_write_idx = source.index("(artifact_dir / cfg.output_filename).write_text", main_idx)
+    x2_write_idx = source.index('artifact_dir / "x2_gate_outputs.json"', output_write_idx)
+    x3_finalize_idx = source.index("x3 = finalize_section_lane_x3(", x2_write_idx)
+
+    assert output_write_idx < x2_write_idx < x3_finalize_idx
+
+
 def test_ey_model_bullet_target_overwrite_is_discarded_before_display() -> None:
     cfg = role_episode_lane._ROLE_LANES["ey_bullets"]
     facts = [
@@ -518,5 +528,85 @@ def test_role_episode_display_text_gate_rejects_valid_id_with_unbacked_phrase() 
     )
 
     gate = _gate_by_id(gates)["x2_insurtech_narrative_display_text_proof_authorized"]
+    assert gate["pass"] is False
+    assert gate["observed_value"]["status"] == "FAIL"
+
+
+def test_insurtech_bullets_display_text_gate_rejects_valid_id_with_unbacked_phrase() -> None:
+    facts = [
+        {
+            "fact_id": "reb_insurtech_founder_led_market_creation",
+            "claim_text": "InsurTech graph evidence supports founder-led insurance market creation.",
+        },
+        {
+            "fact_id": "reb_insurtech_aws_migration_execution",
+            "claim_text": "InsurTech graph evidence supports AWS migration execution governance.",
+        },
+        {
+            "fact_id": "reb_insurtech_regulated_aws_control_implementation",
+            "claim_text": "InsurTech graph evidence supports regulated AWS control implementation.",
+        },
+    ]
+    bullets = [
+        {
+            "bullet_text": "Led partner-led deployments of frontier AI at scale.",
+            "source_fact_ids": [facts[0]["fact_id"]],
+        },
+        {
+            "bullet_text": facts[1]["claim_text"],
+            "source_fact_ids": [facts[1]["fact_id"]],
+        },
+        {
+            "bullet_text": facts[2]["claim_text"],
+            "source_fact_ids": [facts[2]["fact_id"]],
+        },
+    ]
+    l2 = {
+        "bullets": bullets,
+        "claim_ledger": [
+            {"claim_text": b["bullet_text"], "source_fact_ids": b["source_fact_ids"]}
+            for b in bullets
+        ],
+        "selected_fact_plan": {"facts": facts},
+        "display_text_authority": "selected_fact_plan_claim_text",
+        "role_episode_bundle_consumed": True,
+    }
+
+    gates = run_insurtech_bullets_x2_gates(
+        l2=l2,
+        allowed=[f["fact_id"] for f in facts],
+        runtime_generation_status="REAL_LLM",
+    )
+
+    gate = _gate_by_id(gates)["x2_insurtech_bullets_display_text_proof_authorized"]
+    assert gate["pass"] is False
+    assert gate["observed_value"]["status"] == "FAIL"
+
+
+def test_ey_narrative_display_text_gate_rejects_valid_id_with_unbacked_phrase() -> None:
+    fact = {
+        "fact_id": "reb_ey_regulatory_analytics_modernization",
+        "claim_text": "EY graph evidence supports regulatory analytics modernization.",
+    }
+    l2 = {
+        "narrative_sentence": "Led partner-led deployments of frontier AI at scale.",
+        "claim_ledger": [
+            {
+                "claim_text": "Led partner-led deployments of frontier AI at scale.",
+                "source_fact_ids": [fact["fact_id"]],
+            }
+        ],
+        "selected_fact_plan": {"facts": [fact]},
+        "display_text_authority": "selected_fact_plan_claim_text",
+        "role_episode_bundle_consumed": True,
+    }
+
+    gates = run_ey_narrative_x2_gates(
+        l2=l2,
+        allowed=[fact["fact_id"]],
+        runtime_generation_status="REAL_LLM",
+    )
+
+    gate = _gate_by_id(gates)["x2_ey_narrative_display_text_proof_authorized"]
     assert gate["pass"] is False
     assert gate["observed_value"]["status"] == "FAIL"

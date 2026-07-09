@@ -1,4 +1,5 @@
 """Prompt/code product-shape drift guard for all generated lanes."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -93,6 +94,22 @@ def test_pool_compile_hints_use_self_consistency_label(lane: str) -> None:
 def test_headline_word_band_ssot() -> None:
     shape = section_product_shape("headline")
     assert f"{HEADLINE_WORD_MIN}-{HEADLINE_WORD_MAX}" in shape.shape_summary
+
+
+@pytest.mark.parametrize("lane", ["insurtech_bullets", "ey_bullets"])
+def test_role_episode_bullet_prompts_require_unique_source_fact_ids(lane: str) -> None:
+    from apps_rg.runtime.sections.section_prompt_authority_ssot import (
+        collect_executable_prompt_corpus,
+    )
+
+    shape = section_product_shape(lane)
+    block = " ".join((shape.shape_summary, *shape.compile_hints))
+    corpus = collect_executable_prompt_corpus(lane)
+
+    assert "3 unique source_fact_ids" in block
+    assert "duplicate selections are not a pass" in block
+    assert "unique_source_fact_ids_required" in corpus
+    assert "one final bullet per proof fact" in corpus
 
 
 def test_product_shape_block_format() -> None:

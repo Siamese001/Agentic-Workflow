@@ -166,6 +166,7 @@ def build_dimension_upstream_triangulation(
                 "related_x2_gate": related_x2,
                 "x2_gate_failed_in_run": related_x2 in x2_failed if related_x2 else False,
                 "PROVIDER_MODEL_prompt_surfaces": list(DIMENSION_PROVIDER_MODEL_SURFACES.get(dim, ())),
+                "retired_provider_prompt_surfaces": list(DIMENSION_PROVIDER_MODEL_SURFACES.get(dim, ())),
                 "upstream_actions": list(DIMENSION_UPSTREAM_ACTIONS.get(dim, ())),
             }
         )
@@ -189,21 +190,24 @@ def build_dimension_upstream_triangulation(
     else:
         recommended = "No dimension consensus failure; holistic scores may still be below threshold."
 
+    prompt_refs = {
+        "compiled_prompt": "compiled_prompt.txt",
+        "compiled_prompt_artifact": "compiled_prompt_artifact.json",
+        "provider_request": "provider_request.json",
+        "provider_response": "provider_response.json",
+        "raw_model_output": "raw_model_output.txt",
+        "composition_plan": "executive_summary_composition_plan.json",
+        "generation_grade_contract_manifest": "generation_grade_contract_manifest.json",
+    }
+
     return {
         "schema": TRIANGULATION_SCHEMA,
         "consensus_failed_dimensions": consensus,
         "l2_upstream_failed_dimensions": l2_upstream,
         "dimension_remediation_lines": dim_lines,
         "per_dimension": per_dimension,
-        "PROVIDER_MODEL_prompt_refs": {
-            "compiled_prompt": "compiled_prompt.txt",
-            "compiled_prompt_artifact": "compiled_prompt_artifact.json",
-            "provider_request": "provider_request.json",
-            "provider_response": "provider_response.json",
-            "raw_model_output": "raw_model_output.txt",
-            "composition_plan": "executive_summary_composition_plan.json",
-            "generation_grade_contract_manifest": "generation_grade_contract_manifest.json",
-        },
+        "PROVIDER_MODEL_prompt_refs": prompt_refs,
+        "retired_provider_prompt_refs": prompt_refs,
         "judge_cost_controls": {
             "post_regen_judge_rescore_mode": post_regen_judge_mode,
             "judge_regen_max_cycles_configured": regen_cycles,

@@ -1,4 +1,5 @@
 """Integration: run_x2_gates + write_section_x2_gate_outputs enumerates lane_registry critical gates."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -111,6 +112,37 @@ def test_ibm_narrative_x2_write_includes_meta_and_c0(tmp_path: Path) -> None:
     crit = spec_for_lane("ibm_narrative").critical_gates
     assert "x2_ibm_narrative_no_meta_disclaimer_in_display" in present
     assert not sorted(g for g in crit if g not in present)
+
+
+def test_write_section_x2_gate_outputs_binds_final_materialized_display_and_claim_ledger(
+    tmp_path: Path,
+) -> None:
+    text = "SVP Engineering | Governed AI Platforms | Regulated Delivery | Partner Scale"
+    (tmp_path / "headline_output.txt").write_text(text + "\n", encoding="utf-8")
+    (tmp_path / "claim_ledger.json").write_text(
+        json.dumps([{"claim_text": text, "source_fact_ids": ["bul_unify_001"]}]),
+        encoding="utf-8",
+    )
+    (tmp_path / "l2_output.json").write_text(
+        json.dumps({"section_id": "headline", "headline_line": text}),
+        encoding="utf-8",
+    )
+
+    write_section_x2_gate_outputs(
+        tmp_path,
+        "headline",
+        [{"gate_id": "x2_headline_example", "pass": True}],
+    )
+
+    payload = json.loads((tmp_path / "x2_gate_outputs.json").read_text(encoding="utf-8"))
+    binding = payload["final_materialized_input_binding"]
+    assert binding["section_id"] == "headline"
+    assert binding["final_materialized_output_ref"] == "headline_output.txt"
+    assert binding["final_materialized_output_present"] is True
+    assert binding["final_claim_ledger_present"] is True
+    assert payload["final_materialized_output_sha256"] == binding[
+        "final_materialized_output_sha256"
+    ]
 
 
 @pytest.mark.parametrize("lane", ["headline", "unify_bullets", "ibm_bullets", "competencies"])

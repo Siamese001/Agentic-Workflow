@@ -1,4 +1,5 @@
 """Synthesis-quality voice repair (Claude-fail antipatterns)."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ from apps_rg.runtime.sections.executive_summary_voice_repair import (
     strip_unsupported_source_sensitive_prose,
 )
 from apps_rg.runtime.validators.executive_summary_x2 import (
+    EXEC_SUMMARY_MAX_WORDS,
     _resume_word_count,
     build_sentence_claim_coverage,
     check_claim_ledger_orphan_source_ids,
@@ -569,7 +571,7 @@ def test_graph_era_anthropic_exec_summary_repair_keeps_source_ids_and_budget() -
     jd_copy, phrase = has_jd_phrase_copy(text, "embed with GSI and cloud partner ecosystems")
 
     assert receipt["judge_polish"]["applied"] is True
-    assert _resume_word_count(text) <= 140
+    assert _resume_word_count(text) <= EXEC_SUMMARY_MAX_WORDS
     assert "IP-led of" not in text
     assert jd_copy is False, phrase
     assert orphan_ok is True, orphan_reason
@@ -760,7 +762,7 @@ def test_graph_era_trim_repair_restores_metric_nouns_after_word_budget() -> None
     repaired_ledger = list(out.get("claim_ledger") or [])
     coverage = build_sentence_claim_coverage(text, repaired_ledger, allowed)
 
-    assert _resume_word_count(text) <= 140
+    assert _resume_word_count(text) <= EXEC_SUMMARY_MAX_WORDS
     assert "20% joint across" not in text
     assert "20% joint revenue growth across" in text
     assert "translated into in IP-led" not in text

@@ -87,6 +87,7 @@ from apps_rg.runtime.assembly.final_resume_x2 import (
     sha256_utf8,
 
 )
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root, sha256_hex
 
@@ -382,6 +383,9 @@ def assemble_final_resume(
                 )
 
                 x3_disp = source_refs.get("x3_disposition.json") or paths.rel(run_dir / "x3_disposition.json")
+                final_contract_ref = source_refs.get(
+                    FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+                ) or paths.rel(run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT)
 
                 disp_gen = {
 
@@ -396,6 +400,8 @@ def assemble_final_resume(
                     "latest_successful_real_artifact_dir": paths.rel(run_dir),
 
                     "x3_disposition_json": x3_disp,
+
+                    "final_materialized_acceptance_contract_json": final_contract_ref,
 
                     "rollup_artifact_refs": {
 
