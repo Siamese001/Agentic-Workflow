@@ -6,6 +6,7 @@ Plan: docs/archive/windsurf/legacy-tree/plans/three-bucket-otel-view-5db409.md (
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -125,6 +126,7 @@ class TestAnnotateOneIntegration:
     def test_dry_run_does_not_write(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         target = tmp_path / "consumer.py"
         target.write_text("import os\nx = 'FROM edges'\n", encoding="utf-8")
+        logging.info("C3 write receipt: consumer-mode dry-run fixture written")
         monkeypatch.setattr(ann, "REPO_ROOT", tmp_path)
         plan = ann.annotate_one("consumer.py", apply=False)
         assert plan.inferred_mode == "inventory"

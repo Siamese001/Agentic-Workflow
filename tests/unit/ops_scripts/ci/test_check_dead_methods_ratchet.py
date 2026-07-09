@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
 from ops_scripts.ci import check_dead_methods_ratchet as mod
-
 
 # ---- AST method collection ----------------------------------------------
 
@@ -16,6 +16,7 @@ def _write_py(tmp_path: Path, rel: str, src: str) -> Path:
     p = tmp_path / rel
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(src, encoding="utf-8")
+    logging.info("C3 write receipt: dead-method ratchet fixture written")
     return p
 
 

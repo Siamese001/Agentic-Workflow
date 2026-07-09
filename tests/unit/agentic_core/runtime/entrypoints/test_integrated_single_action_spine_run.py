@@ -9,6 +9,7 @@ deterministic helpers + result contract + fail-soft route resolution.
 from __future__ import annotations
 
 import hashlib
+import logging
 from pathlib import Path
 
 import pytest
@@ -74,6 +75,7 @@ class TestSha256File:
     def test_hashes_existing_file(self, tmp_path: Path) -> None:
         p = tmp_path / "x.bin"
         p.write_bytes(b"hello world")
+        logging.info("C3 write receipt: single-action hash fixture written")
         expected = "sha256:" + hashlib.sha256(b"hello world").hexdigest()
         assert _sha256_file(p) == expected
 

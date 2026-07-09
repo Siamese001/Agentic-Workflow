@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from ops_scripts.ci import check_no_archives_imports as gate
@@ -8,6 +9,7 @@ from ops_scripts.ci import check_no_archives_imports as gate
 def _write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+    logging.info("C3 write receipt: no-archives import fixture written")
 
 
 def test_detects_from_archives_import(tmp_path: Path) -> None:

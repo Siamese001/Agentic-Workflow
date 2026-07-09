@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib
+import logging
 import os
 import sys
 from pathlib import Path
@@ -42,6 +43,7 @@ def test_scan_file_detects_writer_import(tmp_path: Path) -> None:
     src.write_text(
         "from agentic_core.L4_state.uwg_writer import write_uwg_state\n", encoding="utf-8"
     )
+    logging.info("C3 write receipt: L6 observer writer-import fixture written")
     # Patch REPO_ROOT to tmp_path so relative path computation works.
     original_root = GATE.REPO_ROOT
     GATE.REPO_ROOT = tmp_path

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 from pathlib import Path
@@ -22,8 +23,7 @@ assert spec is not None and spec.loader is not None
 _runner = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(_runner)
 
-from agentic_core.adg.ci.gate_result import GateResult, VALID_BUCKETS, VALID_STATUSES
-
+from agentic_core.adg.ci.gate_result import VALID_BUCKETS, VALID_STATUSES, GateResult
 
 MANIFEST_PATH = REPO_ROOT / "ops_scripts" / "ci" / "adg_gate_manifest.yaml"
 
@@ -259,6 +259,7 @@ class TestLegacySnapshotPin:
         monkeypatch.setattr(_runner.subprocess, "run", fake_run)
         snap = tmp_path / "adg_indexed_01012026_1200.sqlite"
         snap.write_bytes(b"")
+        logging.info("C3 write receipt: ADG gate snapshot fixture written")
         gate = {
             "gate_id": "static.edge_authority_well_formed",
             "bucket": "static",

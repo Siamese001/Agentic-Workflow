@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from apps_research.prompt_assembly.apps_rg_targeting_brief import (
@@ -48,6 +49,7 @@ def test_extract_jd_text_from_context_and_file(tmp_path: Path) -> None:
     assert extract_jd_text(jd_context={"content": "Full JD body"}) == "Full JD body"
     jd_file = tmp_path / "jd.txt"
     jd_file.write_text("File JD", encoding="utf-8")
+    logging.info("C3 write receipt: targeting brief JD fixture written")
     assert extract_jd_text(jd_context={}, jd_anchor=jd_file) == "File JD"
 
 

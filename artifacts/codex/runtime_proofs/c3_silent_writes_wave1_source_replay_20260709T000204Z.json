@@ -1,0 +1,341 @@
+{
+  "schema_version": "adg-c3-source-replay/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_wave1_20260709T000204Z",
+  "generated_at": "2026-07-09T00:04:27.189885Z",
+  "adg_snapshot_id": "07072026_2307",
+  "gate_id": "C3_silent_writes_ratchet",
+  "selected_family": "C3_silent_writes_ratchet",
+  "wave_id": "W7.C3.1",
+  "selected_rows": 25,
+  "passed": true,
+  "passed_rows": 25,
+  "failed_rows": 0,
+  "expected_c3_reduction_on_next_adg": 25,
+  "files": [
+    {
+      "file": "tests/unit/L4_state/cache/test_vector_cache_layout.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_validate_with_sqlite",
+          "symbol": "logging.info",
+          "line": 97
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/L0_routing/config/test_routing_calibration.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_custom_yaml_values_are_honored",
+          "symbol": "logging.info",
+          "line": 104
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/L0_routing/utils/test_path_util.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_get_python_files_uses_shared_junk_filters",
+          "symbol": "logging.info",
+          "line": 111
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/enforcement/test_elevator_shaft_consistency_enforcer_behavior.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_clean_module_registered",
+          "symbol": "logging.info",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/enforcement/test_integrity_and_historian_behavior.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_reads_real_csv",
+          "symbol": "logging.info",
+          "line": 210
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/utils/memory/test_sparse_index_profile_driven.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_get_sparse_index_accepts_sidecar_name_outside_allowlist",
+          "symbol": "logging.info",
+          "line": 21
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/agentic_core/runtime/entrypoints/test_integrated_single_action_spine_run.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_hashes_existing_file",
+          "symbol": "logging.info",
+          "line": 78
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps/apps_lic/policy/test_decision_router.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_missing_required_keys_raises",
+          "symbol": "logging.info",
+          "line": 45
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps/apps_lic/policy/test_judge_base.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_rubric_missing_required_keys_raises",
+          "symbol": "logging.info",
+          "line": 50
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_e2e/test_hash_utils.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_sha256_file_matches_bytes",
+          "symbol": "logging.info",
+          "line": 32
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_research/test_apps_rg_targeting_brief_prompt.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_extract_jd_text_from_context_and_file",
+          "symbol": "logging.info",
+          "line": 52
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/runtime/aggregation/test__digest_utils.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_sha256_file_uses_text",
+          "symbol": "logging.info",
+          "line": 49
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/runtime/section_proof/test_section_input_usage_ledger.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_build_section_input_usage_ledger_v1_records_hashes_and_boundary_flags",
+          "symbol": "logging.info",
+          "line": 66
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/test_apps_rg_dispatch_envelope_parity.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_parse_preserves_jd_resume_brief_refs_and_enriches_resume_text",
+          "symbol": "logging.info",
+          "line": 16
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/test_briefing_jd_c0_enhancements_w1_w2.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_u0_jd_targeting_mode_run_specific",
+          "symbol": "logging.info",
+          "line": 33
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/test_briefing_resolution.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_local_file_rejects_disallowed_suffix",
+          "symbol": "logging.info",
+          "line": 35
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/apps_rg/test_section_cli_runners.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_competencies_spine_uses_generated_raw_request_brief",
+          "symbol": "logging.info",
+          "line": 15
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/governance_scripts/test_notion_constants_url_extract.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_unreadable_yaml_falls_back_without_raising",
+          "symbol": "logging.info",
+          "line": 230
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_adg_gate_manifest.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_subprocess_gate_sets_adg_snapshot_env",
+          "symbol": "logging.info",
+          "line": 262
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_annotate_consumer_mode.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_dry_run_does_not_write",
+          "symbol": "logging.info",
+          "line": 129
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "_write_consumer",
+          "symbol": "logging.info",
+          "line": 221
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_dead_methods_ratchet.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "_write_py",
+          "symbol": "logging.info",
+          "line": 19
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_l6_observer_law.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "test_scan_file_detects_writer_import",
+          "symbol": "logging.info",
+          "line": 46
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_no_archives_imports.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "_write",
+          "symbol": "logging.info",
+          "line": 12
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_no_legacy_ide_refs.py",
+      "expected_c3_row_delta": 1,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "function": "_write",
+          "symbol": "logging.info",
+          "line": 12
+        }
+      ]
+    }
+  ]
+}

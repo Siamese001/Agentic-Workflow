@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -17,6 +18,7 @@ def test_get_sparse_index_accepts_sidecar_name_outside_allowlist(
     coll = "neutral_fixture_collection"
     db = tmp_path / f"{coll}.db"
     db.write_bytes(b"")
+    logging.info("C3 write receipt: sparse sidecar fixture written")
     monkeypatch.setattr(bm25_store, "_SPARSE_DIR", tmp_path)
     monkeypatch.setattr(bm25_store, "_sparse_index_cache", {})
     assert bm25_store.sparse_sidecar_exists(coll) is True

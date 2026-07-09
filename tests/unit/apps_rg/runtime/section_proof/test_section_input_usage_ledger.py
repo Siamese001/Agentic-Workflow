@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from apps_rg.runtime.section_proof.section_input_usage_ledger import (
@@ -62,6 +63,7 @@ def test_summarize_claim_ledger_proof_axes_counts_supported_unsupported_and_non_
 def test_build_section_input_usage_ledger_v1_records_hashes_and_boundary_flags(tmp_path: Path) -> None:
     base = tmp_path / "base_resume.json"
     base.write_text('{"facts":["bul_001"]}', encoding="utf-8")
+    logging.info("C3 write receipt: section input base resume fixture written")
     claim_ledger = [
         {"claim_text": "Supported claim.", "source_fact_ids": ["bul_001"]},
         {"claim_text": "Bad targeting claim.", "source_fact_ids": ["target_company_acme"]},

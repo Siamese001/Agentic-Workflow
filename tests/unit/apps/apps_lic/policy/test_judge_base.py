@@ -16,6 +16,7 @@ Plus integration tests on each shipped rubric:
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from textwrap import dedent
 
@@ -46,6 +47,7 @@ def test_rubric_missing_file_raises(tmp_path):
 def test_rubric_missing_required_keys_raises(tmp_path):
     bad = tmp_path / "bad.yaml"
     bad.write_text("rubric_id: only\n")
+    logging.info("C3 write receipt: malformed rubric fixture written")
     with pytest.raises(RubricLoadError, match="missing required"):
         Rubric.load(bad)
 

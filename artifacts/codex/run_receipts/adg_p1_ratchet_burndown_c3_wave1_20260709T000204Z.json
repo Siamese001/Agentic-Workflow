@@ -1,0 +1,159 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_wave1_20260709T000204Z",
+  "generated_at": "2026-07-09T00:04:27.189885Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+    "branch": "codex/adg-p1-ratchet-burndown-20260708T195540",
+    "head": "e8ad5e0af2e09c8bb4bfee4cd814778d7cf488c3",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Burn down next P1 ADG ratchet waves on the same P1 branch, commit files, and execute PR to local main.",
+    "plan_id": "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md",
+    "files_changed": [
+      "tests/unit/L4_state/cache/test_vector_cache_layout.py",
+      "tests/unit/agentic_core/L0_routing/config/test_routing_calibration.py",
+      "tests/unit/agentic_core/L0_routing/utils/test_path_util.py",
+      "tests/unit/agentic_core/L4_state/enforcement/test_elevator_shaft_consistency_enforcer_behavior.py",
+      "tests/unit/agentic_core/L4_state/enforcement/test_integrity_and_historian_behavior.py",
+      "tests/unit/agentic_core/L4_state/utils/memory/test_sparse_index_profile_driven.py",
+      "tests/unit/agentic_core/runtime/entrypoints/test_integrated_single_action_spine_run.py",
+      "tests/unit/apps/apps_lic/policy/test_decision_router.py",
+      "tests/unit/apps/apps_lic/policy/test_judge_base.py",
+      "tests/unit/apps_e2e/test_hash_utils.py",
+      "tests/unit/apps_research/test_apps_rg_targeting_brief_prompt.py",
+      "tests/unit/apps_rg/runtime/aggregation/test__digest_utils.py",
+      "tests/unit/apps_rg/runtime/section_proof/test_section_input_usage_ledger.py",
+      "tests/unit/apps_rg/test_apps_rg_dispatch_envelope_parity.py",
+      "tests/unit/apps_rg/test_briefing_jd_c0_enhancements_w1_w2.py",
+      "tests/unit/apps_rg/test_briefing_resolution.py",
+      "tests/unit/apps_rg/test_section_cli_runners.py",
+      "tests/unit/governance_scripts/test_notion_constants_url_extract.py",
+      "tests/unit/ops_scripts/ci/test_adg_gate_manifest.py",
+      "tests/unit/ops_scripts/ci/test_annotate_consumer_mode.py",
+      "tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py",
+      "tests/unit/ops_scripts/ci/test_check_dead_methods_ratchet.py",
+      "tests/unit/ops_scripts/ci/test_check_l6_observer_law.py",
+      "tests/unit/ops_scripts/ci/test_check_no_archives_imports.py",
+      "tests/unit/ops_scripts/ci/test_check_no_legacy_ide_refs.py",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_wave1_source_replay_20260709T000204Z.json",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_wave1_runtime_proof_20260709T000204Z.json"
+    ],
+    "p1_burndown": {
+      "ordinary_p1_target": 3,
+      "selected_family": "C3_silent_writes_ratchet",
+      "ratchet_target": 25,
+      "planned_rows": 25,
+      "attempted_rows": 25,
+      "cleared_rows": 25,
+      "remaining_rows": "not proven until fresh ADG; projected ratchet remaining before this wave was 2667",
+      "final_p1_count": "not zero / not proven",
+      "target_status": "missed",
+      "downstream_unblock_status": "blocked"
+    }
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check --select I --fix <25 touched modules>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check --select I <25 touched modules>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m compileall -q <25 touched test modules>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest <25 touched modules> -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py::TestLiveRepoState::test_live_scan_returns_some_declared_consumers -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest <25 touched modules> -q -k 'not live_scan_returns_some_declared_consumers'",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref e8ad5e0af2e09c8bb4bfee4cd814778d7cf488c3",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "full touched pytest",
+        "reason": "one live-repo-state assertion fails on unchanged local main with 8 missing consumer-mode declarations",
+        "substitute": "focused touched pytest excluding only the reproduced pre-existing live-state assertion"
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "source_replay",
+        "status": "PASS",
+        "evidence": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_wave1_source_replay_20260709T000204Z.json: 25/25 touched modules contain ADG-recognized emits_side_effect calls"
+      },
+      {
+        "name": "runtime_pytest",
+        "status": "PASS",
+        "evidence": "362 passed, 1 deselected; deselected live-state test fails unchanged on local main"
+      },
+      {
+        "name": "handoff_validator",
+        "status": "PASS",
+        "evidence": "dependency_status=ready, artifact_status=repair_ready, P0_FIX=0, P0_WAVE=0, P1_FIX=0"
+      },
+      {
+        "name": "target_status",
+        "status": "BLOCKED",
+        "evidence": "P1=0 not proven; C3 wave is partial progress and downstream lanes remain blocked pending fresh ADG"
+      }
+    ]
+  },
+  "artifacts": {
+    "source_replay": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_wave1_source_replay_20260709T000204Z.json",
+    "runtime_proof": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_wave1_runtime_proof_20260709T000204Z.json"
+  },
+  "rca": {
+    "symptom": "Full touched pytest command has one failure while C3 wave-specific runtime proof passes with the live-state assertion deselected.",
+    "root_cause": "The failing test checks repository-wide consumer-mode declaration state; it fails unchanged on local main with 8 missing declarations and is outside this C3 wave.",
+    "evidence": "Base proof: same TestLiveRepoState assertion fails in C:\\Git\\Agentic-Workflow-FRESH; wave proof: 362 passed, 1 deselected.",
+    "fix_or_next": "next: address consumer-mode declaration debt in its own lane, then run fresh full ADG to prove P1 ratchet deltas.",
+    "recurrence_guard": "Receipt records both the failed full command and passing substituted focused proof so the live-state debt cannot be hidden."
+  }
+}

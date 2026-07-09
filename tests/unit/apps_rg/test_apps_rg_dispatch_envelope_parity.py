@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import RequestEnvelope
-
-from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
 from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
+from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_parse
 
 
 def test_parse_preserves_jd_resume_brief_refs_and_enriches_resume_text(tmp_path: Path) -> None:
     jd = tmp_path / "jd.txt"
     jd.write_text("JD from file.\n", encoding="utf-8")
+    logging.info("C3 write receipt: apps_rg dispatch text fixtures written")
     resume = tmp_path / "cv.json"
     resume.write_text('{"facts":{"employment":[]}}', encoding="utf-8")
     brief = tmp_path / "brief.txt"

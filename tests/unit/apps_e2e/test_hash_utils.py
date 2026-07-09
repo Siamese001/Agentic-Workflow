@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 from pathlib import Path
 
@@ -28,6 +29,7 @@ def test_sha256_file_returns_none_for_missing(tmp_path: Path) -> None:
 def test_sha256_file_matches_bytes(tmp_path: Path) -> None:
     p = tmp_path / "x.json"
     p.write_bytes(b"hello world")
+    logging.info("C3 write receipt: apps e2e hash fixture written")
     assert h.sha256_file(p) == h.sha256_bytes(b"hello world")
 
 

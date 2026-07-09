@@ -1,0 +1,56 @@
+{
+  "schema_version": "codex-runtime-proof/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_wave1_20260709T000204Z",
+  "generated_at": "2026-07-09T00:04:27.189885Z",
+  "proof_name": "c3_silent_writes_wave1_pytest",
+  "commands": [
+    {
+      "command": "python -m ruff check --select I --fix <25 touched modules>",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "18 import-order issues fixed; follow-up ruff --select I passed"
+    },
+    {
+      "command": "python -m ruff check --select I <25 touched modules>",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "All checks passed"
+    },
+    {
+      "command": "python -m compileall -q <25 touched test modules>",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "compileall passed for all 25 touched modules"
+    },
+    {
+      "command": "git diff --check",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "no whitespace errors; Git emitted CRLF conversion warnings only"
+    },
+    {
+      "command": "python -m pytest <25 touched modules> -q",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 1,
+      "summary": "362 passed, 1 failed; failure reproduced unchanged on local main as pre-existing live consumer-mode declaration debt"
+    },
+    {
+      "command": "python -m pytest <25 touched modules> -q -k 'not live_scan_returns_some_declared_consumers'",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "362 passed, 1 deselected, 2 warnings in 10.84s"
+    },
+    {
+      "command": "python ops_scripts/ci/check_terminal_cleanup.py --verbose --fail-on-new-only --base-ref e8ad5e0af2e09c8bb4bfee4cd814778d7cf488c3",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "summary": "terminal cleanup gate passed; reported no Python files to scan for that gate"
+    }
+  ],
+  "pre_existing_failure": {
+    "command": "python -m pytest tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py::TestLiveRepoState::test_live_scan_returns_some_declared_consumers -q",
+    "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+    "exit_code": 1,
+    "summary": "local main has 8 unannotated consumers; same assertion fails before this wave"
+  }
+}
