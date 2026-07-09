@@ -350,7 +350,7 @@ def _failure_payload(
 ) -> dict[str, Any]:
     spine = {
         "schema_version": "apps_rg.spine_run_manifest.v1",
-        "route_family": ROUTE_FAMILY_R3R4,
+        "route_family": route.route_family,
         "route_id": route.route_id,
         "execution_form": route.execution_form,
         "proof_authority": "spine_run_manifest.json",
@@ -372,7 +372,7 @@ def _failure_payload(
         "x3_disposition": "X3_BLOCK",
         "fault": reason,
         "artifact_dir": str(artifact_dir),
-        "route_family": ROUTE_FAMILY_R3R4,
+        "route_family": route.route_family,
         "spine_run_manifest": str(artifact_dir / sr.FILENAME_SPINE_MANIFEST),
         "research_note": reason,
     }
@@ -500,6 +500,22 @@ def run_whole_run_with_route_governance(
     )
     sr.write_stage_receipt(art / sr.FILENAME_ROUTE_CONTRACT, _route_contract_payload(route))
 
+    research_required = bool(route_decision["research_delegation_enabled"])
+    incoming_handoff_authorized = bool(route_decision["incoming_apps_research_handoff_authorized"])
+    if research_required and not incoming_handoff_authorized and route.route_family != ROUTE_FAMILY_R3R4:
+        reason = "APPS_RESEARCH_ROUTE_MISMATCH"
+        route_decision["research_delegation_executed"] = False
+        route_decision["research_failure"] = reason
+        route_decision["research_failure_reason"] = (
+            f"apps_research_required_without_authorized_handoff_on_{route.route_family}"
+        )
+        return _failure_payload(
+            artifact_dir=art,
+            route=route,
+            reason=reason,
+            route_decision=route_decision,
+        )
+
     manual_brief_eff = manual_brief
     research_ran = False
     research_note = ""
@@ -525,30 +541,14 @@ def run_whole_run_with_route_governance(
         route_decision["research_delegation_executed"] = True
         route_decision["research_outcome"] = research_note
         if not ok:
-            if briefing_input_present(manual_brief):
-                route_decision["research_failure_nonterminal"] = research_note
-                route_decision["research_fallback_to_manual_brief"] = True
-                route_decision["research_fallback_reason"] = "manual_brief_input_present"
-                sr.write_stage_receipt(
-                    art / "research" / "manual_brief_fallback_receipt.json",
-                    {
-                        "schema_version": "apps_rg.research_manual_brief_fallback.v1",
-                        "apps_research_outcome": research_note,
-                        "fallback": "manual_brief",
-                        "manual_brief": manual_brief,
-                        "reason": "manual_brief_input_present",
-                    },
-                )
-                research_note = f"ManualBriefFallbackAfter_{research_note}"
-                route_decision["research_outcome"] = research_note
-            else:
-                route_decision["research_failure"] = research_note
-                return _failure_payload(
-                    artifact_dir=art,
-                    route=route,
-                    reason=research_note,
-                    route_decision=route_decision,
-                )
+            route_decision["research_failure"] = research_note
+            route_decision["research_failure_reason"] = "apps_research_hop_failed_without_authorized_handoff"
+            return _failure_payload(
+                artifact_dir=art,
+                route=route,
+                reason=research_note,
+                route_decision=route_decision,
+            )
         else:
             manual_brief_eff = brief_path
             delegated_briefing_ref = sr.FILENAME_DELEGATED_BRIEFING
