@@ -1,18 +1,16 @@
-"""Enriched choice builder for standard AskUserQuestion decisions.
+"""Enriched choice builder for standard Codex request_user_input decisions.
 
-Lightweight wrapper that adds UI invariants to AskUserQuestion options:
+Lightweight wrapper that adds UI invariants to request_user_input options:
 - Recommended option label ends with ``(Recommended)`` and is first when present
 - Numeric confidence prefix on every option description
 - ``[RECOMMENDED ⭐ confidence=X.XX]`` prefix on the recommended description
 - Pros and Cons segments in every option
 - Flip condition on the recommended option
-- ASK_USER_QUESTION_PACKET telemetry (returned, caller must emit)
+- request_user_input ``questions[].id`` plus ``header`` fields
 
 Per hardened plan ui-choice-consistency-zero-loss-hardened-d9f3a1:
 - DEFAULT_HEURISTIC_CONFIDENCE = 0.72 (labeled fallback, not measured)
 - confidence_source explicitly tracked (explicit vs heuristic_default)
-- Builder returns telemetry packet; caller MUST emit
-- AUTHOR_GATE_PACKET never emitted from this path
 
 Authority boundary:
 - AUTHOR_GATE = canonical pipeline for architecture/refactoring/deletion/governance
@@ -21,7 +19,7 @@ Authority boundary:
 
 from __future__ import annotations
 
-import json
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal
@@ -79,8 +77,8 @@ class EnrichedOption:
         )
         return essential + optional
 
-    def to_ask_user_question_dict(self) -> dict[str, str]:
-        """Convert to ask_user_question-compatible dict."""
+    def to_request_user_input_option(self) -> dict[str, str]:
+        """Convert to a Codex request_user_input option."""
         return {
             "label": self.format_label()[:120],  # Cap length
             "description": self.format_description()[:240],  # Cap length
@@ -89,9 +87,9 @@ class EnrichedOption:
 
 @dataclass
 class TelemetryPacket:
-    """Telemetry packet for ASK_USER_QUESTION_PACKET emission."""
+    """Telemetry packet for the request_user_input learning loop."""
 
-    packet_type: str = "ASK_USER_QUESTION_PACKET"
+    packet_type: str = "REQUEST_USER_INPUT_PACKET"
     context: str = "enriched_choice"
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     option_count: int = 0
@@ -240,13 +238,28 @@ def _validate_star_invariant(enriched: list[EnrichedOption]) -> None:
     # recommended_count == 1 is valid (exactly one recommendation)
 
 
+def _slugify_question_id(value: str) -> str:
+    """Return a stable Codex question id from user-facing text."""
+    slug = re.sub(r"[^a-z0-9]+", "_", str(value or "").strip().lower()).strip("_")
+    return (slug or "decision")[:64]
+
+
+def _header_from_context(value: str) -> str:
+    """Return a compact request_user_input header."""
+    words = re.findall(r"[A-Za-z0-9]+", str(value or "Decision"))
+    header = words[0] if words else "Decision"
+    return header[:12]
+
+
 def build_enriched_choice_question(
     question: str,
     options: list[dict[str, Any]],
     recommended_id: str | None = None,
     telemetry_context: str | None = None,
+    question_id: str | None = None,
+    header: str | None = None,
 ) -> dict[str, Any]:
-    """Build enriched ask_user_question payload with UI invariants.
+    """Build a Codex request_user_input payload with UI invariants.
 
     Args:
         question: Base question text.
@@ -261,12 +274,19 @@ def build_enriched_choice_question(
             - confidence: float (optional, uses DEFAULT_HEURISTIC_CONFIDENCE if missing)
         recommended_id: ID of recommended option, or None for no recommendation.
         telemetry_context: Optional context string for telemetry.
+        question_id: Optional stable Codex question id. Derived when omitted.
+        header: Optional short Codex UI header. Derived when omitted.
 
     Returns:
         Dict with keys:
         - question: str (unchanged from input)
-        - options: list[dict] (formatted for ask_user_question with confidence/star/trade-off)
-        - telemetry_packet: dict (ASK_USER_QUESTION_PACKET shape)
+        - question_id: str
+        - header: str
+        - options: list[dict] (formatted request_user_input options)
+        - questions: list[dict] (Codex request_user_input questions array)
+        - tool_input: dict (Codex request_user_input input)
+        - tool_name: str (functions.request_user_input)
+        - telemetry_packet: dict (learning-loop metadata)
 
     Raises:
         ValueError: If options invalid or invariants violated.
@@ -298,12 +318,10 @@ def build_enriched_choice_question(
         ...     recommended_id="B",
         ...     telemetry_context="branch-resolution",
         ... )
-        >>> ask_user_question(
-        ...     question=payload["question"],
-        ...     options=payload["options"],
-        ...     allowMultiple=False,
-        ... )
-        >>> print("ASK_USER_QUESTION_PACKET: " + json.dumps(payload["telemetry_packet"]))
+        >>> payload["tool_name"]
+        'functions.request_user_input'
+        >>> payload["tool_input"]["questions"][0]["id"]
+        'branch_resolution'
     """
     # Validate inputs
     _validate_options(options, recommended_id)
@@ -343,29 +361,41 @@ def build_enriched_choice_question(
         confidence_source=telemetry_confidence_source,
     )
 
-    # Convert to ask_user_question format
-    ask_user_question_options = [opt.to_ask_user_question_dict() for opt in enriched]
-    telemetry.options = ask_user_question_options
+    request_user_input_options = [opt.to_request_user_input_option() for opt in enriched]
+    telemetry.options = request_user_input_options
+
+    context_for_id = telemetry_context or question
+    qid = question_id or _slugify_question_id(context_for_id)
+    qheader = header or _header_from_context(context_for_id)
+    question_payload = {
+        "id": qid,
+        "header": qheader,
+        "question": question,
+        "options": request_user_input_options,
+    }
 
     return {
         "question": question,
-        "options": ask_user_question_options,
+        "question_id": qid,
+        "header": qheader,
+        "options": request_user_input_options,
+        "questions": [question_payload],
+        "tool_input": {"questions": [question_payload]},
+        "tool_name": "functions.request_user_input",
         "telemetry_packet": telemetry.to_dict(),
     }
 
 
-def format_ask_user_question_call(
+def format_request_user_input_payload(
     question: str,
     options: list[dict[str, Any]],
     recommended_id: str | None = None,
     telemetry_context: str | None = None,
 ) -> str:
-    """Format a complete ask_user_question call with telemetry emission.
+    """Format a request_user_input payload example.
 
-    Returns a string that can be printed/executed to perform the ask_user_question
-    call and emit the telemetry packet.
-
-    This is a convenience wrapper for documentation and examples.
+    This is a convenience wrapper for documentation and examples. It returns
+    a Python expression-like snippet, not an executable tool call.
     """
     payload = build_enriched_choice_question(
         question=question,
@@ -387,15 +417,8 @@ def format_ask_user_question_call(
     lines.extend([
         ')',
         '',
-        '# Invoke ask_user_question',
-        'ask_user_question(',
-        '    question=payload["question"],',
-        '    options=payload["options"],',
-        '    allowMultiple=False,',
-        ')',
-        '',
-        '# Emit telemetry (REQUIRED - caller must emit)',
-        'print("ASK_USER_QUESTION_PACKET: " + json.dumps(payload["telemetry_packet"]))',
+        '# Tool input for functions.request_user_input',
+        'payload["tool_input"]',
     ])
 
     return '\n'.join(lines)

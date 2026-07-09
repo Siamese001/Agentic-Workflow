@@ -1,22 +1,20 @@
 #!/usr/bin/env python3
-"""post_ask_user_question_capture.py — PostToolUse capture for native question tools.
+"""post_ask_user_question_capture.py — PostToolUse capture for Codex request_user_input.
 
 Plan: askq-confidence-meta-learning-loop-c4e7a1 (W1.2). Companion thin hook:
-``.codex/hooks/after_ask_user_question.py`` (registered under ``PostToolUse`` for native
-question tools).
+``.codex/hooks/after_ask_user_question.py``.
 
 Why this exists
 ---------------
-The ``ask_user_question_decisions`` ledger + ``AskUserQuestionConsulter`` already exist, but the
-native tool never wrote to them: the only live hook was the PreToolUse *shape* gate, and
-``hooks.json`` had no ``PostToolUse`` matcher for ``AskUserQuestion`` — so the user's actual
-selection (the core learning signal) was never captured. This hook closes the WRITE+SELECTION
-seam: a single PostToolUse event carries both ``tool_input`` (options + confidence) and
-``tool_response`` (the user's choice), so one atomic capture needs no PreToolUse correlation.
+The ``ask_user_question_decisions`` ledger already exists, but the Codex request path still
+needs to capture the user's actual selection (the core learning signal). This hook closes the
+WRITE+SELECTION path: a single PostToolUse event carries both ``tool_input`` (options +
+confidence) and ``tool_response`` (the user's choice), so one atomic capture needs no
+PreToolUse correlation.
 
 Selection-shape robustness
 ---------------------------
-The native question ``tool_input`` shape is reliable (questions[] → options[] with
+The Codex ``tool_input`` shape is reliable (questions[] → options[] with
 label/description; the recommended option's label ends ``(Recommended)`` and its description
 carries ``[confidence=0.NN]`` — guaranteed by the PreToolUse gate). The ``tool_response``
 selected-option representation is NOT authoritatively documented, so selection extraction is
@@ -51,7 +49,7 @@ _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
 # Word-band fallback (the gate tolerates legacy high/medium/low).
 _BAND_RE = re.compile(r"\b(high|medium|low)\b", re.IGNORECASE)
 _BAND_SCORE = {"high": 0.9, "medium": 0.7, "low": 0.5}
-_QUESTION_TOOL_NAMES = frozenset({"AskUserQuestion", "request_user_input", "functions.request_user_input"})
+_QUESTION_TOOL_NAMES = frozenset({"request_user_input", "functions.request_user_input"})
 
 
 def _bypass() -> bool:
@@ -107,7 +105,7 @@ def _context_from_question(question: dict, fallback_idx: int) -> str:
 def _collect_selected_strings(node: Any, out: list[str]) -> None:
     """Recursively collect plausible 'selected label/answer' strings from any tool_response shape.
 
-    Defensive by design: AskUserQuestion's response shape is not authoritatively documented, so we
+    Defensive by design: the response shape is not authoritatively documented, so we
     harvest string values under the common selection keys, plus bare strings in lists, and let
     label-matching disambiguate.
     """
@@ -176,7 +174,7 @@ def selected_strings_for_question(
 ) -> list[str]:
     """Selected label/answer strings scoped to ONE question (avoids cross-question collisions).
 
-    Multi-question AskUserQuestion calls may reuse option labels (two yes/no prompts). A global
+    Multi-question request_user_input calls may reuse option labels (two yes/no prompts). A global
     pool would let q0 match q1's choice, corrupting the acceptance/override signal. So scope by:
     (1) positional answers list → entry at this question's index; (2) header/question-keyed map →
     this question's key; (3) only when there is a single question, fall back to the whole response.
@@ -245,7 +243,7 @@ def build_decision_rows(tool_input: dict, tool_response: Any) -> list[dict]:
         sel_idx = selected_index_for_question(q_idx, options, sel_strings, indices_by_question)
         question_text = str(question.get("question") or question.get("header") or "")
         packet: dict[str, Any] = {
-            "packet_type": "ASK_USER_QUESTION_PACKET",
+            "packet_type": "REQUEST_USER_INPUT_PACKET",
             "timestamp": now,
             "decision_type": "enriched_choice",
             "context": _context_from_question(question, q_idx),

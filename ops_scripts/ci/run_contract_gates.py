@@ -102,7 +102,7 @@ def validate_mcp_health():
     # MISSING_FILESYSTEM premise no longer holds. Retired.
 
     # cursor-decommission W7: check_cursor_config_schema removed (validated deleted
-    # deleted legacy editor-era hooks/MCP config; Claude Code uses .codex/hooks.json + root .mcp.json).
+    # deleted legacy editor-era hooks/MCP config; Codex uses .codex/hooks.json + root .mcp.json).
 
     # Gate: every .codex/skills/<name>/SKILL.md must conform to Anthropic's
     # Agent Skills authoring spec (frontmatter, name/description rules, 500-line
@@ -178,11 +178,11 @@ def main():
 
     # [contract-gates-deband 2026-06-15] Removed from the runner: 1.9 reference_orphans,
     # 1.10 judge_calibration (legacy editor-era). (memory: contract-gates-debanding-triage)
-    # [W1 claude-native-supersession-9d3f7a] Author-Gate harness-HITL CI gates RETIRED.
+    # Author-Gate harness-HITL CI gates RETIRED.
     # The 9 gates here (ledger schema/SSOT/outcome-coverage/integrity, ask_user_question
     # packet freshness, AGP1 pipeline freshness, v2 completeness, anomaly detector,
     # bypass rollup) enforced a bespoke packet -> render -> marker -> queue -> SQLite-ledger
-    # pipeline that emulated a structured-choice tool. Native AskUserQuestion supersedes
+    # pipeline that emulated a structured-choice tool. Codex request_user_input supersedes
     # it. Gate scripts under ops_scripts/ci/decision_ledger/ are dormant (uncalled); the
     # governance hook scripts + 2 skills are dormant in place. Invariant (stop & ask before
     # ambiguous edits) preserved in AGENTS.md + constitutional s6.
@@ -705,10 +705,14 @@ def main():
             "ops_scripts/ci/check_gap001_exit_no_direct_writes.py",
         ),
         # EC-UI Enriched Choice UI invariants gate — RETIRED (Author-Gate W1 teardown,
-        # ADR-093). It scanned callsites for the retired enriched-choice/AUTHOR_GATE_PACKET
+        # ADR-093). It scanned callsites for the retired enriched-choice packet
         # wrapper; the live native-tool convention (numeric confidence + (Recommended)) is
         # enforced by the PreToolUse gate pre_ask_user_question_recommendation_gate.py. Gate
-        # archived under archives/claude_native_supersession_2026-06-07/.
+        # archived under the 2026-06-07 native-supersession archive.
+        (
+            "CODEX-REQUEST-UI request_user_input decision UI contract",
+            "ops_scripts/ci/check_codex_request_user_input_contract.py",
+        ),
         # W6ECE1 — W6 Emit-Contract Enrichment 9-concern gate (ADR-084).
         # Structural field scan across all 11 emit contracts (AST-level).
         # Verifies: C1 identity quad, C2 l5_cert_ref, C3 gate_verdict_refs,
@@ -749,7 +753,7 @@ def main():
             "MCP-PARITY legacy editor vs legacy editor MCP editor parity",
             "ops_scripts/ci/check_mcp_editor_parity.py",
         ),
-        # [W4 claude-native-supersession-9d3f7a] DEFER deferred-scope-marker gate RETIRED;
+        # DEFER deferred-scope-marker gate RETIRED;
         # out-of-scope work now surfaces via native spawn_task chips (ADR-096).
         # RULE-FMT — Rule frontmatter schema validation.
         # Validates .codex/rules/*.md YAML frontmatter against canonical schema.

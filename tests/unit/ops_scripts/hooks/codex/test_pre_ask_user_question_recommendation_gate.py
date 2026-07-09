@@ -1,12 +1,4 @@
-"""Unit tests for pre_ask_user_question_recommendation_gate.py.
-
-The decision function ``evaluate`` is exercised in isolation — no live tool, no hook
-plumbing. Covers the §6 recommended-marker check (Finding 1), the confidence-band check
-(Finding 2), the recommended-first convention, advisory-vs-strict behavior, bypass, and
-fail-open paths.
-
-Plan precedent: RCA 2026-06-08 (AskUserQuestion shipped with no (Recommended)/confidence).
-"""
+"""Unit tests for the Codex request_user_input recommendation gate."""
 
 from __future__ import annotations
 
@@ -45,12 +37,23 @@ def _clean_env(monkeypatch, tmp_path):
     return monkeypatch
 
 
-def _auq(*options: dict, header: str = "Approach", tool_name: str = "AskUserQuestion") -> dict:
+def _question(*options: dict, header: str = "Approach", **overrides: object) -> dict:
+    data = {
+        "id": "approach",
+        "question": "Which approach?",
+        "header": header,
+        "options": list(options),
+    }
+    data.update(overrides)
+    return data
+
+
+def _payload(*options: dict, question_overrides: dict | None = None, tool_name: str = "functions.request_user_input") -> dict:
     return {
         "tool_name": tool_name,
         "tool_input": {
             "questions": [
-                {"question": "Which approach?", "header": header, "options": list(options)}
+                _question(*options, **(question_overrides or {})),
             ]
         },
     }
@@ -60,78 +63,107 @@ def _opt(label: str, description: str = "a trade-off") -> dict:
     return {"label": label, "description": description}
 
 
-# --------------------------------------------------------------------------------------
-# allow paths
-# --------------------------------------------------------------------------------------
+def _recommended(label: str = "Do it inline (Recommended)", confidence: str = "0.82") -> dict:
+    return _opt(
+        label,
+        f"[RECOMMENDED ⭐ confidence={confidence}] Pros: fastest fix. Cons: more local coupling. "
+        "Flips if blast radius grows.",
+    )
 
-def test_non_ask_user_question_allowed():
+
+def _alternative(label: str = "Refactor first", confidence: str = "0.61") -> dict:
+    return _opt(label, f"[confidence={confidence}] Pros: cleaner shape. Cons: slower delivery.")
+
+
+def test_non_request_user_input_allowed():
     code, reason = gate.evaluate({"tool_name": "Grep", "tool_input": {}})
     assert code == 0
     assert "not a native question tool" in reason
 
 
+def test_compliant_codex_request_user_input_passes():
+    code, reason = gate.evaluate(_payload(_recommended(), _alternative()))
+    assert code == 0
+    assert reason.startswith("ok:")
+
+
+def test_unqualified_codex_request_user_input_passes():
+    payload = _payload(_recommended(), _alternative(), tool_name="request_user_input")
+    code, reason = gate.evaluate(payload)
+    assert code == 0
+    assert reason.startswith("ok:")
+
+
+def test_missing_question_id_blocks():
+    payload = _payload(_recommended(), _alternative(), question_overrides={"id": ""})
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include non-empty 'id'" in reason
+
+
+def test_missing_header_blocks():
+    payload = _payload(_recommended(), _alternative(), question_overrides={"header": ""})
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include non-empty 'header'" in reason
+
+
+def test_legacy_multiselect_field_blocks():
+    payload = _payload(_recommended(), _alternative(), question_overrides={"multiSelect": False})
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must not include legacy-only 'multiSelect'" in reason
+
+
+def test_one_option_blocks_codex_schema():
+    payload = _payload(_recommended())
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include 2-3 options" in reason
+
+
+def test_four_options_blocks_codex_schema():
+    payload = _payload(
+        _recommended(),
+        _alternative("B"),
+        _alternative("C"),
+        _alternative("D"),
+    )
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include 2-3 options" in reason
+
+
+def test_option_description_required():
+    payload = _payload(_recommended(), {"label": "Other", "description": ""})
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include non-empty 'description'" in reason
+
+
 def test_bypass_allows(_clean_env):
     _clean_env.setenv(gate._BYPASS_ENV, "1")
-    payload = _auq(_opt("Option A"), _opt("Option B"))  # no recommended at all
+    payload = _payload(_opt("Option A"), _opt("Option B"))
     code, reason = gate.evaluate(payload)
     assert code == 0
     assert "bypass" in reason.lower()
 
 
-def test_compliant_recommended_first_with_confidence():
-    payload = _auq(
-        _opt(
-            "Do it inline (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.82] Pros: fastest fix. Cons: more local coupling. Flips if blast radius grows.",
-        ),
-        _opt("Refactor first", "[confidence=0.61] Pros: cleaner shape. Cons: slower delivery."),
-    )
-    code, reason = gate.evaluate(payload)
-    assert code == 0
-    assert reason.startswith("ok:")
-
-
-def test_compliant_codex_request_user_input_passes():
-    payload = _auq(
-        _opt(
-            "Patch gate (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.91] Pros: closes the Codex gap. Cons: touches hook wiring. Flips if Codex does not emit this tool name.",
-        ),
-        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
-        tool_name="request_user_input",
-    )
-    code, reason = gate.evaluate(payload)
-    assert code == 0
-    assert reason.startswith("ok:")
-
-
-def test_codex_request_user_input_recommended_without_ui_contract_blocks():
-    payload = _auq(
+def test_recommended_without_ui_contract_blocks():
+    payload = _payload(
         _opt("Patch gate (Recommended)", "Confidence high. Pros: closes gap. Cons: churn. Flips if unavailable."),
-        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
-        tool_name="request_user_input",
+        _alternative("Document only", "0.24"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
-    assert "native question-tool recommendation/confidence contract" in reason
+    assert "Codex request_user_input recommendation/confidence contract" in reason
     assert "[RECOMMENDED ⭐ confidence=0.NN]" in reason
 
 
-def test_qualified_codex_request_user_input_recommended_without_ui_contract_blocks():
-    payload = _auq(
-        _opt("Patch gate (Recommended)", "[confidence=0.91] Pros: closes gap. Cons: churn. Flips if unavailable."),
-        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
-        tool_name="functions.request_user_input",
-    )
-    code, reason = gate.evaluate(payload)
-    assert code == 2
-    assert "recommended description must begin '[RECOMMENDED ⭐ confidence=0.NN]'" in reason
-
-
 def test_confidence_keyword_without_numeric_prefix_blocks():
-    payload = _auq(
+    payload = _payload(
         _opt("Merge as-is (Recommended)", "Confidence: medium. Pros: quick. Cons: risky. Flips if tests fail."),
-        _opt("Hold", "[confidence=0.40] Pros: safer. Cons: slower."),
+        _alternative("Hold", "0.40"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
@@ -139,12 +171,9 @@ def test_confidence_keyword_without_numeric_prefix_blocks():
 
 
 def test_out_of_range_confidence_value_blocks_visible_ui_contract():
-    payload = _auq(
-        _opt(
-            "Patch gate (Recommended)",
-            "[RECOMMENDED ⭐ confidence=1.20] Pros: closes gap. Cons: impossible confidence. Flips if evidence changes.",
-        ),
-        _opt("Document only", "[confidence=0.24] Pros: low churn. Cons: leaves runtime gap."),
+    payload = _payload(
+        _recommended("Patch gate (Recommended)", "1.20"),
+        _alternative("Document only", "0.24"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
@@ -152,24 +181,20 @@ def test_out_of_range_confidence_value_blocks_visible_ui_contract():
 
 
 def test_non_recommended_out_of_range_confidence_value_blocks_visible_ui_contract():
-    payload = _auq(
-        _opt(
-            "Patch gate (Recommended)",
-            "[RECOMMENDED ⭐ confidence=1.00] Pros: closes gap. Cons: absolute confidence. Flips if evidence changes.",
-        ),
-        _opt("Document only", "[confidence=1.20] Pros: low churn. Cons: impossible confidence."),
+    payload = _payload(
+        _recommended("Patch gate (Recommended)", "1.00"),
+        _alternative("Document only", "1.20"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
     assert "Document only description must begin with numeric 0.00-1.00 confidence prefix" in reason
 
 
-# --------------------------------------------------------------------------------------
-# advisory (non-strict) findings — exit 0 but flagged
-# --------------------------------------------------------------------------------------
-
 def test_missing_recommended_marker_is_advisory():
-    payload = _auq(_opt("Option A"), _opt("Option B"))
+    payload = _payload(
+        _opt("Option A", "[confidence=0.51] Pros: quick. Cons: less proof."),
+        _opt("Option B", "[confidence=0.49] Pros: safer. Cons: slower."),
+    )
     code, reason = gate.evaluate(payload)
     assert code == 0
     assert reason.startswith("ADVISORY")
@@ -177,11 +202,9 @@ def test_missing_recommended_marker_is_advisory():
 
 
 def test_recommended_without_confidence_blocks_by_default():
-    # Default-to-enforcement (user directive 2026-06-13): a marked recommendation with no
-    # confidence signal is the core violation → BLOCK (exit 2) without needing strict mode.
-    payload = _auq(
+    payload = _payload(
         _opt("Pick this one (Recommended)", "just a plain trade-off, no band"),
-        _opt("Other", "x"),
+        _alternative("Other", "0.35"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
@@ -189,34 +212,20 @@ def test_recommended_without_confidence_blocks_by_default():
     assert "confidence" in reason
 
 
-def test_recommended_without_confidence_bypass_allows(_clean_env):
-    # The bypass escape hatch still overrides the default block.
-    _clean_env.setenv(gate._BYPASS_ENV, "1")
-    payload = _auq(
-        _opt("Pick this one (Recommended)", "no band"),
-        _opt("Other", "x"),
-    )
-    code, reason = gate.evaluate(payload)
-    assert code == 0
-    assert "bypass" in reason.lower()
-
-
 def test_symmetric_question_not_blocked_by_default():
-    # No option marked (Recommended) — a legitimate symmetric question — stays advisory,
-    # NOT blocked, so the enforcement default does not false-block preference questions.
-    payload = _auq(_opt("Red", "warm"), _opt("Blue", "cool"))
+    payload = _payload(
+        _opt("Red", "[confidence=0.50] Pros: warm. Cons: less contrast."),
+        _opt("Blue", "[confidence=0.50] Pros: cool. Cons: less warmth."),
+    )
     code, reason = gate.evaluate(payload)
     assert code == 0
     assert reason.startswith("ADVISORY")
 
 
 def test_recommended_not_first_is_flagged():
-    payload = _auq(
-        _opt("Other", "[confidence=0.40] Pros: low churn. Cons: weaker outcome."),
-        _opt(
-            "Pick this (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.80] Pros: better outcome. Cons: higher churn. Flips if scope expands.",
-        ),
+    payload = _payload(
+        _alternative("Other", "0.40"),
+        _recommended("Pick this (Recommended)", "0.80"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
@@ -224,19 +233,21 @@ def test_recommended_not_first_is_flagged():
 
 
 def test_violation_is_logged(_clean_env):
-    payload = _auq(_opt("A"), _opt("B"))
+    payload = _payload(
+        _opt("A", "[confidence=0.50] Pros: a. Cons: b."),
+        _opt("B", "[confidence=0.50] Pros: c. Cons: d."),
+    )
     gate.evaluate(payload)
     assert gate._VIOLATIONS_LOG.exists()
     assert "no option marked" in gate._VIOLATIONS_LOG.read_text(encoding="utf-8")
 
 
-# --------------------------------------------------------------------------------------
-# strict mode — exit 2 (block)
-# --------------------------------------------------------------------------------------
-
 def test_strict_blocks_missing_recommended(_clean_env):
     _clean_env.setenv(gate._STRICT_ENV, "1")
-    payload = _auq(_opt("A"), _opt("B"))
+    payload = _payload(
+        _opt("A", "[confidence=0.50] Pros: a. Cons: b."),
+        _opt("B", "[confidence=0.50] Pros: c. Cons: d."),
+    )
     code, reason = gate.evaluate(payload)
     assert code == 2
     assert "contract" in reason
@@ -244,24 +255,14 @@ def test_strict_blocks_missing_recommended(_clean_env):
 
 def test_strict_allows_compliant(_clean_env):
     _clean_env.setenv(gate._STRICT_ENV, "1")
-    payload = _auq(
-        _opt(
-            "Go (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Cons: touches more code. Flips if tests fail.",
-        ),
-        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
-    )
-    code, _ = gate.evaluate(payload)
+    code, _ = gate.evaluate(_payload(_recommended("Go (Recommended)", "0.80"), _alternative("Stop", "0.35")))
     assert code == 0
 
 
 def test_all_options_require_pros_and_cons():
-    payload = _auq(
-        _opt(
-            "Go (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Flips if tests fail.",
-        ),
-        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
+    payload = _payload(
+        _opt("Go (Recommended)", "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Flips if tests fail."),
+        _alternative("Stop", "0.35"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
@@ -269,35 +270,28 @@ def test_all_options_require_pros_and_cons():
 
 
 def test_recommended_requires_flip_condition():
-    payload = _auq(
-        _opt(
-            "Go (Recommended)",
-            "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Cons: touches more code.",
-        ),
-        _opt("Stop", "[confidence=0.35] Pros: avoids churn. Cons: leaves issue open."),
+    payload = _payload(
+        _opt("Go (Recommended)", "[RECOMMENDED ⭐ confidence=0.80] Pros: completes the work. Cons: touches more code."),
+        _alternative("Stop", "0.35"),
     )
     code, reason = gate.evaluate(payload)
     assert code == 2
     assert "Flips if" in reason
 
 
-# --------------------------------------------------------------------------------------
-# fail-open / shape robustness
-# --------------------------------------------------------------------------------------
-
-def test_no_questions_allowed():
-    code, _ = gate.evaluate({"tool_name": "AskUserQuestion", "tool_input": {"questions": []}})
+def test_no_questions_allowed_fail_open():
+    code, _ = gate.evaluate({"tool_name": "functions.request_user_input", "tool_input": {"questions": []}})
     assert code == 0
 
 
-def test_freetext_only_question_allowed():
-    # A question with no options (free-text) has nothing to enforce.
+def test_free_text_shape_blocks_for_codex():
     payload = {
-        "tool_name": "AskUserQuestion",
-        "tool_input": {"questions": [{"question": "name?", "header": "Name"}]},
+        "tool_name": "functions.request_user_input",
+        "tool_input": {"questions": [{"id": "name", "question": "name?", "header": "Name"}]},
     }
-    code, _ = gate.evaluate(payload)
-    assert code == 0
+    code, reason = gate.evaluate(payload)
+    assert code == 2
+    assert "must include an options list" in reason
 
 
 def test_non_dict_payload_allowed():

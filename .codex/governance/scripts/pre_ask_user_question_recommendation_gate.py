@@ -1,37 +1,29 @@
 #!/usr/bin/env python3
-"""pre_ask_user_question_recommendation_gate.py — native question-tool contract gate.
+"""pre_ask_user_question_recommendation_gate.py — Codex request_user_input contract gate.
 
-Companion thin hook: ``.codex/hooks/before_ask_user_question.py`` (registered under
-``PreToolUse`` for native question tools).
+Companion thin hook: ``.codex/hooks/before_ask_user_question.py``.
 
 Why this exists
 ---------------
 Constitutional §6 / AGENTS.md Author-Gate require: when ≥2 plausible approaches have
-different blast radius and no unambiguous directive, call the native question tool
-(``AskUserQuestion`` in Claude Code, ``request_user_input`` in Codex) **and mark the
-recommended option**. The retired W1 Author-Gate pipeline
-(``author-gate-packet-builder`` → ``author-gate-ui-renderer``; ADR-093 /
-``claude-native-supersession-9d3f7a``) used to *manufacture* two load-bearing fields
-deterministically — a STAR recommendation and a confidence band. The native tool dropped
-those affordances, so the §6 invariant lost its enforcing mechanism (RCA 2026-06-08: two
-AskUserQuestion calls shipped with neither a ``(Recommended)`` marker nor a confidence
-signal).
+different blast radius and no unambiguous directive, call Codex ``request_user_input`` and
+mark the recommended option. This gate adds deterministic control on the proposed Codex
+tool input. It inspects each question and flags when:
 
-This gate re-adds the missing deterministic control on the *native tool input*. It is the
-post-supersession successor to the retired legacy AskUserQuestion routing gate. It inspects
-the proposed native question-tool options and flags when:
-
+* the Codex schema fields are absent or malformed (``id``, ``header``, ``question``, and
+  2-3 options);
 * no option label ends with ``(Recommended)`` — the §6 marker is absent (Finding 1);
 * the recommended option's description does not begin with the canonical confidence prefix;
 * any option description lacks a numeric confidence prefix or Pros/Cons text;
-* the recommended option is not placed first (native-tool authoring convention);
+* the recommended option is not placed first;
 * the recommended option lacks the required ``Flips if`` calibration condition.
 
 Canonical option shape (SSOT)
 -----------------------------
-Authoring-convention SSOT: the ``ask-user-question-recommendation`` skill. Recommended option
-first; its ``label`` ends ``(Recommended)``; **every** option ``description`` begins with a
-numeric ``[confidence=0.NN]`` prefix, and the recommended one with
+Authoring-convention SSOT: the ``ask-user-question-recommendation`` skill. Every Codex
+question includes a stable ``id`` and a short ``header``. The recommended option goes first,
+its ``label`` ends ``(Recommended)``, **every** option ``description`` begins with a numeric
+``[confidence=0.NN]`` prefix, and the recommended one begins with
 ``[RECOMMENDED ⭐ confidence=0.NN]`` (one star). Every option also carries ``Pros:`` and
 ``Cons:`` text; the recommended option names the fact that would flip the recommendation.
 
@@ -39,9 +31,10 @@ Decision contract (``evaluate``)
 --------------------------------
 Returns ``(0, reason)`` to allow or ``(2, reason)`` to block.
 
-* Not a native question-tool call ............ allow
+* Not a Codex request_user_input call ........ allow
 * ``ASK_REC_GUARD_BYPASS=1`` ................. allow (logged)
 * Every question has a marked + canonical recommendation ... allow
+* A Codex question with malformed schema fields ... **BLOCK (exit 2) by default**
 * A marked ``(Recommended)`` option with a non-canonical shape ... **BLOCK (exit 2) by
   default** — the exact §6 / user-directive violation (a recommendation must carry
   confidence, pros/cons, and flip criteria). Override only with ``ASK_REC_GUARD_BYPASS=1``.
@@ -73,7 +66,7 @@ _STRICT_ENV = "ASK_REC_GUARD_STRICT"
 # set to 0 to silence. NEVER affects the allow/block decision.
 _CALIB_ADVISORY_ENV = "ASK_REC_CALIBRATION_ADVISORY"
 
-_QUESTION_TOOL_NAMES = frozenset({"AskUserQuestion", "request_user_input", "functions.request_user_input"})
+_QUESTION_TOOL_NAMES = frozenset({"request_user_input", "functions.request_user_input"})
 
 # A "(Recommended)" suffix on an option label (case-insensitive, trailing-space tolerant).
 _RECOMMENDED_RE = re.compile(r"\(\s*recommended\s*\)\s*$", re.IGNORECASE)
@@ -219,6 +212,38 @@ def question_findings(idx: int, question: dict) -> list[tuple[str, str]]:
     return findings
 
 
+def codex_schema_findings(idx: int, question: dict) -> list[str]:
+    """Return blocking findings for malformed Codex request_user_input questions."""
+    if not isinstance(question, dict):
+        return [f"[q{idx}] question must be an object"]
+
+    header = str(question.get("header") or question.get("question") or f"q{idx}")[:48]
+    findings: list[str] = []
+    for field in ("id", "header", "question"):
+        value = question.get(field)
+        if not isinstance(value, str) or not value.strip():
+            findings.append(f"[{header}] Codex request_user_input question must include non-empty {field!r}")
+
+    if "multiSelect" in question:
+        findings.append(f"[{header}] Codex request_user_input question must not include legacy-only 'multiSelect'")
+
+    options = question.get("options")
+    if not isinstance(options, list):
+        findings.append(f"[{header}] Codex request_user_input question must include an options list")
+        return findings
+    if not 2 <= len(options) <= 3:
+        findings.append(f"[{header}] Codex request_user_input question must include 2-3 options")
+    for pos, opt in enumerate(options):
+        if not isinstance(opt, dict):
+            findings.append(f"[{header}] option {pos + 1} must be an object")
+            continue
+        for field in ("label", "description"):
+            value = opt.get(field)
+            if not isinstance(value, str) or not value.strip():
+                findings.append(f"[{header}] option {pos + 1} must include non-empty {field!r}")
+    return findings
+
+
 def evaluate(payload: dict) -> tuple[int, str]:
     """Pure decision function. Returns (exit_code, reason). Logs on non-compliance."""
     if not isinstance(payload, dict):
@@ -238,6 +263,7 @@ def evaluate(payload: dict) -> tuple[int, str]:
     block_findings: list[str] = []
     advisory_findings: list[str] = []
     for idx, question in enumerate(questions):
+        block_findings.extend(codex_schema_findings(idx, question))
         for severity, message in question_findings(idx, question):
             (block_findings if severity == "block" else advisory_findings).append(message)
 
@@ -249,12 +275,12 @@ def evaluate(payload: dict) -> tuple[int, str]:
     # Default to enforcement: a marked (Recommended) option with non-canonical output criteria
     # is the exact contract violation — block by default.
     if block_findings:
-        return 2, f"native question-tool recommendation/confidence contract: {'; '.join(block_findings)}"
+        return 2, f"Codex request_user_input recommendation/confidence contract: {'; '.join(block_findings)}"
     # Soft findings (no recommendation marked — possibly a symmetric question; or not-first):
     # advisory by default, blocking only under strict mode.
     if _strict():
-        return 2, f"native question-tool recommendation/confidence contract (strict): {'; '.join(advisory_findings)}"
-    return 0, f"ADVISORY (native question-tool recommendation/confidence): {'; '.join(advisory_findings)}"
+        return 2, f"Codex request_user_input recommendation/confidence contract (strict): {'; '.join(advisory_findings)}"
+    return 0, f"ADVISORY (Codex request_user_input recommendation/confidence): {'; '.join(advisory_findings)}"
 
 
 def _log_violation(payload: dict, reason: str) -> None:

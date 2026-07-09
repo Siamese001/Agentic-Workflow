@@ -1,4 +1,4 @@
-"""Tests for the canonical AskUserQuestion enriched choice builder."""
+"""Tests for the canonical Codex request_user_input enriched choice builder."""
 
 from __future__ import annotations
 
@@ -65,6 +65,11 @@ class TestCanonicalOutput:
             assert "Cons:" in opt["description"]
             assert re.match(r"^\[(?:RECOMMENDED ⭐ )?confidence=\d\.\d{2}\]", opt["description"])
         assert "Flips if the bug is isolated to one obvious line." in opts[0]["description"]
+        assert payload["tool_name"] == "functions.request_user_input"
+        assert payload["tool_input"]["questions"] == payload["questions"]
+        assert payload["questions"][0]["id"] == "branch_resolution"
+        assert payload["questions"][0]["header"] == "branch"
+        assert payload["questions"][0]["options"] == opts
 
     def test_no_recommendation_keeps_order_and_has_no_star(self):
         payload = build_enriched_choice_question(
@@ -157,7 +162,7 @@ class TestTelemetryPacket:
         )
         telemetry = payload["telemetry_packet"]
 
-        assert telemetry["packet_type"] == "ASK_USER_QUESTION_PACKET"
+        assert telemetry["packet_type"] == "REQUEST_USER_INPUT_PACKET"
         assert telemetry["context"] == "approach"
         assert telemetry["question"] == "Which approach?"
         assert telemetry["option_count"] == 2

@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""beforeAskUserQuestion — PreToolUse relay for native question tools.
+"""before_request_user_input — PreToolUse relay for Codex request_user_input.
 
-Thin relay: reads the Claude Code event JSON once, delegates the decision to
+Thin relay: reads the tool event JSON once, delegates the decision to
 ``.codex/governance/scripts/pre_ask_user_question_recommendation_gate.py`` (the testable
-SSOT), and translates the gate's exit code into a Claude Code allow/block.
+SSOT), and translates the gate's exit code into allow/block.
 
 Self-contained on purpose — it does not depend on ``lib.codex_hook_common`` (absent in some
 checkouts). Fail-open on every error so a broken gate never wedges a turn.
 
-Contract enforced by the gate: §6 / AGENTS.md Author-Gate — a native question-tool call
-(``AskUserQuestion`` or Codex ``request_user_input``) for an Author-Gate-class decision must
-mark the recommended option ``(Recommended)``, place it first, and put numeric confidence plus
-Pros/Cons in every option description. A marked recommendation with non-canonical output
+Contract enforced by the gate: §6 / AGENTS.md Author-Gate — a Codex
+``request_user_input`` call for an Author-Gate-class decision must include a stable question
+``id``, mark the recommended option ``(Recommended)``, place it first, and put numeric confidence
+plus Pros/Cons in every option description. A marked recommendation with non-canonical output
 criteria **blocks by default** (``ASK_REC_GUARD_BYPASS=1`` overrides); a missing recommendation
 stays advisory unless ``ASK_REC_GUARD_STRICT=1``.
 """
@@ -51,7 +51,7 @@ def _failopen_receipt(raw: str, failure_class: str, reason: str) -> None:
             sid = ""
         row = {
             "ts": datetime.now(timezone.utc).isoformat(),
-            "hook": "beforeAskUserQuestion",
+            "hook": "beforeRequestUserInput",
             "failure_class": failure_class,
             "reason": str(reason)[:500],
             "criticality": "CRITICAL_PRETOOL",
