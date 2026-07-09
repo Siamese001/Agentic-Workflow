@@ -1,8 +1,12 @@
-"""3.9: Baseline tests for LicHealingOrchestrator (HEAL-GAP-04)."""
+"""apps-test-model: APP CONTRACT.
+
+3.9: Baseline tests for LicHealingOrchestrator (HEAL-GAP-04).
+"""
 
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from types import ModuleType
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_lic_healing_orchestrator")
@@ -91,6 +95,8 @@ def _make_lic_agent_base_stub():
     """Inject a minimal LICAgentBase stub so LicHealingOrchestrator can be imported."""
     stub_mod = ModuleType("apps_lic.utils.LICAgentBase")
     parent_mod = ModuleType("apps_lic.utils")
+    parent_mod.__package__ = "apps_lic"
+    parent_mod.__path__ = [str(Path(__file__).resolve().parents[2] / "apps_lic" / "utils")]
 
     class _LICAgentBase:
         recovery_playbooks: dict = {}
