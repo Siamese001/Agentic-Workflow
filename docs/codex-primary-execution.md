@@ -96,12 +96,15 @@ python scripts/governance/codex_main_closeout.py --check --json
 python scripts/governance/codex_main_closeout.py --apply --json
 ```
 
-`publication_closeout` proves local `main` equals `origin/main`, the root index and worktree are
-clean, and no branch remains unmerged from the base ref. `workspace_topology_closeout` proves only
-the expected main worktree remains and no non-main local branches remain. The top-level status stays
-strict and fails unless both surfaces pass. The apply mode is cleanup-only: it may fast-forward clean
-local `main` and remove clean ancestor-contained non-main branches/worktrees, but it never resets,
-force-pushes, deletes dirty worktrees, or deletes unmerged branches.
+`publication_closeout` proves local `main` equals `origin/main` and the root worktree has no
+unresolved merge conflicts. Ordinary dirty files on local `main`, unrelated retained branches, and
+parallel worktrees are reported under `workspace_topology_closeout`; they do not make a completed
+PR-to-local-main publication fail. `workspace_topology_closeout` proves only the expected main
+worktree remains, no root worktree/index dirt remains, and no non-main local branches remain. The
+top-level status stays strict and fails unless both surfaces pass. The apply mode is cleanup-only:
+it may fast-forward clean local `main` and remove clean ancestor-contained non-main
+branches/worktrees, but it never resets, force-pushes, deletes dirty worktrees, or deletes unmerged
+branches.
 
 The shell hook enforces this for local PR completion commands. A direct `gh pr merge` or push to
 `main` must chain both closeout commands in the same shell command, normally after switching back to

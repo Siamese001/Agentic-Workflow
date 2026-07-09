@@ -1,7 +1,7 @@
 # On-Demand PR Main Publisher
 
 - run_time: 2026-07-02T00:00:00-04:00
-- policy update: closeout is split into `publication_closeout` and `workspace_topology_closeout`. Publication success is gated by PR merge evidence, GitHub/origin main agreement, clean root main, branch containment, and `--require-publication-closeout`; unrelated retained worktrees are reported as topology hygiene/RCA, not publication failure.
+- policy update: closeout is split into `publication_closeout` and `workspace_topology_closeout`. Publication success is gated by PR merge evidence, GitHub/origin main agreement, root conflict-free status, branch containment, and `--require-publication-closeout`; ordinary dirty files on local main plus unrelated retained worktrees are reported as topology hygiene/RCA, not publication failure.
 - strict topology remains a cleanup target through `workspace_topology_closeout.status`, but dirty unrelated worktrees must not be force-removed or merged into publication scope.
 
 - run_time: 2026-06-20T07:25:10.4600688-04:00
