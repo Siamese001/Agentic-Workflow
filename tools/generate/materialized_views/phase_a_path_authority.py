@@ -186,6 +186,56 @@ _NON_DURABLE_ARTIFACT_HELPER_SYMBOLS = (
     "subprocess.Popen",
 )
 
+# Site-scoped generated artifact writes from the 07082026_2319 P0 backlog.
+# These symbols are generic enough that a symbol-only exemption would hide
+# future real writes; bind them to the exact artifact-producing source files.
+_NON_DURABLE_ARTIFACT_WRITE_SITES = (
+    ("bundle_path.write_text", "apps_shared/spine_emission/reseal.py"),
+    ("closeout_path.write_text", "apps_rg/fact_inventory/track_weighted_graph_expansion.py"),
+    ("dest.write_text", "apps_rg/runtime/c0/prior_resume_variant_extractor.py"),
+    ("dst_path.write_text", "apps_shared/spine_emission/context.py"),
+    ("input_path.write_text", "apps_shared/cli/interactive_wizard.py"),
+    ("learning_path.write_text", "apps_rg/runtime/shadow/competencies_l6.py"),
+    ("nhsr_path.write_text", "agentic_core/runtime/entrypoints/integrated_fallback_run.py"),
+    ("nhsr_path.write_text", "agentic_core/runtime/entrypoints/integrated_grounded_read_run.py"),
+    ("nhsr_path.write_text", "agentic_core/runtime/entrypoints/integrated_managed_workflow_real_run.py"),
+    ("nhsr_path.write_text", "agentic_core/runtime/entrypoints/integrated_single_action_run.py"),
+    ("p.write_text", "apps_research/reasoning/ResearchOrchestrator.py"),
+    ("p_bridge.write_text", "apps_rg/runtime/spine/c0_fec_compose.py"),
+    ("p_bundle.write_text", "apps_rg/runtime/section_runtime_exhaust_spine_receipt.py"),
+    ("p_cert.write_text", "apps_rg/runtime/section_one_spine_certification.py"),
+    ("p_handoff.write_text", "apps_rg/runtime/section_runtime_exhaust_spine_receipt.py"),
+    ("p_l1.write_text", "apps_rg/runtime/spine/front_contracts.py"),
+    ("p_legacy.write_text", "apps_rg/runtime/spine/c0_fec_compose.py"),
+    ("p_master.write_text", "apps_rg/runtime/spine/front_contracts.py"),
+    ("p_pc.write_text", "apps_rg/runtime/section_one_spine_certification.py"),
+    ("p_pe.write_text", "apps_rg/runtime/section_one_spine_certification.py"),
+    ("p_route.write_text", "apps_rg/runtime/spine/front_contracts.py"),
+    ("p_sealed.write_text", "apps_rg/runtime/section_l2_spine_receipt.py"),
+    ("p_vr.write_text", "apps_rg/runtime/spine/front_contracts.py"),
+    ("prod_out.write_text", "apps_rg/l2_recipe/modular_resume_generation.py"),
+    ("prod_out.write_text", "apps_rg/runtime/orchestration/patch_run.py"),
+    ("proposals_path.write_text", "apps_rg/runtime/shadow/competencies_l6.py"),
+    ("receipt_json.write_text", "apps_rg/fact_inventory/run_w14_senior_role_offline_traversal.py"),
+    ("sm_path.write_text", "apps_rg/runtime/evidence/canonical_evidence_digest_chain.py"),
+    ("snip.write_text", "apps_rg/l2_recipe/provider_run_diagnostics.py"),
+    ("spine_path.write_text", "agentic_core/runtime/entrypoints/integrated_fallback_run.py"),
+    ("spine_path.write_text", "agentic_core/runtime/entrypoints/integrated_grounded_read_run.py"),
+    ("spine_path.write_text", "agentic_core/runtime/entrypoints/integrated_managed_workflow_real_run.py"),
+    ("spine_path.write_text", "agentic_core/runtime/entrypoints/integrated_single_action_run.py"),
+    ("src_reg_path.write_text", "apps_research/reasoning/ResearchOrchestrator.py"),
+    ("x1d_path.write_text", "apps_rg/runtime/assembly/full_resume_llm_coherence.py"),
+    ("x3_path.write_text", "apps_rg/runtime/internal/resume_package_disposition.py"),
+)
+
+# Site-scoped scanner false positives. These are not durable writes at the
+# named call sites, but the symbols stay visible anywhere else.
+_NON_DURABLE_ARTIFACT_HELPER_SITES = (
+    ("compute_replay_hash", "agentic_core/L2_execution/types/vllm_replay_validator_types.py"),
+    ("get_write_gateway", "agentic_core/L2_execution/enforcement/write_governor_mixin.py"),
+    ("self.log_event", "apps_shared/utils/security_config_util.py"),
+)
+
 # Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations
 # produce report artifacts, proof bundles, or output renderings, not durable
 # state mutations per the canonical DurableWriteContext definition in
@@ -320,6 +370,19 @@ def _build_non_mutating_write_symbol_clause(col: str) -> str:
 def _build_exact_symbol_clause(col: str, symbols: tuple[str, ...]) -> str:
     """SQL fragment matching ``col`` against an exact symbol allowlist."""
     values = " OR ".join(f"{col} = '{symbol}'" for symbol in symbols)
+    return f"({values})"
+
+
+def _build_exact_symbol_site_clause(
+    symbol_col: str,
+    file_col: str,
+    sites: tuple[tuple[str, str], ...],
+) -> str:
+    """SQL fragment matching exact ``(symbol, writer_file)`` pairs."""
+    values = " OR ".join(
+        f"({symbol_col} = '{symbol}' AND {file_col} = '{writer_file}')"
+        for symbol, writer_file in sites
+    )
     return f"({values})"
 
 
@@ -726,6 +789,14 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           -- 2026-07-09 P0 debt burndown W5: factory/process scanner
           -- false positives are not durable writes.
           AND NOT {_build_exact_symbol_clause("e.symbol", _NON_DURABLE_ARTIFACT_HELPER_SYMBOLS)}
+          -- 2026-07-09 P0 debt burndown W7-W15: site-scoped generated
+          -- artifacts. These symbols are intentionally NOT excluded globally;
+          -- only the released artifact-producing call sites are non-durable.
+          AND NOT {_build_exact_symbol_site_clause("e.symbol", "src.resolved_path", _NON_DURABLE_ARTIFACT_WRITE_SITES)}
+          -- 2026-07-09 P0 debt burndown W16: site-scoped scanner helper
+          -- false positives that read, route, or log in memory rather than
+          -- writing durable state.
+          AND NOT {_build_exact_symbol_site_clause("e.symbol", "src.resolved_path", _NON_DURABLE_ARTIFACT_HELPER_SITES)}
           -- 2026-04-28 W1.2 Author-Gate option D: tighten MV scope to canonical
           -- durable-write definition. Exclude (a) writes from non-durable target
           -- paths (proof/, outputs/, reports/, runtime/prove_requirements/) and

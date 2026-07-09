@@ -25,10 +25,10 @@ targets, not by pretending every row can be repaired safely in one patch.
 
 Target sequence:
 
-1. Reduce `2971 -> <= 2694` by removing confirmed scanner false positives
+1. Reduce `2971 -> <= 2614` by removing confirmed scanner false positives
    and non-durable generated-artifact writer rows from the write-sovereignty
    MV producer.
-2. Reduce `<= 2694 -> <= 2500` by promoting high-confidence write-sovereignty
+2. Reduce `<= 2614 -> <= 2500` by promoting high-confidence write-sovereignty
    clusters into owned source-routing waves.
 3. Reduce `<= 2500 -> <= 2000` by addressing G_REACH clusters with real runtime
    ownership or approved deletion/deprecation.
@@ -37,6 +37,10 @@ Target sequence:
 Waves 2-6 remove 224 rows on the released `07082026_2319` snapshot. Combined
 with Wave 1's 53 rows, the projected post-regeneration tracked P0 inventory is
 `2971 - 277 = 2694`.
+
+Waves 7-16 remove 80 additional site-scoped rows on the released
+`07082026_2319` snapshot. Combined with Waves 1-6, the projected
+post-regeneration tracked P0 inventory is `2971 - 357 = 2614`.
 
 ## Waves
 
@@ -215,7 +219,192 @@ Exit:
 Stop condition: do not exclude durable baseline/state stores or non-evidence
 contract writers.
 
-### Wave 7: Source Routing for Real Write Clusters
+### Wave 7: Runtime Envelope Artifact Sites
+
+Goal: Remove integrated runtime NHSR/spine envelope artifact writes from the
+write-sovereignty inventory without excluding those symbols globally.
+
+Sites:
+
+- `nhsr_path.write_text` in integrated runtime entrypoints
+- `spine_path.write_text` in integrated runtime entrypoints
+
+Expected reduction on `07082026_2319`: about 16 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 8: C0 FEC Bridge Artifact Sites
+
+Goal: Remove final-evidence-contract bridge and compatibility artifact writes
+from the write-sovereignty inventory.
+
+Sites:
+
+- `p_bridge.write_text` in `apps_rg/runtime/spine/c0_fec_compose.py`
+- `p_legacy.write_text` in `apps_rg/runtime/spine/c0_fec_compose.py`
+
+Expected reduction on `07082026_2319`: about 6 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 9: Runtime Exhaust Handoff Artifact Sites
+
+Goal: Remove runtime-exhaust bundle and L6 handoff receipt artifacts from the
+write-sovereignty inventory.
+
+Sites:
+
+- `p_bundle.write_text` in `apps_rg/runtime/section_runtime_exhaust_spine_receipt.py`
+- `p_handoff.write_text` in `apps_rg/runtime/section_runtime_exhaust_spine_receipt.py`
+
+Expected reduction on `07082026_2319`: about 4 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 10: Section-One Certification Artifact Sites
+
+Goal: Remove one-spine, proof-eligibility, and product-certification receipt
+artifacts from the write-sovereignty inventory.
+
+Sites:
+
+- `p_cert.write_text` in `apps_rg/runtime/section_one_spine_certification.py`
+- `p_pe.write_text` in `apps_rg/runtime/section_one_spine_certification.py`
+- `p_pc.write_text` in `apps_rg/runtime/section_one_spine_certification.py`
+
+Expected reduction on `07082026_2319`: about 6 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 11: Front-Spine Contract Artifact Sites
+
+Goal: Remove section-front, validated-request, L1 plan, and route contract
+artifact writes from the write-sovereignty inventory.
+
+Sites:
+
+- `p_master.write_text` in `apps_rg/runtime/spine/front_contracts.py`
+- `p_vr.write_text` in `apps_rg/runtime/spine/front_contracts.py`
+- `p_l1.write_text` in `apps_rg/runtime/spine/front_contracts.py`
+- `p_route.write_text` in `apps_rg/runtime/spine/front_contracts.py`
+
+Expected reduction on `07082026_2319`: about 8 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 12: L2 Evidence and Disposition Artifact Sites
+
+Goal: Remove sealed L2, evidence digest, X1D, and X3 disposition artifact writes
+from the write-sovereignty inventory.
+
+Sites:
+
+- `p_sealed.write_text` in `apps_rg/runtime/section_l2_spine_receipt.py`
+- `sm_path.write_text` in `apps_rg/runtime/evidence/canonical_evidence_digest_chain.py`
+- `x1d_path.write_text` in `apps_rg/runtime/assembly/full_resume_llm_coherence.py`
+- `x3_path.write_text` in `apps_rg/runtime/internal/resume_package_disposition.py`
+
+Expected reduction on `07082026_2319`: about 8 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 13: Resume Diagnostic Artifact Sites
+
+Goal: Remove generated-resume, provider snippet, and prior-resume variant
+artifact writes from the write-sovereignty inventory.
+
+Sites:
+
+- `prod_out.write_text` in `apps_rg/l2_recipe/modular_resume_generation.py`
+- `prod_out.write_text` in `apps_rg/runtime/orchestration/patch_run.py`
+- `snip.write_text` in `apps_rg/l2_recipe/provider_run_diagnostics.py`
+- `dest.write_text` in `apps_rg/runtime/c0/prior_resume_variant_extractor.py`
+
+Expected reduction on `07082026_2319`: about 8 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 14: Shadow and Spine Emission Artifact Sites
+
+Goal: Remove runtime-exhaust reseal, synthesized spine context, L6 learning,
+and non-authoritative proposal artifact writes from the write-sovereignty
+inventory.
+
+Sites:
+
+- `bundle_path.write_text` in `apps_shared/spine_emission/reseal.py`
+- `dst_path.write_text` in `apps_shared/spine_emission/context.py`
+- `learning_path.write_text` in `apps_rg/runtime/shadow/competencies_l6.py`
+- `proposals_path.write_text` in `apps_rg/runtime/shadow/competencies_l6.py`
+
+Expected reduction on `07082026_2319`: about 8 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 15: Research, Template, and Closeout Artifact Sites
+
+Goal: Remove research run summaries, source registers, interactive templates,
+offline traversal receipts, and graph-expansion closeout artifacts from the
+write-sovereignty inventory.
+
+Sites:
+
+- `p.write_text` in `apps_research/reasoning/ResearchOrchestrator.py`
+- `src_reg_path.write_text` in `apps_research/reasoning/ResearchOrchestrator.py`
+- `input_path.write_text` in `apps_shared/cli/interactive_wizard.py`
+- `receipt_json.write_text` in `apps_rg/fact_inventory/run_w14_senior_role_offline_traversal.py`
+- `closeout_path.write_text` in `apps_rg/fact_inventory/track_weighted_graph_expansion.py`
+
+Expected reduction on `07082026_2319`: about 10 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 16: Site-Scoped Non-Write Helper False Positives
+
+Goal: Remove call sites that read, route, or log in memory but were emitted by
+the broad write-edge scanner.
+
+Sites:
+
+- `compute_replay_hash` in `agentic_core/L2_execution/types/vllm_replay_validator_types.py`
+- `get_write_gateway` in `agentic_core/L2_execution/enforcement/write_governor_mixin.py`
+- `self.log_event` in `apps_shared/utils/security_config_util.py`
+
+Expected reduction on `07082026_2319`: about 6 write-sovereignty rows.
+
+Exit:
+
+- Site-scoped MV test proves configured sites are excluded.
+- Same-symbol different-file test proves future generic writes remain flagged.
+
+### Wave 17: Source Routing for Real Write Clusters
 
 Goal: Route high-confidence real writes through UWG or sanctioned layer
 authorities.
@@ -229,7 +418,7 @@ Candidate clusters:
 Stop condition: stop for design review if routing changes public contracts,
 runtime persistence semantics, or migration receipts.
 
-### Wave 8: G_REACH Owned Runtime Wiring
+### Wave 18: G_REACH Owned Runtime Wiring
 
 Goal: Reduce L0 reachability debt by wiring or retiring real orphan clusters.
 
