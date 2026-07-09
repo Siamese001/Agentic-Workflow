@@ -1092,6 +1092,28 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             flush=True,
         )
 
+    if section_eff == "executive_summary":
+        from apps_rg.runtime.section_cli_defaults import (
+            collect_executive_summary_mandatory_missing,
+            validate_executive_summary_mandatory_inputs,
+        )
+
+        exec_missing = collect_executive_summary_mandatory_missing(args)
+        if exec_missing and args.cursor_prompts:
+            sentinel = (
+                f"CASCADE_WIZARD_SENTINEL: mandatory inputs missing: "
+                f"{', '.join(exec_missing)}. "
+                "Please provide target company, target role, JD (--jd), and briefing "
+                "(--manual-brief) to proceed."
+            )
+            print(sentinel, flush=True)
+            return 7
+        try:
+            validate_executive_summary_mandatory_inputs(args)
+        except SectionCliConfigError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
+            return 2
+
     from apps_rg.runtime.embedding_settings import (
         apply_apps_rg_embedding_env_guards,
         bootstrap_apps_rg_embedding_env,
@@ -1130,7 +1152,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if _emb_receipt is not None:
         print(f"embedding_settings_receipt={_emb_receipt.as_posix()}", flush=True)
 
-    if section_eff in section_lane_ids or not section_eff:
+    fact_vector_readiness_required = bool(_emb_settings.embedding_required)
+
+    if fact_vector_readiness_required and (section_eff in section_lane_ids or not section_eff):
         from apps_rg.runtime.fact_vector_readiness import (
             BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
             FactVectorReadinessError,
@@ -1176,31 +1200,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     flush=True,
                 )
             return 2
+    elif section_eff in section_lane_ids or not section_eff:
+        print(
+            "pre_u0_fact_vector_readiness: status=SKIPPED reason=embedding_not_required",
+            flush=True,
+        )
 
     if args.interactive:
         _gather_interactive_fields(args)
-
-    if section_eff == "executive_summary":
-        from apps_rg.runtime.section_cli_defaults import (
-            collect_executive_summary_mandatory_missing,
-            validate_executive_summary_mandatory_inputs,
-        )
-
-        exec_missing = collect_executive_summary_mandatory_missing(args)
-        if exec_missing and args.cursor_prompts:
-            sentinel = (
-                f"CASCADE_WIZARD_SENTINEL: mandatory inputs missing: "
-                f"{', '.join(exec_missing)}. "
-                "Please provide target company, target role, JD (--jd), and briefing "
-                "(--manual-brief) to proceed."
-            )
-            print(sentinel, flush=True)
-            return 7
-        try:
-            validate_executive_summary_mandatory_inputs(args)
-        except SectionCliConfigError as exc:
-            print(f"ERROR: {exc}", file=sys.stderr, flush=True)
-            return 2
 
     # Wizard / cursor-prompts mode: if mandatory inputs are missing, write a
     # sentinel line and exit 7 so the calling process (Codex IDE) can prompt
@@ -1300,7 +1307,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             print(f"ERROR: {exc}", file=sys.stderr, flush=True)
             return 2
 
-    if section_eff in section_lane_ids or not section_eff:
+    if fact_vector_readiness_required and (section_eff in section_lane_ids or not section_eff):
         from apps_rg.runtime.fact_vector_readiness import (
             BLOCKED_POST_U0_SECTION_SUFFICIENCY,
             FactVectorReadinessError,
@@ -1351,6 +1358,11 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                     flush=True,
                 )
             return 2
+    elif section_eff in section_lane_ids or not section_eff:
+        print(
+            "post_u0_section_sufficiency_preview: status=SKIPPED reason=embedding_not_required",
+            flush=True,
+        )
 
     if args.dry_run:
         print("DRY RUN: apps_rg pre-dispatch validation complete (no lane runtime).", flush=True)
