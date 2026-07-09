@@ -83,6 +83,7 @@ USER_PROFILE_FORBIDDEN_AUTOMATION_FIELDS = (
     "runtime_optimization",
     "handoff",
 )
+FORBIDDEN_AUTOMATION_MODELS = frozenset({"gpt-5.4-mini"})
 
 PUBLICATION_REQUIRED_PROMPT_SNIPPETS = (
     "Capture one state snapshot per phase and reuse it until a mutation changes git, PR, CI, or worktree state",
@@ -454,6 +455,15 @@ def _validate_common_automation(
         )
     if manual and "rrule" in data:
         issues.append(EnforcementHomeIssue("automation_rrule", f"{automation_id}: manual automation must not have rrule"))
+
+    model = data.get("model")
+    if model in FORBIDDEN_AUTOMATION_MODELS:
+        issues.append(
+            EnforcementHomeIssue(
+                "automation_forbidden_model",
+                f"{automation_id}: model {model!r} is retired; use the repo-approved automation model",
+            )
+        )
 
     cwds = data.get("cwds")
     allowed_roots = _allowed_automation_cwd_roots(root)

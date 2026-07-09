@@ -53,8 +53,8 @@ Closeout must include certification_status, artifact_status, artifact_status_sou
 status = "ACTIVE"
 execution_environment = "worktree"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=23;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"
-model = "gpt-5.4-mini"
-reasoning_effort = "xhigh"
+model = "gpt-5.5"
+reasoning_effort = "high"
 cwds = [
   "C:\\Git\\Agentic-Workflow-FRESH",
   "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown",

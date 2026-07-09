@@ -43,8 +43,8 @@ def _automation_toml(automation_id: str, root: Path, *, cron: bool = True) -> st
                 f'prompt = "{prompt}"',
                 'status = "ACTIVE"',
                 'rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"',
-                'model = "gpt-5.4-mini"',
-                'reasoning_effort = "xhigh"',
+                'model = "gpt-5.5"',
+                'reasoning_effort = "high"',
                 'execution_environment = "local"',
                 f'cwds = ["{escaped_root}"]',
             ]
@@ -57,8 +57,8 @@ def _automation_toml(automation_id: str, root: Path, *, cron: bool = True) -> st
             f'name = "{automation_id}"',
             'prompt = "approved prompt"',
             'status = "ON_DEMAND"',
-            'model = "gpt-5.4-mini"',
-            'reasoning_effort = "xhigh"',
+            'model = "gpt-5.5"',
+            'reasoning_effort = "high"',
             'execution_environment = "local"',
             f'cwds = ["{escaped_root}"]',
         ]
@@ -100,8 +100,8 @@ def test_write_user_profile_projection_is_validator_compliant(monkeypatch, tmp_p
     assert "contract_path" in data
     assert "contract_sha256" in data
     assert data["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
-    assert data["model"] == "gpt-5.4-mini"
-    assert data["reasoning_effort"] == "xhigh"
+    assert data["model"] == "gpt-5.5"
+    assert data["reasoning_effort"] == "high"
     assert data["execution_environment"] == "local"
     assert data["cwds"] == [str(root)]
     assert enforcement_home.validate(root, user_codex_home) == []
@@ -126,7 +126,7 @@ def test_projection_payloads_include_ui_fields(monkeypatch, tmp_path: Path) -> N
     assert "contractPath" in payload
     assert "contractSha256" in payload
     assert payload["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
-    assert payload["model"] == "gpt-5.4-mini"
+    assert payload["model"] == "gpt-5.5"
     assert payload["cwds"] == [str(root)]
 
 
@@ -156,5 +156,5 @@ def test_disable_stale_user_profile_launchers_then_writes_ui_mirror(monkeypatch,
     assert data is not None
     assert data["projection_kind"] == "repo_contract_ui_mirror"
     assert data["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
-    assert data["model"] == "gpt-5.4-mini"
+    assert data["model"] == "gpt-5.5"
     assert enforcement_home.validate(root, user_codex_home) == []

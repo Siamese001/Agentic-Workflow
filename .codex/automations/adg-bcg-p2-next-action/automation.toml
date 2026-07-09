@@ -87,8 +87,8 @@ Summarize the selected BCG/P2 source artifact, generated P2 burndown plan, targe
 '''
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=4;BYMINUTE=20;BYDAY=SU,MO,TU,WE,TH,FR,SA"
-model = "gpt-5.4-mini"
-reasoning_effort = "xhigh"
+model = "gpt-5.5"
+reasoning_effort = "high"
 execution_environment = "worktree"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782240890932
