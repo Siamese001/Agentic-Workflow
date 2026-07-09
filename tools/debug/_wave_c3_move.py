@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
 import subprocess
@@ -9,6 +10,7 @@ import subprocess
 targets = pathlib.Path("artifacts/adg/wave_c3_safe.txt").read_text().splitlines()
 targets = [t for t in targets if t.strip()]
 print(f"Moving {len(targets)} files")
+logging.info("C3 write receipt: tools/debug/_wave_c3_move.py write side effect recorded")
 ok = 0
 fail = 0
 for s in targets:

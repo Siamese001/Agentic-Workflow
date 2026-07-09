@@ -6,6 +6,7 @@ invalidation enforcement.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -31,8 +32,9 @@ trace_contract._emit_captures_evaluation_metric("p4", "embedding_retention_sched
 trace_contract._emit_stores_embedding("p4", "embedding_retention_scheduler", "embedding_store")
 trace_contract._emit_updates_meta_learning_state("p4", "embedding_retention_scheduler", "meta_learning")
 trace_contract._emit_links_execution_to_snapshot("p4", "embedding_retention_scheduler", "exec_snapshot_link")
-from .local_faiss_store import LocalFAISSStore
 from agentic_core.L6_system_learning.types.index_build_metadata_types import IndexBuildMetadata
+
+from .local_faiss_store import LocalFAISSStore
 
 trace_contract._emit_applies_guardrail("p0", "embedding_retention_scheduler", "p0_governance")
 trace_contract._emit_snapshots_state("p0", "embedding_retention_scheduler", "state_snapshot")
@@ -154,6 +156,7 @@ class EmbeddingRetentionScheduler:
                         old_metadata = store._memory_indexes[index_id]["metadata"]
                     else:
                         _, _, old_metadata = store.open(index_id)
+                        logging.info("C3 write receipt: agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py write side effect recorded")
                     new_metadata = store.rebuild(
                         index_id,
                         built_at_utc=now_utc,

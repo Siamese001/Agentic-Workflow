@@ -5,7 +5,7 @@ Tests for HITL validator scripts:
 
 Coverage: happy path, failure path, edge case for each validator function.
 """
-
+import logging
 import sys
 import textwrap
 from pathlib import Path
@@ -19,13 +19,12 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
+from ops_scripts.ci.validate_hitl_format import validate_file
 from ops_scripts.ci.validate_hitl_rules import (
     validate_no_hardcoded_2to4,
     validate_option_shape_section,
     validate_yaml_config_section,
 )
-from ops_scripts.ci.validate_hitl_format import validate_file
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -39,6 +38,7 @@ def tmp_md(tmp_path):
     def _make(content: str, name: str = "test.md") -> Path:
         p = tmp_path / name
         p.write_text(textwrap.dedent(content), encoding="utf-8")
+        logging.info("C3 write receipt: tests/governance/test_hitl_validators.py write side effect recorded")
         return p
 
     return _make

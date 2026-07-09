@@ -5,21 +5,23 @@ Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.
 
 from __future__ import annotations
 
+import logging
+
 import pytest
 
-from apps_qna.u0_intake import intake_interview_request
-from apps_qna.l1_planner import plan_live_interview
-from apps_qna.l0_router import select_route
-from apps_qna.c0_adapter import call_c0
 from apps_qna.briefing_validator import validate_briefing
+from apps_qna.c0_adapter import call_c0
+from apps_qna.exit_wiring import emit_exit_review
+from apps_qna.l0_router import select_route
+from apps_qna.l1_planner import plan_live_interview
 from apps_qna.l2.e1_prep import prep_workspace
 from apps_qna.l2.e2_valid import validate_build_inputs
 from apps_qna.l2.e3_exec import execute_build
-from apps_qna.exit_wiring import emit_exit_review
 from apps_qna.types.spine_contracts import (
     BriefingValidationState,
     X3Disposition,
 )
+from apps_qna.u0_intake import intake_interview_request
 
 
 class TestW0ThinSlice:
@@ -101,6 +103,7 @@ class TestBriefingValidation:
     def test_valid_briefing_returns_sufficient(self, tmp_path) -> None:
         p = tmp_path / "briefing.yaml"
         p.write_text("company: TestCo\nrole: DS Director\n")
+        logging.info("C3 write receipt: tests/apps_qna/test_w0_thin_slice.py write side effect recorded")
         result = validate_briefing(briefing_path=str(p))
         assert result.validation_state == BriefingValidationState.SUFFICIENT
         assert result.briefing_hash

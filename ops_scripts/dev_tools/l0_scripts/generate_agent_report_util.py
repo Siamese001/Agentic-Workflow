@@ -4,14 +4,15 @@ Ultra Zero-Loss Agent Discovery Report Generator
 Reads from agent_discovery_full.json - run full_agent_discovery.py first.
 full_agent_discovery.py is the canonical SSOT for agent discovery.
 """
-
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: engine, guardrail, healer, orchestrator, prompt, workflow
 # This boosts alignment detection — review and integrate appropriately
-
 import json
+import logging
 from collections import defaultdict
+
+from tqdm import tqdm
 
 from agentic_core.L0_routing.config.path_constants import AGENT_DISCOVERY_JSON, TESTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -20,7 +21,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
-from tqdm import tqdm
 
 _emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write")
 _emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write_2")
@@ -33,6 +33,7 @@ _emit_validated_by_safety_plane("p1", "generate_agent_report_util", "safety_vali
 # Load full analysis
 with open(AGENT_DISCOVERY_JSON) as f:
     agents = json.load(f)
+logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/generate_agent_report_util.py write side effect recorded")
 
 # Calculate stats
 by_layer = defaultdict(list)

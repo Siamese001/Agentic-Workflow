@@ -1,0 +1,164 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_waves2_5_20260709T001200Z",
+  "generated_at": "2026-07-09T00:25:00Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+    "branch": "codex/adg-p1-ratchet-burndown-20260708T201105",
+    "head": "0bce04cfe66d725de10b32e2c7a64de8f4d29506",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Burn down the next 20 P1 ADG ratchet waves on the same P1 branch, commit all files, and execute PR to local main.",
+    "plan_id": "plans/adg-p1-ratchet-burndown-wave-plan-4c8d2a.md",
+    "files_changed": [
+      "100 C3 source/test/tool modules with explicit write-side-effect logging receipts",
+      "ops_scripts/ci/baselines/wiring_silent_writes_ratchet.json",
+      "artifacts/codex/runtime_proofs/c3_apply_remaining_waves.py",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_waves2_5_apply_20260709T001200Z.json",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_waves2_5_runtime_proof_20260709T001200Z.json",
+      "artifacts/codex/runtime_proofs/c3_silent_writes_waves2_5_active_test_files.txt"
+    ],
+    "p1_burndown": {
+      "ordinary_p1_target": 0,
+      "selected_family": "C3_silent_writes_ratchet",
+      "requested_waves": 20,
+      "safe_waves_available": 4,
+      "ratchet_target": 100,
+      "planned_rows": 100,
+      "attempted_rows": 100,
+      "cleared_rows": 100,
+      "remaining_rows": "C3 projected remaining is zero after wave1 plus waves2_5; total P1 remains not proven until fresh ADG",
+      "final_p1_count": "not zero / not proven",
+      "target_status": "missed",
+      "downstream_unblock_status": "blocked"
+    }
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "adg_health via ADG MCP",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python artifacts\\codex\\runtime_proofs\\c3_apply_remaining_waves.py --repo-root C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown --sqlite C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite --previous-proof artifacts\\codex\\runtime_proofs\\c3_silent_writes_wave1_source_replay_20260709T000204Z.json --out artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_apply_20260709T001200Z.json --wave-size 25 --limit 100",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check --select I --fix @files; python -m ruff check --select I @files",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "source replay for artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m compileall -q @files",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts\\ci\\check_w4_silent_writes.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest @artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest @C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 1,
+        "status": "FAIL"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "ADG MCP P-view query",
+        "reason": "No C3 ratchet P-view was exposed by the MCP tool surface.",
+        "substitute": "Read immutable digest-bound SQLite snapshot adg_indexed_07072026_2307.sqlite directly for row selection."
+      },
+      {
+        "route": "requested 20 C3 waves",
+        "reason": "Only 100 safe C3 rows remained after prior 25-row C3 wave.",
+        "substitute": "Ran all four available 25-row C3 waves and stopped before unrelated structural-family work."
+      },
+      {
+        "route": "active touched pytest as regression proof",
+        "reason": "The selected suite has existing contract/profile/env failures on local main.",
+        "substitute": "Recorded identical local-main failure profile and used source replay plus compileall/diff/static C3 gate proof for this mechanical wave."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "handoff_validator",
+        "status": "PASS",
+        "evidence": "dependency_status=ready, artifact_status=repair_ready, P0_FIX=0, P0_WAVE=0"
+      },
+      {
+        "name": "c3_source_replay",
+        "status": "PASS",
+        "evidence": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json reports 100/100 rows passed and projected C3 remaining zero after wave1 plus waves2_5"
+      },
+      {
+        "name": "syntax_and_static_checks",
+        "status": "PASS",
+        "evidence": "Ruff import check, compileall, git diff --check, and stale-snapshot check_w4_silent_writes.py all passed"
+      },
+      {
+        "name": "runtime_pytest",
+        "status": "FAIL",
+        "evidence": "Branch active touched suite and local-main base both reported 488 passed, 14 failed, 2 errors; failures are reproduced pre-existing blockers"
+      },
+      {
+        "name": "target_status",
+        "status": "BLOCKED",
+        "evidence": "C3 is projected clear, but full P1=0 is not proven without fresh ADG and structural-family waves for remaining gates"
+      }
+    ]
+  },
+  "artifacts": {
+    "apply": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_apply_20260709T001200Z.json",
+    "source_replay": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json",
+    "runtime_proof": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_runtime_proof_20260709T001200Z.json",
+    "active_test_files": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt"
+  },
+  "rca": {
+    "symptom": "The user requested 20 waves, but this run safely executed four additional C3 waves and did not prove final P1=0.",
+    "root_cause": "The digest-bound C3 source artifact had only 100 rows remaining after prior C3 wave 1; unrelated P1 ratchet families require separate structural refactoring plans and harnesses.",
+    "evidence": "C3 source replay passed 100/100 and reports expected C3 remaining zero after wave1 plus waves2_5; active touched pytest failures reproduced unchanged on local main.",
+    "fix_or_next": "next: run fresh ADG to confirm C3 zero, then process the remaining P1 structural families with family-specific wave plans.",
+    "recurrence_guard": "Receipt records requested_waves versus safe_waves_available and stops downstream unblocking until P1=0 is proven by fresh ADG evidence."
+  }
+}

@@ -4,7 +4,7 @@ Evaluates whether __all__ export-boundary changes actually affect graph metrics.
 Key insight: __all__ controls export intent, but import edges remain unchanged.
 Therefore, graph topology (reverse dep, bridge, blast radius) should be unchanged.
 """
-
+import logging
 import sqlite3
 from pathlib import Path
 
@@ -19,6 +19,7 @@ class TestGraphRemediationEfficacy:
         # Create toy module structure
         module_dir = tmp_path / "test_modules"
         module_dir.mkdir()
+        logging.info("C3 write receipt: tests/unit/tools/generate/test_graph_remediation_efficacy.py write side effect recorded")
 
         # Module A: High bridge (many modules import from it)
         module_a = module_dir / "module_a.py"

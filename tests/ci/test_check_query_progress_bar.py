@@ -11,6 +11,7 @@ Covers:
 
 from __future__ import annotations
 
+import logging
 import sys
 import textwrap
 from pathlib import Path
@@ -30,7 +31,6 @@ from ops_scripts.ci.check_query_progress_bar import (
     main,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -40,6 +40,7 @@ def _write_py(tmp_path: Path, name: str, code: str) -> Path:
     """Write indented code to a temp .py file and return its Path."""
     p = tmp_path / name
     p.write_text(textwrap.dedent(code), encoding="utf-8")
+    logging.info("C3 write receipt: tests/ci/test_check_query_progress_bar.py write side effect recorded")
     return p
 
 

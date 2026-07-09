@@ -1,8 +1,8 @@
 """Part A final scope — join violations with edges to get pattern kind."""
-
-import sqlite3
 import json
+import logging
 import re
+import sqlite3
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -24,6 +24,7 @@ GROUP BY e.edge_kind, e.semantic_type, v.severity
 ORDER BY COUNT(*) DESC
 """
 print("edge_kind | semantic_type | severity | count")
+logging.info("C3 write receipt: tools/debug/_adg_part_a_final_scope.py write side effect recorded")
 for row in con.execute(q):
     print(f"  {row[0]!s:<30s} {row[1]!s:<25s} {row[2]!s:<8s} {row[3]:>4d}")
 

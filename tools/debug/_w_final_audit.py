@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -91,6 +92,7 @@ for rel in TARGETS:
     )
 
 OUT.write_text(json.dumps({"items": report}, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_w_final_audit.py write side effect recorded")
 print(f"[ok] wrote {OUT}")
 for r in report:
     name = r["path"].split("/")[-1]

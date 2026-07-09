@@ -12,6 +12,8 @@ Tests cover:
 
 from __future__ import annotations
 
+import logging
+
 # Import the module under test
 import sys
 from pathlib import Path
@@ -62,6 +64,7 @@ special_dirs:
 """
         yaml_path = tmp_path / "excluded_paths.yaml"
         yaml_path.write_text(yaml_content)
+        logging.info("C3 write receipt: tests/_archived_obsolete/ops_scripts/ci/test_exclusion_sync_gate.py write side effect recorded")
 
         # Mock the config path calculation
         with patch.object(exclusion_sync_gate.Path, "__file__", str(yaml_path)):

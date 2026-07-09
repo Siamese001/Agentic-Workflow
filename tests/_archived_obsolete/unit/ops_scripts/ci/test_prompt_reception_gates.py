@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 import yaml
-
-from ops_scripts.ci.check_exemplar_coverage import validate_config
 from ops_scripts.ci.check_prompt_reception_v2 import validate_gateway_wiring
 
+from ops_scripts.ci.check_exemplar_coverage import validate_config
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 
@@ -39,6 +39,7 @@ class TestExemplarCoverageGate:
             ),
             encoding="utf-8",
         )
+        logging.info("C3 write receipt: tests/_archived_obsolete/unit/ops_scripts/ci/test_prompt_reception_gates.py write side effect recorded")
         ok, errors = validate_config(cfg)
         assert not ok
         assert any("minimum_examples" in e for e in errors)

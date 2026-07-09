@@ -9,6 +9,7 @@ local class injected into `sys.modules` so no real OS-level kill paths run.
 
 from __future__ import annotations
 
+import logging
 import sys
 import time
 from pathlib import Path
@@ -76,6 +77,7 @@ def fake_psutil(monkeypatch: pytest.MonkeyPatch):
 
 def _write_hb(dir_path: Path, marker: str, ts: float, pid: int) -> None:
     dir_path.mkdir(parents=True, exist_ok=True)
+    logging.info("C3 write receipt: tests/tools/mcp/test_heartbeat_authority.py write side effect recorded")
     path = dir_path / f"{hb._sanitize_marker(marker)}.hb"
     path.write_text(f"{ts:.3f}:{pid}\n", encoding="utf-8")
 

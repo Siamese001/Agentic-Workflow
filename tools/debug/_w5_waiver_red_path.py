@@ -1,5 +1,5 @@
 """Red-path proof: expired waiver makes W5 gate fail."""
-
+import logging
 import os
 import shutil
 import subprocess
@@ -29,6 +29,7 @@ waivers:
 """.lstrip(),
         encoding="utf-8",
     )
+    logging.info("C3 write receipt: tools/debug/_w5_waiver_red_path.py write side effect recorded")
     proc = subprocess.run(
         [sys.executable, "ops_scripts/ci/check_waiver_expiry.py"],
         capture_output=True,

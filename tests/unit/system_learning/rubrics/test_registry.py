@@ -14,12 +14,12 @@ edit the copy, so the real rubrics.yaml is never mutated.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
 from agentic_core.L6_system_learning.rubrics import RubricRegistry, load_rubric_file
-
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 CANONICAL_RUBRICS = REPO_ROOT / "config" / "judges" / "rubrics.yaml"
@@ -29,6 +29,7 @@ CANONICAL_RUBRICS = REPO_ROOT / "config" / "judges" / "rubrics.yaml"
 def rubrics_yaml_copy(tmp_path: Path) -> Path:
     dst_dir = tmp_path / "config" / "judges"
     dst_dir.mkdir(parents=True)
+    logging.info("C3 write receipt: tests/unit/system_learning/rubrics/test_registry.py write side effect recorded")
     dst = dst_dir / "rubrics.yaml"
     dst.write_text(CANONICAL_RUBRICS.read_text(encoding="utf-8"), encoding="utf-8")
     return dst

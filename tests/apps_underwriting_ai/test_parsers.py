@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -20,7 +21,6 @@ from apps_underwriting_ai.parsers.document_parser import (
     DocumentParser,
     register_parser,
 )
-
 
 # -- Registry ----------------------------------------------------------------
 
@@ -81,6 +81,7 @@ def test_json_parser_happy_path() -> None:
 def test_json_parser_from_path(tmp_path: Path) -> None:
     p = tmp_path / "doc.json"
     p.write_text('{"k": "v"}', encoding="utf-8")
+    logging.info("C3 write receipt: tests/apps_underwriting_ai/test_parsers.py write side effect recorded")
     result = JsonDocumentParser().parse(p, document_id="d-path")
     assert result.fields == {"k": "v"}
 

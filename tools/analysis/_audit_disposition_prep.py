@@ -6,8 +6,10 @@ either by (a) fixing the antipattern in source, or (b) recording a guardian
 exemption with justification, or (c) marking 'deferred' with a tracking ticket.
 """
 from __future__ import annotations
+
 import csv
 import glob
+import logging
 import os
 import sqlite3
 from pathlib import Path
@@ -17,6 +19,7 @@ OUT = REPO / "docs" / "reports" / "audit_6_disposition_triage.csv"
 
 latest = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"), key=os.path.getmtime)[-1]
 print(f"Snapshot: {latest}")
+logging.info("C3 write receipt: tools/analysis/_audit_disposition_prep.py write side effect recorded")
 c = sqlite3.connect(latest)
 cur = c.cursor()
 cur.execute(

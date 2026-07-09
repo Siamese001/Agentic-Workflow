@@ -7,6 +7,7 @@ NO docstring value appears in SQL at all is the gate flagged as drift.
 
 from __future__ import annotations
 
+import logging
 import textwrap
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from tools.generate.truth_expansion_enricher import PATH_REF_RE, _gate_self_chec
 def _write(tmp_path: Path, content: str) -> Path:
     p = tmp_path / "check_fake_gate.py"
     p.write_text(textwrap.dedent(content), encoding="utf-8")
+    logging.info("C3 write receipt: tests/unit/tools/generate/test_truth_expansion_gate_self_check.py write side effect recorded")
     return p
 
 

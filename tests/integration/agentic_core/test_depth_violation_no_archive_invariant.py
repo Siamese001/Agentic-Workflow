@@ -6,7 +6,7 @@ Root cause this guards against: The archive fallback in _apply_healing_strategy(
 was firing for depth violations that slipped through the strategy map or produced
 no-op moves, causing 1,031 unintended file deletions in run11.
 """
-
+import logging
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -22,10 +22,10 @@ try:
         APPS_SHARED_DIR,
     )
     from agentic_core.L5_safety.config.structure_blueprint import get_all_territories
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
 
     # MW-9 (2026-04-24): Class body relocated to utils module.
     from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
-    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
     from agentic_core.runtime.contracts.lifecycle_trace_contract import (
         _emit_applies_guardrail,
         _emit_reads_policy_state,
@@ -76,6 +76,7 @@ def test_depth_violation_never_archived(healer, sovereign_root, violation_msg):
     # Create a fake file under the sovereign root
     sovereign_dir = tmp_path / sovereign_root / "engines"
     sovereign_dir.mkdir(parents=True, exist_ok=True)
+    logging.info("C3 write receipt: tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py write side effect recorded")
     fake_file = sovereign_dir / "TestAgent.py"
     fake_file.write_text("class TestAgent: pass\n")
 

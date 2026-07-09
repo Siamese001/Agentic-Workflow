@@ -13,15 +13,16 @@ Rules:
 
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import (
-    BGE_M3_MODEL_ID,
-)
-
 import json
+import logging
 import os
 import sys
 import time
 from pathlib import Path
+
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["HF_HUB_OFFLINE"] = "1"
@@ -36,6 +37,7 @@ COLLECTION = "ext_authority"
 TOP_K = 5
 OUT_PATH = REPO_ROOT / "artifacts" / "b5r_proof_raw.json"
 OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/diag/b5r_direct_proof_runner.py write side effect recorded")
 
 # ─── Family-to-Query Map ─────────────────────────────────────────────────────
 # TS-xx = reused from existing audit basis; NEW = net-new query for B5R

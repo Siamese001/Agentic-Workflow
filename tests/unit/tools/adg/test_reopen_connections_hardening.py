@@ -9,6 +9,7 @@ Covers plan ``adg-mcp-reopen-hardening``:
 
 from __future__ import annotations
 
+import logging
 import time
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -56,6 +57,7 @@ def test_reopen_noop_when_snapshot_unchanged(tmp_path: Path, monkeypatch: pytest
     """W2.2 F4: same path + mtime → skip service.reopen() entirely."""
     snap = tmp_path / "adg_indexed_20260424_0000.sqlite"
     snap.write_bytes(b"stub")
+    logging.info("C3 write receipt: tests/unit/tools/adg/test_reopen_connections_hardening.py write side effect recorded")
     mtime = snap.stat().st_mtime
 
     runtime, service = _make_runtime_with_service(monkeypatch, snap, mtime)
@@ -111,6 +113,7 @@ def test_log_file_handler_registered_on_named_logger() -> None:
     """
     import logging as _logging
     import os as _os
+
     from tools.adg.mcp.runtime import LOG, LOG_FILE
 
     file_handlers = [h for h in LOG.handlers if isinstance(h, _logging.FileHandler)]
@@ -131,6 +134,7 @@ def test_log_configuration_is_idempotent_on_reimport() -> None:
     the named logger each time the module is re-imported.
     """
     import logging as _logging
+
     from tools.adg.mcp.runtime import LOG_FILE, _configure_adg_logger
 
     before = [h for h in _logging.getLogger("adg_mcp").handlers if isinstance(h, _logging.FileHandler)]

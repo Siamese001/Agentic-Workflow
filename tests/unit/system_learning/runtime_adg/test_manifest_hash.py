@@ -7,6 +7,7 @@ a different hash. No YAML parse, no canonicalization.
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -18,7 +19,6 @@ from agentic_core.L6_system_learning.manifest_hash import (
     compute_manifest_hash,
     compute_manifest_hash_for_app,
 )
-
 
 _HEX_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -33,6 +33,7 @@ def test_same_bytes_produce_same_hash(tmp_path: Path) -> None:
     p2 = tmp_path / "b.yaml"
     payload = b"claimed_routes: [R3_grounded_read]\n"
     p1.write_bytes(payload)
+    logging.info("C3 write receipt: tests/unit/system_learning/runtime_adg/test_manifest_hash.py write side effect recorded")
     p2.write_bytes(payload)
     assert compute_manifest_hash(p1) == compute_manifest_hash(p2)
 

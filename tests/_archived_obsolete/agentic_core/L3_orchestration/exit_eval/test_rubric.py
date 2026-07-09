@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -132,5 +133,6 @@ def test_missing_file_raises_rubric_error(tmp_path: Path) -> None:
 def test_malformed_yaml_raises(tmp_path: Path) -> None:
     bad = tmp_path / "bad.yaml"
     bad.write_text(":\n invalid::", encoding="utf-8")
+    logging.info("C3 write receipt: tests/_archived_obsolete/agentic_core/L3_orchestration/exit_eval/test_rubric.py write side effect recorded")
     with pytest.raises(RubricError):
         load_rubric(bad)

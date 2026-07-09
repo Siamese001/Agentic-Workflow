@@ -1,17 +1,18 @@
 """Build markdown report from SSOT dry-run JSON results + stderr log."""
-
 import json
+import logging
 import re
 from collections import defaultdict
 
+from tqdm import tqdm
+
+from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
-from tqdm import tqdm
-from agentic_core.L0_routing.config.path_constants import DOCS_REPORTS_DIR
 
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write")
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write_2")
@@ -21,6 +22,7 @@ emit_determinism_digest("trace__build_ssot_report", "_build_ssot_report_dispatch
 emit_determinism_digest("trace__build_ssot_report", "_build_ssot_report_complete")
 _emit_validated_by_safety_plane("p1", "_build_ssot_report", "safety_validation")
 data = json.load(open("_ssot_results_v2.json", encoding="utf-8"))
+logging.info("C3 write receipt: ops_scripts/root_scripts/_build_ssot_report.py write side effect recorded")
 stderr = open("_ssot_stderr_v2.log", encoding="utf-8").read()
 lines = []
 W = lines.append

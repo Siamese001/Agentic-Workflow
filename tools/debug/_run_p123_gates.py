@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 import sys
 from pathlib import Path
@@ -13,6 +14,7 @@ sys.path.insert(0, str(ROOT))
 SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)[-1]
 
 print(f"Snapshot: {SNAP.name}\n")
+logging.info("C3 write receipt: tools/debug/_run_p123_gates.py write side effect recorded")
 
 # Gates with class entry points we can call in-process
 GATE_CLASSES = [

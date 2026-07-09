@@ -7,12 +7,12 @@ treating these as authoritative tests.
 from __future__ import annotations
 
 import importlib
+import logging
 from pathlib import Path
 
 import pytest
 
 from agentic_core.L5_safety.utils.location_healer_util import LocationHealerAgent
-
 
 MODULE_PATH = "agentic_core.L5_safety.utils.location_healer_util"
 
@@ -68,6 +68,7 @@ def test_safe_move_dry_run_reports_preview_path(tmp_path: Path) -> None:
     src = tmp_path / "source.py"
     dst = tmp_path / "nested" / "target.py"
     src.write_text("print('hi')\n", encoding="utf-8")
+    logging.info("C3 write receipt: tests/agentic_core/L5_safety/utils/test_location_healer_util.py write side effect recorded")
 
     result = LocationHealerAgent.safe_move(agent, src, dst, dry_run=True)
 

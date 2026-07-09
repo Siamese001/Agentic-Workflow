@@ -1,9 +1,13 @@
-import sqlite3, glob
+import glob
+import logging
+import sqlite3
+
 snap = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))[-1]
 c = sqlite3.connect(snap)
 
 cols = [r[1] for r in c.execute("PRAGMA table_info(violations)")]
 print(f"violations columns: {cols}\n")
+logging.info("C3 write receipt: tools/analysis/_audit_check_p0_overlap2.py write side effect recorded")
 
 print("=== HIGH+CRITICAL rows by antipattern/category ===")
 ap_col = "antipattern" if "antipattern" in cols else ("category" if "category" in cols else "violation_class")
@@ -30,5 +34,6 @@ if any(v.startswith("v_p0_") for v in views):
 
 print("\n=== Existing gates that consume violations.severity ===")
 import subprocess
+
 r = subprocess.run(["grep", "-rln", "severity.*HIGH\\|severity.*CRITICAL", "ops_scripts/ci/"], capture_output=True, text=True)
 print(r.stdout or "  (none found via grep)")

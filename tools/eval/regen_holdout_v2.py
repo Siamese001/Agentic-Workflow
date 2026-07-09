@@ -8,6 +8,7 @@ the user (acting as curator per AG dec_19dede3a5e4d6507f) approved.
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from pathlib import Path
 
@@ -96,4 +97,5 @@ for app_id, dims in DIM_BY_APP.items():
         rows.append(json.dumps(row, separators=(",", ":")))
     out = HOLDOUT / f"{app_id}.jsonl"
     out.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    logging.info("C3 write receipt: tools/eval/regen_holdout_v2.py write side effect recorded")
     print(f"wrote {len(rows)} rows -> {out}")

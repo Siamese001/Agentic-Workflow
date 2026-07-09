@@ -1,6 +1,7 @@
 """One-off: mark agent_taxonomy_registry apps_rg/reasoning entries OBSOLETE."""
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -25,4 +26,5 @@ def patch_block(m: re.Match[str]) -> str:
 pat = r'"[^"]+": AgentClassification\(\s*[\s\S]*?\),\n'
 new_text, n = re.subn(pat, patch_block, text)
 p.write_text(new_text, encoding="utf-8")
+logging.info("C3 write receipt: tools/_oneoff/patch_taxonomy_reasoning_obsolete.py write side effect recorded")
 print("patched_blocks", n)

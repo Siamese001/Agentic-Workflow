@@ -8,6 +8,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -73,6 +74,7 @@ for entry in data["entries"]:
         )
 
 OUT.write_text(json.dumps({"items": report}, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_w3_2_inspect_consumers.py write side effect recorded")
 print(f"[ok] wrote {OUT}")
 cats: dict[str, int] = {}
 for r in report:

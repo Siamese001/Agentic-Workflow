@@ -1,4 +1,5 @@
 "\nFix remaining imports\n"
+import logging
 
 files = [
     "apps_lic/engines/MessageDiversityValidator.py",
@@ -9,6 +10,7 @@ files = [
     "apps_lic/engines/k1_routing_agent.py",
 ]
 from pathlib import Path
+
 from tqdm import tqdm
 
 for file_path in tqdm(files, desc="Processing", unit="item"):
@@ -25,5 +27,6 @@ for file_path in tqdm(files, desc="Processing", unit="item"):
             first_import_idx, "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent"
         )
         path.write_text("\n".join(lines), encoding="utf-8")
+        logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/fix_remaining_imports_util.py write side effect recorded")
         print(f"Fixed: {file_path}")
 print("Done")

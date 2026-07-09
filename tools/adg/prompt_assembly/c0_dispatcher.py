@@ -10,8 +10,9 @@ Public API:
 
 from __future__ import annotations
 
-from pathlib import Path
+import logging
 import re
+from pathlib import Path
 
 from agentic_core.L3_orchestration.types.c0_evidence_contract_types import C0EvidenceContract
 from tools.adg.prompt_assembly.adapters.c0_bridge_adapter import translate_contract
@@ -51,6 +52,7 @@ def _maybe_write_packet(
         return None
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
+    logging.info("C3 write receipt: tools/adg/prompt_assembly/c0_dispatcher.py write side effect recorded")
     filename = f"packet_{envelope.packet_type}_{envelope.packet_id}.json"
     out_path = out / filename
     tmp_path = out / f".{filename}.tmp"

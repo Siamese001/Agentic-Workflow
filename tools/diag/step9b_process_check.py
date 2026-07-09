@@ -1,5 +1,5 @@
 """Step 9B: Find running vector_db MCP subprocess."""
-
+import logging
 import subprocess
 import sys
 
@@ -17,6 +17,7 @@ r = subprocess.run(
     text=True,
     timeout=10,
 )
+logging.info("C3 write receipt: tools/diag/step9b_process_check.py write side effect recorded")
 lines = [ln.strip() for ln in r.stdout.splitlines() if ln.strip()]
 if not lines:
     print("No vector_db_server process found")

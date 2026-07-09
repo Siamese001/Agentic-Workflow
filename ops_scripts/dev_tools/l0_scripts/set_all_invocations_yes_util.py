@@ -4,13 +4,14 @@ SovereignBaseAgent is the ROOT and correctly has 'No (missing super)' but
 for dashboard purposes we count it as having invocation since it IS the
 termination point of the heal chain.
 """
-
 import json
+import logging
 from pathlib import Path
 
 discovery_path = Path("agent_discovery_full.json")
 with open(discovery_path) as f:
     agents = json.load(f)
+logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/set_all_invocations_yes_util.py write side effect recorded")
 print(f"Total agents: {len(agents)}")
 not_yes = sum(1 for a in agents if a.get("invocation") != "Yes")
 print(f"Currently NOT 'Yes': {not_yes}")

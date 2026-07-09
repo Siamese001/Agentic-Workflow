@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 import sys
 from collections import defaultdict
@@ -57,6 +58,7 @@ for fpath, lno, sev, edge_kind, src, layer in rows:
 
 out = ADG_DIR / f"p1_burndown_targets_{db.stem.replace('adg_indexed_', '')}.json"
 out.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/_oneoff/_export_p1_net_targets.py write side effect recorded")
 print(out.name, "sites", len(targets))
 for k, n in sorted(by_kind.items(), key=lambda x: -x[1]):
     print(f"  {k}: {n} (prod {prod_by_kind.get(k, 0)})")

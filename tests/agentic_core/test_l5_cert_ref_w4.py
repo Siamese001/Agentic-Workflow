@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import ast
 import importlib
+import logging
 import subprocess
 import sys
 import textwrap
@@ -52,8 +53,8 @@ def test_verify_cert_ref_reexported_from_registry():
 
 
 def test_verify_cert_ref_registry_and_verify_are_same_function():
-    from agentic_core.L5_safety.contracts.verify import verify_certification_ref as vv
     from agentic_core.L5_safety.contracts.registry import verify_certification_ref as vr
+    from agentic_core.L5_safety.contracts.verify import verify_certification_ref as vv
     assert vv is vr
 
 
@@ -112,6 +113,7 @@ def test_gate_check_file_missing_field(tmp_path):
     """)
     f = tmp_path / "contract.py"
     f.write_text(src, encoding="utf-8")
+    logging.info("C3 write receipt: tests/agentic_core/test_l5_cert_ref_w4.py write side effect recorded")
     # Patch REPO_ROOT so the relative path resolves correctly
     rel = str(f.relative_to(REPO_ROOT)) if f.is_relative_to(REPO_ROOT) else str(f)
     # Use absolute path trick: temporarily make it relative to tmp_path

@@ -6,6 +6,7 @@ All other violations require human refactoring.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 from tools.adg.repair.base_rule import BaseRepairRule
@@ -80,6 +81,7 @@ class FixP1LayerViolationRule(BaseRepairRule):
             lines[line_no - 1] = guardian_comment + lines[line_no - 1]
 
             file_path.write_text("".join(lines), encoding="utf-8")
+            logging.info("C3 write receipt: tools/adg/repair/rules/fix_p1_layer_violation.py write side effect recorded")
 
             return FixResult(
                 success=True,

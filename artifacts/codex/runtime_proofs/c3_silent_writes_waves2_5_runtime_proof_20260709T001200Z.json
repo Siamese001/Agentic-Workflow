@@ -1,0 +1,109 @@
+{
+  "schema_version": "adg-c3-runtime-proof/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_waves2_5_20260709T001200Z",
+  "generated_at": "2026-07-09T00:25:00Z",
+  "adg_snapshot_id": "07072026_2307",
+  "gate_id": "C3_silent_writes_ratchet",
+  "selected_family": "C3_silent_writes_ratchet",
+  "wave_ids": [
+    "W7.C3.2",
+    "W7.C3.3",
+    "W7.C3.4",
+    "W7.C3.5"
+  ],
+  "requested_waves": 20,
+  "safe_waves_available": 4,
+  "selected_rows": 100,
+  "passed_source_replay_rows": 100,
+  "failed_source_replay_rows": 0,
+  "expected_c3_reduction_on_next_adg": 100,
+  "expected_c3_remaining_after_wave1_and_waves2_5": 0,
+  "p1_zero_proven": false,
+  "target_status": "missed",
+  "downstream_unblock_status": "blocked",
+  "reason_20_waves_not_run": "The immutable 07072026_2307 C3 snapshot had 125 total rows. Prior C3 wave 1 selected 25 rows, leaving 100 rows, so only four additional 25-row safe C3 waves were available. Other P1 families require separate structural wave harnesses and were not safe to batch into this mechanical C3 run.",
+  "commands": [
+    {
+      "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "dependency_status=ready, artifact_status=repair_ready, adg_run_id=07072026_2307, P0_FIX=0, P0_WAVE=0, P1_FIX=0, P1_RATCHET_FLOOR_BACKLOG=7, P1_RATCHET_REGRESSION=0"
+    },
+    {
+      "command": "adg_health via ADG MCP",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "sqlite=healthy, redis=healthy, adg_snapshot_id=07072026_2307; graph projection reported stale"
+    },
+    {
+      "command": "python artifacts\\codex\\runtime_proofs\\c3_apply_remaining_waves.py --repo-root C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown --sqlite C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite --previous-proof artifacts\\codex\\runtime_proofs\\c3_silent_writes_wave1_source_replay_20260709T000204Z.json --out artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_apply_20260709T001200Z.json --wave-size 25 --limit 100",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "selected_rows=100, instrumented_rows=100, failed_rows=0"
+    },
+    {
+      "command": "python -m ruff check --select I --fix @files; python -m ruff check --select I @files",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "Found 112 import-order issues, fixed all; final Ruff import check passed"
+    },
+    {
+      "command": "source replay for artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "passed=true, passed_rows=100, failed_rows=0, expected C3 remaining after wave1 and waves2_5 is 0"
+    },
+    {
+      "command": "python -m compileall -q @files",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "compileall passed for changed Python files"
+    },
+    {
+      "command": "git diff --check",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "whitespace check passed; Git emitted LF-to-CRLF warnings only"
+    },
+    {
+      "command": "python ops_scripts\\ci\\check_w4_silent_writes.py",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 0,
+      "status": "PASS",
+      "summary": "stale snapshot gate stayed pass at current=125 baseline=125; full ADG regeneration is forbidden in this lane"
+    },
+    {
+      "command": "python -m pytest @artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt -q",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+      "exit_code": 1,
+      "status": "FAIL",
+      "summary": "488 passed, 14 failed, 2 errors, 5 warnings in 18.07s"
+    },
+    {
+      "command": "python -m pytest @C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown\\artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt -q",
+      "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+      "exit_code": 1,
+      "status": "FAIL",
+      "summary": "local main reproduced the same suite result: 488 passed, 14 failed, 2 errors, 5 warnings in 15.44s"
+    }
+  ],
+  "pre_existing_test_blockers": [
+    "ProviderKind.LOCAL_LOCAL_MODEL_SERVER is absent in the current contract enum",
+    "apps_rg/config/domain_contract/grader_roster.yaml is missing",
+    "exit_profile.resume_generation.v1.json is missing",
+    "retired_provider_profile fixture/config path is missing",
+    "several L5 certificate reference/HITL/apps-depth invariant expectations fail unchanged on local main"
+  ],
+  "artifacts": {
+    "apply": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_apply_20260709T001200Z.json",
+    "source_replay": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_source_replay_20260709T001200Z.json",
+    "active_test_files": "artifacts\\codex\\runtime_proofs\\c3_silent_writes_waves2_5_active_test_files.txt"
+  }
+}

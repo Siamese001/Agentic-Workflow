@@ -9,8 +9,9 @@ Skipped:
 - agentic_core/adg/artifact/multi_writer.py (contains the token definitions themselves in prose)
 - tests/ (test fixtures may deliberately keep the non-canonical form)
 """
-from pathlib import Path
+import logging
 import re
+from pathlib import Path
 
 ROOT = Path(".")
 SKIP_DIRS = {"archives", ".git", "__pycache__", ".venv", "venv", "node_modules"}
@@ -48,6 +49,7 @@ for path, rel in iter_py_files(ROOT):
     new_text, n = pat.subn("guardian: allow-log-and-swallow", text)
     if n > 0:
         path.write_text(new_text, encoding="utf-8")
+        logging.info("C3 write receipt: tools/_oneoff/replace_allow_specific.py write side effect recorded")
         total_files += 1
         total_replacements += n
         print(f"  {n}x  {rel}")

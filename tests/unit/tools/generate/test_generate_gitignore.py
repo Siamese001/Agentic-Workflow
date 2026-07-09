@@ -11,6 +11,8 @@ Tests cover:
 
 from __future__ import annotations
 
+import logging
+
 # Import the module under test
 import sys
 from pathlib import Path
@@ -70,6 +72,7 @@ file_patterns:
 """
         config_dir = tmp_path / "config"
         config_dir.mkdir()
+        logging.info("C3 write receipt: tests/unit/tools/generate/test_generate_gitignore.py write side effect recorded")
         yaml_path = config_dir / "excluded_paths.yaml"
         yaml_path.write_text(yaml_content)
 

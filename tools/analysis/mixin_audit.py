@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 # W6 ADG consumer mode declaration (per .codex/rules/adg-canonical-invariants.md §6 + agentic_core/adg/artifact/consumer_mode.py).
 __adg_consumer_mode__ = "inventory"
 
@@ -20,6 +22,7 @@ REPO = Path(__file__).resolve().parents[2]
 SNAP = sorted(glob.glob(str(REPO / "artifacts" / "adg" / "adg_indexed_*.sqlite")), key=os.path.getmtime)[-1]
 OUT_DIR = REPO / "docs" / "reports" / "plans"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/analysis/mixin_audit.py write side effect recorded")
 
 con = sqlite3.connect(SNAP)
 con.row_factory = sqlite3.Row

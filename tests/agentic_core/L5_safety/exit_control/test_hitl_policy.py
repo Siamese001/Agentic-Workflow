@@ -8,6 +8,7 @@ Scope: runtime HITL (v30 step [5]) — NOT developer-loop Author-Gate.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -31,7 +32,6 @@ from agentic_core.L5_safety.exit_control.hitl_policy import (
     DEFAULT_POLICY_PATH,
     ClassPolicy,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -81,6 +81,7 @@ precedence:
 def policy_file(tmp_path: Path) -> Path:
     p = tmp_path / "runtime_hitl_policy.yaml"
     p.write_text(VALID_YAML, encoding="utf-8")
+    logging.info("C3 write receipt: tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py write side effect recorded")
     return p
 
 

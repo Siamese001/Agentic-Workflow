@@ -1,6 +1,6 @@
 """Test MCP server startup — hang diagnosis using subprocess.run with timeout."""
-
 import json
+import logging
 import os
 import subprocess
 import sys
@@ -49,6 +49,7 @@ readiness_call = json.dumps(
 stdin_payload = f"{init_request}\n{initialized_notif}\n{readiness_call}\n"
 
 print(f"Server: {SERVER_SCRIPT}")
+logging.info("C3 write receipt: tests/_archived_obsolete/scratch/test_mcp_handshake.py write side effect recorded")
 print(f"Sending {len(stdin_payload)} bytes to stdin")
 print(f"Timeout: 15s\n")
 
