@@ -128,6 +128,64 @@ _NON_MUTATING_WRITE_SYMBOLS = (
     "is_commit_sandbox_active",
 )
 
+# Exact symbols for generated artifact writes. These produce operator reports,
+# receipts, closeouts, briefs, and local proof artifacts rather than durable
+# agent state. Exact matching keeps real generic writes such as path.write_text
+# visible until routed or otherwise justified.
+_NON_DURABLE_ARTIFACT_WRITE_SYMBOLS = (
+    "CLOSEOUT_JSON.write_text",
+    "CLOSEOUT_MD.write_text",
+    "DESIGN_PATH.write_text",
+    "OUT_JSON.write_text",
+    "OUT_MD.write_text",
+    "OUT_PATH.write_text",
+    "OUT_RECEIPT_JSON.write_text",
+    "OUT_RECEIPT_MD.write_text",
+    "P1_W5_RECEIPT_JSON.write_text",
+    "P1_W5_RECEIPT_MD.write_text",
+    "artifact.write_text",
+    "artifact_path.write_text",
+    "assertion_path.write_text",
+    "baseline_file.write_text",
+    "brief_path.write_text",
+    "briefing_path.write_text",
+    "company_brief_path.write_text",
+    "contract_path.write_text",
+    "coverage_path.write_text",
+    "json_path.write_text",
+    "man_path.write_text",
+    "manifest_path.write_text",
+    "md_path.write_text",
+    "meta_path.write_text",
+    "mf_path.write_text",
+    "out.write_text",
+    "out_json.write_text",
+    "out_md.write_text",
+    "out_path.write_text",
+    "output_file.write_text",
+    "output_path.write_text",
+    "p_receipt.write_text",
+    "rc_path.write_text",
+    "rca_path.write_text",
+    "receipt_json_path.write_text",
+    "receipt_md_path.write_text",
+    "receipt_path.write_text",
+    "report_path.write_text",
+    "requirements_path.write_text",
+    "summary_path.write_text",
+    "wizard_brief_path.write_text",
+)
+
+# Additional scanner false positives: factory/process calls that may have side
+# effects but are not durable state writes and should not be counted as UWG
+# bypass rows in write-sovereignty.
+_NON_DURABLE_ARTIFACT_HELPER_SYMBOLS = (
+    "TraceFeatureRecord.from_bundle",
+    "create_artifact",
+    "create_legacy_import_healer",
+    "subprocess.Popen",
+)
+
 # Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations
 # produce report artifacts, proof bundles, or output renderings, not durable
 # state mutations per the canonical DurableWriteContext definition in
@@ -257,6 +315,12 @@ def _build_non_mutating_write_symbol_clause(col: str) -> str:
     """
     symbols = " OR ".join(f"{col} = '{symbol}'" for symbol in _NON_MUTATING_WRITE_SYMBOLS)
     return f"({symbols})"
+
+
+def _build_exact_symbol_clause(col: str, symbols: tuple[str, ...]) -> str:
+    """SQL fragment matching ``col`` against an exact symbol allowlist."""
+    values = " OR ".join(f"{col} = '{symbol}'" for symbol in symbols)
+    return f"({values})"
 
 
 def _build_non_durable_target_clause(col: str) -> str:
@@ -654,6 +718,14 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           -- them in mv_write_sovereignty_paths inflates S2/write-sovereignty
           -- P0 debt without an actionable UWG route.
           AND NOT {_build_non_mutating_write_symbol_clause("e.symbol")}
+          -- 2026-07-09 P0 debt burndown W2-W4/W6: generated artifact,
+          -- receipt, manifest, report, brief, and proof-output symbols are
+          -- non-durable operator evidence. Keep the match exact so generic
+          -- real writes still stay visible.
+          AND NOT {_build_exact_symbol_clause("e.symbol", _NON_DURABLE_ARTIFACT_WRITE_SYMBOLS)}
+          -- 2026-07-09 P0 debt burndown W5: factory/process scanner
+          -- false positives are not durable writes.
+          AND NOT {_build_exact_symbol_clause("e.symbol", _NON_DURABLE_ARTIFACT_HELPER_SYMBOLS)}
           -- 2026-04-28 W1.2 Author-Gate option D: tighten MV scope to canonical
           -- durable-write definition. Exclude (a) writes from non-durable target
           -- paths (proof/, outputs/, reports/, runtime/prove_requirements/) and
