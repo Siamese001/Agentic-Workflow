@@ -115,6 +115,19 @@ _ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS = (
     "ArchivalGatekeeper",
 )
 
+# Symbol names that can be emitted by the broad governance write-edge scanner
+# but are read/check/helper operations, not durable state writes. Keep this list
+# tight: real write methods such as write_text/open remain in the MV until
+# routed through UWG or explicitly handled by another authority.
+_NON_MUTATING_WRITE_SYMBOLS = (
+    "assert_no_persistent_write",
+    "compute_content_hash",
+    "get_bm25_store",
+    "get_default_store",
+    "get_validated_project_root",
+    "is_commit_sandbox_active",
+)
+
 # Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations
 # produce report artifacts, proof bundles, or output renderings, not durable
 # state mutations per the canonical DurableWriteContext definition in
@@ -233,6 +246,17 @@ def _build_uwg_symbol_clause(col: str) -> str:
 def _build_uwg_routed_clause(path_col: str, symbol_col: str) -> str:
     """Combined UWG-routed predicate: caller path OR symbol matches a UWG fragment."""
     return f"({_build_uwg_path_clause(path_col)} OR {_build_uwg_symbol_clause(symbol_col)})"
+
+
+def _build_non_mutating_write_symbol_clause(col: str) -> str:
+    """SQL fragment matching scanner false-positive helper symbols.
+
+    These symbols return paths, hashes, stores, or boolean guard state. They
+    may appear on semantic write edges because the scanner is intentionally
+    broad, but they do not themselves perform a durable write.
+    """
+    symbols = " OR ".join(f"{col} = '{symbol}'" for symbol in _NON_MUTATING_WRITE_SYMBOLS)
+    return f"({symbols})"
 
 
 def _build_non_durable_target_clause(col: str) -> str:
@@ -625,6 +649,11 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           -- writes. These produce execution side effects, not state mutations.
           AND e.symbol NOT LIKE '%.run'
           AND e.symbol != 'run'
+          -- 2026-07-09 P0 debt burndown W1: scanner false positives for
+          -- read/check/helper calls. These are not durable writes and keeping
+          -- them in mv_write_sovereignty_paths inflates S2/write-sovereignty
+          -- P0 debt without an actionable UWG route.
+          AND NOT {_build_non_mutating_write_symbol_clause("e.symbol")}
           -- 2026-04-28 W1.2 Author-Gate option D: tighten MV scope to canonical
           -- durable-write definition. Exclude (a) writes from non-durable target
           -- paths (proof/, outputs/, reports/, runtime/prove_requirements/) and

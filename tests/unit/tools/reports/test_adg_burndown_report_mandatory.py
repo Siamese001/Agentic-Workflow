@@ -115,7 +115,7 @@ def test_emit_existing_burndown_markdown_replays_written_artifact(
 
 
 def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
-    """848 inventory vs 2792 floor — same TRACK verdict, both report-only for P0."""
+    """848 inventory vs 2792 floor — same TRACK verdict, different Sub."""
     gate = tmp_path / "gates.json"
     burndown = tmp_path / "burndown.json"
     gate.write_text(
@@ -153,8 +153,8 @@ def test_render_track_inventory_vs_ratchet_floor(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     md = render(gate, burndown)
-    assert "| `3_write_sovereignty` | P0 | block | KPI | inventory | 848 |" in md
-    assert "| `G_REACH_l0_reachability` | P0 | ratchet | KPI | floor | 2792 |" in md
+    assert "| `3_write_sovereignty` | P0 | block | BURN | inventory | 848 |" in md
+    assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 |" in md
     assert "| FIX |" not in md.split("3_write_sovereignty")[1][:80]
 
 
@@ -266,10 +266,10 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     assert "Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work." in md
     assert "| Band | Status | Fix now | Burn-down backlog | KPI / watchlist | Read it as | Next move |" in md
-    assert "| P0 | PASS | 0 | 0 gates / 0 rows | 1 gate / 2,792 rows | green; KPI/watchlist only | watch trend; no burn-down action |" in md
+    assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | 0 gates / 0 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
     assert "Allowed Floor" in md
     assert "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
-    assert "| `G_REACH_l0_reachability` | P0 | ratchet | KPI | floor | 2792 | 2792 |" in md
+    assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 | 2792 |" in md
     assert "`net` = audit net (`gross - guardian`). It is severity inventory, not live gate drivers and not foundation blockers." in md
     assert "A P0 audit net value can be nonzero while BCG foundation blockers are zero" in md
     assert "| Severity Band | Label | Gross | Guardian | Audit net | Diff vs prev |" in md
