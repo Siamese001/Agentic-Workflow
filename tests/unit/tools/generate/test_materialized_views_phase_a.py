@@ -8,6 +8,8 @@ from pathlib import Path
 import pytest
 
 from tools.generate.materialized_views.phase_a_path_authority import (
+    _NON_DURABLE_ARTIFACT_HELPER_SITES,
+    _NON_DURABLE_ARTIFACT_WRITE_SITES,
     _PHASE_A_TABLES,
     materialize_phase_a,
 )
@@ -766,6 +768,108 @@ class TestPhaseAAuthority:
         for symbol in helper_symbols:
             assert symbol not in flagged, f"{symbol!r} is a scanner false positive"
         assert "path.write_text" in flagged
+
+    def test_write_sovereignty_excludes_non_durable_artifact_writer_sites(
+        self, tmp_path: Path
+    ) -> None:
+        """Site-scoped artifact exclusions do not hide same-symbol writes elsewhere."""
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for idx, (symbol, writer_file) in enumerate(
+            _NON_DURABLE_ARTIFACT_WRITE_SITES,
+            start=1,
+        ):
+            _node(conn, idx, f"artifact_site{idx}", "L2", writer_file)
+            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+        non_exempt_symbol = _NON_DURABLE_ARTIFACT_WRITE_SITES[0][0]
+        _node(
+            conn,
+            80,
+            "same_symbol_real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/non_exempt_artifact_site.py",
+        )
+        _edge(conn, 80, 99, "writes_to", symbol=non_exempt_symbol)
+        _node(
+            conn,
+            81,
+            "real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/real_writer.py",
+        )
+        _edge(conn, 81, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {(symbol, writer_file) for symbol, writer_file in rows}
+        for symbol, writer_file in _NON_DURABLE_ARTIFACT_WRITE_SITES:
+            assert (symbol, writer_file) not in flagged, (
+                f"{symbol!r} in {writer_file!r} is site-scoped artifact output"
+            )
+        assert (
+            non_exempt_symbol,
+            "agentic_core/L2_execution/utils/non_exempt_artifact_site.py",
+        ) in flagged
+        assert ("path.write_text", "agentic_core/L2_execution/utils/real_writer.py") in flagged
+
+    def test_write_sovereignty_excludes_non_durable_artifact_helper_sites(
+        self, tmp_path: Path
+    ) -> None:
+        """Site-scoped helper exclusions leave same-symbol writes elsewhere visible."""
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        for idx, (symbol, writer_file) in enumerate(
+            _NON_DURABLE_ARTIFACT_HELPER_SITES,
+            start=1,
+        ):
+            _node(conn, idx, f"helper_site{idx}", "L2", writer_file)
+            _edge(conn, idx, 99, "writes_to", symbol=symbol)
+        non_exempt_symbol = _NON_DURABLE_ARTIFACT_HELPER_SITES[0][0]
+        _node(
+            conn,
+            80,
+            "same_symbol_real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/non_exempt_helper_site.py",
+        )
+        _edge(conn, 80, 99, "writes_to", symbol=non_exempt_symbol)
+        _node(
+            conn,
+            81,
+            "real_writer",
+            "L2",
+            "agentic_core/L2_execution/utils/real_writer.py",
+        )
+        _edge(conn, 81, 99, "writes_to", symbol="path.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths"
+        ).fetchall()
+        conn.close()
+        flagged = {(symbol, writer_file) for symbol, writer_file in rows}
+        for symbol, writer_file in _NON_DURABLE_ARTIFACT_HELPER_SITES:
+            assert (symbol, writer_file) not in flagged, (
+                f"{symbol!r} in {writer_file!r} is a site-scoped false positive"
+            )
+        assert (
+            non_exempt_symbol,
+            "agentic_core/L2_execution/utils/non_exempt_helper_site.py",
+        ) in flagged
+        assert ("path.write_text", "agentic_core/L2_execution/utils/real_writer.py") in flagged
 
     def test_write_sovereignty_excludes_pascalcase_class_instantiation(
         self, tmp_path: Path
