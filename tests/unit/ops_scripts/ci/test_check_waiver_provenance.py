@@ -120,7 +120,7 @@ def test_provenance_exact_path_match(tmp_path: Path, monkeypatch) -> None:
 
 def test_provenance_basename_match(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(mod, "REPO_ROOT", tmp_path)
-    plan_dir = tmp_path / "docs" / "archive" / "windsurf" / "legacy-tree" / "plans"
+    plan_dir = tmp_path / "plans"
     plan_dir.mkdir(parents=True)
     (plan_dir / "my-plan-abc123.md").write_text("x", encoding="utf-8")
     assert mod._provenance_path_exists("my-plan-abc123.md", mod.PLAN_GLOB)

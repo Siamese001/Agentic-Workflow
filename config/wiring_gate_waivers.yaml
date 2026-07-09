@@ -24,4 +24,10 @@
 #
 # Waivers are read, not written, by CI. Add manually via PR review.
 
-waivers: []
+waivers:
+  - gate: J1_canonical_pipeline_wiring
+    scope: C0_context_engine::C03_graph
+    reason: "C0.3 entity graph stage is explicitly deferred in canonical_pipelines.yaml; keep manifest visibility without counting it as active P0 wiring debt."
+    owner: amit@workflow.local
+    expires_on: "2026-09-30"
+    plan: archived-windsurf-c0-context-engine-wiring-fix-9e42a1.md
