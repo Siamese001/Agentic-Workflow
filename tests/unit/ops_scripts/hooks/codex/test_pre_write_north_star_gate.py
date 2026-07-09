@@ -83,7 +83,7 @@ def test_gate_own_state_allowed():
 def test_off_star_rules_blocked():
     code, reason = gate.evaluate(_edit(".codex/rules/new_rule.md"), state=_STATE, env=_NO_BYPASS)
     assert code == 2
-    assert "AskUserQuestion" in reason
+    assert "NORTH-STAR GATE" in reason
     assert "RECOMMENDED" in reason
 
 
@@ -150,5 +150,11 @@ def test_mode_off_allows():
 
 def test_mode_warn_does_not_block_but_warns():
     code, reason = gate.evaluate(_edit(".codex/rules/x.md"), state=_STATE, env={"NORTH_STAR_GATE_ENFORCE": "warn"})
+    assert code == 0
+    assert reason.startswith("WARN:")
+
+
+def test_default_mode_warns_instead_of_blocking():
+    code, reason = gate.evaluate(_edit(".codex/rules/x.md"), state=_STATE, env={})
     assert code == 0
     assert reason.startswith("WARN:")

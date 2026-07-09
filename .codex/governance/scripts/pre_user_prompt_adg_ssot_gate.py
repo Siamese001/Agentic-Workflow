@@ -11,10 +11,11 @@ corrected SSOT semantics from plan ``adg-redis-hotcache-enforcement-b9f4c2``:
   - **ADG Redis is a non-authoritative hot cache.** A cold/absent Redis hot cache
     is advisory only and **never blocks** — SQLite serves every query directly
     (constitutional §28 SQLite-direct fallback).
-  - **ADG MCP transport must be open for ordinary T2/T3 work.** A live process or
-    readable SQLite snapshot is not enough to prove the active Codex stdio route
-    is callable. T2/T3 prompts block unless the supervisor reports an open
-    transport, except explicit ADG transport recovery/RCA prompts.
+  - **ADG MCP transport must be open for T2/T3 edits and execution.** A live
+    process or readable SQLite snapshot is not enough to prove the active Codex
+    stdio route is callable for edits. Read-only analysis/recommendation prompts
+    may proceed from SQLite with degraded provenance; explicit ADG transport
+    recovery/RCA prompts may proceed so the route can be repaired.
 
 This reuses ``classify_tier`` / ``check_adg_health_red`` / ``check_redis_*`` from
 ``pre_prompt_classifier.py`` so the probe logic has a single source of truth. It
@@ -24,8 +25,9 @@ traces — that is the classifier's concern, out of scope for this green-light g
 Payload: reads the ``UserPromptSubmit`` JSON from stdin. Accepts both the Claude
 Code shape (``{"prompt": "..."}``) and the legacy ``{"tool_info": {...}}`` shape.
 
-Exit codes: 0 for T0/T1 and healthy T2/T3; 2 to block a T2/T3 prompt when the
-SQLite SSOT or ADG MCP transport is unavailable.
+Exit codes: 0 for T0/T1, healthy T2/T3, read-only degraded analysis, and recovery
+prompts; 2 to block a T2/T3 prompt when the SQLite SSOT is unavailable or edit
+work lacks ADG MCP transport proof.
 
 Bypass: ``ADG_SSOT_GATE_BYPASS=1``.
 """
@@ -70,6 +72,43 @@ _ADG_RECOVERY_TERMS = (
     "restore",
 )
 
+_READ_ONLY_ANALYSIS_TERMS = (
+    "analyze",
+    "architecture review",
+    "audit",
+    "compare",
+    "explain",
+    "identify",
+    "list",
+    "plan",
+    "recommend",
+    "review",
+    "summarize",
+    "what",
+    "which",
+    "why",
+)
+
+_EXECUTION_TERMS = (
+    "apply",
+    "branch",
+    "commit",
+    "create branch",
+    "delete",
+    "edit",
+    "fix",
+    "implement",
+    "merge",
+    "patch",
+    "pull request",
+    "push",
+    "remove",
+    "run",
+    "test",
+    "update",
+    "write",
+)
+
 
 def _read_payload(raw: str) -> dict[str, Any]:
     """Parse the hook payload; return an empty dict for invalid/non-object input."""
@@ -105,6 +144,15 @@ def _is_adg_transport_recovery_prompt(prompt: str) -> bool:
     """Allow the work needed to repair ADG itself when the transport is closed."""
     text = prompt.lower()
     return "adg" in text and any(term in text for term in _ADG_RECOVERY_TERMS)
+
+
+def _is_read_only_analysis_prompt(prompt: str) -> bool:
+    """Allow recommendation/planning turns to proceed from SQLite evidence only."""
+    text = " ".join(prompt.lower().split())
+    return (
+        any(term in text for term in _READ_ONLY_ANALYSIS_TERMS)
+        and not any(term in text for term in _EXECUTION_TERMS)
+    )
 
 
 def _configured_http_endpoint(server_id: str) -> str:
@@ -238,11 +286,18 @@ def main() -> int:
                 "Allowing recovery path only.",
                 file=sys.stderr,
             )
+        elif _is_read_only_analysis_prompt(prompt):
+            print(
+                f"[adg_ssot_gate] {tier}: ADG SQLite SSOT green; ADG MCP transport "
+                f"is {transport_status}. Allowing read-only analysis/recommendation "
+                "with degraded provenance; live ADG MCP callability is still required before edits.",
+                file=sys.stderr,
+            )
         else:
             print(
                 f"[adg_ssot_gate] BLOCKED: {tier} prompt — ADG MCP transport is "
                 f"{transport_status}; active-session callability proof is required "
-                f"before ordinary T2/T3 work. {detail}",
+                f"before T2/T3 edit or execution work. {detail}",
                 file=sys.stderr,
             )
             return 2

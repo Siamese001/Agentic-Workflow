@@ -5,6 +5,7 @@ Plan: adg-redis-hotcache-enforcement-b9f4c2.
 Contract under test:
   - SQLite SSOT is the authority: T2/T3 + SSOT red (no readable snapshot) → exit 2.
   - ADG MCP transport must be open for ordinary T2/T3 prompts.
+  - Read-only analysis/recommendation prompts may proceed from SQLite SSOT with degraded provenance.
   - Explicit ADG transport recovery/RCA prompts may proceed while transport is closed.
   - Redis is a non-authoritative hot cache: cold/absent Redis → advisory only, exit 0.
   - T0/T1 prompts are never gated, even when the SSOT is red.
@@ -112,6 +113,20 @@ class TestTransportAuthority:
         )
         err = capsys.readouterr().err
         assert "recovery" in err.lower() and "closed_transport" in err
+
+    def test_read_only_recommendation_allows_closed_transport(self, capsys):
+        assert (
+            _run(
+                '{"prompt": "architecture review: recommend redundant T3 refactoring approvals across layers"}',
+                sqlite_red=False,
+                transport_open=False,
+                transport_status="closed_transport",
+            )
+            == 0
+        )
+        err = capsys.readouterr().err
+        assert "degraded provenance" in err
+        assert "required before edits" in err
 
     def test_http_transport_opens_with_endpoint_matched_adg_health_proof(
         self,

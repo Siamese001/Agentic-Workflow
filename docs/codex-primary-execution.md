@@ -62,7 +62,7 @@ The readiness gate checks:
 - Git state is known, with optional clean-worktree enforcement.
 - `AGENTIC_REPO_ROOT`, `ADG_REDIS_URL`, and pytest plugin-autoload state are sane.
 - Required Codex routes have callable evidence when marked required.
-- ADG active-session transport is open; initialize/tools-list and process liveness are not enough, and direct SQLite is not a green readiness substitute for required ADG work.
+- ADG active-session transport is open for edit/execution, proof, eval, and publication work; initialize/tools-list and process liveness are not enough, and direct SQLite is not a green readiness substitute for required ADG edit work.
 - Duplicate MCP process cohorts are visible before the run starts.
 
 ## Main Publication And Cleanup Contract
@@ -137,6 +137,8 @@ python .codex/governance/scripts/sync_mcp_config.py --check-user-config --json
 
 The SessionStart hook runs `.codex/hooks/session_start_mcp_bootstrap.py`, which refreshes that projection and runs advisory health probes. It does not claim detached stdio subprocesses, HTTP service process liveness, port-open checks, or protocol-only initialize/tools-list probes as host-attached MCP parity.
 
+The all-enabled per-turn MCP protocol gate is advisory by default for ordinary analysis, design, and refactoring prompts so transport churn does not block low-risk innovation work. It remains blocking for proof, eval, PR/publication, `main` closeout, and explicit strict prompts; malformed MCP config and missing required secret passthrough also always block. Set `REQUIRED_MCP_GATE_ENFORCE=block` to restore the old block-all mode, or `REQUIRED_MCP_GATE_ENFORCE=warn` for explicit warn-only transport checks.
+
 Shell-side scripts cannot see the live Codex MCP namespace. For legacy stdio routes,
 an operator may pass evidence through the existing environment convention only
 after a live Codex MCP tool call succeeds in the same verification context:
@@ -155,7 +157,7 @@ used. The PostToolUse callability ledger at
 `artifacts/mcp/codex_mcp_callability_proofs.json` must show `route_kind=http`,
 the configured endpoint, and a fresh `healthy` proof.
 
-ADG has an additional hard per-turn and readiness gate: ordinary T2/T3 prompts require the configured route to be callable in the active Codex session. A readable SQLite snapshot, a live ADG process, an HTTP service heartbeat, port-open checks, and HTTP initialize/tools-list are necessary diagnostics but not sufficient green proof. The ADG PostToolUse proof hook writes a short-lived ledger entry after `adg_health`, `adg_runtime_info`, or `adg_process_identity` succeeds against the configured HTTP endpoint; explicit ADG transport recovery/RCA prompts may proceed while the proof is absent so the route can be repaired.
+ADG has an additional hard per-turn and readiness gate for T2/T3 edit and execution prompts: the configured route must be callable in the active Codex session. A readable SQLite snapshot, a live ADG process, an HTTP service heartbeat, port-open checks, and HTTP initialize/tools-list are necessary diagnostics but not sufficient green proof for edits. Read-only analysis/recommendation prompts may proceed from the canonical SQLite snapshot with degraded provenance when live ADG transport is closed, but no edits should start until live callability is restored. The ADG PostToolUse proof hook writes a short-lived ledger entry after `adg_health`, `adg_runtime_info`, or `adg_process_identity` succeeds against the configured HTTP endpoint; explicit ADG transport recovery/RCA prompts may proceed while the proof is absent so the route can be repaired.
 
 ## MCP Lifecycle Cleanup Guard
 
@@ -272,7 +274,7 @@ Use live Codex callable routes when exposed. When a route is unavailable, report
 | `memory` | Required for session recall/writeback when available; no honest substitute for claiming Memory MCP compliance. |
 | `GitKraken` | Required git/PR authority when callable; the GitKraken CLI (`gk`) is the substitute proof path when the live MCP surface is unavailable. Raw `git`/`gh` are not primary routes for governed git/PR actions. |
 | `vector_db` | Preferred semantic retrieval route when callable; `rg` is lexical fallback, not semantic parity. |
-| `adg_sqlite` | Required structural route for dependency/refactor work. If closed, stop for ADG transport recovery/RCA; direct SQLite is a named degraded diagnostic or CI-parity path, not a green readiness substitute. |
+| `adg_sqlite` | Required structural route for dependency/refactor edit work. If closed, read-only analysis may proceed from canonical SQLite with degraded provenance; edits/proof/eval/publication stop for ADG transport recovery/RCA. Direct SQLite is a named degraded diagnostic or CI-parity path, not a green readiness substitute for edits. |
 | `notion` | Codex plugin substitute is acceptable for manual Plans/Backlog access when schema is fetched first. |
 | `playwright` | Browser/node substitutes are acceptable for UI verification unless raw browser MCP parity is explicitly required. |
 | `deepwiki` and `context7` | Use official docs, GitHub, Tavily, or web only as named degraded substitutes until raw tools are exposed. |

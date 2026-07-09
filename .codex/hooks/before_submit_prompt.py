@@ -111,10 +111,12 @@ def _run_adg_ssot_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
 def _run_required_mcp_gate(raw_stdin: str, payload: dict[str, Any]) -> int:
     """Dispatch the all-required-MCP configured protocol gate.
 
-    Unlike advisory prompt enrichment, this gate is fail-closed: if the gate
-    cannot run, the hook cannot prove required MCP command/url protocol probes
-    are green. Active-session ADG callability is enforced immediately afterward
-    by ``pre_user_prompt_adg_ssot_gate.py``.
+    The child gate blocks strict proof/eval/publication prompts and
+    nonnegotiable config/spawn failures; ordinary transport churn is surfaced as
+    a warning so low-risk analysis can continue. If the gate cannot run at all,
+    this dispatcher blocks because no protocol evidence was produced.
+    Active-session ADG callability is enforced immediately afterward by
+    ``pre_user_prompt_adg_ssot_gate.py``.
     """
     if not raw_stdin.strip():
         return 0
@@ -161,12 +163,12 @@ if legacy:
 if raw_stdin.strip():
     _run_grep_for_deps_warning(raw_stdin, payload)
 
-# Required Codex MCP protocol green-light: every enabled repo MCP must complete
-# its configured initialize/tools-list probe before normal prompt handling.
+# Required Codex MCP protocol readiness: strict prompts and nonnegotiable
+# config/spawn failures block; ordinary analysis prompts receive warnings.
 if _run_required_mcp_gate(raw_stdin, payload) != 0:
     reason = (
         "Required Codex MCP transports unavailable before turn - "
-        "repair MCP transport/callability first."
+        "repair MCP transport/callability before strict proof or publication work."
     )
     write_receipt("beforeSubmitPrompt", payload, "block", reason)
     raise SystemExit(block(reason))
@@ -174,7 +176,7 @@ if _run_required_mcp_gate(raw_stdin, payload) != 0:
 # Constitutional §13 ADG SQLite-SSOT + MCP transport green-light (Redis is advisory hot cache only).
 if _run_adg_ssot_gate(raw_stdin, payload) == 2:
     reason = (
-        "ADG SQLite SSOT or MCP transport unavailable for T2/T3 prompt - "
+        "ADG SQLite SSOT or MCP transport unavailable for T2/T3 edit/execution prompt - "
         "restore active ADG callability before proceeding (constitutional §13)."
     )
     write_receipt("beforeSubmitPrompt", payload, "block", reason)
