@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""check_ask_user_question_loop_wired.py — verify the native question-tool loop is wired.
+"""check_ask_user_question_loop_wired.py — verify the Codex request_user_input loop is wired.
 
 Plan: askq-confidence-meta-learning-loop-c4e7a1 (W3.1).
 
-The loop only learns if the native question-tool seams are connected:
-  1. SHAPE — a ``PreToolUse`` hook on ``AskUserQuestion`` and Codex ``request_user_input``
+The loop only learns if the Codex request_user_input seams are connected:
+  1. SHAPE — a ``PreToolUse`` hook on ``request_user_input``
      is registered in ``.codex/hooks.json`` and points at ``before_ask_user_question.py``.
-  2. CAPTURE — a ``PostToolUse`` hook on those same native question-tool names is registered
+  2. CAPTURE — a ``PostToolUse`` hook on that Codex tool name is registered
      and points at ``after_ask_user_question.py``.
   3. The capture SSOT (``post_ask_user_question_capture.py``) and the calibration helper
      (``tools/ledgers/ask_user_question_calibration.py``) exist on disk.
@@ -36,7 +36,7 @@ SHAPE_HOOK = ROOT / ".codex" / "hooks" / "before_ask_user_question.py"
 CAPTURE_HOOK = ROOT / ".codex" / "hooks" / "after_ask_user_question.py"
 CAPTURE_SSOT = ROOT / ".codex" / "governance" / "scripts" / "post_ask_user_question_capture.py"
 CALIB_HELPER = ROOT / "tools" / "ledgers" / "ask_user_question_calibration.py"
-QUESTION_TOOL_MATCH_TOKENS = ("AskUserQuestion", "request_user_input")
+QUESTION_TOOL_MATCH_TOKENS = ("request_user_input",)
 
 
 def _fail_closed() -> bool:
@@ -44,7 +44,7 @@ def _fail_closed() -> bool:
 
 
 def _hook_registered(stage: str, hook_name: str) -> bool:
-    """True when hooks.json has a stage matcher covering Claude and Codex question tools."""
+    """True when hooks.json has a stage matcher covering Codex request_user_input."""
     try:
         data = json.loads(SETTINGS.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -97,9 +97,9 @@ def run_checks() -> list[tuple[str, bool, str]]:
         sys.path.insert(0, str(ROOT))
     return [
         ("pre_tool_use_hook_registered", _pre_hook_registered(),
-         "hooks.json PreToolUse matcher covers AskUserQuestion/request_user_input -> before_ask_user_question.py"),
+         "hooks.json PreToolUse matcher covers request_user_input -> before_ask_user_question.py"),
         ("post_tool_use_hook_registered", _post_hook_registered(),
-         "hooks.json PostToolUse matcher covers AskUserQuestion/request_user_input -> after_ask_user_question.py"),
+         "hooks.json PostToolUse matcher covers request_user_input -> after_ask_user_question.py"),
         ("shape_hook_exists", SHAPE_HOOK.is_file(), str(SHAPE_HOOK.relative_to(ROOT))),
         ("capture_hook_exists", CAPTURE_HOOK.is_file(), str(CAPTURE_HOOK.relative_to(ROOT))),
         ("capture_ssot_exists", CAPTURE_SSOT.is_file(), str(CAPTURE_SSOT.relative_to(ROOT))),

@@ -2,7 +2,7 @@
 
 ## Plan First. Execute Second.
 
-Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts. Primary enforcement is Codex-owned, and `.codex` is the only repo governance tree. Do not recreate the legacy Claude governance directory.
+Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary local execution surface for readiness, run evidence, and verification receipts. Primary enforcement is Codex-owned, and `.codex` is the only repo governance tree. Do not recreate any legacy non-Codex governance directory.
 
 **T2/T3** (2+ files, cross-layer, architecture, multi-file debug): enter native plan mode and present the plan for approval before any edit. Use the `structured-reasoning` skill only as decomposition / retrieval guidance inside that plan-mode workflow. See `.codex/rules/plan-first-enforcement.md`.
 
@@ -73,7 +73,7 @@ The knowledge-graph Memory MCP is optional for graph queries or writeback when i
 
 ## Plans
 
-Lookup: `.codex/rules/claude-config-lookup.md` and `.codex/rules/plan-location.md`. New plans are disk-only under `plans/<name>-<6hex>.md`; `.codex/plans/` is an archive of migrated historical plans, not the write target for new work.
+Lookup: `.codex/rules/codex-config-lookup.md` and `.codex/rules/plan-location.md`. New plans are disk-only under `plans/<name>-<6hex>.md`; `.codex/plans/` is an archive of migrated historical plans, not the write target for new work.
 
 ## Pytest
 
@@ -110,7 +110,7 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 - For post-publication closeout, use `python scripts/governance/codex_main_closeout.py --check --json --publication-only`; local cleanup may use `--apply` only for clean, ancestor-contained branches/worktrees.
 - Direct PR completion commands (`gh pr merge` or push-to-main) must chain `codex_main_closeout.py --apply --fetch --json --publication-only` and `codex_main_closeout.py --check --fetch --json --publication-only` in the same shell command, then run strict topology closeout as evidence.
 - Validate the repo-owned enforcement home with `python scripts/governance/verify_codex_enforcement_home.py --json`.
-- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement must not depend on the legacy Claude governance directory or hook parity path.
+- Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement must not depend on any legacy non-Codex governance directory or hook parity path.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
@@ -120,7 +120,7 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 
 The repo must stay Codex-only:
 
-- The legacy Claude governance directory is forbidden.
+- Legacy non-Codex governance directories are forbidden.
 - Active hook registration lives in `.codex/hooks.json`.
 - Active hook entrypoints live in `.codex/hooks/**`.
 - Active repo Codex governance assets live in `.codex/rules`, `.codex/skills`, `.codex/governance`, `.codex/schemas`, `.codex/templates`, and `.codex/state`.

@@ -90,6 +90,7 @@ class TestBuildDecisionRows:
         return {
             "questions": [
                 {
+                    "id": "approach",
                     "header": "Approach",
                     "question": "Which approach for the split?",
                     "options": [
@@ -120,8 +121,8 @@ class TestBuildDecisionRows:
     def test_multi_question(self):
         ti = {
             "questions": [
-                {"header": "Store", "options": [{"label": "Reuse (Recommended)", "description": "[confidence=0.8] x"}, {"label": "Migrate", "description": "[confidence=0.6] y"}]},
-                {"header": "Mode", "options": [{"label": "Advisory (Recommended)", "description": "[confidence=0.75] z"}, {"label": "Blocking", "description": "[confidence=0.5] w"}]},
+                {"id": "store", "header": "Store", "options": [{"label": "Reuse (Recommended)", "description": "[confidence=0.8] x"}, {"label": "Migrate", "description": "[confidence=0.6] y"}]},
+                {"id": "mode", "header": "Mode", "options": [{"label": "Advisory (Recommended)", "description": "[confidence=0.75] z"}, {"label": "Blocking", "description": "[confidence=0.5] w"}]},
             ]
         }
         rows = cap.build_decision_rows(ti, {"Store": "Reuse (Recommended)", "Mode": "Blocking"})
@@ -137,8 +138,8 @@ class TestBuildDecisionRows:
         # A global pool would mis-assign q0 to the first 'A' match — this asserts per-question scope.
         ti = {
             "questions": [
-                {"header": "Q0", "options": [{"label": "A", "description": "[confidence=0.6] a"}, {"label": "B (Recommended)", "description": "[confidence=0.8] b"}]},
-                {"header": "Q1", "options": [{"label": "A (Recommended)", "description": "[confidence=0.8] a"}, {"label": "B", "description": "[confidence=0.6] b"}]},
+                {"id": "q0", "header": "Q0", "options": [{"label": "A", "description": "[confidence=0.6] a"}, {"label": "B (Recommended)", "description": "[confidence=0.8] b"}]},
+                {"id": "q1", "header": "Q1", "options": [{"label": "A (Recommended)", "description": "[confidence=0.8] a"}, {"label": "B", "description": "[confidence=0.6] b"}]},
             ]
         }
         rows = cap.build_decision_rows(ti, {"answers": [{"selected_label": "B"}, {"selected_label": "A"}]})
@@ -148,8 +149,8 @@ class TestBuildDecisionRows:
     def test_reused_labels_scoped_per_question_header_map(self):
         ti = {
             "questions": [
-                {"header": "Q0", "options": [{"label": "A"}, {"label": "B"}]},
-                {"header": "Q1", "options": [{"label": "A"}, {"label": "B"}]},
+                {"id": "q0", "header": "Q0", "options": [{"label": "A"}, {"label": "B"}]},
+                {"id": "q1", "header": "Q1", "options": [{"label": "A"}, {"label": "B"}]},
             ]
         }
         rows = cap.build_decision_rows(ti, {"Q0": "B", "Q1": "A"})
@@ -198,10 +199,11 @@ def temp_ledger(tmp_path):
 class TestCaptureEndToEnd:
     def test_capture_writes_row_with_selection(self, temp_ledger):
         payload = {
-            "tool_name": "AskUserQuestion",
+            "tool_name": "functions.request_user_input",
             "tool_input": {
                 "questions": [
                     {
+                        "id": "capture_mech",
                         "header": "Capture mech",
                         "question": "Which capture mechanism?",
                         "options": [
@@ -229,11 +231,12 @@ class TestCaptureEndToEnd:
             "tool_input": {
                 "questions": [
                     {
+                        "id": "codex_ask",
                         "header": "Codex ask",
                         "question": "Which question surface?",
                         "options": [
                             {"label": "Native Codex hook (Recommended)", "description": "[RECOMMENDED ⭐ confidence=0.86] atomic"},
-                            {"label": "Claude-only hook", "description": "[confidence=0.20] misses Codex"},
+                            {"label": "Stale hook", "description": "[confidence=0.20] misses Codex"},
                         ],
                     }
                 ]
@@ -249,15 +252,16 @@ class TestCaptureEndToEnd:
         assert rows[0]["selected_index"] == 0
         assert rows[0]["confidence_score"] == 0.86
 
-    def test_capture_ignores_non_ask_user_question(self, temp_ledger):
+    def test_capture_ignores_non_request_user_input(self, temp_ledger):
         assert cap.capture({"tool_name": "Write", "tool_input": {}}) == []
 
     def test_capture_override_persisted(self, temp_ledger):
         payload = {
-            "tool_name": "AskUserQuestion",
+            "tool_name": "functions.request_user_input",
             "tool_input": {
                 "questions": [
                     {
+                        "id": "x",
                         "header": "X",
                         "options": [
                             {"label": "A (Recommended)", "description": "[confidence=0.9] a"},
@@ -283,10 +287,11 @@ class TestMainEntryPointClosure:
         import json as _json
 
         payload = {
-            "tool_name": "AskUserQuestion",
+            "tool_name": "functions.request_user_input",
             "tool_input": {
                 "questions": [
                     {
+                        "id": "next_step",
                         "header": "Next step",
                         "options": [
                             {"label": "Ship it (Recommended)", "description": "[RECOMMENDED ⭐ confidence=0.80] go"},

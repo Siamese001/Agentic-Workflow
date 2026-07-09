@@ -41,12 +41,12 @@ def test_main_passes_when_wired():
 
 
 def test_post_hook_detection_reads_settings():
-    # The detector must match native question-tool PostToolUse → after_ask_user_question.py.
+    # The detector must match request_user_input PostToolUse -> after_ask_user_question.py.
     assert gate._post_hook_registered() is True
 
 
 def test_pre_hook_detection_reads_settings():
-    # The detector must match native question-tool PreToolUse → before_ask_user_question.py.
+    # The detector must match request_user_input PreToolUse -> before_ask_user_question.py.
     assert gate._pre_hook_registered() is True
 
 

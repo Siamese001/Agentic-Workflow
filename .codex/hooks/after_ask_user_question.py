@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""afterAskUserQuestion — PostToolUse relay for native question tools.
+"""after_request_user_input — PostToolUse relay for Codex request_user_input.
 
-Thin relay: reads the Claude Code event JSON once and delegates to
+Thin relay: reads the tool event JSON once and delegates to
 ``.codex/governance/scripts/post_ask_user_question_capture.py`` (the testable SSOT), which
 records the decision (options + confidence + the user's selection) to the
 ``ask_user_question_decisions`` ledger — closing the WRITE+SELECTION seam of the
-AskUserQuestion confidence meta-learning loop (plan askq-confidence-meta-learning-loop-c4e7a1).
+request_user_input confidence meta-learning loop (plan askq-confidence-meta-learning-loop-c4e7a1).
 
 Self-contained on purpose — no dependency on ``lib.codex_hook_common``. PostToolUse never
 blocks, so this ALWAYS exits 0; any error is swallowed (capture must never wedge a turn).

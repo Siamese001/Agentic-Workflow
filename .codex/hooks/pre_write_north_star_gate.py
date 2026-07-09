@@ -9,12 +9,12 @@ self-merged).
 
 This gate makes the north star the centerpiece of the edit decision. When an edit targets a KNOWN
 off-north-star surface AND lanes < lanes_total, it BLOCKS (exit 2) and instructs the model to put
-the decision to the operator via the native ``AskUserQuestion`` tool — with the disciplined "Park
+the decision to the operator via the native ``request_user_input`` tool — with the disciplined "Park
 it" option pre-marked RECOMMENDED at a confidence EARNED from the operator's own recent base-rate,
 and the off-target option clearly labelled dopamine-seeking at the inverse (low) confidence.
 
 Why a block-and-instruct (not a direct tool call): a PreToolUse hook returns an exit code, it
-cannot itself render ``AskUserQuestion``. So it blocks and hands the model the exact option shape.
+cannot itself render ``request_user_input``. So it blocks and hands the model the exact option shape.
 
 Choices the operator gets (rendered by the model per .codex/skills/ask-user-question-recommendation):
   1. "Park it (Recommended)" desc begins [RECOMMENDED ⭐ confidence=<earned>]
@@ -117,7 +117,7 @@ def _instruction(rel: str, state: dict) -> str:
         f"NORTH-STAR GATE: this edit targets `{rel}` — an off-north-star surface while lanes are "
         f"{passing}/{total}.\n"
         "The north star is the centerpiece of this decision. Do NOT silently proceed. Put it to the "
-        "operator now via the native AskUserQuestion tool, recommended option FIRST, using exactly "
+        "operator now via the native request_user_input tool, recommended option FIRST, using exactly "
         "this shape (per .codex/skills/ask-user-question-recommendation):\n\n"
         "  Q: \"This write is off the 11/11 apps_rg E2E north star. Park it or do it now?\"\n"
         f"  1. \"Park it (Recommended)\"  desc: \"[RECOMMENDED ⭐ confidence={park:.2f}] "
@@ -153,9 +153,9 @@ def evaluate(data: dict, state: dict | None = None, env: dict | None = None) -> 
         return 0, ""
     # harness scratch under ~/.codex is never a repo edit
     try:
-        home_claude = (Path.home() / ".codex").resolve()
+        home_codex = (Path.home() / ".codex").resolve()
         fp = Path(file_path).expanduser().resolve()
-        if fp == home_claude or home_claude in fp.parents:
+        if fp == home_codex or home_codex in fp.parents:
             return 0, ""
     except (OSError, ValueError, RuntimeError):
         pass

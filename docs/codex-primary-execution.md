@@ -14,7 +14,7 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Route evidence and Codex preflight | `scripts/governance/audit_codex_mcp_transports.py` and `scripts/governance/codex_readiness.py` |
 | Run receipts | JSON receipts validated by `scripts/governance/verify_codex_run_receipt.py` |
 
-No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate the legacy Claude governance directory, root `.agents` skill tree, memory-hosted `SKILL.md` tree, or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
+No parallel registry: `.codex` is the only repo governance tree for Codex rules, skills, hooks, schemas, templates, and state. Do not recreate any legacy non-Codex governance directory, root `.agents` skill tree, memory-hosted `SKILL.md` tree, or any second hook/rule tree. Codex consumes the repo-owned files and produces fresh execution evidence.
 
 For non-trivial Codex work in this repo, load repo-local project memory before relying on global Codex memory: read `memory/MEMORY.md`, then `memory/codex/memory_summary.md` when the task may depend on previous Agentic Workflow Codex runs, branch/worktree workflows, or repo-specific Codex skills. Keep `C:\Users\amita\.codex\memories` for cross-project/user memory only.
 
@@ -228,7 +228,7 @@ If a process-identity tool is absent, the live MCP child is still serving older 
 
 ## Native Hook Contract
 
-Codex primary enforcement uses the native Codex hook registry at `.codex/hooks.json`. Hook entrypoints live under `.codex/hooks/**`, and delegated governance scripts live under `.codex/governance/scripts/**`. The legacy Claude governance directory is forbidden.
+Codex primary enforcement uses the native Codex hook registry at `.codex/hooks.json`. Hook entrypoints live under `.codex/hooks/**`, and delegated governance scripts live under `.codex/governance/scripts/**`. Legacy non-Codex governance directories are forbidden.
 
 Workspace-specific avatar enforcement lives in `.codex/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
 
@@ -287,4 +287,4 @@ Run the primary verifier after changing Codex execution docs or scripts:
 python scripts/governance/verify_codex_primary.py
 ```
 
-The primary verifier also enforces the Codex-only migration: no legacy Claude governance directory, no tracked legacy Claude instruction or project-dir references, and no missing `.codex/hooks.json` command targets.
+The primary verifier also enforces the Codex-only migration: no legacy non-Codex governance directory, no tracked legacy instruction or project-dir references, and no missing `.codex/hooks.json` command targets.

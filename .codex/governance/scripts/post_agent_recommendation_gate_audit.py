@@ -1,16 +1,16 @@
-"""post_agent_recommendation_gate_audit.py — trigger-side audit for the AskUserQuestion contract.
+"""post_agent_recommendation_gate_audit.py — trigger-side audit for the request_user_input contract.
 
 The PreToolUse gate (`pre_ask_user_question_recommendation_gate.py`) enforces the SHAPE of an
-AskUserQuestion (recommended option + confidence) and blocks. This audit covers the TRIGGER:
+request_user_input (recommended option + confidence) and blocks. This audit covers the TRIGGER:
 a response that surfaces a decision/options menu in PROSE — or a "do you want X or Y?" closer —
-without ever calling AskUserQuestion. That is exactly the `no-prose-options-menus` anti-pattern
+without ever calling request_user_input. That is exactly the `no-prose-options-menus` anti-pattern
 (AGENTS.md Author-Gate): a decision the user should have been asked, rendered as prose instead.
 
 Heuristic and ADVISORY by design: "a decision was needed" cannot be inferred from text with
 enough precision to block safely, so this NEVER blocks — it logs to
 ``artifacts/governance/recommendation_gate_violations.jsonl`` for review. Patterns are
 conservative (clear option menus / lettered "(a) … or (b)" / explicit decision questions) and
-an AskUserQuestion-was-used anti-signal suppresses the flag.
+a request_user_input-was-used anti-signal suppresses the flag.
 
 Bypass: RECOMMENDATION_GATE_BYPASS=1
 """
@@ -34,11 +34,11 @@ from _post_agent_payload import extract_response_text  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VIOLATIONS_FILE = REPO_ROOT / "artifacts" / "governance" / "recommendation_gate_violations.jsonl"
 
-# Anti-signal: an AskUserQuestion was actually posed (its native markers appear in the turn) →
+# Anti-signal: request_user_input was actually posed (its native markers appear in the turn) →
 # compliant, suppress. The confidence/recommended markers are the strong signal; the tool name
 # is a softer one. Over-suppression is acceptable for an advisory detector (favor low FP).
 _ASK_USED_RE = re.compile(
-    r"(?i)\[confidence=0\.\d|\[RECOMMENDED|\bask_user_question\b|AskUserQuestion"
+    r"(?i)\[confidence=0\.\d|\[RECOMMENDED|\brequest_user_input\b|functions\.request_user_input"
 )
 
 # Conservative prose decision / options-menu patterns.
@@ -56,7 +56,7 @@ _PROSE_DECISION_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
 )
 
 _REMEDY = (
-    "A decision was surfaced in prose without AskUserQuestion. Fire AskUserQuestion with "
+    "A decision was surfaced in prose without request_user_input. Fire request_user_input with "
     "the recommended option first and labeled '(Recommended)'; descriptions must begin with "
     "[RECOMMENDED ⭐ confidence=0.NN] for the recommendation and [confidence=0.NN] for every "
     "other option, with Pros: and Cons: text. Or decide-and-proceed — never a prose options menu. "
@@ -80,7 +80,7 @@ def _append(record: dict) -> None:
 def detect(text: str) -> list[dict]:
     """Return advisory violation records (empty if compliant or no decision-in-prose)."""
     if _ASK_USED_RE.search(text):
-        return []  # an AskUserQuestion was posed (markers present) — compliant
+        return []  # request_user_input was posed (markers present) — compliant
     hits = [name for rx, name in _PROSE_DECISION_PATTERNS if rx.search(text)]
     if not hits:
         return []
@@ -106,7 +106,7 @@ def main() -> int:
             _append(record)
             print(
                 f"[recommendation-gate] {record['kind']}: patterns={record['patterns']} — "
-                "use AskUserQuestion with confidence levels, not a prose menu.",
+                "use request_user_input with confidence levels, not a prose menu.",
                 file=sys.stderr,
             )
         return 0
