@@ -28,8 +28,10 @@ output_contract:
     count: 3
     fields: [bullet_id, bullet_text, source_fact_ids]
     source_fact_id_prefix: bul_ey
+    uniqueness: "choose 3 unique source_fact_ids; one final bullet per proof fact"
 proof_contract:
   source_fact_ids: required
+  unique_source_fact_ids_required: true
   targeting_only: true
   jd_used_as_proof: false
   retries_cannot_repair_missing_upstream_evidence: true

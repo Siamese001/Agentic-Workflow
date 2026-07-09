@@ -2,12 +2,18 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Any, Callable
 
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
 from apps_rg.runtime.executive_summary_certification import (
     executive_summary_x3_requires_failure,
+)
+from apps_rg.runtime.sections.section_final_materialized_binding import (
+    final_claim_ledger_rows,
+    resolve_final_materialized_text,
+    validate_final_materialized_input_binding,
 )
 
 SPINE_FEC_ARTIFACT = "final_evidence_contract.json"
@@ -66,6 +72,18 @@ def _load_text(path: Path) -> str:
         return path.read_text(encoding="utf-8")
     except OSError:
         return ""
+
+
+def _canonical_json_for_digest(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+
+
+def _sha256_text(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _sha256_json(value: Any) -> str:
+    return _sha256_text(_canonical_json_for_digest(value))
 
 
 def _x3_to_doc(x3: Any) -> dict[str, Any]:
@@ -166,58 +184,11 @@ def _apply_final_materialized_hard_gate(x3_doc: dict[str, Any]) -> dict[str, Any
 
 def _final_materialized_text(artifact_dir: Path) -> tuple[str, str]:
     """Resolve the final display artifact used by the lane, independent of provider raw text."""
-    command_output = artifact_dir / "command_output.txt"
-    if command_output.is_file():
-        text = _load_text(command_output).strip()
-        if text:
-            return text, command_output.name
-    output_candidates = sorted(
-        p for p in artifact_dir.glob("*_output.txt") if p.is_file()
-    )
-    for path in output_candidates:
-        text = _load_text(path).strip()
-        if text:
-            return text, path.name
-    l2 = _load_json(artifact_dir / "l2_output.json")
-    for key in (
-        "resume_display_text",
-        "headline_line",
-        "narrative_sentence",
-        "summary_text",
-    ):
-        text = str(l2.get(key) or "").strip()
-        if text:
-            return text, "l2_output.json"
-    bullets = l2.get("bullets")
-    if isinstance(bullets, list) and bullets:
-        lines = [
-            str(row.get("bullet_text") or "").strip()
-            for row in bullets
-            if isinstance(row, dict) and str(row.get("bullet_text") or "").strip()
-        ]
-        if lines:
-            return "\n".join(f"- {line}" for line in lines), "l2_output.json"
-    competencies = l2.get("competencies")
-    if isinstance(competencies, list) and competencies:
-        labels = [
-            str(row.get("label") or row.get("category") or "").strip()
-            for row in competencies
-            if isinstance(row, dict) and str(row.get("label") or row.get("category") or "").strip()
-        ]
-        if labels:
-            return "\n".join(labels), "l2_output.json"
-    return "", ""
+    return resolve_final_materialized_text(artifact_dir)
 
 
 def _final_claim_ledger_rows(artifact_dir: Path) -> list[dict[str, Any]]:
-    doc = _load_json_any(artifact_dir / "claim_ledger.json")
-    if isinstance(doc, list):
-        return [dict(r) for r in doc if isinstance(r, dict)]
-    l2 = _load_json(artifact_dir / "l2_output.json")
-    rows = l2.get("claim_ledger")
-    if isinstance(rows, list):
-        return [dict(r) for r in rows if isinstance(r, dict)]
-    return []
+    return final_claim_ledger_rows(artifact_dir)
 
 
 def _final_x1d_judge_rows(artifact_dir: Path) -> list[dict[str, Any]]:
@@ -226,6 +197,38 @@ def _final_x1d_judge_rows(artifact_dir: Path) -> list[dict[str, Any]]:
     if isinstance(rows, list):
         return [dict(r) for r in rows if isinstance(r, dict)]
     return []
+
+
+def _declared_final_materialized_contracts(l2_output: dict[str, Any]) -> list[dict[str, Any]]:
+    """Read lane-specific final materialization contracts declared by the final L2 artifact."""
+    out: list[dict[str, Any]] = []
+    selection_contract = l2_output.get("final_materialized_selection_contract")
+    if isinstance(selection_contract, dict):
+        ok = selection_contract.get("final_materialized_acceptance_ok") is True
+        out.append(
+            {
+                "contract_id": "role_episode_final_materialized_selection_contract",
+                "pass": ok,
+                "expected_bullet_count": selection_contract.get("expected_bullet_count"),
+                "selected_unique_source_fact_count": selection_contract.get(
+                    "selected_unique_source_fact_count"
+                ),
+                "rendered_bullet_count": selection_contract.get("rendered_bullet_count"),
+                "rendered_source_fact_ids": selection_contract.get("rendered_source_fact_ids"),
+                "contract_sha256": _sha256_json(selection_contract),
+            }
+        )
+    elif l2_output.get("final_materialized_acceptance_ok") is False:
+        out.append(
+            {
+                "contract_id": "l2_final_materialized_acceptance_flag",
+                "pass": False,
+                "contract_sha256": _sha256_json(
+                    {"final_materialized_acceptance_ok": False}
+                ),
+            }
+        )
+    return out
 
 
 def _x1d_model_backed_passes(judges: list[dict[str, Any]]) -> list[str]:
@@ -263,55 +266,117 @@ def build_final_materialized_acceptance_contract(
         if isinstance(g, dict) and not bool(g.get("pass"))
     ]
     output_text, output_ref = _final_materialized_text(artifact_dir)
+    l2_output = _load_json(artifact_dir / "l2_output.json")
     x2_present = bool(gates)
     x2_all_pass = x2_present and not failed_gate_ids
+    x2_binding = (
+        x2_doc.get("final_materialized_input_binding")
+        if isinstance(x2_doc.get("final_materialized_input_binding"), dict)
+        else None
+    )
+    x2_binding_pass, x2_binding_failures, current_x2_binding = (
+        validate_final_materialized_input_binding(
+            x2_binding,
+            artifact_dir=artifact_dir,
+            section_id=section_id,
+        )
+    )
     final_output_present = bool(output_text.strip())
     final_claim_ledger = _final_claim_ledger_rows(artifact_dir)
+    final_claim_ledger_present = bool(final_claim_ledger)
+    x1d_doc = _load_json(artifact_dir / "x1d_llm_judge_outputs.json")
     final_x1d_judges = _final_x1d_judge_rows(artifact_dir)
+    final_x1d_model_backed_judges = [
+        j for j in final_x1d_judges if j.get("evaluator_mode") == "MODEL_BACKED"
+    ]
     final_x1d_pass_keys = _x1d_model_backed_passes(final_x1d_judges)
+    x1d_all_model_backed_judges_pass = bool(final_x1d_model_backed_judges) and (
+        len(final_x1d_pass_keys) == len(final_x1d_model_backed_judges)
+    )
     repair_ledger = _load_json(artifact_dir / "section_repair_ledger.json")
+    declared_contracts = _declared_final_materialized_contracts(l2_output)
+    declared_contract_failures = [
+        str(c.get("contract_id") or "")
+        for c in declared_contracts
+        if not bool(c.get("pass"))
+    ]
+    declared_contracts_all_pass = not declared_contract_failures
     terminal_class = _terminal_class_from_x3(x3, x3_doc)
     x3_authorizes = terminal_class in {"success", "success_with_review"}
-    acceptance_ok = (not x3_authorizes) or (
-        final_output_present and x2_present and x2_all_pass
-    )
+    failure_reasons: list[str] = []
+    if x3_authorizes:
+        if not final_output_present:
+            failure_reasons.append("final_materialized_output_missing")
+        if not final_claim_ledger_present:
+            failure_reasons.append("final_claim_ledger_missing")
+        if not x2_present:
+            failure_reasons.append("x2_gate_outputs_missing")
+        elif not x2_all_pass:
+            failure_reasons.append("x2_gate_outputs_failed")
+        if not x2_binding_pass:
+            failure_reasons.extend(x2_binding_failures)
+        if not (artifact_dir / "x1d_llm_judge_outputs.json").is_file():
+            failure_reasons.append("x1d_judge_outputs_missing")
+        elif not x1d_all_model_backed_judges_pass:
+            failure_reasons.append("x1d_model_backed_judges_missing_or_failed")
+        if not declared_contracts_all_pass:
+            failure_reasons.append("declared_final_materialized_contract_failed")
+    acceptance_ok = (not x3_authorizes) or not failure_reasons
     contract = {
         "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
         "section_id": section_id,
         "gate_id": FINAL_MATERIALIZED_ACCEPTANCE_GATE_ID,
         "pass": acceptance_ok,
+        "failure_reasons": failure_reasons,
         "terminal_class": terminal_class,
         "x3_authorizes": x3_authorizes,
         "final_materialized_output_ref": output_ref,
         "final_materialized_output_present": final_output_present,
         "final_materialized_output_char_count": len(output_text),
+        "final_materialized_output_sha256": _sha256_text(output_text) if output_text else "",
+        "l2_output_present": (artifact_dir / "l2_output.json").is_file(),
+        "l2_output_sha256": _sha256_json(l2_output) if l2_output else "",
         "x2_gate_outputs_present": x2_present,
+        "x2_gate_outputs_sha256": _sha256_json(x2_doc) if x2_doc else "",
         "x2_all_pass": x2_all_pass,
         "failed_gate_ids": failed_gate_ids,
-        "final_claim_ledger_present": bool(final_claim_ledger),
+        "x2_final_materialized_binding_present": x2_binding is not None,
+        "x2_final_materialized_binding_pass": x2_binding_pass,
+        "x2_final_materialized_binding_failures": x2_binding_failures,
+        "x2_final_materialized_binding": x2_binding or {},
+        "x2_current_final_materialized_binding": current_x2_binding,
+        "final_claim_ledger_present": final_claim_ledger_present,
         "final_claim_ledger_row_count": len(final_claim_ledger),
+        "final_claim_ledger_sha256": _sha256_json(final_claim_ledger) if final_claim_ledger else "",
         "x1d_judge_outputs_present": (artifact_dir / "x1d_llm_judge_outputs.json").is_file(),
+        "x1d_judge_outputs_sha256": _sha256_json(x1d_doc) if x1d_doc else "",
         "x1d_judge_count": len(final_x1d_judges),
+        "x1d_model_backed_judge_count": len(final_x1d_model_backed_judges),
         "x1d_model_backed_pass_provider_keys": final_x1d_pass_keys,
-        "x1d_all_model_backed_judges_pass": bool(final_x1d_judges)
-        and len(final_x1d_pass_keys)
-        == len([j for j in final_x1d_judges if j.get("evaluator_mode") == "MODEL_BACKED"]),
+        "x1d_all_model_backed_judges_pass": x1d_all_model_backed_judges_pass,
         "repair_ledger_present": bool(repair_ledger),
+        "repair_ledger_sha256": _sha256_json(repair_ledger) if repair_ledger else "",
         "repair_ledger_authoritative_l2_source": str(
             repair_ledger.get("authoritative_l2_source") or ""
         ),
         "repair_ledger_authoritative_attempt": repair_ledger.get("authoritative_attempt"),
-        "l2_output_present": (artifact_dir / "l2_output.json").is_file(),
+        "declared_final_materialized_contracts": declared_contracts,
+        "declared_final_materialized_contracts_all_pass": declared_contracts_all_pass,
+        "declared_final_materialized_contract_failures": declared_contract_failures,
         "acceptance_inputs": [
             "final_materialized_output",
             "claim_ledger",
             "x2_gate_outputs",
+            "x2_final_materialized_input_binding",
             "x1d_judge_outputs",
             "section_repair_ledger",
+            "declared_final_materialized_contracts",
         ],
         "enforcement": (
             "X3_ALLOW or review-authorized section outcomes must be backed by final "
-            "materialized display output and passing final X2 gates."
+            "materialized display output, claim ledger, passing final X2, passing "
+            "model-backed X1D, and any declared lane-specific final materialization "
+            "contracts."
         ),
     }
     _write_json(artifact_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT, contract)

@@ -7,6 +7,9 @@ from typing import Any
 
 from apps_rg.runtime.bindings.section_lane_c0_metrics import augment_section_x2_gates
 from apps_rg.runtime.rigor.convergence_audit import apply_rigor_convergence_to_x2_payload
+from apps_rg.runtime.sections.section_final_materialized_binding import (
+    augment_x2_payload_with_final_materialized_binding,
+)
 
 _CANON_GATE_IDS = frozenset(
     {
@@ -118,6 +121,11 @@ def write_section_x2_gate_outputs(
         gates=augmented,
         c0_sidecar=True,
     )
+    payload_out = augment_x2_payload_with_final_materialized_binding(
+        payload_out,
+        artifact_dir=artifact_dir,
+        section_id=section_id,
+    )
     write_json(artifact_dir / "x2_gate_outputs.json", payload_out)
     from apps_rg.runtime.evidence.canonical_evidence_digest_chain import (
         emit_canonical_evidence_digest_chain,
@@ -144,6 +152,11 @@ def write_section_x2_gate_outputs(
             lane=section_id,
             gates=augmented2,
             c0_sidecar=True,
+        )
+        payload_out = augment_x2_payload_with_final_materialized_binding(
+            payload_out,
+            artifact_dir=artifact_dir,
+            section_id=section_id,
         )
         write_json(artifact_dir / "x2_gate_outputs.json", payload_out)
 

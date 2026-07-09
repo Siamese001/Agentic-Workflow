@@ -8,6 +8,7 @@ if __name__ == "__main__":
 
 
 import argparse
+import hashlib
 import json
 import sys
 from dataclasses import dataclass
@@ -28,6 +29,7 @@ from apps_rg.runtime.runtime_proof_layout import (
 )
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 RUNTIME_PROOFS = REPO_ROOT / "artifacts" / "apps_rg" / "runtime_proofs"
@@ -116,6 +118,7 @@ REQUIRED_RELATIVE = (
     "x2_gate_outputs.json",
     "x1d_llm_judge_outputs.json",
     "x3_disposition.json",
+    FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
     "l6_shadow_eval_package.json",
 )
 
@@ -129,6 +132,10 @@ def _rel(p: Path) -> str:
         return str(p.resolve().relative_to(REPO_ROOT.resolve())).replace("\\", "/")
     except ValueError:
         return str(p.resolve()).replace("\\", "/")
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _normalize_x1d_judges(raw: Any) -> list[dict[str, Any]]:
@@ -316,6 +323,7 @@ def collect_lane(
     x2_raw = _load_json(lp.p("x2_gate_outputs.json"))
     x1d_raw = _load_json(lp.p("x1d_llm_judge_outputs.json"))
     x3 = _load_json(lp.p("x3_disposition.json"))
+    final_materialized_contract = _load_json(lp.p(FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT))
     l6 = _load_json(lp.p("l6_shadow_eval_package.json"))
 
     x2n = _normalize_x2(x2_raw)
@@ -359,6 +367,16 @@ def collect_lane(
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
         "x3_code": rollup_x3_code,
+        "final_materialized_acceptance_ok": final_materialized_contract.get("pass") is True,
+        "final_materialized_acceptance_contract_ref": artifact_refs.get(
+            FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+        ),
+        "final_materialized_acceptance_contract_digest": _sha256_file(
+            lp.p(FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT)
+        ),
+        "final_materialized_acceptance_failure_reasons": list(
+            final_materialized_contract.get("failure_reasons") or []
+        ),
         "disposition_authority": str(x3_auth.get("disposition_authority") or "lane"),
         "x3_authoritative_artifact": x3_auth.get("authoritative_artifact"),
         "section_x3_mirror_only": bool(x3_auth.get("section_x3_mirror_only", True)),
@@ -400,6 +418,7 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
     x2_raw = _load_json(lp.p("x2_gate_outputs.json"))
     x1d_raw = _load_json(lp.p("x1d_llm_judge_outputs.json"))
     x3 = _load_json(lp.p("x3_disposition.json"))
+    final_materialized_contract = _load_json(lp.p(FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT))
     l6 = _load_json(lp.p("l6_shadow_eval_package.json"))
 
     x2n = _normalize_x2(x2_raw)
@@ -460,6 +479,16 @@ def collect_lane_from_run_dir(lane: str, base: Path, *, repo: Path) -> dict[str,
         "soft_failed_judges": soft,
         "blocked_judges": blocked,
         "x3_code": rollup_x3_code,
+        "final_materialized_acceptance_ok": final_materialized_contract.get("pass") is True,
+        "final_materialized_acceptance_contract_ref": artifact_refs.get(
+            FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+        ),
+        "final_materialized_acceptance_contract_digest": _sha256_file(
+            lp.p(FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT)
+        ),
+        "final_materialized_acceptance_failure_reasons": list(
+            final_materialized_contract.get("failure_reasons") or []
+        ),
         "disposition_authority": str(x3_auth.get("disposition_authority") or "lane"),
         "x3_authoritative_artifact": x3_auth.get("authoritative_artifact"),
         "section_x3_mirror_only": bool(x3_auth.get("section_x3_mirror_only", True)),

@@ -4,16 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import json
 from typing import Any
 
 from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS
 from apps_rg.runtime.aggregation.section_sealed_index import GENERATED_LANE_PROOF_FILES
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 REQUIRED_PROOF_FILES: tuple[str, ...] = (
     "section_input_usage_ledger.json",
     "x2_source_fact_pool_receipt.json",
     "x2_gate_outputs.json",
     "x3_disposition.json",
+    FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
     "l2_output.json",
 )
 
@@ -59,6 +62,11 @@ def _resolved_run_dir(repo: Path, rel: str) -> Path:
     while rel_norm.startswith("./"):
         rel_norm = rel_norm[2:]
     return (repo / rel_norm).resolve()
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    return doc if isinstance(doc, dict) else {}
 
 
 def run_aggregation_preflight(
@@ -120,6 +128,7 @@ def run_aggregation_preflight(
     missing_proof: list[str] = []
     pool_fail_lanes: list[str] = []
     x2_fail_lanes: list[str] = []
+    final_materialized_fail_lanes: list[str] = []
     review_block_lanes: list[str] = []
     blocked_lanes: list[str] = []
 
@@ -137,6 +146,24 @@ def run_aggregation_preflight(
         for fname in REQUIRED_PROOF_FILES:
             if not (run_dir / fname).is_file():
                 missing_proof.append(f"{lane}:{fname}")
+        final_contract_path = run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+        if not final_contract_path.is_file():
+            final_materialized_fail_lanes.append(
+                f"{lane}:missing_final_materialized_acceptance_contract"
+            )
+        else:
+            try:
+                final_contract = _load_json(final_contract_path)
+            except (OSError, ValueError):
+                final_contract = {}
+            if final_contract.get("pass") is not True:
+                final_materialized_fail_lanes.append(
+                    f"{lane}:final_materialized_acceptance_contract_failed"
+                )
+            elif final_contract.get("x2_final_materialized_binding_pass") is not True:
+                final_materialized_fail_lanes.append(
+                    f"{lane}:final_materialized_x2_binding_not_proven"
+                )
 
         x2f = int(row.get("x2_failed") or 0)
         if x2f > 0:
@@ -170,6 +197,16 @@ def run_aggregation_preflight(
             pass_=not x2_fail_lanes,
             decisive_reason=None if not x2_fail_lanes else f"x2_failed lanes: {x2_fail_lanes}",
             observed=x2_fail_lanes,
+        ),
+    )
+    results.append(
+        PreflightResult(
+            gate_id="x2_preflight_final_materialized_acceptance_contracts_pass",
+            pass_=not final_materialized_fail_lanes,
+            decisive_reason=None
+            if not final_materialized_fail_lanes
+            else f"final materialized contract fail/missing: {final_materialized_fail_lanes}",
+            observed=final_materialized_fail_lanes,
         ),
     )
     results.append(

@@ -9,6 +9,7 @@ from typing import Any
 
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths, resolve_default_paths
 from apps_rg.runtime.assembly.full_resume_llm_coherence import assembly_product_release_mode
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 CANONICAL_ASSEMBLED_SECTION_ORDER: tuple[str, ...] = (
     "headline",
@@ -83,6 +84,10 @@ def sha256_utf8(payload: str) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 @dataclass
 class GateResult:
     gate_id: str
@@ -140,6 +145,47 @@ def _explicit_run_dir_is_real_authorized(row: dict[str, Any]) -> bool:
     if row.get("x2_failed_gate_ids"):
         return False
     return bool(str(row.get("rollup_source_run_dir") or "").strip())
+
+
+def _final_materialized_contract_observation(
+    *,
+    repo_root: Path,
+    lane: str,
+    row: dict[str, Any],
+) -> str:
+    rd = row.get("latest_successful_real_artifact_path") or row.get("rollup_source_run_dir")
+    if not isinstance(rd, str) or not rd.strip():
+        return f"{lane}:missing_run_dir"
+    artifact_refs = row.get("artifact_refs") if isinstance(row.get("artifact_refs"), dict) else {}
+    contract_ref = str(
+        artifact_refs.get(FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT)
+        or row.get("final_materialized_acceptance_contract_ref")
+        or ""
+    ).strip()
+    contract_path = (
+        _run_rel_path(repo_root, contract_ref)
+        if contract_ref
+        else _run_rel_path(repo_root, rd) / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+    )
+    if not contract_path.is_file():
+        return f"{lane}:missing_final_materialized_acceptance_contract"
+    try:
+        contract = json.loads(contract_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, ValueError):
+        return f"{lane}:invalid_final_materialized_acceptance_contract"
+    if not isinstance(contract, dict):
+        return f"{lane}:invalid_final_materialized_acceptance_contract"
+    contract_section = str(contract.get("section_id") or "").strip()
+    if contract_section and contract_section != lane:
+        return f"{lane}:final_materialized_acceptance_contract_section_mismatch:{contract_section}"
+    if contract.get("pass") is not True:
+        return f"{lane}:final_materialized_acceptance_contract_failed"
+    if contract.get("x2_final_materialized_binding_pass") is not True:
+        return f"{lane}:final_materialized_x2_binding_not_proven"
+    declared_digest = str(row.get("final_materialized_acceptance_contract_digest") or "").strip()
+    if declared_digest and declared_digest != _sha256_file(contract_path):
+        return f"{lane}:final_materialized_acceptance_contract_digest_mismatch"
+    return f"{lane}:ok"
 
 
 def run_final_resume_x2_gates(
@@ -208,6 +254,32 @@ def run_final_resume_x2_gates(
             break
 
     _add(gates, "x2_generated_sections_from_latest_successful_real", gen_ok, gen_reason, "rollup pointer contract")
+
+    final_contract_failures: list[str] = []
+    final_contract_observed: list[str] = []
+    for lane in GENERATED_LANE_IDS:
+        row = lanes.get(lane)
+        if not isinstance(row, dict):
+            obs = f"{lane}:missing_rollup_lane"
+        else:
+            obs = _final_materialized_contract_observation(
+                repo_root=repo_root,
+                lane=lane,
+                row=row,
+            )
+        final_contract_observed.append(obs)
+        if not obs.endswith(":ok"):
+            final_contract_failures.append(obs)
+    _add(
+        gates,
+        "x2_generated_sections_final_materialized_contracts_pass",
+        not final_contract_failures,
+        final_contract_observed,
+        "all generated lanes have pass=true final_materialized_acceptance_contract.json",
+        None
+        if not final_contract_failures
+        else f"final materialized contract fail/missing: {final_contract_failures}",
+    )
 
     by_manifest = {
         str(s.get("section_id")): s
@@ -418,6 +490,7 @@ def run_final_resume_x2_gates(
             if (
                 not isinstance(gl, dict)
                 or not gl.get("x3_disposition_json")
+                or not gl.get("final_materialized_acceptance_contract_json")
                 or not gl.get("rollup_lane_key")
                 or not gl.get("accepted_real_evidence_resolution")
             ):

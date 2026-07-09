@@ -1,4 +1,5 @@
 """Product-release assembly must execute aggregate full-resume judge, not x2_no_judge_calls pass."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -6,6 +7,7 @@ import json
 from pathlib import Path
 
 from apps_rg.runtime.assembly.final_resume_x2 import GENERATED_LANE_IDS, run_final_resume_x2_gates
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 
 def _minimal_final_resume(*, judge_calls_made: bool) -> dict:
@@ -59,11 +61,39 @@ def _generated_rollup_row(lane: str, **overrides) -> dict:
     return row
 
 
+def _write_final_materialized_contract(
+    repo: Path,
+    lane: str,
+    *,
+    pass_: bool = True,
+    binding_pass: bool | None = True,
+) -> str:
+    rel = f"artifacts/apps_rg/runtime_proofs/{lane}"
+    run_dir = repo / rel
+    run_dir.mkdir(parents=True, exist_ok=True)
+    doc = {
+        "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
+        "section_id": lane,
+        "gate_id": "x3_final_materialized_acceptance_contract",
+        "pass": pass_,
+    }
+    if binding_pass is not None:
+        doc["x2_final_materialized_binding_pass"] = binding_pass
+    (run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT).write_text(
+        json.dumps(doc),
+        encoding="utf-8",
+    )
+    return rel
+
+
 def test_final_resume_x2_accepts_patch_run_explicit_real_x3_allow_dirs(tmp_path: Path):
     repo, paths = _paths(tmp_path)
     rollup = {
         "lanes": {
-            lane: _generated_rollup_row(lane)
+            lane: _generated_rollup_row(
+                lane,
+                rollup_source_run_dir=_write_final_materialized_contract(repo, lane),
+            )
             for lane in GENERATED_LANE_IDS
         }
     }
@@ -79,6 +109,96 @@ def test_final_resume_x2_accepts_patch_run_explicit_real_x3_allow_dirs(tmp_path:
     )
 
     assert _gate(results, "x2_generated_sections_from_latest_successful_real").pass_ is True
+    assert _gate(results, "x2_generated_sections_final_materialized_contracts_pass").pass_ is True
+
+
+def test_final_resume_x2_rejects_missing_final_materialized_contract(tmp_path: Path):
+    repo, paths = _paths(tmp_path)
+    rollup = {
+        "lanes": {
+            lane: _generated_rollup_row(
+                lane,
+                rollup_source_run_dir=f"artifacts/apps_rg/runtime_proofs/{lane}",
+            )
+            for lane in GENERATED_LANE_IDS
+        }
+    }
+
+    results = run_final_resume_x2_gates(
+        repo=repo,
+        paths=paths,
+        final_resume_blob=_minimal_final_resume(judge_calls_made=False),
+        rollup_blob=rollup,
+        locked_manifest_blob={},
+        coherence_review=None,
+        product_release_mode=False,
+    )
+
+    gate = _gate(results, "x2_generated_sections_final_materialized_contracts_pass")
+    assert gate.pass_ is False
+    assert "headline:missing_final_materialized_acceptance_contract" in str(gate.observed_value)
+
+
+def test_final_resume_x2_rejects_failed_final_materialized_contract(tmp_path: Path):
+    repo, paths = _paths(tmp_path)
+    rollup = {
+        "lanes": {
+            lane: _generated_rollup_row(
+                lane,
+                rollup_source_run_dir=_write_final_materialized_contract(
+                    repo,
+                    lane,
+                    pass_=lane != "ey_bullets",
+                ),
+            )
+            for lane in GENERATED_LANE_IDS
+        }
+    }
+
+    results = run_final_resume_x2_gates(
+        repo=repo,
+        paths=paths,
+        final_resume_blob=_minimal_final_resume(judge_calls_made=False),
+        rollup_blob=rollup,
+        locked_manifest_blob={},
+        coherence_review=None,
+        product_release_mode=False,
+    )
+
+    gate = _gate(results, "x2_generated_sections_final_materialized_contracts_pass")
+    assert gate.pass_ is False
+    assert "ey_bullets:final_materialized_acceptance_contract_failed" in str(gate.observed_value)
+
+
+def test_final_resume_x2_rejects_pass_true_contract_without_x2_binding_proof(tmp_path: Path):
+    repo, paths = _paths(tmp_path)
+    rollup = {
+        "lanes": {
+            lane: _generated_rollup_row(
+                lane,
+                rollup_source_run_dir=_write_final_materialized_contract(
+                    repo,
+                    lane,
+                    binding_pass=None if lane == "headline" else True,
+                ),
+            )
+            for lane in GENERATED_LANE_IDS
+        }
+    }
+
+    results = run_final_resume_x2_gates(
+        repo=repo,
+        paths=paths,
+        final_resume_blob=_minimal_final_resume(judge_calls_made=False),
+        rollup_blob=rollup,
+        locked_manifest_blob={},
+        coherence_review=None,
+        product_release_mode=False,
+    )
+
+    gate = _gate(results, "x2_generated_sections_final_materialized_contracts_pass")
+    assert gate.pass_ is False
+    assert "headline:final_materialized_x2_binding_not_proven" in str(gate.observed_value)
 
 
 def test_final_resume_x2_rejects_patch_run_explicit_dir_without_x3_allow(tmp_path: Path):

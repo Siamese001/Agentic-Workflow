@@ -615,7 +615,8 @@ def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: 
         display_field="bullets",
         shape_summary=(
             f"3 {employer_label} bullets from {pool_n}-path pool when proof exists; "
-            f"{bullet_prefix}_* source ids only; fail closed on missing upstream evidence"
+            f"{bullet_prefix}_* source ids only; 3 unique source_fact_ids; "
+            "one final bullet per unique proof fact; fail closed on missing upstream evidence"
         ),
         bounds_gate_ids=(
             f"x2_{section_id}_bullet_count_3",
@@ -637,6 +638,7 @@ def _role_bullets_shape(section_id: str, *, employer_label: str, bullet_prefix: 
         jd_alignment_proof_fields=("targeting_only", "jd_used_as_proof"),
         compile_hints=(
             f"sc_pool_paths={pool_n}; final_bullets=3",
+            "selector must choose 3 unique source_fact_ids; duplicate selections are not a pass",
             "upstream evidence required; retries cannot repair missing proof",
         ),
     )

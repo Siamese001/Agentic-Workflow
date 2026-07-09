@@ -14,6 +14,7 @@ from apps_rg.runtime.aggregation._digest_utils import (
     sha256_file,
     sha256_utf8,
 )
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 GENERATED_LANE_PROOF_FILES: tuple[str, ...] = (
     "section_input_usage_ledger.json",
@@ -23,6 +24,8 @@ GENERATED_LANE_PROOF_FILES: tuple[str, ...] = (
     "section_metric_receipt.json",
     "x2_gate_outputs.json",
     "x3_disposition.json",
+    FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
+    "role_episode_final_materialized_selection_contract.json",
     "l2_output.json",
 )
 
@@ -39,6 +42,9 @@ class SectionSealedPointer:
     x2_gate_outputs_ref: str | None
     x3_disposition_ref: str | None
     x3_code: str
+    final_materialized_acceptance_contract_ref: str | None
+    final_materialized_acceptance_contract_digest: str | None
+    final_materialized_acceptance_ok: bool | None
     x2_failed: int
     x2_passed: int
     pool_receipt_status: str | None
@@ -69,6 +75,9 @@ class SectionSealedPointer:
             "x2_gate_outputs_ref": self.x2_gate_outputs_ref,
             "x3_disposition_ref": self.x3_disposition_ref,
             "x3_code": self.x3_code,
+            "final_materialized_acceptance_contract_ref": self.final_materialized_acceptance_contract_ref,
+            "final_materialized_acceptance_contract_digest": self.final_materialized_acceptance_contract_digest,
+            "final_materialized_acceptance_ok": self.final_materialized_acceptance_ok,
             "x2_failed": self.x2_failed,
             "x2_passed": self.x2_passed,
             "pool_receipt_status": self.pool_receipt_status,
@@ -179,6 +188,8 @@ def build_section_sealed_index(
         x3_path = run_dir / "x3_disposition.json"
         x3 = _load_json(x3_path) if x3_path.is_file() else {}
         x3_code = str(x3.get("x3_code") or row.get("x3_code") or "")
+        final_contract_path = run_dir / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+        final_contract = _load_json(final_contract_path) if final_contract_path.is_file() else {}
 
         pool_status: str | None = None
         proof_pool_ref: str | None = None
@@ -215,6 +226,17 @@ def build_section_sealed_index(
             x2_gate_outputs_ref=_optional_ref(repo, run_dir, "x2_gate_outputs.json"),
             x3_disposition_ref=_optional_ref(repo, run_dir, "x3_disposition.json"),
             x3_code=x3_code,
+            final_materialized_acceptance_contract_ref=_optional_ref(
+                repo,
+                run_dir,
+                FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
+            ),
+            final_materialized_acceptance_contract_digest=(
+                sha256_file(final_contract_path) if final_contract_path.is_file() else None
+            ),
+            final_materialized_acceptance_ok=(
+                final_contract.get("pass") if isinstance(final_contract, dict) else None
+            ),
             x2_failed=int(row.get("x2_failed") or 0),
             x2_passed=int(row.get("x2_passed") or 0),
             pool_receipt_status=pool_status,

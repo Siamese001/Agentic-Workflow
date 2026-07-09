@@ -4,6 +4,7 @@ Weak-fail cases live in ``weak_payloads.py`` and run via ``test_section_rigor_we
 Dedicated modules hold section-specific nuance tests under ``section_rigor/lanes/`` plus
 historical validators/contract tests referenced by path fragment.
 """
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ SECTION_DEDICATED_TEST_FRAGMENTS: dict[str, tuple[str, ...]] = {
     "unify_bullets": (
         "tests/unit/apps_rg/section_rigor/lanes/test_unify_bullets_section.py",
         "tests/unit/apps_rg/runtime/validators/test_unify_mechanism_stack_x2.py",
+        "tests/unit/apps_rg/test_unify_bullets_graph_hardening.py",
         "tests/_apps_contract/test_unify_bullets_text_claim_coverage.py",
         "tests/_apps_contract/test_unify_bullets_section_pipeline.py",
         "tests/_apps_contract/test_unify_ibm_lanes_e2e.py",
@@ -67,21 +69,25 @@ SECTION_DEDICATED_TEST_FRAGMENTS: dict[str, tuple[str, ...]] = {
     ),
     "insurtech_bullets": (
         "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_role_episode_x2_gates.py",
         "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
         "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
     ),
     "ey_bullets": (
         "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_role_episode_x2_gates.py",
         "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
         "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
     ),
     "insurtech_narrative": (
         "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_role_episode_x2_gates.py",
         "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
         "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
     ),
     "ey_narrative": (
         "tests/unit/apps_rg/section_rigor/lanes/test_role_episode_sections.py",
+        "tests/unit/apps_rg/test_role_episode_x2_gates.py",
         "tests/unit/apps_rg/test_insurtech_ey_role_episode_wiring.py",
         "tests/unit/apps_rg/test_role_episode_x2_bundle_consumed_w2.py",
     ),

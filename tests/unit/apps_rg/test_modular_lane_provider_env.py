@@ -1,4 +1,5 @@
 """Env wiring: modular section lanes must not ignore ``APPS_RG_MODULAR_LANE_PROVIDER``."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -18,6 +19,7 @@ from apps_rg.l2_recipe.r4_generation_mode import (
 )
 from apps_rg.l2_recipe.steps import GenerateResumeStep
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root
+from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 
 def test_resolve_modular_lane_provider_default_external_claude(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -142,6 +144,7 @@ def test_collect_lane_mocked_not_latest_successful_real(tmp_path: Path) -> None:
         ("x2_gate_outputs.json", {"gates": [], "x2_passed": 1, "x2_failed": 0}),
         ("x1d_llm_judge_outputs.json", {"judges": []}),
         ("x3_disposition.json", {"x3_code": "X3_REVIEW_MOCKED_PLUMBING_ONLY"}),
+        (FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT, {"section_id": lane, "pass": False}),
         ("l6_shadow_eval_package.json", {"offline_only": True}),
     ]:
         (base / name).write_text(json.dumps(blob), encoding="utf-8")
@@ -176,6 +179,7 @@ def test_collect_lane_real_llm_with_pointer_matches_gate(tmp_path: Path) -> None
         ("x2_gate_outputs.json", {"gates": [], "x2_passed": 1, "x2_failed": 0}),
         ("x1d_llm_judge_outputs.json", {"judges": []}),
         ("x3_disposition.json", {"x3_code": "X3_ALLOW"}),
+        (FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT, {"section_id": lane, "pass": True}),
         ("l6_shadow_eval_package.json", {"offline_only": True}),
         (
             "provider_request.json",
@@ -212,6 +216,7 @@ def test_collect_lane_real_llm_with_integrated_lane_root_pointer(tmp_path: Path)
         ("x2_gate_outputs.json", {"gates": [], "x2_passed": 1, "x2_failed": 0}),
         ("x1d_llm_judge_outputs.json", {"judges": []}),
         ("x3_disposition.json", {"x3_code": "X3_ALLOW"}),
+        (FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT, {"section_id": lane, "pass": True}),
         ("l6_shadow_eval_package.json", {"offline_only": True}),
         (
             "provider_request.json",

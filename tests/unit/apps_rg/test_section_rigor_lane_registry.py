@@ -1,4 +1,5 @@
 """Section-rigor SSOT: lane registry aligns with generated_lane_rollup and proof artifacts."""
+# apps-test-model: APP CONTRACT
 
 from __future__ import annotations
 
@@ -25,4 +26,4 @@ def test_each_lane_has_critical_gates_and_brown_targeting() -> None:
         assert spec.critical_gates, spec.lane
         assert C0_CRITICAL_GATES.issubset(spec.critical_gates), spec.lane
         assert "Brown & Brown" in spec.extra_cli_args
-        assert spec.provider_mode == "retired_provider_live"
+        assert spec.provider_mode == "live_provider"
