@@ -28,8 +28,8 @@
     "Fix now:",
     "ADG Run Metrics",
     "| Metric | Value |",
-    "P0-P3 Severity Inventory",
-    "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+    "Impact Inventory",
+    "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |",
     "### Recommended Next Steps",
     "| Priority | Action | Evidence | Exit criterion |"
   ],

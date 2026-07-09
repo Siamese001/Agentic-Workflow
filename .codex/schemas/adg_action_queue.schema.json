@@ -112,6 +112,11 @@
         "source_digest",
         "sort_bucket",
         "sort_band",
+        "impact_severity",
+        "enforcement_effect",
+        "disposition",
+        "work_priority",
+        "queue_section",
         "violation_count",
         "ordering_reason",
         "scoped_tests"
@@ -120,7 +125,7 @@
         "rank": { "type": "integer", "minimum": 1 },
         "verdict_cluster": {
           "type": "string",
-          "enum": ["FIX", "REFACTOR", "P0_WAVE", "GRAPHDB"]
+          "enum": ["FIX", "REFACTOR", "CANDIDATE_BLOCKER_TRIAGE", "GRAPHDB"]
         },
         "gate_id": { "type": ["string", "null"] },
         "source_id": { "type": ["string", "null"] },
@@ -128,7 +133,7 @@
           "type": "string",
           "enum": [
             "fix_gate",
-            "p0_wave_file",
+            "candidate_blocker_file",
             "refactor_candidate",
             "test_hotspot_gap",
             "graphdb_hotspot",
@@ -145,12 +150,53 @@
         "signal": { "type": "string" },
         "sort_bucket": { "type": "integer", "minimum": 0, "maximum": 5 },
         "sort_band": { "type": "string" },
+        "impact_severity": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low"]
+        },
+        "enforcement_effect": {
+          "type": "string",
+          "enum": ["blocker", "ratchet", "watchlist", "inventory"]
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "open",
+            "resolved",
+            "waived",
+            "guardian_covered",
+            "accepted_baseline",
+            "false_positive"
+          ]
+        },
+        "work_priority": {
+          "type": "string",
+          "enum": ["P0", "triage", "tracked", "watch", "none"]
+        },
+        "queue_section": {
+          "type": "string",
+          "enum": ["open_blockers", "candidate_blockers", "tracked_debt", "watchlist"]
+        },
         "violation_count": { "type": "integer", "minimum": 0 },
         "source_artifact": { "type": "string" },
         "source_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
         "ordering_reason": { "type": "string" }
       },
       "anyOf": [{ "required": ["gate_id"] }, { "required": ["source_id"] }],
+      "allOf": [
+        {
+          "if": {
+            "properties": { "work_priority": { "const": "P0" } },
+            "required": ["work_priority"]
+          },
+          "then": {
+            "properties": {
+              "enforcement_effect": { "const": "blocker" },
+              "queue_section": { "const": "open_blockers" }
+            }
+          }
+        }
+      ],
       "additionalProperties": false
     }
   }

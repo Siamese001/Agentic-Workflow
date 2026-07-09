@@ -69,12 +69,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"artifact_status={payload['artifact_status']}")
         print(f"adg_run_id={payload['adg_run_id']}")
         for key in (
-            "P0_FIX",
-            "P0_WAVE",
-            "P0_TRACKED_BACKLOG",
-            "P1_FIX",
-            "P1_RATCHET_REGRESSION",
-            "P1_RATCHET_FLOOR_BACKLOG",
+            "open_blocker_fix_count",
+            "critical_open_blocker_fix_count",
+            "candidate_blocker_triage_count",
+            "critical_tracked_debt_count",
+            "high_open_blocker_fix_count",
+            "high_ratchet_regression_count",
+            "high_ratchet_floor_tracked_debt_count",
         ):
             print(f"{key}={counts[key]}")
         for error in errors:

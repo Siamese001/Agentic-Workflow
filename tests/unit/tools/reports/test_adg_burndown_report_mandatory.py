@@ -270,12 +270,12 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
     assert "Allowed Floor" in md
     assert "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
     assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 | 2792 |" in md
-    assert "`net` = audit net (`gross - guardian`). It is severity inventory, not live gate drivers and not foundation blockers." in md
-    assert "A P0 audit net value can be nonzero while BCG foundation blockers are zero" in md
-    assert "| Severity Band | Label | Gross | Guardian | Audit net | Diff vs prev |" in md
+    assert "`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers." in md
+    assert "Critical impact inventory can be nonzero while BCG foundation blockers are zero" in md
+    assert "| Impact Band | Impact Severity | Label | Gross | Guardian | Audit net | Diff vs prev |" in md
     assert md.index("## 1. ADG Status By Band") < md.index("## 2. ADG CI Gates")
     assert md.index("## 2. ADG CI Gates") < md.index("## 3. KPI / Watchlist Signals")
-    assert md.index("## 3. KPI / Watchlist Signals") < md.index("## 4. Severity Inventory Burndown")
+    assert md.index("## 3. KPI / Watchlist Signals") < md.index("## 4. Impact Inventory Burndown")
 
 
 def test_render_separates_kpi_watchlist_from_burndown(tmp_path: Path) -> None:

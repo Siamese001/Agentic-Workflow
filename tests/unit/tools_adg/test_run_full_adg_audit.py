@@ -804,18 +804,18 @@ def _wrapper_result_for_handoff(
     )
 
 
-def test_repair_counts_split_p0_fix_wave_and_backlog():
+def test_repair_counts_split_blockers_candidates_and_tracked_debt():
     action_queue = {
         "actions": [
-            {"verdict_cluster": "FIX", "sort_band": "P0"},
-            {"verdict_cluster": "P0_WAVE", "sort_band": "P0"},
+            {"verdict_cluster": "FIX", "sort_band": "P0", "work_priority": "P0"},
+            {"verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE", "sort_band": "P0", "work_priority": "triage"},
             {
-                "verdict_cluster": "P0_WAVE",
+                "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
                 "sort_band": "P0",
-                "action_kind": "p0_wave_file",
+                "action_kind": "candidate_blocker_file",
                 "source_artifact": "p0_wave_plan",
             },
-            {"verdict_cluster": "FIX", "sort_band": "P1"},
+            {"verdict_cluster": "FIX", "sort_band": "P1", "work_priority": "P0"},
         ]
     }
     gate_results = {
@@ -841,11 +841,12 @@ def test_repair_counts_split_p0_fix_wave_and_backlog():
 
     counts = wrapper._repair_counts(action_queue, gate_results)
 
-    assert counts["P0_FIX"] == 1
-    assert counts["P0_WAVE"] == 2
-    assert counts["P0_TRACKED_BACKLOG"] == 1
-    assert counts["P1_FIX"] == 1
-    assert counts["P1_RATCHET_REGRESSION"] == 1
+    assert counts["open_blocker_fix_count"] == 2
+    assert counts["critical_open_blocker_fix_count"] == 1
+    assert counts["candidate_blocker_triage_count"] == 2
+    assert counts["critical_tracked_debt_count"] == 1
+    assert counts["high_open_blocker_fix_count"] == 1
+    assert counts["high_ratchet_regression_count"] == 1
 
 
 def test_repair_handoff_certified_status(temp_artifacts, monkeypatch):
@@ -858,16 +859,18 @@ def test_repair_handoff_certified_status(temp_artifacts, monkeypatch):
 
     assert status == "certified"
     assert handoff["counts"] == {
-        "P0_FIX": 0,
-        "P0_WAVE": 0,
-        "P0_TRACKED_BACKLOG": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
+        "open_blocker_fix_count": 0,
+        "critical_open_blocker_fix_count": 0,
+        "candidate_blocker_triage_count": 0,
+        "critical_tracked_debt_count": 0,
+        "high_open_blocker_fix_count": 0,
+        "high_ratchet_regression_count": 0,
+        "high_ratchet_floor_tracked_debt_count": 0,
     }
+    assert handoff["legacy_counts"]["P0_TRACKED_BACKLOG"] == 0
     _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
     assert errors == []
-    assert counts["P0_FIX"] == 0
+    assert counts["open_blocker_fix_count"] == 0
 
 
 def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypatch):
@@ -899,13 +902,16 @@ def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypat
 
     assert status == "repair_ready"
     assert handoff["counts"] == {
-        "P0_FIX": 1,
-        "P0_WAVE": 0,
-        "P0_TRACKED_BACKLOG": 0,
-        "P1_FIX": 1,
-        "P1_RATCHET_REGRESSION": 1,
-        "P1_RATCHET_FLOOR_BACKLOG": 1,
+        "open_blocker_fix_count": 2,
+        "critical_open_blocker_fix_count": 1,
+        "candidate_blocker_triage_count": 0,
+        "critical_tracked_debt_count": 0,
+        "high_open_blocker_fix_count": 1,
+        "high_ratchet_regression_count": 1,
+        "high_ratchet_floor_tracked_debt_count": 1,
     }
+    assert handoff["legacy_counts"]["P0_FIX"] == 1
+    assert handoff["legacy_counts"]["P1_FIX"] == 1
     _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
     assert errors == []
     assert counts == handoff["counts"]
@@ -928,12 +934,12 @@ def test_repair_handoff_rejects_stale_recorded_counts(temp_artifacts, monkeypatc
         certification_status="failed",
         monkeypatch=monkeypatch,
     )
-    handoff["counts"]["P1_RATCHET_REGRESSION"] = 0
+    handoff["counts"]["high_ratchet_regression_count"] = 0
     receipt = _write_receipt(temp_artifacts / "receipt_stale_counts.json", artifact_status=status, handoff=handoff)
 
     _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
 
-    assert counts["P1_RATCHET_REGRESSION"] == 1
+    assert counts["high_ratchet_regression_count"] == 1
     assert any("repair_handoff counts differ from digest-bound artifacts" in error for error in errors)
 
 
@@ -972,14 +978,15 @@ def test_repair_handoff_recovers_same_run_snapshot_when_manifest_paths_are_null(
     assert Path(handoff["artifacts"]["snapshot"]["path"]).resolve() == snap.resolve()
     assert Path(handoff["artifacts"]["gate_results"]["path"]).is_file()
     assert Path(handoff["artifacts"]["action_queue"]["path"]).is_file()
-    assert handoff["counts"]["P0_WAVE"] >= 0
-    assert handoff["counts"] | {"P0_WAVE": 0} == {
-        "P0_FIX": 1,
-        "P0_WAVE": 0,
-        "P0_TRACKED_BACKLOG": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
+    assert handoff["counts"]["candidate_blocker_triage_count"] >= 0
+    assert handoff["counts"] | {"candidate_blocker_triage_count": 0} == {
+        "open_blocker_fix_count": 1,
+        "critical_open_blocker_fix_count": 1,
+        "candidate_blocker_triage_count": 0,
+        "critical_tracked_debt_count": 0,
+        "high_open_blocker_fix_count": 0,
+        "high_ratchet_regression_count": 0,
+        "high_ratchet_floor_tracked_debt_count": 0,
     }
 
     receipt = _write_receipt(
@@ -1014,7 +1021,7 @@ def test_repair_handoff_pointer_validates_exact_receipt(temp_artifacts, monkeypa
 
     assert errors == []
     assert receipt is not None
-    assert counts["P0_FIX"] == 1
+    assert counts["open_blocker_fix_count"] == 1
     assert pointer_payload["downstream_release_status"] == "released"
     assert Path(pointer_payload["receipt_path"]).name == "adg_audit_pipeline_receipt_06252026_0101.json"
     assert Path(pointer_payload["receipt_path"]).is_file()
@@ -1169,7 +1176,7 @@ def test_repair_handoff_pointer_ignores_overwritten_latest_receipt(temp_artifact
     _receipt, counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
 
     assert errors == []
-    assert counts["P0_FIX"] == 1
+    assert counts["open_blocker_fix_count"] == 1
 
 
 def test_repair_handoff_pointer_rejects_overwritten_immutable_receipt(temp_artifacts, monkeypatch):

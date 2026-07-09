@@ -50,7 +50,7 @@ def _print_defect_table(
     semantic_warnings: list[str] | None = None,
     sqlite_path: Path | None = None,
 ) -> None:
-    """Print P0-P3 defect table in terminal output."""
+    """Print impact-inventory defect table in terminal output."""
     sqlite_source, source_mismatch = _resolve_reporting_sqlite(sqlite_path)
     if sqlite_source is None:
         print("[ADG] WARNING: No sqlite source available for burndown reporting")
@@ -606,7 +606,7 @@ def _print_defect_table(
             pass
 
     print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=audit net/actionable candidates  %=exempt/gross")
-    print("  P0 BCG foundation blockers are reported separately in the BCG KPI scorecard.")
+    print("  Critical impact inventory is separate from BCG foundation blockers and live blockers.")
     print("  Gate: *=BLOCKS  ^=ratchet  ~=watch  ✓=clean  ✗=failing  CI✓/CI✗=ci-gate")
 
     _p2_delta_val = max(0, p2_count - _p2_ceiling) if _p2_ceiling is not None else 0
@@ -755,6 +755,14 @@ def _print_defect_table(
         "summary": _summary,
         # Top-level flat keys (SSOT-derived, schema >=2.2)
         **_flat_top_level,
+        "impact_inventory": {
+            "critical": _net_by_band[Band.P0.value],
+            "high": _net_by_band[Band.P1.value],
+            "medium": _net_by_band[Band.P2.value],
+            "low": _net_by_band[Band.P3.value],
+        },
+        "critical_layer_inventory_count": _net_by_band[Band.P0.value],
+        "critical_inventory_clean": _net_by_band[Band.P0.value] == 0,
         "p0_clean": _net_by_band[Band.P0.value] == 0,
         "p1_no_ratchet": _p1_delta == 0,
         "by_class": _by_class,

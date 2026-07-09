@@ -419,8 +419,8 @@ def test_locked_inline_contract_validates_final_bcg_shape() -> None:
         "Fix now:",
         "ADG Run Metrics",
         "| Metric | Value |",
-        "P0-P3 Severity Inventory",
-        "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+        "Impact Inventory",
+        "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |",
         "### Recommended Next Steps",
         "| Priority | Action | Evidence | Exit criterion |",
     ]
@@ -441,8 +441,8 @@ def test_locked_inline_contract_validates_final_bcg_shape() -> None:
             "| Priority | Action | Evidence | Exit criterion |",
             "ADG Run Metrics",
             "| Metric | Value |",
-            "P0-P3 Severity Inventory",
-            "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+            "Impact Inventory",
+            "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |",
         ]
     )
     with pytest.raises(ValueError, match="section/table out of order"):
@@ -608,20 +608,20 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     for section in [
         "## ADG Executive Brief",
         "| Question | Answer |",
-        "| Can we merge? | No. A live P0 gate driver is red. |",
+        "| Can we merge? | No. A live critical gate driver is red and must be treated as a P0 blocker. |",
         "| What blocks merge? |",
         "ADG Run Metrics",
         "| Metric | Value |",
-        "P0-P3 Severity Inventory",
-        "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |",
+        "Impact Inventory",
+        "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |",
         "### Recommended Next Steps",
         "No deletions are approved in this run",
         "| Priority | Action | Evidence | Exit criterion |",
     ]:
         assert section in md
     assert md.index("| Question | Answer |") < md.index("ADG Run Metrics")
-    assert md.index("ADG Run Metrics") < md.index("P0-P3 Severity Inventory")
-    assert md.index("P0-P3 Severity Inventory") < md.index("### Recommended Next Steps")
+    assert md.index("ADG Run Metrics") < md.index("Impact Inventory")
+    assert md.index("Impact Inventory") < md.index("### Recommended Next Steps")
     assert "- **Readout:**" not in md
     assert "### 1. Executive Bottom Line" not in md
     assert "North star:" not in md
@@ -646,17 +646,17 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert "Why this order" not in md
     assert "fix_blocker" not in md
     assert "| FIX gates (all bands) | 1 |" in md
-    assert "| Live P0 gate drivers | 1 |" in md
-    assert "| P0 action queue | no P0 action-queue rows |" in md
-    assert "| P0 ledgers |" in md
-    assert "foundation risk inventory=3; audit net backlog=1; live merge drivers=1" in md
-    assert "Classify remaining P0 counts after the rerun" in md
+    assert "| Open critical gate drivers | 1 |" in md
+    assert "| Open blocker queue | no open blocker or candidate-blocker rows |" in md
+    assert "| Decision ledgers |" in md
+    assert "foundation candidate inventory=3; critical audit net=1; live blocker drivers=1" in md
+    assert "Classify remaining critical-impact counts after the rerun" in md
     assert "Do not open a separate product/app workstream" in md
-    assert "Keep deletion/deprecation cleanup after P0" in md
+    assert "Keep deletion/deprecation cleanup after blockers" in md
     assert "### 1. Key Findings" not in md
     assert "| Finding | What it says |" not in md
     assert "| Finding | What it says | Response |" not in md
-    assert "| P0 | 1 | 0 | 1 | 3 | 1 |" in md
+    assert "| P0 | critical | 1 | 0 | 1 | 3 | 1 |" in md
     assert "adg_indexed_run.sqlite" in md
     assert "| Snapshot | 2026-06-18T18:02:31+00:00 |" in md
     assert "## ADG Executive Brief" in capsys.readouterr().out
@@ -695,11 +695,11 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "Business read:" not in md
     assert "Technical evidence:" not in md
     assert "ADG Run Metrics" in md
-    assert "P0-P3 Severity Inventory" in md
-    assert "P0 action queue" in md
+    assert "Impact Inventory" in md
+    assert "Open blocker queue" in md
     assert "Report consistency" in md
     assert "| Question | Answer |" in md
-    assert "| Can we merge? | No. A live P0 gate driver is red. |" in md
+    assert "| Can we merge? | No. A live critical gate driver is red and must be treated as a P0 blocker. |" in md
     assert "| What blocks merge? | `blocker` has 1 blocking row(s). |" in md
     assert "### 1. Key Findings" not in md
     assert "| Repair graph/report consistency |" not in md
@@ -710,13 +710,14 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "| Priority | Action | Evidence | Exit criterion |" in md
     assert md.index("Decision gate:") < md.index("Fix now:")
     assert md.index("Fix now:") < md.index("ADG Run Metrics")
-    assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." in md
-    assert "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing." in md
-    assert "Post-P0 ADG has report consistency PASS or an explicit waiver." in md
+    assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." not in md
+    assert "Repair runtime proof if it is still missing or failing after the P0 rerun" not in md
+    assert "Post-P0 ADG has report consistency PASS or an explicit waiver." not in md
+    assert "Rerun ADG after the blocker fix" in md
     assert "Next step: Repair graph/report consistency first." not in md
 
 
-def test_inline_report_prioritizes_p0_wave_before_p1_fix(tmp_path: Path) -> None:
+def test_inline_report_prioritizes_open_blocker_before_candidate_blockers(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts" / "adg"
     artifacts.mkdir(parents=True)
     db = artifacts / "adg_indexed_run.sqlite"
@@ -747,18 +748,31 @@ def test_inline_report_prioritizes_p0_wave_before_p1_fix(tmp_path: Path) -> None
         queue,
         {
             "actions": [
-                {"verdict_cluster": "FIX", "sort_band": "P1", "gate_id": "H1_new_orphans_delta_ratchet"},
                 {
-                    "verdict_cluster": "P0_WAVE",
-                    "sort_band": "P0",
-                    "action_kind": "p0_wave_file",
-                    "file_path": "agentic_core/L1_cognition/__init__.py",
+                    "verdict_cluster": "FIX",
+                    "sort_band": "P1",
+                    "gate_id": "H1_new_orphans_delta_ratchet",
+                    "work_priority": "P0",
+                    "enforcement_effect": "blocker",
+                    "queue_section": "open_blockers",
                 },
                 {
-                    "verdict_cluster": "P0_WAVE",
+                    "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
                     "sort_band": "P0",
-                    "action_kind": "p0_wave_file",
+                    "action_kind": "candidate_blocker_file",
+                    "file_path": "agentic_core/L1_cognition/__init__.py",
+                    "work_priority": "triage",
+                    "enforcement_effect": "inventory",
+                    "queue_section": "candidate_blockers",
+                },
+                {
+                    "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
+                    "sort_band": "P0",
+                    "action_kind": "candidate_blocker_file",
                     "file_path": "agentic_core/L1_cognition/apps_research_c0_binding.py",
+                    "work_priority": "triage",
+                    "enforcement_effect": "inventory",
+                    "queue_section": "candidate_blockers",
                 },
             ]
         },
@@ -790,15 +804,16 @@ def test_inline_report_prioritizes_p0_wave_before_p1_fix(tmp_path: Path) -> None
 
     assert rc == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
-    assert doc["p0_action_queue_summary"]["p0_wave_count"] == 2
+    assert doc["p0_action_queue_summary"]["open_blocker_count"] == 1
+    assert doc["p0_action_queue_summary"]["candidate_blocker_count"] == 2
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     _validate_locked_bcg_inline_markdown(md)
-    assert "| Can we merge? | No. ADG is red and P0 foundation/wave work remains before lower-severity lanes. |" in md
+    assert "| Can we merge? | No. ADG has open blocker action rows. |" in md
     assert "No. A P0 FIX gate is red." not in md
-    assert "| Live P0 gate drivers | 0 |" in md
-    assert "| P0 action queue | 2 P0 wave file row(s): agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py |" in md
+    assert "| Open critical gate drivers | 0 |" in md
+    assert "| Open blocker queue | 1 P0 blocker row(s); 2 candidate-blocker row(s): H1_new_orphans_delta_ratchet, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py |" in md
     assert "top red FIX gate=H1_new_orphans_delta_ratchet; rows=1" in md
-    assert md.index("| 1 | Clear P0 foundation wave.") < md.rindex("Address H1_new_orphans_delta_ratchet")
+    assert md.index("| 1 | Clear P0 blocker rows.") < md.rindex("Address H1_new_orphans_delta_ratchet")
 
 
 def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:
@@ -1054,17 +1069,17 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
     assert doc["lens_0_p0_landmines"]["summary"]["foundation_blockers"] == 0
 
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
-    assert "P0-P3 Severity Inventory" in md
-    assert "| Band | Gross | Guardian exempted | Net | Foundation blockers | Live gate drivers |" in md
-    assert "| P0 | 43 | 40 | 3 | 0 | 1 |" in md
-    assert "| P1 | 10 | 8 | 2 | n/a | 0 |" in md
-    assert "| P2 | 7 | 2 | 5 | n/a | 0 |" in md
-    assert "| P3 | 0 | 0 | 0 | n/a | 0 |" in md
+    assert "Impact Inventory" in md
+    assert "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |" in md
+    assert "| P0 | critical | 43 | 40 | 3 | 0 | 1 |" in md
+    assert "| P1 | high | 10 | 8 | 2 | n/a | 0 |" in md
+    assert "| P2 | medium | 7 | 2 | 5 | n/a | 0 |" in md
+    assert "| P3 | low | 0 | 0 | 0 | n/a | 0 |" in md
     assert "### 1. Key Findings" not in md
-    assert "foundation risk inventory=0; audit net backlog=3; live merge drivers=1" in md
-    assert "| P0 ledgers |" in md
-    assert "Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates." in md
-    assert "Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate." in md
+    assert "foundation candidate inventory=0; critical audit net=3; live blocker drivers=1" in md
+    assert "| Decision ledgers |" in md
+    assert "Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates." in md
+    assert "Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate." in md
     assert "### 3A. KPI Scorecard — Decision vs Audit" not in md
     assert "### 4. Lens 0 — Foundation Blockers" not in md
     assert "### 4. Lens 0 — P0 Landmines / Foundation Cracks" not in md

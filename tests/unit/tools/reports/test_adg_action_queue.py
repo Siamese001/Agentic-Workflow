@@ -97,6 +97,12 @@ def test_track_never_in_actions(tmp_path: Path) -> None:
     _write_burndown(burndown)
     doc = build_action_queue(gate_results_path=gate, burndown_path=burndown, max_actions=10)
     assert all(a.get("verdict_cluster") != "TRACK" for a in doc["actions"])
+    blocker = doc["actions"][0]
+    assert blocker["verdict_cluster"] == "FIX"
+    assert blocker["impact_severity"] == "critical"
+    assert blocker["enforcement_effect"] == "blocker"
+    assert blocker["work_priority"] == "P0"
+    assert blocker["queue_section"] == "open_blockers"
     assert display_verdict({"classification": "pass", "violation_count": 2792, "enforcement": "ratchet"}) == "TRACK"
 
 
@@ -126,7 +132,7 @@ def test_p0_wave_does_not_promote_ratchet_floor(tmp_path: Path) -> None:
     )
 
     assert doc["summary"]["track_count"] == 1
-    assert all(a.get("verdict_cluster") != "P0_WAVE" for a in doc["actions"])
+    assert all(a.get("verdict_cluster") != "CANDIDATE_BLOCKER_TRIAGE" for a in doc["actions"])
 
 
 def test_p0_wave_promotes_ratchet_regression(tmp_path: Path) -> None:
@@ -154,9 +160,13 @@ def test_p0_wave_promotes_ratchet_regression(tmp_path: Path) -> None:
         p0_wave_plan_path=p0_wave,
     )
 
-    p0_wave_actions = [a for a in doc["actions"] if a.get("verdict_cluster") == "P0_WAVE"]
-    assert len(p0_wave_actions) == 1
-    assert p0_wave_actions[0]["file_path"] == "agentic_core/L1_cognition/reachable.py"
+    candidate_actions = [a for a in doc["actions"] if a.get("verdict_cluster") == "CANDIDATE_BLOCKER_TRIAGE"]
+    assert len(candidate_actions) == 1
+    assert candidate_actions[0]["file_path"] == "agentic_core/L1_cognition/reachable.py"
+    assert candidate_actions[0]["impact_severity"] == "critical"
+    assert candidate_actions[0]["enforcement_effect"] == "inventory"
+    assert candidate_actions[0]["work_priority"] == "triage"
+    assert candidate_actions[0]["queue_section"] == "candidate_blockers"
 
 
 def test_p0_wave_promotes_non_ratchet_structural_issue(tmp_path: Path) -> None:
@@ -173,7 +183,12 @@ def test_p0_wave_promotes_non_ratchet_structural_issue(tmp_path: Path) -> None:
         p0_wave_plan_path=p0_wave,
     )
 
-    assert any(a.get("verdict_cluster") == "P0_WAVE" for a in doc["actions"])
+    assert any(a.get("verdict_cluster") == "CANDIDATE_BLOCKER_TRIAGE" for a in doc["actions"])
+    assert all(
+        a.get("work_priority") != "P0"
+        for a in doc["actions"]
+        if a.get("verdict_cluster") == "CANDIDATE_BLOCKER_TRIAGE"
+    )
 
 
 def test_track_never_in_notion_payload(tmp_path: Path) -> None:

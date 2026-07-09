@@ -279,13 +279,37 @@ def _copy_result_for_handoff_root(result: WrapperResult, *, producer_artifacts: 
 
 def _repair_handoff_counts() -> dict[str, int]:
     return {
-        "P0_FIX": 0,
-        "P0_WAVE": 0,
-        "P0_TRACKED_BACKLOG": 0,
-        "P1_FIX": 0,
-        "P1_RATCHET_REGRESSION": 0,
-        "P1_RATCHET_FLOOR_BACKLOG": 0,
+        "open_blocker_fix_count": 0,
+        "critical_open_blocker_fix_count": 0,
+        "candidate_blocker_triage_count": 0,
+        "critical_tracked_debt_count": 0,
+        "high_open_blocker_fix_count": 0,
+        "high_ratchet_regression_count": 0,
+        "high_ratchet_floor_tracked_debt_count": 0,
     }
+
+
+def _legacy_repair_handoff_counts(counts: dict[str, int]) -> dict[str, int]:
+    return {
+        "P0_FIX": int(counts.get("critical_open_blocker_fix_count", 0)),
+        "P0_WAVE": int(counts.get("candidate_blocker_triage_count", 0)),
+        "P0_TRACKED_BACKLOG": int(counts.get("critical_tracked_debt_count", 0)),
+        "P1_FIX": int(counts.get("high_open_blocker_fix_count", 0)),
+        "P1_RATCHET_REGRESSION": int(counts.get("high_ratchet_regression_count", 0)),
+        "P1_RATCHET_FLOOR_BACKLOG": int(counts.get("high_ratchet_floor_tracked_debt_count", 0)),
+    }
+
+
+def _repair_count_mismatches(recorded_counts: dict[str, Any], computed_counts: dict[str, int]) -> list[str]:
+    if any(key in recorded_counts for key in computed_counts):
+        expected = computed_counts
+    else:
+        expected = _legacy_repair_handoff_counts(computed_counts)
+    return [
+        f"{key}: recorded={recorded_counts.get(key)!r} computed={value!r}"
+        for key, value in expected.items()
+        if recorded_counts.get(key) != value
+    ]
 
 
 def _stamp_from_artifact_name(path: Path | None, *, prefix: str, suffix: str) -> str | None:
@@ -745,10 +769,10 @@ def _ensure_action_queue_for_handoff(
     return path, [f"action_queue validation: {err}" for err in errors]
 
 
-def _p0_p1_fix_count(action_queue: dict[str, Any]) -> int:
+def _open_blocker_fix_count(action_queue: dict[str, Any]) -> int:
     count = 0
     for action in action_queue.get("actions") or []:
-        if action.get("verdict_cluster") == "FIX" and action.get("sort_band") in {"P0", "P1"}:
+        if action.get("verdict_cluster") == "FIX" or action.get("work_priority") == "P0":
             count += 1
     return count
 
@@ -759,25 +783,26 @@ def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -
     counts = _repair_handoff_counts()
     for action in action_queue.get("actions") or []:
         cluster = action.get("verdict_cluster")
-        if cluster == "P0_WAVE" and action.get("sort_band") == "P0":
-            counts["P0_WAVE"] += 1
+        if cluster in {"CANDIDATE_BLOCKER_TRIAGE", "P0_WAVE"} and action.get("sort_band") == "P0":
+            counts["candidate_blocker_triage_count"] += 1
             continue
         if cluster != "FIX":
             continue
+        counts["open_blocker_fix_count"] += 1
         if action.get("sort_band") == "P0":
-            counts["P0_FIX"] += 1
+            counts["critical_open_blocker_fix_count"] += 1
         elif action.get("sort_band") == "P1":
-            counts["P1_FIX"] += 1
+            counts["high_open_blocker_fix_count"] += 1
     for gate in gate_results.get("gates") or []:
         if gate.get("band") == "P0" and display_verdict(gate) == "TRACK":
-            counts["P0_TRACKED_BACKLOG"] += 1
+            counts["critical_tracked_debt_count"] += 1
         if gate.get("band") != "P1" or gate.get("enforcement") != "ratchet":
             continue
         sub = display_verdict_sub(gate)
         if sub == "regr":
-            counts["P1_RATCHET_REGRESSION"] += 1
+            counts["high_ratchet_regression_count"] += 1
         elif sub == "floor":
-            counts["P1_RATCHET_FLOOR_BACKLOG"] += 1
+            counts["high_ratchet_floor_tracked_debt_count"] += 1
     return counts
 
 
@@ -899,7 +924,7 @@ def _build_repair_handoff(
             action_queue = _load_json(action_queue_path)
             gate_results = _load_json(gate_results_path)
             counts = _repair_counts(action_queue, gate_results)
-            if not errors and certification_status == "clean" and _p0_p1_fix_count(action_queue) == 0:
+            if not errors and certification_status == "clean" and _open_blocker_fix_count(action_queue) == 0:
                 artifact_status = "certified"
             elif not errors:
                 artifact_status = "repair_ready"
@@ -913,6 +938,7 @@ def _build_repair_handoff(
         "status": artifact_status,
         "artifacts": artifacts,
         "counts": counts,
+        "legacy_counts": _legacy_repair_handoff_counts(counts),
         "validation_errors": sorted(set(errors)),
     }
     return artifact_status, handoff, errors
@@ -1028,11 +1054,7 @@ def validate_repair_handoff_receipt(
     if not isinstance(recorded_counts, dict):
         errors.append("repair_handoff.counts missing or malformed")
     elif counts_recomputed:
-        mismatches = [
-            f"{key}: recorded={recorded_counts.get(key)!r} computed={value!r}"
-            for key, value in counts.items()
-            if recorded_counts.get(key) != value
-        ]
+        mismatches = _repair_count_mismatches(recorded_counts, counts)
         if mismatches:
             errors.append(
                 "repair_handoff counts differ from digest-bound artifacts: " + "; ".join(mismatches)
@@ -1310,6 +1332,7 @@ def _default_incomplete_handoff() -> dict[str, Any]:
         "status": "incomplete",
         "artifacts": {},
         "counts": _repair_handoff_counts(),
+        "legacy_counts": _legacy_repair_handoff_counts(_repair_handoff_counts()),
         "validation_errors": ["repair_handoff was not built"],
     }
 

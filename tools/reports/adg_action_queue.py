@@ -23,6 +23,7 @@ from tools.reports.gate_signal_catalog import (
     format_gate_signal,
     needs_fix,
 )
+from tools.reports.adg_output_semantics import action_semantics
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
@@ -37,7 +38,7 @@ SUB_TO_SORT_BUCKET = {
     "seed": 2,
 }
 
-P0_WAVE_RATCHET_GATE_BY_KIND = {
+CANDIDATE_BLOCKER_RATCHET_GATE_BY_KIND = {
     "l0_reachability_orphan": "G_REACH_l0_reachability",
 }
 
@@ -235,8 +236,7 @@ def _build_fix_actions(gates: list[dict[str, Any]], source_digest: str) -> list[
     rows: list[dict[str, Any]] = []
     for gate in fix_gates:
         sub = display_verdict_sub(gate)
-        rows.append(
-            {
+        action = {
                 "verdict_cluster": "FIX",
                 "gate_id": gate.get("gate_id"),
                 "source_id": None,
@@ -253,7 +253,8 @@ def _build_fix_actions(gates: list[dict[str, Any]], source_digest: str) -> list[
                 "source_digest": source_digest,
                 "ordering_reason": _ordering_reason_for_fix(gate),
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
     return rows
 
 
@@ -268,7 +269,7 @@ def _p0_wave_item_promotable(item: dict[str, Any], gates_by_id: dict[str, dict[s
 
     ratchet_gate_ids: set[str] = set()
     for kind in kinds:
-        gate_id = P0_WAVE_RATCHET_GATE_BY_KIND.get(kind)
+        gate_id = CANDIDATE_BLOCKER_RATCHET_GATE_BY_KIND.get(kind)
         if gate_id is None:
             return True
         ratchet_gate_ids.add(gate_id)
@@ -276,7 +277,7 @@ def _p0_wave_item_promotable(item: dict[str, Any], gates_by_id: dict[str, dict[s
     return any(needs_fix(gates_by_id.get(gate_id, {})) for gate_id in ratchet_gate_ids)
 
 
-def _build_p0_wave_actions(
+def _build_candidate_blocker_actions(
     plan: dict[str, Any],
     source_digest: str,
     *,
@@ -296,25 +297,25 @@ def _build_p0_wave_actions(
         source_file = str(item.get("source_file") or "")
         if not source_file:
             continue
-        rows.append(
-            {
-                "verdict_cluster": "P0_WAVE",
+        action = {
+                "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
                 "gate_id": None,
                 "source_id": source_file,
-                "action_kind": "p0_wave_file",
+                "action_kind": "candidate_blocker_file",
                 "file_path": source_file,
                 "symbol": None,
                 "scoped_tests": [],
-                "plan_hint": "p0_wave_session",
-                "signal": f"P0 wave file; issues={item.get('issue_count', 0)}",
+                "plan_hint": "candidate_blocker_triage_session",
+                "signal": f"Candidate blocker file; issues={item.get('issue_count', 0)}",
                 "sort_bucket": 3,
                 "sort_band": "P0",
                 "violation_count": int(item.get("issue_count") or 0),
                 "source_artifact": "p0_wave_plan",
                 "source_digest": source_digest,
-                "ordering_reason": "p0_wave_top_files_priority",
+                "ordering_reason": "candidate_blocker_top_files_priority",
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
     return rows
 
 
@@ -330,8 +331,7 @@ def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max
         if not isinstance(tests, list):
             tests = []
         dimensions = cand.get("dimensions") if isinstance(cand.get("dimensions"), dict) else {}
-        rows.append(
-            {
+        action = {
                 "verdict_cluster": "REFACTOR",
                 "gate_id": None,
                 "source_id": file_path,
@@ -348,7 +348,8 @@ def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max
                 "source_digest": source_digest,
                 "ordering_reason": "refactor_accelerator_candidates_desc",
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
         if len(rows) >= max_candidates:
             break
     return rows
@@ -447,8 +448,7 @@ def _build_test_hotspot_actions(
         coverage_pct = _float_value(row["coverage_pct"], default=-1.0)
         coverage_text = "absent" if coverage_pct < 0 else f"{coverage_pct:.1f}%"
         priority = str(row["priority_band"] or "P?_GAP")
-        rows.append(
-            {
+        action = {
                 "verdict_cluster": "GRAPHDB",
                 "gate_id": None,
                 "source_id": file_path,
@@ -470,7 +470,8 @@ def _build_test_hotspot_actions(
                 "source_digest": source_digest,
                 "ordering_reason": "mv_hotspot_coverage_risk_priority",
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
     return rows
 
 
@@ -509,8 +510,7 @@ def _build_structural_hotspot_actions(
             continue
         seen_paths.add(file_path)
         fan_in = _int_value(cand.get("direct_fan_in"), cand.get("fan_in"), default=0)
-        rows.append(
-            {
+        action = {
                 "verdict_cluster": "GRAPHDB",
                 "gate_id": None,
                 "source_id": file_path,
@@ -530,7 +530,8 @@ def _build_structural_hotspot_actions(
                 "source_digest": source_digest,
                 "ordering_reason": "structural_outputs_hotspot_desc",
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
         if len(rows) >= max_candidates:
             break
     return rows
@@ -573,8 +574,7 @@ def _build_graphdb_structural_actions(
 
     rows: list[dict[str, Any]] = []
     for count, key, label in scored[:max_candidates]:
-        rows.append(
-            {
+        action = {
                 "verdict_cluster": "GRAPHDB",
                 "gate_id": None,
                 "source_id": key,
@@ -594,7 +594,8 @@ def _build_graphdb_structural_actions(
                 "source_digest": source_digest,
                 "ordering_reason": "graphdb_structural_signal_count_desc",
             }
-        )
+        action.update(action_semantics(action))
+        rows.append(action)
     return rows
 
 
@@ -731,7 +732,7 @@ def build_action_queue(
     combined = list(fix_rows)
     if p0_prov.status == "present" and p0_prov.raw:
         combined.extend(
-            _build_p0_wave_actions(
+            _build_candidate_blocker_actions(
                 p0_prov.raw,
                 p0_prov.digest_sha256 or "",
                 gates=gates,
@@ -824,6 +825,10 @@ def validate_action_queue(doc: dict[str, Any], schema_path: Path = SCHEMA_PATH) 
     for action in actions:
         if action.get("verdict_cluster") == "TRACK":
             errors.append("TRACK must not appear in actions")
+        if action.get("work_priority") == "P0" and action.get("enforcement_effect") != "blocker":
+            errors.append("P0 work priority is reserved for open blockers")
+        if action.get("verdict_cluster") == "P0_WAVE":
+            errors.append("legacy P0_WAVE must not appear as a canonical action cluster")
         if not action.get("gate_id") and not action.get("source_id"):
             errors.append("action missing gate_id and source_id")
 

@@ -1870,36 +1870,36 @@ def _p0_p3_reconciliation(p0_lens: dict[str, Any], audit_notes: dict[str, Any], 
         )
     return {
         "status": "present",
-        "executive_read": "P0 is split into three ledgers: foundation blockers, audit inventory, and live gate drivers.",
-        "rule": "Do not add these counts together. A P0 audit finding is not a foundation blocker unless it comes from the foundation-blocker wave plan.",
+        "executive_read": "Impact severity is split from enforcement: foundation candidates, critical impact inventory, and live blocker drivers.",
+        "rule": "Do not add these counts together. Critical impact inventory is not a blocker unless it is tied to a live blocker gate.",
         "kpis": [
             {
                 "id": "foundation_blockers",
-                "kpi": "Foundation blockers",
+                "kpi": "Foundation candidate inventory",
                 "value": foundation_count,
                 "display_value": _display_count(foundation_count),
-                "meaning": "P0 trust hazards that can make ADG evidence incomplete, unstable, or misleading.",
-                "action_rule": "Stop the line if greater than zero; if not loaded, do not claim clean.",
+                "meaning": "Candidate run-trust hazards that can make ADG evidence incomplete, unstable, or misleading.",
+                "action_rule": "Triage as candidate blockers; stop the line only when linked to a live blocker gate.",
             },
             {
                 "id": "p0_audit_net",
-                "kpi": "P0 audit net",
+                "kpi": "Critical impact inventory",
                 "value": p0_audit_net,
                 "display_value": _display_count(p0_audit_net),
-                "meaning": "P0 severity audit inventory after guardian exemptions.",
+                "meaning": "Critical impact inventory after guardian exemptions.",
                 "action_rule": "Audit-only unless mapped to a failing gate, runtime failure, hotspot, or changed code.",
             },
             {
                 "id": "p0_live_gate_drivers",
-                "kpi": "P0 live gate drivers",
+                "kpi": "Open critical gate drivers",
                 "value": p0_live_gate_drivers,
                 "display_value": _display_count(p0_live_gate_drivers),
-                "meaning": "Current red P0 gates that can drive today's work order.",
-                "action_rule": "Can drive priority when the gate is FIX/red and decision-linked.",
+                "meaning": "Current red critical-impact gates that can drive today's work order.",
+                "action_rule": "Only live blocker gates can become P0 work.",
             },
         ],
         "p0_p3_audit_inventory": band_rows,
-        "reconciliation_note": "Zero foundation blockers can coexist with nonzero P0 audit net because they measure different ledgers: run-trust hazards versus severity audit inventory.",
+        "reconciliation_note": "Zero live blockers can coexist with nonzero critical impact inventory because they measure different dimensions: enforcement versus impact.",
     }
 
 
@@ -1913,7 +1913,7 @@ def build_deprecation_deletion_plan(
 
 def _audit_notes(gates: list[dict[str, Any]], burndown: dict[str, Any] | None, consistency: dict[str, Any] | None = None) -> dict[str, Any]:
     consistency = consistency or {"status": "PASS", "errors": []}
-    return {"status": "present", "guardian_summary": _audit_band_summary_rows(burndown), "severity_summary": {"executive_read": "P0-P3 severity inventory is audit math unless tied to current FIX/action rows.", "rows": []}, "artifact_consistency": consistency, "notes": ["Guardian exceptions are audit math only; they do not automatically explain away real problems.", "Diagnostic-only MVs are not immediate work unless tied to a blocker, testing gap, critical path, or planned slice.", "Do not add foundation-blocker counts to audit-net counts; they come from different ledgers.", "Artifact consistency is derived from mv_graph_vs_report_mismatches (graph-vs-report truth), not assumed PASS."]}
+    return {"status": "present", "guardian_summary": _audit_band_summary_rows(burndown), "severity_summary": {"executive_read": "Impact inventory is audit math unless tied to current FIX/action rows.", "rows": []}, "artifact_consistency": consistency, "notes": ["Guardian exceptions are audit math only; they do not automatically explain away real problems.", "Diagnostic-only MVs are not immediate work unless tied to a blocker, testing gap, critical path, or planned slice.", "Do not add foundation-candidate counts to audit-net counts; they come from different ledgers.", "Artifact consistency is derived from mv_graph_vs_report_mismatches (graph-vs-report truth), not assumed PASS."]}
 
 
 def _bottom_line(health: dict[str, Any], runtime: dict[str, Any], testing: dict[str, Any], actions: dict[str, Any]) -> dict[str, list[str]]:
@@ -1966,34 +1966,39 @@ def _action_queue_scope(row: dict[str, Any]) -> str:
 
 def _p0_action_queue_summary(action_queue: dict[str, Any]) -> dict[str, Any]:
     actions = [row for row in action_queue.get("actions", []) or [] if isinstance(row, dict)]
-    p0_fix: list[dict[str, Any]] = []
-    p0_wave: list[dict[str, Any]] = []
+    open_blockers: list[dict[str, Any]] = []
+    candidate_blockers: list[dict[str, Any]] = []
     for row in actions:
         band = str(row.get("sort_band") or row.get("band") or "").upper()
         cluster = str(row.get("verdict_cluster") or "").upper()
         kind = str(row.get("action_kind") or "").lower()
-        if band.startswith("P0") and cluster == "FIX":
-            p0_fix.append(row)
-        elif band.startswith("P0") or cluster == "P0_WAVE" or kind.startswith("p0_"):
-            p0_wave.append(row)
-    rows = p0_fix + p0_wave
+        priority = str(row.get("work_priority") or "").upper()
+        if priority == "P0" or cluster == "FIX":
+            open_blockers.append(row)
+        elif cluster in {"CANDIDATE_BLOCKER_TRIAGE", "P0_WAVE"} or kind in {"candidate_blocker_file", "p0_wave_file"} or (
+            band.startswith("P0") and cluster != "FIX"
+        ):
+            candidate_blockers.append(row)
+    rows = open_blockers + candidate_blockers
     scopes = [_action_queue_scope(row) for row in rows]
     top_scopes = scopes[:3]
     if not rows:
-        metric = "no P0 action-queue rows"
-    elif p0_fix:
-        metric = f"{_display_count(len(p0_fix))} P0 FIX row(s)"
-        if p0_wave:
-            metric += f"; {_display_count(len(p0_wave))} P0 wave row(s)"
+        metric = "no open blocker or candidate-blocker rows"
+    elif open_blockers:
+        metric = f"{_display_count(len(open_blockers))} P0 blocker row(s)"
+        if candidate_blockers:
+            metric += f"; {_display_count(len(candidate_blockers))} candidate-blocker row(s)"
     else:
-        metric = f"{_display_count(len(p0_wave))} P0 wave file row(s)"
+        metric = f"{_display_count(len(candidate_blockers))} candidate-blocker file row(s)"
     if top_scopes:
         metric += ": " + ", ".join(top_scopes)
         if len(scopes) > len(top_scopes):
             metric += f", +{len(scopes) - len(top_scopes)} more"
     return {
-        "p0_fix_count": len(p0_fix),
-        "p0_wave_count": len(p0_wave),
+        "open_blocker_count": len(open_blockers),
+        "candidate_blocker_count": len(candidate_blockers),
+        "p0_fix_count": len(open_blockers),
+        "p0_wave_count": len(candidate_blockers),
         "total_p0_rows": len(rows),
         "top_scopes": top_scopes,
         "metric": metric,
@@ -2014,24 +2019,25 @@ def _p0_priority_rows(doc: dict[str, Any]) -> list[dict[str, Any]]:
     p0_summary = doc.get("p0_action_queue_summary") or {}
     if _int_value(p0_summary.get("total_p0_rows")) <= 0:
         return []
-    has_fix = _int_value(p0_summary.get("p0_fix_count")) > 0
-    move = "Clear P0 FIX rows" if has_fix else "Clear P0 foundation wave"
+    has_fix = _int_value(p0_summary.get("open_blocker_count"), p0_summary.get("p0_fix_count")) > 0
+    move = "Clear P0 blocker rows" if has_fix else "Triage candidate blocker evidence"
+    scope = "Open blocker queue" if has_fix else "Candidate blocker queue"
     return [
         {
             "priority": 1,
             "move": move,
-            "why_it_matters": "P0 work is the first severity lane; do not let a P1 ratchet or graph/report caveat jump ahead of it.",
+            "why_it_matters": "Open blockers are the only canonical P0 work; candidate blockers need proof before they halt lower-impact lanes.",
             "evidence": p0_summary.get("metric"),
-            "next_step": "Burn down the listed P0 rows first, then rerun ADG before ranking P1-P3.",
-            "scope": "P0 action queue",
+            "next_step": "Clear open blockers first; otherwise attach candidate rows to a live blocker gate or move them to tracked debt.",
+            "scope": scope,
             "decision_options": [],
-            "done_condition": "Rerun ADG and confirm P0 action rows/foundation blockers are zero or explicitly waived.",
-            "affected_system": "ADG P0 lane",
+            "done_condition": "Rerun ADG and confirm open blocker rows are zero or explicitly waived.",
+            "affected_system": "ADG blocker lane",
             "affected_layers": [],
             "change_breakout": [],
             "diagram": None,
-            "action_type": "p0_action_queue",
-            "decision": "clear_p0_first",
+            "action_type": "blocker_action_queue",
+            "decision": "clear_blockers_first" if has_fix else "triage_candidate_blockers",
         }
     ]
 
@@ -2104,12 +2110,12 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
         if scope:
             seen_scopes.add(scope)
     first_priority = priority_rows[0] if priority_rows else {}
-    first_move = str(first_priority.get("move") or first_priority.get("scope") or "the first P0 blocker")
+    first_move = str(first_priority.get("move") or first_priority.get("scope") or "the first open blocker")
     first_scope = str(first_priority.get("scope") or first_move)
-    first_evidence = str(first_priority.get("evidence") or "ADG emitted a concrete P0 row").rstrip(".")
+    first_evidence = str(first_priority.get("evidence") or "ADG emitted a concrete blocker row").rstrip(".")
     red_gates_by_id = {str(row.get("gate_id") or ""): row for row in health.get("red_gates", []) or []}
     first_gate = red_gates_by_id.get(first_scope, {})
-    if first_scope == "P0 action queue":
+    if first_scope in {"Open blocker queue", "Candidate blocker queue"}:
         first_row_count = _display_count((doc.get("p0_action_queue_summary") or {}).get("total_p0_rows"))
     else:
         first_row_count = _fmt_int(first_gate.get("total_records") or first_gate.get("records") or first_gate.get("violation_count") or 0)
@@ -2122,28 +2128,28 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     if verdict == "REPORT_INCONSISTENT":
         if priority_rows:
             business_suffix = (
-                "ADG is giving one safe decision, not a full ranked roadmap: clear concrete P0 evidence "
+                "ADG is giving one safe decision, not a full ranked roadmap: clear concrete blocker evidence "
                 "before lower-severity work. The report inconsistency only limits confidence in the lower-priority "
                 "ranking; it does not change the first engineering move."
             )
             priority_rule = (
-                "Concrete P0 FIX rows first; graph/report mismatch is a decision-quality caveat, "
+                "Concrete blocker FIX rows first; graph/report mismatch is a decision-quality caveat, "
                 "not the first engineering work item."
             )
             why_this_order = [
-                "Concrete P0 FIX rows are actionable now and still outrank report-maintenance work.",
-                "Graph/report mismatch makes lower-severity ordering provisional, not a reason to defer the P0 blocker.",
-                "After the P0 fix, rerun ADG to prove both the gate and report consistency.",
+                "Concrete blocker FIX rows are actionable now and still outrank report-maintenance work.",
+                "Graph/report mismatch makes lower-severity ordering provisional, not a reason to defer the blocker.",
+                "After the blocker fix, rerun ADG to prove both the gate and report consistency.",
             ]
         else:
             business_suffix = "Repair report consistency before treating lower-severity order as authoritative."
             priority_rule = (
                 "Decision queue: repair consistency before ranking lower-severity backlog; "
-                "do not let high-volume P3 hygiene outrank P0 safety/governance gates."
+                "do not let high-volume P3 hygiene outrank safety/governance blockers."
             )
             why_this_order = [
                 "Graph/report mismatch means the lower-severity action order is not decision-grade yet.",
-                "Once consistent, concrete P0 FIX gates outrank P3 hygiene even when the P3 row count is larger.",
+                "Once consistent, concrete FIX blockers outrank P3 hygiene even when the P3 row count is larger.",
                 "Testing exposure should travel with the relevant fix slice.",
             ]
     elif verdict == "DEGRADED":
@@ -2156,7 +2162,7 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     elif verdict == "RUNTIME_PROOF_FAILING":
         business_suffix = "Fix failing runtime proof before ordinary gate cleanup."
         priority_rule = (
-            "Decision queue: fix runtime proof, then remove concrete P0 hard stops/regressions; "
+            "Decision queue: fix runtime proof, then remove concrete hard stops/regressions; "
             "defer high-volume P3 hygiene until safety/governance gates are clear."
         )
         why_this_order = [
@@ -2193,9 +2199,9 @@ def _executive_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
             f"burn-down gates: {_fmt_int(health.get('summary', {}).get('burn_down_gates', health.get('summary', {}).get('track_gates', 0)))}; "
             f"KPI/watchlist gates: {_fmt_int(health.get('summary', {}).get('kpi_watchlist_gates', 0))}",
             "KPI split: "
-            f"foundation blockers {kpi_by_id.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
-            f"P0 audit net {kpi_by_id.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
-            f"P0 live gate drivers {kpi_by_id.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}",
+            f"foundation candidates {kpi_by_id.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+            f"critical impact net {kpi_by_id.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+            f"live blocker drivers {kpi_by_id.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}",
             runtime.get("measurement_gap_vs_quality_failure") or runtime.get("executive_read", ""),
             testing.get("executive_read") or testing.get("why_it_matters", ""),
             graph.get("executive_read", ""),
@@ -2329,8 +2335,8 @@ def _step_action(row: dict[str, Any]) -> str:
     if move.startswith("Refactor high-blast-radius seam"):
         scope = str(row.get("scope") or "the flagged seam")
         return (
-            f"After P0 is green and mapped tests are decided, open a scoped refactor/test slice for {scope} "
-            "only if ADG still flags it or the P0 fix touches it."
+            f"After blockers are green and mapped tests are decided, open a scoped refactor/test slice for {scope} "
+            "only if ADG still flags it or the blocker fix touches it."
         )
     if not next_step:
         return move
@@ -2343,7 +2349,7 @@ def _step_exit(row: dict[str, Any]) -> str:
         return str(explicit)
     scope = str(row.get("scope") or "")
     if scope == "13_core_imports_apps":
-        return "Post-fix ADG shows this gate green and P0 FIX=0."
+        return "Post-fix ADG shows this gate green and open_blocker_fix_count=0."
     return "Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived."
 
 
@@ -2385,9 +2391,9 @@ def _compact_next_steps(doc: dict[str, Any], brief: dict[str, Any] | None = None
         _insert_step(
             steps,
             1 if steps else 0,
-            "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3.",
+            "Rerun ADG after the blocker fix; if report consistency still fails, repair the report pipeline before ranking lower-impact work.",
             "Report consistency=FAIL.",
-            "Post-P0 ADG has report consistency PASS or an explicit waiver.",
+            "Post-blocker ADG has report consistency PASS or an explicit waiver.",
         )
     scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
     kpis = {str(row.get("id") or ""): row for row in scorecard.get("kpis", []) or []}
@@ -2395,20 +2401,20 @@ def _compact_next_steps(doc: dict[str, Any], brief: dict[str, Any] | None = None
         _insert_step(
             steps,
             min(2, len(steps)),
-            "Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates.",
+            "Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates.",
             (
-                f"Foundation risk inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
-                f"audit net backlog={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
-                f"live merge drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}."
+                f"Foundation candidate inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+                f"critical audit net={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+                f"live blocker drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}."
             ),
-            "Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate.",
+            "Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate.",
         )
     runtime_status = _first_runtime_status(doc)
     if runtime_status not in {"present", "unknown"}:
         _insert_step(
             steps,
             min(3, len(steps)),
-            "Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing.",
+            "Repair runtime proof if it is still missing or failing after the blocker rerun; do not rely on runtime evidence until it is present and passing.",
             f"runtime_spine={runtime_status}.",
             "Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision.",
         )
@@ -2416,7 +2422,7 @@ def _compact_next_steps(doc: dict[str, Any], brief: dict[str, Any] | None = None
     product_read = product.get("executive_read") or "No product/app risk promoted."
     _append_step(
         steps,
-        "Do not open a separate product/app workstream; validate app-owned wiring only if the P0 adapter fix touches it.",
+        "Do not open a separate product/app workstream; validate app-owned wiring only if the blocker fix touches it.",
         product_read,
         "Touched app wiring has targeted validation, or no app-owned surface was touched.",
     )
@@ -2425,9 +2431,9 @@ def _compact_next_steps(doc: dict[str, Any], brief: dict[str, Any] | None = None
     if plan_summary:
         _append_step(
             steps,
-            "Keep deletion/deprecation cleanup after P0, report consistency, and runtime proof are green unless cleanup blocks the P0 fix.",
+            "Keep deletion/deprecation cleanup after blockers, report consistency, and runtime proof are green unless cleanup blocks the fix.",
             plan_summary.get("executive_read") or "Cleanup signal loaded.",
-            "Cleanup is scheduled as a separate after-green wave or explicitly tied to the P0 fix.",
+            "Cleanup is scheduled as a separate after-green wave or explicitly tied to the blocker fix.",
         )
     if not steps:
         steps = [{"action": "Keep ADG green.", "evidence": "No red gate evidence.", "exit": "No red gate remains."}]
@@ -2451,7 +2457,7 @@ def _first_testing_signal(doc: dict[str, Any]) -> str:
 
 
 def _p0_action_queue_metric(doc: dict[str, Any]) -> str:
-    return str((doc.get("p0_action_queue_summary") or {}).get("metric") or "no P0 action-queue rows")
+    return str((doc.get("p0_action_queue_summary") or {}).get("metric") or "no open blocker action rows")
 
 
 def _first_fix_gate_metric(doc: dict[str, Any], brief: dict[str, Any]) -> str:
@@ -2488,16 +2494,16 @@ def _adg_run_metrics(doc: dict[str, Any], brief: dict[str, Any]) -> list[list[An
         ["SQLite snapshot", artifacts.get("sqlite_snapshot") or "unknown"],
         ["Audit caveat", f"{(doc.get('executive_decision') or {}).get('verdict') or 'UNKNOWN'}; report consistency={consistency.get('status') or 'unknown'}"],
         ["FIX gates (all bands)", _fmt_int(summary.get("fix_gates", 0))],
-        ["Live P0 gate drivers", _display_count(_kpi_int(doc, "p0_live_gate_drivers"))],
-        ["P0 action queue", _p0_action_queue_metric(doc)],
+        ["Open critical gate drivers", _display_count(_kpi_int(doc, "p0_live_gate_drivers"))],
+        ["Open blocker queue", _p0_action_queue_metric(doc)],
         ["Top FIX gate", _first_fix_gate_metric(doc, brief)],
         ["Action rows", _fmt_int(len(actions))],
         [
-            "P0 ledgers",
+            "Decision ledgers",
             (
-                f"foundation risk inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
-                f"audit net backlog={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
-                f"live merge drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}"
+                f"foundation candidate inventory={kpis.get('foundation_blockers', {}).get('display_value', 'not loaded')}; "
+                f"critical audit net={kpis.get('p0_audit_net', {}).get('display_value', 'not loaded')}; "
+                f"live blocker drivers={kpis.get('p0_live_gate_drivers', {}).get('display_value', 'not loaded')}"
             ),
         ],
         ["Runtime proof", _first_runtime_status(doc)],
@@ -2509,12 +2515,14 @@ def _p0_p3_severity_inventory(doc: dict[str, Any]) -> list[list[Any]]:
     scorecard = doc.get("kpi_scorecard") or doc.get("p0_p3_reconciliation") or {}
     rows = scorecard.get("p0_p3_audit_inventory") or []
     if not rows:
-        return [["P0", "not loaded", "not loaded", "not loaded", "not loaded", "not loaded"]]
+        return [["P0", "critical", "not loaded", "not loaded", "not loaded", "not loaded", "not loaded"]]
+    severity_by_band = {"P0": "critical", "P1": "high", "P2": "medium", "P3": "low"}
     out: list[list[Any]] = []
     for row in rows:
         out.append(
             [
                 row.get("band"),
+                severity_by_band.get(str(row.get("band") or ""), "unknown"),
                 _display_count(row.get("audit_gross")),
                 _display_count(row.get("guardian_exempted")),
                 _display_count(row.get("audit_net")),
@@ -2536,33 +2544,32 @@ def _executive_decision_rows(doc: dict[str, Any], brief: dict[str, Any]) -> list
     count = _fmt_int(row.get("total_records") or row.get("records") or row.get("violation_count") or 0)
     consistency = (((doc.get("audit_notes") or {}).get("artifact_consistency") or {}).get("status") or "unknown")
     p0_summary = doc.get("p0_action_queue_summary") or {}
-    p0_queue_count = _int_value(p0_summary.get("total_p0_rows"))
+    open_blocker_count = _int_value(p0_summary.get("open_blocker_count"), _int_value(p0_summary.get("p0_fix_count")))
     p0_live_drivers = _kpi_int(doc, "p0_live_gate_drivers")
-    foundation_blockers = _kpi_int(doc, "foundation_blockers")
     if p0_live_drivers > 0:
-        merge_status = "No. A live P0 gate driver is red."
-    elif p0_queue_count > 0 or foundation_blockers > 0:
-        merge_status = "No. ADG is red and P0 foundation/wave work remains before lower-severity lanes."
+        merge_status = "No. A live critical gate driver is red and must be treated as a P0 blocker."
+    elif open_blocker_count > 0:
+        merge_status = "No. ADG has open blocker action rows."
     elif gates:
         merge_status = "No. ADG has a red FIX gate."
     else:
         merge_status = "No. ADG report consistency/runtime proof is not decision-grade." if str(consistency).upper() == "FAIL" else "Yes, if no external release gate is red."
-    if p0_queue_count > 0:
-        p0_detail = str(p0_summary.get("metric") or "P0 action queue has rows.")
+    if open_blocker_count > 0:
+        p0_detail = str(p0_summary.get("metric") or "Open blocker queue has rows.")
         non_p0_fix = _first_fix_gate_metric(doc, brief)
-        blocker = f"{p0_detail}. Live P0 gate drivers={_display_count(p0_live_drivers)}; top red FIX gate={non_p0_fix}."
+        blocker = f"{p0_detail}. Live blocker drivers={_display_count(p0_live_drivers)}; top red FIX gate={non_p0_fix}."
     elif scope == "13_core_imports_apps":
         blocker = f"`{scope}`: `agentic_core` imports `apps_*` in {count} row(s), violating the core/app boundary."
     elif gates:
         blocker = f"`{scope}` has {count} blocking row(s)."
     else:
-        blocker = f"Report consistency is {consistency}; no red P0 live gate driver is present."
+        blocker = f"Report consistency is {consistency}; no red live blocker driver is present."
     return [
         ["Can we merge?", merge_status],
         ["What blocks merge?", blocker],
         ["First engineering move", f"{move}. {next_step}"],
-        ["What waits?", "P1-P3 work, ratchets, dead-code cleanup, and broad graph ranking."],
-        ["Audit caveat", f"Report consistency is {consistency}; this makes lower-priority ranking provisional, but does not change the P0 decision."],
+        ["What waits?", "Non-blocking impact inventory, ratchets, dead-code cleanup, and broad graph ranking."],
+        ["Audit caveat", f"Report consistency is {consistency}; this makes lower-priority ranking provisional, but does not change the blocker decision."],
     ]
 
 
@@ -2595,9 +2602,9 @@ def render_bcg_inline_markdown(doc: dict[str, Any]) -> str:
     a("")
     a(_table(["Metric", "Value"], _adg_run_metrics(doc, brief)))
     a("")
-    a("P0-P3 Severity Inventory")
+    a("Impact Inventory")
     a("")
-    a(_table(["Band", "Gross", "Guardian exempted", "Net", "Foundation blockers", "Live gate drivers"], _p0_p3_severity_inventory(doc)))
+    a(_table(["Band", "Impact severity", "Gross", "Guardian exempted", "Net", "Foundation candidates", "Live blocker drivers"], _p0_p3_severity_inventory(doc)))
     a("")
     a("### Recommended Next Steps")
     a("")

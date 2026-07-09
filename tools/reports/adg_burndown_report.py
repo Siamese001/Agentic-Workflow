@@ -609,28 +609,29 @@ def render(
             )
     a("")
 
-    # ---------------------------------------------------- §4 severity inventory by band
-    a("## 4. Severity Inventory Burndown")
+    # ---------------------------------------------------- §4 impact inventory by band
+    a("## 4. Impact Inventory Burndown")
     a("")
     a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
-    a("This is raw MV defect inventory by severity/source band; it is not one row per CI gate.")
+    a("This is raw MV defect inventory by impact/source band; it is not one row per CI gate.")
     a("Use this section for guardian math, not the status table above, and not the BCG foundation-blocker KPI.")
     a("`gross` = raw violations found. `guardian` = guardian-exempted (still counted).")
-    a("`net` = audit net (`gross - guardian`). It is severity inventory, not live gate drivers and not foundation blockers.")
-    a("A P0 audit net value can be nonzero while BCG foundation blockers are zero; the BCG KPI scorecard reconciles that split.")
+    a("`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers.")
+    a("Critical impact inventory can be nonzero while BCG foundation blockers are zero; the BCG KPI scorecard reconciles that split.")
     a("")
-    a("| Severity Band | Label | Gross | Guardian | Audit net | Diff vs prev |")
-    a("|---------------|-------|------:|---------:|----:|-------------:|")
+    a("| Impact Band | Impact Severity | Label | Gross | Guardian | Audit net | Diff vs prev |")
+    a("|-------------|-----------------|-------|------:|---------:|----:|-------------:|")
+    severity_by_band = {"P0": "critical", "P1": "high", "P2": "medium", "P3": "low"}
     for band in ("P0", "P1", "P2", "P3"):
         row = burndown.get("summary", {}).get(band, {})
         a(
-            f"| {band} | {row.get('label', '?')} | "
+            f"| {band} | {severity_by_band[band]} | {row.get('label', '?')} | "
             f"{row.get('gross', 0)} | {row.get('guardian', 0)} | "
             f"{row.get('net', 0)} | {row.get('diff', 0):+d} |"
         )
     a("")
     a(
-        f"_p0_clean = {burndown.get('p0_clean')} • "
+        f"_critical_inventory_clean = {burndown.get('critical_inventory_clean', burndown.get('p0_clean'))} • "
         f"p1_no_ratchet = {burndown.get('p1_no_ratchet')} • "
         f"counting_mode = `{burndown.get('provenance', {}).get('counting_mode', '?')}`_"
     )
