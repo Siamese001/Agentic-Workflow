@@ -90,8 +90,8 @@ Closeout:
 """
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=15;BYDAY=SU,MO,TU,WE,TH,FR,SA"
-model = "gpt-5.4-mini"
-reasoning_effort = "xhigh"
+model = "gpt-5.5"
+reasoning_effort = "high"
 execution_environment = "local"
 cwds = [
   "C:\\Git\\Agentic-Workflow-FRESH",

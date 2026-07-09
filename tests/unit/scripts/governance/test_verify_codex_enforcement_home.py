@@ -62,8 +62,8 @@ def _automation_toml(
         lines.append('rrule = "RRULE:FREQ=WEEKLY;BYHOUR=22;BYMINUTE=0;BYDAY=SU,MO,TU,WE,TH,FR,SA"')
     lines.extend(
         [
-            'model = "gpt-5.4-mini"',
-            'reasoning_effort = "xhigh"',
+            'model = "gpt-5.5"',
+            'reasoning_effort = "high"',
             'execution_environment = "local"',
             f'cwds = ["{escaped_root}"]',
             "created_at = 1",
@@ -159,6 +159,23 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
     issues = mod.validate(root, user_codex_home)
 
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
+
+
+def test_retired_automation_model_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path / "repo")
+    user_codex_home = tmp_path / "user-codex"
+    automation = mod._automation_path(root, "adg-p1-ratchet-burndown")
+    automation.write_text(
+        _automation_toml("adg-p1-ratchet-burndown", _adg_p1_prompt(), root).replace(
+            'model = "gpt-5.5"',
+            'model = "gpt-5.4-mini"',
+        ),
+        encoding="utf-8",
+    )
+
+    issues = mod.validate(root, user_codex_home)
+
+    assert any(issue.code == "automation_forbidden_model" for issue in issues)
 
 
 def test_user_profile_thin_automation_launcher_fails(tmp_path: Path) -> None:
