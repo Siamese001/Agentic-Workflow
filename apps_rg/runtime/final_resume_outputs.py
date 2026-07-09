@@ -659,12 +659,16 @@ def emit_final_resume_product_outputs(
 ) -> dict[str, Any]:
     root = Path(run_root).resolve()
     final_resume_path = _resolve_final_resume_json(root)
+    synthesized_fallback = False
     if final_resume_path is None and required:
         final_resume_path = _ensure_fallback_final_resume_json(root, repo_root=repo_root)
+        synthesized_fallback = True
     if final_resume_path is not None:
         final_resume = _load_json(final_resume_path)
         if _is_spine_shaped(final_resume):
             text = flatten_final_resume_to_text(final_resume)
+            if synthesized_fallback and "[NOT_GENERATED_BY_RUN:" not in text:
+                text = text.rstrip() + "\n[NOT_GENERATED_BY_RUN: fallback_final_resume]\n"
             (root / FINAL_RESUME_OUTPUT_TXT).write_text(text, encoding="utf-8")
             docx_path = root / FINAL_RESUME_DOCX_RELPATH
             docx_path.parent.mkdir(parents=True, exist_ok=True)

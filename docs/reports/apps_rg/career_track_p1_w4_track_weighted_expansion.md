@@ -1,7 +1,7 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-06-17T23:04:01Z  
-**Plan:** graph-skills-hardening-f3a8c1  
+**Generated:** 2026-07-09T10:04:13Z
+**Plan:** graph-skills-hardening-f3a8c1
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 
 ## Track weights
@@ -45,7 +45,7 @@
 
 - c03_graph_bound_status: **BOUND**
 - c03_binding_surface: `apps_rg/fact_inventory/track_weighted_graph_expansion`
-- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:71434de8331de06e`
+- c03_graph_expansion_ref: `ref:graph:track_weighted_expansion:f8ccac05a5c1c561`
 - c03_graph_hop_paths_count: **22**
 - c03_selected_tracks: ['track_actuarial_risk_derivatives', 'track_data_tech_cloud_ml', 'track_genai_agentic']
 - non_graph_evidence_items_count: **0**

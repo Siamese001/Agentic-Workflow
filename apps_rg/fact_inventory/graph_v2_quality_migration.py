@@ -10,6 +10,8 @@ from typing import Any
 
 from apps_rg.fact_inventory.augmented_skills_graph import default_augmented_skills_graph_path, load_augmented_skills_graph
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
+    NON_EXTERNAL_CLAIM_POLICIES,
+    NON_EXTERNAL_SUPPORT_LEVELS,
     skill_row_eligible_for_external_claim,
     validate_arsenal_ledger_shape,
 )
@@ -36,6 +38,19 @@ def _ledger_digest(ledger: dict[str, Any]) -> str:
 def _is_active(row: dict[str, Any]) -> bool:
     status = str(row.get("activation_status") or "")
     return status == "ACTIVE" or status.startswith("ACTIVE_")
+
+
+def _requires_external_claim_eligibility(row: dict[str, Any]) -> bool:
+    support = str(row.get("support_level") or "")
+    policy = str(row.get("external_claim_policy") or "")
+    visibility = str(row.get("visibility_rule") or "")
+    if support in NON_EXTERNAL_SUPPORT_LEVELS:
+        return False
+    if policy in NON_EXTERNAL_CLAIM_POLICIES:
+        return False
+    if visibility == "never_external":
+        return False
+    return str(row.get("activation_status")) == "ACTIVE_CONFIRMED"
 
 
 def derive_graph_hop_path(row: dict[str, Any]) -> list[str]:
@@ -83,7 +98,7 @@ def audit_active_skill_orphans(ledger: dict[str, Any]) -> list[dict[str, Any]]:
             reasons.append("missing_graph_hop_path")
         elif len(hop) < 2:
             reasons.append("graph_hop_path_too_short")
-        if str(row.get("activation_status")) == "ACTIVE_CONFIRMED" and not skill_row_eligible_for_external_claim(row):
+        if _requires_external_claim_eligibility(row) and not skill_row_eligible_for_external_claim(row):
             reasons.append("not_eligible_for_external_claim")
         if reasons:
             orphans.append({"skill_id": sid, "reasons": reasons, "activation_status": row.get("activation_status")})

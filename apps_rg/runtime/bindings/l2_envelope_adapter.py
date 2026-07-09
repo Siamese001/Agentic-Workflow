@@ -548,6 +548,16 @@ def _provider_profile_for_cpa(
         )
 
     if provider_mode == ProviderMode.LIVE_ALLOWED:
+        if tp == "local_local_model_server":
+            return ProviderProfile(
+                profile_id="apps_rg_envelope_local_model_server",
+                provider_kind=ProviderKind.LOCAL_VLLM,
+                model_id=mid,
+                vendor="local_model_server",
+                capabilities=("text_generation", "structured_json_generation"),
+                sandbox_safe=False,
+                requires_network=True,
+            )
         if tp in ("anthropic", "claude"):
             return ProviderProfile(
                 profile_id="apps_rg_envelope_anthropic",

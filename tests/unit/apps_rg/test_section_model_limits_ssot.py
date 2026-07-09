@@ -78,8 +78,8 @@ def test_openai_model_source_reports_only_configured_section() -> None:
 
 def test_selector_models_are_explicit_and_advisory() -> None:
     assert sml.resolve_selector_provider_model("competencies_graph_pool_selector") == (
-        "anthropic_claude",
-        "claude-sonnet-5",
+        "openai_chatgpt",
+        "gpt-5.5",
         "apps_rg/config/provider_profiles.yaml:selector_models.competencies_graph_pool_selector.model",
     )
     assert sml.resolve_selector_provider_model("employment_bullet_pool_selector") == (

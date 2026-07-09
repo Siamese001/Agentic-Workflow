@@ -8,6 +8,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
     validate_materialized_sqlite,
@@ -18,7 +22,6 @@ from apps_rg.runtime.c03_graph_sqlite_context import (
     write_c03_graph_sqlite_context_receipt,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUT_DIR = ROOT / "docs/reports/apps_rg"
 PLAN_ID = "graph-skills-sqlite-c03-w1"
 

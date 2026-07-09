@@ -209,8 +209,8 @@ def perform_product_hybrid_retrieval(
     payload = normalize_section_app_payload(app_payload)
     from apps_rg.runtime.c0.chroma_persistent_client import ensure_apps_rg_chroma_client
 
-    client = ensure_apps_rg_chroma_client(chroma_path)
     try:
+        client = ensure_apps_rg_chroma_client(chroma_path)
         fv_col = get_precomputed_embeddings_collection_for_query(client, "fact_vectors")
     except Exception as exc:  # guardian: allow-broad-exception -- Chroma collection error taxonomy varies by version; classify as C0 evidence gap.
         raise C0EvidenceGapError(

@@ -7,11 +7,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 from apps_rg.fact_inventory.augmented_skills_graph import (
     SOURCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
     load_augmented_skills_graph,
@@ -22,12 +22,6 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     load_graph_metadata_row,
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
-)
-from apps_rg.fact_inventory.graph_sqlite_path_index import (
-    query_best_metric_candidates,
-    query_reverse_metric_paths,
-    query_section_evidence_budget,
-    query_sibling_alternatives,
 )
 from apps_rg.runtime.c0.c03_errors import RoleFamilyProjectionError
 
@@ -118,6 +112,14 @@ def _ensure_sqlite(repo_root: Path, db_path: Path | None) -> Path:
 def ensure_c03_graph_sqlite(repo_root: Path, db_path: Path | None = None) -> Path:
     """Return a current generated SQLite projection for C0.3 runtime reads."""
     return _ensure_sqlite(repo_root, db_path)
+
+
+from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    query_best_metric_candidates,
+    query_reverse_metric_paths,
+    query_section_evidence_budget,
+    query_sibling_alternatives,
+)
 
 
 PARTNER_ARCHITECTURE_ROLE_KEYS: tuple[str, ...] = (
@@ -541,15 +543,21 @@ def write_c03_graph_sqlite_context_receipt(
 ) -> Path:
     """Persist C0.3 SQLite context receipt under artifacts/apps_rg/runtime_proofs/."""
     root = repo_root or _repo_root()
-    rid = run_id or datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    rid = run_id or datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     out_dir = root / "artifacts/apps_rg/runtime_proofs/c03_graph_sqlite_context"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"c03_graph_sqlite_context_{rid}.json"
     from agentic_core.L2_execution.utils import write_gateway as _wg
 
+    payload = bundle.get("receipt") or bundle
+    if out_path.exists() and run_id is None:
+        digest = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()[:8]
+        out_path = out_dir / f"c03_graph_sqlite_context_{rid}_{digest}.json"
     _wg.write_text(
         out_path,
-        json.dumps(bundle.get("receipt") or bundle, indent=2, ensure_ascii=False) + "\n",
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
     return out_path

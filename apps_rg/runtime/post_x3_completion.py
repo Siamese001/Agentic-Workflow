@@ -118,6 +118,29 @@ def _json_ready(value: Any) -> Any:
     return value
 
 
+def _state_diffs_digest(state_diffs: list[Any]) -> str:
+    from agentic_core.L4_state.uwg.durable_write_gateway import compute_state_diffs_digest
+
+    return compute_state_diffs_digest(state_diffs)
+
+
+def _commit_request_signature(
+    *,
+    commit_request_id: str,
+    state_diff_hash: str,
+    clearance_proof_id: str,
+) -> str:
+    from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
+
+    return compute_deterministic_digest(
+        {
+            "commit_request_id": commit_request_id,
+            "staged_diff_hash": state_diff_hash,
+            "clearance_proof_id": clearance_proof_id,
+        }
+    )
+
+
 def _generated_resume_path(artifact_dir: Path) -> Path | None:
     candidates = [
         artifact_dir / "outputs" / "generated_resume.json",
@@ -240,10 +263,13 @@ def _build_commit_packet(
             ),
         )
     )
+    commit_request_id = f"cr:apps-rg-post-x3:{run_id}"
+    clearance_proof_id = "exit_review_packet.json"
+    state_diff_hash = _state_diffs_digest([state_diff])
     commit_request = stamp_digest(
         CommitRequest(
-            commit_request_id=f"cr:apps-rg-post-x3:{run_id}",
-            cleared_exit_review_packet_ref="exit_review_packet.json",
+            commit_request_id=commit_request_id,
+            cleared_exit_review_packet_ref=clearance_proof_id,
             request_id=ids["request_id"],
             run_id=run_id,
             trace_root=ids["trace_root"],
@@ -263,6 +289,19 @@ def _build_commit_packet(
                 "runtime_certification_binding.json",
                 "x3_disposition_receipt.json",
                 "apps_rg_output_manifest.json",
+            ),
+            registry_digest_set=(
+                f"registry:policy:{ids['policy_hash']}",
+                f"registry:blueprint:{ids['blueprint_hash']}",
+            ),
+            capability_token_ref=f"capability:apps_rg:post-x3:{run_id}",
+            clearance_proof_id=clearance_proof_id,
+            validator_receipt_id=f"validator:apps-rg-post-x3:{run_id}",
+            staged_diff_hash=state_diff_hash,
+            commit_request_signature=_commit_request_signature(
+                commit_request_id=commit_request_id,
+                state_diff_hash=state_diff_hash,
+                clearance_proof_id=clearance_proof_id,
             ),
         )
     )
