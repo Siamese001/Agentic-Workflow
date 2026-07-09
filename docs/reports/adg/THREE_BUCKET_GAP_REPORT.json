@@ -1,17 +1,17 @@
 {
   "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
-  "generated_at": "2026-07-09T02:06:01.010117+00:00",
-  "snapshot": "adg_indexed_07082026_2156.sqlite",
-  "snapshot_path": "artifacts\\adg\\adg_indexed_07082026_2156.sqlite",
-  "source_snapshot": "adg_indexed_07082026_2156.sqlite",
-  "source_snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2156.sqlite",
-  "source_snapshot_sha256": "43824ba23c323c9b12d746dec743cf20e859479f339493d3c98240b58dd1685c",
-  "source_snapshot_mtime_iso": "2026-07-09T02:02:49.706950+00:00",
-  "source_snapshot_size_bytes": 709779456,
+  "generated_at": "2026-07-09T02:47:07.983524+00:00",
+  "snapshot": "adg_indexed_07082026_2238.sqlite",
+  "snapshot_path": "artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
+  "source_snapshot": "adg_indexed_07082026_2238.sqlite",
+  "source_snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
+  "source_snapshot_sha256": "cb6dd4779d40c57a5c70528d1125abc2564880ac0028179a1028d9fd75d64057",
+  "source_snapshot_mtime_iso": "2026-07-09T02:43:31.104672+00:00",
+  "source_snapshot_size_bytes": 709885952,
   "runtime_view_present": true,
   "runtime_attested_edges": 0,
   "runtime_proof_status": "view_present_zero_attested",
-  "total_edges_classified": 510526,
+  "total_edges_classified": 510549,
   "health_score_pct_triplet_attested": 0.0,
   "summary_by_class": [
     {
@@ -38,7 +38,7 @@
     {
       "defect_class": "UNOBSERVED_CODE",
       "severity": "P3",
-      "edge_count": 510247,
+      "edge_count": 510270,
       "edge_pct": 99.95,
       "description": "Static-only \u2014 orphan import, dead code, or never-traced path."
     },
@@ -70,104 +70,104 @@
     "DEAD_PATH": [
       {
         "src": "<id=27>",
-        "dst": "<id=189177>",
+        "dst": "<id=189187>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=27>",
-        "dst": "<id=189178>",
+        "dst": "<id=189188>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=27>",
-        "dst": "<id=189181>",
+        "dst": "<id=189191>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=27>",
-        "dst": "<id=189182>",
+        "dst": "<id=189192>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=28>",
-        "dst": "<id=189178>",
+        "dst": "<id=189188>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=31>",
-        "dst": "<id=189177>",
+        "dst": "<id=189187>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=31>",
-        "dst": "<id=189178>",
+        "dst": "<id=189188>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=31>",
-        "dst": "<id=189181>",
+        "dst": "<id=189191>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=31>",
-        "dst": "<id=189182>",
+        "dst": "<id=189192>",
         "relation": "references_mcp_server"
       },
       {
         "src": "<id=32>",
-        "dst": "<id=189177>",
+        "dst": "<id=189187>",
         "relation": "references_mcp_server"
       }
     ],
     "UNOBSERVED_CODE": [
       {
         "src": "<id=7>",
-        "dst": "<id=15131>",
+        "dst": "<id=15132>",
         "relation": "implements"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=18584>",
+        "dst": "<id=18585>",
         "relation": "reads_from"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=20920>",
+        "dst": "<id=20921>",
         "relation": "reads_from"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=28298>",
+        "dst": "<id=28299>",
         "relation": "exports"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=28298>",
+        "dst": "<id=28299>",
         "relation": "reads_from"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=28309>",
+        "dst": "<id=28310>",
         "relation": "exports"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=28309>",
+        "dst": "<id=28310>",
         "relation": "reads_from"
-      },
-      {
-        "src": "<id=7>",
-        "dst": "<id=28737>",
-        "relation": "covers"
       },
       {
         "src": "<id=7>",
         "dst": "<id=28738>",
+        "relation": "covers"
+      },
+      {
+        "src": "<id=7>",
+        "dst": "<id=28739>",
         "relation": "imports"
       },
       {
         "src": "<id=7>",
-        "dst": "<id=55907>",
+        "dst": "<id=55908>",
         "relation": "unused_import"
       }
     ],
@@ -175,53 +175,53 @@
     "SHADOW_CHANNEL": [],
     "CONFIG_BLOAT": [
       {
-        "src": "<id=189176>",
-        "dst": "<id=189177>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189178>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189179>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189180>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189181>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189182>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189183>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189184>",
-        "relation": "MCP_SERVER_DECLARED"
-      },
-      {
-        "src": "<id=189176>",
-        "dst": "<id=189185>",
+        "src": "<id=189186>",
+        "dst": "<id=189187>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
         "src": "<id=189186>",
-        "dst": "<id=189187>",
+        "dst": "<id=189188>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189189>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189190>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189191>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189192>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189193>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189194>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189186>",
+        "dst": "<id=189195>",
+        "relation": "MCP_SERVER_DECLARED"
+      },
+      {
+        "src": "<id=189196>",
+        "dst": "<id=189197>",
         "relation": "AGENT_SPEC_DECLARED"
       }
     ]

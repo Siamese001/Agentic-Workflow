@@ -10,10 +10,8 @@ from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
 from apps_rg.runtime.executive_summary_certification import (
     executive_summary_x3_requires_failure,
 )
-from apps_rg.runtime.sections.section_final_materialized_binding import (
-    final_claim_ledger_rows,
-    resolve_final_materialized_text,
-    validate_final_materialized_input_binding,
+from apps_rg.runtime.sections import (
+    section_final_materialized_binding as final_materialized_binding,
 )
 
 SPINE_FEC_ARTIFACT = "final_evidence_contract.json"
@@ -184,11 +182,11 @@ def _apply_final_materialized_hard_gate(x3_doc: dict[str, Any]) -> dict[str, Any
 
 def _final_materialized_text(artifact_dir: Path) -> tuple[str, str]:
     """Resolve the final display artifact used by the lane, independent of provider raw text."""
-    return resolve_final_materialized_text(artifact_dir)
+    return final_materialized_binding.resolve_final_materialized_text(artifact_dir)
 
 
 def _final_claim_ledger_rows(artifact_dir: Path) -> list[dict[str, Any]]:
-    return final_claim_ledger_rows(artifact_dir)
+    return final_materialized_binding.final_claim_ledger_rows(artifact_dir)
 
 
 def _final_x1d_judge_rows(artifact_dir: Path) -> list[dict[str, Any]]:
@@ -275,7 +273,7 @@ def build_final_materialized_acceptance_contract(
         else None
     )
     x2_binding_pass, x2_binding_failures, current_x2_binding = (
-        validate_final_materialized_input_binding(
+        final_materialized_binding.validate_final_materialized_input_binding(
             x2_binding,
             artifact_dir=artifact_dir,
             section_id=section_id,

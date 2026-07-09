@@ -7,64 +7,62 @@
     "runtime_proof_status": "view_present_zero_attested",
     "reasons": [
       "generator exit_code=1",
-      "required gate 'adg_gate_dispatcher' status=fail",
       "required gate 'config-ref' status=fail",
       "required gate 'lifecycle' status=fail",
       "required gate 'test-coverage' status=fail",
-      "adg_gate_dispatcher overall_exit_code=1",
       "enforcement_report certified_rollup=NOT_CERTIFIED"
     ]
   },
   "artifact_status": "repair_ready",
   "artifact_status_source": "direct",
-  "adg_run_id": "07082026_2156",
-  "started_at_utc": "2026-07-09T01:56:51Z",
-  "completed_at_utc": "2026-07-09T02:06:01Z",
+  "adg_run_id": "07082026_2238",
+  "started_at_utc": "2026-07-09T02:38:14Z",
+  "completed_at_utc": "2026-07-09T02:47:08Z",
   "repair_handoff": {
     "status": "repair_ready",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07082026_2156.sqlite",
-        "sha256": "43824ba23c323c9b12d746dec743cf20e859479f339493d3c98240b58dd1685c"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
+        "sha256": "cb6dd4779d40c57a5c70528d1125abc2564880ac0028179a1028d9fd75d64057"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260709_020235.json",
-        "sha256": "7cd5ede5c3c6861352153af2b845f57faa0421ca8c824b3e9161847d1de9da22"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260709_024317.json",
+        "sha256": "426a2f1f2dbd2ede4e027767cbca40befa80490cdba445029f08f93c26eef608"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07082026_2156.json",
-        "sha256": "d7c87128ff25720adb6d97a4ba1e34884b22eada52d5d1c206b7d223abb7c874"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07082026_2238.json",
+        "sha256": "49fa75422acba5abed9e48621b24c19b060caa44c78937ae56e41b432b73ba3f"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07082026_2156.md",
-        "sha256": "de924c7572de5bac21791af4606cd0a33a667b7a10c25153da6c60a1f0ca4dcc"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07082026_2238.md",
+        "sha256": "4fd7712031f600ab11bf0ae19b4cb7d2cae5b73d834aa13782736de772dc8020"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07082026_2156.json",
-        "sha256": "61312496eaaba4709e441e04588b885ef3ab3a9fd685d6a3c9f703a5c849c4b9"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07082026_2238.json",
+        "sha256": "e1e265c384207851916d25e2acf68ec05353c7e6ab4dfe32964810ba0a9f358c"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07082026_2156.json",
-        "sha256": "7c936aad0388c2f13b8f6585ae246e4b8c37aa5cce3db45856c802e42165a8c2"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07082026_2238.json",
+        "sha256": "c67f2b161c3702b94eb1f449dc303d275566f9c0062c7a2d033d142d42df7509"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07082026_2156.json",
-        "sha256": "0aaae573f0f4c9be338a12fd2c15cd0ac3448c6d0dd64a245a95cd5d903a5727"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07082026_2238.json",
+        "sha256": "d674734e3b595d8e62ec20d6a2518bc5c399aeb57d3d2a3e14ffe3e1cfd0fbbb"
       }
     },
     "counts": {
       "P0_FIX": 0,
       "P0_WAVE": 0,
       "P0_TRACKED_BACKLOG": 4,
-      "P1_FIX": 1,
-      "P1_RATCHET_REGRESSION": 1,
+      "P1_FIX": 0,
+      "P1_RATCHET_REGRESSION": 0,
       "P1_RATCHET_FLOOR_BACKLOG": 7
     },
     "validation_errors": []
