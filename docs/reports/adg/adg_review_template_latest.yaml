@@ -1,8 +1,8 @@
 schema_version: '1.0'
 artifact_kind: adg_run_review_template
-run_id: 07082026_2238
-generated_at_utc: '2026-07-09T02:46:16+00:00'
-snapshot_ts: '2026-07-09T02:43:17.337866+00:00'
+run_id: 07082026_2319
+generated_at_utc: '2026-07-09T03:39:24+00:00'
+snapshot_ts: '2026-07-09T03:32:56.409358+00:00'
 review_template:
   reviewer: ''
   reviewed_at: ''
@@ -214,8 +214,8 @@ executive_decision_brief:
   situation: 'ADG is PASS: no red gates, but 18,833 ratchet-floor records and 874
     open non-ratchet records remain.'
   risk: High
-  testing_gap_readout: 'Testing risk is High: 1,137 urgent GraphDB hotspots, 234 critical-risk
-    hotspots, 4,446 with absent coverage.'
+  testing_gap_readout: 'Testing risk is High: 1,076 urgent GraphDB hotspots, 234 critical-risk
+    hotspots, 4,142 with absent coverage.'
   graphdb_mv_readout: 'GraphDB/MV is not unused: 1 MV(s) drive the action queue, 5
     feed gates, and 23 are diagnostic/context only.'
   priority: Burn down ratchets first; attach tests where GraphDB shows hotspot coverage
@@ -232,7 +232,7 @@ executive_decision_brief:
     action: Use the Testing Gap Risk table below; start with ranks 1-3 when the current
       slice touches them.
     why: These are high-blast-radius files with weak or absent test coverage.
-    graphdb_mv_signal: 1,137 urgent; 234 critical-risk; 4,446 absent coverage
+    graphdb_mv_signal: 1,076 urgent; 234 critical-risk; 4,142 absent coverage
   - rank: 3
     move: Reduce accepted debt
     action: Burn down the largest P0/P1 ratchet floors before broad cleanup.
@@ -244,7 +244,7 @@ executive_decision_brief:
   - Do not run broad cleanup before red gates and ratchet floors are controlled.
 graphdb_mv_analyst_summary:
   title: ADG + GraphDB/MV Analyst Summary
-  snapshot_sqlite: artifacts\adg\adg_indexed_07082026_2238.sqlite
+  snapshot_sqlite: artifacts\adg\adg_indexed_07082026_2319.sqlite
   summary:
     mv_tables: 52
     nonempty_mv_tables: 44
@@ -272,29 +272,15 @@ graphdb_mv_analyst_summary:
       These are not abstract metrics: they are the files where a change is most likely
       to create an undetected regression.'
     counts:
-      total_hotspots: 4446
-      p1_urgent: 1137
-      p2_gap: 0
-      coverage_absent: 4446
+      total_hotspots: 4448
+      p1_urgent: 1076
+      p2_gap: 34
+      coverage_absent: 4142
       coverage_low: 0
       risk_critical: 234
       risk_high: 903
     top_files:
     - rank: 1
-      file: agentic_core/L5_safety/contracts/registry.py
-      layer: L5
-      priority_band: P1_URGENT
-      risk_band: CRITICAL
-      coverage_band: ABSENT
-      coverage_pct: absent
-      criticality_score: 810.0
-      combined_risk_score: 822.0
-      fan_in: 0
-      fan_out: 810
-      violation_count: 0
-      analyst_read: High-blast-radius code with weak or absent tests. Test this when
-        a gate fix or burn-down slice touches it.
-    - rank: 2
       file: apps_rg/runtime/sections/executive_summary_lane.py
       layer: L_APP
       priority_band: P1_URGENT
@@ -308,13 +294,13 @@ graphdb_mv_analyst_summary:
       violation_count: 30
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 3
+    - rank: 2
       file: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
       layer: L5
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: absent
+      coverage_pct: 0.0%
       criticality_score: 217.0
       combined_risk_score: 283.0
       fan_in: 0
@@ -322,13 +308,13 @@ graphdb_mv_analyst_summary:
       violation_count: 20
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 4
+    - rank: 3
       file: agentic_core/L5_safety/utils/location_healer_util.py
       layer: L5
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: absent
+      coverage_pct: 0.0%
       criticality_score: 193.0
       combined_risk_score: 235.0
       fan_in: 0
@@ -336,7 +322,7 @@ graphdb_mv_analyst_summary:
       violation_count: 17
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 5
+    - rank: 4
       file: apps_rg/runtime/sections/unify_bullets_lane.py
       layer: L_APP
       priority_band: P1_URGENT
@@ -350,13 +336,13 @@ graphdb_mv_analyst_summary:
       violation_count: 33
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 6
+    - rank: 5
       file: agentic_core/adg/extraction/static_scanner.py
       layer: L_TOOLS
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: absent
+      coverage_pct: 0.0%
       criticality_score: 191.0
       combined_risk_score: 372.0
       fan_in: 0
@@ -364,13 +350,13 @@ graphdb_mv_analyst_summary:
       violation_count: 10
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 7
+    - rank: 6
       file: agentic_core/L6_observability/shadow_eval/__init__.py
       layer: L6
       priority_band: P1_URGENT
       risk_band: CRITICAL
       coverage_band: ABSENT
-      coverage_pct: absent
+      coverage_pct: 0.0%
       criticality_score: 190.0
       combined_risk_score: 440.0
       fan_in: 0
@@ -378,7 +364,7 @@ graphdb_mv_analyst_summary:
       violation_count: 0
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
-    - rank: 8
+    - rank: 7
       file: apps_rg/runtime/sections/ibm_bullets_lane.py
       layer: L_APP
       priority_band: P1_URGENT
@@ -390,6 +376,20 @@ graphdb_mv_analyst_summary:
       fan_in: 0
       fan_out: 91
       violation_count: 32
+      analyst_read: High-blast-radius code with weak or absent tests. Test this when
+        a gate fix or burn-down slice touches it.
+    - rank: 8
+      file: apps_rg/runtime/sections/headline_lane.py
+      layer: L_APP
+      priority_band: P1_URGENT
+      risk_band: CRITICAL
+      coverage_band: ABSENT
+      coverage_pct: absent
+      criticality_score: 178.0
+      combined_risk_score: 248.0
+      fan_in: 0
+      fan_out: 100
+      violation_count: 26
       analyst_read: High-blast-radius code with weak or absent tests. Test this when
         a gate fix or burn-down slice touches it.
     what_to_do:
@@ -404,8 +404,8 @@ graphdb_mv_analyst_summary:
   - rank: 1
     priority: Place tests where GraphDB says risk is highest
     plain_language: GraphDB is telling you where a change is most likely under-tested.
-    graphdb_mv_signal: '`agentic_core/L5_safety/contracts/registry.py`; `apps_rg/runtime/sections/executive_summary_lane.py`;
-      `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`'
+    graphdb_mv_signal: '`apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`;
+      `agentic_core/L5_safety/utils/location_healer_util.py`'
     next_action: When the current fix or burn-down slice touches these paths, add
       or repair tests there.
   - rank: 2
@@ -425,7 +425,7 @@ graphdb_mv_analyst_summary:
   top_mv_signals:
   - &id009
     mv_name: mv_hotspot_coverage_risk
-    rows: 4446
+    rows: 4448
     routing_status: action_driver
     priority: next
     role: Directly promoted into the action queue.
@@ -487,7 +487,7 @@ graphdb_mv_analyst_summary:
     - I1_exit_disposition_ratchet
   - &id014
     mv_name: mv_snapshot_integrity_anomalies
-    rows: 406976
+    rows: 407015
     routing_status: analyst_signal
     priority: supporting
     role: Treat as generator/ingest health signal, not product-code work by itself.
@@ -496,7 +496,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id004
     mv_name: mv_dependency_cone_risk
-    rows: 11919
+    rows: 11923
     routing_status: analyst_signal
     priority: supporting
     role: Prefer fixes that reduce downstream blast radius.
@@ -506,7 +506,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id008
     mv_name: mv_hotspot_centrality
-    rows: 11919
+    rows: 11923
     routing_status: analyst_signal
     priority: supporting
     role: Use as structural leverage ranking for refactor waves.
@@ -515,7 +515,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id012
     mv_name: mv_path_criticality_rollup
-    rows: 11919
+    rows: 11923
     routing_status: analyst_signal
     priority: supporting
     role: Use as impact weighting for any fix or refactor slice.
@@ -525,7 +525,7 @@ graphdb_mv_analyst_summary:
   top_unrouted_mv_signals:
   - &id005
     mv_name: mv_determinism_provenance_drift
-    rows: 6637
+    rows: 6640
     routing_status: diagnostic_only
     priority: monitor
     role: Recorded by GraphDB/MV but not currently promoted into gates or the action
@@ -537,7 +537,7 @@ graphdb_mv_analyst_summary:
     - 6_determinism_provenance
   - &id017
     mv_name: mv_unknown_taxonomy_and_orphans
-    rows: 6637
+    rows: 6640
     routing_status: diagnostic_only
     priority: monitor
     role: Recorded by GraphDB/MV but not currently promoted into gates or the action
@@ -548,7 +548,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id002
     mv_name: mv_agent_specialization_overlap
-    rows: 3036
+    rows: 3038
     routing_status: diagnostic_only
     priority: monitor
     role: Recorded by GraphDB/MV but not currently promoted into gates or the action
@@ -559,7 +559,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - &id007
     mv_name: mv_hitl_reclearance_gaps
-    rows: 2005
+    rows: 2007
     routing_status: diagnostic_only
     priority: monitor
     role: Recorded by GraphDB/MV but not currently promoted into gates or the action
@@ -662,7 +662,7 @@ graphdb_mv_analyst_summary:
       slice.
     related_gates: []
   - mv_name: mv_debt_concentration_hotspots
-    rows: 4942
+    rows: 4943
     routing_status: analyst_signal
     priority: supporting
     role: Rank refactor slices after red gates clear.
@@ -775,7 +775,7 @@ graphdb_mv_analyst_summary:
     related_gates:
     - 8_trace_replay_eval
   - mv_name: mv_high_fan_in_out_with_defects
-    rows: 10997
+    rows: 10999
     routing_status: analyst_signal
     priority: supporting
     role: Prioritize defects in high fan-in/fan-out symbols.
@@ -814,7 +814,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - *id010
   - mv_name: mv_modified_area_regressions
-    rows: 4961
+    rows: 4962
     routing_status: analyst_signal
     priority: supporting
     role: Check defects in files touched by this run.
@@ -840,7 +840,7 @@ graphdb_mv_analyst_summary:
     related_gates: []
   - *id011
   - mv_name: mv_newly_introduced_critical_paths
-    rows: 8489
+    rows: 8490
     routing_status: analyst_signal
     priority: supporting
     role: Inspect newly created critical-path edges for regressions.
@@ -1111,8 +1111,8 @@ adg_attack_order: &id019
     rank: 9
   - band: P3
     work_class: Severity audit
-    target: 19,348 non-exempt from 19,435 gross
-    records: 19348
+    target: 19,352 non-exempt from 19,439 gross
+    records: 19352
     why_this_priority: Review-only audit signal; not Fix now unless it maps to a failing
       gate.
     next_step: Audit or map to a gate; do not treat as a CI blocker by itself.
@@ -1752,9 +1752,9 @@ severity_inventory:
   formula: net = gross - guardian
 - band: P3
   label: style_warnings
-  gross: 19435
+  gross: 19439
   guardian: 87
-  net: 19348
+  net: 19352
   diff_vs_prev: 87
   formula: net = gross - guardian
 high_signal_review:
@@ -1771,15 +1771,15 @@ high_signal_review:
     `pipeline_wiring` 1. Do it after ratchets unless an item is tiny or high-leverage.'
   - 'Guardian is exception audit only: P0 has 6 non-exempt severity items from 38
     gross. Do not use guardian math as the burn-down queue.'
-  - GraphDB/MV says the first testing hotspot is `agentic_core/L5_safety/contracts/registry.py`.
+  - GraphDB/MV says the first testing hotspot is `apps_rg/runtime/sections/executive_summary_lane.py`.
   do_this_next: &id026
   - 'Burn down P0 ratchet `G_REACH` (1,450): Open a burn-down slice for this gate,
     reduce records, rerun ADG, then absorb the lower baseline.'
   - 'Burn down P0 ratchet `S2_UWG` (755): Open a burn-down slice for this gate, reduce
     records, rerun ADG, then absorb the lower baseline.'
   - 'Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice:
-    `agentic_core/L5_safety/contracts/registry.py`; `apps_rg/runtime/sections/executive_summary_lane.py`;
-    `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`.'
+    `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`;
+    `agentic_core/L5_safety/utils/location_healer_util.py`.'
   - 'Close P0 open non-ratchet work `write_sovereignty` (765): Schedule after P0 ratchets
     unless the fix is tiny, already in hand, or high-leverage.'
   - 'Close P0 open non-ratchet work `pipeline_wiring` (1): Close when touching nearby
@@ -1817,22 +1817,6 @@ high_signal_review:
     rank: 1
     lane: GRAPHDB
     kind: test_hotspot_gap
-    target: agentic_core/L5_safety/contracts/registry.py
-    band: P1_URGENT
-    records: 0
-    ordering_reason: mv_hotspot_coverage_risk_priority
-    source_artifact: sqlite:mv_hotspot_coverage_risk
-    signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
-      coverage=ABSENT (absent); criticality=810.00; fan_in=0
-next_best_action:
-  source: artifacts\adg\adg_action_queue_07082026_2238.json
-  emit_status: ok
-  degraded: false
-  actions:
-  - *id025
-  - rank: 2
-    lane: GRAPHDB
-    kind: test_hotspot_gap
     target: apps_rg/runtime/sections/executive_summary_lane.py
     band: P1_URGENT
     records: 30
@@ -1840,7 +1824,13 @@ next_best_action:
     source_artifact: sqlite:mv_hotspot_coverage_risk
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
       coverage=ABSENT (absent); criticality=323.00; fan_in=0
-  - rank: 3
+next_best_action:
+  source: artifacts\adg\adg_action_queue_07082026_2319.json
+  emit_status: ok
+  degraded: false
+  actions:
+  - *id025
+  - rank: 2
     lane: GRAPHDB
     kind: test_hotspot_gap
     target: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
@@ -1849,7 +1839,17 @@ next_best_action:
     ordering_reason: mv_hotspot_coverage_risk_priority
     source_artifact: sqlite:mv_hotspot_coverage_risk
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
-      coverage=ABSENT (absent); criticality=217.00; fan_in=0
+      coverage=ABSENT (0.0%); criticality=217.00; fan_in=0
+  - rank: 3
+    lane: GRAPHDB
+    kind: test_hotspot_gap
+    target: agentic_core/L5_safety/utils/location_healer_util.py
+    band: P1_URGENT
+    records: 17
+    ordering_reason: mv_hotspot_coverage_risk_priority
+    source_artifact: sqlite:mv_hotspot_coverage_risk
+    signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
+      coverage=ABSENT (0.0%); criticality=193.00; fan_in=0
   - rank: 4
     lane: REFACTOR
     kind: refactor_candidate
@@ -1891,10 +1891,10 @@ next_best_action:
     kind: graphdb_structural_signal
     target: structural.uwg_durable_write_conformance
     band: GRAPHDB
-    records: 3191
+    records: 3195
     ordering_reason: graphdb_structural_signal_count_desc
     source_artifact: graphdb_queries
-    signal: GraphDB structural signal; rows=3191; UWG durable write conformance rows.
+    signal: GraphDB structural signal; rows=3195; UWG durable write conformance rows.
       Inspect adg_graphdb_queries for concrete rows.
   - rank: 9
     lane: GRAPHDB
@@ -2028,46 +2028,46 @@ decision_synthesis:
 artifacts:
   gate_results:
     artifact_key: gate_results
-    path: artifacts\adg\adg_gate_results_20260709_024317.json
+    path: artifacts\adg\adg_gate_results_20260709_033256.json
     exists: true
     required: true
-    sha256: 426a2f1f2dbd2ede4e027767cbca40befa80490cdba445029f08f93c26eef608
+    sha256: 705e89faa0fe8e06c687a46b84cd396e8236b51dd78ee4d84ff587e8a9b7673f
   burndown:
     artifact_key: burndown
     path: artifacts\adg\adg_burndown_table.json
     exists: true
     required: true
-    sha256: e1e265c384207851916d25e2acf68ec05353c7e6ab4dfe32964810ba0a9f358c
+    sha256: 03cf0c31683bf81f85e1ecd2a23e19e36540862497bbd5ad9b3874ed9fbe898a
   action_queue:
     artifact_key: action_queue
-    path: artifacts\adg\adg_action_queue_07082026_2238.json
+    path: artifacts\adg\adg_action_queue_07082026_2319.json
     exists: true
     required: false
-    sha256: 1dd78f8fd5e3f1036d5a64aa8a1a785d53ca37997e48e8423faa486935e1289c
+    sha256: fb719ec5dddede6c786414600ea71bfda7d2de976902a8dd62f70716ce3caeb9
   generation_manifest:
     artifact_key: generation_manifest
-    path: artifacts\adg\adg_generation_manifest_07082026_2238.json
+    path: artifacts\adg\adg_generation_manifest_07082026_2319.json
     exists: true
     required: false
-    sha256: 51106df564fbf30cc24827bf54b6a3092996ff45173dd4f586b93887a22a7aa2
+    sha256: 03e2246344de8b186fa32556182a55d065ef23ccc676b4ec4a9d6762ef3789ec
   enforcement_report:
     artifact_key: enforcement_report
     path: artifacts\adg\adg_enforcement_report_latest.json
     exists: true
     required: false
-    sha256: 169d77fe80a5276acb69342d999dba644524aade7ae433c4d7f8cafafb3a44aa
+    sha256: 3c4c16790f9d0a648750f0b41893834a676cebd3b089aa2176474556b2bf428f
   markdown_burndown:
     artifact_key: markdown_burndown
     path: artifacts\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: 06a960d64bbfc3ef8a7ab5804246d311647b491de75df0ecddcd82d2df868451
+    sha256: fa170456812645fb2d33718ea81e005e3f07a7ddcc3ef76833b0906b2ee1e1fb
   docs_markdown_burndown:
     artifact_key: docs_markdown_burndown
     path: docs\reports\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: 06a960d64bbfc3ef8a7ab5804246d311647b491de75df0ecddcd82d2df868451
+    sha256: fa170456812645fb2d33718ea81e005e3f07a7ddcc3ef76833b0906b2ee1e1fb
 raw_rollups:
   gate_results_summary:
     block_pass: 15
@@ -2081,18 +2081,18 @@ raw_rollups:
     p1_no_ratchet: true
     counting_mode: violations_plus_exempted_edge_inference
   generation_manifest:
-    timestamp: '2026-07-09T02:46:16Z'
-    sqlite_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-generate-full-adg\artifacts\adg\adg_indexed_07082026_2238.sqlite
-    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-generate-full-adg\artifacts\adg\adg_indexed_07082026_2238.sqlite
+    timestamp: '2026-07-09T03:39:24Z'
+    sqlite_path: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_07082026_2319.sqlite
+    snapshot_path: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_indexed_07082026_2319.sqlite
     commit_sha: null
     repo_state_hash: null
     generation_exit_code: 1
     p0_status: deferred_fail
-    gate_manifest_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-generate-full-adg\artifacts\adg\adg_gate_invocation_manifest_07082026_2238.json
-    runtime_proof_status: view_present_zero_attested
-    runtime_attested_edge_count: 0
+    gate_manifest_path: C:\Git\Agentic-Workflow-FRESH\artifacts\adg\adg_gate_invocation_manifest_07082026_2319.json
+    runtime_proof_status: attested
+    runtime_attested_edge_count: 3867
     registry_bucket_edge_count: 0
-    created_at_utc: '2026-07-09T02:46:16Z'
+    created_at_utc: '2026-07-09T03:39:24Z'
     certification_status: failed
   enforcement_report_status: NOT_CERTIFIED
 bcg_findings:
@@ -2108,8 +2108,8 @@ bcg_findings:
     - 'ADG is PASS: no red gates, but 18,833 ratchet-floor records and 874 open non-ratchet
       records remain.'
     - High
-    - 'Testing risk is High: 1,137 urgent GraphDB hotspots, 234 critical-risk hotspots,
-      4,446 with absent coverage.'
+    - 'Testing risk is High: 1,076 urgent GraphDB hotspots, 234 critical-risk hotspots,
+      4,142 with absent coverage.'
     - 'GraphDB/MV is not unused: 1 MV(s) drive the action queue, 5 feed gates, and
       23 are diagnostic/context only.'
     - 'Tracked records: 19,707'
@@ -2222,7 +2222,7 @@ bcg_findings:
       count.
     next_step: 'Burn down P0 ratchet `G_REACH` (1,450): Open a burn-down slice for
       this gate, reduce records, rerun ADG, then absorb the lower baseline.'
-    status: 07082026_2238
+    status: 07082026_2319
     status_label: Run ID
     secondary_statuses: {}
     table_limit: 4
@@ -2236,7 +2236,7 @@ bcg_findings:
   why_this_order: *id030
   next_step: 'Burn down P0 ratchet `G_REACH` (1,450): Open a burn-down slice for this
     gate, reduce records, rerun ADG, then absorb the lower baseline.'
-  status: 07082026_2238
+  status: 07082026_2319
   status_label: Run ID
   north_star: 'Maintain SVP engineer-level repo standards: executive decisions, explicit
     prioritization, and technical evidence a layperson can follow.'

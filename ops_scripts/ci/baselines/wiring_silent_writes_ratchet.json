@@ -1,9 +1,9 @@
 {
   "gate_id": "C3_silent_writes_ratchet",
   "count": 56,
-  "seeded_at": "2026-07-09T02:02:02.930751+00:00",
-  "snapshot": "adg_indexed_07082026_2156.sqlite",
+  "seeded_at": "2026-07-09T03:32:11.565525+00:00",
+  "snapshot": "adg_indexed_07082026_2319.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-09T02:43:06.379477+00:00",
-  "last_run_snapshot": "adg_indexed_07082026_2238.sqlite"
+  "last_run_at": "2026-07-09T03:32:41.323044+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2319.sqlite"
 }

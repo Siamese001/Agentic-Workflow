@@ -36,9 +36,9 @@ ADG Run Metrics
 
 | Metric | Value |
 |---|---|
-| Run ID | 07082026_2238 |
-| Snapshot | 2026-07-09T02:43:17.337866+00:00 |
-| SQLite snapshot | artifacts/adg/adg_indexed_07082026_2238.sqlite |
+| Run ID | 07082026_2319 |
+| Snapshot | 2026-07-09T03:32:56.409358+00:00 |
+| SQLite snapshot | artifacts/adg/adg_indexed_07082026_2319.sqlite |
 | Audit caveat | REPORT_INCONSISTENT; report consistency=FAIL |
 | FIX gates (all bands) | 0 |
 | Live P0 gate drivers | 0 |
@@ -56,7 +56,7 @@ P0-P3 Severity Inventory
 | P0 | 38 | 32 | 6 | 200 | 0 |
 | P1 | 1,143 | 1,143 | 0 | n/a | 0 |
 | P2 | 727 | 698 | 29 | n/a | 0 |
-| P3 | 19,435 | 87 | 19,348 | n/a | 0 |
+| P3 | 19,439 | 87 | 19,352 | n/a | 0 |
 
 ### Recommended Next Steps
 
