@@ -103,6 +103,66 @@ def _unique_disabled_destination(disabled_root: Path, automation_dir: Path) -> P
     return destination
 
 
+def _disabled_launcher_toml(text: str) -> str:
+    replacements = {
+        "enabled": "enabled = false",
+        "status": 'status = "PAUSED"',
+    }
+    seen: set[str] = set()
+    output: list[str] = []
+    top_level = True
+
+    def append_missing_fields() -> None:
+        for key, line in replacements.items():
+            if key not in seen:
+                output.append(line)
+                seen.add(key)
+
+    for line in text.splitlines():
+        stripped = line.strip()
+        if top_level and stripped.startswith("["):
+            append_missing_fields()
+            top_level = False
+        if top_level and "=" in line and not line.lstrip().startswith("#"):
+            key = line.split("=", 1)[0].strip()
+            if key in replacements:
+                output.append(replacements[key])
+                seen.add(key)
+                continue
+        output.append(line)
+
+    if top_level:
+        append_missing_fields()
+    return "\n".join(output) + "\n"
+
+
+def _neutralize_disabled_launcher(destination: Path) -> str | None:
+    automation_toml = destination / "automation.toml"
+    if not automation_toml.exists():
+        return None
+    text = automation_toml.read_text(encoding="utf-8")
+    neutralized = _disabled_launcher_toml(text)
+    if neutralized == text:
+        return None
+    automation_toml.write_text(neutralized, encoding="utf-8")
+    return str(automation_toml)
+
+
+def neutralize_disabled_user_profile_launchers(*, root: Path, user_codex_home: Path) -> list[dict[str, str]]:
+    """Pause disabled holding-directory launchers that still look active to the app."""
+    disabled_root = user_codex_home / "automations-disabled"
+    if not disabled_root.exists():
+        return []
+    neutralized: list[dict[str, str]] = []
+    for automation_toml in sorted(disabled_root.glob("*/automation.toml")):
+        if not enforcement_home._automation_toml_references_repo(automation_toml, root):  # noqa: SLF001
+            continue
+        path = _neutralize_disabled_launcher(automation_toml.parent)
+        if path is not None:
+            neutralized.append({"path": path})
+    return neutralized
+
+
 def disable_stale_user_profile_launchers(*, root: Path, user_codex_home: Path) -> list[dict[str, str]]:
     """Move stale repo-specific profile launchers to a disabled holding directory."""
     root = root.resolve()
@@ -120,7 +180,11 @@ def disable_stale_user_profile_launchers(*, root: Path, user_codex_home: Path) -
         destination = _unique_disabled_destination(disabled_root, automation_dir)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.move(str(automation_dir), str(destination))
-        moved.append({"source": str(automation_dir), "destination": str(destination)})
+        move_result = {"source": str(automation_dir), "destination": str(destination)}
+        neutralized = _neutralize_disabled_launcher(destination)
+        if neutralized is not None:
+            move_result["neutralized"] = neutralized
+        moved.append(move_result)
     return moved
 
 
@@ -135,8 +199,10 @@ def build_report(
     root = root.resolve()
     user_codex_home = user_codex_home.resolve()
     disabled: list[dict[str, str]] = []
+    neutralized_disabled: list[dict[str, str]] = []
     if disable_stale_user_profile_launchers_before_write:
         disabled = disable_stale_user_profile_launchers(root=root, user_codex_home=user_codex_home)
+        neutralized_disabled = neutralize_disabled_user_profile_launchers(root=root, user_codex_home=user_codex_home)
     written: list[str] = []
     if write_user_profile:
         written = write_user_profile_projections(root=root, user_codex_home=user_codex_home)
@@ -152,6 +218,7 @@ def build_report(
         "expected_projection_ids": expected_ids,
         "projection_count": len(expected_ids),
         "disabled_stale_launchers": disabled,
+        "neutralized_disabled_launchers": neutralized_disabled,
         "written": written,
         "issues": [issue.__dict__ for issue in issues],
     }

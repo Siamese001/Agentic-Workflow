@@ -138,7 +138,11 @@ def test_disable_stale_user_profile_launchers_then_writes_ui_mirror(monkeypatch,
     monkeypatch.setattr(enforcement_home, "REPO_SKILL_IDS", ())
     _write(enforcement_home._automation_path(root, automation_id), _automation_toml(automation_id, root))
     stale_launcher = user_codex_home / "automations" / automation_id / "automation.toml"
-    _write(stale_launcher, _automation_toml(automation_id, root))
+    stale_text = _automation_toml(automation_id, root).replace(
+        'status = "ACTIVE"',
+        'enabled = true\nstatus = "ACTIVE"',
+    )
+    _write(stale_launcher, stale_text)
 
     report = projection.build_report(
         root=root,
@@ -149,7 +153,16 @@ def test_disable_stale_user_profile_launchers_then_writes_ui_mirror(monkeypatch,
 
     assert report["status"] == "PASS"
     assert len(report["disabled_stale_launchers"]) == 1
-    assert Path(report["disabled_stale_launchers"][0]["destination"]).exists()
+    disabled_entry = report["disabled_stale_launchers"][0]
+    disabled_path = Path(disabled_entry["destination"])
+    disabled_toml = disabled_path / "automation.toml"
+    assert disabled_path.exists()
+    assert disabled_entry["neutralized"] == str(disabled_toml)
+    disabled_data, error = enforcement_home._load_toml(disabled_toml)
+    assert error is None
+    assert disabled_data is not None
+    assert disabled_data["enabled"] is False
+    assert disabled_data["status"] == "PAUSED"
     assert stale_launcher.exists()
     data, error = enforcement_home._load_toml(stale_launcher)
     assert error is None
@@ -158,3 +171,34 @@ def test_disable_stale_user_profile_launchers_then_writes_ui_mirror(monkeypatch,
     assert data["prompt"] == "\n".join(enforcement_home.ADG_REQUIRED_PROMPT_SNIPPETS)
     assert data["model"] == "gpt-5.5"
     assert enforcement_home.validate(root, user_codex_home) == []
+
+
+def test_disable_stale_user_profile_launchers_neutralizes_existing_disabled_copies(monkeypatch, tmp_path: Path) -> None:
+    root = tmp_path / "repo"
+    user_codex_home = tmp_path / "user-codex"
+    automation_id = "weekly-adg-audit-and-burndown"
+    monkeypatch.setattr(enforcement_home, "AUTOMATION_IDS", (automation_id,))
+    monkeypatch.setattr(enforcement_home, "REPO_SKILL_IDS", ())
+    _write(enforcement_home._automation_path(root, automation_id), _automation_toml(automation_id, root))
+    disabled_toml = user_codex_home / "automations-disabled" / f"{automation_id}-old" / "automation.toml"
+    disabled_text = _automation_toml(automation_id, root).replace(
+        'status = "ACTIVE"',
+        'enabled = true\nstatus = "ACTIVE"',
+    )
+    _write(disabled_toml, disabled_text)
+
+    report = projection.build_report(
+        root=root,
+        user_codex_home=user_codex_home,
+        write_user_profile=False,
+        disable_stale_user_profile_launchers_before_write=True,
+    )
+
+    assert report["status"] == "PASS"
+    assert report["disabled_stale_launchers"] == []
+    assert report["neutralized_disabled_launchers"] == [{"path": str(disabled_toml)}]
+    disabled_data, error = enforcement_home._load_toml(disabled_toml)
+    assert error is None
+    assert disabled_data is not None
+    assert disabled_data["enabled"] is False
+    assert disabled_data["status"] == "PAUSED"
