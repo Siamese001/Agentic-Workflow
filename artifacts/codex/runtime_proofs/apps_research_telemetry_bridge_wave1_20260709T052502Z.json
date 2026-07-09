@@ -1,0 +1,23 @@
+{
+  "run_id": "adg-p1-ratchet-burndown-20260709T012136",
+  "wave": "E1 telemetry bridge wave 1",
+  "timestamp_utc": "2026-07-09T05:25:02Z",
+  "commands": [
+    "python -m compileall apps_research/_telemetry.py apps_research/services/telemetry.py tests/unit/apps_research/test_telemetry_bridge.py",
+    "python -m pytest tests/unit/apps_research/test_telemetry_bridge.py -q"
+  ],
+  "results": {
+    "compileall": {
+      "exit_code": 0,
+      "summary": "Compiled apps_research/_telemetry.py, apps_research/services/telemetry.py, and tests/unit/apps_research/test_telemetry_bridge.py"
+    },
+    "pytest": {
+      "exit_code": 0,
+      "summary": "4 passed in 0.12s"
+    }
+  },
+  "notes": [
+    "apps_research.services.telemetry now re-exports the canonical apps_research._telemetry surface.",
+    "Fallback import mode was exercised by blocking agentic_core imports in pytest."
+  ]
+}

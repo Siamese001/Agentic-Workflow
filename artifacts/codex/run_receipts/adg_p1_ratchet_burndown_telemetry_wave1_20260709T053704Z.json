@@ -1,0 +1,117 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p1_ratchet_burndown_telemetry_wave1_20260709T053704Z",
+  "generated_at": "2026-07-09T05:37:04.5187334Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+    "branch": "codex/adg-p1-ratchet-burndown-20260709T012136",
+    "head": "045b67530af14dfab58949c97d6d8c0192a1cb42",
+    "dirty_before": false,
+    "dirty_after": false
+  },
+  "scope": {
+    "request": "Run the safe ADG P1 telemetry bridge wave and record the partial closeout.",
+    "plan_id": "plans/adg-p1-ratchet-burndown-wave-plan-7e4d91.md",
+    "files_changed": [
+      "apps_research/_telemetry.py",
+      "apps_research/services/telemetry.py",
+      "tests/unit/apps_research/test_telemetry_bridge.py",
+      "plans/adg-p1-ratchet-burndown-wave-plan-7e4d91.md",
+      "artifacts/codex/runtime_proofs/apps_research_telemetry_bridge_wave1_20260709T052502Z.json"
+    ]
+  },
+  "execution": {
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m compileall apps_research/_telemetry.py apps_research/services/telemetry.py tests/unit/apps_research/test_telemetry_bridge.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/apps_research/test_telemetry_bridge.py -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "gh pr list --head codex/adg-p1-ratchet-burndown-20260709T012136 --json number,state,mergeable,mergeStateStatus,url,title,headRefName,baseRefName",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "gh pr view 520 --json statusCheckRollup,reviewDecision,mergeStateStatus,mergeable,isDraft,headRefOid,baseRefOid",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p1-ratchet-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "status": "PARTIAL"
+  },
+  "p1_wave": {
+    "artifacts": [
+      "artifacts/codex/runtime_proofs/apps_research_telemetry_bridge_wave1_20260709T052502Z.json"
+    ],
+    "downstream_unblock": false,
+    "expected_e1_reduction_on_regen": 2,
+    "gate": "E1_trace_stub_module",
+    "ordinary_p1_target": 0,
+    "ratchet_target": 25,
+    "planned_rows": 7,
+    "attempted_rows": 2,
+    "cleared_rows": 2,
+    "remaining_rows": 5,
+    "final_p1_count": 5,
+    "selected_rows": 2,
+    "target_status": "missed/BLOCKED",
+    "wave": "E1 telemetry bridge wave 1"
+  },
+  "rca": {
+    "blocker_type": "PARTIAL_P1_REMAINS_OPEN",
+    "blocker_evidence": "The upstream handoff remains ready/repair_ready with P1_RATCHET_FLOOR_BACKLOG=7, but this wave only cleared 2 safe E1 rows; PR #520 is still open and mergeStateStatus=BLOCKED while contract-gate checks continue.",
+    "why_additional_safe_candidates_unavailable": "The deferred E1 row at agentic_core/adg/runtime/determinism_control.py needs a larger rewrite than this bounded wave can absorb, and the remaining ratchet families B2, C3, I1, M, N, and O are broader cross-layer surfaces outside standing approval.",
+    "next_unblock_action": "Run a dedicated safe harness for the deferred E1 row or a later family-specific ratchet wave, then continue until fresh ADG evidence proves P1=0.",
+    "evidence": "compileall passed; pytest passed 4/4; upstream handoff validator still reports dependency_status=ready and artifact_status=repair_ready.",
+    "fix_or_next": "next: keep this partial wave published on the branch and continue with the next bounded P1 ratchet slice.",
+    "recurrence_guard": "Keep downstream P2/P3 blocked until fresh or replayed ADG evidence reports P1_FIX=0, P1_RATCHET_REGRESSION=0, and P1_RATCHET_FLOOR_BACKLOG=0.",
+    "root_cause": "Only a two-file telemetry bridge subset was safe in this run; the remaining P1 backlog is still present beyond the bounded mechanical wave.",
+    "symptom": "Telemetry bridge wave is implemented, but P1=0 is not proven."
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "handoff_validator",
+        "status": "PASS",
+        "evidence": "dependency_status=ready artifact_status=repair_ready adg_run_id=07082026_2319 P0_FIX=0 P0_WAVE=0 P1_FIX=0 P1_RATCHET_FLOOR_BACKLOG=7 P1_RATCHET_REGRESSION=0"
+      },
+      {
+        "name": "compileall",
+        "status": "PASS",
+        "evidence": "Compiled apps_research/_telemetry.py, apps_research/services/telemetry.py, and tests/unit/apps_research/test_telemetry_bridge.py"
+      },
+      {
+        "name": "pytest",
+        "status": "PASS",
+        "evidence": "4 passed in 0.11s"
+      },
+      {
+        "name": "pr_state",
+        "status": "BLOCKED",
+        "evidence": "PR #520 is open with mergeable=MERGEABLE and mergeStateStatus=BLOCKED; contract-gate checks are still in progress."
+      },
+      {
+        "name": "target_status",
+        "status": "BLOCKED",
+        "evidence": "selected_rows=2 cleared_rows=2 remaining_rows=5 final_p1_count=5; P1=0 is not proven."
+      }
+    ]
+  }
+}
