@@ -804,7 +804,7 @@ def _wrapper_result_for_handoff(
     )
 
 
-def test_repair_counts_split_p0_fix_wave_and_backlog():
+def test_repair_counts_split_p0_fix_wave_and_report_only_backlog():
     action_queue = {
         "actions": [
             {"verdict_cluster": "FIX", "sort_band": "P0"},
@@ -843,7 +843,7 @@ def test_repair_counts_split_p0_fix_wave_and_backlog():
 
     assert counts["P0_FIX"] == 1
     assert counts["P0_WAVE"] == 2
-    assert counts["P0_TRACKED_BACKLOG"] == 1
+    assert counts["P0_TRACKED_BACKLOG"] == 0
     assert counts["P1_FIX"] == 1
     assert counts["P1_RATCHET_REGRESSION"] == 1
 
