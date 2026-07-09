@@ -1,6 +1,6 @@
 {
   "schema": "graph_skills_hardening_p2_accelerated_closeout_v1",
-  "generated_at": "2026-07-09T10:04:12Z",
+  "generated_at": "2026-07-09T10:21:55Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "sprint": "P2-ACCELERATED-CLOSEOUT",
   "status": "PARTIAL",
@@ -19,7 +19,7 @@
   },
   "all_sections_graph_authority": {
     "schema": "all_sections_graph_skills_authority_p2_w1a_v1",
-    "generated_at": "2026-07-09T10:04:07Z",
+    "generated_at": "2026-07-09T10:21:50Z",
     "plan_id": "graph-skills-hardening-f3a8c1",
     "wave": "P2-W1A",
     "all_sections_default_to_augmented_skills_graph": true,
@@ -400,7 +400,7 @@
   },
   "package_audit": {
     "schema": "cross_section_graph_authority_audit_p2_w10_v1",
-    "generated_at": "2026-07-09T10:04:12Z",
+    "generated_at": "2026-07-09T10:21:55Z",
     "plan_id": "graph-skills-hardening-f3a8c1",
     "wave": "P2-W10",
     "all_sections_trace_to_augmented_skills_graph": true,
@@ -542,7 +542,7 @@
       }
     }
   },
-  "competencies_p2_w1a_receipt": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-functional-hotspot-tests\\docs\\reports\\apps_rg\\competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json",
+  "competencies_p2_w1a_receipt": "C:\\Git\\Agentic-Workflow-FRESH\\docs\\reports\\apps_rg\\competencies_graph_proof_pool_p2_w1a_default_graph_authority_receipt.json",
   "live_x3_allow_claimed": false,
   "global_c03_bound_claimed": false
 }

@@ -10,7 +10,8 @@ from agentic_core.runtime.contracts.route_contract import RouteContract
 
 
 def _digest(payload: dict[str, Any]) -> str:
-    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    stable_payload = {k: v for k, v in payload.items() if k != "timestamp"}
+    canonical = json.dumps(stable_payload, sort_keys=True, separators=(",", ":"), default=str)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 

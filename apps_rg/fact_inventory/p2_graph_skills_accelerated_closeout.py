@@ -851,7 +851,12 @@ def run_full_closeout(
     w6 = write_p2_w6_repair(repo_root=root)
     w7 = write_p2_w7_x1d(repo_root=root)
     w8 = write_p2_w8_validators(repo_root=root)
-    if skip_live:
+    if skip_live and preserve_w9_live_matrix and W9_JSON.is_file():
+        existing_w9 = _read_json(W9_JSON)
+        w9 = existing_w9 if isinstance(existing_w9.get("sections"), dict) else {}
+        if not w9:
+            w9 = write_p2_w9_live_matrix_closeout(run_live=False, repo_root=root)["w9"]
+    elif skip_live:
         w9 = write_p2_w9_live_matrix_closeout(run_live=False, repo_root=root)["w9"]
     else:
         w9 = write_p2_w9_live(repo_root=root, skip_live=False)

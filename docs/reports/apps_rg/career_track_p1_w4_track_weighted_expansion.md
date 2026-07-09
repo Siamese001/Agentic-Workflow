@@ -1,6 +1,6 @@
 # P1-W4 — Track-weighted graph expansion
 
-**Generated:** 2026-07-09T10:04:13Z
+**Generated:** 2026-07-09T10:21:56Z
 **Plan:** graph-skills-hardening-f3a8c1
 **Role family:** SVP_ENGINEERING_AI_PLATFORM
 

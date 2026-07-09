@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T10:04:13Z",
+  "generated_at": "2026-07-09T10:21:56Z",
   "plan_id": "graph-skills-hardening-f3a8c1",
   "wave": "P1-W4",
   "closeout_wave": "P1-W4-CLOSEOUT",
@@ -2086,7 +2086,7 @@
     "c03_graphrag_bound_document": {
       "schema_version": "c03_graphrag_bound_v1",
       "section_id": "executive_summary",
-      "generated_at_utc": "2026-07-09T10:04:13.049301+00:00",
+      "generated_at_utc": "2026-07-09T10:21:55.911288+00:00",
       "c03_graphrag_bound_status": "BOUND",
       "source_authority": "augmented_skills_graph",
       "graph_expansion_allowed": true,
@@ -2395,7 +2395,7 @@
             "career_track": "track_genai_agentic"
           }
         ],
-        "evidence_collection_timestamp": "2026-07-09T10:04:13.049301+00:00",
+        "evidence_collection_timestamp": "2026-07-09T10:21:55.911288+00:00",
         "fec_shape_only": true,
         "canonical_final_evidence_contract_emitted": false,
         "recommended_artifact_name": "section_graph_binding_fec_snapshot.json"

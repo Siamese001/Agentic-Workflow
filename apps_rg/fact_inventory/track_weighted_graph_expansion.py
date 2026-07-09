@@ -1015,8 +1015,8 @@ def write_p1_w4_receipts(
     md_lines = [
         "# P1-W4 — Track-weighted graph expansion",
         "",
-        f"**Generated:** {ts}  ",
-        f"**Plan:** graph-skills-hardening-f3a8c1  ",
+        f"**Generated:** {ts}",
+        f"**Plan:** graph-skills-hardening-f3a8c1",
         f"**Role family:** {hybrid.get('role_family_key')}",
         "",
         "## Track weights",

@@ -1295,11 +1295,21 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 docker_restart_audit=dict(_qdr),
             )
             receipt_path = resolve_preflight_receipt_path(artifact_dir=_ad, section=section_eff)
+            provider_health_status = getattr(
+                preflight,
+                "provider_health_status",
+                getattr(preflight, "retired_provider_health_status", ""),
+            )
+            provider_model_ready_status = getattr(
+                preflight,
+                "provider_model_ready_status",
+                getattr(preflight, "retired_provider_model_ready_status", ""),
+            )
             print(
                 f"pre_dispatch_preflight: dispatch_started={preflight.dispatch_started} "
                 f"jd_status={preflight.jd_status} manual_brief_status={preflight.manual_brief_status} "
-                f"provider_health={preflight.provider_health_status} "
-                f"provider_model_ready={preflight.provider_model_ready_status}",
+                f"provider_health={provider_health_status} "
+                f"provider_model_ready={provider_model_ready_status}",
                 flush=True,
             )
             print(f"pre_dispatch_preflight_receipt={receipt_path.as_posix()}", flush=True)

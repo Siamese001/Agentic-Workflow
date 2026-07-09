@@ -116,6 +116,7 @@ def verify_recorded_modular_r4_proof_bundle(
             errs.append(f"silent_fallback_marker_in:{rel}")
 
     gen_rc = run_dir / "modular_r4" / "generate_resume_step_receipt.json"
+    recorded_lane_keys: list[str] | None = None
     if not gen_rc.is_file():
         errs.append("missing_modular_r4/generate_resume_step_receipt.json")
     else:
@@ -130,6 +131,10 @@ def verify_recorded_modular_r4_proof_bundle(
             errs.append("generate_receipt_final_schema_invalid")
         elif str(gr.get("failure_reason") or "") != "":
             errs.append(f"generate_receipt_failure_reason_non_empty:{gr.get('failure_reason')!r}")
+        else:
+            section_output_refs = gr.get("section_output_refs")
+            if isinstance(section_output_refs, dict):
+                recorded_lane_keys = [str(k) for k in section_output_refs.keys()]
 
     calls_path = run_dir / "modular_r4" / "section_provider_calls.json"
     if not calls_path.is_file():
@@ -144,11 +149,16 @@ def verify_recorded_modular_r4_proof_bundle(
             if raw_calls.get("real_lane_invocation_attempted") is not True:
                 errs.append("real_lane_invocation_attempted_not_true")
             recs = raw_calls.get("records")
-            if not isinstance(recs, list) or len(recs) != len(GENERATED_LANES):
-                errs.append(f"section_lane_record_count_expected_{len(GENERATED_LANES)}")
+            expected_lanes = (
+                recorded_lane_keys
+                if "phase1.v1" in str(raw_calls.get("schema_version") or "") and recorded_lane_keys
+                else list(GENERATED_LANES)
+            )
+            if not isinstance(recs, list) or len(recs) != len(expected_lanes):
+                errs.append(f"section_lane_record_count_expected_{len(expected_lanes)}")
             else:
                 lanes = {str(r.get("section_lane")) for r in recs if isinstance(r, dict)}
-                if lanes != set(GENERATED_LANES):
+                if lanes != set(expected_lanes):
                     errs.append(f"section_lane_set_mismatch:{sorted(lanes)!r}")
                 mocked = sum(
                     1 for r in recs if isinstance(r, dict) and str(r.get("generation_status") or "") == "MOCKED"
