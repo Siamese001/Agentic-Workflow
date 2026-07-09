@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed Codex MCP transport gate for UserPromptSubmit.
+"""Codex MCP transport readiness gate for UserPromptSubmit.
 
 This gate checks every enabled repo-declared MCP server before a normal user
 prompt is accepted. A server's configured command/url probe is green only when
@@ -7,9 +7,10 @@ it can complete a real MCP JSON-RPC ``initialize`` plus ``tools/list`` exchange.
 That proves protocol viability, not active-session Codex tool callability.
 
 Scope: root ``.mcp.json`` is the repo MCP SSOT. The generated Codex Desktop
-projection marks these servers ``required = true``; this hook enforces the same
-contract per turn instead of relying on stale process health or backend-only
-checks.
+projection marks these servers ``required = true``. This hook records the same
+per-turn evidence, blocks strict proof/eval/publication prompts and nonnegotiable
+config/spawn failures, and warns for ordinary exploratory prompts instead of
+letting transport churn stop low-risk design work.
 
 Explicit MCP/ADG repair/RCA prompts are allowed through so a red transport can
 be fixed from inside Codex. Active-session ADG callability is enforced by the
@@ -55,6 +56,7 @@ SERVER_LIST_ENV = "REQUIRED_MCP_GATE_SERVERS"
 CALLABILITY_SERVER_LIST_ENV = "REQUIRED_MCP_GATE_CALLABILITY_SERVERS"
 TIMEOUT_ENV = "REQUIRED_MCP_GATE_TIMEOUT_SEC"
 MAX_WORKERS_ENV = "REQUIRED_MCP_GATE_MAX_WORKERS"
+ENFORCE_ENV = "REQUIRED_MCP_GATE_ENFORCE"
 
 DEFAULT_CALLABILITY_REQUIRED_SERVERS = ("memory", "GitKraken", "adg_sqlite", "vector_db")
 CALLABLE_ROUTE_CLASSIFICATIONS = {
@@ -85,6 +87,30 @@ _MCP_REPAIR_PHRASES = (
     "restore adg transport",
     "restore mcp transport",
     "reconnect mcp transport",
+)
+
+_STRICT_PROMPT_PHRASES = (
+    "codex_readiness",
+    "codex_main_closeout",
+    "create pr",
+    "draft pr",
+    "end to end",
+    "e2e",
+    "eval",
+    "evaluation",
+    "full adg",
+    "full run",
+    "merge to local main",
+    "merge to main",
+    "origin/main",
+    "pr branch",
+    "proof",
+    "publish",
+    "publication",
+    "pull request",
+    "push origin",
+    "release",
+    "strict",
 )
 
 
@@ -174,6 +200,37 @@ def _is_mcp_repair_prompt(prompt: str) -> bool:
 
 def _repair_bypass_enabled() -> bool:
     return os.environ.get(DISABLE_REPAIR_BYPASS_ENV) != "1"
+
+
+def _enforcement_mode() -> str:
+    raw = os.environ.get(ENFORCE_ENV, "auto").strip().lower()
+    return raw if raw in {"auto", "block", "warn"} else "auto"
+
+
+def _is_strict_prompt(prompt: str) -> bool:
+    text = " ".join(prompt.lower().split())
+    return any(phrase in text for phrase in _STRICT_PROMPT_PHRASES)
+
+
+def _should_block_failures(prompt: str) -> bool:
+    mode = _enforcement_mode()
+    if mode == "block":
+        return True
+    if mode == "warn":
+        return False
+    return _is_strict_prompt(prompt)
+
+
+def _has_nonnegotiable_failure(failures: list[ProbeResult]) -> bool:
+    """Config/spawn-safety failures are not advisory transport readiness churn."""
+    for failure in failures:
+        if failure.transport == "config":
+            return True
+        if failure.reason.startswith("missing required environment:"):
+            return True
+        if failure.reason == "missing command/url":
+            return True
+    return False
 
 
 def _server_filter_from_env() -> set[str] | None:
@@ -622,6 +679,27 @@ def _print_failures(failures: list[ProbeResult]) -> None:
     )
 
 
+def _print_warnings(failures: list[ProbeResult], prompt: str) -> None:
+    mode = _enforcement_mode()
+    strict_note = (
+        "Strict proof/eval/publication prompts still block; set "
+        f"{ENFORCE_ENV}=block to force old behavior or {ENFORCE_ENV}=warn to always warn."
+    )
+    print(
+        "[required_mcp_gate] WARNING: required Codex MCP transports are not green; "
+        f"allowing non-strict prompt in {mode!r} mode. {strict_note}",
+        file=sys.stderr,
+    )
+    if prompt:
+        print(f"[required_mcp_gate] prompt_class=strict:{_is_strict_prompt(prompt)}", file=sys.stderr)
+    for failure in failures:
+        print(
+            f"[required_mcp_gate] WARN {failure.server_id} "
+            f"({failure.transport or 'unknown'}): {failure.reason}",
+            file=sys.stderr,
+        )
+
+
 def run_gate(
     raw: str,
     *,
@@ -667,15 +745,23 @@ def run_gate(
     results = _run_probes(specs, timeout_value, probe_func)
     failures = [result for result in results if not result.ok]
     if failures:
-        _print_failures(failures)
-        _append_receipt(payload, results, "block")
-        return 2
+        if _has_nonnegotiable_failure(failures) or _should_block_failures(prompt):
+            _print_failures(failures)
+            _append_receipt(payload, results, "block")
+            return 2
+        _print_warnings(failures, prompt)
+        _append_receipt(payload, results, "warn")
+        return 0
 
     callability_failures = callability_check_func(_callability_servers_from_env())
     if callability_failures:
-        _print_failures(callability_failures)
-        _append_receipt(payload, [*results, *callability_failures], "block")
-        return 2
+        if _should_block_failures(prompt):
+            _print_failures(callability_failures)
+            _append_receipt(payload, [*results, *callability_failures], "block")
+            return 2
+        _print_warnings(callability_failures, prompt)
+        _append_receipt(payload, [*results, *callability_failures], "warn")
+        return 0
 
     summary = ", ".join(f"{result.server_id}:{result.tools_count}" for result in results)
     print(

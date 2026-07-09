@@ -186,12 +186,12 @@ class TestCheckPlanExists:
             assert check_plan_exists("T2") is False
 
     def test_t2_empty_plans_dir_false(self, tmp_path):
-        (tmp_path / ".codex" / "plans").mkdir(parents=True)
+        (tmp_path / "plans").mkdir(parents=True)
         with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T2") is False
 
     def test_t2_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".codex" / "plans"
+        plans = tmp_path / "plans"
         plans.mkdir(parents=True)
         (plans / "my-plan-abc123.md").write_text("# Plan")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
@@ -202,14 +202,14 @@ class TestCheckPlanExists:
             assert check_plan_exists("T3") is False
 
     def test_t3_with_plan_file_true(self, tmp_path):
-        plans = tmp_path / ".codex" / "plans"
+        plans = tmp_path / "plans"
         plans.mkdir(parents=True)
         (plans / "plan.md").write_text("# Plan")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
             assert check_plan_exists("T3") is True
 
     def test_non_md_file_in_plans_not_counted(self, tmp_path):
-        plans = tmp_path / ".codex" / "plans"
+        plans = tmp_path / "plans"
         plans.mkdir(parents=True)
         (plans / "not_a_plan.txt").write_text("text")
         with patch("pre_prompt_classifier.repo_root", tmp_path):
@@ -370,10 +370,11 @@ class TestMain:
         payload = {"tool_info": {"user_prompt": "refactor the authentication layer"}}
         self._run(payload, adg_red=False, redis_down=False)
         captured = capsys.readouterr()
-        assert "create_task" in captured.err
-        assert "SR_INTAKE" in captured.err
-        assert "SR_PLAN" in captured.err
-        assert "SR_APPROVAL" in captured.err
+        assert "NATIVE PLAN MODE REQUIRED" in captured.err
+        assert "Use native plan mode" in captured.err
+        assert "make no edits until the plan is approved" in captured.err
+        assert "create_task" not in captured.err
+        assert "SR_INTAKE" not in captured.err
 
     # --- T2/T3 + SQLite SSOT red: blocked (§13: SQLite MCP is the SSOT authority;
     #     a red SSOT blocks regardless of Redis hot-cache state) ---
@@ -431,7 +432,7 @@ class TestMain:
 
     # --- plan warning ---
     def test_no_plan_for_t3_emits_warning(self, capsys, tmp_path):
-        (tmp_path / ".codex" / "plans").mkdir(parents=True)
+        (tmp_path / "plans").mkdir(parents=True)
         payload = {"tool_info": {"user_prompt": "refactor the architecture"}}
         self._run(payload, adg_red=False, redis_down=False, repo_root=tmp_path)
         captured = capsys.readouterr()

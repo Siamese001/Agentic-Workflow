@@ -67,7 +67,7 @@ def test_all_enabled_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> 
     ]
 
 
-def test_any_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> None:
+def test_strict_prompt_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> None:
     config = _write_config(
         tmp_path / ".mcp.json",
         {
@@ -76,6 +76,7 @@ def test_any_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> Non
         },
     )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.ENFORCE_ENV, raising=False)
 
     def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
         if spec.server_id == "memory":
@@ -84,7 +85,7 @@ def test_any_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> Non
 
     assert (
         gate.run_gate(
-            _payload(),
+            _payload("publish proof for the PR branch"),
             config_path=config,
             probe_func=probe,
             callability_check_func=_callability_green,
@@ -98,6 +99,38 @@ def test_any_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> Non
     assert "connection closed" in err
 
 
+def test_non_strict_red_required_mcp_warns(tmp_path: Path, capsys, monkeypatch) -> None:
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {
+            "adg_sqlite": {"command": "python"},
+            "memory": {"command": "python"},
+        },
+    )
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.ENFORCE_ENV, raising=False)
+
+    def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
+        if spec.server_id == "memory":
+            return gate.ProbeResult(spec.server_id, "fail", "connection closed", spec.transport)
+        return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
+
+    assert (
+        gate.run_gate(
+            _payload("review the redundant approval gates"),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=_callability_green,
+            timeout=0.1,
+        )
+        == 0
+    )
+    err = capsys.readouterr().err
+    assert "WARNING" in err
+    assert "WARN memory" in err
+    assert "connection closed" in err
+
+
 def test_protocol_green_still_blocks_when_callability_route_red(
     tmp_path: Path,
     capsys,
@@ -106,6 +139,7 @@ def test_protocol_green_still_blocks_when_callability_route_red(
     config = _write_config(tmp_path / ".mcp.json", {"memory": {"command": "python"}})
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.delenv(gate.CALLABILITY_SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.ENFORCE_ENV, raising=False)
 
     def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
         return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
@@ -124,7 +158,7 @@ def test_protocol_green_still_blocks_when_callability_route_red(
 
     assert (
         gate.run_gate(
-            _payload(),
+            _payload("publish proof for the PR branch"),
             config_path=config,
             probe_func=probe,
             callability_check_func=callability_check,
@@ -197,7 +231,7 @@ def test_mcp_green_health_words_do_not_bypass_without_repair_intent(
 
     assert (
         gate.run_gate(
-            _payload("prove MCP fleet green and healthy"),
+            _payload("MCP fleet green and healthy proof"),
             config_path=config,
             probe_func=probe,
             callability_check_func=_callability_green,
@@ -218,6 +252,7 @@ def test_disable_repair_bypass_forces_probe_even_for_explicit_repair_prompt(
     config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.setenv(gate.DISABLE_REPAIR_BYPASS_ENV, "1")
+    monkeypatch.setenv(gate.ENFORCE_ENV, "block")
 
     def probe(spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
         return gate.ProbeResult(spec.server_id, "fail", "transport closed", spec.transport)
