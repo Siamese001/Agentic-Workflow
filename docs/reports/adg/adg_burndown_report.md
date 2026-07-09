@@ -1,9 +1,9 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-07-09T02:46:45+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260709_024317.json`
-- **Burndown source:** `artifacts\adg\adg_burndown_table_07082026_2238.json`
-- **Snapshot timestamp:** 2026-07-09T02:43:17.337866+00:00
+- **Generated:** 2026-07-09T03:40:09+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260709_033256.json`
+- **Burndown source:** `artifacts\adg\adg_burndown_table_07082026_2319.json`
+- **Snapshot timestamp:** 2026-07-09T03:32:56.409358+00:00
 - **Total gates:** 49
 - **Overall verdict:** **PASS** (run halt — exit code)
 
@@ -13,7 +13,7 @@
 - **Business read:** ADG is PASS with tracked backlog: burn down accepted debt after green.
 - **ADG verdict:** PASS
 - **Technical evidence:**
-  - Snapshot timestamp: 2026-07-09T02:43:17.337866+00:00
+  - Snapshot timestamp: 2026-07-09T03:32:56.409358+00:00
   - Total gates: 49
   - FIX gates: 0
   - Burn-down gates: 13
@@ -155,7 +155,7 @@ A P0 audit net value can be nonzero while BCG foundation blockers are zero; the 
 | P0 | layer_violations | 38 | 32 | 6 | +32 |
 | P1 | anti_patterns_high | 1143 | 1143 | 0 | +1143 |
 | P2 | anti_patterns_medium | 727 | 698 | 29 | +698 |
-| P3 | style_warnings | 19435 | 87 | 19348 | +87 |
+| P3 | style_warnings | 19439 | 87 | 19352 | +87 |
 
 _p0_clean = False • p1_no_ratchet = True • counting_mode = `violations_plus_exempted_edge_inference`_
 
@@ -205,16 +205,16 @@ _No FIX gates._
 ---
 ## Next action
 
-- **Queue:** `artifacts\adg\adg_action_queue_07082026_2238.json`
+- **Queue:** `artifacts\adg\adg_action_queue_07082026_2319.json`
 - **emit_status:** `ok`
 - **degraded:** `False`
 - **summary:** FIX=0 · TRACK=18 · actions_emitted=9
 
 | Rank | Lane | Kind | Target | ordering_reason | Signal |
 |-----:|------|------|--------|-----------------|--------|
-| 1 | GRAPHDB | test_hotspot_gap | `agentic_core/L5_safety/contracts/registry.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); critical... |
-| 2 | GRAPHDB | test_hotspot_gap | `apps_rg/runtime/sections/executive_summary_lane.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); critical... |
-| 3 | GRAPHDB | test_hotspot_gap | `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); critical... |
+| 1 | GRAPHDB | test_hotspot_gap | `apps_rg/runtime/sections/executive_summary_lane.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); critical... |
+| 2 | GRAPHDB | test_hotspot_gap | `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticalit... |
+| 3 | GRAPHDB | test_hotspot_gap | `agentic_core/L5_safety/utils/location_healer_util.py` | mv_hotspot_coverage_risk_priority | Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticalit... |
 | 4 | REFACTOR | refactor_candidate | `apps_rg/runtime/validators/executive_summary_x2.py` | refactor_accelerator_candidates_desc | Refactor candidate; score=0.0935 |
 | 5 | REFACTOR | refactor_candidate | `apps_rg/runtime/judges/executive_summary_x1d.py` | refactor_accelerator_candidates_desc | Refactor candidate; score=0.0646 |
 

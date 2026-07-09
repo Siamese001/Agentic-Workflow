@@ -92,8 +92,8 @@
         "band": "P3",
         "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
         "rank": 10,
-        "records": 19348,
-        "target": "19,348 non-exempt from 19,435 gross",
+        "records": 19352,
+        "target": "19,352 non-exempt from 19,439 gross",
         "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
         "work_class": "Severity audit"
       }
@@ -695,51 +695,51 @@
     "action_queue": {
       "artifact_key": "action_queue",
       "exists": true,
-      "path": "artifacts\\adg\\adg_action_queue_07082026_2238.json",
+      "path": "artifacts\\adg\\adg_action_queue_07082026_2319.json",
       "required": false,
-      "sha256": "1dd78f8fd5e3f1036d5a64aa8a1a785d53ca37997e48e8423faa486935e1289c"
+      "sha256": "fb719ec5dddede6c786414600ea71bfda7d2de976902a8dd62f70716ce3caeb9"
     },
     "burndown": {
       "artifact_key": "burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_table.json",
       "required": true,
-      "sha256": "e1e265c384207851916d25e2acf68ec05353c7e6ab4dfe32964810ba0a9f358c"
+      "sha256": "03cf0c31683bf81f85e1ecd2a23e19e36540862497bbd5ad9b3874ed9fbe898a"
     },
     "docs_markdown_burndown": {
       "artifact_key": "docs_markdown_burndown",
       "exists": true,
       "path": "docs\\reports\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "06a960d64bbfc3ef8a7ab5804246d311647b491de75df0ecddcd82d2df868451"
+      "sha256": "fa170456812645fb2d33718ea81e005e3f07a7ddcc3ef76833b0906b2ee1e1fb"
     },
     "enforcement_report": {
       "artifact_key": "enforcement_report",
       "exists": true,
       "path": "artifacts\\adg\\adg_enforcement_report_latest.json",
       "required": false,
-      "sha256": "169d77fe80a5276acb69342d999dba644524aade7ae433c4d7f8cafafb3a44aa"
+      "sha256": "3c4c16790f9d0a648750f0b41893834a676cebd3b089aa2176474556b2bf428f"
     },
     "gate_results": {
       "artifact_key": "gate_results",
       "exists": true,
-      "path": "artifacts\\adg\\adg_gate_results_20260709_024317.json",
+      "path": "artifacts\\adg\\adg_gate_results_20260709_033256.json",
       "required": true,
-      "sha256": "426a2f1f2dbd2ede4e027767cbca40befa80490cdba445029f08f93c26eef608"
+      "sha256": "705e89faa0fe8e06c687a46b84cd396e8236b51dd78ee4d84ff587e8a9b7673f"
     },
     "generation_manifest": {
       "artifact_key": "generation_manifest",
       "exists": true,
-      "path": "artifacts\\adg\\adg_generation_manifest_07082026_2238.json",
+      "path": "artifacts\\adg\\adg_generation_manifest_07082026_2319.json",
       "required": false,
-      "sha256": "51106df564fbf30cc24827bf54b6a3092996ff45173dd4f586b93887a22a7aa2"
+      "sha256": "03e2246344de8b186fa32556182a55d065ef23ccc676b4ec4a9d6762ef3789ec"
     },
     "markdown_burndown": {
       "artifact_key": "markdown_burndown",
       "exists": true,
       "path": "artifacts\\adg\\adg_burndown_report.md",
       "required": false,
-      "sha256": "06a960d64bbfc3ef8a7ab5804246d311647b491de75df0ecddcd82d2df868451"
+      "sha256": "fa170456812645fb2d33718ea81e005e3f07a7ddcc3ef76833b0906b2ee1e1fb"
     }
   },
   "bcg_findings": {
@@ -840,13 +840,13 @@
       ],
       "priority_rule": "Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
       "secondary_statuses": {},
-      "status": "07082026_2238",
+      "status": "07082026_2319",
       "status_label": "Run ID",
       "table_limit": 4,
       "technical_read": [
         "ADG is PASS: no red gates, but 18,833 ratchet-floor records and 874 open non-ratchet records remain.",
         "High",
-        "Testing risk is High: 1,137 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,446 with absent coverage.",
+        "Testing risk is High: 1,076 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,142 with absent coverage.",
         "GraphDB/MV is not unused: 1 MV(s) drive the action queue, 5 feed gates, and 23 are diagnostic/context only.",
         "Tracked records: 19,707"
       ],
@@ -955,12 +955,12 @@
     "priority_rule": "Stabilize the run first, then close the testing exposure, then reduce accepted debt.",
     "report_kind": "adg_run_review_template",
     "schema_version": "1.0",
-    "status": "07082026_2238",
+    "status": "07082026_2319",
     "status_label": "Run ID",
     "technical_read": [
       "ADG is PASS: no red gates, but 18,833 ratchet-floor records and 874 open non-ratchet records remain.",
       "High",
-      "Testing risk is High: 1,137 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,446 with absent coverage.",
+      "Testing risk is High: 1,076 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,142 with absent coverage.",
       "GraphDB/MV is not unused: 1 MV(s) drive the action queue, 5 feed gates, and 23 are diagnostic/context only.",
       "Tracked records: 19,707"
     ],
@@ -1118,7 +1118,7 @@
       },
       {
         "action": "Use the Testing Gap Risk table below; start with ranks 1-3 when the current slice touches them.",
-        "graphdb_mv_signal": "1,137 urgent; 234 critical-risk; 4,446 absent coverage",
+        "graphdb_mv_signal": "1,076 urgent; 234 critical-risk; 4,142 absent coverage",
         "move": "Close the testing exposure",
         "rank": 2,
         "why": "These are high-blast-radius files with weak or absent test coverage."
@@ -1136,7 +1136,7 @@
     "priority": "Burn down ratchets first; attach tests where GraphDB shows hotspot coverage risk.",
     "risk": "High",
     "situation": "ADG is PASS: no red gates, but 18,833 ratchet-floor records and 874 open non-ratchet records remain.",
-    "testing_gap_readout": "Testing risk is High: 1,137 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,446 with absent coverage.",
+    "testing_gap_readout": "Testing risk is High: 1,076 urgent GraphDB hotspots, 234 critical-risk hotspots, 4,142 with absent coverage.",
     "title": "Executive Decision Brief",
     "what_not_to_do": [
       "Do not chase the largest raw MV table just because it is large.",
@@ -1144,7 +1144,7 @@
       "Do not run broad cleanup before red gates and ratchet floors are controlled."
     ]
   },
-  "generated_at_utc": "2026-07-09T02:46:16+00:00",
+  "generated_at_utc": "2026-07-09T03:39:24+00:00",
   "graphdb_mv_analyst_summary": {
     "mv_inventory": [
       {
@@ -1167,7 +1167,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 3036
+        "rows": 3038
       },
       {
         "description": "Tools-per-agent ratio per agent class.",
@@ -1231,7 +1231,7 @@
         "related_gates": [],
         "role": "Rank refactor slices after red gates clear.",
         "routing_status": "analyst_signal",
-        "rows": 4942
+        "rows": 4943
       },
       {
         "description": "Forward dependency cone (transitive imports) per node, weighted by criticality.",
@@ -1241,7 +1241,7 @@
         "related_gates": [],
         "role": "Prefer fixes that reduce downstream blast radius.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       },
       {
         "description": "Trace_root emit sites missing determinism digest or replay key.",
@@ -1253,7 +1253,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6637
+        "rows": 6640
       },
       {
         "description": "Snapshot-to-snapshot digest reconciliation per pipeline phase.",
@@ -1391,7 +1391,7 @@
         "related_gates": [],
         "role": "Prioritize defects in high fan-in/fan-out symbols.",
         "routing_status": "analyst_signal",
-        "rows": 10997
+        "rows": 10999
       },
       {
         "description": "Author-Gate / runtime HITL flows missing the modify-then-reclear edge.",
@@ -1403,7 +1403,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 2005
+        "rows": 2007
       },
       {
         "description": "Hotspot ranking by graph centrality (PageRank / betweenness blend).",
@@ -1413,7 +1413,7 @@
         "related_gates": [],
         "role": "Use as structural leverage ranking for refactor waves.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       },
       {
         "description": "Hotspots \u00d7 test-coverage cross-join with priority bands (P1..P5).",
@@ -1423,7 +1423,7 @@
         "related_gates": [],
         "role": "Directly promoted into the action queue.",
         "routing_status": "action_driver",
-        "rows": 4446
+        "rows": 4448
       },
       {
         "description": "L2 execution phase coverage (capability / call / seal / dispatch).",
@@ -1475,7 +1475,7 @@
         "related_gates": [],
         "role": "Check defects in files touched by this run.",
         "routing_status": "analyst_signal",
-        "rows": 4961
+        "rows": 4962
       },
       {
         "description": "Cross-layer imports introduced since the previous snapshot baseline.",
@@ -1518,7 +1518,7 @@
         "related_gates": [],
         "role": "Inspect newly created critical-path edges for regressions.",
         "routing_status": "analyst_signal",
-        "rows": 8489
+        "rows": 8490
       },
       {
         "description": "Observability code that interferes with the production code path.",
@@ -1538,7 +1538,7 @@
         "related_gates": [],
         "role": "Use as impact weighting for any fix or refactor slice.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       },
       {
         "description": "Wiring gaps in the prompt assembly path (S0/D0/I0/C0/U0 slots).",
@@ -1614,7 +1614,7 @@
         "related_gates": [],
         "role": "Treat as generator/ingest health signal, not product-code work by itself.",
         "routing_status": "analyst_signal",
-        "rows": 406976
+        "rows": 407015
       },
       {
         "description": "Aggregate delta vs previous baseline (one row).",
@@ -1678,7 +1678,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6637
+        "rows": 6640
       },
       {
         "description": "User text reaching action-class tools without prompt-governance gating.",
@@ -1714,7 +1714,7 @@
     ],
     "priority_rows": [
       {
-        "graphdb_mv_signal": "`agentic_core/L5_safety/contracts/registry.py`; `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`",
+        "graphdb_mv_signal": "`apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/utils/location_healer_util.py`",
         "next_action": "When the current fix or burn-down slice touches these paths, add or repair tests there.",
         "plain_language": "GraphDB is telling you where a change is most likely under-tested.",
         "priority": "Place tests where GraphDB says risk is highest",
@@ -1735,7 +1735,7 @@
         "rank": 3
       }
     ],
-    "snapshot_sqlite": "artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
+    "snapshot_sqlite": "artifacts\\adg\\adg_indexed_07082026_2319.sqlite",
     "summary": {
       "action_driver_mvs": 1,
       "diagnostic_only_mvs": 23,
@@ -1753,32 +1753,17 @@
     },
     "testing_gap_summary": {
       "counts": {
-        "coverage_absent": 4446,
+        "coverage_absent": 4142,
         "coverage_low": 0,
-        "p1_urgent": 1137,
-        "p2_gap": 0,
+        "p1_urgent": 1076,
+        "p2_gap": 34,
         "risk_critical": 234,
         "risk_high": 903,
-        "total_hotspots": 4446
+        "total_hotspots": 4448
       },
       "plain_language": "GraphDB found important files with absent or weak test coverage. These are not abstract metrics: they are the files where a change is most likely to create an undetected regression.",
       "status": "present",
       "top_files": [
-        {
-          "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
-          "combined_risk_score": 822.0,
-          "coverage_band": "ABSENT",
-          "coverage_pct": "absent",
-          "criticality_score": 810.0,
-          "fan_in": 0,
-          "fan_out": 810,
-          "file": "agentic_core/L5_safety/contracts/registry.py",
-          "layer": "L5",
-          "priority_band": "P1_URGENT",
-          "rank": 1,
-          "risk_band": "CRITICAL",
-          "violation_count": 0
-        },
         {
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
           "combined_risk_score": 443.0,
@@ -1790,7 +1775,7 @@
           "file": "apps_rg/runtime/sections/executive_summary_lane.py",
           "layer": "L_APP",
           "priority_band": "P1_URGENT",
-          "rank": 2,
+          "rank": 1,
           "risk_band": "CRITICAL",
           "violation_count": 30
         },
@@ -1798,14 +1783,14 @@
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
           "combined_risk_score": 283.0,
           "coverage_band": "ABSENT",
-          "coverage_pct": "absent",
+          "coverage_pct": "0.0%",
           "criticality_score": 217.0,
           "fan_in": 0,
           "fan_out": 157,
           "file": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py",
           "layer": "L5",
           "priority_band": "P1_URGENT",
-          "rank": 3,
+          "rank": 2,
           "risk_band": "CRITICAL",
           "violation_count": 20
         },
@@ -1813,14 +1798,14 @@
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
           "combined_risk_score": 235.0,
           "coverage_band": "ABSENT",
-          "coverage_pct": "absent",
+          "coverage_pct": "0.0%",
           "criticality_score": 193.0,
           "fan_in": 0,
           "fan_out": 142,
           "file": "agentic_core/L5_safety/utils/location_healer_util.py",
           "layer": "L5",
           "priority_band": "P1_URGENT",
-          "rank": 4,
+          "rank": 3,
           "risk_band": "CRITICAL",
           "violation_count": 17
         },
@@ -1835,7 +1820,7 @@
           "file": "apps_rg/runtime/sections/unify_bullets_lane.py",
           "layer": "L_APP",
           "priority_band": "P1_URGENT",
-          "rank": 5,
+          "rank": 4,
           "risk_band": "CRITICAL",
           "violation_count": 33
         },
@@ -1843,14 +1828,14 @@
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
           "combined_risk_score": 372.0,
           "coverage_band": "ABSENT",
-          "coverage_pct": "absent",
+          "coverage_pct": "0.0%",
           "criticality_score": 191.0,
           "fan_in": 0,
           "fan_out": 161,
           "file": "agentic_core/adg/extraction/static_scanner.py",
           "layer": "L_TOOLS",
           "priority_band": "P1_URGENT",
-          "rank": 6,
+          "rank": 5,
           "risk_band": "CRITICAL",
           "violation_count": 10
         },
@@ -1858,14 +1843,14 @@
           "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
           "combined_risk_score": 440.0,
           "coverage_band": "ABSENT",
-          "coverage_pct": "absent",
+          "coverage_pct": "0.0%",
           "criticality_score": 190.0,
           "fan_in": 0,
           "fan_out": 190,
           "file": "agentic_core/L6_observability/shadow_eval/__init__.py",
           "layer": "L6",
           "priority_band": "P1_URGENT",
-          "rank": 7,
+          "rank": 6,
           "risk_band": "CRITICAL",
           "violation_count": 0
         },
@@ -1880,9 +1865,24 @@
           "file": "apps_rg/runtime/sections/ibm_bullets_lane.py",
           "layer": "L_APP",
           "priority_band": "P1_URGENT",
-          "rank": 8,
+          "rank": 7,
           "risk_band": "CRITICAL",
           "violation_count": 32
+        },
+        {
+          "analyst_read": "High-blast-radius code with weak or absent tests. Test this when a gate fix or burn-down slice touches it.",
+          "combined_risk_score": 248.0,
+          "coverage_band": "ABSENT",
+          "coverage_pct": "absent",
+          "criticality_score": 178.0,
+          "fan_in": 0,
+          "fan_out": 100,
+          "file": "apps_rg/runtime/sections/headline_lane.py",
+          "layer": "L_APP",
+          "priority_band": "P1_URGENT",
+          "rank": 8,
+          "risk_band": "CRITICAL",
+          "violation_count": 26
         }
       ],
       "what_to_do": [
@@ -1902,7 +1902,7 @@
         "related_gates": [],
         "role": "Directly promoted into the action queue.",
         "routing_status": "action_driver",
-        "rows": 4446
+        "rows": 4448
       },
       {
         "description": "Every state-write path with severity classification.",
@@ -1974,7 +1974,7 @@
         "related_gates": [],
         "role": "Treat as generator/ingest health signal, not product-code work by itself.",
         "routing_status": "analyst_signal",
-        "rows": 406976
+        "rows": 407015
       },
       {
         "description": "Forward dependency cone (transitive imports) per node, weighted by criticality.",
@@ -1984,7 +1984,7 @@
         "related_gates": [],
         "role": "Prefer fixes that reduce downstream blast radius.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       },
       {
         "description": "Hotspot ranking by graph centrality (PageRank / betweenness blend).",
@@ -1994,7 +1994,7 @@
         "related_gates": [],
         "role": "Use as structural leverage ranking for refactor waves.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       },
       {
         "description": "Rolled-up criticality score per node across all critical-path memberships.",
@@ -2004,7 +2004,7 @@
         "related_gates": [],
         "role": "Use as impact weighting for any fix or refactor slice.",
         "routing_status": "analyst_signal",
-        "rows": 11919
+        "rows": 11923
       }
     ],
     "top_unrouted_mv_signals": [
@@ -2018,7 +2018,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6637
+        "rows": 6640
       },
       {
         "description": "Symbols that did not classify into any taxonomy bucket.",
@@ -2028,7 +2028,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 6637
+        "rows": 6640
       },
       {
         "description": "Agent classes whose specializations overlap (potential dedup target).",
@@ -2038,7 +2038,7 @@
         "related_gates": [],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 3036
+        "rows": 3038
       },
       {
         "description": "Author-Gate / runtime HITL flows missing the modify-then-reclear edge.",
@@ -2050,7 +2050,7 @@
         ],
         "role": "Recorded by GraphDB/MV but not currently promoted into gates or the action queue.",
         "routing_status": "diagnostic_only",
-        "rows": 2005
+        "rows": 2007
       },
       {
         "description": "Task contracts (entry \u2192 exit shape) that are incomplete.",
@@ -2195,8 +2195,8 @@
           "band": "P3",
           "next_step": "Audit or map to a gate; do not treat as a CI blocker by itself.",
           "rank": 10,
-          "records": 19348,
-          "target": "19,348 non-exempt from 19,435 gross",
+          "records": 19352,
+          "target": "19,352 non-exempt from 19,439 gross",
           "why_this_priority": "Review-only audit signal; not Fix now unless it maps to a failing gate.",
           "work_class": "Severity audit"
         }
@@ -2206,7 +2206,7 @@
     "do_this_next": [
       "Burn down P0 ratchet `G_REACH` (1,450): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
       "Burn down P0 ratchet `S2_UWG` (755): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `agentic_core/L5_safety/contracts/registry.py`; `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`.",
+      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/utils/location_healer_util.py`.",
       "Close P0 open non-ratchet work `write_sovereignty` (765): Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
       "Close P0 open non-ratchet work `pipeline_wiring` (1): Close when touching nearby code; it is open work but not ratchet burn-down.",
       "Then burn down P1 ratchets by size: `B2_layer_skip` 863; `I1_exit_disposition` 695; `M_taint_actionable` 690; +4 more (2,601 total).",
@@ -2222,10 +2222,10 @@
       "lane": "GRAPHDB",
       "ordering_reason": "mv_hotspot_coverage_risk_priority",
       "rank": 1,
-      "records": 0,
-      "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=810.00; fan_in=0",
+      "records": 30,
+      "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=323.00; fan_in=0",
       "source_artifact": "sqlite:mv_hotspot_coverage_risk",
-      "target": "agentic_core/L5_safety/contracts/registry.py"
+      "target": "apps_rg/runtime/sections/executive_summary_lane.py"
     },
     "headline": "Green for enforcement; burn-down work remains.",
     "p0_action_plan": {
@@ -2343,7 +2343,7 @@
       "P0 ratchets in order: `G_REACH` 1,450; `S2_UWG` 755.",
       "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 765; `pipeline_wiring` 1. Do it after ratchets unless an item is tiny or high-leverage.",
       "Guardian is exception audit only: P0 has 6 non-exempt severity items from 38 gross. Do not use guardian math as the burn-down queue.",
-      "GraphDB/MV says the first testing hotspot is `agentic_core/L5_safety/contracts/registry.py`."
+      "GraphDB/MV says the first testing hotspot is `apps_rg/runtime/sections/executive_summary_lane.py`."
     ]
   },
   "next_best_action": {
@@ -2354,17 +2354,6 @@
         "lane": "GRAPHDB",
         "ordering_reason": "mv_hotspot_coverage_risk_priority",
         "rank": 1,
-        "records": 0,
-        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=810.00; fan_in=0",
-        "source_artifact": "sqlite:mv_hotspot_coverage_risk",
-        "target": "agentic_core/L5_safety/contracts/registry.py"
-      },
-      {
-        "band": "P1_URGENT",
-        "kind": "test_hotspot_gap",
-        "lane": "GRAPHDB",
-        "ordering_reason": "mv_hotspot_coverage_risk_priority",
-        "rank": 2,
         "records": 30,
         "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=323.00; fan_in=0",
         "source_artifact": "sqlite:mv_hotspot_coverage_risk",
@@ -2375,11 +2364,22 @@
         "kind": "test_hotspot_gap",
         "lane": "GRAPHDB",
         "ordering_reason": "mv_hotspot_coverage_risk_priority",
-        "rank": 3,
+        "rank": 2,
         "records": 20,
-        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (absent); criticality=217.00; fan_in=0",
+        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticality=217.00; fan_in=0",
         "source_artifact": "sqlite:mv_hotspot_coverage_risk",
         "target": "agentic_core/L5_safety/reasoning/FileClassificationAgent.py"
+      },
+      {
+        "band": "P1_URGENT",
+        "kind": "test_hotspot_gap",
+        "lane": "GRAPHDB",
+        "ordering_reason": "mv_hotspot_coverage_risk_priority",
+        "rank": 3,
+        "records": 17,
+        "signal": "Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL; coverage=ABSENT (0.0%); criticality=193.00; fan_in=0",
+        "source_artifact": "sqlite:mv_hotspot_coverage_risk",
+        "target": "agentic_core/L5_safety/utils/location_healer_util.py"
       },
       {
         "band": "L_APP",
@@ -2431,8 +2431,8 @@
         "lane": "GRAPHDB",
         "ordering_reason": "graphdb_structural_signal_count_desc",
         "rank": 8,
-        "records": 3191,
-        "signal": "GraphDB structural signal; rows=3191; UWG durable write conformance rows. Inspect adg_graphdb_queries for concrete rows.",
+        "records": 3195,
+        "signal": "GraphDB structural signal; rows=3195; UWG durable write conformance rows. Inspect adg_graphdb_queries for concrete rows.",
         "source_artifact": "graphdb_queries",
         "target": "structural.uwg_durable_write_conformance"
       },
@@ -2453,7 +2453,7 @@
     "priority_bullets": [
       "Burn down P0 ratchet `G_REACH` (1,450): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
       "Burn down P0 ratchet `S2_UWG` (755): Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline.",
-      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `agentic_core/L5_safety/contracts/registry.py`; `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`.",
+      "Apply GraphDB/MV testing hotspot overlay while executing the next burn-down slice: `apps_rg/runtime/sections/executive_summary_lane.py`; `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`; `agentic_core/L5_safety/utils/location_healer_util.py`.",
       "Close P0 open non-ratchet work `write_sovereignty` (765): Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage.",
       "Close P0 open non-ratchet work `pipeline_wiring` (1): Close when touching nearby code; it is open work but not ratchet burn-down.",
       "Then burn down P1 ratchets by size: `B2_layer_skip` 863; `I1_exit_disposition` 695; `M_taint_actionable` 690; +4 more (2,601 total).",
@@ -2463,7 +2463,7 @@
       "Close P3 open non-ratchet work: `D1_layer_doc` 3.",
       "Review guardian exceptions separately; they are severity audit math, not burn-down work."
     ],
-    "source": "artifacts\\adg\\adg_action_queue_07082026_2238.json"
+    "source": "artifacts\\adg\\adg_action_queue_07082026_2319.json"
   },
   "operator_summary": {
     "band_status": [
@@ -2845,17 +2845,17 @@
     "generation_manifest": {
       "certification_status": "failed",
       "commit_sha": null,
-      "created_at_utc": "2026-07-09T02:46:16Z",
-      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_gate_invocation_manifest_07082026_2238.json",
+      "created_at_utc": "2026-07-09T03:39:24Z",
+      "gate_manifest_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07082026_2319.json",
       "generation_exit_code": 1,
       "p0_status": "deferred_fail",
       "registry_bucket_edge_count": 0,
       "repo_state_hash": null,
-      "runtime_attested_edge_count": 0,
-      "runtime_proof_status": "view_present_zero_attested",
-      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
-      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
-      "timestamp": "2026-07-09T02:46:16Z"
+      "runtime_attested_edge_count": 3867,
+      "runtime_proof_status": "attested",
+      "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07082026_2319.sqlite",
+      "sqlite_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07082026_2319.sqlite",
+      "timestamp": "2026-07-09T03:39:24Z"
     }
   },
   "review_template": {
@@ -2864,7 +2864,7 @@
     "reviewed_at": "",
     "reviewer": ""
   },
-  "run_id": "07082026_2238",
+  "run_id": "07082026_2319",
   "schema_version": "1.0",
   "severity_inventory": [
     {
@@ -2898,13 +2898,13 @@
       "band": "P3",
       "diff_vs_prev": 87,
       "formula": "net = gross - guardian",
-      "gross": 19435,
+      "gross": 19439,
       "guardian": 87,
       "label": "style_warnings",
-      "net": 19348
+      "net": 19352
     }
   ],
-  "snapshot_ts": "2026-07-09T02:43:17.337866+00:00",
+  "snapshot_ts": "2026-07-09T03:32:56.409358+00:00",
   "terminology": {
     "cleanup_backlog": "Compatibility alias for open_non_ratchet_work.",
     "guardian_math_location": "severity_inventory; net = gross - guardian",
