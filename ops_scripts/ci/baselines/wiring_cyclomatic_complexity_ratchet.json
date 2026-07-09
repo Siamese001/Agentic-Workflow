@@ -1,9 +1,9 @@
 {
   "gate_id": "Q2_cyclomatic_complexity_ratchet",
-  "count": 1230,
-  "seeded_at": "2026-07-09T01:51:17.189937+00:00",
-  "snapshot": "adg_indexed_07082026_2146.sqlite",
+  "count": 1232,
+  "seeded_at": "2026-07-09T02:02:02.825024+00:00",
+  "snapshot": "adg_indexed_07082026_2156.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-09T01:51:39.001212+00:00",
-  "last_run_snapshot": "adg_indexed_07082026_2146.sqlite"
+  "last_run_at": "2026-07-09T02:02:24.894196+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2156.sqlite"
 }

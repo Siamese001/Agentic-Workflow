@@ -1,9 +1,9 @@
 {
   "gate_id": "B2_layer_skip_ratchet",
   "count": 863,
-  "seeded_at": "2026-07-09T01:51:08.586969+00:00",
-  "snapshot": "adg_indexed_07082026_2146.sqlite",
+  "seeded_at": "2026-07-09T02:01:54.804901+00:00",
+  "snapshot": "adg_indexed_07082026_2156.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-09T01:51:31.152340+00:00",
-  "last_run_snapshot": "adg_indexed_07082026_2146.sqlite"
+  "last_run_at": "2026-07-09T02:02:16.993485+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2156.sqlite"
 }
