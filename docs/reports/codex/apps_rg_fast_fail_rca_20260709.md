@@ -2,7 +2,7 @@
 
 Date: 2026-07-09
 Branch: `codex-apps-rg-fast-fail-rca`
-Scope: RCA only. No runtime repair is included in this branch.
+Scope: RCA plus runtime/test repair.
 
 ## Executive Finding
 
@@ -176,3 +176,28 @@ The July 7 run did not fast fail because routing changed the run out of the
 managed apps_research path, and the remaining e2e/lane gates treated the existing
 configured briefing as enough to continue. The fast-fail rule existed in pieces,
 but it was not wired as a mandatory root invariant for the source-to-end run.
+
+## Implemented Repair
+
+This branch changes the whole-run root so apps_rg fails before draft/section
+dispatch when apps_research is required but no authorized apps_research handoff
+is available.
+
+Implemented behavior:
+
+1. If `auto_research_internal=True`, no authorized apps_research handoff is
+   present, and L0 selects a non-`R3R4_MANAGED_WORKFLOW` route, the run returns
+   terminal `APPS_RESEARCH_ROUTE_MISMATCH`.
+2. If apps_research delegation runs but fails, the run returns the apps_research
+   failure as terminal instead of falling back to configured manual brief text.
+3. The terminal failure payload now reports the actual selected route family so
+   future RCAs can see when a simple route caused the fast-fail.
+
+Regression tests added/changed:
+
+- `test_whole_run_research_failure_fails_closed_with_manual_brief`
+- `test_whole_run_route_mismatch_fails_closed_when_apps_research_required`
+
+Before the runtime repair, both regression tests failed because the run reached
+draft spine dispatch. After the repair, both pass and prove the fast-fail point
+is before draft/section generation.

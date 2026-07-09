@@ -1,10 +1,14 @@
-"""R3R4 whole-run reachability with apps_research delegation enabled."""
+"""apps-test-model: APP CONTRACT.
+
+R3R4 whole-run reachability with apps_research delegation enabled.
+"""
 from __future__ import annotations
 
 import hashlib
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -205,7 +209,7 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
 
 
-def test_whole_run_research_failure_falls_back_to_manual_brief(
+def test_whole_run_research_failure_fails_closed_with_manual_brief(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -222,17 +226,8 @@ def test_whole_run_research_failure_falls_back_to_manual_brief(
 
     from apps_rg.cache.whole_run_entrypoint_preflight import WholeRunCachePreflightOutcome
 
-    captured: dict[str, object] = {}
-
     def _fake_spine(**kwargs: object) -> _FakeResult:
-        captured["raw_request"] = kwargs["raw_request"]
-        art = Path(kwargs["artifact_dir"])
-        art.mkdir(parents=True, exist_ok=True)
-        (art / "r4_run_manifest.json").write_text(
-            json.dumps({"chain_kind": "R4_SINGLE_ACTION", "route_family": "R4_SINGLE_ACTION"}),
-            encoding="utf-8",
-        )
-        return _FakeResult()
+        pytest.fail("draft spine must not run after apps_research failure")
 
     monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)
     monkeypatch.setattr(
@@ -280,14 +275,84 @@ def test_whole_run_research_failure_falls_back_to_manual_brief(
         artifact_dir=str(tmp_path / "fallback_run"),
     )
 
-    raw_request = captured["raw_request"]
-    assert isinstance(raw_request, dict)
-    assert raw_request["manual_brief"] == str(brief)
-    assert result["route_decision"]["research_delegation_executed"] is True
-    assert result["route_decision"]["research_fallback_to_manual_brief"] is True
-    assert result["route_decision"]["research_failure_nonterminal"] == "APPS_RESEARCH_BLOCKED"
-    assert result["route_decision"]["research_outcome"] == "ManualBriefFallbackAfter_APPS_RESEARCH_BLOCKED"
-    assert (tmp_path / "fallback_run" / "research" / "manual_brief_fallback_receipt.json").is_file()
+    assert result["exit_status"] == "error"
+    assert result["execution_status"] == "failed"
+    assert result["fault"] == "APPS_RESEARCH_BLOCKED"
+    assert not (tmp_path / "fallback_run" / "research" / "manual_brief_fallback_receipt.json").exists()
+    spine = json.loads((tmp_path / "fallback_run" / FILENAME_SPINE_MANIFEST).read_text(encoding="utf-8"))
+    route_decision = spine["route_decision"]
+    assert route_decision["research_delegation_executed"] is True
+    assert route_decision["research_failure"] == "APPS_RESEARCH_BLOCKED"
+    assert "research_fallback_to_manual_brief" not in route_decision
+
+
+def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
+
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    def _fake_spine(**kwargs: object) -> object:
+        pytest.fail("draft spine must not run when apps_research-required routing mismatches")
+
+    def _fake_research_hop(**kwargs: object) -> tuple[bool, str, str]:
+        pytest.fail("apps_research hop must not run on a non-R3R4 route family")
+
+    def _simple_route(plan: object) -> SimpleNamespace:
+        return SimpleNamespace(
+            route_id="R3_SIMPLE_GROUNDED_READ",
+            route_family="R3_SIMPLE_GROUNDED_READ",
+            execution_form="single_action",
+            l3_required=True,
+            grounding_required=True,
+            route_profile_ref="test://route-profile/simple",
+            reason_codes=("pytest_route_mismatch",),
+            request_id=getattr(plan, "request_id", "req-route-mismatch"),
+            run_id=getattr(plan, "run_id", "run-route-mismatch"),
+            trace_id=getattr(plan, "trace_id", "trace-route-mismatch"),
+        )
+
+    monkeypatch.setattr(orch, "l0_route_apps_rg", _simple_route)
+    monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)
+    monkeypatch.setattr(orch, "_run_r3r4_research_hop", _fake_research_hop)
+    monkeypatch.setattr(orch, "emit_integrated_run_bundle_index", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_whole_run_cache_preflight_artifact",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.cache.cache_preflight_evidence.write_cache_miss_receipt",
+        lambda *a, **k: None,
+    )
+    monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "route_mismatch_run")
+
+    brief = tmp_path / "manual_brief.md"
+    brief.write_text("Static manual briefing that was not produced by apps_research.", encoding="utf-8")
+    jd = tmp_path / "jd.txt"
+    jd.write_text("Run-specific JD for applied AI architecture partnerships.", encoding="utf-8")
+    result = orch.run_whole_run_with_route_governance(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd=str(jd),
+        manual_brief=str(brief),
+        generation_mode="strategic_tailor",
+        auto_research_internal=True,
+        artifact_dir=str(tmp_path / "route_mismatch_run"),
+    )
+
+    assert result["exit_status"] == "error"
+    assert result["execution_status"] == "failed"
+    assert result["fault"] == "APPS_RESEARCH_ROUTE_MISMATCH"
+    assert result["route_family"] == "R3_SIMPLE_GROUNDED_READ"
+    spine = json.loads((tmp_path / "route_mismatch_run" / FILENAME_SPINE_MANIFEST).read_text(encoding="utf-8"))
+    route_decision = spine["route_decision"]
+    assert route_decision["research_delegation_executed"] is False
+    assert route_decision["research_failure"] == "APPS_RESEARCH_ROUTE_MISMATCH"
+    assert route_decision["research_failure_reason"] == (
+        "apps_research_required_without_authorized_handoff_on_R3_SIMPLE_GROUNDED_READ"
+    )
 
 
 def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
