@@ -167,13 +167,13 @@ def bootstrap_apps_rg_embedding_env(
     repo = _resolve_bootstrap_repo_root(repo_root)
     os.environ.setdefault("AGENTIC_REPO_ROOT", str(repo))
 
+    if _embedding_explicitly_disabled():
+        return applied
+
     if not os.environ.get("CHROMA_PERSIST_DIR", "").strip():
         chroma = (repo / "data" / "cache" / "chromadb").resolve()
         os.environ["CHROMA_PERSIST_DIR"] = str(chroma)
         applied["CHROMA_PERSIST_DIR"] = os.environ["CHROMA_PERSIST_DIR"]
-
-    if _embedding_explicitly_disabled():
-        return applied
 
     if _embedding_env_unset():
         os.environ["EMBEDDING_ENABLED"] = "true"
