@@ -1,9 +1,9 @@
 {
   "gate_id": "E1_trace_stub_module",
-  "count": 982,
+  "count": 3,
   "seeded_at": "2026-04-23T11:52:36.906904+00:00",
-  "snapshot": "adg_indexed_06182026_2236.sqlite",
-  "tightened_at": "2026-06-19T02:41:16.166481+00:00",
+  "snapshot": "adg_indexed_07082026_2035.sqlite",
+  "tightened_at": "2026-07-09T00:47:32.934752+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:18.712244+00:00",
@@ -112,9 +112,15 @@
       "snapshot": "adg_indexed_06182026_2236.sqlite",
       "from": 983,
       "to": 982
+    },
+    {
+      "at": "2026-07-09T00:47:32.934752+00:00",
+      "snapshot": "adg_indexed_07082026_2035.sqlite",
+      "from": 982,
+      "to": 3
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-08T21:44:28.972372+00:00",
-  "last_run_snapshot": "adg_indexed_07072026_2307.sqlite"
+  "last_run_at": "2026-07-09T00:48:17.037562+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2035.sqlite"
 }

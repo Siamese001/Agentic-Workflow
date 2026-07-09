@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -74,6 +75,45 @@ def _status_rows(path: Path) -> tuple[list[str], CloseoutIssue | None]:
     if rc != 0:
         return [], CloseoutIssue("worktree_status_failed", f"{path}: {stderr}")
     return [line for line in stdout.splitlines() if line.strip()], None
+
+
+def _active_process_refs(path: Path) -> list[str]:
+    """Return process command lines that still reference a worktree path."""
+    if sys.platform != "win32":
+        return []
+    try:
+        needle = str(path.resolve()).casefold().replace("/", "\\")
+    except OSError:
+        needle = str(path).casefold().replace("/", "\\")
+    if not needle:
+        return []
+    try:
+        proc = subprocess.run(
+            [
+                "powershell",
+                "-NoProfile",
+                "-Command",
+                "Get-CimInstance Win32_Process | Select-Object -ExpandProperty CommandLine",
+            ],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return []
+    if proc.returncode != 0:
+        return []
+    matches: list[str] = []
+    for raw in proc.stdout.splitlines():
+        command_line = raw.strip()
+        if not command_line:
+            continue
+        normalized = command_line.casefold().replace("/", "\\")
+        if needle in normalized:
+            matches.append(command_line[:500])
+    return matches
 
 
 def _extra_local_branch_issues(root: Path) -> list[CloseoutIssue]:
@@ -235,6 +275,12 @@ def _remove_safe_extra_worktrees(
             continue
         path = Path(path_text).resolve()
         if path == expected:
+            continue
+
+        active_refs = _active_process_refs(path)
+        if active_refs:
+            detail = f"{path}: " + "\n".join(active_refs[:5])
+            issues.append(CloseoutIssue("active_extra_worktree_process", detail))
             continue
 
         dirty_rows, dirty_issue = _status_rows(path)

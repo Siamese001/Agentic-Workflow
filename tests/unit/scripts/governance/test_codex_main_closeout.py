@@ -163,6 +163,7 @@ def test_closeout_apply_preserves_empty_worktree_staging_root(monkeypatch, tmp_p
         raise AssertionError(command)
 
     monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+    monkeypatch.setattr(mod, "_active_process_refs", lambda path: [])
 
     report = mod.build_closeout_report(tmp_path, apply=True)
 
@@ -227,6 +228,51 @@ def test_closeout_apply_removes_clean_ancestor_contained_worktree_and_branch(
     assert state == {"extra_worktree": False, "extra_branch": False}
 
 
+def test_closeout_apply_refuses_active_clean_worktree(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    other = tmp_path.parent / "codex-active-adg"
+
+    def fake_git(*args: str, cwd: Path):
+        command = tuple(args)
+        if command == ("worktree", "list", "--porcelain"):
+            return (
+                0,
+                f"worktree {tmp_path}\nHEAD abc\nbranch refs/heads/main\n\n"
+                f"worktree {other}\nHEAD def\nbranch refs/heads/codex/active-adg\n\n",
+                "",
+            )
+        if command == ("status", "--short", "--branch"):
+            return 0, "## main...origin/main", ""
+        if command in {("diff", "--quiet"), ("diff", "--cached", "--quiet")}:
+            return 0, "", ""
+        if command == ("rev-parse", "--abbrev-ref", "HEAD"):
+            return 0, "main", ""
+        if command in {("rev-parse", "--verify", "HEAD"), ("rev-parse", "--verify", "origin/main")}:
+            return 0, "abc", ""
+        if command == ("branch", "--format=%(refname:short)"):
+            return 0, "main\ncodex/active-adg", ""
+        if command == ("branch", "--no-merged", "origin/main", "--format=%(refname:short)"):
+            return 0, "", ""
+        raise AssertionError((command, cwd))
+
+    monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+    monkeypatch.setattr(
+        mod,
+        "_active_process_refs",
+        lambda path: [f"python {other}\\tools\\adg\\run_full_adg_audit.py"] if path == other.resolve() else [],
+    )
+
+    report = mod.build_closeout_report(tmp_path, apply=True)
+    issue_codes = {issue["code"] for issue in report["issues"]}
+
+    assert report["status"] == "FAIL"
+    assert "active_extra_worktree_process" in issue_codes
+    assert "branch_checked_out" in issue_codes
+    assert report["actions"] == []
+
+
 def test_closeout_apply_refuses_dirty_worktree_and_unmerged_branch(
     monkeypatch,
     tmp_path: Path,
@@ -261,6 +307,7 @@ def test_closeout_apply_refuses_dirty_worktree_and_unmerged_branch(
         raise AssertionError((command, cwd))
 
     monkeypatch.setattr(mod.worktree_hygiene, "run_git", fake_git)
+    monkeypatch.setattr(mod, "_active_process_refs", lambda path: [])
 
     report = mod.build_closeout_report(tmp_path, apply=True)
     issue_codes = {issue["code"] for issue in report["issues"]}

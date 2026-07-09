@@ -1387,8 +1387,9 @@ def _write_repair_handoff_pointer(
     print(f"[audit] wrote repair handoff pointer: {display}")
 
 
-def _write_receipt(result: WrapperResult) -> None:
-    producer_artifacts = _handoff_producer_artifacts_adg()
+def _write_receipt(result: WrapperResult, *, producer_artifacts: Path | None = None) -> None:
+    if producer_artifacts is None:
+        producer_artifacts = _handoff_producer_artifacts_adg()
     handoff_result = _copy_result_for_handoff_root(result, producer_artifacts=producer_artifacts)
     RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -1443,6 +1444,7 @@ def run_audit(
     wall_start = time.time()
     started_at_utc = _utcnow_iso()
     ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
+    producer_artifacts = _handoff_producer_artifacts_adg()
 
     extra = list(generator_extra_args or [])
     if continue_on_p0 and "--continue-on-p0" not in extra:
@@ -1652,7 +1654,7 @@ def run_audit(
         completed_at_utc=completed_at_utc,
         repair_handoff=repair_handoff,
     )
-    _write_receipt(result)
+    _write_receipt(result, producer_artifacts=producer_artifacts)
     if enforcement_path is not None:
         print(f"[audit] enforcement report: {enforcement_path}")
 

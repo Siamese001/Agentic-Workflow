@@ -1080,6 +1080,57 @@ def test_repair_handoff_pointer_publishes_to_contract_producer_root(temp_artifac
     assert errors == []
 
 
+def test_run_audit_uses_pre_resolved_producer_root_when_contract_disappears(
+    temp_artifacts,
+    monkeypatch,
+):
+    producer_root = temp_artifacts / "producer-root"
+    producer_root.mkdir()
+    contract = temp_artifacts / "automation.toml"
+    contract.write_text(
+        "\n".join(
+            [
+                "[handoff]",
+                'handoff_pointer_base = "producer_repo_root"',
+                f"producer_repo_root = {json.dumps(str(producer_root))}",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(wrapper, "HANDOFF_CONTRACT_PATH", contract)
+
+    stamp = "06292026_0303"
+    snap = _make_snapshot(
+        wrapper.ARTIFACTS_ADG / f"adg_indexed_{stamp}.sqlite",
+        with_runtime_view=True,
+        attested=1,
+    )
+
+    def _fake_generator(extra_args, timeout_s, certification_mode):  # noqa: ARG001
+        _write_manifests(wrapper.ARTIFACTS_ADG, ts=stamp, snapshot=snap)
+        contract.unlink()
+        return 0
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_fake_generator))
+    monkeypatch.setattr(wrapper, "_run_certification_plane2", lambda **_: [])
+    monkeypatch.setattr(wrapper, "_emit_mandatory_run_outputs", lambda **_: [])
+    monkeypatch.setattr(wrapper, "_run_retention_sweep", lambda adg_run_id: None)
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification")
+
+    pointer = producer_root / "artifacts" / "adg" / "handoffs" / "adg_repair_handoff_latest.json"
+    local_pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
+
+    assert result.adg_run_id == stamp
+    assert pointer_payload["adg_run_id"] == stamp
+    assert Path(pointer_payload["handoff_path"]).parent == producer_root / "artifacts" / "adg" / "handoffs"
+    assert Path(pointer_payload["receipt_path"]).parent == producer_root / "artifacts" / "adg" / "handoffs"
+    assert not local_pointer.exists()
+
+
 def test_repair_handoff_pointer_rejects_legacy_ready_release_status(temp_artifacts, monkeypatch):
     status, handoff, _receipt = _build_test_handoff(
         temp_artifacts,
