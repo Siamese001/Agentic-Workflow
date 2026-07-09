@@ -4,6 +4,8 @@ import json
 import sqlite3
 from pathlib import Path
 
+import pytest
+
 from tools.analysis import functional_hotspot_test_gaps_report as report
 
 
@@ -25,10 +27,10 @@ def _hotspot(path: str) -> dict[str, object]:
 
 def test_structural_reachability_is_not_functional_pass() -> None:
     rows = report.analyze_hotspots(
-        [_hotspot("apps_rg/runtime/judges/bullet_pool_claude_selector.py")],
+        [_hotspot("apps_rg/runtime/unmapped_hotspot.py")],
         nodeids=["tests/unit/apps_rg/test_bullet_selector_containment.py::test_imports_selector"],
         structural_reachability={
-            "apps_rg/runtime/judges/bullet_pool_claude_selector.py": {
+            "apps_rg/runtime/unmapped_hotspot.py": {
                 "structural_test_count": 1,
                 "test_reachability_edges": 4,
             }
@@ -42,6 +44,70 @@ def test_structural_reachability_is_not_functional_pass() -> None:
     assert rows[0]["structural_test_count"] == 1
     assert rows[0]["contract_id"] == ""
     assert rows[0]["execution_status"] == "not_applicable"
+
+
+@pytest.mark.parametrize(
+    ("hotspot", "contract_id"),
+    [
+        ("apps_rg/__main__.py", "apps_rg.runtime_entrypoint.functional_chain"),
+        ("apps_rg/runtime/bindings/c0_binding.py", "apps_rg.c0_fact_vector.functional_chain"),
+        ("apps_rg/runtime/fact_vectors_bootstrap.py", "apps_rg.c0_fact_vector.functional_chain"),
+        ("apps_rg/runtime/c0/fact_vector_write_back.py", "apps_rg.c0_fact_vector.functional_chain"),
+        ("apps_rg/runtime/c0/fact_vector_index_preflight.py", "apps_rg.c0_fact_vector.functional_chain"),
+        ("apps_rg/runtime/judges/bullet_pool_claude_selector.py", "apps_rg.pool_selector.functional_chain"),
+        ("apps_rg/runtime/bindings/l2_envelope_adapter.py", "apps_rg.l2_envelope.functional_chain"),
+        ("apps_rg/runtime/orchestration/patch_run.py", "apps_rg.patch_run.functional_chain"),
+        (
+            "apps_rg/fact_inventory/p2_graph_skills_accelerated_closeout.py",
+            "apps_rg.fact_inventory_closeout.functional_chain",
+        ),
+    ],
+)
+def test_previous_structural_only_apps_rg_hotspots_have_functional_contract_mapping(
+    hotspot: str,
+    contract_id: str,
+) -> None:
+    contracts = report._contracts_for_path(hotspot, report.DEFAULT_CONTRACTS)
+
+    assert [contract.contract_id for contract in contracts] == [contract_id]
+
+
+def test_final_aggregation_contract_rejects_cross_app_and_core_aggregate_nodeids() -> None:
+    rows = report.analyze_hotspots(
+        [_hotspot("apps_rg/l2_recipe/modular_resume_generation.py")],
+        nodeids=[
+            "tests/_apps_contract/test_ag8_apps_lic_golden_path.py::TestA15_X2ConsumesX1Checkout::test_aggregate_decision_uses_x1_checkout_result",
+            "tests/unit/agentic_core/L6_observability/utils/dashboard/test_dashboard_aggregation_rca.py::TestDashboardAggregationRca::test_dashboard_aggregation_rca_callable",
+        ],
+        structural_reachability={},
+        execution_results={},
+    )
+
+    assert rows[0]["gap_type"] == "not_collected"
+    assert rows[0]["matched_nodeids"] == []
+    assert rows[0]["missing_groups"] == [
+        "aggregation_contract",
+        "same_run_fingerprint",
+        "no_latest_successful",
+    ]
+
+
+def test_final_aggregation_contract_counts_only_apps_rg_functional_nodeids() -> None:
+    nodeids = [
+        "tests/unit/apps_rg/test_aggregation_run_fingerprint.py::test_final_resume_aggregation_contract_blocks_bad_rollup",
+        "tests/unit/apps_rg/test_aggregation_run_fingerprint.py::test_same_run_fingerprint_current_run_binding",
+        "tests/unit/apps_rg/test_modular_lane_provider_env.py::test_modular_generation_no_latest_successful_manifest_inference",
+        "tests/_apps_contract/test_ag8_apps_lic_golden_path.py::TestA15_X2ConsumesX1Checkout::test_aggregate_decision_uses_x1_checkout_result",
+    ]
+    rows = report.analyze_hotspots(
+        [_hotspot("apps_rg/l2_recipe/modular_resume_generation.py")],
+        nodeids=nodeids,
+        structural_reachability={},
+        execution_results={nodeid: "passed" for nodeid in nodeids},
+    )
+
+    assert rows[0]["gap_type"] == "passing"
+    assert set(rows[0]["matched_nodeids"]) == set(nodeids[:3])
 
 
 def test_functional_contract_requires_all_required_groups_collected() -> None:
