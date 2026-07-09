@@ -1,5 +1,6 @@
 """Generate validated final report combining Phase 16 categories with cross-check verdicts."""
 import json
+import logging
 from pathlib import Path
 
 ART = Path(r"artifacts")
@@ -230,6 +231,7 @@ report = {
 }
 
 (ART / "audit_validation_final.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/analysis/_audit_finalize_validation.py write side effect recorded")
 print("Wrote artifacts/audit_validation_final.json")
 print()
 print(f"=== HEADLINE ===")

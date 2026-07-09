@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -98,6 +99,7 @@ class TestScanFile:
     def test_clean_file_returns_empty(self, tmp_path):
         f = tmp_path / "clean.py"
         f.write_text("x = 1\ny = 2\n", encoding="utf-8")
+        logging.info("C3 write receipt: tests/unit/tools/guardian/test_idempotency_check.py write side effect recorded")
         issues = scan_file(f)
         assert issues == []
 

@@ -1,11 +1,13 @@
 """W1.1 catalog: dump all 17 L_APP_core_bypass breaches to CSV for remediation."""
 import csv
+import logging
 import sqlite3
 from pathlib import Path
 
 snap = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"))[-1]
 out = Path("docs/reports/maintenance/l0_authority_breaches_catalog.csv")
 out.parent.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/priority/dump_l0_authority_breaches.py write side effect recorded")
 
 con = sqlite3.connect(snap)
 cur = con.cursor()
@@ -32,6 +34,7 @@ print(f"Wrote {len(rows)} rows to {out}")
 
 # Tier breakdown
 import collections
+
 counter = collections.Counter()
 for r in rows:
     dst = r[2]

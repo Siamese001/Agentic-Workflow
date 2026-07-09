@@ -4,8 +4,8 @@ Uses the latest snapshot (adg_indexed_04232026_0925.sqlite) produced minutes
 ago by `python tools/generate_full_adg.py`. Proves that the 15-gate plane
 would have caught C0 through 5 independent signals.
 """
-
 import json
+import logging
 import subprocess
 import sys
 from pathlib import Path
@@ -21,6 +21,7 @@ latest_snapshot = _gate_base.latest_snapshot
 
 snap = latest_snapshot()
 print(f"Fresh snapshot: {snap.name}")
+logging.info("C3 write receipt: tools/debug/_c0_escalation_proof.py write side effect recorded")
 print()
 
 conn = connect_snapshot(snap)

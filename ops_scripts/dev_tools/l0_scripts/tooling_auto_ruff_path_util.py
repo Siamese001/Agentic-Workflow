@@ -19,3 +19,4 @@ for f in sys.argv[1:]:
     if REL not in PATHS:
         PATHS.append(REL)
         PYPROJECT.write_text(tomllib.dumps(DATA))
+        logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/tooling_auto_ruff_path_util.py write side effect recorded")

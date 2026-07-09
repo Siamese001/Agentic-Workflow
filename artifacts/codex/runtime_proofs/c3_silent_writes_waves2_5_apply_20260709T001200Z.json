@@ -1,0 +1,1053 @@
+{
+  "schema_version": "adg-c3-apply-waves/v1",
+  "generated_at": "2026-07-09T00:16:07.268244Z",
+  "adg_snapshot_id": "07072026_2307",
+  "gate_id": "C3_silent_writes_ratchet",
+  "source_sqlite": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07072026_2307.sqlite",
+  "wave_size": 25,
+  "requested_limit": 100,
+  "snapshot_rows": 125,
+  "previous_wave_rows": 25,
+  "selected_rows": 100,
+  "instrumented_rows": 100,
+  "failed_rows": 0,
+  "waves": [
+    {
+      "wave_id": "W7.C3.2",
+      "planned_rows": 25,
+      "files": [
+        "agentic_core/L0_routing/utils/filesystem_mcp_client.py",
+        "agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py",
+        "apps_lic/scripts/fix_lic_imports.py",
+        "apps_shared/scripts/clean_shims_simple.py",
+        "ops_scripts/apps_rg/_dump_docx.py",
+        "ops_scripts/dev_tools/l0_scripts/fix_remaining_imports_util.py",
+        "ops_scripts/dev_tools/l0_scripts/generate_agent_report_util.py",
+        "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+        "ops_scripts/dev_tools/l0_scripts/set_all_agents_tested_util.py",
+        "ops_scripts/dev_tools/l0_scripts/set_all_invocations_yes_util.py",
+        "ops_scripts/dev_tools/l0_scripts/tooling_auto_ruff_path_util.py",
+        "ops_scripts/dev_tools/l0_scripts/tooling_enforce_verb_noun_util.py",
+        "ops_scripts/dev_tools/l0_scripts/update_mcp_metadata_util.py",
+        "ops_scripts/root_scripts/_build_ssot_report.py",
+        "tests/_apps_contract/test_apps_rg_core_boundary.py",
+        "tests/_apps_contract/test_apps_rg_llm_judge_gateway.py",
+        "tests/_apps_contract/test_apps_rg_provider_gateway.py",
+        "tests/_apps_contract/test_apps_rg_runtime_gate_mesh.py",
+        "tests/_archived_obsolete/agentic_core/L3_orchestration/exit_eval/test_rubric.py",
+        "tests/_archived_obsolete/guardian/test_exemption_recognition.py",
+        "tests/_archived_obsolete/guardian/test_invalid_stub_detector.py",
+        "tests/_archived_obsolete/guardian/test_test_silent_skip_detector.py",
+        "tests/_archived_obsolete/ops_scripts/ci/test_exclusion_sync_gate.py",
+        "tests/_archived_obsolete/scratch/test_mcp_handshake.py",
+        "tests/_archived_obsolete/unit/ops_scripts/ci/test_prompt_reception_gates.py"
+      ]
+    },
+    {
+      "wave_id": "W7.C3.3",
+      "planned_rows": 25,
+      "files": [
+        "tests/_archived_obsolete/unit/tools/ingestion/test_ingest_code_contextualization.py",
+        "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
+        "tests/agentic_core/L5_safety/utils/test_location_healer_util.py",
+        "tests/agentic_core/test_l5_cert_ref_w4.py",
+        "tests/apps_lic/test_w6_shared_ssot_briefing_ops.py",
+        "tests/apps_qna/test_w0_thin_slice.py",
+        "tests/apps_qna/test_w2_evidence_paths.py",
+        "tests/apps_research/integrations/test_pdf_ingest.py",
+        "tests/apps_underwriting_ai/test_parsers.py",
+        "tests/ci/test_check_query_progress_bar.py",
+        "tests/conftest.py",
+        "tests/governance/test_hitl_validators.py",
+        "tests/governance/test_hitl_validators_new_tests.py",
+        "tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py",
+        "tests/runtime/test_panel_attestation_writer.py",
+        "tests/tools/mcp/test_heartbeat_authority.py",
+        "tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py",
+        "tests/unit/scripts/governance/test_codex_publication_audit.py",
+        "tests/unit/system_learning/rubrics/test_registry.py",
+        "tests/unit/system_learning/runtime_adg/test_manifest_hash.py",
+        "tests/unit/tools/adg/test_reopen_connections_hardening.py",
+        "tests/unit/tools/generate/integration/test_generate_full_adg_three_bucket_default_off.py",
+        "tests/unit/tools/generate/test_check_exclusion_sync.py",
+        "tests/unit/tools/generate/test_generate_gitignore.py",
+        "tests/unit/tools/generate/test_graph_remediation_efficacy.py"
+      ]
+    },
+    {
+      "wave_id": "W7.C3.4",
+      "planned_rows": 25,
+      "files": [
+        "tests/unit/tools/generate/test_truth_expansion_gate_self_check.py",
+        "tests/unit/tools/guardian/test_bulk_fix_bare_markers.py",
+        "tests/unit/tools/guardian/test_idempotency_check.py",
+        "tests/unit/tools/mcp/test_mcp_heartbeat.py",
+        "tools/_oneoff/_export_p1_net_targets.py",
+        "tools/_oneoff/_export_p2_net_targets.py",
+        "tools/_oneoff/_l6_w4_fanin_export.py",
+        "tools/_oneoff/patch_taxonomy_reasoning_obsolete.py",
+        "tools/_oneoff/replace_allow_specific.py",
+        "tools/adg/prompt_assembly/c0_dispatcher.py",
+        "tools/adg/repair/rules/fix_p1_layer_violation.py",
+        "tools/analysis/_audit_check_p0_overlap2.py",
+        "tools/analysis/_audit_disposition_prep.py",
+        "tools/analysis/_audit_final_status.py",
+        "tools/analysis/_audit_finalize_validation.py",
+        "tools/analysis/_audit_fix_lineendings.py",
+        "tools/analysis/_audit_stage_for_commit.py",
+        "tools/analysis/_audit_wave2_verify.py",
+        "tools/analysis/mixin_audit.py",
+        "tools/debug/_adg_part_a_final_scope.py",
+        "tools/debug/_burn_check_gates.py",
+        "tools/debug/_c0_escalation_proof.py",
+        "tools/debug/_mw_usage_scan.py",
+        "tools/debug/_replay_layer_b_markers.py",
+        "tools/debug/_run_p123_gates.py"
+      ]
+    },
+    {
+      "wave_id": "W7.C3.5",
+      "planned_rows": 25,
+      "files": [
+        "tools/debug/_sc1_inspect_schema.py",
+        "tools/debug/_w2_seed_baseline.py",
+        "tools/debug/_w3_2_inspect_consumers.py",
+        "tools/debug/_w3_verify_zero_consumers.py",
+        "tools/debug/_w4_verify.py",
+        "tools/debug/_w5_verify.py",
+        "tools/debug/_w5_waiver_red_path.py",
+        "tools/debug/_w6_2a_runner.py",
+        "tools/debug/_w6_2b_only.py",
+        "tools/debug/_w_final_audit.py",
+        "tools/debug/_wave_c3_move.py",
+        "tools/debug/_wave_c_filter.py",
+        "tools/debug/_wave_d_move.py",
+        "tools/diag/b5r_direct_proof_runner.py",
+        "tools/diag/b61_targeted_validation.py",
+        "tools/diag/b62_f25_validation.py",
+        "tools/diag/step9b_process_check.py",
+        "tools/eval/regen_holdout_v2.py",
+        "tools/generate/regenerate_fixed_tests.py",
+        "tools/governance_legacy/_extract_section_runners.py",
+        "tools/governance_legacy/_trim_canonical_dispatch.py",
+        "tools/guardian/guard_final.py",
+        "tools/priority/dump_l0_authority_breaches.py",
+        "tools/priority/dump_l5_guardrail_catalog.py",
+        "tools/underwriting/_fix_holdout.py"
+      ]
+    }
+  ],
+  "layer_counts": {
+    "L0": 1,
+    "L6": 1,
+    "L_APP": 2,
+    "L_OPS": 10,
+    "L_TEST": 40,
+    "L_TOOLS": 46
+  },
+  "results": [
+    {
+      "file": "agentic_core/L0_routing/utils/filesystem_mcp_client.py",
+      "status": "instrumented",
+      "receipt_line": 41,
+      "write_statement_line": 40,
+      "layer": "L0",
+      "node_id": 235
+    },
+    {
+      "file": "agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py",
+      "status": "instrumented",
+      "receipt_line": 158,
+      "write_statement_line": 157,
+      "layer": "L6",
+      "node_id": 1777
+    },
+    {
+      "file": "apps_lic/scripts/fix_lic_imports.py",
+      "status": "instrumented",
+      "receipt_line": 15,
+      "write_statement_line": 14,
+      "layer": "L_APP",
+      "node_id": 3201
+    },
+    {
+      "file": "apps_shared/scripts/clean_shims_simple.py",
+      "status": "instrumented",
+      "receipt_line": 88,
+      "write_statement_line": 87,
+      "layer": "L_APP",
+      "node_id": 4192
+    },
+    {
+      "file": "ops_scripts/apps_rg/_dump_docx.py",
+      "status": "instrumented",
+      "receipt_line": 11,
+      "write_statement_line": 9,
+      "layer": "L_OPS",
+      "node_id": 4444
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/fix_remaining_imports_util.py",
+      "status": "instrumented",
+      "receipt_line": 29,
+      "write_statement_line": 28,
+      "layer": "L_OPS",
+      "node_id": 5129
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/generate_agent_report_util.py",
+      "status": "instrumented",
+      "receipt_line": 37,
+      "write_statement_line": 35,
+      "layer": "L_OPS",
+      "node_id": 5133
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+      "status": "instrumented",
+      "receipt_line": 200,
+      "write_statement_line": 199,
+      "layer": "L_OPS",
+      "node_id": 5173
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/set_all_agents_tested_util.py",
+      "status": "instrumented",
+      "receipt_line": 13,
+      "write_statement_line": 11,
+      "layer": "L_OPS",
+      "node_id": 5181
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/set_all_invocations_yes_util.py",
+      "status": "instrumented",
+      "receipt_line": 15,
+      "write_statement_line": 13,
+      "layer": "L_OPS",
+      "node_id": 5182
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/tooling_auto_ruff_path_util.py",
+      "status": "instrumented",
+      "receipt_line": 22,
+      "write_statement_line": 21,
+      "layer": "L_OPS",
+      "node_id": 5204
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/tooling_enforce_verb_noun_util.py",
+      "status": "instrumented",
+      "receipt_line": 23,
+      "write_statement_line": 22,
+      "layer": "L_OPS",
+      "node_id": 5205
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/update_mcp_metadata_util.py",
+      "status": "instrumented",
+      "receipt_line": 12,
+      "write_statement_line": 11,
+      "layer": "L_OPS",
+      "node_id": 5208
+    },
+    {
+      "file": "ops_scripts/root_scripts/_build_ssot_report.py",
+      "status": "instrumented",
+      "receipt_line": 25,
+      "write_statement_line": 24,
+      "layer": "L_OPS",
+      "node_id": 5343
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_core_boundary.py",
+      "status": "instrumented",
+      "receipt_line": 94,
+      "write_statement_line": 93,
+      "layer": "L_TEST",
+      "node_id": 5437
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_llm_judge_gateway.py",
+      "status": "instrumented",
+      "receipt_line": 393,
+      "write_statement_line": 392,
+      "layer": "L_TEST",
+      "node_id": 5493
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_provider_gateway.py",
+      "status": "instrumented",
+      "receipt_line": 169,
+      "write_statement_line": 168,
+      "layer": "L_TEST",
+      "node_id": 5523
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_runtime_gate_mesh.py",
+      "status": "instrumented",
+      "receipt_line": 315,
+      "write_statement_line": 314,
+      "layer": "L_TEST",
+      "node_id": 5539
+    },
+    {
+      "file": "tests/_archived_obsolete/agentic_core/L3_orchestration/exit_eval/test_rubric.py",
+      "status": "instrumented",
+      "receipt_line": 136,
+      "write_statement_line": 135,
+      "layer": "L_TEST",
+      "node_id": 5852
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_exemption_recognition.py",
+      "status": "instrumented",
+      "receipt_line": 28,
+      "write_statement_line": 27,
+      "layer": "L_TEST",
+      "node_id": 5899
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_invalid_stub_detector.py",
+      "status": "instrumented",
+      "receipt_line": 35,
+      "write_statement_line": 27,
+      "layer": "L_TEST",
+      "node_id": 5900
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_test_silent_skip_detector.py",
+      "status": "instrumented",
+      "receipt_line": 181,
+      "write_statement_line": 180,
+      "layer": "L_TEST",
+      "node_id": 5901
+    },
+    {
+      "file": "tests/_archived_obsolete/ops_scripts/ci/test_exclusion_sync_gate.py",
+      "status": "instrumented",
+      "receipt_line": 66,
+      "write_statement_line": 65,
+      "layer": "L_TEST",
+      "node_id": 5920
+    },
+    {
+      "file": "tests/_archived_obsolete/scratch/test_mcp_handshake.py",
+      "status": "instrumented",
+      "receipt_line": 53,
+      "write_statement_line": 52,
+      "layer": "L_TEST",
+      "node_id": 5936
+    },
+    {
+      "file": "tests/_archived_obsolete/unit/ops_scripts/ci/test_prompt_reception_gates.py",
+      "status": "instrumented",
+      "receipt_line": 43,
+      "write_statement_line": 27,
+      "layer": "L_TEST",
+      "node_id": 5957
+    },
+    {
+      "file": "tests/_archived_obsolete/unit/tools/ingestion/test_ingest_code_contextualization.py",
+      "status": "instrumented",
+      "receipt_line": 46,
+      "write_statement_line": 45,
+      "layer": "L_TEST",
+      "node_id": 5960
+    },
+    {
+      "file": "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
+      "status": "instrumented",
+      "receipt_line": 85,
+      "write_statement_line": 84,
+      "layer": "L_TEST",
+      "node_id": 6416
+    },
+    {
+      "file": "tests/agentic_core/L5_safety/utils/test_location_healer_util.py",
+      "status": "instrumented",
+      "receipt_line": 72,
+      "write_statement_line": 71,
+      "layer": "L_TEST",
+      "node_id": 6434
+    },
+    {
+      "file": "tests/agentic_core/test_l5_cert_ref_w4.py",
+      "status": "instrumented",
+      "receipt_line": 116,
+      "write_statement_line": 115,
+      "layer": "L_TEST",
+      "node_id": 6786
+    },
+    {
+      "file": "tests/apps_lic/test_w6_shared_ssot_briefing_ops.py",
+      "status": "instrumented",
+      "receipt_line": 58,
+      "write_statement_line": 54,
+      "layer": "L_TEST",
+      "node_id": 6896
+    },
+    {
+      "file": "tests/apps_qna/test_w0_thin_slice.py",
+      "status": "instrumented",
+      "receipt_line": 105,
+      "write_statement_line": 104,
+      "layer": "L_TEST",
+      "node_id": 6920
+    },
+    {
+      "file": "tests/apps_qna/test_w2_evidence_paths.py",
+      "status": "instrumented",
+      "receipt_line": 72,
+      "write_statement_line": 71,
+      "layer": "L_TEST",
+      "node_id": 6922
+    },
+    {
+      "file": "tests/apps_research/integrations/test_pdf_ingest.py",
+      "status": "instrumented",
+      "receipt_line": 17,
+      "write_statement_line": 16,
+      "layer": "L_TEST",
+      "node_id": 6940
+    },
+    {
+      "file": "tests/apps_underwriting_ai/test_parsers.py",
+      "status": "instrumented",
+      "receipt_line": 85,
+      "write_statement_line": 84,
+      "layer": "L_TEST",
+      "node_id": 6985
+    },
+    {
+      "file": "tests/ci/test_check_query_progress_bar.py",
+      "status": "instrumented",
+      "receipt_line": 44,
+      "write_statement_line": 43,
+      "layer": "L_TEST",
+      "node_id": 7003
+    },
+    {
+      "file": "tests/conftest.py",
+      "status": "instrumented",
+      "receipt_line": 406,
+      "write_statement_line": 405,
+      "layer": "L_TEST",
+      "node_id": 7005
+    },
+    {
+      "file": "tests/governance/test_hitl_validators.py",
+      "status": "instrumented",
+      "receipt_line": 43,
+      "write_statement_line": 42,
+      "layer": "L_TEST",
+      "node_id": 7188
+    },
+    {
+      "file": "tests/governance/test_hitl_validators_new_tests.py",
+      "status": "instrumented",
+      "receipt_line": 27,
+      "write_statement_line": 26,
+      "layer": "L_TEST",
+      "node_id": 7189
+    },
+    {
+      "file": "tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py",
+      "status": "instrumented",
+      "receipt_line": 80,
+      "write_statement_line": 79,
+      "layer": "L_TEST",
+      "node_id": 7280
+    },
+    {
+      "file": "tests/runtime/test_panel_attestation_writer.py",
+      "status": "instrumented",
+      "receipt_line": 72,
+      "write_statement_line": 71,
+      "layer": "L_TEST",
+      "node_id": 7377
+    },
+    {
+      "file": "tests/tools/mcp/test_heartbeat_authority.py",
+      "status": "instrumented",
+      "receipt_line": 80,
+      "write_statement_line": 79,
+      "layer": "L_TEST",
+      "node_id": 7529
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py",
+      "status": "instrumented",
+      "receipt_line": 26,
+      "write_statement_line": 25,
+      "layer": "L_TEST",
+      "node_id": 10218
+    },
+    {
+      "file": "tests/unit/scripts/governance/test_codex_publication_audit.py",
+      "status": "instrumented",
+      "receipt_line": 220,
+      "write_statement_line": 208,
+      "layer": "L_TEST",
+      "node_id": 10325
+    },
+    {
+      "file": "tests/unit/system_learning/rubrics/test_registry.py",
+      "status": "instrumented",
+      "receipt_line": 33,
+      "write_statement_line": 32,
+      "layer": "L_TEST",
+      "node_id": 10377
+    },
+    {
+      "file": "tests/unit/system_learning/runtime_adg/test_manifest_hash.py",
+      "status": "instrumented",
+      "receipt_line": 37,
+      "write_statement_line": 36,
+      "layer": "L_TEST",
+      "node_id": 10380
+    },
+    {
+      "file": "tests/unit/tools/adg/test_reopen_connections_hardening.py",
+      "status": "instrumented",
+      "receipt_line": 60,
+      "write_statement_line": 59,
+      "layer": "L_TEST",
+      "node_id": 10425
+    },
+    {
+      "file": "tests/unit/tools/generate/integration/test_generate_full_adg_three_bucket_default_off.py",
+      "status": "instrumented",
+      "receipt_line": 48,
+      "write_statement_line": 47,
+      "layer": "L_TEST",
+      "node_id": 10475
+    },
+    {
+      "file": "tests/unit/tools/generate/test_check_exclusion_sync.py",
+      "status": "instrumented",
+      "receipt_line": 48,
+      "write_statement_line": 47,
+      "layer": "L_TEST",
+      "node_id": 10487
+    },
+    {
+      "file": "tests/unit/tools/generate/test_generate_gitignore.py",
+      "status": "instrumented",
+      "receipt_line": 74,
+      "write_statement_line": 73,
+      "layer": "L_TEST",
+      "node_id": 10491
+    },
+    {
+      "file": "tests/unit/tools/generate/test_graph_remediation_efficacy.py",
+      "status": "instrumented",
+      "receipt_line": 23,
+      "write_statement_line": 22,
+      "layer": "L_TEST",
+      "node_id": 10493
+    },
+    {
+      "file": "tests/unit/tools/generate/test_truth_expansion_gate_self_check.py",
+      "status": "instrumented",
+      "receipt_line": 20,
+      "write_statement_line": 19,
+      "layer": "L_TEST",
+      "node_id": 10505
+    },
+    {
+      "file": "tests/unit/tools/guardian/test_bulk_fix_bare_markers.py",
+      "status": "instrumented",
+      "receipt_line": 82,
+      "write_statement_line": 81,
+      "layer": "L_TEST",
+      "node_id": 10527
+    },
+    {
+      "file": "tests/unit/tools/guardian/test_idempotency_check.py",
+      "status": "instrumented",
+      "receipt_line": 102,
+      "write_statement_line": 101,
+      "layer": "L_TEST",
+      "node_id": 10528
+    },
+    {
+      "file": "tests/unit/tools/mcp/test_mcp_heartbeat.py",
+      "status": "instrumented",
+      "receipt_line": 49,
+      "write_statement_line": 48,
+      "layer": "L_TEST",
+      "node_id": 10551
+    },
+    {
+      "file": "tools/_oneoff/_export_p1_net_targets.py",
+      "status": "instrumented",
+      "receipt_line": 61,
+      "write_statement_line": 60,
+      "layer": "L_TOOLS",
+      "node_id": 10641
+    },
+    {
+      "file": "tools/_oneoff/_export_p2_net_targets.py",
+      "status": "instrumented",
+      "receipt_line": 38,
+      "write_statement_line": 37,
+      "layer": "L_TOOLS",
+      "node_id": 10642
+    },
+    {
+      "file": "tools/_oneoff/_l6_w4_fanin_export.py",
+      "status": "instrumented",
+      "receipt_line": 69,
+      "write_statement_line": 68,
+      "layer": "L_TOOLS",
+      "node_id": 10646
+    },
+    {
+      "file": "tools/_oneoff/patch_taxonomy_reasoning_obsolete.py",
+      "status": "instrumented",
+      "receipt_line": 29,
+      "write_statement_line": 28,
+      "layer": "L_TOOLS",
+      "node_id": 10661
+    },
+    {
+      "file": "tools/_oneoff/replace_allow_specific.py",
+      "status": "instrumented",
+      "receipt_line": 52,
+      "write_statement_line": 51,
+      "layer": "L_TOOLS",
+      "node_id": 10667
+    },
+    {
+      "file": "tools/adg/prompt_assembly/c0_dispatcher.py",
+      "status": "instrumented",
+      "receipt_line": 55,
+      "write_statement_line": 54,
+      "layer": "L_TOOLS",
+      "node_id": 10751
+    },
+    {
+      "file": "tools/adg/repair/rules/fix_p1_layer_violation.py",
+      "status": "instrumented",
+      "receipt_line": 84,
+      "write_statement_line": 83,
+      "layer": "L_TOOLS",
+      "node_id": 10783
+    },
+    {
+      "file": "tools/analysis/_audit_check_p0_overlap2.py",
+      "status": "instrumented",
+      "receipt_line": 8,
+      "write_statement_line": 7,
+      "layer": "L_TOOLS",
+      "node_id": 10814
+    },
+    {
+      "file": "tools/analysis/_audit_disposition_prep.py",
+      "status": "instrumented",
+      "receipt_line": 21,
+      "write_statement_line": 20,
+      "layer": "L_TOOLS",
+      "node_id": 10819
+    },
+    {
+      "file": "tools/analysis/_audit_final_status.py",
+      "status": "instrumented",
+      "receipt_line": 13,
+      "write_statement_line": 12,
+      "layer": "L_TOOLS",
+      "node_id": 10820
+    },
+    {
+      "file": "tools/analysis/_audit_finalize_validation.py",
+      "status": "instrumented",
+      "receipt_line": 234,
+      "write_statement_line": 233,
+      "layer": "L_TOOLS",
+      "node_id": 10821
+    },
+    {
+      "file": "tools/analysis/_audit_fix_lineendings.py",
+      "status": "instrumented",
+      "receipt_line": 8,
+      "write_statement_line": 7,
+      "layer": "L_TOOLS",
+      "node_id": 10822
+    },
+    {
+      "file": "tools/analysis/_audit_stage_for_commit.py",
+      "status": "instrumented",
+      "receipt_line": 89,
+      "write_statement_line": 88,
+      "layer": "L_TOOLS",
+      "node_id": 10836
+    },
+    {
+      "file": "tools/analysis/_audit_wave2_verify.py",
+      "status": "instrumented",
+      "receipt_line": 9,
+      "write_statement_line": 8,
+      "layer": "L_TOOLS",
+      "node_id": 10840
+    },
+    {
+      "file": "tools/analysis/mixin_audit.py",
+      "status": "instrumented",
+      "receipt_line": 24,
+      "write_statement_line": 23,
+      "layer": "L_TOOLS",
+      "node_id": 10902
+    },
+    {
+      "file": "tools/debug/_adg_part_a_final_scope.py",
+      "status": "instrumented",
+      "receipt_line": 28,
+      "write_statement_line": 27,
+      "layer": "L_TOOLS",
+      "node_id": 11155
+    },
+    {
+      "file": "tools/debug/_burn_check_gates.py",
+      "status": "instrumented",
+      "receipt_line": 10,
+      "write_statement_line": 9,
+      "layer": "L_TOOLS",
+      "node_id": 11186
+    },
+    {
+      "file": "tools/debug/_c0_escalation_proof.py",
+      "status": "instrumented",
+      "receipt_line": 25,
+      "write_statement_line": 24,
+      "layer": "L_TOOLS",
+      "node_id": 11197
+    },
+    {
+      "file": "tools/debug/_mw_usage_scan.py",
+      "status": "instrumented",
+      "receipt_line": 88,
+      "write_statement_line": 87,
+      "layer": "L_TOOLS",
+      "node_id": 11234
+    },
+    {
+      "file": "tools/debug/_replay_layer_b_markers.py",
+      "status": "instrumented",
+      "receipt_line": 36,
+      "write_statement_line": 28,
+      "layer": "L_TOOLS",
+      "node_id": 11249
+    },
+    {
+      "file": "tools/debug/_run_p123_gates.py",
+      "status": "instrumented",
+      "receipt_line": 17,
+      "write_statement_line": 16,
+      "layer": "L_TOOLS",
+      "node_id": 11252
+    },
+    {
+      "file": "tools/debug/_sc1_inspect_schema.py",
+      "status": "instrumented",
+      "receipt_line": 11,
+      "write_statement_line": 10,
+      "layer": "L_TOOLS",
+      "node_id": 11255
+    },
+    {
+      "file": "tools/debug/_w2_seed_baseline.py",
+      "status": "instrumented",
+      "receipt_line": 13,
+      "write_statement_line": 12,
+      "layer": "L_TOOLS",
+      "node_id": 11277
+    },
+    {
+      "file": "tools/debug/_w3_2_inspect_consumers.py",
+      "status": "instrumented",
+      "receipt_line": 77,
+      "write_statement_line": 76,
+      "layer": "L_TOOLS",
+      "node_id": 11281
+    },
+    {
+      "file": "tools/debug/_w3_verify_zero_consumers.py",
+      "status": "instrumented",
+      "receipt_line": 73,
+      "write_statement_line": 72,
+      "layer": "L_TOOLS",
+      "node_id": 11295
+    },
+    {
+      "file": "tools/debug/_w4_verify.py",
+      "status": "instrumented",
+      "receipt_line": 102,
+      "write_statement_line": 101,
+      "layer": "L_TOOLS",
+      "node_id": 11299
+    },
+    {
+      "file": "tools/debug/_w5_verify.py",
+      "status": "instrumented",
+      "receipt_line": 67,
+      "write_statement_line": 66,
+      "layer": "L_TOOLS",
+      "node_id": 11309
+    },
+    {
+      "file": "tools/debug/_w5_waiver_red_path.py",
+      "status": "instrumented",
+      "receipt_line": 33,
+      "write_statement_line": 17,
+      "layer": "L_TOOLS",
+      "node_id": 11310
+    },
+    {
+      "file": "tools/debug/_w6_2a_runner.py",
+      "status": "instrumented",
+      "receipt_line": 12,
+      "write_statement_line": 11,
+      "layer": "L_TOOLS",
+      "node_id": 11311
+    },
+    {
+      "file": "tools/debug/_w6_2b_only.py",
+      "status": "instrumented",
+      "receipt_line": 12,
+      "write_statement_line": 11,
+      "layer": "L_TOOLS",
+      "node_id": 11312
+    },
+    {
+      "file": "tools/debug/_w_final_audit.py",
+      "status": "instrumented",
+      "receipt_line": 95,
+      "write_statement_line": 94,
+      "layer": "L_TOOLS",
+      "node_id": 11320
+    },
+    {
+      "file": "tools/debug/_wave_c3_move.py",
+      "status": "instrumented",
+      "receipt_line": 13,
+      "write_statement_line": 12,
+      "layer": "L_TOOLS",
+      "node_id": 11327
+    },
+    {
+      "file": "tools/debug/_wave_c_filter.py",
+      "status": "instrumented",
+      "receipt_line": 37,
+      "write_statement_line": 36,
+      "layer": "L_TOOLS",
+      "node_id": 11329
+    },
+    {
+      "file": "tools/debug/_wave_d_move.py",
+      "status": "instrumented",
+      "receipt_line": 17,
+      "write_statement_line": 16,
+      "layer": "L_TOOLS",
+      "node_id": 11330
+    },
+    {
+      "file": "tools/diag/b5r_direct_proof_runner.py",
+      "status": "instrumented",
+      "receipt_line": 40,
+      "write_statement_line": 39,
+      "layer": "L_TOOLS",
+      "node_id": 11355
+    },
+    {
+      "file": "tools/diag/b61_targeted_validation.py",
+      "status": "instrumented",
+      "receipt_line": 115,
+      "write_statement_line": 114,
+      "layer": "L_TOOLS",
+      "node_id": 11359
+    },
+    {
+      "file": "tools/diag/b62_f25_validation.py",
+      "status": "instrumented",
+      "receipt_line": 32,
+      "write_statement_line": 31,
+      "layer": "L_TOOLS",
+      "node_id": 11360
+    },
+    {
+      "file": "tools/diag/step9b_process_check.py",
+      "status": "instrumented",
+      "receipt_line": 21,
+      "write_statement_line": 7,
+      "layer": "L_TOOLS",
+      "node_id": 11383
+    },
+    {
+      "file": "tools/eval/regen_holdout_v2.py",
+      "status": "instrumented",
+      "receipt_line": 100,
+      "write_statement_line": 99,
+      "layer": "L_TOOLS",
+      "node_id": 11402
+    },
+    {
+      "file": "tools/generate/regenerate_fixed_tests.py",
+      "status": "instrumented",
+      "receipt_line": 44,
+      "write_statement_line": 43,
+      "layer": "L_TOOLS",
+      "node_id": 11495
+    },
+    {
+      "file": "tools/governance_legacy/_extract_section_runners.py",
+      "status": "instrumented",
+      "receipt_line": 33,
+      "write_statement_line": 32,
+      "layer": "L_TOOLS",
+      "node_id": 11532
+    },
+    {
+      "file": "tools/governance_legacy/_trim_canonical_dispatch.py",
+      "status": "instrumented",
+      "receipt_line": 14,
+      "write_statement_line": 13,
+      "layer": "L_TOOLS",
+      "node_id": 11534
+    },
+    {
+      "file": "tools/guardian/guard_final.py",
+      "status": "instrumented",
+      "receipt_line": 25,
+      "write_statement_line": 24,
+      "layer": "L_TOOLS",
+      "node_id": 11603
+    },
+    {
+      "file": "tools/priority/dump_l0_authority_breaches.py",
+      "status": "instrumented",
+      "receipt_line": 10,
+      "write_statement_line": 9,
+      "layer": "L_TOOLS",
+      "node_id": 11763
+    },
+    {
+      "file": "tools/priority/dump_l5_guardrail_catalog.py",
+      "status": "instrumented",
+      "receipt_line": 10,
+      "write_statement_line": 9,
+      "layer": "L_TOOLS",
+      "node_id": 11764
+    },
+    {
+      "file": "tools/underwriting/_fix_holdout.py",
+      "status": "instrumented",
+      "receipt_line": 81,
+      "write_statement_line": 80,
+      "layer": "L_TOOLS",
+      "node_id": 11881
+    }
+  ],
+  "skipped": [
+    {
+      "file": "tests/unit/L4_state/cache/test_vector_cache_layout.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/L0_routing/config/test_routing_calibration.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/L0_routing/utils/test_path_util.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/enforcement/test_elevator_shaft_consistency_enforcer_behavior.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/enforcement/test_integrity_and_historian_behavior.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/L4_state/utils/memory/test_sparse_index_profile_driven.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/agentic_core/runtime/entrypoints/test_integrated_single_action_spine_run.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps/apps_lic/policy/test_decision_router.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps/apps_lic/policy/test_judge_base.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_e2e/test_hash_utils.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_research/test_apps_rg_targeting_brief_prompt.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/runtime/aggregation/test__digest_utils.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/runtime/section_proof/test_section_input_usage_ledger.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/test_apps_rg_dispatch_envelope_parity.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/test_briefing_jd_c0_enhancements_w1_w2.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/test_briefing_resolution.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/apps_rg/test_section_cli_runners.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/governance_scripts/test_notion_constants_url_extract.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_adg_gate_manifest.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_annotate_consumer_mode.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_consumer_mode_declared.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_dead_methods_ratchet.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_l6_observer_law.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_no_archives_imports.py",
+      "reason": "previous_wave"
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_no_legacy_ide_refs.py",
+      "reason": "previous_wave"
+    }
+  ],
+  "failures": []
+}

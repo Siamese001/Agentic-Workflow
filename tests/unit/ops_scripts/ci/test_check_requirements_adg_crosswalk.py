@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -22,6 +23,7 @@ class TestResolve:
     def test_fully_resolved_obligation(self, tmp_path: Path) -> None:
         gate = tmp_path / "ops_scripts" / "ci" / "gate.py"
         gate.parent.mkdir(parents=True)
+        logging.info("C3 write receipt: tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py write side effect recorded")
         gate.write_text("# gate", encoding="utf-8")
         test = tmp_path / "tests" / "test_x.py"
         test.parent.mkdir(parents=True)

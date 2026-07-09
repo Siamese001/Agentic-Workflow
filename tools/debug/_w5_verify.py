@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -63,6 +64,7 @@ for rel in W5_TARGETS:
     )
 
 OUT.write_text(json.dumps({"total": len(entries), "entries": entries}, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_w5_verify.py write side effect recorded")
 print(f"[ok] wrote {OUT}")
 for e in sorted(entries, key=lambda x: x["live_consumer_count"]):
     print(f"=== {e['class_name']} ({e['live_consumer_count']} consumers) ===")

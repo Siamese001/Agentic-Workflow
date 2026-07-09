@@ -12,6 +12,7 @@ Per operator directive 2026-05-01 14:15 UTC-04:00.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -68,6 +69,7 @@ def panel_payload(tmp_path: Path) -> dict:
     """Build a panel attestation with all-SAFE jurors using a fake rubric path."""
     rubric = tmp_path / "rubric.md"
     rubric.write_text("rubric body", encoding="utf-8")
+    logging.info("C3 write receipt: tests/runtime/test_panel_attestation_writer.py write side effect recorded")
     return build_panel_attestation(
         jurors=_mk_safe_verdicts(),
         final_consensus_verdict="SAFE",

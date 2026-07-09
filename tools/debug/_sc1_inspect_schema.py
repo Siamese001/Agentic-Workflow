@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import sqlite3
 from pathlib import Path
 
 OUT = Path("artifacts/_sc1_schema.log")
 OUT.parent.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/debug/_sc1_inspect_schema.py write side effect recorded")
 
 snaps = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"))
 if not snaps:

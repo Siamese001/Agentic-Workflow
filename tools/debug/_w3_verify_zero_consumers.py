@@ -12,6 +12,7 @@ archives/ and tools/archive/ paths are excluded.
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -69,6 +70,7 @@ for entry in data["entries"]:
     )
 
 OUT.write_text(json.dumps({"total": len(results), "entries": results}, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_w3_verify_zero_consumers.py write side effect recorded")
 print(f"[ok] wrote {OUT}")
 zero = [r for r in results if r["live_consumer_count"] == 0]
 nonzero = [r for r in results if r["live_consumer_count"] > 0]

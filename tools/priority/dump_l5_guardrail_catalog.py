@@ -1,11 +1,13 @@
 """W1 P8.01 catalog: inventory L5 modules grouped by guardrail concern."""
 import csv
+import logging
 import sqlite3
 from pathlib import Path
 
 snap = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"))[-1]
 out = Path("docs/reports/maintenance/l5_guardrail_family_catalog.csv")
 out.parent.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/priority/dump_l5_guardrail_catalog.py write side effect recorded")
 
 # G01-G29 taxonomy mapping (path-fragment → G-id) per W4-P8 plan rows in Notion
 # Best-effort initial mapping; ADR will refine
@@ -72,6 +74,7 @@ with out.open("w", encoding="utf-8", newline="") as fh:
 
 # Coverage summary
 import collections
+
 g_counter: collections.Counter[str] = collections.Counter()
 for path, fi, fo, bw in rows:
     gid, _ = classify(path)

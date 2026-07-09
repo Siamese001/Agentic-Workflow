@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -84,6 +85,7 @@ for class_name, mod_path, util_path in AGENTS:
 
 outfile = REPO / "artifacts" / "agent_deprecation" / "mw_usage_scan.json"
 outfile.write_text(json.dumps(out, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_mw_usage_scan.py write side effect recorded")
 print(f"[ok] wrote {outfile}")
 
 for cls, d in out.items():

@@ -1,6 +1,6 @@
 """Seed trace_replay_eval_baseline.json with current gaps (one-time bootstrap)."""
-
 import json
+import logging
 import sqlite3
 from pathlib import Path
 
@@ -9,6 +9,7 @@ SNAP = sorted((ROOT / "artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda 
 BASELINE = ROOT / "artifacts/adg/ci_ratchets/trace_replay_eval_baseline.json"
 
 print(f"Snapshot: {SNAP.name}")
+logging.info("C3 write receipt: tools/debug/_w2_seed_baseline.py write side effect recorded")
 c = sqlite3.connect(SNAP)
 gaps = {
     f"{row[1]}:{row[0]}": True

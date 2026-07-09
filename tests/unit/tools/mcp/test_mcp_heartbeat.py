@@ -6,6 +6,7 @@ Closes the last deferred item from
 
 from __future__ import annotations
 
+import logging
 import time
 from pathlib import Path
 
@@ -45,6 +46,7 @@ class TestWriteAndRead:
     def test_read_corrupt_returns_none(self, isolated_heartbeat_dir: Path) -> None:
         path = mcp_heartbeat._heartbeat_path("corrupt_marker")
         path.write_text("this is not a valid heartbeat", encoding="utf-8")
+        logging.info("C3 write receipt: tests/unit/tools/mcp/test_mcp_heartbeat.py write side effect recorded")
         assert mcp_heartbeat.read_heartbeat("corrupt_marker") is None
 
     def test_marker_with_unsafe_chars_sanitized(self, isolated_heartbeat_dir: Path) -> None:

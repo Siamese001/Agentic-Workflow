@@ -7,12 +7,13 @@ gateway is injected) and the ``chunk_context`` metadata field is populated.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
-from tools.ingestion.ingest_code import CodeChunker, _apply_contextualization
 from tools.ingestion.contextual_chunk_builder import ContextualChunkBuilder
+from tools.ingestion.ingest_code import CodeChunker, _apply_contextualization
 
 
 def _chunk(file_path: str, content: str = "def foo(): pass", name: str = "foo") -> dict:
@@ -42,6 +43,7 @@ def test_apply_contextualization_enriches_chunks_with_heuristic_fallback(tmp_pat
     # Write a real file the helper can read
     src_file = tmp_path / "example.py"
     src_file.write_text("def foo():\n    '''Demo function.'''\n    return 1\n", encoding="utf-8")
+    logging.info("C3 write receipt: tests/_archived_obsolete/unit/tools/ingestion/test_ingest_code_contextualization.py write side effect recorded")
 
     chunks = [_chunk(file_path=str(src_file))]
     # No gateway -> heuristic path

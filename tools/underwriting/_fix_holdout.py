@@ -1,6 +1,8 @@
 """One-shot script to fix DS-R1 holdout: short/NA rationale_text entries."""
-import yaml
+import logging
 from pathlib import Path
+
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 path = REPO_ROOT / "apps_underwriting_ai" / "holdout" / "rationale_judge_holdout.yaml"
@@ -77,6 +79,7 @@ body = yaml.dump(
     width=100,
 )
 path.write_text(HEADER + body, encoding="utf-8")
+logging.info("C3 write receipt: tools/underwriting/_fix_holdout.py write side effect recorded")
 
 data2 = yaml.safe_load(path.read_text(encoding="utf-8"))
 examples = data2["examples"]

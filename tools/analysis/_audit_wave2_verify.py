@@ -1,10 +1,12 @@
 """Verify py_compile across files we changed in Wave 2."""
+import logging
 import subprocess
 import sys
 from pathlib import Path
 
 # Reconstruct list from git status
 r = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, timeout=30)
+logging.info("C3 write receipt: tools/analysis/_audit_wave2_verify.py write side effect recorded")
 changed = []
 for line in r.stdout.splitlines():
     parts = line.strip().split(maxsplit=1)

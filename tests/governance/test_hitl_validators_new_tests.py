@@ -1,13 +1,12 @@
 """
 Additional HITL validator tests for star marker and confidence band rules.
 """
-
+import logging
+import sys
 import textwrap
 from pathlib import Path
 
 import pytest
-
-import sys
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
@@ -23,6 +22,7 @@ def tmp_md(tmp_path):
     def _make(content: str, name: str = "test.md") -> Path:
         p = tmp_path / name
         p.write_text(textwrap.dedent(content), encoding="utf-8")
+        logging.info("C3 write receipt: tests/governance/test_hitl_validators_new_tests.py write side effect recorded")
         return p
 
     return _make

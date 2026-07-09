@@ -2,7 +2,7 @@
 """
 Regenerate specific test files with the fixed template.
 """
-
+import logging
 import sys
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -20,8 +20,9 @@ REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from tools.enhance_import_only_tests import analyze_module_api, generate_enhanced_test
 from tqdm import tqdm
+
+from tools.enhance_import_only_tests import analyze_module_api, generate_enhanced_test
 
 FILES_TO_FIX = [
     "tests/architecture/test_phantom_folder_regression.py",
@@ -40,6 +41,7 @@ for file_path in tqdm(files_to_fix, desc="Processing", unit="item"):
             break
     else:
         print(f"No MODULE_PATH found in {file_path}")
+        logging.info("C3 write receipt: tools/generate/regenerate_fixed_tests.py write side effect recorded")
         continue
 
     print(f"Regenerating {file_path} -> {module_path}")

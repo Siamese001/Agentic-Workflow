@@ -17,6 +17,7 @@ Run with: pytest tests/guardian/test_test_silent_skip_detector.py -v
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -177,6 +178,7 @@ def test_py(tmp_path):
     def _make(content: str) -> Path:
         p = tmp_path / "test_probe.py"
         p.write_text(content, encoding="utf-8")
+        logging.info("C3 write receipt: tests/_archived_obsolete/guardian/test_test_silent_skip_detector.py write side effect recorded")
         return p
 
     return _make

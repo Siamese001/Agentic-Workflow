@@ -4,8 +4,10 @@ Rename Unified agents in L5_safety/unified directory.
 Removes "Unified" prefix from file names and class names,
 then updates all imports across the codebase.
 """
-
+import logging
 from pathlib import Path
+
+from tqdm import tqdm
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
@@ -80,7 +82,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from tqdm import tqdm
 
 _emit_emits_metric_event("rename_unified_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("rename_unified_agents_util", "p4obs", "metric_2")
@@ -196,6 +197,7 @@ def rename_files():
         new_path = UNIFIED_DIR / new_name
         if old_path.exists():
             old_path.rename(new_path)
+            logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py write side effect recorded")
 
 
 def update_class_names_in_unified():

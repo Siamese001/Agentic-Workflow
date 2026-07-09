@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ def test_txt_ingest_produces_chunks(tmp_path: Path):
     words = [f"word{i}" for i in range(1500)]
     f = tmp_path / "sample.txt"
     f.write_text(" ".join(words), encoding="utf-8")
+    logging.info("C3 write receipt: tests/apps_research/integrations/test_pdf_ingest.py write side effect recorded")
     chunks = ingest(f, chunk_tokens=256, overlap_tokens=25)
     assert len(chunks) >= 3
     for c in chunks:

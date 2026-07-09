@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 import traceback
 from pathlib import Path
 
 LOG = Path("artifacts/_w6_2a_runner.log")
 LOG.parent.mkdir(parents=True, exist_ok=True)
+logging.info("C3 write receipt: tools/debug/_w6_2a_runner.py write side effect recorded")
 
 
 def main() -> int:

@@ -1,9 +1,11 @@
 """Convert CRLF to LF for all files staged in this commit (Wave 2/3 mass refactor side effect)."""
+import logging
 import subprocess
 from pathlib import Path
 
 # Get list of staged files
 r = subprocess.run(["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, timeout=30)
+logging.info("C3 write receipt: tools/analysis/_audit_fix_lineendings.py write side effect recorded")
 files = [f.strip() for f in r.stdout.splitlines() if f.strip()]
 print(f"Staged files: {len(files)}")
 

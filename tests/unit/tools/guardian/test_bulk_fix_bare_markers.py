@@ -11,6 +11,7 @@ Critical invariants:
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -78,6 +79,7 @@ class TestRegexBacktrackSafety:
     def test_exemption_lines_are_preserved(self, tmp_path: Path, line: str) -> None:
         file = tmp_path / "sample.py"
         file.write_text(line + "\n", encoding="utf-8")
+        logging.info("C3 write receipt: tests/unit/tools/guardian/test_bulk_fix_bare_markers.py write side effect recorded")
         edit = _rewrite_file(file, apply=True)
         assert edit.count == 0
         assert file.read_text(encoding="utf-8") == line + "\n"

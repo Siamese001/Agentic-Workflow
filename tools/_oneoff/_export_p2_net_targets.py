@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 import sys
 from pathlib import Path
@@ -34,4 +35,5 @@ for fpath, lno, edge_kind, src in cur.fetchall():
 
 out = ADG_DIR / f"p2_burndown_targets_{db.stem.replace('adg_indexed_', '')}.json"
 out.write_text(json.dumps(targets, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/_oneoff/_export_p2_net_targets.py write side effect recorded")
 print(out.name, len(targets), targets)

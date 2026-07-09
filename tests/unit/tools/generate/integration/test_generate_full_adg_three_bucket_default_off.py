@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -44,6 +45,7 @@ def test_default_env_skips_optional_enrichment(tmp_path: Path, monkeypatch: pyte
 
     snap = tmp_path / "adg_indexed_test.sqlite"
     snap.write_bytes(b"SQLite format 3\x00")
+    logging.info("C3 write receipt: tests/unit/tools/generate/integration/test_generate_full_adg_three_bucket_default_off.py write side effect recorded")
     result = mod.run_optional_three_bucket_enrichment(snap)
     assert result.skipped_reason
     assert result.report_paths == {}

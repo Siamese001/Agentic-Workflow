@@ -1,5 +1,9 @@
 """Extract text from a .docx by parsing its XML directly (no python-docx)."""
-import sys, zipfile, re, xml.etree.ElementTree as ET
+import logging
+import re
+import sys
+import xml.etree.ElementTree as ET
+import zipfile
 
 path = sys.argv[1]
 ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
@@ -7,6 +11,7 @@ ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
 with zipfile.ZipFile(path) as z:
     with z.open("word/document.xml") as f:
         tree = ET.parse(f)
+    logging.info("C3 write receipt: ops_scripts/apps_rg/_dump_docx.py write side effect recorded")
 
 root = tree.getroot()
 out_lines = []

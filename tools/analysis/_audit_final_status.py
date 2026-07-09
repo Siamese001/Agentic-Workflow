@@ -1,5 +1,8 @@
 """Final status check: are all 6 audit gates passing except AUDIT_6?"""
-import subprocess, sys
+import logging
+import subprocess
+import sys
+
 gates = [
     ("AUDIT_1 SSOT magic constants",        "ops_scripts/ci/check_ssot_magic_constants.py"),
     ("AUDIT_2 observability fan-in",        "ops_scripts/ci/check_observability_on_high_fanin.py"),
@@ -9,6 +12,7 @@ gates = [
     ("AUDIT_6 violation aging SLA",         "ops_scripts/ci/check_violation_aging_sla.py"),
 ]
 print(f"{'Gate':<42} {'Exit':<6} {'Last line of output'}")
+logging.info("C3 write receipt: tools/analysis/_audit_final_status.py write side effect recorded")
 print("-" * 100)
 for label, script in gates:
     r = subprocess.run([sys.executable, script], capture_output=True, text=True, timeout=120)

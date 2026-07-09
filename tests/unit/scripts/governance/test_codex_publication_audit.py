@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -216,6 +217,7 @@ def test_publication_audit_can_require_pr_flow_contract(monkeypatch, tmp_path: P
         ),
         encoding="utf-8",
     )
+    logging.info("C3 write receipt: tests/unit/scripts/governance/test_codex_publication_audit.py write side effect recorded")
 
     def fake_git(*args: str, cwd: Path):
         command = tuple(args)

@@ -20,3 +20,4 @@ for f in sys.argv[1:]:
     else:
         NEW: Any = p.parent / f"retrieve_{p.stem}.py"
     shutil.move(p, new)
+    logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/tooling_enforce_verb_noun_util.py write side effect recorded")

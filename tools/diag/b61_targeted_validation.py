@@ -6,16 +6,17 @@ Saves results to artifacts/b61_validation_raw.json.
 
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import (
-    BGE_M3_MODEL_ID,
-)
-
 import json
+import logging
 import os
 import sys
 import time
 
 from tqdm import tqdm
+
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -111,6 +112,7 @@ def _live_grade(dist: float, n_rel: int) -> str:
 
 # ── Setup ─────────────────────────────────────────────────────────────────────
 print("=" * 65)
+logging.info("C3 write receipt: tools/diag/b61_targeted_validation.py write side effect recorded")
 print("B6.1 Targeted Validation — F12 / F14 / F17 / F25")
 print("=" * 65)
 

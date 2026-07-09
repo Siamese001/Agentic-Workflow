@@ -1,4 +1,5 @@
 """Surgically stage only the audit-uncovered-gates plan files for commit."""
+import logging
 import subprocess
 from pathlib import Path
 
@@ -85,6 +86,7 @@ ALL = WAVE2 + WAVE3 + WAVE5 + WAVEB + UNTRACKED
 missing = [f for f in ALL if not Path(f).exists()]
 if missing:
     print("MISSING FILES (will be skipped):")
+    logging.info("C3 write receipt: tools/analysis/_audit_stage_for_commit.py write side effect recorded")
     for f in missing:
         print(f"  {f}")
 

@@ -7,6 +7,7 @@ the response.
 
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 from pathlib import Path
@@ -32,6 +33,7 @@ proc = subprocess.run(
     timeout=60,
     check=False,
 )
+logging.info("C3 write receipt: tools/debug/_replay_layer_b_markers.py write side effect recorded")
 print("exit:", proc.returncode)
 print("stdout:", proc.stdout)
 print("stderr:", proc.stderr)

@@ -20,10 +20,12 @@ LOGGER = logging.getLogger(__name__)
 Logger = logging.getLogger(__name__)
 
 """
-
+import logging
 from pathlib import Path
 from typing import Any
+
 from tqdm import tqdm
+
 from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 
@@ -84,6 +86,7 @@ def clean_prompt_governance() -> Any:
                     LINES[i] = f"from agentic_core.{import_from} import *"
                     break
             FILEPATH.write_text("\n".join(LINES), encoding="utf-8")
+            logging.info("C3 write receipt: apps_shared/scripts/clean_shims_simple.py write side effect recorded")
             LOGGER.info(f"Updated {filename} to import from agentic_core.{import_from}")
     for filename in to_delete:
         FILEPATH: Any = pg_dir / filename

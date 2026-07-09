@@ -1,8 +1,8 @@
 """
 Tests for InvalidStubDetector
 """
-
 import ast
+import logging
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.base_detector_validator import AntiPatternCategory
@@ -31,6 +31,7 @@ def test_find_book():
     result = mock_find_book("valid_id")
     assert result["status"] == 200
 """)
+        logging.info("C3 write receipt: tests/_archived_obsolete/guardian/test_invalid_stub_detector.py write side effect recorded")
 
         tree = ast.parse(test_file.read_text())
         violations = detector.detect(test_file, tree)

@@ -2,12 +2,14 @@
 Update agent discovery metadata to reflect actual MCP hardening in code.
 This scans all agent files and updates the mcp_hardened flag based on actual code.
 """
-
 import json
+import logging
 from pathlib import Path
+
 from tqdm import tqdm
 
 data = json.load(open("agent_discovery_full.json"))
+logging.info("C3 write receipt: ops_scripts/dev_tools/l0_scripts/update_mcp_metadata_util.py write side effect recorded")
 print("Updating MCP hardening metadata...")
 print()
 before_count = sum(1 for a in data if a.get("mcp_hardened"))

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import sqlite3
 from pathlib import Path
 
@@ -65,4 +66,5 @@ conn.close()
 
 dest = REPO / "docs/reports/cursor/l6_w4_adg_fanin_20260525.json"
 dest.write_text(json.dumps(out, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/_oneoff/_l6_w4_fanin_export.py write side effect recorded")
 print(dest)

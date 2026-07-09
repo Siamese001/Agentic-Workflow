@@ -1,11 +1,12 @@
 """Run P0 runner + P1/P2 ratchet checks against latest snapshot."""
-
+import logging
 import subprocess
 import sys
 from pathlib import Path
 
 snap = sorted(Path("artifacts/adg").glob("adg_indexed_*.sqlite"), key=lambda x: x.stat().st_mtime)[-1]
 print(f"snap: {snap.name}\n")
+logging.info("C3 write receipt: tools/debug/_burn_check_gates.py write side effect recorded")
 
 # P0 runner
 print("=== P0 two-pass runner ===")

@@ -6,6 +6,7 @@ Targets from W0 assessment (fan-in 15-46 via ADG resolves_callsite).
 from __future__ import annotations
 
 import json
+import logging
 import pathlib
 import re
 
@@ -98,6 +99,7 @@ for rel in W4_TARGETS:
     )
 
 OUT.write_text(json.dumps({"total": len(entries), "entries": entries}, indent=2), encoding="utf-8")
+logging.info("C3 write receipt: tools/debug/_w4_verify.py write side effect recorded")
 print(f"[ok] wrote {OUT}")
 zero = sum(1 for e in entries if e.get("live_consumer_count") == 0)
 print(f"[ok] zero live consumers: {zero}/{len(entries)}")

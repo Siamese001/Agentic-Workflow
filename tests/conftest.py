@@ -1,7 +1,7 @@
 """Core pytest configuration - sys.path setup MUST be first."""
+import os
 import sys
 import warnings
-import os
 from pathlib import Path
 
 # Filter Pydantic V2 deprecation warnings to prevent collection errors
@@ -369,7 +369,8 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
     import json as _json
     import os as _os
     import time as _time
-    from datetime import datetime as _dt, timezone as _tz
+    from datetime import datetime as _dt
+    from datetime import timezone as _tz
 
     if _os.environ.get("AUTHOR_GATE_TEST_SIGNAL_BYPASS") == "1":
         return
@@ -403,6 +404,7 @@ def pytest_sessionfinish(session, exitstatus):  # noqa: ARG001
         out_path = Path(_REPO_ROOT) / "artifacts" / sub / "last_test_signal.json"
         try:
             out_path.parent.mkdir(parents=True, exist_ok=True)
+            logging.info("C3 write receipt: tests/conftest.py write side effect recorded")
             out_path.write_text(text, encoding="utf-8")
         except OSError:
             # guardian: allow-silent-swallow -- signal write is non-critical meta-learning aid

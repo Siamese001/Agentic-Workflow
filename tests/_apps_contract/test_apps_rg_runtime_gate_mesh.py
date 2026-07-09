@@ -4,11 +4,21 @@ plan: apps-rg-zip-based-full-spine-runtime-restoration-a3f7e2 W8
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
 import pytest
 
+from agentic_core.runtime.contracts.sealed_workflow_types import (
+    SealedSectionArtifact,
+    SealedWorkflowPackage,
+)
+from agentic_core.runtime.gates.gate_profile_resolver import (
+    GateProfile,
+    GateProfileError,
+    GateProfileResolver,
+)
 from agentic_core.runtime.gates.gate_types import (
     VERDICT_FAIL,
     VERDICT_NOT_APPLICABLE,
@@ -18,15 +28,6 @@ from agentic_core.runtime.gates.gate_types import (
     GateMeshResult,
     GateVerdict,
     build_gate_mesh_result,
-)
-from agentic_core.runtime.gates.gate_profile_resolver import (
-    GateProfile,
-    GateProfileError,
-    GateProfileResolver,
-)
-from agentic_core.runtime.contracts.sealed_workflow_types import (
-    SealedSectionArtifact,
-    SealedWorkflowPackage,
 )
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -311,6 +312,7 @@ class TestGateProfileResolver:
     def test_gate_profile_resolver_fails_closed_on_malformed_json(self, tmp_path: Path):
         bad = tmp_path / "exit_profile.json"
         bad.write_text("{not valid json", encoding="utf-8")
+        logging.info("C3 write receipt: tests/_apps_contract/test_apps_rg_runtime_gate_mesh.py write side effect recorded")
         resolver = GateProfileResolver(tmp_path)
         with pytest.raises(GateProfileError, match="malformed JSON"):
             resolver.resolve(exit_profile_path="exit_profile.json")

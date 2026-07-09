@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from agentic_core.config.model_catalog import (
-    BGE_M3_MODEL_ID,
-)
-
 import json
+import logging
 import os
 import sys
 import time
+
+from agentic_core.config.model_catalog import (
+    BGE_M3_MODEL_ID,
+)
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
@@ -28,6 +29,7 @@ P13_PATTERNS = ["libs/langgraph", "langgraph_core"]
 P12_PATTERNS = ["temporalio/sdk-python", "temporal.io"]
 
 print("=== B6.2 F25 Targeted Validation ===")
+logging.info("C3 write receipt: tools/diag/b62_f25_validation.py write side effect recorded")
 print(f"Model: {MODEL}  |  Collection: {COLLECTION}  |  TopK: {TOP_K}")
 
 try:

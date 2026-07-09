@@ -5,6 +5,7 @@ Plan: apps-lic-completeness-graph-grounding-ssot-e7b2c4 (W6.1).
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -54,6 +55,7 @@ def test_apps_lic_consumes_briefing_file_via_manual_brief(tmp_path: Path) -> Non
         "AIG — Director, AI Platforms. Regulated insurer scaling agentic AI governance.\n",
         encoding="utf-8",
     )
+    logging.info("C3 write receipt: tests/apps_lic/test_w6_shared_ssot_briefing_ops.py write side effect recorded")
     loaded = _load_manual_brief_text(str(briefing))
     assert "Director, AI Platforms" in loaded
     # inline text passes through unchanged too.

@@ -5,10 +5,12 @@ Plan: docs/archive/windsurf/legacy-tree/plans/apps-qna-spine-integration-e9c5b3.
 
 from __future__ import annotations
 
+import logging
+
 import pytest
 
-from apps_qna.c0_adapter import C0UnavailableError, call_c0
 from apps_qna.briefing_validator import validate_briefing
+from apps_qna.c0_adapter import C0UnavailableError, call_c0
 from apps_qna.types.evidence_contracts import (
     BriefingValidationState,
     EvidenceSufficiency,
@@ -68,6 +70,7 @@ class TestUploadedBriefingEvidenceContract:
     def test_valid_briefing_returns_sufficient(self, tmp_path) -> None:
         p = tmp_path / "briefing.yaml"
         p.write_text("company: TestCo\nrole: DS Director\n")
+        logging.info("C3 write receipt: tests/apps_qna/test_w2_evidence_paths.py write side effect recorded")
         result = validate_briefing(briefing_path=str(p))
         assert result.validation_state == BriefingValidationState.SUFFICIENT
         assert result.company_name == "TestCo"

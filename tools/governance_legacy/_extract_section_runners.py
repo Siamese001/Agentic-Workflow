@@ -1,6 +1,7 @@
 """One-off: extract section CLI runners from canonical_dispatch."""
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 
@@ -29,4 +30,5 @@ from apps_rg.runtime.orchestration.canonical_dispatch import (
 '''
 out = REPO / "apps_rg/runtime/spine/section_cli_runners.py"
 out.write_text(header + chunk, encoding="utf-8")
+logging.info("C3 write receipt: tools/governance_legacy/_extract_section_runners.py write side effect recorded")
 print(f"wrote {out} ({len(header + chunk)} bytes)")

@@ -1,5 +1,5 @@
 """Fix LIC import paths from agent_base to LICAgentBase."""
-
+import logging
 from pathlib import Path
 
 root = Path("apps_lic/engines")
@@ -11,6 +11,7 @@ for py_file in root.glob("*.py"):
     if old_import in content:
         new_content = content.replace(old_import, new_import)
         py_file.write_text(new_content, encoding="utf-8")
+        logging.info("C3 write receipt: apps_lic/scripts/fix_lic_imports.py write side effect recorded")
         print(f"Fixed: {py_file.name}")
         fixed_count += 1
 print(f"\nTotal files fixed: {fixed_count}")

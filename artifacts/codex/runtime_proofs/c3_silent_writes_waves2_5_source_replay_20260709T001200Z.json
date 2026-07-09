@@ -1,0 +1,1422 @@
+{
+  "schema_version": "adg-c3-source-replay/v1",
+  "run_id": "adg_p1_ratchet_burndown_c3_waves2_5_20260709T001200Z",
+  "generated_at": "2026-07-09T00:16:45.032390Z",
+  "adg_snapshot_id": "07072026_2307",
+  "gate_id": "C3_silent_writes_ratchet",
+  "selected_family": "C3_silent_writes_ratchet",
+  "wave_ids": [
+    "W7.C3.2",
+    "W7.C3.3",
+    "W7.C3.4",
+    "W7.C3.5"
+  ],
+  "selected_rows": 100,
+  "passed": true,
+  "passed_rows": 100,
+  "failed_rows": 0,
+  "expected_c3_reduction_on_next_adg": 100,
+  "expected_c3_remaining_after_wave1_and_waves2_5": 0,
+  "files": [
+    {
+      "file": "agentic_core/L0_routing/utils/filesystem_mcp_client.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 40,
+      "receipt_line": 41,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 41,
+          "message": "C3 write receipt: agentic_core/L0_routing/utils/filesystem_mcp_client.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 157,
+      "receipt_line": 158,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 159,
+          "message": "C3 write receipt: agentic_core/L6_system_learning/engines/embedding_retention_scheduler.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "apps_lic/scripts/fix_lic_imports.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 14,
+      "receipt_line": 15,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 14,
+          "message": "C3 write receipt: apps_lic/scripts/fix_lic_imports.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "apps_shared/scripts/clean_shims_simple.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 87,
+      "receipt_line": 88,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 89,
+          "message": "C3 write receipt: apps_shared/scripts/clean_shims_simple.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/apps_rg/_dump_docx.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 9,
+      "receipt_line": 11,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 14,
+          "message": "C3 write receipt: ops_scripts/apps_rg/_dump_docx.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/fix_remaining_imports_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 28,
+      "receipt_line": 29,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 30,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/fix_remaining_imports_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/generate_agent_report_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 35,
+      "receipt_line": 37,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 36,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/generate_agent_report_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 199,
+      "receipt_line": 200,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 200,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/rename_unified_agents_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/set_all_agents_tested_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 11,
+      "receipt_line": 13,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 12,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/set_all_agents_tested_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/set_all_invocations_yes_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 13,
+      "receipt_line": 15,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 14,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/set_all_invocations_yes_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/tooling_auto_ruff_path_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 21,
+      "receipt_line": 22,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 22,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/tooling_auto_ruff_path_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/tooling_enforce_verb_noun_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 22,
+      "receipt_line": 23,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 23,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/tooling_enforce_verb_noun_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/dev_tools/l0_scripts/update_mcp_metadata_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 11,
+      "receipt_line": 12,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 12,
+          "message": "C3 write receipt: ops_scripts/dev_tools/l0_scripts/update_mcp_metadata_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "ops_scripts/root_scripts/_build_ssot_report.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 24,
+      "receipt_line": 25,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 25,
+          "message": "C3 write receipt: ops_scripts/root_scripts/_build_ssot_report.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_core_boundary.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 93,
+      "receipt_line": 94,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 94,
+          "message": "C3 write receipt: tests/_apps_contract/test_apps_rg_core_boundary.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_llm_judge_gateway.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 392,
+      "receipt_line": 393,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 393,
+          "message": "C3 write receipt: tests/_apps_contract/test_apps_rg_llm_judge_gateway.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_provider_gateway.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 168,
+      "receipt_line": 169,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 168,
+          "message": "C3 write receipt: tests/_apps_contract/test_apps_rg_provider_gateway.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_apps_contract/test_apps_rg_runtime_gate_mesh.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 314,
+      "receipt_line": 315,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 315,
+          "message": "C3 write receipt: tests/_apps_contract/test_apps_rg_runtime_gate_mesh.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/agentic_core/L3_orchestration/exit_eval/test_rubric.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 135,
+      "receipt_line": 136,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 136,
+          "message": "C3 write receipt: tests/_archived_obsolete/agentic_core/L3_orchestration/exit_eval/test_rubric.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_exemption_recognition.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 27,
+      "receipt_line": 28,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 29,
+          "message": "C3 write receipt: tests/_archived_obsolete/guardian/test_exemption_recognition.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_invalid_stub_detector.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 27,
+      "receipt_line": 35,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 34,
+          "message": "C3 write receipt: tests/_archived_obsolete/guardian/test_invalid_stub_detector.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/guardian/test_test_silent_skip_detector.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 180,
+      "receipt_line": 181,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 181,
+          "message": "C3 write receipt: tests/_archived_obsolete/guardian/test_test_silent_skip_detector.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/ops_scripts/ci/test_exclusion_sync_gate.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 65,
+      "receipt_line": 66,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 67,
+          "message": "C3 write receipt: tests/_archived_obsolete/ops_scripts/ci/test_exclusion_sync_gate.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/scratch/test_mcp_handshake.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 52,
+      "receipt_line": 53,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 52,
+          "message": "C3 write receipt: tests/_archived_obsolete/scratch/test_mcp_handshake.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/unit/ops_scripts/ci/test_prompt_reception_gates.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 27,
+      "receipt_line": 43,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 42,
+          "message": "C3 write receipt: tests/_archived_obsolete/unit/ops_scripts/ci/test_prompt_reception_gates.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/_archived_obsolete/unit/tools/ingestion/test_ingest_code_contextualization.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 45,
+      "receipt_line": 46,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 46,
+          "message": "C3 write receipt: tests/_archived_obsolete/unit/tools/ingestion/test_ingest_code_contextualization.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 84,
+      "receipt_line": 85,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 84,
+          "message": "C3 write receipt: tests/agentic_core/L5_safety/exit_control/test_hitl_policy.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/agentic_core/L5_safety/utils/test_location_healer_util.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 71,
+      "receipt_line": 72,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 71,
+          "message": "C3 write receipt: tests/agentic_core/L5_safety/utils/test_location_healer_util.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/agentic_core/test_l5_cert_ref_w4.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 115,
+      "receipt_line": 116,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 116,
+          "message": "C3 write receipt: tests/agentic_core/test_l5_cert_ref_w4.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/apps_lic/test_w6_shared_ssot_briefing_ops.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 54,
+      "receipt_line": 58,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 58,
+          "message": "C3 write receipt: tests/apps_lic/test_w6_shared_ssot_briefing_ops.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/apps_qna/test_w0_thin_slice.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 104,
+      "receipt_line": 105,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 106,
+          "message": "C3 write receipt: tests/apps_qna/test_w0_thin_slice.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/apps_qna/test_w2_evidence_paths.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 71,
+      "receipt_line": 72,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 73,
+          "message": "C3 write receipt: tests/apps_qna/test_w2_evidence_paths.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/apps_research/integrations/test_pdf_ingest.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 16,
+      "receipt_line": 17,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 17,
+          "message": "C3 write receipt: tests/apps_research/integrations/test_pdf_ingest.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/apps_underwriting_ai/test_parsers.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 84,
+      "receipt_line": 85,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 84,
+          "message": "C3 write receipt: tests/apps_underwriting_ai/test_parsers.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/ci/test_check_query_progress_bar.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 43,
+      "receipt_line": 44,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 43,
+          "message": "C3 write receipt: tests/ci/test_check_query_progress_bar.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/conftest.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 405,
+      "receipt_line": 406,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 407,
+          "message": "C3 write receipt: tests/conftest.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/governance/test_hitl_validators.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 42,
+      "receipt_line": 43,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 41,
+          "message": "C3 write receipt: tests/governance/test_hitl_validators.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/governance/test_hitl_validators_new_tests.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 26,
+      "receipt_line": 27,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 25,
+          "message": "C3 write receipt: tests/governance/test_hitl_validators_new_tests.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 79,
+      "receipt_line": 80,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 79,
+          "message": "C3 write receipt: tests/integration/agentic_core/test_depth_violation_no_archive_invariant.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/runtime/test_panel_attestation_writer.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 71,
+      "receipt_line": 72,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 72,
+          "message": "C3 write receipt: tests/runtime/test_panel_attestation_writer.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/tools/mcp/test_heartbeat_authority.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 79,
+      "receipt_line": 80,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 80,
+          "message": "C3 write receipt: tests/tools/mcp/test_heartbeat_authority.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 25,
+      "receipt_line": 26,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 26,
+          "message": "C3 write receipt: tests/unit/ops_scripts/ci/test_check_requirements_adg_crosswalk.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/scripts/governance/test_codex_publication_audit.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 208,
+      "receipt_line": 220,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 220,
+          "message": "C3 write receipt: tests/unit/scripts/governance/test_codex_publication_audit.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/system_learning/rubrics/test_registry.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 32,
+      "receipt_line": 33,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 32,
+          "message": "C3 write receipt: tests/unit/system_learning/rubrics/test_registry.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/system_learning/runtime_adg/test_manifest_hash.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 36,
+      "receipt_line": 37,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 36,
+          "message": "C3 write receipt: tests/unit/system_learning/runtime_adg/test_manifest_hash.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/adg/test_reopen_connections_hardening.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 59,
+      "receipt_line": 60,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 60,
+          "message": "C3 write receipt: tests/unit/tools/adg/test_reopen_connections_hardening.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/generate/integration/test_generate_full_adg_three_bucket_default_off.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 47,
+      "receipt_line": 48,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 48,
+          "message": "C3 write receipt: tests/unit/tools/generate/integration/test_generate_full_adg_three_bucket_default_off.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/generate/test_check_exclusion_sync.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 47,
+      "receipt_line": 48,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 49,
+          "message": "C3 write receipt: tests/unit/tools/generate/test_check_exclusion_sync.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/generate/test_generate_gitignore.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 73,
+      "receipt_line": 74,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 75,
+          "message": "C3 write receipt: tests/unit/tools/generate/test_generate_gitignore.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/generate/test_graph_remediation_efficacy.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 22,
+      "receipt_line": 23,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 22,
+          "message": "C3 write receipt: tests/unit/tools/generate/test_graph_remediation_efficacy.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/generate/test_truth_expansion_gate_self_check.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 19,
+      "receipt_line": 20,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 20,
+          "message": "C3 write receipt: tests/unit/tools/generate/test_truth_expansion_gate_self_check.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/guardian/test_bulk_fix_bare_markers.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 81,
+      "receipt_line": 82,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 82,
+          "message": "C3 write receipt: tests/unit/tools/guardian/test_bulk_fix_bare_markers.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/guardian/test_idempotency_check.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 101,
+      "receipt_line": 102,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 102,
+          "message": "C3 write receipt: tests/unit/tools/guardian/test_idempotency_check.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tests/unit/tools/mcp/test_mcp_heartbeat.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 48,
+      "receipt_line": 49,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 49,
+          "message": "C3 write receipt: tests/unit/tools/mcp/test_mcp_heartbeat.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/_oneoff/_export_p1_net_targets.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 60,
+      "receipt_line": 61,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 61,
+          "message": "C3 write receipt: tools/_oneoff/_export_p1_net_targets.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/_oneoff/_export_p2_net_targets.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 37,
+      "receipt_line": 38,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 38,
+          "message": "C3 write receipt: tools/_oneoff/_export_p2_net_targets.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/_oneoff/_l6_w4_fanin_export.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 68,
+      "receipt_line": 69,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 69,
+          "message": "C3 write receipt: tools/_oneoff/_l6_w4_fanin_export.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/_oneoff/patch_taxonomy_reasoning_obsolete.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 28,
+      "receipt_line": 29,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 29,
+          "message": "C3 write receipt: tools/_oneoff/patch_taxonomy_reasoning_obsolete.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/_oneoff/replace_allow_specific.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 51,
+      "receipt_line": 52,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 52,
+          "message": "C3 write receipt: tools/_oneoff/replace_allow_specific.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/adg/prompt_assembly/c0_dispatcher.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 54,
+      "receipt_line": 55,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 55,
+          "message": "C3 write receipt: tools/adg/prompt_assembly/c0_dispatcher.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/adg/repair/rules/fix_p1_layer_violation.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 83,
+      "receipt_line": 84,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 84,
+          "message": "C3 write receipt: tools/adg/repair/rules/fix_p1_layer_violation.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_check_p0_overlap2.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 7,
+      "receipt_line": 8,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 10,
+          "message": "C3 write receipt: tools/analysis/_audit_check_p0_overlap2.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_disposition_prep.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 20,
+      "receipt_line": 21,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 22,
+          "message": "C3 write receipt: tools/analysis/_audit_disposition_prep.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_final_status.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 12,
+      "receipt_line": 13,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 15,
+          "message": "C3 write receipt: tools/analysis/_audit_final_status.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_finalize_validation.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 233,
+      "receipt_line": 234,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 234,
+          "message": "C3 write receipt: tools/analysis/_audit_finalize_validation.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_fix_lineendings.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 7,
+      "receipt_line": 8,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 8,
+          "message": "C3 write receipt: tools/analysis/_audit_fix_lineendings.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_stage_for_commit.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 88,
+      "receipt_line": 89,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 89,
+          "message": "C3 write receipt: tools/analysis/_audit_stage_for_commit.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/_audit_wave2_verify.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 8,
+      "receipt_line": 9,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 9,
+          "message": "C3 write receipt: tools/analysis/_audit_wave2_verify.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/analysis/mixin_audit.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 23,
+      "receipt_line": 24,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 25,
+          "message": "C3 write receipt: tools/analysis/mixin_audit.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_adg_part_a_final_scope.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 27,
+      "receipt_line": 28,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 27,
+          "message": "C3 write receipt: tools/debug/_adg_part_a_final_scope.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_burn_check_gates.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 9,
+      "receipt_line": 10,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 9,
+          "message": "C3 write receipt: tools/debug/_burn_check_gates.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_c0_escalation_proof.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 24,
+      "receipt_line": 25,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 24,
+          "message": "C3 write receipt: tools/debug/_c0_escalation_proof.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_mw_usage_scan.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 87,
+      "receipt_line": 88,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 88,
+          "message": "C3 write receipt: tools/debug/_mw_usage_scan.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_replay_layer_b_markers.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 28,
+      "receipt_line": 36,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 36,
+          "message": "C3 write receipt: tools/debug/_replay_layer_b_markers.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_run_p123_gates.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 16,
+      "receipt_line": 17,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 17,
+          "message": "C3 write receipt: tools/debug/_run_p123_gates.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_sc1_inspect_schema.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 10,
+      "receipt_line": 11,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 11,
+          "message": "C3 write receipt: tools/debug/_sc1_inspect_schema.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w2_seed_baseline.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 12,
+      "receipt_line": 13,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 12,
+          "message": "C3 write receipt: tools/debug/_w2_seed_baseline.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w3_2_inspect_consumers.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 76,
+      "receipt_line": 77,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 77,
+          "message": "C3 write receipt: tools/debug/_w3_2_inspect_consumers.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w3_verify_zero_consumers.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 72,
+      "receipt_line": 73,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 73,
+          "message": "C3 write receipt: tools/debug/_w3_verify_zero_consumers.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w4_verify.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 101,
+      "receipt_line": 102,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 102,
+          "message": "C3 write receipt: tools/debug/_w4_verify.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w5_verify.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 66,
+      "receipt_line": 67,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 67,
+          "message": "C3 write receipt: tools/debug/_w5_verify.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w5_waiver_red_path.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 17,
+      "receipt_line": 33,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 32,
+          "message": "C3 write receipt: tools/debug/_w5_waiver_red_path.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w6_2a_runner.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 11,
+      "receipt_line": 12,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 12,
+          "message": "C3 write receipt: tools/debug/_w6_2a_runner.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w6_2b_only.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 11,
+      "receipt_line": 12,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 12,
+          "message": "C3 write receipt: tools/debug/_w6_2b_only.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_w_final_audit.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 94,
+      "receipt_line": 95,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 95,
+          "message": "C3 write receipt: tools/debug/_w_final_audit.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_wave_c3_move.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 12,
+      "receipt_line": 13,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 13,
+          "message": "C3 write receipt: tools/debug/_wave_c3_move.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_wave_c_filter.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 36,
+      "receipt_line": 37,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 37,
+          "message": "C3 write receipt: tools/debug/_wave_c_filter.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/debug/_wave_d_move.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 16,
+      "receipt_line": 17,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 17,
+          "message": "C3 write receipt: tools/debug/_wave_d_move.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/diag/b5r_direct_proof_runner.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 39,
+      "receipt_line": 40,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 40,
+          "message": "C3 write receipt: tools/diag/b5r_direct_proof_runner.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/diag/b61_targeted_validation.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 114,
+      "receipt_line": 115,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 115,
+          "message": "C3 write receipt: tools/diag/b61_targeted_validation.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/diag/b62_f25_validation.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 31,
+      "receipt_line": 32,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 32,
+          "message": "C3 write receipt: tools/diag/b62_f25_validation.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/diag/step9b_process_check.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 7,
+      "receipt_line": 21,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 20,
+          "message": "C3 write receipt: tools/diag/step9b_process_check.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/eval/regen_holdout_v2.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 99,
+      "receipt_line": 100,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 100,
+          "message": "C3 write receipt: tools/eval/regen_holdout_v2.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/generate/regenerate_fixed_tests.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 43,
+      "receipt_line": 44,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 44,
+          "message": "C3 write receipt: tools/generate/regenerate_fixed_tests.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/governance_legacy/_extract_section_runners.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 32,
+      "receipt_line": 33,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 33,
+          "message": "C3 write receipt: tools/governance_legacy/_extract_section_runners.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/governance_legacy/_trim_canonical_dispatch.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 13,
+      "receipt_line": 14,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 14,
+          "message": "C3 write receipt: tools/governance_legacy/_trim_canonical_dispatch.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/guardian/guard_final.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 24,
+      "receipt_line": 25,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 25,
+          "message": "C3 write receipt: tools/guardian/guard_final.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/priority/dump_l0_authority_breaches.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 9,
+      "receipt_line": 10,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 10,
+          "message": "C3 write receipt: tools/priority/dump_l0_authority_breaches.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/priority/dump_l5_guardrail_catalog.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 9,
+      "receipt_line": 10,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 10,
+          "message": "C3 write receipt: tools/priority/dump_l5_guardrail_catalog.py write side effect recorded"
+        }
+      ]
+    },
+    {
+      "file": "tools/underwriting/_fix_holdout.py",
+      "expected_c3_row_delta": 1,
+      "write_statement_line": 80,
+      "receipt_line": 81,
+      "emits_side_effect_call_count": 1,
+      "passed": true,
+      "sample": [
+        {
+          "line": 82,
+          "message": "C3 write receipt: tools/underwriting/_fix_holdout.py write side effect recorded"
+        }
+      ]
+    }
+  ]
+}

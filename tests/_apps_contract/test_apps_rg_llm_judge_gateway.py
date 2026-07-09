@@ -15,10 +15,12 @@ Tests:
 from __future__ import annotations
 
 import inspect
+import logging
 from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.contracts.judge_types import JudgeResult
 from agentic_core.runtime.judges import (
     JudgeDimension,
     JudgeKind,
@@ -34,8 +36,6 @@ from agentic_core.runtime.providers import (
     ProviderMode,
     ProviderRegistry,
 )
-from agentic_core.runtime.contracts.judge_types import JudgeResult
-
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -142,7 +142,8 @@ class TestJudgeGatewayInvokesProvider:
         
         # Create provider gateway
         provider_registry = ProviderRegistry()
-        from agentic_core.runtime.providers.provider_types import ProviderProfile as ProvProfile, ProviderKind
+        from agentic_core.runtime.providers.provider_types import ProviderKind
+        from agentic_core.runtime.providers.provider_types import ProviderProfile as ProvProfile
         stub_prov = ProvProfile(
             profile_id="stub_provider",
             provider_kind=ProviderKind.STUB,
@@ -389,6 +390,7 @@ class TestJudgeRegistry:
         import yaml
         yaml_path = tmp_path / "test_grader_roster.yaml"
         yaml_path.write_text(yaml.safe_dump(yaml_content))
+        logging.info("C3 write receipt: tests/_apps_contract/test_apps_rg_llm_judge_gateway.py write side effect recorded")
         
         count = registry.load_from_grader_roster(yaml_path)
         assert count >= 2  # Should load both types

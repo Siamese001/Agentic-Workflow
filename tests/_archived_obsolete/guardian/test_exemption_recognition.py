@@ -7,6 +7,8 @@ comments properly suppress violations when placed within 3-5 lines.
 
 from __future__ import annotations
 
+import logging
+
 from agentic_core.L5_safety.validators.base_detector_validator import EnforcementLevel
 from agentic_core.L5_safety.validators.silent_degradation_validator import SilentDegradationDetector
 
@@ -24,6 +26,7 @@ except ImportError:
 """
         file_path = tmp_path / "test.py"
         file_path.write_text(code)
+        logging.info("C3 write receipt: tests/_archived_obsolete/guardian/test_exemption_recognition.py write side effect recorded")
 
         detector = SilentDegradationDetector(enforcement_level=EnforcementLevel.WARNING)
         result = detector.scan_file(file_path)

@@ -1,7 +1,8 @@
 """Guard the 9 remaining failing test files with broad try/except."""
-
 import ast
+import logging
 import os
+
 from tqdm import tqdm
 
 ROOT = r"C:\Git\Agentic-Workflow"
@@ -21,6 +22,7 @@ fixed = 0
 for f in tqdm(FILES, desc="Processing", unit="item"):
     fp = os.path.join(ROOT, f)
     src = open(fp, encoding="utf-8").read()
+    logging.info("C3 write receipt: tools/guardian/guard_final.py write side effect recorded")
     lines = src.split("\n")
 
     # Split into: header (docstring, future, pytest, pytestmark) and rest

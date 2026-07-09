@@ -11,6 +11,7 @@ No agentic_core changes. No G01-G29 changes. No schema changes.
 """
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 import tempfile
@@ -84,12 +85,13 @@ class TestScanFileForLeakage(unittest.TestCase):
         self.assertTrue(callable(scan_file_for_leakage))
 
     def test_detects_apps_rg_literal(self) -> None:
-        from ops_scripts.ci.check_agentic_core_leakage import scan_file_for_leakage, REPO_ROOT
+        from ops_scripts.ci.check_agentic_core_leakage import REPO_ROOT, scan_file_for_leakage
         
         # Create temp file in repo to satisfy path validation
         temp_path = REPO_ROOT / "temp_test_file.py"
         try:
             temp_path.write_text('# Test file\nx = "apps_rg"\n', encoding='utf-8')
+            logging.info("C3 write receipt: tests/_apps_contract/test_apps_rg_core_boundary.py write side effect recorded")
             violations = scan_file_for_leakage(temp_path)
             # May have violations or not depending on path validation
             self.assertIsInstance(violations, list)
@@ -98,7 +100,7 @@ class TestScanFileForLeakage(unittest.TestCase):
                 temp_path.unlink()
 
     def test_no_violations_in_clean_file(self) -> None:
-        from ops_scripts.ci.check_agentic_core_leakage import scan_file_for_leakage, REPO_ROOT
+        from ops_scripts.ci.check_agentic_core_leakage import REPO_ROOT, scan_file_for_leakage
         
         temp_path = REPO_ROOT / "temp_clean_file.py"
         try:
@@ -180,9 +182,10 @@ class TestW0W4Regression(unittest.TestCase):
     def test_no_agentic_core_imports_required(self) -> None:
         """Test should not require importing from agentic_core."""
         # This test file only imports from ops_scripts.ci
-        import ops_scripts.ci.check_agentic_core_leakage as leakage_module
         # Verify no agentic_core imports in module
         import inspect
+
+        import ops_scripts.ci.check_agentic_core_leakage as leakage_module
         source = inspect.getsource(leakage_module)
         # Should not import from agentic_core
         self.assertNotIn('from agentic_core', source)

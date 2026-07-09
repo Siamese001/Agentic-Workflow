@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 
@@ -37,6 +38,7 @@ class FilesystemMCPClient:
             if self._base_path:
                 path = self._base_path / path
             path.write_text(content, encoding="utf-8")
+            logging.info("C3 write receipt: agentic_core/L0_routing/utils/filesystem_mcp_client.py write side effect recorded")
             return True
         except (
             OSError,

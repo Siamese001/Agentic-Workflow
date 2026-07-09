@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import pathlib
 import re
 from collections import Counter, defaultdict
@@ -33,6 +34,7 @@ for d, files in by_dir.items():
             truly_dead.append(f)
 
 print(f"TRULY DEAD: {len(truly_dead)}")
+logging.info("C3 write receipt: tools/debug/_wave_c_filter.py write side effect recorded")
 print(f"EXCLUDED (parent __init__.py re-exports): {len(excluded)}")
 bydir = Counter(str(pathlib.Path(d).parent).replace("\\", "/") for d in truly_dead)
 for k, v in sorted(bydir.items(), key=lambda x: -x[1]):

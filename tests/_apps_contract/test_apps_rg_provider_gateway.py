@@ -11,12 +11,14 @@ Tests:
 
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 
 import pytest
 import yaml
 
+from agentic_core.runtime.contracts.l3_to_l2_step_contract import L3ToL2StepContract
 from agentic_core.runtime.providers import (
     BudgetStatus,
     ProviderGateway,
@@ -37,8 +39,6 @@ from agentic_core.runtime.providers import (
     get_provider_registry,
     reset_provider_registry,
 )
-from agentic_core.runtime.contracts.l3_to_l2_step_contract import L3ToL2StepContract
-
 
 # ── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -165,6 +165,7 @@ class TestProviderGatewayBlocksMissingProfile:
         
         yaml_path = tmp_path / "test_providers.yaml"
         yaml_path.write_text(yaml.safe_dump(yaml_content))
+        logging.info("C3 write receipt: tests/_apps_contract/test_apps_rg_provider_gateway.py write side effect recorded")
         
         count = registry.load_from_yaml(yaml_path)
         assert count == 1
@@ -466,6 +467,7 @@ class TestNoProviderHardcoding:
     def test_no_hardcoded_provider_names_in_gateway(self):
         """Provider gateway has no hardcoded provider names."""
         import inspect
+
         from agentic_core.runtime.providers import provider_gateway
         
         source = inspect.getsource(provider_gateway)
