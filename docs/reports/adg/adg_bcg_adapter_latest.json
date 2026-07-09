@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-09T02:05:08+00:00",
+  "generated_at_utc": "2026-07-09T02:46:16+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -13,43 +13,6 @@
   },
   "policy_version": "2026-06-28.high_signal_burndown_v1",
   "priority_rows": [
-    {
-      "band": "P1",
-      "baseline_count": 0,
-      "classification": "regressed",
-      "delta_vs_baseline": 1,
-      "enforcement": "ratchet",
-      "gate_class": "NewOrphansDeltaGate",
-      "gate_id": "H1_new_orphans_delta_ratchet",
-      "is_burndown_work": true,
-      "is_kpi_or_watchlist": false,
-      "materiality": "architecture_backlog",
-      "next_step": "Regression +1 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
-      "raw_gate": {
-        "band": "P1",
-        "baseline_count": 0,
-        "classification": "regressed",
-        "dispatch": "in-process",
-        "enforcement": "ratchet",
-        "exit_code": 1,
-        "gate_class": "NewOrphansDeltaGate",
-        "gate_id": "H1_new_orphans_delta_ratchet",
-        "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
-        "owner": "wiring_ci",
-        "source": "sql",
-        "status": "fail",
-        "stderr_tail": [],
-        "violation_count": 1
-      },
-      "reported_for_priority_queue": true,
-      "rows": 1,
-      "section": "fix_now",
-      "section_label": "Fix now",
-      "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +1 vs baseline 0.",
-      "status": "fail",
-      "sub": "regr",
-      "verdict": "FIX"
-    },
     {
       "band": "P0",
       "baseline_count": 1450,
@@ -1212,7 +1175,7 @@
     },
     "clear": {
       "description": "Zero-action rows.",
-      "gate_count": 30,
+      "gate_count": 31,
       "label": "Clear",
       "row_count": 0,
       "rows": [
@@ -1962,6 +1925,43 @@
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
+          "gate_class": "NewOrphansDeltaGate",
+          "gate_id": "H1_new_orphans_delta_ratchet",
+          "is_burndown_work": false,
+          "is_kpi_or_watchlist": false,
+          "materiality": "architecture_backlog",
+          "next_step": "None \u2014 gate clean (zero rows).",
+          "raw_gate": {
+            "band": "P1",
+            "baseline_count": 0,
+            "classification": "pass",
+            "dispatch": "in-process",
+            "enforcement": "ratchet",
+            "exit_code": 0,
+            "gate_class": "NewOrphansDeltaGate",
+            "gate_id": "H1_new_orphans_delta_ratchet",
+            "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
+            "owner": "wiring_ci",
+            "source": "sql",
+            "status": "pass",
+            "stderr_tail": [],
+            "violation_count": 0
+          },
+          "reported_for_priority_queue": false,
+          "rows": 0,
+          "section": "clear",
+          "section_label": "Clear",
+          "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: No rows.",
+          "status": "pass",
+          "sub": "\u2014",
+          "verdict": "CLEAR"
+        },
+        {
+          "band": "P1",
+          "baseline_count": 0,
+          "classification": "pass",
+          "delta_vs_baseline": 0,
+          "enforcement": "ratchet",
           "gate_class": "FaninCollapseGate",
           "gate_id": "H2_fanin_collapse_ratchet",
           "is_burndown_work": false,
@@ -2330,48 +2330,10 @@
     },
     "fix_now": {
       "description": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
-      "gate_count": 1,
+      "gate_count": 0,
       "label": "Fix now",
-      "row_count": 1,
-      "rows": [
-        {
-          "band": "P1",
-          "baseline_count": 0,
-          "classification": "regressed",
-          "delta_vs_baseline": 1,
-          "enforcement": "ratchet",
-          "gate_class": "NewOrphansDeltaGate",
-          "gate_id": "H1_new_orphans_delta_ratchet",
-          "is_burndown_work": true,
-          "is_kpi_or_watchlist": false,
-          "materiality": "architecture_backlog",
-          "next_step": "Regression +1 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt.",
-          "raw_gate": {
-            "band": "P1",
-            "baseline_count": 0,
-            "classification": "regressed",
-            "dispatch": "in-process",
-            "enforcement": "ratchet",
-            "exit_code": 1,
-            "gate_class": "NewOrphansDeltaGate",
-            "gate_id": "H1_new_orphans_delta_ratchet",
-            "handler": "ops_scripts/ci/check_w6_new_orphans_delta.py",
-            "owner": "wiring_ci",
-            "source": "sql",
-            "status": "fail",
-            "stderr_tail": [],
-            "violation_count": 1
-          },
-          "reported_for_priority_queue": true,
-          "rows": 1,
-          "section": "fix_now",
-          "section_label": "Fix now",
-          "signal": "Counts: Modules newly fan_in=0 vs prior snapshot (new orphans). Sub: +1 vs baseline 0.",
-          "status": "fail",
-          "sub": "regr",
-          "verdict": "FIX"
-        }
-      ]
+      "row_count": 0,
+      "rows": []
     },
     "kpi_watchlist": {
       "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
@@ -2569,25 +2531,25 @@
   },
   "source": {
     "burndown_schema_version": "2.2",
-    "overall_exit_code": 1,
-    "snapshot": "adg_indexed_07082026_2156.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2156.sqlite",
-    "timestamp": "2026-07-09T02:02:35.916900+00:00"
+    "overall_exit_code": 0,
+    "snapshot": "adg_indexed_07082026_2238.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-generate-full-adg\\artifacts\\adg\\adg_indexed_07082026_2238.sqlite",
+    "timestamp": "2026-07-09T02:43:17.337866+00:00"
   },
   "summary": {
     "burn_down_gates": 13,
     "burn_down_rows": 7559,
-    "clear_gates": 30,
-    "fix_now_gates": 1,
-    "fix_now_rows": 1,
+    "clear_gates": 31,
+    "fix_now_gates": 0,
+    "fix_now_rows": 0,
     "kpi_watchlist_gates": 5,
     "kpi_watchlist_rows": 12148,
-    "priority_queue_gate_count": 14,
-    "priority_queue_row_count": 7560,
+    "priority_queue_gate_count": 13,
+    "priority_queue_row_count": 7559,
     "report_only_gate_count": 5,
     "report_only_row_count": 12148,
     "total_gates": 49,
-    "work_section_gate_count": 14,
-    "work_section_row_count": 7560
+    "work_section_gate_count": 13,
+    "work_section_row_count": 7559
   }
 }

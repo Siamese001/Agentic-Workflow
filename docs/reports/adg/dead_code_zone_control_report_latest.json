@@ -105,13 +105,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.12%.",
+          "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
           "move": "Reduce low-confidence noise",
           "next_step": "Lower the noise floor, then rerun the scan.",
           "priority": 5,
           "rank": 5,
           "scope": "first-party nodes",
-          "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.12%.",
+          "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
           "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
           "why_this_rank": "Lower the noise floor, then rerun the scan.",
           "work": "Reduce low-confidence noise"
@@ -147,12 +147,12 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07082026_2156.sqlite (snapshot 07082026_2156)",
+        "ADG source: artifacts/adg/adg_indexed_07082026_2238.sqlite (snapshot 07082026_2238)",
         "Dead code candidates: 913",
         "Dead imports: 913",
         "Unresolved imports: 483",
         "First-party low-confidence ratio: 1.55%",
-        "Inferred-symbol ratio: 10.12%",
+        "Inferred-symbol ratio: 10.11%",
         "Cleanup candidates surfaced: 0"
       ],
       "title": "BCG Deletion Brief",
@@ -264,13 +264,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.12%.",
+        "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
         "move": "Reduce low-confidence noise",
         "next_step": "Lower the noise floor, then rerun the scan.",
         "priority": 5,
         "rank": 5,
         "scope": "first-party nodes",
-        "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.12%.",
+        "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
         "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
         "why_this_rank": "Lower the noise floor, then rerun the scan.",
         "work": "Reduce low-confidence noise"
@@ -304,8 +304,8 @@
       "dead_code_candidates": 913,
       "dead_imports": 913,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.55081072403275,
-      "inferred_symbol_ratio": 10.115815733330322,
+      "first_party_low_confidence_ratio": 1.5507609323829705,
+      "inferred_symbol_ratio": 10.114737537178236,
       "unresolved_imports": 483,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
@@ -447,8 +447,8 @@
     "executive_metrics": {
       "dead_code_count": 913,
       "dead_import_count": 913,
-      "first_party_low_confidence_ratio": 1.55081072403275,
-      "inferred_symbol_ratio": 10.115815733330322,
+      "first_party_low_confidence_ratio": 1.5507609323829705,
+      "inferred_symbol_ratio": 10.114737537178236,
       "l4_unresolved_import_count": 0,
       "low_confidence_count": 483,
       "unresolved_import_count": 483
@@ -465,7 +465,7 @@
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17923
+      "MEDIUM": 17922
     },
     "inferred_by_layer": {
       "L0": 1348,
@@ -475,8 +475,8 @@
       "L4": 607,
       "L5": 1284,
       "L6": 1328,
-      "L_APP": 5492,
-      "L_OPS": 503,
+      "L_APP": 5489,
+      "L_OPS": 505,
       "L_PG": 497,
       "L_RUNTIME": 1068,
       "L_SHARED": 602,
@@ -484,12 +484,12 @@
       "L_TOOLS": 2359,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.115815733330322,
-    "total_inferred_symbols": 17923,
-    "total_symbols": 177178
+    "inferred_symbol_ratio": 10.114737537178236,
+    "total_inferred_symbols": 17922,
+    "total_symbols": 177187
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.55081072403275,
+    "first_party_low_confidence_ratio": 1.5507609323829705,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
       "symbol": 483
@@ -509,8 +509,8 @@
     "total_low_confidence": 483
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07082026_2156.sqlite",
-    "adg_snapshot_ts": "07082026_2156",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07082026_2238.sqlite",
+    "adg_snapshot_ts": "07082026_2238",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -520,11 +520,11 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07082026_2156.sqlite",
-    "adg_snapshot_ts": "07082026_2156",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07082026_2238.sqlite",
+    "adg_snapshot_ts": "07082026_2238",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.55081072403275,
-    "inferred_symbol_ratio": 10.115815733330322,
+    "first_party_low_confidence_ratio": 1.5507609323829705,
+    "inferred_symbol_ratio": 10.114737537178236,
     "l4_unresolved_imports": 0,
     "total_dead_code_candidates": 913,
     "total_dead_imports": 913,

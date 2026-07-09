@@ -1,9 +1,9 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-09T02:05:08+00:00
+- **Generated:** 2026-07-09T02:46:16+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-09T02:02:35.916900+00:00
-- **Work sections:** 14 gate(s) / 7,560 row(s)
+- **Source timestamp:** 2026-07-09T02:43:17.337866+00:00
+- **Work sections:** 13 gate(s) / 7,559 row(s)
 - **KPI/watchlist:** 5 gate(s) / 12,148 row(s)
 
 This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.
@@ -12,9 +12,7 @@ This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one own
 
 Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.
 
-| Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
-|------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `H1_new_orphans_delta_ratchet` | architecture_backlog | P1 | ratchet | FIX | regr | 1 | Regression +1 over baseline 0: fix the new findings, or re-baseline via the gate's `--regenerate-baseline` if intentional/approved debt. |
+_No rows._
 
 ## Burn down / owned backlog
 

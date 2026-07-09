@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-07-09T02:05:08+00:00
+- **Generated:** 2026-07-09T02:46:17+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_07082026_2156.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_07082026_2238.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07082026_2156.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07082026_2238.json`
 
 ### BCG Cleanup Brief
 
@@ -14,12 +14,12 @@
 - **Deletion status:** DELETION_CANDIDATES
 - **Source report status:** PASS
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_07082026_2156.sqlite (snapshot 07082026_2156)
+  - ADG source: artifacts/adg/adg_indexed_07082026_2238.sqlite (snapshot 07082026_2238)
   - Dead code candidates: 913
   - Dead imports: 913
   - Unresolved imports: 483
   - First-party low-confidence ratio: 1.55%
-  - Inferred-symbol ratio: 10.12%
+  - Inferred-symbol ratio: 10.11%
   - Cleanup candidates surfaced: 0
 - **Priority rule:** Confirmed dead code first, then unresolved imports, then low-confidence noise, then low-value diagnostics.
 
@@ -31,7 +31,7 @@ Fix now:
 | 2 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 12 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 3 | Remove confirmed dead imports | This is high-confidence cleanup because the completed ADG resolved it as dead import traffic. | 11 resolved dead-import overlay row(s) point at this file. | Remove the imports, then rerun ADG to confirm the dead-import signal clears. |
 | 4 | Triage unresolved imports | Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities. | 483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9). | Trace the top unresolved scope before deleting anything else. |
-| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.12%. | Lower the noise floor, then rerun the scan. |
+| 5 | Reduce low-confidence noise | Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing. | First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%. | Lower the noise floor, then rerun the scan. |
 | 6 | Deprecate low-value ADG signals | Remove empty or low-value diagnostics to cut review overhead once the evidence layer is stable. | 0 MV candidates and 0 unused artifacts surfaced by the report. | Deprecate only after higher-confidence cleanup is complete. |
 
 Next step: Deprecate first, then delete after the evidence stays clean.
@@ -70,12 +70,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **P2 ratchet status:** WITHIN_CEILING
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_07082026_2156.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_07082026_2238.sqlite
   - P2 ceiling: 29
   - Current MEDIUM hygiene count: 29
   - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_07082026_2156.sqlite
-  - Latest failed run: 2026-07-09T02:05:08Z (failed)
+  - Baseline snapshot: adg_indexed_07082026_2238.sqlite
+  - Latest failed run: 2026-07-09T02:46:16Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 Fix now:
@@ -95,9 +95,9 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Current MEDIUM hygiene count:** 29
 - **Ceiling:** 29
 - **Delta:** +0
-- **Baseline snapshot:** adg_indexed_07082026_2156.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_07082026_2156.sqlite
-- **Latest failed run:** 2026-07-09T02:05:08Z (failed)
+- **Baseline snapshot:** adg_indexed_07082026_2238.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_07082026_2238.sqlite
+- **Latest failed run:** 2026-07-09T02:46:16Z (failed)
 
 ### Evidence Buckets
 

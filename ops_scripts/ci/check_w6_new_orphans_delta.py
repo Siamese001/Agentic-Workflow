@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Gate H1 — new-orphan delta (plan W6.1).
 
-Compares the current snapshot's orphan set (production modules with
-``fan_in=0`` on ``imports``) against the prior snapshot's orphan set.
+Compares the current snapshot's orphan set (production modules with no
+incoming module-or-symbol ``imports`` fan-in) against the prior snapshot's
+orphan set.
 Any module that is an orphan NOW but was NOT an orphan in the prior
 snapshot is a new orphan — flagged.
 
@@ -35,21 +36,29 @@ from ops_scripts.ci._adg_wiring_gate_base import (  # noqa: E402
 )
 
 PROD_LAYERS = ("L0", "L1", "L2", "L3", "L4", "L5", "L6", "L_APP", "L_PG", "L_SHARED")
-_ORPHAN_QUERY = """
+_MODULE_QUERY = """
     SELECT n.resolved_path, n.layer
     FROM nodes n
     WHERE n.entity_type = 'module'
       AND n.resolved_path IS NOT NULL
       AND n.layer IN ({layers})
-      AND NOT EXISTS (
-          SELECT 1 FROM edges e
-          WHERE e.dst_id = n.id AND e.relation_type = 'imports'
-      )
 """.format(layers=",".join(f"'{layer}'" for layer in PROD_LAYERS))
+_IMPORTED_MODULE_PATH_QUERY = """
+    SELECT DISTINCT imported.resolved_path
+    FROM edges e
+    JOIN nodes imported ON imported.id = e.dst_id
+    JOIN nodes importer ON importer.id = e.src_id
+    WHERE e.relation_type = 'imports'
+      AND imported.resolved_path IS NOT NULL
+      AND imported.resolved_path != ''
+      AND COALESCE(importer.resolved_path, '') != imported.resolved_path
+"""
 
 
 def _orphan_set(conn: sqlite3.Connection) -> dict[str, str]:
-    return {p: layer for p, layer in conn.execute(_ORPHAN_QUERY)}
+    modules = {p: layer for p, layer in conn.execute(_MODULE_QUERY)}
+    imported_paths = {p for (p,) in conn.execute(_IMPORTED_MODULE_PATH_QUERY)}
+    return {p: layer for p, layer in modules.items() if p not in imported_paths}
 
 
 class NewOrphansDeltaGate(WiringGate):
