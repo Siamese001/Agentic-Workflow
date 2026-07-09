@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -11,6 +12,7 @@ from apps_rg.runtime.spine.section_cli_runners import run_section_competencies_s
 def test_competencies_spine_uses_generated_raw_request_brief(tmp_path: Path, monkeypatch) -> None:
     generated = tmp_path / "briefing.md"
     generated.write_text("Generated company brief for Acme.", encoding="utf-8")
+    logging.info("C3 write receipt: section CLI generated briefing fixture written")
 
     captured: dict[str, str] = {}
 

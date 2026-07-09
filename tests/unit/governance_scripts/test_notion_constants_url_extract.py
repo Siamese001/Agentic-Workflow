@@ -8,9 +8,11 @@ Fix: canonical helpers that mirror the Notion SDK helpers.ts regex logic.
 
 from __future__ import annotations
 
-import pytest
-import sys
+import logging
 import os
+import sys
+
+import pytest
 
 # Canonical path — _notion_constants.py lives in governance/scripts/, not _legacy_windsurf/
 _SCRIPTS = os.path.join(os.path.dirname(__file__), "../../../.codex/governance/scripts")
@@ -18,7 +20,6 @@ if _SCRIPTS not in sys.path:
     sys.path.insert(0, _SCRIPTS)
 
 from _notion_constants import extract_page_id, format_uuid
-
 
 EXPECTED = "35727693-f55c-8118-95a8-d62d11d50c25"
 
@@ -226,6 +227,7 @@ class TestFailSoftFallback:
     def test_unreadable_yaml_falls_back_without_raising(self, monkeypatch, tmp_path) -> None:
         bogus = tmp_path / "notion_databases.yaml"
         bogus.write_text("{ this is : : not valid yaml", encoding="utf-8")
+        logging.info("C3 write receipt: malformed Notion YAML fixture written")
         monkeypatch.setattr(_nc, "_find_ssot_yaml", lambda: bogus)
         # Must not raise; returns the literal fallback.
         api, dbs = _nc._load_ssot()

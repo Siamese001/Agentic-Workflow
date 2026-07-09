@@ -6,6 +6,7 @@ requirements, and prefer temporary directories for path-safety checks.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path, PureWindowsPath
 
 import pytest
@@ -107,6 +108,7 @@ class TestPathUtilityFunctions:
         bad = junk / "bad.py"
         good.write_text("print('ok')", encoding="utf-8")
         bad.write_text("print('no')", encoding="utf-8")
+        logging.info("C3 write receipt: path utility scan fixtures written")
 
         result = list(path_util_module.get_python_files(tmp_path, exclude_dirs=frozenset({".cache"})))
 

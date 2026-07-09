@@ -15,7 +15,6 @@ from apps_rg.runtime.c0.c03_graph_ref_policy import (
 )
 from apps_rg.runtime.jd_resolution import JdSource, resolve_jd_for_lanes
 
-
 # ---------------------------------------------------------------------------
 # F2: jd_targeting_mode in u0_validate_apps_rg
 # ---------------------------------------------------------------------------
@@ -31,6 +30,7 @@ def test_u0_jd_targeting_mode_run_specific(tmp_path):
 
     brief = tmp_path / "brief.txt"
     brief.write_text("Company context.", encoding="utf-8")
+    logging.info("C3 write receipt: JD targeting brief fixture written")
     payload = AppsRgIngressPayload(
         target_company="Acme",
         target_role="Staff Engineer",

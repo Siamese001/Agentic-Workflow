@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -175,6 +176,7 @@ class TestRegisterModule:
         e = ElevatorShaftConsistencyEnforcer()
         fake = tmp_path / "clean.py"
         fake.write_text("pass", encoding="utf-8")
+        logging.info("C3 write receipt: elevator-shaft clean module fixture written")
         e.register_module(fake)
         assert str(fake) in e._scanned_modules
 

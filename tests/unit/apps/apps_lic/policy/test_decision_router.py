@@ -12,6 +12,7 @@ replace, so the YAML change cannot silently drift from production logic.
 """
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from textwrap import dedent
 
@@ -41,6 +42,7 @@ def test_missing_file_raises_policy_load_error(tmp_path):
 def test_missing_required_keys_raises(tmp_path):
     bad = tmp_path / "bad.yaml"
     bad.write_text("policy_name: foo\n")  # missing layer/router/rules
+    logging.info("C3 write receipt: malformed decision policy fixture written")
     with pytest.raises(PolicyLoadError, match="missing required"):
         DecisionRouter(bad)
 

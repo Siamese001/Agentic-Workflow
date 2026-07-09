@@ -8,6 +8,7 @@ per-override placeholder, malformed-input defensive behavior, and
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -100,6 +101,7 @@ semantic_cache:
 """.strip(),
         encoding="utf-8",
     )
+    logging.info("C3 write receipt: routing calibration override written")
     monkeypatch.setattr(routing_calibration, "_YAML_PATH", custom)
     routing_calibration.reset_cache()
     assert routing_calibration.get_abstain_threshold() == 0.42

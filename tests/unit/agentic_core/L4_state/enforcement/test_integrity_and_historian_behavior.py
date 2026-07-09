@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -12,7 +13,6 @@ from agentic_core.L4_state.enforcement.knowledge_integrity_guard import (
     KnowledgeIntegrityViolation,
     KnowledgeNode,
 )
-
 
 # ============================================================================
 # KnowledgeIntegrityGuard
@@ -207,6 +207,7 @@ class TestMissionHistorianGetHistory:
             "2026-01-02T00:00:00,b.py,delete,/b,,cleanup\n",
             encoding="utf-8",
         )
+        logging.info("C3 write receipt: mission historian CSV fixture written")
         gw = MagicMock()
         with patch(
             "agentic_core.L4_state.enforcement.mission_historian._get_write_gateway",

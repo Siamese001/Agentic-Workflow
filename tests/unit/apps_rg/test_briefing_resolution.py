@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,7 @@ def test_require_run_specific_fails_closed() -> None:
 def test_local_file_rejects_disallowed_suffix(tmp_path: Path) -> None:
     p = tmp_path / "x.exe"
     p.write_text("nope", encoding="utf-8")
+    logging.info("C3 write receipt: rejected briefing fixture written")
     with pytest.raises(BriefingResolutionError, match="extension"):
         resolve_briefing_for_lanes(briefing_artifact_ref=str(p))
 

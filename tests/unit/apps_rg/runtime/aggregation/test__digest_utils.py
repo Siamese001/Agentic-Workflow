@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from pathlib import Path
 
 import pytest
@@ -45,6 +46,7 @@ class TestSha256:
     def test_sha256_file_uses_text(self, tmp_path: Path) -> None:
         p = tmp_path / "f.txt"
         p.write_text("contents", encoding="utf-8")
+        logging.info("C3 write receipt: digest text fixture written")
         assert sha256_file(p) == sha256_utf8("contents")
 
     def test_sha256_file_bytes_uses_raw_bytes(self, tmp_path: Path) -> None:

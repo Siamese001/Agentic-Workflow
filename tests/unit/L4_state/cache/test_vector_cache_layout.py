@@ -2,16 +2,17 @@
 
 Location: tests/unit/L4_state/cache/test_vector_cache_layout.py
 """
+import logging
 from pathlib import Path
 
 import pytest
 
 from agentic_core.L4_state.contracts.vector_cache_layout import (
-    VECTOR_CACHE_LAYOUT,
     LEGACY_VECTOR_CACHE_LAYOUT,
+    VECTOR_CACHE_LAYOUT,
     VectorCacheLayout,
-    get_sqlite_cache_path,
     get_chroma_cache_path,
+    get_sqlite_cache_path,
     validate_cache_layout,
 )
 
@@ -93,6 +94,7 @@ class TestValidation:
         """Validation should detect SQLite file."""
         sqlite_file = tmp_path / "l2_cache.db"
         sqlite_file.write_text("")  # Create empty file
+        logging.info("C3 write receipt: vector cache sqlite fixture created")
         result = validate_cache_layout(tmp_path)
         assert result["sqlite_exists"] is True
         assert result["valid"] is True

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -22,7 +23,6 @@ from agentic_core.adg.artifact.consumer_mode import (  # noqa: E402
     is_mode_compatible_with_view,
     is_valid_mode,
 )
-
 
 # ---------------------------------------------------------------------------
 # consumer_mode.py — closed enums + authority law
@@ -218,6 +218,7 @@ class TestScanGate:
         full = tmp / rel
         full.parent.mkdir(parents=True, exist_ok=True)
         full.write_text(body, encoding="utf-8")
+        logging.info("C3 write receipt: consumer-mode declaration fixture written")
         return full
 
     def test_scans_zero_consumers_in_empty_tree(self, tmp_path: Path) -> None:
