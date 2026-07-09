@@ -60,6 +60,17 @@ KPI_OR_WATCHLIST_TOKENS: tuple[str, ...] = (
     "role_duplication",
 )
 
+
+def is_unreleased_p0_tracked_gate(gate: dict[str, Any]) -> bool:
+    """Return True when a P0 row is visible debt, not released P0 work.
+
+    The downstream P0 lane burns ``FIX`` and action-queue ``P0_WAVE`` rows.
+    P0 ``TRACK`` gates are still important evidence, but treating ratchet
+    floors or warning inventory as immediate P0 work re-opens a green run for
+    broad backlog that has not been promoted by the released queue.
+    """
+    return str(gate.get("band") or "") == "P0" and display_verdict(gate) == "TRACK"
+
 SECTION_ORDER: tuple[str, ...] = ("fix_now", "burn_down", "kpi_watchlist", "clear")
 
 SECTION_LABELS: dict[str, str] = {
@@ -155,6 +166,8 @@ def is_kpi_or_watchlist_gate(gate: dict[str, Any]) -> bool:
     Keeping the classification here prevents every report from inventing its own
     definition of "not actionable unless planned."
     """
+    if is_unreleased_p0_tracked_gate(gate):
+        return True
     gate_id = _gate_id(gate)
     lowered = gate_id.lower()
     if gate_id in KPI_OR_WATCHLIST_GATE_IDS:
