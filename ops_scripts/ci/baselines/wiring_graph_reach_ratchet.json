@@ -1,10 +1,10 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 1453,
+  "count": 1450,
   "seeded_at": "2026-04-23T15:00:00+00:00",
-  "snapshot": "adg_indexed_07052026_0127.sqlite",
+  "snapshot": "adg_indexed_07082026_2146.sqlite",
   "notes": "H2 baseline. 1495 core production modules not L0-reachable via 'imports' edges. L_APP is intentionally excluded because apps must not be forced behind core L0 imports. Many remaining rows are legit utility libs, plugins, or indirect dispatch targets. Ratchet: new core orphans fail.",
-  "tightened_at": "2026-07-05T05:36:47.948597+00:00",
+  "tightened_at": "2026-07-09T01:51:05.089679+00:00",
   "tighten_history": [
     {
       "at": "2026-04-23T18:19:33.362026+00:00",
@@ -71,11 +71,23 @@
       "snapshot": "adg_indexed_07052026_0127.sqlite",
       "from": 1495,
       "to": 1453
+    },
+    {
+      "at": "2026-07-09T01:31:26.316917+00:00",
+      "snapshot": "adg_indexed_07082026_2126.sqlite",
+      "from": 1453,
+      "to": 1451
+    },
+    {
+      "at": "2026-07-09T01:51:05.089679+00:00",
+      "snapshot": "adg_indexed_07082026_2146.sqlite",
+      "from": 1451,
+      "to": 1450
     }
   ],
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-06T04:53:16.221755+00:00",
-  "last_run_snapshot": "adg_indexed_07062026_0048.sqlite",
+  "last_run_at": "2026-07-09T01:51:48.078284+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2146.sqlite",
   "loosen_history": [
     {
       "at": "2026-04-28T18:49:35+00:00",

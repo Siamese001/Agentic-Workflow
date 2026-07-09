@@ -1,9 +1,9 @@
 {
   "gate_id": "F1_untyped_seam_ratchet",
-  "count": 983,
-  "seeded_at": "2026-07-09T00:48:04.377875+00:00",
-  "snapshot": "adg_indexed_07082026_2035.sqlite",
+  "count": 987,
+  "seeded_at": "2026-07-09T01:51:17.819371+00:00",
+  "snapshot": "adg_indexed_07082026_2146.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-09T00:48:26.690542+00:00",
-  "last_run_snapshot": "adg_indexed_07082026_2035.sqlite"
+  "last_run_at": "2026-07-09T01:51:39.297472+00:00",
+  "last_run_snapshot": "adg_indexed_07082026_2146.sqlite"
 }

@@ -9,7 +9,7 @@ from agentic_core.L1_cognition.package_driven_l1_binding import (
     l1_plan_package_driven,
     l1_plan_to_contract,
 )
-from agentic_core.runtime.contracts.route_contract import L1PlanContract
+from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 
 
 # Default L1 planning profile ref for apps_research

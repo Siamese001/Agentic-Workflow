@@ -1,9 +1,9 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-09T00:50:44+00:00
+- **Generated:** 2026-07-09T01:54:20+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-09T00:48:37.356191+00:00
-- **Work sections:** 13 gate(s) / 7,558 row(s)
+- **Source timestamp:** 2026-07-09T01:51:50.119820+00:00
+- **Work sections:** 13 gate(s) / 7,559 row(s)
 - **KPI/watchlist:** 5 gate(s) / 12,143 row(s)
 
 This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.
@@ -12,9 +12,7 @@ This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one own
 
 Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.
 
-| Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
-|------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `G_REACH_l0_reachability` | architecture_backlog | P0 | ratchet | FIX | regr | 1,454 | Regression +1 over baseline 1453 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
+_No rows._
 
 ## Burn down / owned backlog
 
@@ -22,10 +20,11 @@ Accepted debt that is still plausible burn-down work after FIX rows clear.
 
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
+| `G_REACH_l0_reachability` | architecture_backlog | P0 | ratchet | TRACK | floor | 1,450 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `3_write_sovereignty` | architecture_backlog | P0 | block | TRACK | inventory | 765 | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
 | `S2_uwg_bypass_ratchet` | architecture_backlog | P0 | ratchet | TRACK | floor | 755 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `J1_canonical_pipeline_wiring` | architecture_backlog | P0 | block | TRACK | inventory | 1 | Advisory inventory: monitor; reduce opportunistically. Does not block CI. |
-| `B2_layer_skip_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 862 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `B2_layer_skip_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 863 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `I1_exit_disposition_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 695 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `M_taint_actionable_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 690 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `O_tool_call_parity_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 206 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
@@ -33,7 +32,6 @@ Accepted debt that is still plausible burn-down work after FIX rows clear.
 | `C3_silent_writes_ratchet` | architecture_backlog | P1 | ratchet | TRACK | floor | 56 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `E1_trace_stub_module` | architecture_backlog | P1 | ratchet | TRACK | floor | 3 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `I2_replay_surface_gaps_ratchet` | architecture_backlog | P2 | ratchet | TRACK | floor | 1,000 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
-| `F1_untyped_seam_ratchet` | architecture_backlog | P2 | ratchet | TRACK | floor | 983 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 
 ## KPI / watchlist
 

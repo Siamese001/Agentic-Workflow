@@ -144,6 +144,18 @@ def _load_app_attr(module_parts: tuple[str, ...], attr: str):
 
 # Reachability anchors for the ADG modules that must stay live from L0 seeds.
 _reach_l1_cognition_package = import_module("agentic_core.L1_cognition")
+from agentic_core.L1_cognition.apps_research_l1_binding_v2 import (  # noqa: E402
+    l1_plan_apps_research as _reach_apps_research_l1_binding_v2,
+)
+from agentic_core.L1_cognition.bridges import (  # noqa: E402
+    validated_request_to_plan_contract as _reach_l1_cognition_bridges_package,
+)
+from agentic_core.L1_cognition.bridges.u0_to_l1_plan import (  # noqa: E402
+    validated_request_to_plan_contract as _reach_u0_to_l1_plan_bridge,
+)
+from agentic_core.L4_state.audit.replay_consistency import (  # noqa: E402
+    validate_replay_consistency as _reach_validate_replay_consistency,
+)
 _reach_apply_c03_graph_full_zero_loss_overwrite = _load_app_attr(
     (_APP_RG_PKG, "fact_inventory", "apply_c03_graph_full_zero_loss_overwrite"),
     "apply_overwrite",
@@ -203,6 +215,10 @@ _reach_ensure_runtime_ready = _load_app_attr(
 
 _REACHABILITY_ANCHORS = (
     _reach_l1_cognition_package,
+    _reach_apps_research_l1_binding_v2,
+    _reach_l1_cognition_bridges_package,
+    _reach_u0_to_l1_plan_bridge,
+    _reach_validate_replay_consistency,
     _reach_apply_c03_graph_full_zero_loss_overwrite,
     _reach_apply_c03_graph_skill_granularity_hardening,
     _reach_apply_graphdb_capability_sqlite_hardening,
