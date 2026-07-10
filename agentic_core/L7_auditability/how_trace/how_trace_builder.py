@@ -579,12 +579,33 @@ def build_how_trace(
                 blocking_gaps=(gap,),
             ))
     else:
-        # R1B — terminal shortcircuit; no L2 ran. Status BYPASSED with the
-        # terminal_ret_packet as the bypass artifact.
+        # R1B cache paths bypass L2, while R4 single-action paths use the same
+        # terminal packet to seal a real app-owned static-DAG L2 execution.
         if terminal is not None:
             tp = _payload(terminal)
             no_l2_assert = bool(tp.get("no_l2_execution_assertion", True))
-            if not no_l2_assert:
+            l2_recipe_executed = bool(tp.get("l2_recipe_executed", False))
+            if l2_recipe_executed:
+                l2_fault = str(tp.get("l2_fault") or "")
+                stages.append(HowTraceStage(
+                    **base("L2_EXECUTE", "L2 — Bounded Execution"),
+                    status="FAILED" if l2_fault else "RAN",
+                    input_artifact_refs=(_ref("terminal_ret_packet.json"),),
+                    output_artifact_refs=(_ref("terminal_ret_packet.json"),),
+                    why_ran_or_bypassed=(
+                        "The app-owned static DAG executed at L2 and the terminal "
+                        "packet sealed its sub-stage evidence."
+                    ),
+                    forbidden_action_assertions=(
+                        {"assertion": "l2_execution_reported_truthfully", "result": "PASS"},
+                    ),
+                    hash_bound=bool(_hash(terminal)),
+                    blocking_gaps=("L2_RECIPE_FAULT",) if l2_fault else (),
+                    sub_stages=_sub_stages_from(tp, "l2_sub_stages"),
+                ))
+                if l2_fault:
+                    blocking_gaps.append("L2_RECIPE_FAULT")
+            elif not no_l2_assert:
                 gap = "R1B_L2_no_l2_execution_assertion_false"
                 blocking_gaps.append(gap)
                 stages.append(HowTraceStage(

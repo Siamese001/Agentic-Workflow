@@ -168,11 +168,22 @@ def resolve_l2_recipe(
                     result.get("error", "non-zero exit"),
                 )
                 break
+        witness_builder = meta.get("execution_witness_builder")
+        runtime_execution_witness = (
+            witness_builder(
+                artifact_dir=artifact_dir,
+                step_results=results,
+                context=context,
+            )
+            if callable(witness_builder)
+            else None
+        )
         return {
             "recipe_app_name": app_name,
             "recipe_dag_id": meta["dag_id"],
             "step_results": results,
             "run_dir": context.get("run_dir"),
+            "runtime_execution_witness": runtime_execution_witness,
         }
 
     return _composite_l2_callable

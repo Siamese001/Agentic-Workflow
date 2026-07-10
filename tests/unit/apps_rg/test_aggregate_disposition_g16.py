@@ -1,11 +1,9 @@
-"""W4 / G16: a whole run that authorized zero lanes surfaces an explicit BLOCK.
+"""X3 remains immutable when later whole-run completion gates fail.
 
 Plan: apps-rg-e2e-gap-remediation-7e2d9c.
 
-The frozen AIG/Brown failure reported aggregate disposition ``X3A`` (which normalizes to UNKNOWN —
-never an allow) while every lane was ``X3_BLOCK``. ``_aggregate_x3_for_outcome`` forces an explicit
-``X3_BLOCK`` for that ambiguous, unauthorized case and leaves authorized / already-explicit
-dispositions untouched. Pure product-mode unit test.
+Later apps_eval, L6, promotion, or closeout failures are represented by completion status and fault.
+They must not rewrite the source X3 judge decision. Pure product-mode unit test.
 """
 
 from __future__ import annotations
@@ -13,14 +11,13 @@ from __future__ import annotations
 from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import _aggregate_x3_for_outcome
 
 
-def test_frozen_x3a_unauthorized_forced_to_block() -> None:
-    # The exact W0-frozen case: X3A (-> UNKNOWN) with no authorized lane.
-    assert _aggregate_x3_for_outcome("X3A", outcome=False) == "X3_BLOCK"
+def test_x3a_is_preserved_when_completion_is_blocked() -> None:
+    assert _aggregate_x3_for_outcome("X3A", outcome=False) == "X3A"
 
 
-def test_blank_unauthorized_forced_to_block() -> None:
-    assert _aggregate_x3_for_outcome("", outcome=False) == "X3_BLOCK"
-    assert _aggregate_x3_for_outcome(None, outcome=False) == "X3_BLOCK"
+def test_blank_source_disposition_remains_blank() -> None:
+    assert _aggregate_x3_for_outcome("", outcome=False) == ""
+    assert _aggregate_x3_for_outcome(None, outcome=False) == ""
 
 
 def test_authorized_disposition_untouched() -> None:
@@ -40,5 +37,4 @@ def test_explicit_review_untouched() -> None:
 
 
 def test_explicit_allow_not_reclassified() -> None:
-    # Only the ambiguous UNKNOWN bucket is forced to BLOCK; an explicit allow label is left as-is.
     assert _aggregate_x3_for_outcome("X3_ALLOW", outcome=False) == "X3_ALLOW"

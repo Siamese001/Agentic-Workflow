@@ -10,25 +10,23 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
-from apps_rg.runtime.orchestration.integrated_spine_runner import (
-    run_integrated_single_action_spine,
-)
-
+from apps_rg.prerequisites.briefing_validator import validate_apps_research_handoff
 from apps_rg.runtime.bindings.briefing_mode_classifier import classify_briefing_mode
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
 from apps_rg.runtime.bindings.u0_binding import u0_validate_apps_rg
 from apps_rg.runtime.dispatch import spine_stage_receipts as sr
-from apps_rg.prerequisites.briefing_validator import validate_apps_research_handoff
-from apps_rg.runtime.full_resume_review_bundle import (
-    REVIEW_BUNDLE_FILENAME,
-    emit_full_resume_review_bundle,
-)
 from apps_rg.runtime.executive_summary_certification import (
     EXECUTIVE_SUMMARY_JUDGE_REVIEW_X3,
     executive_summary_certification_block,
 )
-from apps_rg.runtime.proof.x3_disposition_normalize import normalize_x3_code
+from apps_rg.runtime.full_resume_review_bundle import (
+    REVIEW_BUNDLE_FILENAME,
+    emit_full_resume_review_bundle,
+)
+from apps_rg.runtime.orchestration.integrated_spine_runner import (
+    run_integrated_single_action_spine,
+)
 from apps_rg.runtime.run_bundle_index import emit_integrated_run_bundle_index
 from apps_rg.runtime.runtime_proof_layout import (
     allocate_full_resume_artifact_dir,
@@ -42,18 +40,9 @@ _SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
 
 
 def _aggregate_x3_for_outcome(raw_x3: str | None, *, outcome: bool) -> str:
-    """G16: a whole run that authorized zero lanes surfaces an explicit BLOCK.
-
-    The frozen AIG/Brown failure reported ``X3A`` (which normalizes to UNKNOWN — never an allow)
-    while every lane was ``X3_BLOCK``. When the run is not authorized AND the disposition is the
-    ambiguous UNKNOWN bucket, force an explicit ``X3_BLOCK`` so the aggregate reads honestly and
-    matches the lanes. Authorized runs, and runs with an already-explicit block/review/allow
-    disposition, are left untouched.
-    """
-    x3 = str(raw_x3 or "")
-    if not outcome and normalize_x3_code(x3) == "UNKNOWN":
-        return "X3_BLOCK"
-    return x3
+    """Preserve the source X3 decision; completion status carries later failures."""
+    del outcome
+    return str(raw_x3 or "")
 
 
 def _default_artifact_dir(explicit: str) -> Path:
@@ -206,6 +195,22 @@ def _route_contract_payload(route: Any) -> dict[str, Any]:
         "run_id": route.run_id,
         "trace_id": route.trace_id,
     }
+
+
+def _pre_u0_research_route(envelope: Any) -> SimpleNamespace:
+    """Stable delegation identity used only to dispatch apps_research before U0."""
+    return SimpleNamespace(
+        route_id=ROUTE_FAMILY_R3R4,
+        route_family=ROUTE_FAMILY_R3R4,
+        execution_form="MANAGED_WORKFLOW",
+        l3_required=True,
+        grounding_required=True,
+        route_profile_ref="pre_u0_research_delegation.v1",
+        reason_codes=("PRE_U0_APPS_RESEARCH_DELEGATION",),
+        request_id=str(envelope.request_id),
+        run_id=str(envelope.run_id),
+        trace_id=str(envelope.trace_id),
+    )
 
 
 def _write_mock_elimination_proof(artifact_dir: Path, bridge: Any) -> None:
@@ -406,6 +411,107 @@ def _failure_payload(
     }
 
 
+def _emit_terminal_mandatory_closeout(
+    *,
+    artifact_dir: Path,
+    repo_root: Path,
+    payload: dict[str, Any],
+    final_resume_outputs_pre_emitted: bool = False,
+) -> dict[str, Any]:
+    """Emit and enforce every mandatory terminal artifact for any E2E outcome."""
+    from apps_rg.runtime.mandatory_run_outputs import (
+        MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+        emit_mandatory_run_outputs,
+    )
+    from apps_rg.runtime.section_failure_forensics import (
+        E2E_SECTION_FORENSICS_GATE_ID,
+    )
+
+    try:
+        mandatory_emit = emit_mandatory_run_outputs(
+            artifact_dir,
+            repo_root=repo_root,
+            result=payload,
+            print_stdout=False,
+            emit_final_outputs=not final_resume_outputs_pre_emitted,
+        )
+    except OSError as exc:
+        prior_fault = str(payload.get("fault") or "")
+        payload.update(
+            {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "completion_status": "BLOCKED",
+                "fault": prior_fault or MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+                "completion_fault": MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+                "mandatory_output_upstream_fault": prior_fault,
+                "mandatory_output_emit_error": str(exc),
+            }
+        )
+        return payload
+
+    payload.update(
+        {
+            "mandatory_run_output_json": str(mandatory_emit["json_path"]),
+            "mandatory_run_output_md": str(mandatory_emit["markdown_path"]),
+            "bcg_executive_output_md": str(mandatory_emit["bcg_markdown_path"]),
+        }
+    )
+    emitted_payload = (
+        mandatory_emit.get("payload") if isinstance(mandatory_emit, dict) else {}
+    )
+    forensics_gate = (
+        emitted_payload.get("section_failure_forensics")
+        if isinstance(emitted_payload, dict)
+        and isinstance(emitted_payload.get("section_failure_forensics"), dict)
+        else {}
+    )
+    if forensics_gate.get("required") and not bool(forensics_gate.get("pass")):
+        prior_fault = str(payload.get("fault") or "")
+        payload.update(
+            {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "completion_status": "BLOCKED",
+                "fault": prior_fault or E2E_SECTION_FORENSICS_GATE_ID,
+                "completion_fault": E2E_SECTION_FORENSICS_GATE_ID,
+                "section_failure_forensics_gate": forensics_gate,
+                "mandatory_output_upstream_fault": prior_fault,
+            }
+        )
+    mandatory_gate = (
+        mandatory_emit.get("mandatory_output_gate")
+        if isinstance(mandatory_emit, dict)
+        and isinstance(mandatory_emit.get("mandatory_output_gate"), dict)
+        else {}
+    )
+    if mandatory_gate.get("required") and not bool(mandatory_gate.get("pass")):
+        prior_fault = str(payload.get("fault") or "")
+        payload.update(
+            {
+                "exit_status": "error",
+                "execution_status": "failed",
+                "outcome_authorized": False,
+                "completion_status": "BLOCKED",
+                "fault": prior_fault or (
+                    E2E_SECTION_FORENSICS_GATE_ID
+                    if not bool(forensics_gate.get("pass", True))
+                    else MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+                ),
+                "completion_fault": (
+                    E2E_SECTION_FORENSICS_GATE_ID
+                    if not bool(forensics_gate.get("pass", True))
+                    else MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+                ),
+                "mandatory_output_hard_stop": mandatory_gate,
+                "mandatory_output_upstream_fault": prior_fault,
+            }
+        )
+    return payload
+
+
 def run_whole_run_with_route_governance(
     *,
     target_company: str,
@@ -450,21 +556,18 @@ def run_whole_run_with_route_governance(
         auto_research_internal=auto_research_internal,
         research_via=research_via,
     )
-    validated_request = u0_validate_apps_rg(envelope, allow_missing_profiles=False)
-    l1_plan = l1_plan_apps_rg(validated_request)
-    route = l0_route_apps_rg(l1_plan)
+    from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger
 
-    briefing_mode = classify_briefing_mode(
-        validated_request.app_payload or {},
-        chroma_path_resolved=None,
-        research_via=research_via,
+    stage_ledger = E2EStageLedger.create(
+        artifact_dir=art,
+        e2e_run_id=str(envelope.run_id),
     )
     handoff_jd_ref = (
         str(job_description_ref or "").strip()
         or str(jd or "").strip()
         or str(job_description_text or "").strip()
     )
-    handoff_validation = validate_apps_research_handoff(
+    initial_handoff_validation = validate_apps_research_handoff(
         brief_ref=manual_brief,
         jd_ref=handoff_jd_ref,
         require_observed=research_delegation_enabled(
@@ -478,6 +581,176 @@ def run_whole_run_with_route_governance(
         )
         and briefing_input_present(manual_brief),
     )
+    manual_brief_eff = manual_brief
+    research_ran = False
+    research_note = ""
+    delegated_briefing_ref: str | None = None
+    research_enabled = research_delegation_enabled(
+        auto_research_internal=auto_research_internal,
+        research_via=research_via,
+    )
+    should_delegate_pre_u0 = research_enabled and not (
+        initial_handoff_validation.observed and initial_handoff_validation.valid
+    )
+    if should_delegate_pre_u0:
+        delegation_route = _pre_u0_research_route(envelope)
+        ok, research_note, brief_path = _run_r3r4_research_hop(
+            route=delegation_route,
+            validated_request=envelope,
+            artifact_dir=art,
+            target_company=target_company,
+            target_role=target_role,
+            job_description_ref=str(job_description_ref or jd or "").strip(),
+            job_description_text=job_description_text,
+        )
+        research_ran = True
+        if not ok:
+            stage_ledger.record(
+                stage_id="RESEARCH",
+                status="FAIL",
+                reason_code=research_note,
+                output_refs={
+                    "research_bridge_response": sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
+                },
+            )
+            route_decision = {
+                "route_profile_ref": delegation_route.route_profile_ref,
+                "route_family": delegation_route.route_family,
+                "route_id": delegation_route.route_id,
+                "execution_form": delegation_route.execution_form,
+                "research_delegation_enabled": True,
+                "research_delegation_executed": True,
+                "research_outcome": research_note,
+                "research_failure": research_note,
+                "research_failure_reason": "apps_research_hop_failed_without_authorized_handoff",
+            }
+            failed = _failure_payload(
+                artifact_dir=art,
+                route=delegation_route,
+                reason=research_note,
+                route_decision=route_decision,
+            )
+            failed["completion_status"] = "BLOCKED"
+            _emit_terminal_mandatory_closeout(
+                artifact_dir=art,
+                repo_root=repo,
+                payload=failed,
+            )
+            stage_ledger.record(
+                stage_id="CLOSEOUT",
+                status="PASS",
+                reason_code="FAILED_RUN_REPORTED",
+                output_refs={"spine_run_manifest": sr.FILENAME_SPINE_MANIFEST},
+            )
+            failed["e2e_stage_ledger"] = str(stage_ledger.path)
+            return failed
+        manual_brief_eff = brief_path
+        delegated_briefing_ref = sr.FILENAME_DELEGATED_BRIEFING
+        stage_ledger.record(
+            stage_id="RESEARCH",
+            status="PASS",
+            reason_code=research_note,
+            output_refs={
+                "research_bridge_response": sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
+                "delegated_briefing": sr.FILENAME_DELEGATED_BRIEFING,
+            },
+        )
+    else:
+        research_note = (
+            "AUTHORIZED_HANDOFF_REUSED"
+            if initial_handoff_validation.observed and initial_handoff_validation.valid
+            else "RESEARCH_DISABLED"
+        )
+        stage_ledger.record(
+            stage_id="RESEARCH",
+            status="SKIPPED",
+            reason_code=research_note,
+            input_refs={"manual_brief": str(manual_brief or "")},
+        )
+
+    envelope.app_payload["manual_brief_path"] = manual_brief_eff
+    envelope.app_payload["briefing_artifact_ref"] = manual_brief_eff
+    from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError
+
+    try:
+        validated_request = u0_validate_apps_rg(
+            envelope,
+            allow_missing_profiles=False,
+        )
+    except AppsRgU0RejectedError as exc:
+        reason = f"U0_REJECTED:{exc.notice.rejection_reason.value}"
+        stage_ledger.record(
+            stage_id="U0",
+            status="FAIL",
+            reason_code=reason,
+            output_refs={
+                "rejection_detail": dict(exc.notice.machine_readable_detail or {})
+            },
+        )
+        rejection_route = _pre_u0_research_route(envelope)
+        route_decision = {
+            "route_profile_ref": rejection_route.route_profile_ref,
+            "route_family": rejection_route.route_family,
+            "route_id": rejection_route.route_id,
+            "execution_form": rejection_route.execution_form,
+            "research_delegation_enabled": research_enabled,
+            "research_delegation_executed": research_ran,
+            "research_outcome": research_note,
+            "u0_rejection_reason": exc.notice.rejection_reason.value,
+        }
+        failed = _failure_payload(
+            artifact_dir=art,
+            route=rejection_route,
+            reason=reason,
+            route_decision=route_decision,
+        )
+        failed["completion_status"] = "BLOCKED"
+        _emit_terminal_mandatory_closeout(
+            artifact_dir=art,
+            repo_root=repo,
+            payload=failed,
+        )
+        stage_ledger.record(
+            stage_id="CLOSEOUT",
+            status="FAIL",
+            reason_code=str(failed.get("completion_fault") or reason),
+            output_refs={
+                "mandatory_run_output_json": str(
+                    failed.get("mandatory_run_output_json") or ""
+                )
+            },
+        )
+        failed["e2e_stage_ledger"] = str(stage_ledger.path)
+        return failed
+    stage_ledger.record(
+        stage_id="U0",
+        status="PASS",
+        output_refs={"u0_receipt": sr.FILENAME_U0_RECEIPT},
+    )
+    l1_plan = l1_plan_apps_rg(validated_request)
+    stage_ledger.record(
+        stage_id="L1",
+        status="PASS",
+        output_refs={"l1_plan": sr.FILENAME_L1_PLAN},
+    )
+    route = l0_route_apps_rg(l1_plan)
+    stage_ledger.record(
+        stage_id="L0",
+        status="PASS",
+        output_refs={"route_contract": sr.FILENAME_ROUTE_CONTRACT},
+    )
+
+    briefing_mode = classify_briefing_mode(
+        validated_request.app_payload or {},
+        chroma_path_resolved=None,
+        research_via="apps_research" if research_ran else research_via,
+    )
+    handoff_validation = validate_apps_research_handoff(
+        brief_ref=manual_brief_eff,
+        jd_ref=handoff_jd_ref,
+        require_observed=research_enabled and briefing_input_present(manual_brief_eff),
+        require_x1_x3_authorization=research_enabled and briefing_input_present(manual_brief_eff),
+    )
     route_decision = {
         "route_profile_ref": route.route_profile_ref,
         "route_family": route.route_family,
@@ -485,17 +758,44 @@ def run_whole_run_with_route_governance(
         "execution_form": route.execution_form,
         "briefing_mode": briefing_mode.retrieval_mode,
         "briefing_classified_from": briefing_mode.classified_from,
-        "research_delegation_enabled": research_delegation_enabled(
-            auto_research_internal=auto_research_internal,
-            research_via=research_via,
-        ),
-        "briefing_input_present": briefing_input_present(manual_brief),
+        "research_delegation_enabled": research_enabled,
+        "briefing_input_present": briefing_input_present(manual_brief_eff),
         "incoming_apps_research_handoff_authorized": (
             handoff_validation.observed and handoff_validation.valid
         ),
         "incoming_apps_research_handoff_reason": handoff_validation.reason,
         "incoming_apps_research_handoff_observed": handoff_validation.observed,
+        "research_delegation_executed": research_ran,
+        "research_outcome": research_note,
     }
+    if research_ran:
+        route_decision["delegated_briefing_path"] = manual_brief_eff
+    if research_ran and route.route_family != ROUTE_FAMILY_R3R4:
+        reason = "APPS_RESEARCH_ROUTE_MISMATCH"
+        route_decision["research_failure"] = reason
+        route_decision["research_failure_reason"] = (
+            f"apps_research_completed_before_non_managed_route_{route.route_family}"
+        )
+        failed = _failure_payload(
+            artifact_dir=art,
+            route=route,
+            reason=reason,
+            route_decision=route_decision,
+        )
+        failed["completion_status"] = "BLOCKED"
+        _emit_terminal_mandatory_closeout(
+            artifact_dir=art,
+            repo_root=repo,
+            payload=failed,
+        )
+        stage_ledger.record(
+            stage_id="CLOSEOUT",
+            status="PASS",
+            reason_code="FAILED_RUN_REPORTED",
+            output_refs={"spine_run_manifest": sr.FILENAME_SPINE_MANIFEST},
+        )
+        failed["e2e_stage_ledger"] = str(stage_ledger.path)
+        return failed
 
     sr.write_stage_receipt(
         art / sr.FILENAME_INGRESS_RAW,
@@ -503,7 +803,7 @@ def run_whole_run_with_route_governance(
             "target_company": target_company,
             "target_role": target_role,
             "generation_mode": generation_mode,
-            "manual_brief": manual_brief,
+            "manual_brief": manual_brief_eff,
             "auto_research_internal": auto_research_internal,
             "research_via": research_via,
         },
@@ -527,71 +827,6 @@ def run_whole_run_with_route_governance(
         },
     )
     sr.write_stage_receipt(art / sr.FILENAME_ROUTE_CONTRACT, _route_contract_payload(route))
-
-    research_required = bool(route_decision["research_delegation_enabled"])
-    incoming_handoff_authorized = bool(route_decision["incoming_apps_research_handoff_authorized"])
-    if research_required and not incoming_handoff_authorized and route.route_family != ROUTE_FAMILY_R3R4:
-        reason = "APPS_RESEARCH_ROUTE_MISMATCH"
-        route_decision["research_delegation_executed"] = False
-        route_decision["research_failure"] = reason
-        route_decision["research_failure_reason"] = (
-            f"apps_research_required_without_authorized_handoff_on_{route.route_family}"
-        )
-        return _failure_payload(
-            artifact_dir=art,
-            route=route,
-            reason=reason,
-            route_decision=route_decision,
-        )
-
-    manual_brief_eff = manual_brief
-    research_ran = False
-    research_note = ""
-    delegated_briefing_ref: str | None = None
-
-    if should_delegate_apps_research(
-        route_family=route.route_family,
-        manual_brief=manual_brief,
-        auto_research_internal=auto_research_internal,
-        research_via=research_via,
-        jd_ref=handoff_jd_ref,
-    ):
-        ok, research_note, brief_path = _run_r3r4_research_hop(
-            route=route,
-            validated_request=validated_request,
-            artifact_dir=art,
-            target_company=target_company,
-            target_role=target_role,
-            job_description_ref=str(job_description_ref or jd or "").strip(),
-            job_description_text=job_description_text,
-        )
-        research_ran = True
-        route_decision["research_delegation_executed"] = True
-        route_decision["research_outcome"] = research_note
-        if not ok:
-            route_decision["research_failure"] = research_note
-            route_decision["research_failure_reason"] = "apps_research_hop_failed_without_authorized_handoff"
-            return _failure_payload(
-                artifact_dir=art,
-                route=route,
-                reason=research_note,
-                route_decision=route_decision,
-            )
-        else:
-            manual_brief_eff = brief_path
-            delegated_briefing_ref = sr.FILENAME_DELEGATED_BRIEFING
-            route_decision["delegated_briefing_path"] = brief_path
-    else:
-        route_decision["research_delegation_executed"] = False
-        if (
-            route.route_family == ROUTE_FAMILY_R3R4
-            and not briefing_input_present(manual_brief)
-            and not research_delegation_enabled(
-                auto_research_internal=auto_research_internal,
-                research_via=research_via,
-            )
-        ):
-            route_decision["research_skipped_reason"] = "research_disabled"
 
     spine_pre_draft = {
         "schema_version": "apps_rg.spine_run_manifest.v1",
@@ -630,17 +865,16 @@ def run_whole_run_with_route_governance(
     raw_request["research_via"] = "apps_research" if research_ran else research_via
     raw_request["route_decision_ref"] = sr.FILENAME_SPINE_MANIFEST
 
-    from apps_rg.cache.whole_run_entrypoint_preflight import (
-        ENTRYPOINT_CANONICAL_DISPATCH,
-        build_cache_hit_dispatch_result,
-        maybe_ingest_r1b_post_exit,
-        run_whole_run_cache_preflight,
-    )
     from apps_rg.cache.cache_preflight_evidence import (
         build_cache_preflight_evidence,
         write_cache_hit_receipt,
         write_cache_miss_receipt,
         write_whole_run_cache_preflight_artifact,
+    )
+    from apps_rg.cache.whole_run_entrypoint_preflight import (
+        ENTRYPOINT_CANONICAL_DISPATCH,
+        maybe_ingest_r1b_post_exit,
+        run_whole_run_cache_preflight,
     )
 
     preflight = run_whole_run_cache_preflight(
@@ -659,14 +893,53 @@ def run_whole_run_with_route_governance(
 
     if not preflight.generation_required:
         write_cache_hit_receipt(art, preflight, evidence)
-        hit = build_cache_hit_dispatch_result(preflight)
-        hit["cache_preflight"] = evidence
-        hit["route_family"] = route.route_family
-        hit["spine_run_manifest"] = str(art / sr.FILENAME_SPINE_MANIFEST)
-        hit["route_decision"] = route_decision
-        if preflight.r1a_hit:
-            hit["artifact_dir"] = preflight.r1a_artifact_dir
-        return hit
+        r1b_result = preflight.r1b_result
+        cache_candidate_dir = str(preflight.r1a_artifact_dir or "").strip()
+        if not cache_candidate_dir and r1b_result is not None:
+            cache_candidate_dir = str(
+                getattr(r1b_result, "artifact_dir", "")
+                or getattr(r1b_result, "run_dir", "")
+                or ""
+            ).strip()
+        from apps_rg.runtime.e2e_stage_ledger import validate_cached_e2e_completion
+
+        cache_completion = validate_cached_e2e_completion(
+            Path(cache_candidate_dir)
+            if cache_candidate_dir
+            else art / "__missing_cache_candidate__"
+        )
+        failed = _failure_payload(
+            artifact_dir=art,
+            route=route,
+            reason="E2E_FRESH_RUN_REQUIRES_CACHE_MISS",
+            route_decision=route_decision,
+        )
+        failed.update(
+            {
+                "completion_status": "BLOCKED",
+                "cache_preflight": evidence,
+                "cache_candidate_dir": cache_candidate_dir,
+                "cache_candidate_completion_valid": cache_completion.valid,
+                "cache_candidate_completion_errors": list(cache_completion.errors),
+            }
+        )
+        _emit_terminal_mandatory_closeout(
+            artifact_dir=art,
+            repo_root=repo,
+            payload=failed,
+        )
+        stage_ledger.record(
+            stage_id="CLOSEOUT",
+            status="FAIL",
+            reason_code="E2E_FRESH_RUN_REQUIRES_CACHE_MISS",
+            output_refs={
+                "mandatory_run_output_json": str(
+                    failed.get("mandatory_run_output_json") or ""
+                )
+            },
+        )
+        failed["e2e_stage_ledger"] = str(stage_ledger.path)
+        return failed
 
     write_cache_miss_receipt(art, preflight, evidence)
 
@@ -676,7 +949,58 @@ def run_whole_run_with_route_governance(
         artifact_dir=art,
         route_family=DRAFT_LEG_ROUTE_FAMILY,
         cache_preflight_evidence=evidence,
+        front_continuation={
+            "validated_request": validated_request,
+            "plan_contract": l1_plan,
+            "route_contract": route,
+            "execution_route_id": DRAFT_LEG_ROUTE_FAMILY,
+        },
     )
+    execution_witness = dict(getattr(result, "execution_witness", {}) or {})
+    stage_ledger.record(
+        stage_id="C0",
+        status="PASS",
+        reason_code=str(
+            (execution_witness.get("c0") or {}).get("status")
+            if isinstance(execution_witness.get("c0"), dict)
+            else "CORE_C0_RECEIPT_EMITTED"
+        ),
+        output_refs={"runtime_execution_witness": "runtime_execution_witness.json"},
+    )
+    if result.fault:
+        stage_ledger.record(
+            stage_id="L2",
+            status="FAIL",
+            reason_code=str(result.fault),
+            output_refs={"terminal_ret_packet": "terminal_ret_packet.json"},
+        )
+    else:
+        stage_ledger.record(
+            stage_id="L2",
+            status="PASS",
+            output_refs={"terminal_ret_packet": "terminal_ret_packet.json"},
+        )
+        stage_ledger.record(
+            stage_id="X1",
+            status="PASS",
+            output_refs={"exit_review_packet": "exit_review_packet.json"},
+        )
+        stage_ledger.record(
+            stage_id="X2",
+            status="PASS",
+            reason_code=str(
+                (execution_witness.get("x2") or {}).get("disposition")
+                if isinstance(execution_witness.get("x2"), dict)
+                else "EXIT_X2_AGGREGATED"
+            ),
+            output_refs={"runtime_execution_witness": "runtime_execution_witness.json"},
+        )
+        stage_ledger.record(
+            stage_id="X3",
+            status="PASS",
+            reason_code=str(result.x3_disposition),
+            output_refs={"x3_disposition_receipt": "x3_disposition_receipt.json"},
+        )
     from apps_rg.runtime.orchestration.canonical_dispatch import (
         _augment_integrated_manifest_with_apps_rg_docx,
         _augment_r4_run_manifest_for_apps_rg_l2_fault,
@@ -702,6 +1026,11 @@ def run_whole_run_with_route_governance(
 
         emit_final_resume_product_outputs(art, repo_root=repo, required=True)
         final_resume_outputs_pre_emitted = True
+        stage_ledger.record(
+            stage_id="CANDIDATE",
+            status="PASS",
+            output_refs={"apps_rg_output_manifest": "apps_rg_output_manifest.json"},
+        )
 
     section_status_md: str | None = None
     if is_integrated_whole_run_artifact_dir(art):
@@ -736,7 +1065,8 @@ def run_whole_run_with_route_governance(
                 "exit_status": "success",
                 "execution_status": "completed",
                 "outcome_authorized": True,
-                "x3_disposition": effective_x3,
+                "x3_disposition": result.x3_disposition,
+                "completion_disposition": effective_x3,
                 "fault": result.fault,
                 "artifact_dir": str(art),
                 "run_id": result.run_id,
@@ -753,12 +1083,97 @@ def run_whole_run_with_route_governance(
                 post_x3_completion.get("failure_stage")
                 or "post_x3_completion"
             )
-    aggregate_x3 = _aggregate_x3_for_outcome(effective_x3, outcome=outcome)
+    if final_resume_outputs_pre_emitted:
+        apps_eval_completion = (
+            post_x3_completion.get("apps_eval")
+            if isinstance(post_x3_completion.get("apps_eval"), dict)
+            else {}
+        )
+        coverage = (
+            apps_eval_completion.get("coverage_summary")
+            if isinstance(apps_eval_completion.get("coverage_summary"), dict)
+            else {}
+        )
+        eval_pass = bool(
+            coverage.get("release_blocked") is False
+            and coverage.get("coverage_complete") is True
+        )
+        if not post_x3_completion:
+            stage_ledger.record(
+                stage_id="APPS_EVAL",
+                status="BLOCKED",
+                reason_code="X3_OR_EXECUTIVE_SUMMARY_NOT_AUTHORIZED",
+            )
+        elif not eval_pass:
+            stage_ledger.record(
+                stage_id="APPS_EVAL",
+                status="FAIL",
+                reason_code=str(
+                    post_x3_completion.get("failure_stage") or "APPS_EVAL_FAILED"
+                ),
+                output_refs={
+                    "eval_record": str(apps_eval_completion.get("eval_record_ref") or "")
+                },
+            )
+        else:
+            stage_ledger.record(
+                stage_id="APPS_EVAL",
+                status="PASS",
+                output_refs={
+                    "eval_record": str(apps_eval_completion.get("eval_record_ref") or "")
+                },
+            )
+            l6_completion = (
+                post_x3_completion.get("l6_shadow")
+                if isinstance(post_x3_completion.get("l6_shadow"), dict)
+                else {}
+            )
+            l6_pass = bool(
+                l6_completion.get("l6_shadow_bridge_ref")
+                and l6_completion.get("grain_parity_status") == "PASS"
+                and l6_completion.get("apps_eval_rows_bound") is True
+            )
+            stage_ledger.record(
+                stage_id="L6_SHADOW",
+                status="PASS" if l6_pass else "FAIL",
+                reason_code="L6_APPS_EVAL_BOUND" if l6_pass else "L6_CLOSURE_INCOMPLETE",
+                output_refs={
+                    "l6_shadow_bridge": str(
+                        l6_completion.get("l6_shadow_bridge_ref") or ""
+                    )
+                },
+            )
+            if l6_pass:
+                promotion_pass = bool(
+                    post_x3_completion.get("completed")
+                    and post_x3_completion.get("durable_promotion_committed") is True
+                    and (post_x3_completion.get("fact_vector_writeback") or {}).get(
+                        "status"
+                    )
+                    != "FAIL"
+                )
+                stage_ledger.record(
+                    stage_id="STATE_PROMOTION",
+                    status="PASS" if promotion_pass else "FAIL",
+                    reason_code=(
+                        "DURABLE_PROMOTION_COMMITTED"
+                        if promotion_pass
+                        else str(
+                            post_x3_completion.get("failure_stage")
+                            or "DURABLE_PROMOTION_INCOMPLETE"
+                        )
+                    ),
+                    output_refs={
+                        "post_x3_completion": "apps_rg_post_x3_completion_receipt.json"
+                    },
+                )
     payload: dict[str, Any] = {
         "exit_status": "success" if outcome else "error",
         "execution_status": "completed" if outcome else "failed",
         "outcome_authorized": outcome,
-        "x3_disposition": aggregate_x3,
+        "x3_disposition": result.x3_disposition,
+        "completion_disposition": effective_x3,
+        "completion_status": "PASS" if outcome else "BLOCKED",
         "fault": result_fault,
         "artifact_dir": str(art),
         "run_id": result.run_id,
@@ -793,80 +1208,12 @@ def run_whole_run_with_route_governance(
     if research_ran:
         payload["delegated_briefing"] = str(art / sr.FILENAME_DELEGATED_BRIEFING)
         payload["research_bridge_response"] = str(art / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE)
-    mandatory_outputs: dict[str, Any] = {}
-    if is_integrated_whole_run_artifact_dir(art):
-        try:
-            from apps_rg.runtime.mandatory_run_outputs import (
-                MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
-                emit_mandatory_run_outputs,
-            )
-            from apps_rg.runtime.section_failure_forensics import (
-                E2E_SECTION_FORENSICS_GATE_ID,
-            )
-
-            mandatory_emit = emit_mandatory_run_outputs(
-                art,
-                repo_root=repo,
-                result=payload,
-                print_stdout=False,
-                emit_final_outputs=not final_resume_outputs_pre_emitted,
-            )
-            mandatory_outputs = {
-                "mandatory_run_output_json": str(mandatory_emit["json_path"]),
-                "mandatory_run_output_md": str(mandatory_emit["markdown_path"]),
-                "bcg_executive_output_md": str(mandatory_emit["bcg_markdown_path"]),
-            }
-            payload.update(mandatory_outputs)
-            emitted_payload = (
-                mandatory_emit.get("payload") if isinstance(mandatory_emit, dict) else {}
-            )
-            forensics_gate = (
-                emitted_payload.get("section_failure_forensics")
-                if isinstance(emitted_payload, dict)
-                and isinstance(emitted_payload.get("section_failure_forensics"), dict)
-                else {}
-            )
-            if forensics_gate.get("required") and not bool(forensics_gate.get("pass")):
-                prior_fault = str(payload.get("fault") or "")
-                payload["exit_status"] = "error"
-                payload["execution_status"] = "failed"
-                payload["outcome_authorized"] = False
-                payload["fault"] = E2E_SECTION_FORENSICS_GATE_ID
-                payload["x3_disposition"] = "X3_BLOCK"
-                payload["section_failure_forensics_gate"] = forensics_gate
-                payload["mandatory_output_upstream_fault"] = prior_fault
-            mandatory_gate = (
-                mandatory_emit.get("mandatory_output_gate")
-                if isinstance(mandatory_emit, dict)
-                and isinstance(mandatory_emit.get("mandatory_output_gate"), dict)
-                else {}
-            )
-            if mandatory_gate.get("required") and not bool(mandatory_gate.get("pass")):
-                prior_fault = str(payload.get("fault") or "")
-                payload["exit_status"] = "error"
-                payload["execution_status"] = "failed"
-                payload["outcome_authorized"] = False
-                payload["fault"] = (
-                    E2E_SECTION_FORENSICS_GATE_ID
-                    if not bool(forensics_gate.get("pass", True))
-                    else MANDATORY_OUTPUT_HARD_STOP_GATE_ID
-                )
-                payload["x3_disposition"] = "X3_BLOCK"
-                payload["mandatory_output_hard_stop"] = mandatory_gate
-                payload["mandatory_output_upstream_fault"] = prior_fault
-        except OSError:
-            mandatory_outputs = {}
-            from apps_rg.runtime.mandatory_run_outputs import (
-                MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
-            )
-
-            prior_fault = str(payload.get("fault") or "")
-            payload["exit_status"] = "error"
-            payload["execution_status"] = "failed"
-            payload["outcome_authorized"] = False
-            payload["fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
-            payload["x3_disposition"] = "X3_BLOCK"
-            payload["mandatory_output_upstream_fault"] = prior_fault
+    _emit_terminal_mandatory_closeout(
+        artifact_dir=art,
+        repo_root=repo,
+        payload=payload,
+        final_resume_outputs_pre_emitted=final_resume_outputs_pre_emitted,
+    )
     review_zip = None
     if is_integrated_whole_run_artifact_dir(art):
         try:
@@ -878,6 +1225,36 @@ def run_whole_run_with_route_governance(
         payload["review_bundle_relpath"] = REVIEW_BUNDLE_FILENAME
     if section_status_md is not None:
         payload["full_run_section_status_md"] = section_status_md
+    stage_ledger.record(
+        stage_id="CLOSEOUT",
+        status="PASS" if payload.get("outcome_authorized") is True else "FAIL",
+        reason_code=(
+            "MANDATORY_CLOSEOUT_COMPLETE"
+            if payload.get("outcome_authorized") is True
+            else str(payload.get("fault") or "RUN_NOT_AUTHORIZED")
+        ),
+        output_refs={
+            "mandatory_run_output_json": str(
+                payload.get("mandatory_run_output_json") or ""
+            ),
+            "bcg_executive_output_md": str(
+                payload.get("bcg_executive_output_md") or ""
+            ),
+        },
+    )
+    from apps_rg.runtime.e2e_stage_ledger import verify_e2e_stage_ledger
+
+    ledger_report = verify_e2e_stage_ledger(stage_ledger.path)
+    payload["e2e_stage_ledger"] = str(stage_ledger.path)
+    payload["e2e_stage_ledger_valid"] = ledger_report.valid
+    payload["e2e_stage_ledger_complete"] = ledger_report.complete
+    if payload.get("outcome_authorized") is True and not ledger_report.complete:
+        payload["exit_status"] = "error"
+        payload["execution_status"] = "failed"
+        payload["outcome_authorized"] = False
+        payload["completion_status"] = "BLOCKED"
+        payload["fault"] = "E2E_STAGE_LEDGER_INCOMPLETE"
+        payload["e2e_stage_ledger_errors"] = list(ledger_report.errors)
     return payload
 
 

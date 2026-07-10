@@ -34,7 +34,9 @@ the apps_rg *run + report* loop.
 | Never pre-fill `--target-company`/`--target-role`/`--jd`/`--manual-brief` from inferred or prior-turn context | The in-app wizard owns these (`apps-rg-interactive-discipline.md`, constitutional §6/§18) |
 | One single-prompt request for all missing inputs — no multi-turn back-and-forth | Same rule; minimizes round-trips |
 | After ANY run, render `render_run_summary.py` output inline before claiming success | `apps-rg-post-run-summary.md` — "exit 0" without the table is at most PARTIAL |
-| Failure/aborted runs MUST still emit and surface mandatory BCG + run ledger | Failure runs are MORE valuable for evidence, not less |
+| Failure/aborted runs MUST still emit and surface mandatory BCG + run ledger from the canonical run | Missing terminal artifacts are a hard failure; never repair or backfill them after exit |
+| Fresh E2E run directories come only from `FRESH_E2E_ARTIFACT_DIR` / `e2e_launcher_result.json` | Modification-time discovery can bind evidence from a different run |
+| Failure comparison uses the pinned baseline contract | A moving "latest passing" baseline makes the first divergence non-reproducible |
 | The initial run closeout must answer "what ran, what did not, which judges ran, why retries worked or failed, and where prior/current first diverged" | Mandatory `02_output_bisect.md`, `02_section_lane_summary_table.md`, plus `APPS_RG_MANDATORY_RUN_OUTPUT.json` are the SSOT surfaces for that operator evidence |
 | Every RCA required fix MUST be a 3-5 bullet implementation plan aimed at the core root cause | Single-line actions and symptom fixes are not operator-ready |
 | Every RCA finding MUST include causal allocation tied to the actual root cause | Broad buckets are invalid unless each row names the concrete causal mechanism, evidence, work share, and retry recoverability |
@@ -50,8 +52,8 @@ the apps_rg *run + report* loop.
    3. Research briefing — file path, OR "auto-internal", OR "auto-tavily", OR "skip"
    ```
 2. **Run** `python -m apps_rg ...` exactly as scoped — no added flags when the user typed a bare invocation.
-3. **Locate the run dir** — `--out-dir` if passed, else the most-recently-modified dir under `artifacts/apps_rg/runs/`.
-4. **Validate mandatory outputs** — verify these files exist in the run dir: `01_BCG_executive_output.md`, `02_output_bisect.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. If the BCG, bisect, lane table, or JSON is missing, regenerate them with `python -m apps_rg.runtime.mandatory_run_outputs <run_dir>`; if `03_L7_audit_ability_output.md` is missing, regenerate it with `python tools/apps_rg/render_run_summary.py <run_dir>`.
+3. **Locate the run dir** — use the explicit run directory returned by the invocation. For `--fresh-e2e`, require exactly one `FRESH_E2E_ARTIFACT_DIR` line and the matching `e2e_launcher_result.json`; never scan by modification time.
+4. **Validate mandatory outputs** — verify these files exist in the exact run dir: `e2e_stage_ledger.json`, `01_BCG_executive_output.md`, `02_output_bisect.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. Any missing file is a deterministic hard failure. Do not generate, regenerate, repair, or backfill it after the canonical run exits.
 5. **Render evidence** — `python tools/apps_rg/render_run_summary.py [<run_dir>]`; paste the full markdown inline under `## apps_rg Runtime Evidence`. Do not paraphrase or truncate.
 6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). Render the output bisect immediately after the BCG: every generation/repair/retry, scoped gate result, judge result or `JUDGES_NOT_REACHED`, first observed divergence, first causally relevant divergence, and ingestion-to-outcome lineage. Each RCA finding must include `root_cause`, causal allocation (`dominant_cause`, retry recoverability, and root-cause-linked allocation rows), plus a 3-5 bullet implementation plan that changes the producer/parser/validator contract causing the failure; do not present symptom-only rerun, prompt tweak, or threshold-relaxation actions as required fixes. For executive_summary, use the mandatory 3-sentence layperson explanation first, then the full attempt, gate, judge, and causal tables plus the repo-work proof floor.
 
@@ -65,6 +67,8 @@ the apps_rg *run + report* loop.
 - ❌ Pre-filling wizard flags from session memory or stale `apps_rg/scripts/*.json` files.
 - ❌ Starting the executive_summary response with `X3_BLOCK`, a digest, or a gate-failure list.
 - ❌ Skipping the renderer on a failed/aborted run "to save space".
+- ❌ Selecting a fresh E2E run by latest modification time or sibling-directory scan.
+- ❌ Running a mandatory-output generator after exit to make a failed run appear complete.
 
 ## References
 

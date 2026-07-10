@@ -12,7 +12,6 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Protocol
 
-
 _REQUIRED_TASK = "GRADE_ONLY"
 RECONCILE_POLICY_VERSION = "gate_closure_v1"
 
@@ -142,6 +141,20 @@ class PanelRunResult:
     contract_hash: str
     outcomes: tuple[PanelJudgeOutcome, ...]
     transport_violations: tuple[TransportParityViolation, ...]
+    attempts: tuple["JudgeAttemptReceipt", ...] = field(default_factory=tuple)
+
+
+@dataclass(frozen=True)
+class JudgeAttemptReceipt:
+    """One panel-authorized judge attempt, including retry exhaustion."""
+
+    provider_key: str
+    contract_hash: str
+    attempt: int
+    max_attempts: int
+    status: str
+    error: str = ""
+    receipt_attempt: int = 0
 
 
 class AdapterInvokeError(Exception):
@@ -203,6 +216,7 @@ class JudgePanelRunner:
         contract_hash = contract.contract_hash()
         outcomes: list[PanelJudgeOutcome] = []
         violations: list[TransportParityViolation] = []
+        attempt_receipts: list[JudgeAttemptReceipt] = []
 
         for key in provider_keys:
             adapter = self._registry.get(key)
@@ -214,9 +228,33 @@ class JudgePanelRunner:
                 declared = adapter.declared_policy(attempt=attempt)
                 try:
                     outcome, receipt = adapter.invoke(contract, attempt=attempt)
+                    attempt_receipts.append(
+                        JudgeAttemptReceipt(
+                            provider_key=key,
+                            contract_hash=contract_hash,
+                            attempt=attempt,
+                            max_attempts=max(max_attempts, 1),
+                            status="PASS",
+                            receipt_attempt=int(receipt.attempt),
+                        )
+                    )
                     break
                 except AdapterInvokeError as exc:  # guardian: allow-retry-without-backoff -- bounded panel adapter retries
                     last_exc = exc
+                    attempt_receipts.append(
+                        JudgeAttemptReceipt(
+                            provider_key=key,
+                            contract_hash=contract_hash,
+                            attempt=attempt,
+                            max_attempts=max(max_attempts, 1),
+                            status=(
+                                "EXHAUSTED"
+                                if attempt >= max(max_attempts, 1)
+                                else "RETRYABLE_FAILURE"
+                            ),
+                            error=str(exc),
+                        )
+                    )
                     continue
 
             if outcome is None or receipt is None:
@@ -254,6 +292,7 @@ class JudgePanelRunner:
             contract_hash=contract_hash,
             outcomes=tuple(outcomes),
             transport_violations=tuple(violations),
+            attempts=tuple(attempt_receipts),
         )
 
 

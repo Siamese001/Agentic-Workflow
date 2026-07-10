@@ -4,31 +4,29 @@ Provider-backed judges with full normalization per X1D adapter spec.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+import os
+import re
+import time
+import urllib.error
+import urllib.request
+from dataclasses import asdict, dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable, Mapping
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+
 from agentic_core.config.model_catalog import (
     GEMINI_2_FAMILY_PREFIX,
     GEMINI_3_FAMILY_PREFIX,
     OPENAI_GPT5_FAMILY_PREFIX,
 )
-
-import json
-import os
-import re
-import hashlib
-import time
-import urllib.error
-import urllib.request
-from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
-
-from dataclasses import dataclass, asdict, field
-from datetime import datetime, timezone
-from pathlib import Path
-from typing import Any, Callable, Mapping
-
+from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.judges.executive_summary_x1d_dimension_verdicts import (
     dimension_verdicts_json_schema_fragment,
     ensure_dimension_verdicts,
 )
-from apps_rg.runtime.env_bootstrap import bootstrap_process_env_if_needed
 from apps_rg.runtime.providers.anthropic_prompt_cache import (
     anthropic_prompt_cache_enabled,
     anthropic_prompt_cache_telemetry_enabled,
@@ -36,7 +34,6 @@ from apps_rg.runtime.providers.anthropic_prompt_cache import (
 )
 from apps_rg.runtime.section_judge_policy import get_section_judge_policy
 from apps_rg.runtime.section_model_limits import runtime_limit_float, runtime_limit_int
-
 
 JUDGE_RUBRIC_VERSION = "executive_summary_x1d_v1"
 DEFAULT_THRESHOLD = 0.80
@@ -1401,22 +1398,9 @@ def _call_anthropic(
                     "canonical_contract_hash": canonical_contract_hash,
                     "packet_hash": packet_hash,
                     "attempt": attempt,
+                    "next_attempt": attempt + 1,
+                    "retry_authority": "JudgePanelRunner",
                 },
-            )
-            return _call_anthropic(
-                api_key,
-                prompt,
-                model,
-                input_hash,
-                provider_key,
-                model_source=model_source,
-                artifact_base=artifact_base,
-                model_requested=model_requested,
-                judge_receipt=judge_receipt,
-                attempt=2,
-                packet_hash=packet_hash,
-                canonical_contract_hash=canonical_contract_hash,
-                section_id=section_id,
             )
         return _make_blocked_output(
             provider_key,
@@ -1441,6 +1425,8 @@ def _call_anthropic(
                     "canonical_contract_hash": canonical_contract_hash,
                     "packet_hash": packet_hash,
                     "attempt": attempt,
+                    "next_attempt": attempt + 1,
+                    "retry_authority": "JudgePanelRunner",
                     "next_max_tokens": (
                         _resolved_section_x1d_judge_max_output_tokens(section_id, attempt=2)
                         if section_id
@@ -1448,27 +1434,12 @@ def _call_anthropic(
                     ),
                 },
             )
-            return _call_anthropic(
-                api_key,
-                prompt,
-                model,
-                input_hash,
-                provider_key,
-                model_source=model_source,
-                artifact_base=artifact_base,
-                model_requested=model_requested,
-                judge_receipt=judge_receipt,
-                attempt=2,
-                packet_hash=packet_hash,
-                canonical_contract_hash=canonical_contract_hash,
-                section_id=section_id,
-            )
         return _make_blocked_output(
             provider_key,
             input_hash,
-            "JUDGE_PROVIDER_BLOCKED",
-            "MODEL_BACKED_INCONCLUSIVE",
-            f"Anthropic truncated (stop_reason={stop_reason}); not a content-quality judge verdict",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            "BLOCKED_RESPONSE_PARSE_ERROR",
+            f"Anthropic truncated (finish_reason={stop_reason}); not a content-quality judge verdict",
             raw_response_ref=str(raw_path),
             model_name=model,
             original_model=original_model,
@@ -1790,13 +1761,17 @@ def run_llm_judges(
     When ``judge_packet`` is provided (executive_summary GRADE_ONLY path), judges grade the packet
     candidate and use enhanced proof model resolution — not the generator ``compiled_prompt``.
     """
-    from apps_rg.runtime.judges.executive_summary_judge_packet import judge_contract_hash as _exec_contract_hash
+    from apps_rg.runtime.judges.executive_summary_judge_packet import (
+        judge_contract_hash as _exec_contract_hash,
+    )
     from apps_rg.runtime.judges.executive_summary_judge_packet import judge_packet_hash as _exec_hash
     from apps_rg.runtime.judges.executive_summary_judge_packet import (
         render_judge_prompt_from_packet as _exec_render_packet,
     )
     from apps_rg.runtime.judges.grade_only_judge_packet import (
         judge_packet_hash as _generic_hash,
+    )
+    from apps_rg.runtime.judges.grade_only_judge_packet import (
         render_judge_prompt_from_packet as _generic_render_packet,
     )
     from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model

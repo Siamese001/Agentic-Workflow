@@ -265,7 +265,9 @@ def build_spine_proof_payload(
     terminal_env = _read_json(artifact_dir / "terminal_ret_packet.json")
     if isinstance(terminal_env, dict):
         tp = terminal_env.get("payload", {}) or {}
-        if not bool(tp.get("no_l2_execution_assertion")) and not runtime_l2_artifact_ref:
+        if bool(tp.get("l2_recipe_executed")):
+            runtime_l2_artifact_ref = _hash_or_none("terminal_ret_packet.json")
+        elif not bool(tp.get("no_l2_execution_assertion")) and not runtime_l2_artifact_ref:
             blocking.append(
                 "terminal_ret_packet.no_l2_execution_assertion is not True "
                 "AND no l2_sealed_artifact.json present; runtime_l2_artifact_ref required"

@@ -50,6 +50,7 @@ from typing import Any
 # that matches its causal point in the run.
 W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "integrated_runtime_entrypoint_invocation.json",
+    "runtime_execution_witness.json",
     "runtime_identity_envelope.json",
     "runtime_certification_binding.json",
     "l5_hitl_reclearance.json",
@@ -77,7 +78,8 @@ W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
 # (filename, upstream_filename_or_None).
 W2_CHAIN_LINKAGE: tuple[tuple[str, str | None], ...] = (
     ("integrated_runtime_entrypoint_invocation.json", None),
-    ("runtime_identity_envelope.json", "integrated_runtime_entrypoint_invocation.json"),
+    ("runtime_execution_witness.json", "integrated_runtime_entrypoint_invocation.json"),
+    ("runtime_identity_envelope.json", "runtime_execution_witness.json"),
     ("runtime_certification_binding.json", "runtime_identity_envelope.json"),
     ("l5_hitl_reclearance.json", "runtime_certification_binding.json"),
     ("validated_request.json", "l5_hitl_reclearance.json"),

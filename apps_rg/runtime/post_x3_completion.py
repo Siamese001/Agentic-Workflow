@@ -931,6 +931,74 @@ def complete_apps_rg_post_x3(
         output_hash=output_hash,
         ids=ids,
     )
+    eval_record = _run_current_eval(
+        artifact_dir=art,
+        result=result,
+        raw_request=raw_request,
+    )
+    eval_record_path = str(eval_record.artifact_paths.get("eval_record") or "")
+    l6_bridge_path = str(eval_record.artifact_paths.get("l6_shadow_bridge") or "")
+    eval_record_hash = _sha256_file(Path(eval_record_path)) if eval_record_path else ""
+    l6_bridge_hash = (
+        _sha256_file(Path(l6_bridge_path))
+        if l6_bridge_path and Path(l6_bridge_path).is_file()
+        else ""
+    )
+    l6_grain_refs = _emit_post_x3_success_l6_grain_parity(
+        artifact_dir=art,
+        eval_record=eval_record,
+        l6_bridge_path=l6_bridge_path,
+    )
+    l6_section_bindings = _emit_l6_section_apps_eval_bindings(
+        artifact_dir=art,
+        eval_record=eval_record,
+    )
+    l6_shadow_refs = {**l6_grain_refs, **l6_section_bindings}
+    coverage = dict(eval_record.scorecard.coverage_summary or {})
+    eval_pass = (
+        coverage.get("release_blocked") is False
+        and coverage.get("coverage_complete") is True
+    )
+    l6_pass = bool(
+        l6_bridge_hash
+        and str(l6_grain_refs.get("grain_parity_status") or "") == "PASS"
+        and bool(l6_grain_refs.get("apps_eval_rows_bound"))
+    )
+    apps_eval_payload = {
+        "record_id": eval_record.record_id,
+        "eval_record_ref": eval_record_path,
+        "eval_record_sha256": f"sha256:{eval_record_hash}" if eval_record_hash else "",
+        "score": eval_record.scorecard.score,
+        "verdict": eval_record.scorecard.verdict,
+        "coverage_summary": coverage,
+        "scorecard_rows_ref": eval_record.artifact_paths.get("scorecard_rows", ""),
+        "coverage_matrix_ref": eval_record.artifact_paths.get("coverage_matrix", ""),
+    }
+    l6_shadow_payload = {
+        "l6_shadow_bridge_ref": l6_bridge_path,
+        "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
+        **l6_shadow_refs,
+        "future_run_only": True,
+        "current_run_mutated": False,
+    }
+    if not eval_pass or not l6_pass:
+        payload = {
+            "schema_version": "apps_rg.post_x3_completion.v1",
+            "generated_at_utc": _utc_now_iso(),
+            "status": "FAIL",
+            "completed": False,
+            "x3_to_uwg_to_eval_to_l6_completed": False,
+            "failure_stage": "apps_eval" if not eval_pass else "l6_shadow",
+            "generated_resume_path": _repo_rel(generated, art),
+            "output_hash": output_hash,
+            "output_hash_sha256": f"sha256:{output_hash}",
+            "durable_promotion_attempted": False,
+            "apps_eval": apps_eval_payload,
+            "l6_shadow": l6_shadow_payload,
+        }
+        _write_json(receipt_path, payload)
+        return payload
+
     gw = get_default_gateway()
     commit_receipt, blocked_receipt, refresh_receipts = gw.commit(
         commit_request=commit_request,
@@ -947,14 +1015,12 @@ def complete_apps_rg_post_x3(
             "completed": False,
             "x3_to_uwg_to_eval_to_l6_completed": False,
             "failure_stage": "uwg_commit",
+            "durable_promotion_attempted": True,
+            "durable_promotion_committed": False,
             "blocked_receipt": blocked_payload,
+            "apps_eval": apps_eval_payload,
+            "l6_shadow": l6_shadow_payload,
         }
-        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
-            artifact_dir=art,
-            failure_stage="uwg_commit",
-            reason="uwg_commit_blocked",
-            partial_payload=payload,
-        )
         _write_json(receipt_path, payload)
         return payload
 
@@ -967,14 +1033,12 @@ def complete_apps_rg_post_x3(
             "completed": False,
             "x3_to_uwg_to_eval_to_l6_completed": False,
             "failure_stage": "uwg_validation_receipt_lookup",
+            "durable_promotion_attempted": True,
+            "durable_promotion_committed": False,
             "uwg_validation_receipt_ref": commit_receipt.uwg_validation_receipt_ref,
+            "apps_eval": apps_eval_payload,
+            "l6_shadow": l6_shadow_payload,
         }
-        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
-            artifact_dir=art,
-            failure_stage="uwg_validation_receipt_lookup",
-            reason="uwg_validation_receipt_missing",
-            partial_payload=payload,
-        )
         _write_json(receipt_path, payload)
         return payload
 
@@ -1004,44 +1068,23 @@ def complete_apps_rg_post_x3(
             "completed": False,
             "x3_to_uwg_to_eval_to_l6_completed": False,
             "failure_stage": "fact_vector_writeback",
+            "durable_promotion_attempted": True,
+            "durable_promotion_committed": True,
             "fact_vector_writeback": fact_vector_writeback,
+            "apps_eval": apps_eval_payload,
+            "l6_shadow": l6_shadow_payload,
         }
-        payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
-            artifact_dir=art,
-            failure_stage="fact_vector_writeback",
-            reason=str(fact_vector_writeback.get("reason") or "fact_vector_writeback_failed"),
-            partial_payload=payload,
-        )
         _write_json(receipt_path, payload)
         return payload
-    eval_record = _run_current_eval(
-        artifact_dir=art,
-        result=result,
-        raw_request=raw_request,
-    )
-    eval_record_path = str(eval_record.artifact_paths.get("eval_record") or "")
-    l6_bridge_path = str(eval_record.artifact_paths.get("l6_shadow_bridge") or "")
-    eval_record_hash = _sha256_file(Path(eval_record_path)) if eval_record_path else ""
-    l6_bridge_hash = _sha256_file(Path(l6_bridge_path)) if l6_bridge_path and Path(l6_bridge_path).is_file() else ""
-    l6_grain_refs = _emit_post_x3_success_l6_grain_parity(
-        artifact_dir=art,
-        eval_record=eval_record,
-        l6_bridge_path=l6_bridge_path,
-    )
-    l6_section_bindings = _emit_l6_section_apps_eval_bindings(
-        artifact_dir=art,
-        eval_record=eval_record,
-    )
-    l6_shadow_refs = {**l6_grain_refs, **l6_section_bindings}
-    coverage = dict(eval_record.scorecard.coverage_summary or {})
-    eval_pass = coverage.get("release_blocked") is False and coverage.get("coverage_complete") is True
     payload = {
         "schema_version": "apps_rg.post_x3_completion.v1",
         "generated_at_utc": _utc_now_iso(),
-        "status": "PASS" if eval_pass else "FAIL",
-        "completed": bool(eval_pass),
-        "x3_to_uwg_to_eval_to_l6_completed": bool(eval_pass and l6_bridge_hash),
-        "failure_stage": "" if eval_pass else "apps_eval",
+        "status": "PASS",
+        "completed": True,
+        "x3_to_uwg_to_eval_to_l6_completed": True,
+        "failure_stage": "",
+        "durable_promotion_attempted": True,
+        "durable_promotion_committed": True,
         "generated_resume_path": _repo_rel(generated, art),
         "output_hash": output_hash,
         "output_hash_sha256": f"sha256:{output_hash}",
@@ -1054,27 +1097,12 @@ def complete_apps_rg_post_x3(
             "artifacts": dict(uwg_paths),
         },
         "fact_vector_writeback": fact_vector_writeback,
-        "apps_eval": {
-            "record_id": eval_record.record_id,
-            "eval_record_ref": eval_record_path,
-            "eval_record_sha256": f"sha256:{eval_record_hash}" if eval_record_hash else "",
-            "score": eval_record.scorecard.score,
-            "verdict": eval_record.scorecard.verdict,
-            "coverage_summary": coverage,
-            "scorecard_rows_ref": eval_record.artifact_paths.get("scorecard_rows", ""),
-            "coverage_matrix_ref": eval_record.artifact_paths.get("coverage_matrix", ""),
-        },
-        "l6_shadow": {
-            "l6_shadow_bridge_ref": l6_bridge_path,
-            "l6_shadow_bridge_sha256": f"sha256:{l6_bridge_hash}" if l6_bridge_hash else "",
-            **l6_shadow_refs,
-            "future_run_only": True,
-            "current_run_mutated": False,
-        },
+        "apps_eval": apps_eval_payload,
+        "l6_shadow": l6_shadow_payload,
     }
     _write_json(receipt_path, payload)
     receipt_hash = _sha256_file(receipt_path)
-    if eval_pass and l6_bridge_hash:
+    if l6_pass:
         _bind_completion_artifacts(
             artifact_dir=art,
             receipt_path=receipt_path,

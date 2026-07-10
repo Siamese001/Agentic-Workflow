@@ -121,17 +121,25 @@ def _emit_l6_observability_closure_receipt(
         "microstep_observations_exists": microstep_paths["l6_microstep_observations"].is_file(),
         "grain_parity_exists": microstep_paths["l6_apps_eval_grain_parity"].is_file(),
         "v40_package_exists": package_path.is_file(),
+        "valid_v40_shadow_exhaust": package.get("valid_v40_shadow_exhaust") is True,
+        "readiness_ready": package.get("readiness_decision") == "READY_FOR_6B",
+        "grain_parity_pass": package.get("grain_parity_status") == "PASS",
+        "apps_eval_rows_bound": package.get("apps_eval_rows_bound") is True,
+        "apps_eval_bound_evidence": package.get("evidence_class") == "APPS_EVAL_BOUND_PROOF",
         "no_current_run_mutation_assertion": package.get("current_run_mutation_assertion") is False
         and package.get("current_run_x3_mutation_assertion") is False,
         "no_direct_l4_write_assertion": package.get("direct_l4_write_assertion") is False,
         "no_durable_write_assertion": package.get("durable_write_assertion") is False,
+        "future_run_only_assertion": package.get("future_run_only_assertion") is True,
     }
+    failed_checks = [name for name, passed in checks.items() if not passed]
     receipt = {
         "schema_version": "apps_rg.l6_observability_closure_receipt.v1",
         "section_id": str(package.get("section_id") or ""),
         "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
-        "closure_status": "PASS" if all(checks.values()) else "WARN",
+        "closure_status": "PASS" if not failed_checks else "FAIL",
         "checks": checks,
+        "failed_checks": failed_checks,
         "refs": {
             "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
             "exit_disposition_receipt": _repo_rel(repo_root, artifact_dir / "exit_disposition_receipt.json"),

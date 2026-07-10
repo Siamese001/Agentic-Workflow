@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 from datetime import datetime, timezone
@@ -17,6 +18,9 @@ from apps_rg.runtime.output_bisect import (
 SECTION_FAILURE_FORENSICS_DIR = "section_failure_forensics"
 E2E_SECTION_FORENSICS_GATE_ID = "E2E_FAIL_WITHOUT_SECTION_FORENSICS"
 SECTION_FAILURE_FORENSICS_SCHEMA_VERSION = "apps_rg.section_failure_forensics.v1"
+DEFAULT_E2E_BASELINE_REF = Path(
+    "apps_rg/config/e2e_baselines/anthropic_partnership.v1.json"
+)
 
 FAILURE_TYPES = frozenset(
     {
@@ -381,44 +385,71 @@ def _same_scenario(a: dict[str, Any], b: dict[str, Any]) -> bool:
     return bool(company_a and role_a and company_a == company_b and role_a == role_b)
 
 
-def _find_last_successful_same_scenario(run_root: Path) -> dict[str, Any]:
+def _find_pinned_successful_same_scenario(
+    run_root: Path,
+    repo_root: Path,
+) -> dict[str, Any]:
     current = _scenario_identity(run_root)
-    parent = run_root.parent
-    if not parent.is_dir():
+    configured = str(os.environ.get("APPS_RG_E2E_BASELINE_REF") or "").strip()
+    ref = Path(configured) if configured else DEFAULT_E2E_BASELINE_REF
+    if not ref.is_absolute():
+        ref = repo_root / ref
+    contract = _load_json(ref)
+    if contract.get("schema_version") != "apps_rg.e2e_baseline.v1":
         return {
             "found": False,
-            "baseline_confidence": "not_found",
+            "baseline_confidence": "pinned_contract_invalid",
             "scenario": current,
             "run_dir": "",
+            "baseline_ref": str(ref),
         }
-    candidates = []
-    for child in parent.iterdir():
-        if child.resolve() == run_root.resolve() or not child.is_dir():
-            continue
-        if not _is_successful_run(child):
-            continue
-        identity = _scenario_identity(child)
-        if not _same_scenario(current, identity):
-            continue
-        try:
-            mtime = child.stat().st_mtime
-        except OSError:
-            mtime = 0.0
-        candidates.append((mtime, child, identity))
-    if not candidates:
+    baseline_text = str(contract.get("baseline_run_dir") or "").strip()
+    baseline = Path(baseline_text)
+    if not baseline.is_absolute():
+        baseline = repo_root / baseline
+    mandatory = baseline / "APPS_RG_MANDATORY_RUN_OUTPUT.json"
+    expected_digest = str(contract.get("mandatory_output_sha256") or "").lower()
+    observed_digest = (
+        hashlib.sha256(mandatory.read_bytes()).hexdigest()
+        if mandatory.is_file()
+        else ""
+    )
+    baseline_scenario = _scenario_identity(baseline) if baseline.is_dir() else {}
+    contract_scenario = {
+        "target_company": str(contract.get("target_company") or ""),
+        "target_role": str(contract.get("target_role") or ""),
+    }
+    scenario_matches = _same_scenario(
+        current,
+        baseline_scenario if baseline_scenario.get("target_company") else contract_scenario,
+    )
+    if (
+        not baseline.is_dir()
+        or not _is_successful_run(baseline)
+        or not expected_digest
+        or observed_digest != expected_digest
+        or not scenario_matches
+    ):
         return {
             "found": False,
-            "baseline_confidence": "not_found",
+            "baseline_confidence": "pinned_baseline_unavailable",
             "scenario": current,
             "run_dir": "",
+            "baseline_ref": str(ref),
+            "baseline_run_dir_configured": str(baseline),
+            "baseline_digest_match": bool(
+                expected_digest and observed_digest == expected_digest
+            ),
+            "baseline_scenario_match": scenario_matches,
         }
-    _mtime, baseline, identity = sorted(candidates, key=lambda row: row[0], reverse=True)[0]
     return {
         "found": True,
         "baseline_confidence": _baseline_confidence(baseline),
         "scenario": current,
-        "baseline_scenario": identity,
+        "baseline_scenario": baseline_scenario or contract_scenario,
         "run_dir": str(baseline),
+        "baseline_ref": str(ref),
+        "baseline_digest_match": True,
     }
 
 
@@ -626,10 +657,10 @@ def _why_passed_before(
 ) -> str:
     confidence = str(baseline.get("baseline_confidence") or "not_found")
     if not baseline.get("found"):
-        return "No prior successful same-scenario run was found, so this RCA cannot claim a clean passing baseline."
+        return "The pinned prior-pass baseline was unavailable, so this RCA cannot claim a clean passing comparison."
     if confidence == "dirty":
         return (
-            "The latest successful same-scenario baseline existed but was dirty; treat it as behavioral "
+            "The pinned successful same-scenario baseline existed but was dirty; treat it as behavioral "
             "evidence only, not a clean code baseline."
         )
     if bool(baseline_output.get("present")):
@@ -714,8 +745,8 @@ def _build_rca(
     provider_comparison = _comparison(lane, baseline_lane, "provider_request.json")
     baseline_found = bool(baseline.get("found"))
     comparison_complete = bool(
-        not baseline_found
-        or (
+        baseline_found
+        and (
             baseline_output.get("present")
             and current_output.get("present")
             and str(baseline_output.get("path") or "") != str(current_output.get("path") or "")
@@ -1002,7 +1033,7 @@ def emit_section_failure_forensics(
     out_dir = root / SECTION_FAILURE_FORENSICS_DIR
     artifacts: list[dict[str, Any]] = []
     incomplete: list[dict[str, Any]] = []
-    baseline = _find_last_successful_same_scenario(root)
+    baseline = _find_pinned_successful_same_scenario(root, repo)
     if not failed:
         return {
             "gate_id": E2E_SECTION_FORENSICS_GATE_ID,
