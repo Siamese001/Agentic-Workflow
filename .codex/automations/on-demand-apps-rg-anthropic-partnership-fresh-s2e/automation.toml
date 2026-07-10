@@ -47,6 +47,7 @@ Evidence:
 1. Locate the run directory from the FRESH_E2E_ARTIFACT_DIR line. If that line is unavailable, use the most recently modified child under artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e or artifacts/apps_rg/runs.
 2. Verify these mandatory outputs exist in the run directory:
    - 01_BCG_executive_output.md
+   - 02_output_bisect.md
    - 02_section_lane_summary_table.md
    - 03_L7_audit_ability_output.md
    - APPS_RG_MANDATORY_RUN_OUTPUT.json

@@ -1121,9 +1121,18 @@ def retry_provider_for_synthesis(
         "schema": "executive_summary_synthesis_regen_v2",
         "triggered": True,
         "reject_reason": reject_reason,
+        "initial_candidate_digest": sha16(first_text),
+        "initial_defects": [
+            part.strip() for part in reject_reason.split(";") if part.strip()
+        ],
         "first_pass_resume_word_count": len(re.findall(r"\S+", first_text)),
         "first_pass_claim_ledger_rows": len(list(parsed.get("claim_ledger") or [])),
         "max_attempts": max_attempts,
+        "acceptance_semantics": {
+            "monotonicity_accepted": "candidate improved relative to the prior draft; full pre-X2 shape closure is not implied",
+            "receipt_accepted": "the selected candidate cleared every pre-X2 synthesis-shape check",
+            "transport_accepted": "the provider call completed and parsed; product acceptance is not implied",
+        },
         "attempts": [],
     }
     current_raw = raw_output
@@ -1208,8 +1217,25 @@ def retry_provider_for_synthesis(
         mark_regen_call_parse(artifact_dir, regen_outcome.call_id, parse_ok=bool(new_parsed))
         if new_parsed:
             regen_text = str(new_parsed.get("resume_display_text") or "")
+            attempt_record["candidate_digest"] = sha16(regen_text)
             attempt_record["regen_resume_word_count"] = len(re.findall(r"\S+", regen_text))
             attempt_record["regen_claim_ledger_rows"] = len(list(new_parsed.get("claim_ledger") or []))
+            new_shape_ok, new_shape_reason = _synthesis_shape_reject_reason(
+                regen_text,
+                new_parsed,
+                selected_facts=selected_facts,
+                jd_text=jd_text,
+            )
+            attempt_record["defects_after"] = [
+                part.strip()
+                for part in new_shape_reason.split(";")
+                if part.strip()
+            ]
+            attempt_record["shape_gate_snapshot"] = {
+                "scope": "PRE_X2_SYNTHESIS_SHAPE",
+                "pass": new_shape_ok,
+                "failed_reasons": attempt_record["defects_after"],
+            }
             new_fail_count = _shape_failure_count(
                 regen_text, new_parsed, selected_facts=selected_facts, jd_text=jd_text
             )
@@ -1220,6 +1246,16 @@ def retry_provider_for_synthesis(
                 new_parsed=new_parsed,
             )
             attempt_record["monotonicity"] = mono_detail
+            attempt_record["acceptance_scope"] = (
+                "FULL_PRE_X2_SHAPE_PASS"
+                if new_shape_ok
+                else "MONOTONIC_IMPROVEMENT_ONLY"
+                if mono_ok
+                else "REJECTED"
+            )
+            attempt_record["advanced_to_next_attempt"] = bool(
+                mono_ok and not new_shape_ok
+            )
             new_ledger_rows = len(list(new_parsed.get("claim_ledger") or []))
             if mono_ok:
                 current_raw = new_raw
@@ -1288,6 +1324,10 @@ def retry_provider_for_synthesis(
         regen_receipt["accepted_via"] = regen_receipt.get("accepted_via") or "shape_pass_after_regen"
 
     regen_receipt["accepted"] = final_ok
+    regen_receipt["authoritative_candidate_digest"] = sha16(
+        final_text if final_ok else first_text
+    )
+    regen_receipt["judge_stage_eligible_from_retry"] = final_ok
     if not final_ok:
         regen_receipt["final_reject_reason"] = final_reason
     regen_receipt["final_resume_word_count"] = len(re.findall(r"\S+", final_text))

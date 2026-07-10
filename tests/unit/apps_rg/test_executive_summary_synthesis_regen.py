@@ -2,18 +2,24 @@
 
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
+from types import SimpleNamespace
 
 from apps_rg.runtime.sections.executive_summary_lane import (
     _build_synthesis_repair_user,
     _regen_candidate_preferred,
     _shape_failure_count,
     _synthesis_shape_reject_reason,
+    retry_provider_for_synthesis,
 )
 from apps_rg.runtime.sections.executive_summary_repair_policy import (
     SYNTHESIS_REGEN_MAX_ATTEMPTS,
     synthesis_regen_max_attempts,
 )
+
+# apps-test-model: APP CONTRACT
 
 
 def test_synthesis_regen_max_attempts_default_is_two(monkeypatch) -> None:
@@ -29,6 +35,74 @@ def test_synthesis_regen_max_attempts_env_clamped_only_when_caps_enabled(monkeyp
     assert synthesis_regen_max_attempts() == 3
     monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN_MAX_ATTEMPTS", "1")
     assert synthesis_regen_max_attempts() == 1
+
+
+def test_synthesis_regen_receipt_distinguishes_improvement_from_shape_acceptance(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    import apps_rg.runtime.sections.executive_summary_lane as lane
+
+    monkeypatch.setenv("APPS_RG_EXEC_SUMMARY_SYNTHESIS_REGEN_MAX_ATTEMPTS", "2")
+    responses = iter(("retry one", "retry two"))
+
+    def fake_shape(text, *_args, **_kwargs):
+        return False, "cross_fact_display_conflation:too_many_source_fact_ids_in_one_sentence"
+
+    def fake_budgeted(*_args, **_kwargs):
+        text = next(responses)
+        result = SimpleNamespace(
+            runtime_generation_status="REAL_LLM",
+            raw_model_output=json.dumps(
+                {"resume_display_text": text, "claim_ledger": []}
+            ),
+            to_dict=lambda: {"raw_model_output": text},
+        )
+        attempt = int(_kwargs["attempt_index"])
+        return SimpleNamespace(
+            result=result,
+            call_id=f"retry-{attempt}",
+            dispatch_allowed=True,
+            block_reason=None,
+        )
+
+    monkeypatch.setattr(lane, "_synthesis_shape_reject_reason", fake_shape)
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.budgeted_regen_call",
+        fake_budgeted,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_regen_dispatch.mark_regen_call_parse",
+        lambda *_args, **_kwargs: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.sections.executive_summary_synthesis_monotonic.evaluate_synthesis_regen_monotonicity",
+        lambda **_kwargs: (True, {"accepted": True}),
+    )
+
+    raw = json.dumps({"resume_display_text": "initial", "claim_ledger": []})
+    returned_raw, _, _ = retry_provider_for_synthesis(
+        [{"role": "user", "content": "prompt"}],
+        {"model": "test"},
+        raw,
+        {"resume_display_text": "initial", "claim_ledger": []},
+        artifact_dir=tmp_path,
+    )
+
+    assert returned_raw == raw
+    receipt = json.loads(
+        (tmp_path / "synthesis_regen_receipt.json").read_text(encoding="utf-8")
+    )
+    assert receipt["accepted"] is False
+    assert receipt["reverted_to_first_pass"] is True
+    assert receipt["judge_stage_eligible_from_retry"] is False
+    assert receipt["initial_candidate_digest"]
+    assert receipt["authoritative_candidate_digest"] == receipt["initial_candidate_digest"]
+    assert all(
+        row["acceptance_scope"] == "MONOTONIC_IMPROVEMENT_ONLY"
+        for row in receipt["attempts"]
+    )
+    assert all(row["shape_gate_snapshot"]["pass"] is False for row in receipt["attempts"])
 
 
 def test_repair_user_includes_evidence_weave_and_anti_shrink() -> None:

@@ -15,6 +15,7 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_MD,
+    OUTPUT_BISECT_MD,
     REVIEW_BUNDLE_FILENAME,
     REVIEW_INDEX_FILENAME,
 )
@@ -56,6 +57,7 @@ def write_review_index(run_root: Path) -> Path:
         "## Start here",
         "",
         f"- `{BCG_EXECUTIVE_OUTPUT_MD}` — **mandatory executive RCA / decision brief**",
+        f"- `{OUTPUT_BISECT_MD}` — **mandatory prior/current attempt, gate, judge, and causal bisect**",
         f"- `{APPS_RG_MANDATORY_RUN_OUTPUT_MD}` — **mandatory what-ran ledger: sections, judges, blockers, L6**",
         f"- `{APPS_RG_MANDATORY_RUN_OUTPUT_JSON}` — machine-readable mandatory run ledger",
         f"- `{FINAL_RESUME_OUTPUT_TXT}` — **mandatory rendered resume in enforced order**",

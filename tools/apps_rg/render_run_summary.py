@@ -55,6 +55,7 @@ from apps_rg.runtime.run_output_contract import (
     L7_AUDIT_ABILITY_OUTPUT_MD,
     LEGACY_APPS_RG_MANDATORY_RUN_OUTPUT_MD,
     LEGACY_BCG_EXECUTIVE_OUTPUT_MD,
+    OUTPUT_BISECT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
 from apps_rg.runtime.section_display_labels import summary_section_label
@@ -320,14 +321,16 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
         [Path(BCG_EXECUTIVE_OUTPUT_MD), Path(LEGACY_BCG_EXECUTIVE_OUTPUT_MD)],
     )
     l7_audit_md = run_dir / L7_AUDIT_ABILITY_OUTPUT_MD
+    output_bisect_md = run_dir / OUTPUT_BISECT_MD
     ledger = _load_json(ledger_path) or {}
-    lines: List[str] = ["## Mandatory Outputs (1/2/3)", ""]
+    lines: List[str] = ["## Mandatory Outputs (1/2/3/4)", ""]
     lines.append("| # | Output | File | Status |")
     lines.append("|---:|---|---|---|")
     for number, label, path in (
         (1, "BCG executive output", bcg_md),
-        (2, "Section lane summary table", ledger_md),
-        (3, "L7 audit ability output", l7_audit_md),
+        (2, "Output bisect", output_bisect_md),
+        (3, "Section lane summary table", ledger_md),
+        (4, "L7 audit ability output", l7_audit_md),
     ):
         lines.append(
             f"| `{number}` | **{label}** | {_codex_file_link(path.name, path)} | "
@@ -339,6 +342,12 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
         lines.append("## Locked BCG Output")
         lines.append("")
         lines.extend(bcg_text.splitlines())
+    bisect_text = _load_text(output_bisect_md)
+    if bisect_text:
+        lines.append("")
+        lines.append("## Locked Output Bisect")
+        lines.append("")
+        lines.extend(bisect_text.splitlines())
     if not ledger:
         lines.append("")
         lines.append(
