@@ -39,10 +39,10 @@ from apps_rg.runtime.validators import competencies_quality_x2 as q
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 ANTHROPIC_JD = _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
 ANTHROPIC_BRIEF = (
-    _REPO_ROOT / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
+    _REPO_ROOT / "tests/fixtures/apps_rg/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
 )
 ANTHROPIC_2026_JD_JSON = _REPO_ROOT / "apps_rg/config/targeting/jd_anthropic_partnerships_2026.json"
-ANTHROPIC_2026_BRIEF_JSON = _REPO_ROOT / "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json"
+ANTHROPIC_2026_BRIEF_JSON = _REPO_ROOT / "tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json"
 
 
 # ---------------------------------------------------------------------------

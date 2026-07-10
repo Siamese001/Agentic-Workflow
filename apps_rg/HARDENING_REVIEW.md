@@ -2,7 +2,7 @@
 
 **Review mode:** review and implementation plan only; no production code was changed.
 **Source of truth:** the uploaded `apps_rg.zip` and `apps_research.zip` archives.
-**Target scenario:** the shipped Anthropic partnerships fixtures in `apps_rg/config/targeting/jd_anthropic_partnerships_2026.json` and `apps_rg/config/targeting/brief_anthropic_partnerships_2026.json`.
+**Target scenario:** the Anthropic partnerships JD in `apps_rg/config/targeting/jd_anthropic_partnerships_2026.json` and deterministic test brief in `tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json`.
 
 ## Review basis and limitations
 

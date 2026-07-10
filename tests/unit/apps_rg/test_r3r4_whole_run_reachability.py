@@ -108,7 +108,7 @@ def test_no_delegation_when_auto_research_disabled_and_brief_present(tmp_path: P
 
 
 def test_auto_research_static_brief_requires_delegation() -> None:
-    brief = Path("apps_rg/config/targeting/brief_anthropic_partnerships_2026.json")
+    brief = Path("tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json")
     assert briefing_input_present(str(brief))
     assert should_delegate_apps_research(
         route_family=ROUTE_FAMILY_R3R4,
@@ -188,7 +188,7 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     )
     monkeypatch.setattr(orch, "_default_artifact_dir", lambda explicit: tmp_path / "static_json_run")
 
-    brief_json = Path("apps_rg/config/targeting/brief_anthropic_partnerships_2026.json")
+    brief_json = Path("tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json")
     jd_json = Path("apps_rg/config/targeting/jd_anthropic_partnerships_2026.json")
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",

@@ -976,7 +976,7 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
                 "target_title": "Manager of Applied AI Architecture, Partnerships",
                 "briefing_source": "RUN_SPECIFIC",
                 "briefing_digest": "brief-digest-123",
-                "briefing_ref_used": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+                "briefing_ref_used": "tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json",
                 "briefing_text": json.dumps(
                     {
                         "target_company": "Anthropic",
@@ -992,7 +992,7 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
         run / "ingress_raw.json",
         {
             "auto_research_internal": True,
-            "manual_brief": "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+            "manual_brief": "tests/fixtures/apps_rg/brief_anthropic_partnerships_2026.json",
         },
     )
     _write_json(run / "spine_run_manifest.json", {"research_delegation_executed": False})
