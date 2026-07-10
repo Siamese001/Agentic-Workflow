@@ -37,22 +37,27 @@ import json
 import os
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L0_routing.c0_retrieval.route_contract import L1PlanContract
+from agentic_core.L0_routing.doctrine.terminal_routes import (
+    TerminalExecutionForm,
+    TerminalRetPacket,
+)
 
 # --- production-layer imports (cross-layer; the WHOLE point of an entry point) ---
 from agentic_core.L0_routing.intake.envelope import RawIngressEnvelope
 from agentic_core.L0_routing.intake.pipeline import run_request_intake
 from agentic_core.L0_routing.intake.validated_request import ValidatedRequest
+from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
 from agentic_core.L1_cognition.bridges.u0_to_l1_plan import (
     validated_request_to_plan_contract,
 )
-from agentic_core.L0_routing.c0_retrieval.route_contract import L1PlanContract
-from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
-from agentic_core.L0_routing.doctrine.terminal_routes import (
-    TerminalExecutionForm,
-    TerminalRetPacket,
+from agentic_core.L3_orchestration.exit_eval.v6.return_payload import (
+    RuntimeExhaustManifest,
+    seal_runtime_exhaust,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.types import (
     ExitReviewPacket,
@@ -64,22 +69,21 @@ from agentic_core.L3_orchestration.exit_eval.v6.types import (
     X3DenyPacket,
 )
 from agentic_core.L3_orchestration.exit_eval.v6.x2_matrix import AggregateDecision
-from agentic_core.L3_orchestration.exit_eval.v6.return_payload import (
-    seal_runtime_exhaust,
-    RuntimeExhaustManifest,
-)
 from agentic_core.L3_orchestration.exit_eval.v6.x3_dispositions import build_x3d_allow
 
-# Veto orchestrator + status enum live in tools.certification.safety per
-# the existing W1p5 wiring. The entry point is the ONLY place that
-# instantiates / invokes the orchestrator.
-from tools.certification.safety.veto_orchestrator import VetoOrchestrator  # guardian: allow-layer-violation -- ADR-096 §Exception L_RUNTIME->L_TOOLS; entry point is the ONLY instantiator of VetoOrchestrator per W1p5 wiring
-from tools.certification.safety.veto_protocol import VetoResult, VetoStatus  # guardian: allow-layer-violation -- ADR-096 §Exception; veto protocol types accompany orchestrator import
-
+# Bundle-aggregation surface. As of 2026-05-01 the canonical home is
+# ``agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle``
+# (promoted from system_learning). The import is unconditional now —
+# the boundary no longer crosses into a peer package.
+from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; safe-reuse entrypoint consumes L6 exhaust bundle to emit canonical runtime trace
+    RuntimeExhaustCollector,
+)
+from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (
+    detect_trace_provenance,
+)
 from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
-    ProvenanceStamp,
     W2_CHAIN_LINKAGE,
-    compute_artifact_hash,
+    ProvenanceStamp,
     emit_artifact,
 )
 from agentic_core.runtime.artifacts.spine_proof_bundle import (
@@ -108,17 +112,16 @@ from agentic_core.runtime.contracts.runtime_trace_snapshot import (
     build_runtime_trace_snapshot,
 )
 from agentic_core.runtime.contracts.safe_reuse_decision import SafeReuseDecision
-from agentic_core.L6_observability.runtime_trace.synthetic_trace_detector import (
-    detect_trace_provenance,
-)
 
-# Bundle-aggregation surface. As of 2026-05-01 the canonical home is
-# ``agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle``
-# (promoted from system_learning). The import is unconditional now —
-# the boundary no longer crosses into a peer package.
-from agentic_core.L6_observability.runtime_trace.runtime_exhaust_bundle import (  # guardian: allow-layer-violation -- ADR-096 L6 universally importable; safe-reuse entrypoint consumes L6 exhaust bundle to emit canonical runtime trace
-    RuntimeExhaustBundle,
-    RuntimeExhaustCollector,
+# Veto orchestrator + status enum live in tools.certification.safety per
+# the existing W1p5 wiring. The entry point is the ONLY place that
+# instantiates / invokes the orchestrator.
+from tools.certification.safety.veto_orchestrator import (
+    VetoOrchestrator,  # guardian: allow-layer-violation -- ADR-096 §Exception L_RUNTIME->L_TOOLS; entry point is the ONLY instantiator of VetoOrchestrator per W1p5 wiring
+)
+from tools.certification.safety.veto_protocol import (  # guardian: allow-layer-violation -- ADR-096 §Exception; veto protocol types accompany orchestrator import
+    VetoResult,
+    VetoStatus,
 )
 
 _HAVE_EXHAUST_COLLECTOR = True
@@ -1165,6 +1168,41 @@ def run_integrated_safe_reuse(
         "x3_packet": dataclasses.asdict(x3_packet),
         "verdict_count": len(verdicts),
     })
+    _emit(
+        "runtime_execution_witness.json",
+        {
+            "schema_version": "agentic_core.runtime_execution_witness.v1",
+            "run_id": terminal.run_id,
+            "request_id": vr.request_id,
+            "trace_root": vr.trace_root,
+            "route_id": terminal.route_id,
+            "c0": {
+                "status": "BYPASSED_SAFE_REUSE",
+                "reason": "R1_CACHE_REUSE",
+                "sub_stages": [],
+            },
+            "l2": {
+                "status": "BYPASSED",
+                "executed": False,
+                "fault": "",
+                "sub_stages": [],
+            },
+            "x1": {"status": "EXECUTED", "sub_stages": []},
+            "x2": {
+                "status": "EXECUTED",
+                "disposition": x3_disposition.value,
+                "reason_codes": list(decision.reason_codes),
+                "failed_gate_ids": list(decision.failed_gate_ids),
+            },
+            "x3": {
+                "status": "EMITTED",
+                "disposition": x3_disposition.value,
+            },
+            "provider_attempt_count": 0,
+            "judge_attempt_count": 0,
+            "attempt_evidence_refs": [],
+        },
+    )
 
     # ── 10. RuntimeExhaustBundle (sealed manifest + bundle aggregate) ──
     sealed_manifest = seal_runtime_exhaust(review, x3_packet, verdicts, uwg_receipt=None)

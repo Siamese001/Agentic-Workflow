@@ -1546,7 +1546,6 @@ def run_integrated_single_action_spine(
             "observability_status": dict(observability_status),
         },
     )
-    _emit_chain("runtime_execution_witness.json", execution_witness)
     _emit_chain("runtime_identity_envelope.json", identity.to_dict())
 
     _binding_payload = binding_payload_from_identity(identity.to_dict())
@@ -1626,6 +1625,7 @@ def run_integrated_single_action_spine(
     _exit_review_payload["l5_certification_refs"] = [_l5_cert_ref]
     _emit_chain("exit_review_packet.json", _exit_review_payload)
     _emit_chain("x3_disposition_receipt.json", _x3_payload)
+    _emit_chain("runtime_execution_witness.json", execution_witness)
 
     _exhaust_payload = {
         "run_id": run_id,

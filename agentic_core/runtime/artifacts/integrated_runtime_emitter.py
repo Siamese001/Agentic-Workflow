@@ -50,7 +50,6 @@ from typing import Any
 # that matches its causal point in the run.
 W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "integrated_runtime_entrypoint_invocation.json",
-    "runtime_execution_witness.json",
     "runtime_identity_envelope.json",
     "runtime_certification_binding.json",
     "l5_hitl_reclearance.json",
@@ -65,6 +64,7 @@ W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
     "terminal_ret_packet.json",
     "exit_review_packet.json",
     "x3_disposition_receipt.json",
+    "runtime_execution_witness.json",
     "runtime_exhaust_bundle.json",
     "runtime_trace_snapshot.json",
     "agentic_core_how_trace.json",
@@ -78,8 +78,7 @@ W2_ARTIFACT_FILENAMES: tuple[str, ...] = (
 # (filename, upstream_filename_or_None).
 W2_CHAIN_LINKAGE: tuple[tuple[str, str | None], ...] = (
     ("integrated_runtime_entrypoint_invocation.json", None),
-    ("runtime_execution_witness.json", "integrated_runtime_entrypoint_invocation.json"),
-    ("runtime_identity_envelope.json", "runtime_execution_witness.json"),
+    ("runtime_identity_envelope.json", "integrated_runtime_entrypoint_invocation.json"),
     ("runtime_certification_binding.json", "runtime_identity_envelope.json"),
     ("l5_hitl_reclearance.json", "runtime_certification_binding.json"),
     ("validated_request.json", "l5_hitl_reclearance.json"),
@@ -93,7 +92,8 @@ W2_CHAIN_LINKAGE: tuple[tuple[str, str | None], ...] = (
     ("terminal_ret_packet.json", "semantic_cache_safe_reuse_decision.json"),
     ("exit_review_packet.json", "terminal_ret_packet.json"),
     ("x3_disposition_receipt.json", "exit_review_packet.json"),
-    ("runtime_exhaust_bundle.json", "x3_disposition_receipt.json"),
+    ("runtime_execution_witness.json", "x3_disposition_receipt.json"),
+    ("runtime_exhaust_bundle.json", "runtime_execution_witness.json"),
     ("runtime_trace_snapshot.json", "runtime_exhaust_bundle.json"),
     ("agentic_core_how_trace.json", "runtime_trace_snapshot.json"),
     ("agentic_core_l7_route_family_coverage.json", "agentic_core_how_trace.json"),
