@@ -9,6 +9,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 
 
 @dataclass(frozen=True)
@@ -167,6 +168,66 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
     assert auth["x2"]["score"] >= auth["x2"]["threshold"]
     assert auth["x3"]["status"] == "PASS"
     assert auth["x3"]["disposition"] == "ALLOW"
+
+
+def test_shared_targeting_writer_persists_producer_owned_bundle(tmp_path: Path) -> None:
+    from apps_research.integrations.apps_rg_handoff import (
+        persist_apps_rg_targeting_brief_artifacts,
+    )
+
+    record = _FakeRecord(
+        run_id="research-run-shared-writer",
+        topic="Anthropic",
+        company_brief_text=_VALID_APPS_RG_BRIEF,
+        fec_run_context={
+            "company_brief": {
+                "apps_rg_targeting_brief_sidecar": _sidecar_for(_VALID_APPS_RG_BRIEF),
+            }
+        },
+    )
+
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=record,
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd_text="Run-specific partnerships JD",
+        runs_root=tmp_path / "runs",
+    )
+
+    assert bundle.briefing_path.is_file()
+    assert bundle.company_brief_path.is_file()
+    assert bundle.envelope_path.is_file()
+    assert bundle.envelope["briefing_path"] == str(bundle.briefing_path.resolve())
+    assert bundle.envelope["company_brief_path"] == str(
+        bundle.company_brief_path.resolve()
+    )
+
+
+def test_generic_writer_preserves_legacy_metadata(monkeypatch, tmp_path: Path) -> None:
+    from apps_research import __main__ as main_mod
+
+    monkeypatch.setattr(main_mod, "_apps_research_runs_root", lambda: tmp_path / "runs")
+    record = _FakeRecord(
+        run_id="generic-run",
+        topic="AI infrastructure",
+        company_brief_text="Generic research briefing",
+    )
+    request = SimpleNamespace(
+        trace_id="generic-trace",
+        topic="AI infrastructure",
+        mode="brief",
+        depth_profile="standard",
+        jd_context={},
+    )
+
+    artifact_path = main_mod._write_research_artifacts(record, request)
+
+    metadata_path = artifact_path.parent / "run_metadata.json"
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    assert artifact_path.name == "briefing.md"
+    assert metadata["run_id"] == "generic-run"
+    assert metadata["targeting_format"] == ""
+    assert metadata["apps_research_briefing_envelope_path"] == ""
 
 
 def test_cli_jd_path_fails_closed_without_targeting_markdown(

@@ -4,6 +4,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import os
+import shutil
 import uuid
 from pathlib import Path
 from types import SimpleNamespace
@@ -263,6 +264,24 @@ def _run_r3r4_research_hop(
     outcome = dispatch_resume_research_briefing(req, bridge=bridge)
 
     if isinstance(outcome, ResumeBriefingReady):
+        producer_run_dir = Path(str(outcome.research_artifact_dir or ""))
+        producer_briefing = Path(str(outcome.research_briefing_path or ""))
+        if (
+            not producer_run_dir.is_dir()
+            or not producer_briefing.is_file()
+            or not producer_briefing.resolve().is_relative_to(producer_run_dir.resolve())
+        ):
+            sr.write_stage_receipt(
+                artifact_dir / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
+                {
+                    "outcome": "ResearchDispatchFailure",
+                    "r5_reason_code": "APPS_RESEARCH_ARTIFACT_MISSING",
+                    "detail": "ResumeBriefingReady lacked producer-owned persisted briefing evidence",
+                    "research_artifact_dir": str(outcome.research_artifact_dir or ""),
+                    "research_briefing_path": str(outcome.research_briefing_path or ""),
+                },
+            )
+            return False, "APPS_RESEARCH_ARTIFACT_MISSING", ""
         sr.write_stage_receipt(
             artifact_dir / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE,
             {
@@ -272,15 +291,17 @@ def _run_r3r4_research_hop(
                 "confidence_score": outcome.confidence_score,
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "research_artifact_dir": outcome.research_artifact_dir,
+                "research_briefing_path": outcome.research_briefing_path,
                 "apps_research_handoff_envelope": outcome.apps_research_handoff_envelope,
             },
         )
         brief_path = artifact_dir / sr.FILENAME_DELEGATED_BRIEFING
         brief_path.parent.mkdir(parents=True, exist_ok=True)
-        brief_path.write_text(outcome.briefing_text + "\n", encoding="utf-8")
+        shutil.copyfile(producer_briefing, brief_path)
         handoff_envelope = dict(outcome.apps_research_handoff_envelope)
-        handoff_envelope["briefing_path"] = str(brief_path.resolve())
-        handoff_envelope.setdefault("company_brief_path", "")
+        handoff_envelope["consumer_delegated_briefing_path"] = str(
+            brief_path.resolve()
+        )
         sr.write_stage_receipt(
             brief_path.parent / "apps_research_briefing_envelope.json",
             handoff_envelope,
@@ -298,14 +319,21 @@ def _run_r3r4_research_hop(
                 "proof_note": "FEC-shaped contract for external review; full FEC lives under apps_research run when present.",
             },
         )
-        if outcome.research_artifact_dir:
-            sr.write_stage_receipt(
-                artifact_dir / "research" / "research_artifact_ref.json",
-                {
-                    "research_run_id": outcome.research_run_id,
-                    "research_artifact_dir": outcome.research_artifact_dir,
-                },
-            )
+        sr.write_stage_receipt(
+            artifact_dir / "research" / "research_artifact_ref.json",
+            {
+                "research_run_id": outcome.research_run_id,
+                "research_artifact_dir": str(producer_run_dir.resolve()),
+                "research_briefing_path": str(producer_briefing.resolve()),
+                "research_company_brief_path": handoff_envelope.get(
+                    "company_brief_path", ""
+                ),
+                "research_envelope_path": str(
+                    (producer_run_dir / "apps_research_briefing_envelope.json").resolve()
+                ),
+                "consumer_delegated_briefing_path": str(brief_path.resolve()),
+            },
+        )
         return True, "ResumeBriefingReady", str(brief_path)
 
     if isinstance(outcome, ResearchDispatchFailure):

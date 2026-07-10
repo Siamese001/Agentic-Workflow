@@ -208,6 +208,14 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     ].endswith("research/delegated_briefing.txt")
     assert raw_request["manual_brief"] != str(brief_json)
     assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
+    research_ref_path = (
+        tmp_path / "static_json_run" / "research" / "research_artifact_ref.json"
+    )
+    research_ref = json.loads(research_ref_path.read_text(encoding="utf-8"))
+    assert Path(research_ref["research_artifact_dir"]).is_dir()
+    assert Path(research_ref["research_briefing_path"]).is_file()
+    assert Path(research_ref["research_company_brief_path"]).is_file()
+    assert Path(research_ref["research_envelope_path"]).is_file()
 
 
 def test_whole_run_research_failure_fails_closed_with_manual_brief(
@@ -285,6 +293,74 @@ def test_whole_run_research_failure_fails_closed_with_manual_brief(
     assert route_decision["research_delegation_executed"] is True
     assert route_decision["research_failure"] == "APPS_RESEARCH_BLOCKED"
     assert "research_fallback_to_manual_brief" not in route_decision
+
+
+def test_research_hop_rejects_ready_result_without_producer_artifact(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    from apps_rg.integrations import managed_research_delegation as delegation
+    from apps_rg.integrations.apps_research_bridge import MockAppsResearchBridge
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    monkeypatch.setattr(
+        orch,
+        "_research_bridge",
+        lambda: MockAppsResearchBridge(
+            confidence_score=0.88,
+            artifact_runs_root=tmp_path / "apps_research_runs",
+        ),
+    )
+
+    outcome = delegation.ResumeBriefingReady(
+        request_id="req-missing-artifact",
+        run_id="run-missing-artifact",
+        trace_id="trace-missing-artifact",
+        briefing_text="Valid in-memory briefing that was never persisted by apps_research.",
+        research_run_id="research-run-missing-artifact",
+        research_evidence_count=1,
+        confidence_score=0.91,
+        research_artifact_dir="",
+        result_hash="sha256:test",
+        evidence_lineage=(),
+        apps_research_handoff_envelope={"briefing_path": "", "company_brief_path": ""},
+        dispatch_duration_ms=1.0,
+    )
+    monkeypatch.setattr(
+        delegation,
+        "dispatch_resume_research_briefing",
+        lambda *_args, **_kwargs: outcome,
+    )
+    monkeypatch.setattr(
+        orch,
+        "_research_bridge",
+        lambda: object(),
+    )
+    route = SimpleNamespace(
+        request_id="req-missing-artifact",
+        run_id="run-missing-artifact",
+        trace_id="trace-missing-artifact",
+        route_id=ROUTE_FAMILY_R3R4,
+        route_family=ROUTE_FAMILY_R3R4,
+        execution_form="MANAGED_WORKFLOW",
+        l3_required=True,
+        grounding_required=True,
+        route_profile_ref="test://r3r4",
+        reason_codes=(),
+    )
+
+    ok, reason, brief_path = orch._run_r3r4_research_hop(
+        route=route,
+        validated_request=SimpleNamespace(),
+        artifact_dir=tmp_path / "run",
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+    )
+
+    assert ok is False
+    assert reason == "APPS_RESEARCH_ARTIFACT_MISSING"
+    assert brief_path == ""
+    assert not (tmp_path / "run" / FILENAME_DELEGATED_BRIEFING).exists()
 
 
 def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(

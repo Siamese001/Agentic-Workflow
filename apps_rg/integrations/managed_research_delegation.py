@@ -1,10 +1,13 @@
 """Managed apps_research delegation for apps_rg R3R4 whole-run briefing."""
 from __future__ import annotations
 
+import hashlib
+import json
 import time
 import uuid
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import Any
 
 from apps_rg.integrations.apps_research_bridge import ResearchResult
@@ -16,6 +19,7 @@ class ResearchFailureReason(str, Enum):
     APPS_RESEARCH_BLOCKED = "APPS_RESEARCH_BLOCKED"
     APPS_RESEARCH_STALE = "APPS_RESEARCH_STALE"
     APPS_RESEARCH_WEAK_SUPPORT = "APPS_RESEARCH_WEAK_SUPPORT"
+    APPS_RESEARCH_ARTIFACT_MISSING = "APPS_RESEARCH_ARTIFACT_MISSING"
 
 
 @dataclass(frozen=True)
@@ -47,6 +51,7 @@ class ResumeBriefingReady:
     evidence_lineage: tuple[dict[str, Any], ...]
     apps_research_handoff_envelope: dict[str, Any]
     dispatch_duration_ms: float
+    research_briefing_path: str = ""
 
 
 @dataclass(frozen=True)
@@ -61,6 +66,68 @@ class ResearchDispatchFailure:
 
 def _utc_ms() -> float:
     return time.time() * 1000.0
+
+
+def _is_within(path: Path, root: Path) -> bool:
+    try:
+        path.resolve().relative_to(root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
+
+
+def _validate_persisted_research_artifacts(
+    result: ResearchResult,
+) -> tuple[bool, str, dict[str, str]]:
+    raw_dir = str(result.research_artifact_dir or "").strip()
+    if not raw_dir:
+        return False, "missing research_artifact_dir", {}
+    run_dir = Path(raw_dir)
+    if not run_dir.is_dir():
+        return False, f"research_artifact_dir is not a directory: {raw_dir}", {}
+    raw_brief = str(result.briefing_artifact_path or "").strip()
+    if not raw_brief:
+        return False, "missing briefing_artifact_path", {}
+    briefing_path = Path(raw_brief)
+    company_brief_path = run_dir / "company_brief.json"
+    envelope_path = run_dir / "apps_research_briefing_envelope.json"
+    metadata_path = run_dir / "run_metadata.json"
+    required = (
+        briefing_path,
+        company_brief_path,
+        envelope_path,
+        metadata_path,
+    )
+    for path in required:
+        if not _is_within(path, run_dir):
+            return False, f"producer artifact escapes research_artifact_dir: {path}", {}
+        if not path.is_file() or path.stat().st_size <= 0:
+            return False, f"missing persisted apps_research artifact: {path}", {}
+    try:
+        persisted_text = briefing_path.read_text(encoding="utf-8").strip()
+        persisted_envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return False, f"unreadable persisted apps_research artifact: {type(exc).__name__}", {}
+    if persisted_text != str(result.company_brief_text or "").strip():
+        return False, "persisted briefing text does not match bridge result", {}
+    if not isinstance(persisted_envelope, dict):
+        return False, "persisted apps_research envelope is not an object", {}
+    expected_sha = hashlib.sha256(persisted_text.encode("utf-8")).hexdigest()
+    if str(persisted_envelope.get("brief_sha256") or "") != expected_sha:
+        return False, "persisted apps_research briefing digest mismatch", {}
+    if Path(str(persisted_envelope.get("briefing_path") or "")).resolve() != briefing_path.resolve():
+        return False, "persisted envelope briefing_path mismatch", {}
+    if Path(str(persisted_envelope.get("company_brief_path") or "")).resolve() != company_brief_path.resolve():
+        return False, "persisted envelope company_brief_path mismatch", {}
+    if persisted_envelope != (result.apps_research_handoff_envelope or {}):
+        return False, "bridge envelope differs from persisted producer envelope", {}
+    return True, "ok", {
+        "run_dir": str(run_dir.resolve()),
+        "briefing_path": str(briefing_path.resolve()),
+        "company_brief_path": str(company_brief_path.resolve()),
+        "envelope_path": str(envelope_path.resolve()),
+        "metadata_path": str(metadata_path.resolve()),
+    }
 
 
 def dispatch_resume_research_briefing(
@@ -116,6 +183,18 @@ def dispatch_resume_research_briefing(
             trace_id=request.trace_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
             detail=research_result.block_reason or "blocked",
+            dispatch_duration_ms=_utc_ms() - t_start,
+        )
+    artifacts_valid, artifact_detail, artifact_refs = _validate_persisted_research_artifacts(
+        research_result
+    )
+    if not artifacts_valid:
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_ARTIFACT_MISSING.value,
+            detail=artifact_detail,
             dispatch_duration_ms=_utc_ms() - t_start,
         )
     if not research_result.evidence_items:
@@ -217,6 +296,7 @@ def dispatch_resume_research_briefing(
         evidence_lineage=lineage,
         apps_research_handoff_envelope=handoff_envelope,
         dispatch_duration_ms=_utc_ms() - t_start,
+        research_briefing_path=artifact_refs["briefing_path"],
     )
 
 

@@ -584,6 +584,19 @@ def test_apps_rg_s2e_prompt_requires_real_e2e_command(tmp_path: Path) -> None:
     assert any(issue.code == "apps_rg_s2e_prompt_missing" for issue in issues)
 
 
+def test_apps_rg_s2e_requires_fresh_apps_research_producer_artifact() -> None:
+    repo_root = Path(__file__).resolve().parents[4]
+    automation = mod._automation_path(
+        repo_root,
+        "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+    )
+    prompt = mod._load_toml(automation)[0]["prompt"]
+
+    assert "--manual-brief apps_rg/config/targeting/anthropic" not in prompt
+    assert "research/research_artifact_ref.json" in prompt
+    assert "APPS_RESEARCH_ARTIFACT_MISSING" in prompt
+
+
 def test_wrong_cwd_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path)
     automation = mod._automation_path(root, "weekly-adg-audit-and-burndown")
