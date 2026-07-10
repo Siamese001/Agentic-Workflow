@@ -4,7 +4,6 @@ from __future__ import annotations
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, List
 
@@ -35,6 +34,7 @@ class ResearchResult:
     fetch_duration_ms: float
     audit_ref: str
     research_artifact_dir: str = ""
+    briefing_artifact_path: str = ""
     company_brief_text: str = ""
     apps_research_handoff_envelope: dict[str, Any] | None = None
 
@@ -58,9 +58,15 @@ def _resolve_jd_text(*, job_description_ref: str = "", job_description_text: str
 class AppsResearchBridge:
     SUPPORTED_CAPABILITIES = frozenset({"apps_research.v1", "apps_research.v2"})
 
-    def __init__(self, capability_ref: str = "apps_research.v1") -> None:
+    def __init__(
+        self,
+        capability_ref: str = "apps_research.v1",
+        *,
+        artifact_runs_root: Path | None = None,
+    ) -> None:
         self._capability_ref = capability_ref
         self._bridge_id = f"rg_research_bridge:{uuid.uuid4().hex[:8]}"
+        self._artifact_runs_root = artifact_runs_root
 
     def fetch(
         self,
@@ -273,34 +279,37 @@ class AppsResearchBridge:
                 company_brief_text="",
             )
 
-        handoff_envelope: dict[str, Any] | None = None
         try:
             from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
-                build_apps_rg_handoff_envelope,
-                find_apps_rg_targeting_sidecar,
+                persist_apps_rg_targeting_brief_artifacts,
             )
 
-            sidecar = find_apps_rg_targeting_sidecar(getattr(raw, "fec_run_context", {}) or {})
             jd_text = _resolve_jd_text(
                 job_description_ref=job_description_ref,
                 job_description_text=job_description_text,
             )
-            handoff_envelope = build_apps_rg_handoff_envelope(
-                sidecar=sidecar,
-                run_id=str(getattr(raw, "run_id", run_id) or run_id),
+            artifact_bundle = persist_apps_rg_targeting_brief_artifacts(
+                record=raw,
                 target_company=company_name,
                 target_role=job_title,
-                briefing_text=brief_text,
                 jd_text=jd_text,
-                generated_at_utc=datetime.now(timezone.utc).isoformat(),
+                runs_root=self._artifact_runs_root,
+                mode="brief",
+                depth_profile="COMPANY_BRIEF_STANDARD",
             )
-        except (ImportError, RuntimeError, TypeError, ValueError) as exc:
+        except (ImportError, OSError, RuntimeError, TypeError, ValueError) as exc:
+            persistence_reason = str(exc)
+            block_reason = (
+                f"missing_apps_research_handoff_envelope:{persistence_reason}"
+                if "handoff sidecar" in persistence_reason
+                else f"apps_research_artifact_persistence_failed:{persistence_reason}"
+            )
             return ResearchResult(
                 run_id=str(getattr(raw, "run_id", run_id) or run_id),
                 trace_id=trace_id,
                 request_id=request_id,
                 is_blocked=True,
-                block_reason=f"missing_apps_research_handoff_envelope:{exc}",
+                block_reason=block_reason,
                 is_stale=bool(getattr(raw, "is_stale", False)),
                 age_days=float(getattr(raw, "age_days", 0.0)),
                 evidence_items=evidence_items,
@@ -319,11 +328,7 @@ class AppsResearchBridge:
             ).encode("utf-8")
         ).hexdigest()
 
-        research_dir = ""
         rid = str(getattr(raw, "run_id", run_id) or run_id)
-        candidate = Path("artifacts") / "apps_research" / "runs" / rid
-        if candidate.is_dir():
-            research_dir = str(candidate)
 
         return ResearchResult(
             run_id=rid,
@@ -339,9 +344,10 @@ class AppsResearchBridge:
             company_brief_hash=result_hash,
             fetch_duration_ms=time.time() * 1000.0 - t_start,
             audit_ref=trace_id,
-            research_artifact_dir=research_dir,
+            research_artifact_dir=str(artifact_bundle.run_dir),
+            briefing_artifact_path=str(artifact_bundle.briefing_path),
             company_brief_text=brief_text,
-            apps_research_handoff_envelope=handoff_envelope,
+            apps_research_handoff_envelope=artifact_bundle.envelope,
         )
 
 
@@ -357,8 +363,12 @@ class MockAppsResearchBridge(AppsResearchBridge):
         company_brief_text: str = "",
         apps_research_handoff_envelope: dict[str, Any] | None = None,
         capability_ref: str = "apps_research.v1",
+        artifact_runs_root: Path | None = None,
     ) -> None:
-        super().__init__(capability_ref=capability_ref)
+        super().__init__(
+            capability_ref=capability_ref,
+            artifact_runs_root=artifact_runs_root,
+        )
         self._mock_blocked = is_blocked
         self._mock_block_reason = block_reason
         self._mock_stale = is_stale

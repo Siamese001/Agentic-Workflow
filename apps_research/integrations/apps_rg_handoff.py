@@ -6,7 +6,8 @@ import dataclasses
 import hashlib
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Mapping
 
 from agentic_core.L3_orchestration.exit_eval.dimension import Dimension, GraderClass
@@ -27,6 +28,19 @@ _RETRYABLE_JUDGE_PARSE_MARKERS = (
     "judge response was not JSON",
     "response had no text part",
 )
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class AppsRgTargetingArtifactBundle:
+    """Producer-owned durable artifacts required for apps_rg handoff."""
+
+    run_id: str
+    run_dir: Path
+    briefing_path: Path
+    company_brief_path: Path
+    envelope_path: Path
+    metadata_path: Path
+    envelope: dict[str, Any]
 
 
 def sha256_text(text: str) -> str:
@@ -311,15 +325,146 @@ def build_apps_rg_handoff_envelope(
     }
 
 
+def _jsonable(value: Any) -> Any:
+    if dataclasses.is_dataclass(value):
+        return dataclasses.asdict(value)
+    if isinstance(value, dict):
+        return {str(key): _jsonable(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item) for item in value]
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
+def _default_apps_research_runs_root() -> Path:
+    return Path(__file__).resolve().parents[2] / "artifacts" / "apps_research" / "runs"
+
+
+def persist_apps_rg_targeting_brief_artifacts(
+    *,
+    record: Any,
+    target_company: str,
+    target_role: str,
+    jd_text: str,
+    runs_root: Path | None = None,
+    generated_at_utc: str | None = None,
+    mode: str = "brief",
+    depth_profile: str = "",
+) -> AppsRgTargetingArtifactBundle:
+    """Validate and persist the apps_research-owned handoff bundle.
+
+    Both the direct apps_research CLI and the managed apps_rg bridge call this
+    writer. A handoff is not product evidence until every returned path exists.
+    """
+    run_id = str(getattr(record, "run_id", "") or "").strip()
+    if not run_id:
+        raise RuntimeError("apps_research targeting run missing run_id")
+    company = str(target_company or getattr(record, "topic", "") or "").strip()
+    role = str(target_role or "").strip()
+    if not company or not role:
+        raise RuntimeError("apps_research targeting run missing target company or role")
+    briefing_text = str(getattr(record, "company_brief_text", "") or "").strip()
+    if not briefing_text or looks_like_stub_company_brief(briefing_text):
+        raise RuntimeError(
+            "apps_research targeting run produced no usable company_brief_text; "
+            f"terminal_error={getattr(record, 'hop_terminal_error', '')!r}"
+        )
+    sidecar = find_apps_rg_targeting_sidecar(
+        getattr(record, "fec_run_context", {}) or {}
+    )
+    if not sidecar:
+        raise RuntimeError("apps_research targeting run missing apps_rg handoff sidecar")
+
+    safe_run_id = "".join(
+        char if char.isalnum() or char in "._-" else "_" for char in run_id
+    ).strip("._-")
+    if not safe_run_id:
+        raise RuntimeError("apps_research targeting run_id cannot form an artifact path")
+    run_dir = (runs_root or _default_apps_research_runs_root()) / safe_run_id
+    briefing_path = run_dir / "briefing.md"
+    company_brief_path = run_dir / "company_brief.json"
+    envelope_path = run_dir / "apps_research_briefing_envelope.json"
+    metadata_path = run_dir / "run_metadata.json"
+    emitted_at = generated_at_utc or datetime.now(timezone.utc).isoformat()
+    envelope = build_apps_rg_handoff_envelope(
+        sidecar=sidecar,
+        run_id=run_id,
+        target_company=company,
+        target_role=role,
+        briefing_text=briefing_text,
+        jd_text=str(jd_text or ""),
+        generated_at_utc=emitted_at,
+        briefing_path=str(briefing_path.resolve()),
+        company_brief_path=str(company_brief_path.resolve()),
+    )
+    payload = {
+        "schema_version": "apps_research.company_brief_artifact.v2",
+        "company": company,
+        "run_id": run_id,
+        "generated_at_utc": emitted_at,
+        "targeting_format": "apps_rg_targeting_brief_v1",
+        "company_brief_text": briefing_text,
+        "confidence_score": float(getattr(record, "confidence_score", 0.0) or 0.0),
+        "support_coverage": float(getattr(record, "support_coverage", 0.0) or 0.0),
+        "hop_terminal_error": str(getattr(record, "hop_terminal_error", "") or ""),
+        "fec_run_context": _jsonable(getattr(record, "fec_run_context", {}) or {}),
+    }
+    metadata = {
+        "run_id": run_id,
+        "topic": company,
+        "mode": str(mode or "brief"),
+        "depth_profile": str(depth_profile or ""),
+        "targeting_format": payload["targeting_format"],
+        "company_brief_path": str(company_brief_path.resolve()),
+        "briefing_path": str(briefing_path.resolve()),
+        "apps_research_briefing_envelope_path": str(envelope_path.resolve()),
+    }
+
+    run_dir.mkdir(parents=True, exist_ok=True)
+    company_brief_path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    briefing_path.write_text(briefing_text + "\n", encoding="utf-8")
+    envelope_path.write_text(
+        json.dumps(envelope, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    metadata_path.write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    for required in (
+        briefing_path,
+        company_brief_path,
+        envelope_path,
+        metadata_path,
+    ):
+        if not required.is_file() or required.stat().st_size <= 0:
+            raise RuntimeError(f"apps_research failed to persist required artifact: {required}")
+    return AppsRgTargetingArtifactBundle(
+        run_id=run_id,
+        run_dir=run_dir.resolve(),
+        briefing_path=briefing_path.resolve(),
+        company_brief_path=company_brief_path.resolve(),
+        envelope_path=envelope_path.resolve(),
+        metadata_path=metadata_path.resolve(),
+        envelope=envelope,
+    )
+
+
 __all__ = [
     "APPS_RG_HANDOFF_GENERATION_PROVIDER",
     "APPS_RG_HANDOFF_JUDGE_MODEL",
     "APPS_RG_HANDOFF_JUDGE_NAME",
     "APPS_RG_HANDOFF_JUDGE_PROVIDER",
     "APPS_RG_HANDOFF_X2_THRESHOLD",
+    "AppsRgTargetingArtifactBundle",
     "build_apps_rg_handoff_envelope",
     "find_apps_rg_targeting_sidecar",
     "looks_like_stub_company_brief",
+    "persist_apps_rg_targeting_brief_artifacts",
     "run_apps_rg_handoff_x2_judge",
     "sha256_text",
     "validate_apps_rg_handoff_sidecar",

@@ -13,9 +13,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from apps_research.integrations.apps_rg_handoff import (
-    build_apps_rg_handoff_envelope,
-    find_apps_rg_targeting_sidecar,
-    looks_like_stub_company_brief,
+    persist_apps_rg_targeting_brief_artifacts,
 )
 
 _log = logging.getLogger("apps_research")
@@ -236,108 +234,58 @@ def _jsonable(value):
     if is_dataclass(value):
         return asdict(value)
     if isinstance(value, dict):
-        return {str(k): _jsonable(v) for k, v in value.items()}
+        return {str(key): _jsonable(item) for key, item in value.items()}
     if isinstance(value, (list, tuple)):
-        return [_jsonable(v) for v in value]
+        return [_jsonable(item) for item in value]
     if isinstance(value, (str, int, float, bool)) or value is None:
         return value
     return str(value)
 
 
-def _apps_rg_targeting_sidecar(record) -> dict:
-    fec_ctx = getattr(record, "fec_run_context", {}) or {}
-    return find_apps_rg_targeting_sidecar(fec_ctx)
-
-
-def _write_apps_rg_handoff_envelope(
-    *,
-    run_dir: Path,
-    record,
-    request,
-    briefing_text: str,
-    company_brief_path: Path,
-    briefing_path: Path,
-    generated_at_utc: str,
-) -> dict:
-    """Emit authoritative apps_research -> apps_rg handoff metadata."""
-    sidecar = _apps_rg_targeting_sidecar(record)
-    if not sidecar:
-        raise RuntimeError("apps_research targeting run missing apps_rg handoff sidecar")
-
-    jd_ctx = getattr(request, "jd_context", {}) or {}
-    if not isinstance(jd_ctx, dict):
-        jd_ctx = {}
-    jd_text = str(jd_ctx.get("content") or jd_ctx.get("jd_text") or "")
-    envelope = build_apps_rg_handoff_envelope(
-        sidecar=sidecar,
-        run_id=str(getattr(record, "run_id", "") or getattr(request, "trace_id", "")),
-        target_company=str(jd_ctx.get("company_name") or getattr(request, "topic", "") or ""),
-        target_role=str(jd_ctx.get("job_title") or ""),
-        briefing_text=briefing_text,
-        jd_text=jd_text,
-        generated_at_utc=generated_at_utc,
-        briefing_path=str(briefing_path.resolve()),
-        company_brief_path=str(company_brief_path.resolve()),
-    )
-    (run_dir / "apps_research_briefing_envelope.json").write_text(
-        json.dumps(envelope, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
-    return envelope
-
-
-def _write_research_artifacts(record, request) -> Path:
-    """Persist a fresh apps_research run artifact bundle."""
-    run_id = str(getattr(record, "run_id", "") or getattr(request, "trace_id", "") or uuid4().hex)
-    safe_run_id = "".join(c for c in run_id if c.isalnum() or c in "._-") or uuid4().hex
+def _write_generic_research_artifacts(record, request) -> Path:
+    run_id = str(
+        getattr(record, "run_id", "") or getattr(request, "trace_id", "") or ""
+    ).strip()
+    safe_run_id = "".join(
+        char if char.isalnum() or char in "._-" else "_" for char in run_id
+    ).strip("._-")
+    if not safe_run_id:
+        raise RuntimeError("apps_research generic run missing usable run_id")
     run_dir = _apps_research_runs_root() / safe_run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-
     briefing_text = str(getattr(record, "company_brief_text", "") or "").strip()
-    is_targeting = (
-        str((getattr(request, "jd_context", {}) or {}).get("output_format", ""))
-        == "apps_rg_targeting_brief_v1"
-    )
-    if is_targeting and (not briefing_text or looks_like_stub_company_brief(briefing_text)):
-        raise RuntimeError(
-            "apps_research targeting run produced no usable company_brief_text; "
-            f"terminal_error={getattr(record, 'hop_terminal_error', '')!r}"
-        )
-
     generated_at_utc = datetime.now(timezone.utc).isoformat()
-    payload = {
-        "schema_version": "apps_research.company_brief_artifact.v2",
-        "company": str(getattr(record, "topic", "") or getattr(request, "topic", "")),
-        "run_id": run_id,
-        "generated_at_utc": generated_at_utc,
-        "targeting_format": (
-            (getattr(request, "jd_context", {}) or {}).get("output_format") or ""
-        ),
-        "company_brief_text": briefing_text,
-        "confidence_score": float(getattr(record, "confidence_score", 0.0) or 0.0),
-        "support_coverage": float(getattr(record, "support_coverage", 0.0) or 0.0),
-        "hop_terminal_error": str(getattr(record, "hop_terminal_error", "") or ""),
-        "fec_run_context": _jsonable(getattr(record, "fec_run_context", {}) or {}),
-    }
     company_brief_path = run_dir / "company_brief.json"
     company_brief_path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
+        json.dumps(
+            {
+                "schema_version": "apps_research.company_brief_artifact.v2",
+                "company": str(
+                    getattr(record, "topic", "") or getattr(request, "topic", "")
+                ),
+                "run_id": run_id,
+                "generated_at_utc": generated_at_utc,
+                "targeting_format": "",
+                "company_brief_text": briefing_text,
+                "confidence_score": float(
+                    getattr(record, "confidence_score", 0.0) or 0.0
+                ),
+                "support_coverage": float(
+                    getattr(record, "support_coverage", 0.0) or 0.0
+                ),
+                "hop_terminal_error": str(
+                    getattr(record, "hop_terminal_error", "") or ""
+                ),
+                "fec_run_context": _jsonable(
+                    getattr(record, "fec_run_context", {}) or {}
+                ),
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+        + "\n",
         encoding="utf-8",
     )
-    briefing_path = run_dir / "briefing.md"
-    if briefing_text:
-        briefing_path.write_text(briefing_text + "\n", encoding="utf-8")
-    handoff_envelope = {}
-    if is_targeting and briefing_text:
-        handoff_envelope = _write_apps_rg_handoff_envelope(
-            run_dir=run_dir,
-            record=record,
-            request=request,
-            briefing_text=briefing_text,
-            company_brief_path=company_brief_path,
-            briefing_path=briefing_path,
-            generated_at_utc=generated_at_utc,
-        )
     (run_dir / "run_metadata.json").write_text(
         json.dumps(
             {
@@ -345,21 +293,42 @@ def _write_research_artifacts(record, request) -> Path:
                 "topic": getattr(request, "topic", ""),
                 "mode": getattr(request, "mode", ""),
                 "depth_profile": getattr(request, "depth_profile", ""),
-                "targeting_format": payload["targeting_format"],
-                "company_brief_path": str(run_dir / "company_brief.json"),
+                "targeting_format": "",
+                "company_brief_path": str(company_brief_path),
                 "briefing_path": str(run_dir / "briefing.md") if briefing_text else "",
-                "apps_research_briefing_envelope_path": (
-                    str(run_dir / "apps_research_briefing_envelope.json")
-                    if handoff_envelope
-                    else ""
-                ),
+                "apps_research_briefing_envelope_path": "",
             },
             ensure_ascii=False,
             indent=2,
-        ),
+        )
+        + "\n",
         encoding="utf-8",
     )
-    return run_dir / ("briefing.md" if briefing_text else "company_brief.json")
+    if briefing_text:
+        briefing_path = run_dir / "briefing.md"
+        briefing_path.write_text(briefing_text + "\n", encoding="utf-8")
+        return briefing_path
+    return company_brief_path
+
+
+def _write_research_artifacts(record, request) -> Path:
+    """Persist a fresh targeting bundle through the shared producer contract."""
+    jd_ctx = getattr(request, "jd_context", {}) or {}
+    jd_ctx = jd_ctx if isinstance(jd_ctx, dict) else {}
+    if str(jd_ctx.get("output_format") or "") != "apps_rg_targeting_brief_v1":
+        return _write_generic_research_artifacts(record, request)
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=record,
+        target_company=str(
+            jd_ctx.get("company_name") or getattr(request, "topic", "") or ""
+        ),
+        target_role=str(jd_ctx.get("job_title") or ""),
+        jd_text=str(jd_ctx.get("content") or jd_ctx.get("jd_text") or ""),
+        runs_root=_apps_research_runs_root(),
+        mode=str(getattr(request, "mode", "") or "brief"),
+        depth_profile=str(getattr(request, "depth_profile", "") or ""),
+    )
+    return bundle.briefing_path
 
 
 def _run_profile_spine(argv: list[str]) -> int:

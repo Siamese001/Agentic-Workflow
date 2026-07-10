@@ -19,13 +19,14 @@ Hard stops:
 - Do not edit the primary checkout for run failures. If repair is required, stop with RCA and proposed branch/worktree plan.
 - Do not infer missing target inputs from memory. Use only the fixture paths named below unless the user explicitly supplies a replacement.
 - Do not claim success from process exit alone. The final report must include the rendered run summary and mandatory output status.
+- Fail immediately with APPS_RESEARCH_ARTIFACT_MISSING before any R4 section dispatch when apps_research does not persist its producer-owned briefing bundle. In-memory text, an in-memory envelope, or an apps_rg-written copy is not producer evidence.
 
 Target fixtures:
 - Target company: Anthropic
 - Target role: Manager of Applied AI Architecture, Partnerships
 - Target level: Manager
 - JD: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
-- Manual brief bootstrap: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
+- Briefing: generate fresh through apps_research; do not pass a static --manual-brief bootstrap.
 - Output root: artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
 - Fresh E2E mode creates a clean child run directory under the output root and must select R3R4_MANAGED_WORKFLOW.
 
@@ -33,7 +34,6 @@ Preflight:
 1. Run: python scripts/governance/codex_readiness.py --json
 2. Confirm these files exist:
    - apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
-   - apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
    - tools/apps_rg/render_run_summary.py
 3. Confirm APPS_RG_ENABLE_MANAGED_WORKFLOW_L0 and APPS_RG_ROUTE_HMAC_SECRET are set by the run command below.
 4. Record git status, but do not mutate git state.
@@ -41,11 +41,12 @@ Preflight:
 Run:
 Run the canonical full apps_rg entrypoint:
 
-if (-not $env:APPS_RG_ROUTE_HMAC_SECRET) { $env:APPS_RG_ROUTE_HMAC_SECRET = [guid]::NewGuid().ToString("N") }; $env:APPS_RG_ENABLE_MANAGED_WORKFLOW_L0="1"; python -m apps_rg --fresh-e2e --target-company "Anthropic" --target-role "Manager of Applied AI Architecture, Partnerships" --target-level "Manager" --jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt --manual-brief apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md --artifact-dir artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
+if (-not $env:APPS_RG_ROUTE_HMAC_SECRET) { $env:APPS_RG_ROUTE_HMAC_SECRET = [guid]::NewGuid().ToString("N") }; $env:APPS_RG_ENABLE_MANAGED_WORKFLOW_L0="1"; python -m apps_rg --fresh-e2e --target-company "Anthropic" --target-role "Manager of Applied AI Architecture, Partnerships" --target-level "Manager" --jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt --artifact-dir artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
 
 Evidence:
 1. Locate the run directory from the FRESH_E2E_ARTIFACT_DIR line. If that line is unavailable, use the most recently modified child under artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e or artifacts/apps_rg/runs.
 2. Verify these mandatory outputs exist in the run directory:
+   - research/research_artifact_ref.json
    - 01_BCG_executive_output.md
    - 02_output_bisect.md
    - 02_section_lane_summary_table.md
@@ -54,11 +55,12 @@ Evidence:
    - fresh_e2e_fact_vector_bootstrap_receipt.json
    - pre_u0_fact_vector_readiness.json
    - apps_rg_post_x3_completion_receipt.json
-3. If mandatory outputs are missing but the run directory exists, run:
+3. Read research/research_artifact_ref.json and verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. If any path is missing, stop with APPS_RESEARCH_ARTIFACT_MISSING; do not generate mandatory outputs as a substitute.
+4. If mandatory outputs are missing but the producer artifact check passed and the run directory exists, run:
    python -m apps_rg.runtime.mandatory_run_outputs <run_dir>
-4. Render evidence with:
+5. Render evidence with:
    python tools/apps_rg/render_run_summary.py <run_dir>
-5. Confirm APPS_RG_MANDATORY_RUN_OUTPUT.json includes apps_eval_record_ref and l6_shadow_bridge_ref.
+6. Confirm APPS_RG_MANDATORY_RUN_OUTPUT.json includes apps_eval_record_ref and l6_shadow_bridge_ref.
 
 Final report:
 Include:
@@ -67,6 +69,7 @@ Include:
 - run directory
 - process exit code
 - mandatory output presence
+- apps_research producer research_artifact_dir and research_briefing_path
 - rendered run summary
 - X3/section disposition summary
 - apps_eval_record_ref and l6_shadow_bridge_ref
