@@ -27,7 +27,7 @@ USAGE:
       --target-company "Anthropic" \\
       --target-role "Manager of Applied AI Architecture, Partnerships" \\
       --jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt \\
-      --manual-brief apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
+      --manual-brief tests/fixtures/apps_rg/anthropic_manager_applied_ai_architecture_partnerships_briefing.md
 
 Exit code 0 = all X2 gates pass; 1 = one or more fail (gate list printed).
 """

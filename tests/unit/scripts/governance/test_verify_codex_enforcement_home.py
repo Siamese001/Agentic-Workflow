@@ -595,6 +595,19 @@ def test_apps_rg_s2e_requires_fresh_apps_research_producer_artifact() -> None:
     assert "--manual-brief apps_rg/config/targeting/anthropic" not in prompt
     assert "research/research_artifact_ref.json" in prompt
     assert "APPS_RESEARCH_ARTIFACT_MISSING" in prompt
+    for relative_path in mod.APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS:
+        assert not (repo_root / relative_path).exists()
+
+
+def test_apps_rg_s2e_rejects_static_production_briefing(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    forbidden = root / mod.APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS[0]
+    forbidden.parent.mkdir(parents=True, exist_ok=True)
+    forbidden.write_text("stale bootstrap briefing", encoding="utf-8")
+
+    issues = mod.validate(root, tmp_path / "user-codex")
+
+    assert any(issue.code == "apps_rg_s2e_static_briefing" for issue in issues)
 
 
 def test_wrong_cwd_fails(tmp_path: Path) -> None:

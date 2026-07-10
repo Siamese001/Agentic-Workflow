@@ -1,4 +1,7 @@
-"""Unit tests for centralized pre-dispatch preflight."""
+"""apps-test-model: APP CONTRACT.
+
+Unit tests for centralized pre-dispatch preflight.
+"""
 
 from __future__ import annotations
 
@@ -185,7 +188,7 @@ def test_apps_research_handoff_receipts_written(tmp_path: Path) -> None:
 
 
 def test_strict_apps_research_handoff_blocks_static_json() -> None:
-    brief = REPO / "apps_rg" / "config" / "targeting" / "brief_anthropic_partnerships_2026.json"
+    brief = REPO / "tests" / "fixtures" / "apps_rg" / "brief_anthropic_partnerships_2026.json"
     jd = REPO / "apps_rg" / "config" / "targeting" / "jd_anthropic_partnerships_2026.json"
 
     result = run_pre_dispatch_preflight(

@@ -36,7 +36,7 @@ from apps_rg.runtime.spine.front_contracts import (
 REPO = Path(__file__).resolve().parents[3]
 ANTHROPIC_JD = REPO / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
 ANTHROPIC_BRIEFING = (
-    REPO / "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
+    REPO / "tests/fixtures/apps_rg/anthropic_manager_applied_ai_architecture_partnerships_briefing.md"
 )
 
 _FORBIDDEN_C0 = re.compile(

@@ -235,6 +235,10 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
     "Do not reschedule, enable, or convert this automation to recurring active mode",
     "Do not claim success from process exit alone",
 )
+APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS = (
+    "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md",
+    "apps_rg/config/targeting/brief_anthropic_partnerships_2026.json",
+)
 
 ADG_HANDOFF_SCHEMA = "adg-severity-lanes/v1"
 ADG_HANDOFF_PRODUCER_ROOT = str(EXPECTED_REPO)
@@ -614,6 +618,15 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
                 code="apps_rg_s2e_prompt_missing",
             )
         )
+        for relative_path in APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS:
+            static_brief = root / relative_path
+            if static_brief.exists():
+                issues.append(
+                    EnforcementHomeIssue(
+                        "apps_rg_s2e_static_briefing",
+                        f"{static_brief}: fresh E2E must generate its briefing through apps_research",
+                    )
+                )
     if automation_id == "weekly-adg-audit-and-burndown":
         issues.extend(_validate_adg_prompt(automation_id, prompt))
     if automation_id == "adg-p0-blocker-burndown":
