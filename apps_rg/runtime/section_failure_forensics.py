@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -29,6 +31,9 @@ REQUIRED_RCA_FIELDS = (
     "input_hash_comparison",
     "selected_fact_plan_comparison",
     "provider_request_hash_comparison",
+    "revision_comparison",
+    "difference_summary",
+    "comparison_complete",
     "retry_attempts",
     "retry_outputs",
     "repair_ledger",
@@ -420,15 +425,6 @@ def _baseline_lane_dir(
         return None
     run_dir = Path(raw)
     section_id = str(section.get("section") or "")
-    candidates = [
-        run_dir / "lanes" / section_id,
-        run_dir / "modular_r4" / "sections" / section_id,
-    ]
-    if section_id == "final_resume_aggregation":
-        candidates.append(run_dir / "modular_r4" / "final_resume_assembly")
-    for candidate in candidates:
-        if candidate.is_dir():
-            return candidate
     mandatory = _load_json(run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json")
     for row in mandatory.get("sections") or []:
         if not isinstance(row, dict) or row.get("section") != section_id:
@@ -438,9 +434,108 @@ def _baseline_lane_dir(
             continue
         path = Path(lane_dir)
         if not path.is_absolute():
-            path = repo_root / path
+            run_relative = run_dir / path
+            path = run_relative if run_relative.exists() else repo_root / path
         return path
+    candidates = [
+        run_dir / "lanes" / section_id,
+        run_dir / "modular_r4" / "sections" / section_id,
+    ]
+    if section_id == "final_resume_aggregation":
+        candidates.append(run_dir / "modular_r4" / "final_resume_assembly")
+    for candidate in candidates:
+        if not candidate.is_dir():
+            continue
+        nested = sorted(candidate.rglob("resume_display_text.txt"))
+        return nested[-1].parent if nested else candidate
     return None
+
+
+def _baseline_section_record(baseline: dict[str, Any], section_id: str) -> dict[str, Any]:
+    run_dir = Path(str(baseline.get("run_dir") or ""))
+    mandatory = _load_json(run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json")
+    for row in mandatory.get("sections") or []:
+        if isinstance(row, dict) and str(row.get("section") or "") == section_id:
+            return row
+    return {"section": section_id}
+
+
+def _find_nested_string(value: Any, keys: tuple[str, ...]) -> str:
+    if isinstance(value, dict):
+        for key in keys:
+            text = str(value.get(key) or "").strip()
+            if text:
+                return text
+        for nested in value.values():
+            found = _find_nested_string(nested, keys)
+            if found:
+                return found
+    elif isinstance(value, list):
+        for nested in value:
+            found = _find_nested_string(nested, keys)
+            if found:
+                return found
+    return ""
+
+
+def _git_subject(repo_root: Path, commit: str) -> str:
+    if not re.fullmatch(r"[0-9a-fA-F]{7,64}", commit):
+        return ""
+    try:
+        completed = subprocess.run(
+            ["git", "show", "-s", "--format=%s", "--end-of-options", commit],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            shell=False,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return ""
+    return completed.stdout.strip() if completed.returncode == 0 else ""
+
+
+def _revision_metadata(run_dir: Path | None, repo_root: Path) -> dict[str, Any]:
+    if run_dir is None or not run_dir.is_dir():
+        return {
+            "status": "NO_PRIOR_PASSING_RUN",
+            "git_commit": "",
+            "git_commit_subject": "",
+            "pr_number": None,
+            "pr_resolution": "not_applicable",
+        }
+    docs = [
+        _load_json(run_dir / name)
+        for name in (
+            "agentic_core_spine_proof.json",
+            "runtime_identity_envelope.json",
+            "r4_run_manifest.json",
+            "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        )
+    ]
+    commits = [
+        _find_nested_string(doc, ("git_commit", "commit_sha", "commit"))
+        for doc in docs
+        if doc
+    ]
+    subjects = [
+        _find_nested_string(doc, ("git_commit_subject", "commit_subject"))
+        for doc in docs
+        if doc
+    ]
+    commit = next((value for value in commits if value), "")
+    subject = next((value for value in subjects if value), "")
+    if not subject:
+        subject = _git_subject(repo_root, commit)
+    match = re.search(r"(?:Merge pull request|Merge PR)\s+#(\d+)", subject, flags=re.IGNORECASE)
+    return {
+        "status": "IDENTIFIED" if commit else "REVISION_NOT_OBSERVED",
+        "git_commit": commit,
+        "git_commit_subject": subject,
+        "pr_number": int(match.group(1)) if match else None,
+        "pr_resolution": "resolved_from_commit_subject" if match else "not_derivable_from_local_history",
+    }
 
 
 def _comparison(current_dir: Path | None, baseline_dir: Path | None, filename: str) -> dict[str, Any]:
@@ -517,7 +612,11 @@ def _exact_code_surface(
     }
 
 
-def _why_passed_before(baseline: dict[str, Any], baseline_output: dict[str, Any]) -> str:
+def _why_passed_before(
+    baseline: dict[str, Any],
+    baseline_output: dict[str, Any],
+    baseline_revision: dict[str, Any],
+) -> str:
     confidence = str(baseline.get("baseline_confidence") or "not_found")
     if not baseline.get("found"):
         return "No prior successful same-scenario run was found, so this RCA cannot claim a clean passing baseline."
@@ -527,9 +626,13 @@ def _why_passed_before(baseline: dict[str, Any], baseline_output: dict[str, Any]
             "evidence only, not a clean code baseline."
         )
     if bool(baseline_output.get("present")):
+        commit = str(baseline_revision.get("git_commit") or "NOT_OBSERVED")
+        pr_number = baseline_revision.get("pr_number")
+        revision = f"PR #{pr_number} / {commit}" if pr_number else commit
         return (
-            "The prior same-scenario run produced a materialized output that was accepted by its run-level "
-            "success contract."
+            f"The prior passing revision {revision} produced materialized output "
+            f"sha256={baseline_output.get('sha256') or 'NOT_OBSERVED'} that cleared its run-level "
+            "X2/X3 success contract."
         )
     return "The prior same-scenario run was marked successful, but this section's baseline output was not found."
 
@@ -592,9 +695,44 @@ def _build_rca(
     section_id = str(section.get("section") or "")
     lane = _lane_dir(section, repo_root)
     baseline_lane = _baseline_lane_dir(baseline, section, repo_root)
+    baseline_section = _baseline_section_record(baseline, section_id)
     current_output = _final_materialized_output(lane, section)
-    baseline_output = _final_materialized_output(baseline_lane, section)
+    baseline_output = _final_materialized_output(baseline_lane, baseline_section)
     failure_type = _section_failure_type(section, result)
+    current_revision = _revision_metadata(run_root, repo_root)
+    baseline_run = Path(str(baseline.get("run_dir") or "")) if baseline.get("found") else None
+    baseline_revision = _revision_metadata(baseline_run, repo_root)
+    input_comparison = _input_hash_comparison(run_root, baseline)
+    selected_fact_comparison = _comparison(lane, baseline_lane, "selected_fact_plan.json")
+    provider_comparison = _comparison(lane, baseline_lane, "provider_request.json")
+    baseline_found = bool(baseline.get("found"))
+    comparison_complete = bool(
+        not baseline_found
+        or (
+            baseline_output.get("present")
+            and current_output.get("present")
+            and str(baseline_output.get("path") or "") != str(current_output.get("path") or "")
+            and baseline_revision.get("git_commit")
+            and current_revision.get("git_commit")
+        )
+    )
+    difference_summary = {
+        "baseline_status": "PRIOR_PASSING_RUN_IDENTIFIED" if baseline_found else "NO_PRIOR_PASSING_RUN",
+        "inputs_match": bool(input_comparison.get("match")),
+        "selected_fact_plan_match": bool(selected_fact_comparison.get("match")),
+        "provider_request_match": bool(provider_comparison.get("match")),
+        "materialized_output_match": bool(
+            baseline_output.get("sha256")
+            and baseline_output.get("sha256") == current_output.get("sha256")
+        ),
+        "baseline_x2": str(baseline_section.get("x2_pass") or "NOT_OBSERVED"),
+        "current_x2": str(section.get("x2_pass") or "NOT_OBSERVED"),
+        "baseline_x3": str(baseline_section.get("x3_code") or "NOT_OBSERVED"),
+        "current_x3": str(section.get("x3_code") or "NOT_OBSERVED"),
+        "baseline_judges": baseline_section.get("judge_summary") or "NOT_OBSERVED",
+        "current_judges": section.get("judge_summary") or "NOT_OBSERVED",
+        "failed_gate_ids": _failed_gate_ids(section),
+    }
     return {
         "schema_version": SECTION_FAILURE_FORENSICS_SCHEMA_VERSION,
         "generated_at_utc": _utc_now(),
@@ -606,14 +744,20 @@ def _build_rca(
             **baseline_output,
             "baseline_run_dir": str(baseline.get("run_dir") or ""),
             "baseline_found": bool(baseline.get("found")),
+            "baseline_lane_dir": str(baseline_lane or ""),
+            "baseline_display_txt_path": str(
+                baseline_section.get("display_txt_path") or ""
+            ),
         },
-        "input_hash_comparison": _input_hash_comparison(run_root, baseline),
-        "selected_fact_plan_comparison": _comparison(
-            lane, baseline_lane, "selected_fact_plan.json"
-        ),
-        "provider_request_hash_comparison": _comparison(
-            lane, baseline_lane, "provider_request.json"
-        ),
+        "input_hash_comparison": input_comparison,
+        "selected_fact_plan_comparison": selected_fact_comparison,
+        "provider_request_hash_comparison": provider_comparison,
+        "revision_comparison": {
+            "baseline": baseline_revision,
+            "current": current_revision,
+        },
+        "difference_summary": difference_summary,
+        "comparison_complete": comparison_complete,
         "retry_attempts": _collect_artifacts(
             lane,
             (
@@ -627,7 +771,9 @@ def _build_rca(
         "repair_ledger": _collect_repair_ledger(lane),
         "final_materialized_output": current_output,
         "exact_code_surface": _exact_code_surface(section, lane, repo_root),
-        "why_it_passed_before": _why_passed_before(baseline, baseline_output),
+        "why_it_passed_before": _why_passed_before(
+            baseline, baseline_output, baseline_revision
+        ),
         "why_it_failed_now": _why_failed_now(section, failure_type),
         "required_fix": _required_fix(section, failure_type),
         "baseline_confidence": str(baseline.get("baseline_confidence") or "not_found"),
@@ -656,11 +802,60 @@ def validate_section_failure_rca(doc: dict[str, Any]) -> list[str]:
     code_surface = doc.get("exact_code_surface")
     if not isinstance(code_surface, dict) or not code_surface.get("producer_files"):
         errors.append("invalid:exact_code_surface")
+    baseline_output = doc.get("last_successful_output")
+    baseline_output = baseline_output if isinstance(baseline_output, dict) else {}
+    current_output = doc.get("current_output")
+    current_output = current_output if isinstance(current_output, dict) else {}
+    if baseline_output.get("baseline_found"):
+        if not baseline_output.get("present"):
+            errors.append("invalid:last_successful_output_missing")
+        if not current_output.get("present"):
+            errors.append("invalid:current_output_missing")
+        if str(baseline_output.get("path") or "") == str(current_output.get("path") or ""):
+            errors.append("invalid:baseline_output_aliases_current_output")
+        baseline_path = str(baseline_output.get("path") or "")
+        baseline_lane = str(baseline_output.get("baseline_lane_dir") or "")
+        baseline_display = str(baseline_output.get("baseline_display_txt_path") or "")
+        bound_to_baseline = bool(
+            baseline_path
+            and baseline_display
+            and Path(baseline_path).resolve() == Path(baseline_display).resolve()
+        )
+        if baseline_path and baseline_lane and not bound_to_baseline:
+            try:
+                Path(baseline_path).resolve().relative_to(Path(baseline_lane).resolve())
+                bound_to_baseline = True
+            except ValueError:
+                pass
+        if baseline_path and not bound_to_baseline:
+            errors.append("invalid:baseline_output_not_bound_to_baseline_manifest")
+        revisions = doc.get("revision_comparison")
+        revisions = revisions if isinstance(revisions, dict) else {}
+        for side in ("baseline", "current"):
+            row = revisions.get(side)
+            row = row if isinstance(row, dict) else {}
+            commit = str(row.get("git_commit") or "").strip()
+            if not re.fullmatch(r"[0-9a-fA-F]{7,64}", commit):
+                errors.append(f"invalid:revision_comparison_{side}_commit")
+    if doc.get("comparison_complete") is not True:
+        errors.append("invalid:comparison_incomplete")
     return errors
 
 
 def _render_rca_md(doc: dict[str, Any]) -> str:
     fixes = doc.get("required_fix") if isinstance(doc.get("required_fix"), list) else []
+    revisions = doc.get("revision_comparison")
+    revisions = revisions if isinstance(revisions, dict) else {}
+    baseline_revision = revisions.get("baseline")
+    baseline_revision = baseline_revision if isinstance(baseline_revision, dict) else {}
+    current_revision = revisions.get("current")
+    current_revision = current_revision if isinstance(current_revision, dict) else {}
+    differences = doc.get("difference_summary")
+    differences = differences if isinstance(differences, dict) else {}
+    baseline_output = doc.get("last_successful_output")
+    baseline_output = baseline_output if isinstance(baseline_output, dict) else {}
+    current_output = doc.get("current_output")
+    current_output = current_output if isinstance(current_output, dict) else {}
     lines = [
         f"# Section Failure Forensics - {doc.get('section_id')}",
         "",
@@ -676,6 +871,30 @@ def _render_rca_md(doc: dict[str, Any]) -> str:
         "",
         str(doc.get("why_it_failed_now") or ""),
         "",
+        "## Prior Working Revision Comparison",
+        "",
+        "| Signal | Prior passing revision | Current failure |",
+        "|---|---|---|",
+        (
+            "| Revision | "
+            f"`PR #{baseline_revision.get('pr_number')}` / `{baseline_revision.get('git_commit') or 'NOT_OBSERVED'}` | "
+            f"`{current_revision.get('git_commit') or 'NOT_OBSERVED'}` |"
+        ),
+        (
+            "| Materialized output | "
+            f"`{baseline_output.get('sha256') or 'NOT_OBSERVED'}` / `{baseline_output.get('path') or 'NOT_OBSERVED'}` | "
+            f"`{current_output.get('sha256') or 'NOT_OBSERVED'}` / `{current_output.get('path') or 'NOT_OBSERVED'}` |"
+        ),
+        (
+            "| X2 / X3 | "
+            f"`{differences.get('baseline_x2')}` / `{differences.get('baseline_x3')}` | "
+            f"`{differences.get('current_x2')}` / `{differences.get('current_x3')}` |"
+        ),
+        (
+            "| Judges | "
+            f"`{differences.get('baseline_judges')}` | `{differences.get('current_judges')}` |"
+        ),
+        "",
         "## Required Fix",
         "",
     ]
@@ -688,6 +907,8 @@ def _render_rca_md(doc: dict[str, Any]) -> str:
             f"- input_hash_comparison: `{doc.get('input_hash_comparison', {}).get('match')}`",
             f"- selected_fact_plan_comparison: `{doc.get('selected_fact_plan_comparison', {}).get('match')}`",
             f"- provider_request_hash_comparison: `{doc.get('provider_request_hash_comparison', {}).get('match')}`",
+            f"- materialized_output_hash_comparison: `{differences.get('materialized_output_match')}`",
+            f"- comparison_complete: `{doc.get('comparison_complete')}`",
             "",
         ]
     )

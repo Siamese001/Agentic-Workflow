@@ -768,7 +768,10 @@ def run_whole_run_with_route_governance(
     mandatory_outputs: dict[str, Any] = {}
     if is_integrated_whole_run_artifact_dir(art):
         try:
-            from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
+            from apps_rg.runtime.mandatory_run_outputs import (
+                MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+                emit_mandatory_run_outputs,
+            )
             from apps_rg.runtime.section_failure_forensics import (
                 E2E_SECTION_FORENSICS_GATE_ID,
             )
@@ -796,23 +799,46 @@ def run_whole_run_with_route_governance(
                 else {}
             )
             if forensics_gate.get("required") and not bool(forensics_gate.get("pass")):
+                prior_fault = str(payload.get("fault") or "")
                 payload["exit_status"] = "error"
                 payload["execution_status"] = "failed"
                 payload["outcome_authorized"] = False
                 payload["fault"] = E2E_SECTION_FORENSICS_GATE_ID
                 payload["x3_disposition"] = "X3_BLOCK"
                 payload["section_failure_forensics_gate"] = forensics_gate
+                payload["mandatory_output_upstream_fault"] = prior_fault
+            mandatory_gate = (
+                mandatory_emit.get("mandatory_output_gate")
+                if isinstance(mandatory_emit, dict)
+                and isinstance(mandatory_emit.get("mandatory_output_gate"), dict)
+                else {}
+            )
+            if mandatory_gate.get("required") and not bool(mandatory_gate.get("pass")):
+                prior_fault = str(payload.get("fault") or "")
+                payload["exit_status"] = "error"
+                payload["execution_status"] = "failed"
+                payload["outcome_authorized"] = False
+                payload["fault"] = (
+                    E2E_SECTION_FORENSICS_GATE_ID
+                    if not bool(forensics_gate.get("pass", True))
+                    else MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+                )
+                payload["x3_disposition"] = "X3_BLOCK"
+                payload["mandatory_output_hard_stop"] = mandatory_gate
+                payload["mandatory_output_upstream_fault"] = prior_fault
         except OSError:
             mandatory_outputs = {}
-            from apps_rg.runtime.section_failure_forensics import (
-                E2E_SECTION_FORENSICS_GATE_ID,
+            from apps_rg.runtime.mandatory_run_outputs import (
+                MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
             )
 
+            prior_fault = str(payload.get("fault") or "")
             payload["exit_status"] = "error"
             payload["execution_status"] = "failed"
             payload["outcome_authorized"] = False
-            payload["fault"] = E2E_SECTION_FORENSICS_GATE_ID
+            payload["fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
             payload["x3_disposition"] = "X3_BLOCK"
+            payload["mandatory_output_upstream_fault"] = prior_fault
     review_zip = None
     if is_integrated_whole_run_artifact_dir(art):
         try:

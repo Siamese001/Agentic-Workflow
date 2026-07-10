@@ -38,6 +38,11 @@ RUNS_ROOT = REPO_ROOT / "artifacts" / "apps_rg" / "runs"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from apps_rg.runtime.full_run_section_status import FINAL_AGGREGATION_LANE
+from apps_rg.runtime.l7_audit_output import (
+    emit_l7_audit_ability_output,
+    render_l7_audit_ability_output,
+)
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
@@ -52,7 +57,6 @@ from apps_rg.runtime.run_output_contract import (
     LEGACY_BCG_EXECUTIVE_OUTPUT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
-from apps_rg.runtime.full_run_section_status import FINAL_AGGREGATION_LANE
 from apps_rg.runtime.section_display_labels import summary_section_label
 
 # ----------------------------------------------------------------- read helpers
@@ -1109,64 +1113,6 @@ def _render_quality_reports(run_report: Optional[Dict[str, Any]]) -> List[str]:
     return lines
 
 
-def _render_l7_certification(l7: Optional[Dict[str, Any]], run_dir: Path) -> List[str]:
-    lines: List[str] = ["## 3. L7 Audit Ability Output", ""]
-    how_trace = _load_json(run_dir / "agentic_core_how_trace.json") or {}
-    spine_proof = _load_json(run_dir / "agentic_core_spine_proof.json") or {}
-    lines.append("| Artifact | Path | Status |")
-    lines.append("|---|---|---|")
-    for label, path in (
-        ("HOW trace", run_dir / "agentic_core_how_trace.json"),
-        ("Route-family coverage", run_dir / "agentic_core_l7_route_family_coverage.json"),
-        ("Spine proof", run_dir / "agentic_core_spine_proof.json"),
-    ):
-        lines.append(
-            f"| **{label}** | {_codex_file_link(path.name, path)} | "
-            f"{_artifact_status(path, required=label != 'Spine proof', optional_reason='supplemental spine proof')} |"
-        )
-    lines.append("")
-    if not l7:
-        lines.append("_agentic_core_l7_route_family_coverage.json not found._")
-        lines.append("")
-        return lines
-    payload = l7.get("payload") if isinstance(l7.get("payload"), dict) else l7
-    summary = payload.get("summary") or {}
-    how_payload = how_trace.get("payload") if isinstance(how_trace.get("payload"), dict) else how_trace
-    spine_payload = spine_proof.get("payload") if isinstance(spine_proof.get("payload"), dict) else spine_proof
-    lines.append("| Signal | Value |")
-    lines.append("|---|---|")
-    lines.append(f"| Evidence plane | `{payload.get('evidence_plane') or how_payload.get('evidence_plane') or 'L7_AUDITABILITY'}` |")
-    lines.append(f"| HOW trace class | `{how_payload.get('evidence_class') or how_payload.get('proof_class') or 'NOT_OBSERVED'}` |")
-    lines.append(f"| Spine proof class | `{spine_payload.get('evidence_class') or spine_payload.get('proof_class') or 'NOT_OBSERVED'}` |")
-    lines.append(f"| Certified route families | `{summary.get('certified', 0)} / {summary.get('total_families', 0)}` |")
-    lines.append("")
-    lines.append(
-        f"Certified: **{summary.get('certified', 0)} / {summary.get('total_families', 0)}** · "
-        f"fixture-only: {summary.get('fixture_only', 0)} · "
-        f"not certified: {summary.get('not_certified', 0)}"
-    )
-    lines.append("")
-    families = payload.get("route_families") or []
-    if families:
-        lines.append("| Family | Status | Proof class | Exercised |")
-        lines.append("|---|---|---|---|")
-        for f in families:
-            fam = f.get("route_family", "?")
-            stat = f.get("certification_status", "—")
-            proof = f.get("proof_class", "—")
-            exer = _yes_no(f.get("exercised_in_current_run"))
-            icon = {"CERTIFIED": "✅", "NOT_CERTIFIED": "❌"}.get(stat, "•")
-            lines.append(f"| `{fam}` | {icon} {stat} | `{proof}` | {exer} |")
-        lines.append("")
-    return lines
-
-
-def _write_l7_audit_ability_output(l7: Optional[Dict[str, Any]], run_dir: Path) -> Path:
-    path = run_dir / L7_AUDIT_ABILITY_OUTPUT_MD
-    path.write_text("\n".join(_render_l7_certification(l7, run_dir)).rstrip() + "\n", encoding="utf-8")
-    return path
-
-
 def _render_post_x3_completion(run_dir: Path) -> List[str]:
     receipt = _load_json(run_dir / "apps_rg_post_x3_completion_receipt.json")
     if not receipt:
@@ -1340,8 +1286,7 @@ def render(run_dir: Path) -> str:
     manifest = _load_json(run_dir / "r4_run_manifest.json")
     identity = _load_json(run_dir / "runtime_identity_envelope.json")
     terminal = _load_json(run_dir / "terminal_ret_packet.json")
-    l7 = _load_json(run_dir / "agentic_core_l7_route_family_coverage.json")
-    _write_l7_audit_ability_output(l7, run_dir)
+    emit_l7_audit_ability_output(run_dir)
 
     title = f"# apps_rg Run Summary — `{run_dir.name}`"
     rendered_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -1359,7 +1304,7 @@ def render(run_dir: Path) -> str:
     parts += _render_gate_failures(run_report)
     parts += _render_quality_reports(run_report)
     parts += _render_post_x3_completion(run_dir)
-    parts += _render_l7_certification(l7, run_dir)
+    parts += render_l7_audit_ability_output(run_dir).splitlines()
     parts += _render_artifacts(run_dir, run_report)
     return "\n".join(parts).rstrip() + "\n"
 
