@@ -1,5 +1,7 @@
 """Shared ``python -m apps_rg`` argv/env for generated-lane contract and live-proof tests."""
 
+# apps-test-model: HARNESS
+
 from __future__ import annotations
 
 import json
@@ -15,10 +17,11 @@ TARGET_COMPANY = "Brown & Brown"
 TARGET_ROLE = "SVP IT Strategy & Innovation"
 JD_PATH = "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt"
 BRIEF_PATH = "apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md"
+LIVE_PROVIDER = "external_claude"
 
 
 def contract_env(*, live_l2: bool = False) -> dict[str, str]:
-    """Live ``retired_provider_profile`` contract runs — no mock provider, no offline RetiredProvider stub."""
+    """Build an environment for live external-Claude contract runs."""
     env = {**os.environ, "APPS_RG_ALLOW_NON_ALLOW_EXIT_ZERO": "1"}
     for key in (
         "APPS_RG_RETIRED_PROVIDER_OFFLINE_CONTRACT_STUB",
@@ -62,7 +65,7 @@ def base_canonical_argv(
         "--manual-brief",
         manual_brief or BRIEF_PATH,
         "--provider",
-        "retired_provider_profile",
+        LIVE_PROVIDER,
         "--allow-non-allow-exit-zero",
     ]
     if artifact_dir:
@@ -79,17 +82,13 @@ def contract_harness_fast() -> bool:
     )
 
 
-def retired_provider_live_available() -> bool:
-    """True when the external generation provider (Claude) is credentialed for live CLI lanes.
-
-    The local RetiredProvider/local model server provider was removed; live CLI contract lanes now require a real
-    ``ANTHROPIC_API_KEY`` for the external generation model.
-    """
+def external_claude_live_available() -> bool:
+    """Return whether the supported Claude provider is credentialed for live lanes."""
     return bool(str(os.environ.get("ANTHROPIC_API_KEY") or "").strip())
 
 
 def should_skip_contract_live_lane() -> bool:
-    return contract_harness_fast() or not retired_provider_live_available()
+    return contract_harness_fast() or not external_claude_live_available()
 
 
 def live_lane_skip_reason(section: str = "") -> str:
@@ -105,7 +104,7 @@ def live_lane_skip_reason(section: str = "") -> str:
 
 
 def contract_live_pytestmark(section: str = ""):
-    """Module-level mark: skip entire file when fast mode or local model server unreachable."""
+    """Mark a module skipped when fast mode is enabled or Claude is unavailable."""
     import pytest
 
     return pytest.mark.skipif(should_skip_contract_live_lane(), reason=live_lane_skip_reason(section))
@@ -237,8 +236,9 @@ __all__ = [
     "contract_harness_fast",
     "contract_live_pytestmark",
     "critical_gate_ids",
+    "external_claude_live_available",
+    "LIVE_PROVIDER",
     "live_lane_skip_reason",
-    "retired_provider_live_available",
     "resolve_latest_real_run_dir",
     "run_lane_cli",
     "run_lane_cli_once",

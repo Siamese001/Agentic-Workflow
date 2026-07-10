@@ -1,8 +1,9 @@
 """Shared fixtures for apps_rg contract tests."""
 
+# apps-test-model: HARNESS
+
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
@@ -36,7 +37,7 @@ _LIVE_CLI_PATH_FRAGMENTS = (
 def pytest_configure(config: pytest.Config) -> None:
     config.addinivalue_line(
         "markers",
-        "contract_harness_live: full python -m apps_rg subprocess with live retired_provider_profile",
+        "contract_harness_live: full python -m apps_rg subprocess with live external_claude provider",
     )
 
 
@@ -59,7 +60,7 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 @pytest.fixture(autouse=True)
 def _contract_harness_runtime_env(monkeypatch: pytest.MonkeyPatch, tmp_path_factory) -> None:
-    """Align contract tests with live retired_provider_profile + optional C0 Chroma (root conftest sets stub_only)."""
+    """Align contract tests with live external Claude plus optional C0 Chroma."""
     monkeypatch.setenv("APPS_RG_L2_PROVIDER_MODE", "live_allowed")
     monkeypatch.setenv("PYTEST_APPS_RG_LIVE_L2", "1")
     monkeypatch.delenv("APPS_RG_L2_FORCE_STUB", raising=False)

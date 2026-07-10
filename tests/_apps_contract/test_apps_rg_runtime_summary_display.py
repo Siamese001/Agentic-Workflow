@@ -1,4 +1,6 @@
-"""S5 contract tests: Runtime Executive Summary Display Fix.
+"""apps-test-model: MIGRATION.
+
+S5 contract tests: Runtime Executive Summary Display Fix.
 
 Verifies that the runtime summary display for apps_rg correctly reflects the
 live resume-generation path and accurately labels inactive/future components.
@@ -18,7 +20,6 @@ S5 Display Truth Table (per apps_rg_resume_shipping_s5_runtime_summary_display_f
 from __future__ import annotations
 
 import unittest
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock
@@ -32,13 +33,13 @@ class TestRuntimeSummaryModuleImport(unittest.TestCase):
 
     def test_key_symbols_present(self) -> None:
         from apps_rg.runtime.runtime_executive_summary import (
-            RuntimeExecutiveSummary,
-            generate_runtime_executive_summary,
-            format_executive_summary_markdown,
-            display_runtime_summary_inline,
-            write_runtime_summary_to_runs,
-            build_resume_shipping_status,
             RESUME_SHIPPING_LIVE_PATH,
+            RuntimeExecutiveSummary,
+            build_resume_shipping_status,
+            display_runtime_summary_inline,
+            format_executive_summary_markdown,
+            generate_runtime_executive_summary,
+            write_runtime_summary_to_runs,
         )
         self.assertIsNotNone(RuntimeExecutiveSummary)
         self.assertIsNotNone(generate_runtime_executive_summary)
@@ -150,17 +151,17 @@ class TestRuntimeExecutiveSummaryDefaults(unittest.TestCase):
 
     def _make_summary(self, **kwargs: Any):
         from apps_rg.runtime.runtime_executive_summary import RuntimeExecutiveSummary
-        defaults = dict(
-            run_id="test-run",
-            trace_id="test-trace",
-            target_company="ACME",
-            target_role="Director",
-            generation_mode="strategic_tailor",
-            start_timestamp="2026-01-01T00:00:00+00:00",
-            end_timestamp="2026-01-01T00:00:01+00:00",
-            total_duration_ms=1000,
-            sections=[],
-        )
+        defaults = {
+            "run_id": "test-run",
+            "trace_id": "test-trace",
+            "target_company": "ACME",
+            "target_role": "Director",
+            "generation_mode": "strategic_tailor",
+            "start_timestamp": "2026-01-01T00:00:00+00:00",
+            "end_timestamp": "2026-01-01T00:00:01+00:00",
+            "total_duration_ms": 1000,
+            "sections": [],
+        }
         defaults.update(kwargs)
         return RuntimeExecutiveSummary(**defaults)
 
@@ -228,8 +229,9 @@ class TestGeneratedSummaryStagesExecuted(unittest.TestCase):
         return result
 
     def test_stages_executed_no_l6(self) -> None:
+        import tempfile
+
         from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary
-        import tempfile, os
         with tempfile.TemporaryDirectory() as tmpdir:
             summary = generate_runtime_executive_summary(
                 section_results=[self._make_mock_result()],
@@ -242,8 +244,9 @@ class TestGeneratedSummaryStagesExecuted(unittest.TestCase):
             self.assertNotIn("Shadow", stage)
 
     def test_stages_executed_no_cache_writeback(self) -> None:
-        from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary
         import tempfile
+
+        from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary
         with tempfile.TemporaryDirectory() as tmpdir:
             summary = generate_runtime_executive_summary(
                 section_results=[self._make_mock_result()],
@@ -256,8 +259,9 @@ class TestGeneratedSummaryStagesExecuted(unittest.TestCase):
             self.assertNotIn("Writeback", stage)
 
     def test_cache_writes_always_zero(self) -> None:
-        from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary
         import tempfile
+
+        from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary
         with tempfile.TemporaryDirectory() as tmpdir:
             summary = generate_runtime_executive_summary(
                 section_results=[self._make_mock_result("success"), self._make_mock_result("success")],
@@ -268,8 +272,11 @@ class TestGeneratedSummaryStagesExecuted(unittest.TestCase):
         self.assertEqual(summary.cache_writes, 0)
 
     def test_per_section_stages_no_l6_shadow_cache(self) -> None:
-        from apps_rg.runtime.runtime_executive_summary import generate_runtime_executive_summary, PipelineStageMetrics
         import tempfile
+
+        from apps_rg.runtime.runtime_executive_summary import (
+            generate_runtime_executive_summary,
+        )
         with tempfile.TemporaryDirectory() as tmpdir:
             summary = generate_runtime_executive_summary(
                 section_results=[self._make_mock_result("success")],
@@ -423,26 +430,21 @@ class TestInlineDisplayTruths(unittest.TestCase):
 class TestForbiddenReactivationGuard(unittest.TestCase):
     """Reactivation guard: forbidden symbols must not be importable from dispatch paths."""
 
-    def test_section_pipeline_available_is_false(self) -> None:
-        from apps_rg.runtime.dispatch.apps_rg_dispatch import SECTION_PIPELINE_AVAILABLE
-        self.assertFalse(SECTION_PIPELINE_AVAILABLE)
+    def test_section_pipeline_availability_flag_is_removed(self) -> None:
+        from apps_rg.runtime.dispatch import apps_rg_dispatch as mod
+        self.assertFalse(hasattr(mod, "SECTION_PIPELINE_AVAILABLE"))
 
     def test_apps_rg_dispatch_section_pipeline_not_in_all(self) -> None:
         from apps_rg.runtime.dispatch import apps_rg_dispatch as mod
         self.assertNotIn("apps_rg_dispatch_section_pipeline", getattr(mod, "__all__", []))
 
-    def test_dispatch_section_pipeline_raises(self) -> None:
-        from apps_rg.runtime.dispatch.apps_rg_dispatch import apps_rg_dispatch_section_pipeline
-        with self.assertRaises(RuntimeError):
-            apps_rg_dispatch_section_pipeline(
-                envelope=MagicMock(),
-                validated_request=MagicMock(),
-                run_dir=Path("/tmp"),
-            )
+    def test_dispatch_section_pipeline_symbol_is_removed(self) -> None:
+        from apps_rg.runtime.dispatch import apps_rg_dispatch as mod
+        self.assertFalse(hasattr(mod, "apps_rg_dispatch_section_pipeline"))
 
     def test_l6_shadow_learning_not_imported_in_dispatch(self) -> None:
-        import ast
         import inspect
+
         from apps_rg.runtime.dispatch import apps_rg_dispatch as mod
         source = inspect.getsource(mod)
         # Must not import l6_shadow_learning
@@ -450,6 +452,7 @@ class TestForbiddenReactivationGuard(unittest.TestCase):
 
     def test_section_agentic_pipeline_not_active_in_dispatch(self) -> None:
         import inspect
+
         from apps_rg.runtime.dispatch import apps_rg_dispatch as mod
         source = inspect.getsource(mod)
         # section_agentic_pipeline imports must be absent (not just commented)
@@ -476,13 +479,12 @@ class TestS5RegressionAgainstS1S4(unittest.TestCase):
     def test_structured_resume_classifier_importable(self) -> None:
         import apps_rg.runtime.u0.structured_resume_classifier  # noqa: F401
 
-    def test_payload_synthesizer_importable(self) -> None:
-        import apps_rg.runtime.u0.payload_synthesizer  # noqa: F401
+    def test_u0_binding_importable(self) -> None:
+        import apps_rg.runtime.bindings.u0_binding  # noqa: F401
 
     def test_runtime_summary_importable_after_s5(self) -> None:
         from apps_rg.runtime.runtime_executive_summary import (
             build_resume_shipping_status,
-            RESUME_SHIPPING_LIVE_PATH,
         )
         status = build_resume_shipping_status()
         self.assertFalse(status["l5_governed_production_claimed"])

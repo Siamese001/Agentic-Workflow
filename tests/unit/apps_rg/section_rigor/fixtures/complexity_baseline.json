@@ -2,7 +2,7 @@
   "audit_script_digest": "72ae388fb77f2d41",
   "audit_script_version": "section_complexity_reduction_audit",
   "baseline_id": "apps_rg_complexity_baseline",
-  "generated_at": "2026-07-09T09:59:28.124329+00:00",
+  "generated_at": "2026-07-10T11:31:49.768508+00:00",
   "linked_plan_id": "apps-rg-complexity-test-radar-605dcc",
   "modules": [
     {
@@ -111,7 +111,7 @@
       "section_id": "executive_summary"
     },
     {
-      "loc": 4141,
+      "loc": 4181,
       "module_path": "apps_rg/runtime/sections/executive_summary_lane.py",
       "section_id": "executive_summary"
     },
@@ -489,10 +489,10 @@
       "tagged_runtime_loc": 6117
     },
     {
-      "loc": 26365,
+      "loc": 26405,
       "module_count": 42,
       "section_id": "executive_summary",
-      "tagged_runtime_loc": 26365
+      "tagged_runtime_loc": 26405
     },
     {
       "loc": 9183,

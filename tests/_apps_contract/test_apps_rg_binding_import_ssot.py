@@ -1,11 +1,12 @@
-"""Import SSOT: production code must not import legacy agentic_core apps_rg shims."""
+"""apps-test-model: HARNESS.
+
+Import SSOT: production code must not import legacy agentic_core apps_rg shims.
+"""
 
 from __future__ import annotations
 
 import ast
 from pathlib import Path
-
-import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -47,7 +48,7 @@ SCAN_SKIP_FILE_SUFFIXES: frozenset[str] = frozenset(
 
 
 def _imports_in_file(path: Path) -> set[str]:
-    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    tree = ast.parse(path.read_text(encoding="utf-8-sig"), filename=str(path))
     out: set[str] = set()
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
@@ -66,7 +67,7 @@ def _should_scan(path: Path) -> bool:
         return False
     if any(part in SCAN_SKIP_PARTS for part in path.parts):
         return False
-    if rel.startswith("artifacts/archives/"):
+    if rel.startswith(("artifacts/archives/", "docs/archive/")):
         return False
     return True
 

@@ -1,4 +1,6 @@
-"""W1 P1.2: Prove grounding_required=False blocks C0.
+"""apps-test-model: MIGRATION.
+
+W1 P1.2: Prove grounding_required=False blocks C0.
 
 Plan: 04_apps-rg-c0-architecture-analysis-f3d8b2
 Acceptance: c0_retrieve_apps_rg raises ValueError when grounding_required=False;
@@ -6,20 +8,21 @@ dispatch never calls C0 on such routes.
 """
 from __future__ import annotations
 
-import pytest
 from unittest.mock import MagicMock
 
-from apps_rg.runtime.bindings.c0_binding import (
-    c0_retrieve_apps_rg,
-    C0EvidenceGapError,
-)
-from agentic_core.runtime.contracts.route_contract import RouteContract
+import pytest
+
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
+from agentic_core.runtime.contracts.route_contract import RouteContract
+from apps_rg.runtime.bindings.c0_binding import (
+    C0EvidenceGapError,
+    c0_retrieve_apps_rg,
+)
 
 
 def test_grounding_required_false_blocks_c0():
     """PROOF: C0 binding raises ValueError when grounding_required=False.
-    
+
     Per c0_binding.py lines 519-524: Fail-closed check.
     """
     # Arrange: Route with grounding_required=False
@@ -36,7 +39,7 @@ def test_grounding_required_false_blocks_c0():
         tenant_id="apps_rg",
         l5_certification_ref="test-cert",
     )
-    
+
     # Build a minimal ValidatedRequest
     validated = ValidatedRequest(
         request_id="test-req-001",
@@ -53,22 +56,18 @@ def test_grounding_required_false_blocks_c0():
         },
         l5_certification_ref="ag-w0-5:u0:ingress:apps_rg:12345678",
     )
-    
+
     # Act & Assert: C0 must raise ValueError
     with pytest.raises(ValueError) as exc_info:
         c0_retrieve_apps_rg(route, validated)
-    
+
     error_msg = str(exc_info.value)
     assert "grounding_required=False" in error_msg, f"Error must mention grounding_required=False: {error_msg}"
     assert "C0 is conditional" in error_msg or "AG-2" in error_msg, f"Error must reference C0 conditionality: {error_msg}"
 
 
-def test_grounding_required_true_allows_c0_file_only():
-    """PROOF: C0 succeeds with file-only path when grounding_required=True.
-    
-    This validates the positive case - when grounding is required,
-    C0 should succeed with the file-only fallback path (no Chroma).
-    """
+def test_grounding_required_true_fails_closed_without_chroma(monkeypatch: pytest.MonkeyPatch):
+    """C0.2 requires dense and sparse evidence; the retired file-only fallback is forbidden."""
     route = RouteContract(
         request_id="test-req-002",
         run_id="test-run-002",
@@ -82,7 +81,7 @@ def test_grounding_required_true_allows_c0_file_only():
         tenant_id="apps_rg",
         l5_certification_ref="test-cert",
     )
-    
+
     validated = ValidatedRequest(
         request_id="test-req-002",
         run_id="test-run-002",
@@ -98,31 +97,15 @@ def test_grounding_required_true_allows_c0_file_only():
         },
         l5_certification_ref="ag-w0-5:u0:ingress:apps_rg:87654321",
     )
-    
-    # Act: C0 should succeed (file-only path, no Chroma)
-    # Ensure no CHROMA_PERSIST_DIR to trigger file-only path
-    import os
-    old_chroma = os.environ.pop("CHROMA_PERSIST_DIR", None)
-    try:
-        fec = c0_retrieve_apps_rg(route, validated, chromadb_path=None)
-        
-        # Assert: FEC must be returned
-        assert fec is not None, "FEC must be produced"
-        assert fec.app_id == "apps_rg", "FEC app_id must match"
-        assert len(fec.evidence_items) >= 2, "FEC must have at least JD and resume evidence"
-        
-        # Check that we have JD and resume sources
-        sources = {item.source for item in fec.evidence_items}
-        assert any("jd" in s for s in sources), "Must have JD evidence"
-        assert any("resume" in s for s in sources), "Must have resume evidence"
-    finally:
-        if old_chroma:
-            os.environ["CHROMA_PERSIST_DIR"] = old_chroma
+
+    monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+    with pytest.raises(C0EvidenceGapError, match=r"dense\+sparse mandatory"):
+        c0_retrieve_apps_rg(route, validated, chromadb_path=None)
 
 
 def test_dispatch_chain_respects_grounding_required_false():
     """PROOF: Dispatch chain skips C0 when grounding_required=False.
-    
+
     Validates that app_ingress_runner.py logic correctly skips C0
     when route.grounding_required is False.
     """
@@ -130,20 +113,20 @@ def test_dispatch_chain_respects_grounding_required_false():
     route = MagicMock()
     route.grounding_required = False
     route.model_generation_required = True
-    
+
     # Simulate the C0 conditional
     c0_called = False
     fec = None
-    
+
     def mock_c0_fn(route, validated):
         nonlocal c0_called
         c0_called = True
         return None
-    
+
     # Act: Simulate the dispatch chain
     if getattr(route, "grounding_required", False):
         fec = mock_c0_fn(route, None)
-    
+
     # Assert: C0 must NOT have been called
     assert c0_called is False, "C0 must not be called when grounding_required=False"
     assert fec is None, "FEC must be None when C0 is skipped"
