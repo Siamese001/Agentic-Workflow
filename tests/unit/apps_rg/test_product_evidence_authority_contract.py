@@ -1,4 +1,7 @@
-"""Contract: product evidence authority law — canonical CLI cannot reach forbidden authority states."""
+"""apps-test-model: LAW.
+
+Contract: product evidence authority law — canonical CLI cannot reach forbidden authority states.
+"""
 from __future__ import annotations
 
 from pathlib import Path
@@ -11,7 +14,6 @@ from apps_rg.runtime.product_evidence_authority import (
     EVIDENCE_AUTHORITY_AUGMENTED_SKILLS_GRAPH,
     ProductEvidenceAuthorityError,
     build_evidence_authority,
-    enforce_product_evidence_authority_for_cli,
     finalize_product_section_proof_pool,
     scan_prompt_text_for_forbidden_story_authority,
     validate_compiled_prompt_story_authority,
@@ -239,11 +241,63 @@ def test_blocked_graph_raises_product_error(monkeypatch: pytest.MonkeyPatch) -> 
         )
 
 
-def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.parametrize(
+    ("preflight_fields", "expected_health", "expected_ready"),
+    (
+        (
+            {"provider_health_status": "PASS", "provider_model_ready_status": "PASS"},
+            "PASS",
+            "PASS",
+        ),
+        (
+            {
+                "retired_provider_health_status": "LEGACY_PASS",
+                "retired_provider_model_ready_status": "LEGACY_READY",
+            },
+            "LEGACY_PASS",
+            "LEGACY_READY",
+        ),
+        (
+            {
+                "provider_health_status": "CURRENT_PASS",
+                "provider_model_ready_status": "CURRENT_READY",
+                "retired_provider_health_status": "LEGACY_PASS",
+                "retired_provider_model_ready_status": "LEGACY_READY",
+            },
+            "CURRENT_PASS",
+            "CURRENT_READY",
+        ),
+    ),
+)
+def test_main_returns_2_when_proof_pool_law_violated(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    preflight_fields: dict[str, str],
+    expected_health: str,
+    expected_ready: str,
+) -> None:
     """Canonical CLI path maps ProductEvidenceAuthorityError to exit 2."""
     monkeypatch.setattr(
         "apps_rg.runtime.live_judge_only_guard.assert_production_runtime",
         lambda **_kw: None,
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.embedding_settings.bootstrap_apps_rg_embedding_env",
+        lambda **_kw: {},
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.embedding_settings.apply_apps_rg_embedding_env_guards",
+        lambda **_kw: SimpleNamespace(
+            embeddings_enabled=False,
+            embedding_required=False,
+            route_result="test_not_required",
+            semantic_cache_ineligible=True,
+            chroma_default_ef_used=False,
+        ),
+    )
+    monkeypatch.setattr(
+        "apps_rg.runtime.embedding_settings.write_embedding_settings_receipt",
+        lambda *_args, **_kw: None,
     )
 
     def _boom(**_kw: object) -> dict:
@@ -259,8 +313,7 @@ def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyP
             dispatch_started=True,
             jd_status="PASS",
             manual_brief_status="PASS",
-            retired_provider_health_status="PASS",
-            retired_provider_model_ready_status="PASS",
+            **preflight_fields,
         ),
     )
     monkeypatch.setattr(
@@ -289,6 +342,9 @@ def test_main_returns_2_when_proof_pool_law_violated(monkeypatch: pytest.MonkeyP
         ]
     )
     assert rc == 2
+    stdout = capsys.readouterr().out
+    assert f"provider_health={expected_health}" in stdout
+    assert f"provider_model_ready={expected_ready}" in stdout
 
 
 def test_product_evidence_error_is_section_cli_config_error() -> None:
