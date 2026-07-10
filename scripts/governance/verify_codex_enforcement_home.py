@@ -14,10 +14,11 @@ import json
 import os
 import re
 import subprocess
-import tomllib
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
+
+import tomllib
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_USER_CODEX_HOME = Path(os.environ.get("CODEX_HOME", r"C:\Users\amita\.codex"))
@@ -212,6 +213,8 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
     "Run the Agentic-Workflow apps_rg Anthropic partnership fresh source-to-end E2E",
     "APPS_RG_ENABLE_MANAGED_WORKFLOW_L0",
     "APPS_RG_ROUTE_HMAC_SECRET",
+    "APPS_RG_ROUTE_HMAC_KEY_ID",
+    "python scripts/apps_rg/run_anthropic_partnership_e2e.py",
     "python -m apps_rg --fresh-e2e --target-company \"Anthropic\"",
     "--fresh-e2e",
     "--target-role \"Manager of Applied AI Architecture, Partnerships\"",
@@ -223,17 +226,26 @@ APPS_RG_S2E_REQUIRED_PROMPT_SNIPPETS = (
     "research_artifact_dir",
     "research_briefing_path",
     "01_BCG_executive_output.md",
+    "02_output_bisect.md",
     "02_section_lane_summary_table.md",
     "03_L7_audit_ability_output.md",
     "APPS_RG_MANDATORY_RUN_OUTPUT.json",
     "fresh_e2e_fact_vector_bootstrap_receipt.json",
     "pre_u0_fact_vector_readiness.json",
     "apps_rg_post_x3_completion_receipt.json",
+    "e2e_launch_receipt.json",
+    "e2e_stage_ledger.json",
+    "apps_rg/config/e2e_baselines/anthropic_partnership.v1.json",
     "apps_eval_record_ref",
     "l6_shadow_bridge_ref",
     "python tools/apps_rg/render_run_summary.py <run_dir>",
     "Do not reschedule, enable, or convert this automation to recurring active mode",
     "Do not claim success from process exit alone",
+)
+APPS_RG_S2E_FORBIDDEN_PROMPT_SNIPPETS = (
+    "[guid]::NewGuid",
+    "most recently modified child",
+    "python -m apps_rg.runtime.mandatory_run_outputs",
 )
 APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS = (
     "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_briefing.md",
@@ -618,6 +630,14 @@ def _validate_automation(root: Path, automation_id: str) -> list[EnforcementHome
                 code="apps_rg_s2e_prompt_missing",
             )
         )
+        for forbidden in APPS_RG_S2E_FORBIDDEN_PROMPT_SNIPPETS:
+            if forbidden.lower() in prompt.lower():
+                issues.append(
+                    EnforcementHomeIssue(
+                        "apps_rg_s2e_prompt_forbidden",
+                        f"{automation_id}: forbidden nondeterministic instruction {forbidden!r}",
+                    )
+                )
         for relative_path in APPS_RG_S2E_FORBIDDEN_STATIC_BRIEF_PATHS:
             static_brief = root / relative_path
             if static_brief.exists():

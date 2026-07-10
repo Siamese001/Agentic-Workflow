@@ -153,6 +153,7 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
 
     def _fake_spine(**kwargs: object) -> _FakeResult:
         captured["raw_request"] = kwargs["raw_request"]
+        captured["front_continuation"] = kwargs["front_continuation"]
         art = Path(kwargs["artifact_dir"])
         art.mkdir(parents=True, exist_ok=True)
         (art / "r4_run_manifest.json").write_text(
@@ -208,6 +209,15 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     ].endswith("research/delegated_briefing.txt")
     assert raw_request["manual_brief"] != str(brief_json)
     assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
+    front_continuation = captured["front_continuation"]
+    assert isinstance(front_continuation, dict)
+    validated = front_continuation["validated_request"]
+    plan = front_continuation["plan_contract"]
+    route = front_continuation["route_contract"]
+    assert validated.request_id == plan.request_id == route.request_id
+    assert validated.run_id == plan.run_id == route.run_id
+    assert validated.app_payload["briefing_artifact_ref"] == raw_request["manual_brief"]
+    assert front_continuation["execution_route_id"] == "R4_SINGLE_ACTION"
     research_ref_path = (
         tmp_path / "static_json_run" / "research" / "research_artifact_ref.json"
     )
@@ -295,6 +305,34 @@ def test_whole_run_research_failure_fails_closed_with_manual_brief(
     assert "research_fallback_to_manual_brief" not in route_decision
 
 
+def test_whole_run_u0_rejection_emits_terminal_closeout(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    run_dir = tmp_path / "full_resume_u0_rejected"
+    jd = tmp_path / "jd.txt"
+    jd.write_text("Run-specific partnerships job description.", encoding="utf-8")
+
+    result = orch.run_whole_run_with_route_governance(
+        target_company="Anthropic",
+        target_role="Manager of Applied AI Architecture, Partnerships",
+        jd=str(jd),
+        manual_brief="",
+        auto_research_internal=False,
+        artifact_dir=str(run_dir),
+    )
+
+    assert result["exit_status"] == "error"
+    assert result["fault"].startswith("U0_REJECTED:")
+    assert result["completion_status"] == "BLOCKED"
+    assert Path(result["e2e_stage_ledger"]).is_file()
+    assert (run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json").is_file()
+    assert (run_dir / "01_BCG_executive_output.md").is_file()
+
+
 def test_research_hop_rejects_ready_result_without_producer_artifact(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -375,7 +413,9 @@ def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
         pytest.fail("draft spine must not run when apps_research-required routing mismatches")
 
     def _fake_research_hop(**kwargs: object) -> tuple[bool, str, str]:
-        pytest.fail("apps_research hop must not run on a non-R3R4 route family")
+        delegated = tmp_path / "route_mismatch_delegated_briefing.md"
+        delegated.write_text("Producer-owned delegated briefing.", encoding="utf-8")
+        return True, "ResumeBriefingReady", str(delegated)
 
     def _simple_route(plan: object) -> SimpleNamespace:
         return SimpleNamespace(
@@ -425,10 +465,10 @@ def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
     assert result["route_family"] == "R3_SIMPLE_GROUNDED_READ"
     spine = json.loads((tmp_path / "route_mismatch_run" / FILENAME_SPINE_MANIFEST).read_text(encoding="utf-8"))
     route_decision = spine["route_decision"]
-    assert route_decision["research_delegation_executed"] is False
+    assert route_decision["research_delegation_executed"] is True
     assert route_decision["research_failure"] == "APPS_RESEARCH_ROUTE_MISMATCH"
     assert route_decision["research_failure_reason"] == (
-        "apps_research_required_without_authorized_handoff_on_R3_SIMPLE_GROUNDED_READ"
+        "apps_research_completed_before_non_managed_route_R3_SIMPLE_GROUNDED_READ"
     )
 
 
@@ -714,8 +754,10 @@ def test_whole_run_hard_fails_without_complete_section_forensics(
     assert result["exit_status"] == "error"
     assert result["execution_status"] == "failed"
     assert result["outcome_authorized"] is False
-    assert result["fault"] == E2E_SECTION_FORENSICS_GATE_ID
-    assert result["x3_disposition"] == "X3_BLOCK"
+    assert result["fault"] == "L2_EXECUTION_ERROR:test"
+    assert result["completion_fault"] == E2E_SECTION_FORENSICS_GATE_ID
+    assert result["x3_disposition"] == "X3A"
+    assert result["completion_status"] == "BLOCKED"
 
 
 def test_whole_run_fails_when_exec_summary_judge_not_certified(
@@ -814,7 +856,8 @@ def test_whole_run_fails_when_exec_summary_judge_not_certified(
     assert result["exit_status"] == "error"
     assert result["execution_status"] == "failed"
     assert result["outcome_authorized"] is False
-    assert result["x3_disposition"] == "X3_REVIEW_JUDGE_SOFT_FAIL"
+    assert result["x3_disposition"] == "X3D"
+    assert result["completion_disposition"] == "X3_REVIEW_JUDGE_SOFT_FAIL"
     assert result["executive_summary_certification_block"]["blocking_judge_ids"] == ["gemini_pro"]
 
 
@@ -879,9 +922,21 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         return {
             "completed": True,
             "x3_to_uwg_to_eval_to_l6_completed": True,
+            "durable_promotion_committed": True,
             "uwg": {"artifacts": {"uwg_commit_receipt": "uwg/uwg_commit_receipt.json"}},
-            "apps_eval": {"eval_record_ref": str(art / "apps_eval" / "eval_record.json")},
-            "l6_shadow": {"l6_shadow_bridge_ref": str(art / "apps_eval" / "l6_shadow_bridge.json")},
+            "fact_vector_writeback": {"status": "PASS"},
+            "apps_eval": {
+                "eval_record_ref": str(art / "apps_eval" / "eval_record.json"),
+                "coverage_summary": {
+                    "release_blocked": False,
+                    "coverage_complete": True,
+                },
+            },
+            "l6_shadow": {
+                "l6_shadow_bridge_ref": str(art / "apps_eval" / "l6_shadow_bridge.json"),
+                "grain_parity_status": "PASS",
+                "apps_eval_rows_bound": True,
+            },
         }
 
     monkeypatch.setattr(orch, "run_integrated_single_action_spine", _fake_spine)

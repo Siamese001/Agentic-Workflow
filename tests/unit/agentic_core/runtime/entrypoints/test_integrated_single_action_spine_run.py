@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -22,6 +23,7 @@ from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import 
     _load_route_id_for_app,
     _looks_like_content_sha256_digest,
     _normalize_digest_literal,
+    _resolve_front_continuation,
     _sha256_file,
 )
 
@@ -104,3 +106,61 @@ class TestNormalizeDigestLiteral:
 
     def test_already_prefixed_unchanged(self) -> None:
         assert _normalize_digest_literal("sha256:deadbeef") == "sha256:deadbeef"
+
+
+class TestFrontSpineContinuation:
+    def test_resolves_one_identity_checked_front_spine(self) -> None:
+        validated = SimpleNamespace(
+            request_id="req-1",
+            run_id="run-1",
+            trace_id="trace-1",
+            trace_root="trace-1",
+            app_id="apps_rg",
+        )
+        plan = SimpleNamespace(
+            request_id="req-1",
+            run_id="run-1",
+            trace_id="trace-1",
+            contract_id="plan-1",
+        )
+        route = SimpleNamespace(
+            request_id="req-1",
+            run_id="run-1",
+            trace_id="trace-1",
+            route_id="R3R4_MANAGED_WORKFLOW",
+        )
+
+        resolved = _resolve_front_continuation(
+            {
+                "validated_request": validated,
+                "plan_contract": plan,
+                "route_contract": route,
+                "execution_route_id": "R4_SINGLE_ACTION",
+            },
+            app_name="apps_rg",
+        )
+
+        assert resolved.validated_request is validated
+        assert resolved.plan_contract is plan
+        assert resolved.route_contract is route
+        assert resolved.run_id == "run-1"
+        assert resolved.request_id == "req-1"
+        assert resolved.trace_root == "trace-1"
+        assert resolved.execution_route_id == "R4_SINGLE_ACTION"
+
+    def test_rejects_mixed_run_identity(self) -> None:
+        continuation = {
+            "validated_request": SimpleNamespace(
+                request_id="req-1", run_id="run-1", trace_id="trace-1", app_id="apps_rg"
+            ),
+            "plan_contract": SimpleNamespace(
+                request_id="req-1", run_id="run-2", trace_id="trace-1"
+            ),
+            "route_contract": SimpleNamespace(
+                request_id="req-1", run_id="run-1", trace_id="trace-1", route_id="R3R4_MANAGED_WORKFLOW"
+            ),
+            "execution_route_id": "R4_SINGLE_ACTION",
+        }
+
+        with pytest.raises(ValueError, match="run_id"):
+            _resolve_front_continuation(continuation, app_name="apps_rg")

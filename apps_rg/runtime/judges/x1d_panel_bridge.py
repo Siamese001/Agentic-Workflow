@@ -2,23 +2,20 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
+import json
+from dataclasses import asdict, replace
 from pathlib import Path
 from typing import Any
 
-from apps_rg.runtime.judges.x1d_panel_harness import (
-    CanonicalJudgeContract,
-    JudgePanelRunner,
-    PanelAdapterRegistry,
-)
 from apps_rg.runtime.judges.executive_summary_judge_packet import (
     judge_contract_hash as exec_judge_contract_hash,
 )
 from apps_rg.runtime.judges.executive_summary_x1d import (
-    JudgeOutput,
     PROVIDERS,
+    JudgeOutput,
     _make_blocked_output,
     _mocked_output,
+    _section_x1d_judge_max_attempts,
     resolve_x1d_provider_credentials,
 )
 from apps_rg.runtime.judges.executive_summary_x1d_gate_closure_map import (
@@ -27,7 +24,47 @@ from apps_rg.runtime.judges.executive_summary_x1d_gate_closure_map import (
 from apps_rg.runtime.judges.section_judge_profile import resolve_section_proof_judge_model
 from apps_rg.runtime.judges.x1d_panel_adapters import build_panel_adapter
 from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
+from apps_rg.runtime.judges.x1d_panel_harness import (
+    CanonicalJudgeContract,
+    JudgePanelRunner,
+    PanelAdapterRegistry,
+)
 from apps_rg.runtime.section_judge_policy import normalize_section_id
+
+JUDGE_ATTEMPT_LEDGER_FILENAME = "judge_attempt_ledger.json"
+
+
+def emit_judge_attempt_ledger(
+    *,
+    artifact_base: Path,
+    section_id: str,
+    panel_result: Any,
+) -> Path:
+    """Persist every panel-authorized judge attempt under the section run root."""
+    attempts = [asdict(item) for item in panel_result.attempts]
+    payload = {
+        "schema_version": "apps_rg.judge_attempt_ledger.v1",
+        "section_id": normalize_section_id(section_id),
+        "contract_hash": str(panel_result.contract_hash),
+        "attempt_count": len(attempts),
+        "retry_count": sum(
+            1 for item in attempts if item.get("status") == "RETRYABLE_FAILURE"
+        ),
+        "exhausted_count": sum(
+            1 for item in attempts if item.get("status") == "EXHAUSTED"
+        ),
+        "attempts": attempts,
+    }
+    base = Path(artifact_base)
+    base.mkdir(parents=True, exist_ok=True)
+    path = base / JUDGE_ATTEMPT_LEDGER_FILENAME
+    temporary = path.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+    return path
 
 
 def build_core_contract_from_packet(
@@ -186,7 +223,17 @@ def run_grade_only_judges_via_core_panel(
         for key in eligible:
             registry.register(build_panel_adapter(contexts[key]))
         runner = JudgePanelRunner(registry)
-        panel_result = runner.run(contract, eligible, max_attempts=1)
+        panel_result = runner.run(
+            contract,
+            eligible,
+            max_attempts=_section_x1d_judge_max_attempts(sid),
+        )
+        if artifact_base is not None:
+            emit_judge_attempt_ledger(
+                artifact_base=artifact_base,
+                section_id=sid,
+                panel_result=panel_result,
+            )
 
         for panel_outcome in panel_result.outcomes:
             ctx = contexts[panel_outcome.provider_key]
@@ -253,5 +300,6 @@ def _apply_post_panel_metadata(
 
 __all__ = [
     "build_core_contract_from_packet",
+    "emit_judge_attempt_ledger",
     "run_grade_only_judges_via_core_panel",
 ]

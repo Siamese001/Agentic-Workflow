@@ -43,7 +43,7 @@ class TestArtifactChain:
     def test_all_12_present(self):
         for fn in W2_ARTIFACT_FILENAMES:
             assert (LATEST / fn).exists(), fn
-        assert len(W2_ARTIFACT_FILENAMES) == 12
+        assert len(W2_ARTIFACT_FILENAMES) == 23
 
     def test_each_artifact_hash_matches_payload(self):
         for fn in W2_ARTIFACT_FILENAMES:

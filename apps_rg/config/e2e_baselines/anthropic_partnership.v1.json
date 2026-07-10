@@ -1,0 +1,12 @@
+{
+  "schema_version": "apps_rg.e2e_baseline.v1",
+  "baseline_id": "anthropic_partnership_20260630_094000",
+  "baseline_run_dir": "artifacts/apps_rg/runs/anthropic_partnership_fresh_s2e_20260630_094000",
+  "mandatory_output_sha256": "3270158fd4c3bf52d8c97b24254d2c3d0365956ef416b50d6936090f5e6cd128",
+  "git_commit": "20015c3fbd8e3929eec67a2f1d22d6f69078051d",
+  "expected_exit_status": "success",
+  "expected_outcome_authorized": true,
+  "expected_x3_disposition": "X3D",
+  "target_company": "Anthropic",
+  "target_role": "Manager of Applied AI Architecture, Partnerships"
+}

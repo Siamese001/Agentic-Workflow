@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from apps_rg.runtime.judges.executive_summary_x1d import (
     PROVIDERS,
-    _invoke_judge_with_bounded_retries,
     _resolved_section_x1d_judge_max_output_tokens,
 )
+from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
 from apps_rg.runtime.judges.x1d_panel_harness import (
     AdapterInvokeError,
     CanonicalJudgeContract,
@@ -14,7 +14,6 @@ from apps_rg.runtime.judges.x1d_panel_harness import (
     PanelJudgeOutcome,
     TransportReceipt,
 )
-from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
 
 
 def _transport_receipt(
@@ -157,25 +156,17 @@ class AppsRgX1dPanelAdapter:
             )
 
         try:
-            ctx.last_judge_output = _invoke_judge_with_bounded_retries(
-                _dispatch,
-                provider_key=ctx.provider_key,
-                section_id=ctx.section_id,
-            )
+            ctx.last_judge_output = _dispatch(attempt)
         except Exception as exc:  # guardian: allow-broad-exception -- adapter boundary: normalize provider failures to AdapterInvokeError
             raise AdapterInvokeError(str(exc)) from exc
 
         out = ctx.last_judge_output
-        if out.provider_blocked and _is_hard_blocked(out):
+        if out is None:
+            raise AdapterInvokeError(f"{ctx.provider_key} produced no JudgeOutput")
+        if x1d_mod._is_retriable_judge_output(out):
             raise AdapterInvokeError(out.exact_provider_error or out.provider_status)
 
         return _panel_outcome_from_judge(ctx, contract, attempt=attempt)
-
-
-def _is_hard_blocked(out) -> bool:
-    """Retriable blocked outputs are handled inside _invoke_judge_with_bounded_retries."""
-    status = str(out.provider_status or "")
-    return status.startswith("BLOCKED_") and "RETRIABLE" not in status.upper()
 
 
 def build_panel_adapter(ctx: X1dPanelProviderContext) -> AppsRgX1dPanelAdapter:  # guardian: allow-broad-exception -- P2 ADG burndown

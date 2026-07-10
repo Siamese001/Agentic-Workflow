@@ -631,20 +631,28 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
     exhaust_payload = exhaust.get("payload") if isinstance(exhaust.get("payload"), dict) else {}
     proof_gate = _load_json(run_root / "integrated_product_proof_gate_result.json")
     terminal_fault = "" if result_pass else str(terminal_payload.get("l2_fault") or "")
+    x3_disposition = (
+        result.get("x3_disposition")
+        or ("X3_ALLOW" if result_pass else "")
+        or terminal_payload.get("x3_disposition")
+        or exhaust_payload.get("x3_disposition")
+        or ""
+    )
+    fault = result.get("fault") or (terminal_fault if not result_pass else "")
+    completion_status = str(result.get("completion_status") or "").upper()
+    if not completion_status:
+        completion_status = "PASS" if result_pass else "BLOCKED" if fault else "UNKNOWN"
     return {
         "exit_status": result.get("exit_status") or ("success" if result_pass else "error" if terminal_fault else "unknown"),
         "execution_status": result.get("execution_status") or ("completed" if result_pass else "failed" if terminal_fault else "unknown"),
         "outcome_authorized": bool(result.get("outcome_authorized") or result_pass),
         "decisive_status": result.get("decisive_status") or "",
         "all_lanes_authorized": result.get("all_lanes_authorized"),
-        "x3_disposition": (
-            result.get("x3_disposition")
-            or ("X3_ALLOW" if result_pass else "")
-            or terminal_payload.get("x3_disposition")
-            or exhaust_payload.get("x3_disposition")
-            or ""
-        ),
-        "fault": result.get("fault") or (terminal_fault if not result_pass else ""),
+        "x3_disposition": x3_disposition,
+        "completion_disposition": result.get("completion_disposition") or x3_disposition,
+        "completion_status": completion_status,
+        "completion_fault": result.get("completion_fault") or "",
+        "fault": fault,
         "run_id": result.get("run_id") or terminal_payload.get("run_id") or "",
         "request_id": result.get("request_id") or terminal_payload.get("request_id") or "",
         "proof_gate_status": proof_gate.get("status") or "",
@@ -3185,9 +3193,14 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
     elif authorized:
         executive_answer = "The run reached an authorized product outcome. Preserve the generated outputs and review the run ledger for section and judge proof."
     else:
+        completion_status = str(summary.get("completion_status") or "UNKNOWN")
+        completion_fault = str(summary.get("completion_fault") or summary.get("fault") or "NOT_OBSERVED")
+        x3_disposition = str(summary.get("x3_disposition") or "NOT_OBSERVED")
         executive_answer = (
             "The run is blocked and must not authorize a final resume. Required generation and/or "
-            "final product gates did not clear; use the P0/P1/PX recommendations below as the repair order."
+            "final product gates did not clear. "
+            f"The source X3 decision was {x3_disposition}, but completion ended {completion_status} "
+            f"because {completion_fault}. Use the P0/P1/PX recommendations below as the repair order."
         )
     recommendations = _build_bcg_recommendations(doc)
     next_moves = _build_bcg_recommended_next_moves(doc, recommendations)
@@ -3203,6 +3216,9 @@ def _build_inline_required_output(doc: dict[str, Any]) -> dict[str, Any]:
         {"question": "Research input used", "answer": str(research.get("primary_provider") or "NOT_OBSERVED")},
         {"question": "Briefing evidence", "answer": str(research.get("past_fail_blocker") or "NOT_OBSERVED")},
         {"question": "Did resume generation run?", "answer": f"{counts['ran_real_llm']} REAL_LLM section(s)"},
+        {"question": "Source X3 decision", "answer": str(summary.get("x3_disposition") or "NOT_OBSERVED")},
+        {"question": "Completion status", "answer": str(summary.get("completion_status") or "UNKNOWN")},
+        {"question": "Completion fault", "answer": str(summary.get("completion_fault") or "NONE")},
         {"question": "Final product authorized?", "answer": str(summary.get("outcome_authorized"))},
         {"question": "Primary blocker", "answer": primary_blocker},
         {"question": "Decision", "answer": "Do not authorize; fix P0 gates first." if not authorized else "Authorized; preserve evidence."},
@@ -4085,12 +4101,14 @@ def emit_mandatory_run_outputs(
         summary = doc.get("result_summary")
         summary = summary if isinstance(summary, dict) else {}
         upstream_fault = str(summary.get("fault") or "")
+        upstream_completion_fault = str(summary.get("completion_fault") or "")
         summary["exit_status"] = "error"
         summary["execution_status"] = "failed"
         summary["outcome_authorized"] = False
-        summary["x3_disposition"] = "X3_BLOCK"
-        summary["fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+        summary["completion_status"] = "BLOCKED"
+        summary["completion_fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
         summary["mandatory_output_upstream_fault"] = upstream_fault
+        summary["mandatory_output_upstream_completion_fault"] = upstream_completion_fault
         doc["result_summary"] = summary
     doc["inline_required_output"] = _build_inline_required_output(doc)
     doc["mandatory_inline_output_gates"] = _inline_output_gates(doc)

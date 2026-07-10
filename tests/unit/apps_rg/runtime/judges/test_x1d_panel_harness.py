@@ -124,6 +124,10 @@ def test_panel_runner_retries_adapter_and_preserves_contract_hash() -> None:
     assert result.outcomes[0].transport_receipt.attempt == 2
     assert result.outcomes[0].contract_hash == result.contract_hash
     assert result.transport_violations == ()
+    assert [attempt.attempt for attempt in result.attempts] == [1, 2]
+    assert [attempt.status for attempt in result.attempts] == ["RETRYABLE_FAILURE", "PASS"]
+    assert result.attempts[0].error == "temporary provider error"
+    assert result.attempts[1].receipt_attempt == 2
 
 
 def test_panel_runner_blocks_after_adapter_retries_exhausted() -> None:
@@ -135,6 +139,10 @@ def test_panel_runner_blocks_after_adapter_retries_exhausted() -> None:
     assert result.outcomes[0].provider_status == "JUDGE_PROVIDER_BLOCKED"
     assert result.outcomes[0].pass_ is False
     assert result.outcomes[0].findings == ("temporary provider error",)
+    assert [attempt.status for attempt in result.attempts] == [
+        "RETRYABLE_FAILURE",
+        "EXHAUSTED",
+    ]
 
 
 def test_panel_registry_requires_keys_and_transport_parity_reports_mismatches() -> None:

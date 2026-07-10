@@ -5,7 +5,7 @@ import pytest
 from apps_rg.runtime.judges.executive_summary_x1d import JudgeOutput
 from apps_rg.runtime.judges.x1d_panel_adapters import AppsRgX1dPanelAdapter, build_panel_adapter
 from apps_rg.runtime.judges.x1d_panel_context import X1dPanelProviderContext
-from apps_rg.runtime.judges.x1d_panel_harness import AdapterInvokeError, CanonicalJudgeContract
+from apps_rg.runtime.judges.x1d_panel_harness import CanonicalJudgeContract
 
 
 def _contract() -> CanonicalJudgeContract:
@@ -80,13 +80,10 @@ def test_panel_adapter_declared_policy_scales_by_section_profile() -> None:
     assert low_retry.max_output_tokens == 8192
 
 
-def test_panel_adapter_converts_judge_output_to_panel_outcome(monkeypatch) -> None:
-    from apps_rg.runtime.judges import x1d_panel_adapters as adapters
-
+def test_panel_adapter_converts_one_judge_attempt_to_panel_outcome(monkeypatch) -> None:
     monkeypatch.setattr(
-        adapters,
-        "_invoke_judge_with_bounded_retries",
-        lambda dispatch, *, provider_key, section_id=None: _judge_output(),
+        "apps_rg.runtime.judges.executive_summary_x1d._call_openai",
+        lambda *args, **kwargs: _judge_output(),
     )
     ctx = _ctx()
 
@@ -100,17 +97,17 @@ def test_panel_adapter_converts_judge_output_to_panel_outcome(monkeypatch) -> No
     assert receipt.parse_status == "ok"
 
 
-def test_panel_adapter_blocks_hard_provider_failures(monkeypatch) -> None:
-    from apps_rg.runtime.judges import x1d_panel_adapters as adapters
-
+def test_panel_adapter_returns_hard_provider_failure_without_hidden_retry(monkeypatch) -> None:
     monkeypatch.setattr(
-        adapters,
-        "_invoke_judge_with_bounded_retries",
-        lambda dispatch, *, provider_key, section_id=None: _judge_output(blocked=True),
+        "apps_rg.runtime.judges.executive_summary_x1d._call_openai",
+        lambda *args, **kwargs: _judge_output(blocked=True),
     )
 
-    with pytest.raises(AdapterInvokeError, match="auth failed"):
-        AppsRgX1dPanelAdapter(_ctx()).invoke(_contract(), attempt=1)
+    outcome, receipt = AppsRgX1dPanelAdapter(_ctx()).invoke(_contract(), attempt=1)
+
+    assert outcome.provider_status == "BLOCKED_AUTH"
+    assert outcome.pass_ is False
+    assert receipt.attempt == 1
 
 
 def test_build_panel_adapter_validates_provider_key() -> None:

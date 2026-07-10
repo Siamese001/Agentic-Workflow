@@ -77,6 +77,45 @@ def _seed_success_artifacts(tmp_path: Path) -> None:
     _write_json(tmp_path / "x3_disposition_receipt.json", {"payload": {"x3_disposition": "X3D"}})
 
 
+def _passing_eval(tmp_path: Path) -> SimpleNamespace:
+    eval_dir = tmp_path / "apps_eval" / "passing"
+    eval_record = eval_dir / "eval_record.json"
+    l6_bridge = eval_dir / "l6_shadow_bridge.json"
+    scorecard_rows = eval_dir / "scorecard_rows.jsonl"
+    row = _scorecard_row()
+    _write_json(eval_record, {"record_id": "eval-passing"})
+    _write_json(
+        l6_bridge,
+        {
+            "runtime_exhaust_bundle_id": "reb-eval-passing",
+            "future_run_only": True,
+            "current_run_mutated": False,
+        },
+    )
+    scorecard_rows.parent.mkdir(parents=True, exist_ok=True)
+    scorecard_rows.write_text(json.dumps(row, sort_keys=True) + "\n", encoding="utf-8")
+    return SimpleNamespace(
+        record_id="eval-passing",
+        artifact_paths={
+            "eval_record": eval_record.as_posix(),
+            "l6_shadow_bridge": l6_bridge.as_posix(),
+            "scorecard_rows": scorecard_rows.as_posix(),
+            "coverage_matrix": (eval_dir / "coverage_matrix.csv").as_posix(),
+        },
+        scorecard=SimpleNamespace(
+            coverage_summary={
+                "coverage_complete": True,
+                "release_blocked": False,
+                "passed_required": 134,
+                "required_microsteps": 134,
+            },
+            score=1.0,
+            verdict="pass",
+            scorecard_rows=[row],
+        ),
+    )
+
+
 def test_post_x3_completion_commits_generated_resume_and_binds_eval(
     tmp_path: Path,
     monkeypatch,
@@ -199,6 +238,72 @@ def test_post_x3_completion_commits_generated_resume_and_binds_eval(
     assert (tmp_path / "uwg_validation_receipt.json").is_file()
 
 
+def test_post_x3_eval_failure_blocks_all_durable_promotion(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _seed_success_artifacts(tmp_path)
+
+    def fake_eval(**kwargs):
+        eval_dir = tmp_path / "apps_eval" / "blocked"
+        eval_record = eval_dir / "eval_record.json"
+        l6_bridge = eval_dir / "l6_shadow_bridge.json"
+        _write_json(eval_record, {"record_id": "eval-blocked"})
+        _write_json(
+            l6_bridge,
+            {
+                "runtime_exhaust_bundle_id": "reb-eval-blocked",
+                "future_run_only": True,
+                "current_run_mutated": False,
+            },
+        )
+        return SimpleNamespace(
+            record_id="eval-blocked",
+            artifact_paths={
+                "eval_record": eval_record.as_posix(),
+                "l6_shadow_bridge": l6_bridge.as_posix(),
+                "scorecard_rows": (eval_dir / "scorecard_rows.jsonl").as_posix(),
+                "coverage_matrix": (eval_dir / "coverage_matrix.csv").as_posix(),
+            },
+            scorecard=SimpleNamespace(
+                coverage_summary={
+                    "coverage_complete": False,
+                    "release_blocked": True,
+                    "passed_required": 133,
+                    "required_microsteps": 134,
+                },
+                score=0.99,
+                verdict="fail",
+                scorecard_rows=[],
+            ),
+        )
+
+    class CommitMustNotRun:
+        def commit(self, **kwargs):
+            raise AssertionError("UWG commit must not run before apps_eval and L6 pass")
+
+    monkeypatch.setattr(subject, "_run_current_eval", fake_eval)
+    monkeypatch.setattr(subject, "get_default_gateway", lambda: CommitMustNotRun())
+    monkeypatch.setattr(
+        subject,
+        "_complete_fact_vector_writeback_after_x3",
+        lambda **kwargs: (_ for _ in ()).throw(
+            AssertionError("fact-vector promotion must not run before apps_eval and L6 pass")
+        ),
+    )
+
+    result = subject.complete_apps_rg_post_x3(
+        artifact_dir=tmp_path,
+        result={"x3_disposition": "X3D", "run_id": "run-1", "request_id": "req-1"},
+    )
+
+    assert result["status"] == "FAIL"
+    assert result["failure_stage"] == "apps_eval"
+    assert result["durable_promotion_attempted"] is False
+    assert not (tmp_path / "uwg" / "uwg_commit_receipt.json").exists()
+    assert not (tmp_path / "fact_vector_writeback_completion_receipt.json").exists()
+
+
 def test_l6_section_bindings_follow_modular_section_latest_run_pointer(tmp_path: Path) -> None:
     lane_run = tmp_path / "runtime_proofs" / "full_resume_headline"
     _write_json(
@@ -278,6 +383,7 @@ def test_l6_section_bindings_accept_legacy_l6_pointer_when_v40_absent(tmp_path: 
 
 def test_post_x3_uwg_failure_emits_failure_l6_bridge(tmp_path: Path, monkeypatch) -> None:
     _seed_success_artifacts(tmp_path)
+    monkeypatch.setattr(subject, "_run_current_eval", lambda **kwargs: _passing_eval(tmp_path))
 
     class FakeGateway:
         def commit(self, **kwargs):
@@ -291,15 +397,15 @@ def test_post_x3_uwg_failure_emits_failure_l6_bridge(tmp_path: Path, monkeypatch
     )
 
     assert result["failure_stage"] == "uwg_commit"
-    assert result["l6_shadow"]["grain_parity_status"] == "WARN"
-    assert result["l6_shadow"]["alignment_source"] == "failure_terminal_no_apps_eval_rows"
-    assert result["l6_shadow"]["evidence_class"] == "FAILURE_TERMINAL_ADVISORY"
-    assert (tmp_path / subject.POST_X3_FAILURE_L6_SHADOW_BRIDGE).is_file()
-    assert (tmp_path / subject.POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY).is_file()
+    assert result["l6_shadow"]["grain_parity_status"] == "PASS"
+    assert result["l6_shadow"]["alignment_source"] == "apps_eval_scorecard_rows"
+    assert result["l6_shadow"]["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
+    assert result["durable_promotion_committed"] is False
 
 
 def test_post_x3_fact_vector_writeback_failure_emits_failure_l6_bridge(tmp_path: Path, monkeypatch) -> None:
     _seed_success_artifacts(tmp_path)
+    monkeypatch.setattr(subject, "_run_current_eval", lambda **kwargs: _passing_eval(tmp_path))
     monkeypatch.setattr(
         subject,
         "_complete_fact_vector_writeback_after_x3",
@@ -312,6 +418,5 @@ def test_post_x3_fact_vector_writeback_failure_emits_failure_l6_bridge(tmp_path:
     )
 
     assert result["failure_stage"] == "fact_vector_writeback"
-    assert result["l6_shadow"]["grain_parity_status"] == "WARN"
-    assert result["l6_shadow"]["apps_eval_rows_bound"] is False
-    assert (tmp_path / subject.POST_X3_FAILURE_L6_APPS_EVAL_GRAIN_PARITY).is_file()
+    assert result["l6_shadow"]["grain_parity_status"] == "PASS"
+    assert result["l6_shadow"]["apps_eval_rows_bound"] is True

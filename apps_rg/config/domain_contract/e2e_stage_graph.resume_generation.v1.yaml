@@ -1,0 +1,48 @@
+schema_version: apps_rg.e2e_stage_graph.v1
+workflow_id: apps_rg.resume_generation.e2e
+stages:
+  - id: RESEARCH
+    depends_on: []
+    skip_allowed: true
+  - id: U0
+    depends_on: [RESEARCH]
+  - id: L1
+    depends_on: [U0]
+  - id: L0
+    depends_on: [L1]
+  - id: C0
+    depends_on: [L0]
+  - id: L2
+    depends_on: [C0]
+  - id: X1
+    depends_on: [L2]
+  - id: X2
+    depends_on: [X1]
+  - id: X3
+    depends_on: [X2]
+  - id: CANDIDATE
+    depends_on: [X3]
+  - id: APPS_EVAL
+    depends_on: [CANDIDATE]
+  - id: L6_SHADOW
+    depends_on: [APPS_EVAL]
+  - id: STATE_PROMOTION
+    depends_on: [L6_SHADOW]
+  - id: CLOSEOUT
+    depends_on: []
+    terminal_closeout: true
+success_required:
+  - RESEARCH
+  - U0
+  - L1
+  - L0
+  - C0
+  - L2
+  - X1
+  - X2
+  - X3
+  - CANDIDATE
+  - APPS_EVAL
+  - L6_SHADOW
+  - STATE_PROMOTION
+  - CLOSEOUT

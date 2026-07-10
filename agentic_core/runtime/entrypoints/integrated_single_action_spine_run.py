@@ -82,14 +82,13 @@ _log = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Canonical spine imports — compose, do not reimplement
 # ---------------------------------------------------------------------------
+import agentic_core.L1_cognition as _reach_l1_cognition  # noqa: F401
 from agentic_core.L0_routing.intake.envelope import RawIngressEnvelope
 from agentic_core.L0_routing.intake.pipeline import run_request_intake
-from agentic_core.L0_routing.intake.validated_request import ValidatedRequest
 from agentic_core.L0_routing.reasoning.route_gates import check_route_gates
 from agentic_core.L1_cognition.bridges.u0_to_l1_plan import (
     validated_request_to_plan_contract,
 )
-import agentic_core.L1_cognition as _reach_l1_cognition  # noqa: F401
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import (
     ExitEvalPipeline,
     ExitEvalResult,
@@ -187,6 +186,123 @@ class SingleActionSpineRunResult:
     fault: str = ""              # populated on unexpected internal error
     observability_status: Mapping[str, Any] = field(default_factory=dict)
     l2_result: Any = None        # additive: caller-visible L2 recipe summary
+    execution_witness: Mapping[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True, slots=True)
+class ResolvedFrontContinuation:
+    """Identity-checked U0/L1/L0 contracts supplied by an app orchestrator."""
+
+    validated_request: Any
+    plan_contract: Any
+    route_contract: Any
+    run_id: str
+    request_id: str
+    trace_root: str
+    execution_route_id: str
+
+
+def _resolve_front_continuation(
+    continuation: Mapping[str, Any],
+    *,
+    app_name: str,
+) -> ResolvedFrontContinuation:
+    """Validate a generic app-owned U0/L1/L0 continuation without app imports."""
+    if not isinstance(continuation, Mapping):
+        raise ValueError("front_continuation must be a mapping")
+    validated = continuation.get("validated_request")
+    plan = continuation.get("plan_contract")
+    route = continuation.get("route_contract")
+    if validated is None or plan is None or route is None:
+        raise ValueError(
+            "front_continuation requires validated_request, plan_contract, and route_contract"
+        )
+
+    def _identity(obj: Any, field_name: str) -> str:
+        return str(getattr(obj, field_name, "") or "").strip()
+
+    identity_fields = {
+        "request_id": (
+            _identity(validated, "request_id"),
+            _identity(plan, "request_id"),
+            _identity(route, "request_id"),
+        ),
+        "run_id": (
+            _identity(validated, "run_id"),
+            _identity(plan, "run_id"),
+            _identity(route, "run_id"),
+        ),
+        "trace_id": (
+            _identity(validated, "trace_id") or _identity(validated, "trace_root"),
+            _identity(plan, "trace_id") or _identity(plan, "trace_root"),
+            _identity(route, "trace_id") or _identity(route, "trace_root"),
+        ),
+    }
+    for field_name, values in identity_fields.items():
+        if not all(values) or len(set(values)) != 1:
+            raise ValueError(
+                f"front_continuation {field_name} values must be non-empty and identical: {values}"
+            )
+    validated_app = _identity(validated, "app_id")
+    if app_name and validated_app and validated_app != app_name:
+        raise ValueError(
+            f"front_continuation app_id {validated_app!r} does not match {app_name!r}"
+        )
+    source_route_id = _identity(route, "route_id")
+    execution_route_id = str(continuation.get("execution_route_id") or "").strip()
+    if not source_route_id or not execution_route_id:
+        raise ValueError(
+            "front_continuation route_contract.route_id and execution_route_id are required"
+        )
+    return ResolvedFrontContinuation(
+        validated_request=validated,
+        plan_contract=plan,
+        route_contract=route,
+        run_id=identity_fields["run_id"][0],
+        request_id=identity_fields["request_id"][0],
+        trace_root=identity_fields["trace_id"][0],
+        execution_route_id=execution_route_id,
+    )
+
+
+def _l2_attempt_witness(l2_result: Any) -> dict[str, Any]:
+    """Normalize app-reported attempt evidence without understanding app artifacts."""
+    raw = (
+        l2_result.get("runtime_execution_witness")
+        if isinstance(l2_result, Mapping)
+        else None
+    )
+    if not isinstance(raw, Mapping):
+        return {
+            "attempt_evidence_status": "NOT_REPORTED_BY_L2",
+            "generation_provider_attempt_count": 0,
+            "judge_attempt_count": 0,
+            "attempt_evidence_refs": [],
+        }
+
+    def _count(name: str) -> int:
+        value = raw.get(name, 0)
+        if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+            raise ValueError(f"runtime_execution_witness.{name} must be a non-negative integer")
+        return value
+
+    refs = raw.get("attempt_evidence_refs") or ()
+    if not isinstance(refs, (list, tuple)) or not all(
+        isinstance(item, str) and item.strip() for item in refs
+    ):
+        raise ValueError(
+            "runtime_execution_witness.attempt_evidence_refs must be a list of non-empty strings"
+        )
+    return {
+        "attempt_evidence_status": str(
+            raw.get("attempt_evidence_status") or "REPORTED_BY_L2"
+        ),
+        "generation_provider_attempt_count": _count(
+            "generation_provider_attempt_count"
+        ),
+        "judge_attempt_count": _count("judge_attempt_count"),
+        "attempt_evidence_refs": list(refs),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -738,6 +854,7 @@ def run_integrated_single_action_spine(
     route_id: str = "",
     chain_kind: str = "",
     cache_preflight_evidence: Mapping[str, Any] | None = None,
+    front_continuation: Mapping[str, Any] | None = None,
     _test_mode: bool = False,
 ) -> SingleActionSpineRunResult:
     """Run the governed single-action integrated spine end-to-end.
@@ -771,6 +888,9 @@ def run_integrated_single_action_spine(
         Chain kind stamped on receipts (defaults to ``route_family``).
     cache_preflight_evidence:
         Required for ``app_name=apps_rg`` production: whole-run R1A/R1B preflight receipt.
+    front_continuation:
+        Optional app-owned U0/L1/L0 contracts. Core verifies shared identity and
+        continues at C0/L2 instead of executing a duplicate front spine.
     _test_mode:
         When True, allows ``l2_callable`` and skips apps_rg cache-preflight enforcement.
 
@@ -865,10 +985,34 @@ def run_integrated_single_action_spine(
     artifact_dir = Path(artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
 
-    # W5/GAP-6: resolve route_id from app's route_registry.yaml (fail-soft)
-    effective_route_id = (route_id or _load_route_id_for_app(app_name)).strip() or ROUTE_ID
+    resolved_front: ResolvedFrontContinuation | None = None
+    if front_continuation is not None:
+        try:
+            resolved_front = _resolve_front_continuation(
+                front_continuation,
+                app_name=app_name,
+            )
+        except ValueError as exc:
+            return SingleActionSpineRunResult(
+                run_id="",
+                request_id="",
+                route_id=(route_id or eff_route_family).strip() or ROUTE_ID,
+                x3_disposition=V6Disposition.DENY.value,
+                terminal_r5=False,
+                terminal_r5_reason="",
+                artifact_dir=Path(artifact_dir),
+                fault=f"FRONT_CONTINUATION_INVALID:{exc}",
+                observability_status=observability_status,
+            )
 
-    run_id = str(uuid.uuid4())
+    # W5/GAP-6: resolve route_id from app's route_registry.yaml (fail-soft)
+    effective_route_id = (
+        resolved_front.execution_route_id
+        if resolved_front is not None
+        else (route_id or _load_route_id_for_app(app_name)).strip() or ROUTE_ID
+    )
+
+    run_id = resolved_front.run_id if resolved_front is not None else str(uuid.uuid4())
     started_at = _utc_now_iso()
     git_commit, git_dirty = git_commit_and_dirty()
     _hydrate_raw_request_evidence_digests(
@@ -883,33 +1027,39 @@ def run_integrated_single_action_spine(
     # U0 — intake
     # ------------------------------------------------------------------
     envelope = _build_raw_envelope(raw_request, app_name=app_name)
-    intake_result = run_request_intake(envelope)
+    if resolved_front is None:
+        intake_result = run_request_intake(envelope)
 
-    # If U0 rejects, return schema-rejection result (not R5 — see plan §W2)
-    if intake_result.validated is None:
-        reason = "unknown"
-        if intake_result.rejection_report is not None:
-            reason = getattr(intake_result.rejection_report.decisive_reason_code, "value", "unknown")
-        return SingleActionSpineRunResult(
-            run_id=run_id,
-            request_id=run_id,
-            route_id=ROUTE_ID,
-            x3_disposition=V6Disposition.DENY.value,
-            terminal_r5=False,
-            terminal_r5_reason="",
-            artifact_dir=artifact_dir,
-            fault=f"U0_SCHEMA_REJECTION:{reason}",
-            observability_status=observability_status,
-        )
+        # If U0 rejects, return schema-rejection result (not R5 — see plan §W2)
+        if intake_result.validated is None:
+            reason = "unknown"
+            if intake_result.rejection_report is not None:
+                reason = getattr(intake_result.rejection_report.decisive_reason_code, "value", "unknown")
+            return SingleActionSpineRunResult(
+                run_id=run_id,
+                request_id=run_id,
+                route_id=ROUTE_ID,
+                x3_disposition=V6Disposition.DENY.value,
+                terminal_r5=False,
+                terminal_r5_reason="",
+                artifact_dir=artifact_dir,
+                fault=f"U0_SCHEMA_REJECTION:{reason}",
+                observability_status=observability_status,
+            )
 
-    validated: ValidatedRequest = intake_result.validated
-    request_id = validated.request_id
-    trace_root = validated.trace_root
+        validated: Any = intake_result.validated
+        request_id = validated.request_id
+        trace_root = validated.trace_root
 
-    # ------------------------------------------------------------------
-    # U0 → L1 bridge
-    # ------------------------------------------------------------------
-    plan_contract = validated_request_to_plan_contract(validated)
+        # --------------------------------------------------------------
+        # U0 → L1 bridge
+        # --------------------------------------------------------------
+        plan_contract = validated_request_to_plan_contract(validated)
+    else:
+        validated = resolved_front.validated_request
+        request_id = resolved_front.request_id
+        trace_root = resolved_front.trace_root
+        plan_contract = resolved_front.plan_contract
     _binding_payload = binding_payload_from_identity(
         {
             "request_id": request_id,
@@ -928,10 +1078,17 @@ def run_integrated_single_action_spine(
     # ------------------------------------------------------------------
     # L0 — route gates (decision only; no fallback execution)
     # ------------------------------------------------------------------
-    gate_result = check_route_gates(plan_contract, namespace=app_name)
+    gate_result = (
+        check_route_gates(plan_contract, namespace=app_name)
+        if resolved_front is None
+        else None
+    )
 
     # L0 terminal (R5_FATAL / R5_FALLBACK) — route through Exit V6 before return
-    if getattr(gate_result, "terminal", False) or getattr(gate_result, "r5_terminal", False):
+    if gate_result is not None and (
+        getattr(gate_result, "terminal", False)
+        or getattr(gate_result, "r5_terminal", False)
+    ):
         r5_reason = str(getattr(gate_result, "reason_code", "R5_TERMINAL"))
         route_contract_id_r5 = str(getattr(plan_contract, "contract_id", "") or run_id)
         receipts = _build_r5_exit_receipts(
@@ -1112,6 +1269,17 @@ def run_integrated_single_action_spine(
         "duration_ms": 0.0,
         "meta": {},
     })
+    try:
+        attempt_witness = _l2_attempt_witness(l2_result)
+    except ValueError as exc:
+        l2_fault = f"L2_EXECUTION_WITNESS_INVALID:{exc}"
+        attempt_witness = {
+            "attempt_evidence_status": "INVALID",
+            "generation_provider_attempt_count": 0,
+            "judge_attempt_count": 0,
+            "attempt_evidence_refs": [],
+            "validation_error": str(exc),
+        }
 
     # ------------------------------------------------------------------
     # Exit V6 — exactly one X3 disposition per run
@@ -1208,6 +1376,53 @@ def run_integrated_single_action_spine(
     }
     _write_json(artifact_dir / "x3_disposition_receipt.json", _x3_envelope)
 
+    execution_witness = {
+        "schema_version": "agentic_core.runtime_execution_witness.v1",
+        "run_id": run_id,
+        "request_id": request_id,
+        "trace_root": trace_root,
+        "route_id": effective_route_id,
+        "c0": {
+            "status": "BYPASSED_PRELOADED_CONTEXT",
+            "reason": "BYPASS_PRELOADED_CONTEXT",
+            "sub_stages": c0_sub_stages,
+        },
+        "l2": {
+            "status": "FAIL" if l2_fault else "PASS",
+            "executed": True,
+            "fault": l2_fault,
+            "sub_stages": l2_sub_stages,
+        },
+        "x1": {
+            "status": "EXECUTED",
+            "sub_stages": exit_result.x1_sub_stages,
+        },
+        "x2": {
+            "status": "EXECUTED",
+            "disposition": (
+                exit_result.decision.disposition.value
+                if exit_result.decision is not None
+                else x3
+            ),
+            "reason_codes": (
+                list(exit_result.decision.reason_codes)
+                if exit_result.decision is not None
+                else []
+            ),
+            "failed_gate_ids": (
+                list(exit_result.decision.failed_gate_ids)
+                if exit_result.decision is not None
+                else []
+            ),
+        },
+        "x3": {"status": "EMITTED", "disposition": x3},
+        **attempt_witness,
+    }
+    _write_json(
+        artifact_dir / "runtime_execution_witness.json",
+        execution_witness,
+    )
+
     # ------------------------------------------------------------------
     # Seal L3 bypass + L2 terminal_ret_packet (R4 family shape)
     # ------------------------------------------------------------------
@@ -1229,14 +1444,8 @@ def run_integrated_single_action_spine(
     }
     _write_json(artifact_dir / "l3_bypass_receipt.json", _l3_bypass_envelope)
 
-    # NOTE: HowTrace builder treats R4_SINGLE_ACTION as part of the R1B family
-    # (terminal-shortcircuit shape).  R4 actually executes a deterministic
-    # static-DAG L2 callable (resolved per ``app_name``), but at the spine level the L2 work
-    # is sealed via the L2 callable's own outputs (e.g. generated_resume.json,
-    # run_report.json) rather than a model/tool-call sealed_artifact.  We
-    # therefore emit a terminal_ret_packet that asserts no_l2_execution=True
-    # at the SPINE-execution layer (no real model/tool calls inside the spine
-    # runner) while pointing at the L2 callable's run_report for traceability.
+    # The resolved static DAG is real L2 execution. The terminal packet reports
+    # that fact directly and points to the recipe run report when one exists.
     _l2_run_report_ref = ""
     if isinstance(l2_result, dict):
         _l2_run_dir = l2_result.get("run_dir") or ""
@@ -1249,8 +1458,9 @@ def run_integrated_single_action_spine(
         "route_id": effective_route_id,
         "chain_kind": CHAIN_KIND,
         "execution_form": "R4_SINGLE_ACTION",
-        "no_l2_execution_assertion": True,
+        "no_l2_execution_assertion": False,
         "l2_recipe_executed": True,
+        "l2_execution_status": "EXECUTED",
         "l2_recipe_run_report_ref": _l2_run_report_ref,
         "l2_fault": l2_fault,
         "l2_sub_stages": l2_sub_stages,
@@ -1336,6 +1546,7 @@ def run_integrated_single_action_spine(
             "observability_status": dict(observability_status),
         },
     )
+    _emit_chain("runtime_execution_witness.json", execution_witness)
     _emit_chain("runtime_identity_envelope.json", identity.to_dict())
 
     _binding_payload = binding_payload_from_identity(identity.to_dict())
@@ -1491,7 +1702,12 @@ def run_integrated_single_action_spine(
         "veto_rubric_path": "",
         "veto_rubric_hash": "",
         "veto_timeout_ms": 0,
-        "llm_judge_invocation_count": 0,
+        "llm_judge_invocation_count": execution_witness["judge_attempt_count"],
+        "generation_provider_attempt_count": execution_witness[
+            "generation_provider_attempt_count"
+        ],
+        "attempt_evidence_status": execution_witness["attempt_evidence_status"],
+        "attempt_evidence_refs": execution_witness["attempt_evidence_refs"],
         "veto_counters": {
             "unsafe_reuse_allowed_count": 0,
             "safe_reuse_blocked_count": 0,
@@ -1536,4 +1752,5 @@ def run_integrated_single_action_spine(
         fault=l2_fault,
         observability_status=observability_status,
         l2_result=l2_result,
+        execution_witness=execution_witness,
     )
