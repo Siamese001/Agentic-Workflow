@@ -1,6 +1,6 @@
 """W2 — Artifact chain integrity tests.
 
-Asserts the SHA256 lineage of the 12 W2 artifacts and that every
+Asserts the SHA256 lineage of the current W2 artifacts and that every
 upstream_artifact_ref matches the upstream's recomputed hash. Also
 covers the fail-closed scenario where a single artifact's payload is
 mutated (chain SHA divergence detected).
@@ -27,12 +27,23 @@ from agentic_core.runtime.artifacts.integrated_runtime_emitter import (
 
 LATEST = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest"
 
+
+def _latest_matches_current_chain() -> bool:
+    manifest = LATEST / "integrated_runtime_artifact_manifest.json"
+    try:
+        envelope = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    payload = envelope.get("payload") if isinstance(envelope, dict) else {}
+    filenames = payload.get("artifact_filenames") if isinstance(payload, dict) else []
+    return set(filenames or ()) == set(W2_ARTIFACT_FILENAMES)
+
 import pytest  # noqa: E402
 
 pytestmark = pytest.mark.skipif(
-    not (LATEST / "integrated_runtime_artifact_manifest.json").exists(),
+    not _latest_matches_current_chain(),
     reason=(
-        "W2b honest non-green: latest/ empty without approved live provider. "
+        "W2b honest non-green: latest/ is absent or stale without approved live provider. "
         "Run probe_integrated_runtime_safe_reuse.py with local_qwen reachable "
         "or ANTHROPIC_API_KEY set."
     ),

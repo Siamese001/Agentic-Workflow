@@ -13,7 +13,6 @@ Covers:
 from __future__ import annotations
 
 import json
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -34,7 +33,6 @@ from agentic_core.runtime.entrypoints.integrated_safe_reuse_run import (
 )
 from tools.certification.safety.deterministic_proof_stage import DeterministicProofStage
 from tools.certification.safety.veto_orchestrator import VetoOrchestrator
-
 
 LATEST = REPO_ROOT / "artifacts" / "certification" / "integrated_runtime" / "latest"
 
@@ -155,6 +153,34 @@ class TestEntryPointPositive:
         bind_payload = binding.get("payload", binding)
         expected = f"l5:runtime_certification_binding:{bind_payload['binding_id']}"
         assert bundle.get("l5_certification_ref") == expected
+
+    def test_safe_reuse_execution_witness_records_real_bypasses(self, tmp_path) -> None:
+        _drive_allow_path(tmp_path)
+        envelope = json.loads(
+            (tmp_path / "runtime_execution_witness.json").read_text(encoding="utf-8")
+        )
+        witness = envelope.get("payload", envelope)
+
+        assert witness["c0"]["status"] == "BYPASSED_SAFE_REUSE"
+        assert witness["l2"]["executed"] is False
+        assert witness["l2"]["status"] == "BYPASSED"
+        assert witness["x3"]["disposition"] == "X3D"
+        assert witness["provider_attempt_count"] == 0
+        assert witness["judge_attempt_count"] == 0
+
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "ops_scripts/ci/verify_integrated_runtime_artifact_chain.py",
+                str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=30,
+            shell=False,
+        )
+        assert proc.returncode == 0, proc.stdout + proc.stderr
 
 
 # ──────────────────────────────────────────────────────────────────────
