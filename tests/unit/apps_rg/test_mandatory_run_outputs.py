@@ -27,6 +27,7 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
     L7_AUDIT_ABILITY_OUTPUT_MD,
+    OUTPUT_BISECT_MD,
 )
 from apps_rg.runtime.section_failure_forensics import (
     E2E_SECTION_FORENSICS_GATE_ID,
@@ -270,7 +271,7 @@ def test_section_failure_forensics_binds_output_and_revision_to_prior_run(tmp_pa
         result={"exit_status": "error", "outcome_authorized": False},
     )
 
-    assert gate["pass"] is True
+    assert gate["pass"] is False
     rca = json.loads(
         (run / SECTION_FAILURE_FORENSICS_DIR / "executive_summary.json").read_text(
             encoding="utf-8"
@@ -283,7 +284,8 @@ def test_section_failure_forensics_binds_output_and_revision_to_prior_run(tmp_pa
     assert rca["revision_comparison"]["baseline"]["pr_number"] == 474
     assert rca["revision_comparison"]["current"]["git_commit"] == "b" * 40
     assert rca["comparison_complete"] is True
-    assert validate_section_failure_rca(rca) == []
+    validation_errors = validate_section_failure_rca(rca)
+    assert any("CODE_CAUSE_NOT_ISOLATED" in error for error in validation_errors)
 
 
 def test_mandatory_output_bundle_fails_each_missing_required_artifact(tmp_path: Path) -> None:
@@ -303,6 +305,7 @@ def test_mandatory_output_bundle_fails_each_missing_required_artifact(tmp_path: 
             "# BCG Executive Output\n## Executive Answer\nOK\n"
             "## Board-Level Readout\nOK\n## Issue Tree\nOK\n## Evidence Map\nOK\n"
         ),
+        OUTPUT_BISECT_MD: "# apps_rg Output Bisect\nNo failed-section bisect was required.\n",
         MANDATORY_RUN_OUTPUT_MD: "# apps_rg Mandatory Run Output\n## Section Lane Summary\nOK\n",
         L7_AUDIT_ABILITY_OUTPUT_MD: "## 3. L7 Audit Ability Output\nAudit evidence rendered.\n",
         MANDATORY_RUN_OUTPUT_JSON: json.dumps(payload),
@@ -357,6 +360,7 @@ def test_emitter_writes_all_mandatory_outputs_and_embeds_hard_stop_gate(tmp_path
     assert emitted["mandatory_output_gate"]["pass"] is True
     for filename in (
         BCG_EXECUTIVE_OUTPUT_MD,
+        OUTPUT_BISECT_MD,
         MANDATORY_RUN_OUTPUT_MD,
         L7_AUDIT_ABILITY_OUTPUT_MD,
         MANDATORY_RUN_OUTPUT_JSON,
@@ -365,6 +369,35 @@ def test_emitter_writes_all_mandatory_outputs_and_embeds_hard_stop_gate(tmp_path
         assert (run / filename).stat().st_size > 0
     persisted = json.loads((run / MANDATORY_RUN_OUTPUT_JSON).read_text(encoding="utf-8"))
     assert persisted["mandatory_output_hard_stop"]["pass"] is True
+
+
+def test_mandatory_output_bundle_hard_stops_without_visible_underlying_root_cause(
+    tmp_path: Path,
+) -> None:
+    run = tmp_path / "missing_root_cause_heading"
+    run.mkdir()
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "error", "outcome_authorized": False},
+        section_id="executive_summary",
+        emit_final_outputs=False,
+    )
+    bisect_path = run / OUTPUT_BISECT_MD
+    bisect_path.write_text(
+        bisect_path.read_text(encoding="utf-8").replace(
+            "### Underlying Root Cause", "### Cause Omitted"
+        ),
+        encoding="utf-8",
+    )
+
+    gate = validate_mandatory_output_bundle(run, emitted["payload"])
+
+    assert gate["pass"] is False
+    assert (
+        f"missing_marker:{OUTPUT_BISECT_MD}:### Underlying Root Cause"
+        in gate["errors"]
+    )
 
 
 def test_mandatory_output_bundle_hard_stops_incomplete_section_comparison(tmp_path: Path) -> None:
@@ -1551,6 +1584,7 @@ def test_review_index_points_to_mandatory_outputs(tmp_path: Path) -> None:
     index = write_review_index(run).read_text(encoding="utf-8")
 
     assert BCG_EXECUTIVE_OUTPUT_MD in index
+    assert OUTPUT_BISECT_MD in index
     assert MANDATORY_RUN_OUTPUT_MD in index
     assert MANDATORY_RUN_OUTPUT_JSON in index
 
@@ -1588,10 +1622,15 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
     )
     (run / MANDATORY_RUN_OUTPUT_MD).write_text("# Ledger\n", encoding="utf-8")
     (run / BCG_EXECUTIVE_OUTPUT_MD).write_text("# BCG\n", encoding="utf-8")
+    (run / OUTPUT_BISECT_MD).write_text(
+        "# apps_rg Output Bisect\n### Layperson RCA\nRetry evidence.\n",
+        encoding="utf-8",
+    )
 
     out = render(run)
 
-    assert "## Mandatory Outputs (1/2/3)" in out
+    assert "## Mandatory Outputs (1/2/3/4)" in out
+    assert "## Locked Output Bisect" in out
     assert "Evidence mapping failure" in out
     assert "Causal allocation" in out
     assert "Retry recoverability" in out

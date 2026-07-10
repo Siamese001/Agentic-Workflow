@@ -9,6 +9,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from apps_rg.runtime.output_bisect import (
+    build_section_output_bisect,
+    validate_section_output_bisect,
+)
+
 SECTION_FAILURE_FORENSICS_DIR = "section_failure_forensics"
 E2E_SECTION_FORENSICS_GATE_ID = "E2E_FAIL_WITHOUT_SECTION_FORENSICS"
 SECTION_FAILURE_FORENSICS_SCHEMA_VERSION = "apps_rg.section_failure_forensics.v1"
@@ -34,6 +39,8 @@ REQUIRED_RCA_FIELDS = (
     "revision_comparison",
     "difference_summary",
     "comparison_complete",
+    "output_bisect",
+    "layperson_explanation",
     "retry_attempts",
     "retry_outputs",
     "repair_ledger",
@@ -733,6 +740,16 @@ def _build_rca(
         "current_judges": section.get("judge_summary") or "NOT_OBSERVED",
         "failed_gate_ids": _failed_gate_ids(section),
     }
+    output_bisect = build_section_output_bisect(
+        section_id=section_id,
+        run_root=run_root,
+        repo_root=repo_root,
+        current_lane=lane,
+        baseline_run=baseline_run,
+        baseline_lane=baseline_lane,
+        baseline_revision=baseline_revision,
+        current_revision=current_revision,
+    )
     return {
         "schema_version": SECTION_FAILURE_FORENSICS_SCHEMA_VERSION,
         "generated_at_utc": _utc_now(),
@@ -758,6 +775,8 @@ def _build_rca(
         },
         "difference_summary": difference_summary,
         "comparison_complete": comparison_complete,
+        "output_bisect": output_bisect,
+        "layperson_explanation": output_bisect.get("layperson_explanation") or [],
         "retry_attempts": _collect_artifacts(
             lane,
             (
@@ -839,6 +858,14 @@ def validate_section_failure_rca(doc: dict[str, Any]) -> list[str]:
                 errors.append(f"invalid:revision_comparison_{side}_commit")
     if doc.get("comparison_complete") is not True:
         errors.append("invalid:comparison_incomplete")
+    output_bisect = doc.get("output_bisect")
+    if not isinstance(output_bisect, dict):
+        errors.append("invalid:output_bisect")
+    else:
+        errors.extend(
+            f"output_bisect:{error}"
+            for error in validate_section_output_bisect(output_bisect)
+        )
     return errors
 
 
@@ -856,12 +883,31 @@ def _render_rca_md(doc: dict[str, Any]) -> str:
     baseline_output = baseline_output if isinstance(baseline_output, dict) else {}
     current_output = doc.get("current_output")
     current_output = current_output if isinstance(current_output, dict) else {}
+    output_bisect = doc.get("output_bisect")
+    output_bisect = output_bisect if isinstance(output_bisect, dict) else {}
+    first_observed = output_bisect.get("first_observed_divergence")
+    first_observed = first_observed if isinstance(first_observed, dict) else {}
+    first_causal = output_bisect.get("first_causally_relevant_divergence")
+    first_causal = first_causal if isinstance(first_causal, dict) else {}
     lines = [
         f"# Section Failure Forensics - {doc.get('section_id')}",
         "",
         f"- failure_type: `{doc.get('failure_type')}`",
         f"- baseline_confidence: `{doc.get('baseline_confidence')}`",
         f"- failed_gate_ids: `{', '.join(str(x) for x in doc.get('failed_gate_ids') or []) or '-'}`",
+        "",
+        "## Layperson Explanation",
+        "",
+    ]
+    lines.extend(str(item) for item in doc.get("layperson_explanation") or [])
+    lines.extend(
+        [
+        "",
+        "## First Divergence And Underlying Cause",
+        "",
+        f"- First observed divergence: `{first_observed.get('stage') or 'NOT_ISOLATED'}` - {first_observed.get('reason') or '-'}",
+        f"- First causally relevant divergence: `{first_causal.get('stage') or 'NOT_ISOLATED'}` - {first_causal.get('reason') or '-'}",
+        f"- Code cause status: `{output_bisect.get('code_cause_status') or 'CODE_CAUSE_NOT_ISOLATED'}`",
         "",
         "## Why It Passed Before",
         "",
@@ -897,7 +943,8 @@ def _render_rca_md(doc: dict[str, Any]) -> str:
         "",
         "## Required Fix",
         "",
-    ]
+        ]
+    )
     lines.extend(f"- {item}" for item in fixes)
     lines.extend(
         [

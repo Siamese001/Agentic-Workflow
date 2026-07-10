@@ -3,6 +3,7 @@
 Every apps_rg run must leave numbered human-facing artifacts:
 
 * ``01_BCG_executive_output.md`` - decision-oriented RCA and implementation plan.
+* ``02_output_bisect.md`` - prior-pass/current-failure attempt, gate, judge, and causal bisect.
 * ``02_section_lane_summary_table.md`` - operational ledger of what ran.
 
 The emitter is intentionally data-driven from run artifacts so failed runs still
@@ -30,6 +31,7 @@ from apps_rg.runtime.full_run_section_status import (
     collect_full_run_section_status,
 )
 from apps_rg.runtime.l7_audit_output import emit_l7_audit_ability_output
+from apps_rg.runtime.output_bisect import render_output_bisect
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
@@ -40,6 +42,7 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_JSON,
     L7_AUDIT_ABILITY_OUTPUT_MD,
+    OUTPUT_BISECT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
 from apps_rg.runtime.runtime_proof_layout import find_repo_root
@@ -2766,6 +2769,28 @@ def _forensic_artifacts(doc: dict[str, Any]) -> list[dict[str, Any]]:
     return [row for row in artifacts if isinstance(row, dict)] if isinstance(artifacts, list) else []
 
 
+def _output_bisect_sections(
+    run_root: Path,
+    forensics: dict[str, Any],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    artifacts = forensics.get("artifacts")
+    artifacts = artifacts if isinstance(artifacts, list) else []
+    for artifact in artifacts:
+        if not isinstance(artifact, dict):
+            continue
+        section_id = str(artifact.get("section_id") or "")
+        if not section_id:
+            continue
+        rca = _load_json(
+            run_root / SECTION_FAILURE_FORENSICS_DIR / f"{section_id}.json"
+        )
+        bisect = rca.get("output_bisect")
+        if isinstance(bisect, dict):
+            rows.append(bisect)
+    return rows
+
+
 def _forensic_artifact_by_section(doc: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {
         str(row.get("section_id") or ""): row
@@ -3363,6 +3388,33 @@ def _render_locked_bcg_from_inline(inline: dict[str, Any], doc: dict[str, Any]) 
                 f"`{_markdown_table_escape(gate_delta)}` | "
                 f"`{comparison.get('comparison_complete')}` |"
             )
+        lines.extend(
+            [
+                "",
+                "## Layperson Retry And Root-Cause Explanation",
+                "",
+            ]
+        )
+        for comparison in _output_bisect_sections(run_root, forensics):
+            lines.append(f"### {comparison.get('section_id') or 'unknown'}")
+            lines.append("")
+            for sentence in comparison.get("layperson_explanation") or []:
+                lines.append(str(sentence))
+                lines.append("")
+            first_observed = comparison.get("first_observed_divergence")
+            first_observed = first_observed if isinstance(first_observed, dict) else {}
+            first_causal = comparison.get("first_causally_relevant_divergence")
+            first_causal = first_causal if isinstance(first_causal, dict) else {}
+            lines.append(
+                f"- First observed divergence: `{first_observed.get('stage') or 'NOT_ISOLATED'}`"
+            )
+            lines.append(
+                f"- First causally relevant divergence: `{first_causal.get('stage') or 'NOT_ISOLATED'}`"
+            )
+            lines.append(
+                f"- Code cause status: `{comparison.get('code_cause_status') or 'CODE_CAUSE_NOT_ISOLATED'}`"
+            )
+            lines.append("")
     lines.extend(["", "## Recommended Next Move", ""])
     for idx, item in enumerate(bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else [], 1):
         lines.append(f"{idx}. {item}")
@@ -3857,6 +3909,9 @@ def build_mandatory_run_output(
         sections=sections,
         result=result_summary,
     )
+    output_bisect_sections = _output_bisect_sections(
+        root, section_failure_forensics
+    )
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),
@@ -3869,8 +3924,13 @@ def build_mandatory_run_output(
         "final_resume_output": final_output,
         "rca_findings": _top_rca_sections(sections),
         "section_failure_forensics": section_failure_forensics,
+        "output_bisect": {
+            "required": bool(section_failure_forensics.get("required")),
+            "sections": output_bisect_sections,
+        },
         "mandatory_artifacts": {
             "bcg_executive_output_md": BCG_EXECUTIVE_OUTPUT_MD,
+            "output_bisect_md": OUTPUT_BISECT_MD,
             "mandatory_run_output_md": MANDATORY_RUN_OUTPUT_MD,
             "mandatory_run_output_json": MANDATORY_RUN_OUTPUT_JSON,
             "section_failure_forensics_dir": SECTION_FAILURE_FORENSICS_DIR,
@@ -3899,6 +3959,7 @@ def validate_mandatory_output_bundle(
             "## Issue Tree",
             "## Evidence Map",
         ),
+        OUTPUT_BISECT_MD: ("# apps_rg Output Bisect",),
         MANDATORY_RUN_OUTPUT_MD: ("# apps_rg Mandatory Run Output", "## Section Lane Summary"),
         L7_AUDIT_ABILITY_OUTPUT_MD: ("## 3. L7 Audit Ability Output",),
     }
@@ -3921,6 +3982,18 @@ def validate_mandatory_output_bundle(
     forensics = doc.get("section_failure_forensics")
     forensics = forensics if isinstance(forensics, dict) else {}
     if forensics.get("required"):
+        bisect_text = _read_text(root / OUTPUT_BISECT_MD)
+        for marker in (
+            "### Layperson RCA",
+            "### Underlying Root Cause",
+            "### Ingestion-To-Outcome Lineage",
+            "### Prior Passing Run",
+            "### Current Failing Run",
+            "### Full X2 Gate Matrix",
+            "### Judge Matrix",
+        ):
+            if marker not in bisect_text:
+                errors.append(f"missing_marker:{OUTPUT_BISECT_MD}:{marker}")
         if forensics.get("pass") is not True:
             errors.append(E2E_SECTION_FORENSICS_GATE_ID)
         artifacts = forensics.get("artifacts")
@@ -3950,6 +4023,7 @@ def validate_mandatory_output_bundle(
         "errors": errors,
         "required_artifacts": [
             BCG_EXECUTIVE_OUTPUT_MD,
+            OUTPUT_BISECT_MD,
             MANDATORY_RUN_OUTPUT_MD,
             L7_AUDIT_ABILITY_OUTPUT_MD,
             MANDATORY_RUN_OUTPUT_JSON,
@@ -3989,8 +4063,14 @@ def emit_mandatory_run_outputs(
     json_path = root / MANDATORY_RUN_OUTPUT_JSON
     md_path = root / MANDATORY_RUN_OUTPUT_MD
     bcg_path = root / BCG_EXECUTIVE_OUTPUT_MD
+    bisect_path = root / OUTPUT_BISECT_MD
     _write_text(md_path, _render_mandatory_markdown(doc))
     _write_text(bcg_path, _render_bcg_markdown_locked(doc))
+    output_bisect = doc.get("output_bisect")
+    output_bisect = output_bisect if isinstance(output_bisect, dict) else {}
+    bisect_sections = output_bisect.get("sections")
+    bisect_sections = bisect_sections if isinstance(bisect_sections, list) else []
+    _write_text(bisect_path, render_output_bisect(bisect_sections))
     l7_path = emit_l7_audit_ability_output(root)
     json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     hard_stop_gate = validate_mandatory_output_bundle(root, doc)
@@ -4026,6 +4106,7 @@ def emit_mandatory_run_outputs(
         "json_path": json_path,
         "markdown_path": md_path,
         "bcg_markdown_path": bcg_path,
+        "output_bisect_path": bisect_path,
         "l7_audit_ability_path": l7_path,
         "mandatory_output_gate": hard_stop_gate,
         "payload": doc,

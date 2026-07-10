@@ -21,6 +21,7 @@ MANDATORY_JSON = "APPS_RG_MANDATORY_RUN_OUTPUT.json"
 MANDATORY_FILE_NAMES = {
     MANDATORY_JSON,
     "01_BCG_executive_output.md",
+    "02_output_bisect.md",
     "02_section_lane_summary_table.md",
     "03_L7_audit_ability_output.md",
     "APPS_RG_MANDATORY_RUN_OUTPUT.md",
@@ -33,6 +34,8 @@ MANDATORY_FILE_NAMES = {
 REQUIRED_HEADINGS = (
     "## apps_rg Runtime Evidence",
     "## Locked BCG Output",
+    "## Locked Output Bisect",
+    "### Underlying Root Cause",
     "## Locked Section Lane Summary Table",
     "## Resume DOCX Full Version Inline",
 )
@@ -41,7 +44,7 @@ MAX_TRANSCRIPT_CONTEXT_CHARS = 4_000_000
 _RUN_ROOT_RE = re.compile(r"Run root:\s*`?@?(?P<path>[^`\n]+)`?", re.IGNORECASE)
 _MANDATORY_PATH_RE = re.compile(
     r"(?P<path>(?:[A-Za-z]:)?[^`'\"\s|<>\]]*"
-    r"(?:APPS_RG_MANDATORY_RUN_OUTPUT\.json|02_section_lane_summary_table\.md|"
+    r"(?:APPS_RG_MANDATORY_RUN_OUTPUT\.json|02_output_bisect\.md|02_section_lane_summary_table\.md|"
     r"01_BCG_executive_output\.md|03_L7_audit_ability_output\.md|"
     r"APPS_RG_MANDATORY_RUN_OUTPUT\.md|BCG_EXECUTIVE_OUTPUT\.md|"
     r"FINAL_RESUME_OUTPUT\.txt|FINAL_RESUME_OUTPUT\.json|"
@@ -80,6 +83,7 @@ def _appears_to_close_apps_rg_run(text: str) -> bool:
     hard_tokens = (
         "apps_rg_mandatory_run_output",
         "01_bcg_executive_output.md",
+        "02_output_bisect.md",
         "02_section_lane_summary_table.md",
         "03_l7_audit_ability_output.md",
         "bcg_executive_output.md",

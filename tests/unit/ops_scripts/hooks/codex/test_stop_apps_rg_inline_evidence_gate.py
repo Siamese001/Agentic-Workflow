@@ -252,6 +252,24 @@ Run root: `@{run_dir}`
 
 1. Resolve P0: Fix first blocked lane before rerun. Evidence: lane_dependency_contract.
 
+## Locked Output Bisect
+
+# apps_rg Output Bisect
+
+### Layperson RCA
+
+The prior run passed, the current retry did not clear its failed gates, and judges were not reached.
+
+### Underlying Root Cause
+
+The retries improved length but retained cross-fact conflation, so deterministic X2 blocked judges.
+
+### Ingestion-To-Outcome Lineage
+
+| Stage | Classification |
+|---|---|
+| `u0_ingress` | `CORRELATED_ONLY` |
+
 ## Locked Section Lane Summary Table
 
 | # | Section | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | X2 | X3 | Past fail / blocker | Display output | L6 evidence |

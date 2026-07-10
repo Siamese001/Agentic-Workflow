@@ -24,7 +24,7 @@ the apps_rg *run + report* loop.
 |---|---|
 | "run apps_rg" / `python -m apps_rg` without all inputs in the same turn | Issue ONE prompt requesting ALL missing inputs at once (template below); do not pre-fill flags |
 | User names company + role + JD + briefing in the same turn | Run with those flags; source resume is static — resolve from the configured/most-recent path |
-| Run finished (exit 0 or not) / "show me the run summary" / "how did the resume go" | Confirm mandatory `01_BCG_executive_output.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, and `APPS_RG_MANDATORY_RUN_OUTPUT.json` exist, invoke `python tools/apps_rg/render_run_summary.py [<run_dir>]`, and surface the decision RCA plus renderer markdown |
+| Run finished (exit 0 or not) / "show me the run summary" / "how did the resume go" | Confirm mandatory `01_BCG_executive_output.md`, `02_output_bisect.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, and `APPS_RG_MANDATORY_RUN_OUTPUT.json` exist, invoke `python tools/apps_rg/render_run_summary.py [<run_dir>]`, and surface the decision RCA, causal attempt bisect, plus renderer markdown |
 | `--section executive_summary` run | Lead with the 3-sentence layman block, then technical detail |
 
 ## Hard Routing Rules (do not violate)
@@ -35,7 +35,7 @@ the apps_rg *run + report* loop.
 | One single-prompt request for all missing inputs — no multi-turn back-and-forth | Same rule; minimizes round-trips |
 | After ANY run, render `render_run_summary.py` output inline before claiming success | `apps-rg-post-run-summary.md` — "exit 0" without the table is at most PARTIAL |
 | Failure/aborted runs MUST still emit and surface mandatory BCG + run ledger | Failure runs are MORE valuable for evidence, not less |
-| The initial run closeout must answer "what ran, what did not, which judges ran, and why" | Mandatory `02_section_lane_summary_table.md` plus `APPS_RG_MANDATORY_RUN_OUTPUT.json` is the SSOT for that operator ledger |
+| The initial run closeout must answer "what ran, what did not, which judges ran, why retries worked or failed, and where prior/current first diverged" | Mandatory `02_output_bisect.md`, `02_section_lane_summary_table.md`, plus `APPS_RG_MANDATORY_RUN_OUTPUT.json` are the SSOT surfaces for that operator evidence |
 | Every RCA required fix MUST be a 3-5 bullet implementation plan aimed at the core root cause | Single-line actions and symptom fixes are not operator-ready |
 | Every RCA finding MUST include causal allocation tied to the actual root cause | Broad buckets are invalid unless each row names the concrete causal mechanism, evidence, work share, and retry recoverability |
 | executive_summary response leads with exactly 3 layman sentences, no jargon | `apps-rg-executive-summary-response.md` |
@@ -51,9 +51,9 @@ the apps_rg *run + report* loop.
    ```
 2. **Run** `python -m apps_rg ...` exactly as scoped — no added flags when the user typed a bare invocation.
 3. **Locate the run dir** — `--out-dir` if passed, else the most-recently-modified dir under `artifacts/apps_rg/runs/`.
-4. **Validate mandatory outputs** — verify these files exist in the run dir: `01_BCG_executive_output.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. If the first two or the JSON are missing, regenerate them with `python -m apps_rg.runtime.mandatory_run_outputs <run_dir>`; if `03_L7_audit_ability_output.md` is missing, regenerate it with `python tools/apps_rg/render_run_summary.py <run_dir>`.
+4. **Validate mandatory outputs** — verify these files exist in the run dir: `01_BCG_executive_output.md`, `02_output_bisect.md`, `02_section_lane_summary_table.md`, `03_L7_audit_ability_output.md`, `APPS_RG_MANDATORY_RUN_OUTPUT.json`. If the BCG, bisect, lane table, or JSON is missing, regenerate them with `python -m apps_rg.runtime.mandatory_run_outputs <run_dir>`; if `03_L7_audit_ability_output.md` is missing, regenerate it with `python tools/apps_rg/render_run_summary.py <run_dir>`.
 5. **Render evidence** — `python tools/apps_rg/render_run_summary.py [<run_dir>]`; paste the full markdown inline under `## apps_rg Runtime Evidence`. Do not paraphrase or truncate.
-6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). Each RCA finding must include `root_cause`, causal allocation (`dominant_cause`, retry recoverability, and root-cause-linked allocation rows), plus a 3-5 bullet implementation plan that changes the producer/parser/validator contract causing the failure; do not present symptom-only rerun, prompt tweak, or threshold-relaxation actions as required fixes. For executive_summary, 3-sentence layman lead first, then a technical table (parity, briefing chars, X3 code, judges, exit code) and the repo-work proof floor.
+6. **Shape the response** — lead with the BCG executive answer and the mandatory run-ledger facts (sections, judges, blockers). Render the output bisect immediately after the BCG: every generation/repair/retry, scoped gate result, judge result or `JUDGES_NOT_REACHED`, first observed divergence, first causally relevant divergence, and ingestion-to-outcome lineage. Each RCA finding must include `root_cause`, causal allocation (`dominant_cause`, retry recoverability, and root-cause-linked allocation rows), plus a 3-5 bullet implementation plan that changes the producer/parser/validator contract causing the failure; do not present symptom-only rerun, prompt tweak, or threshold-relaxation actions as required fixes. For executive_summary, use the mandatory 3-sentence layperson explanation first, then the full attempt, gate, judge, and causal tables plus the repo-work proof floor.
 
 ## Forbidden Patterns
 
