@@ -10,6 +10,7 @@ from apps_rg.runtime.full_run_section_status import collect_full_run_section_sta
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
+    MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
     MANDATORY_RUN_OUTPUT_JSON,
     MANDATORY_RUN_OUTPUT_MD,
     _bcg_forensics_truth_errors,
@@ -18,6 +19,14 @@ from apps_rg.runtime.mandatory_run_outputs import (
     _top_rca_sections,
     build_mandatory_run_output,
     emit_mandatory_run_outputs,
+    validate_mandatory_output_bundle,
+)
+from apps_rg.runtime.run_output_contract import (
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_OUTPUT_JSON,
+    FINAL_RESUME_OUTPUT_TXT,
+    L7_AUDIT_ABILITY_OUTPUT_MD,
 )
 from apps_rg.runtime.section_failure_forensics import (
     E2E_SECTION_FORENSICS_GATE_ID,
@@ -25,12 +34,6 @@ from apps_rg.runtime.section_failure_forensics import (
     SECTION_FAILURE_FORENSICS_DIR,
     emit_section_failure_forensics,
     validate_section_failure_rca,
-)
-from apps_rg.runtime.run_output_contract import (
-    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
-    FINAL_RESUME_DOCX_RELPATH,
-    FINAL_RESUME_OUTPUT_JSON,
-    FINAL_RESUME_OUTPUT_TXT,
 )
 from tools.apps_rg.render_run_summary import render
 
@@ -161,6 +164,7 @@ def test_section_failure_forensics_marks_dirty_successful_baseline(tmp_path: Pat
         {"result_summary": {"exit_status": "success", "outcome_authorized": True}},
     )
     _write_json(baseline / "worktree_status.json", {"worktree_dirty": True})
+    _write_json(baseline / "agentic_core_spine_proof.json", {"git_commit": "c" * 40})
     (baseline_lane / "headline_output.txt").write_text("SVP AI Partnerships\n", encoding="utf-8")
     _write_json(baseline_lane / "x3_disposition.json", {"x3_code": "X3_ALLOW", "pass": True})
 
@@ -176,6 +180,7 @@ def test_section_failure_forensics_marks_dirty_successful_baseline(tmp_path: Pat
         run / "x2_gate_outputs.json",
         {"gates": [{"gate_id": "x2_headline_vendor_terms_proof_only", "pass": False}]},
     )
+    _write_json(run / "agentic_core_spine_proof.json", {"git_commit": "d" * 40})
 
     emitted = emit_mandatory_run_outputs(
         run,
@@ -189,6 +194,248 @@ def test_section_failure_forensics_marks_dirty_successful_baseline(tmp_path: Pat
     assert "dirty" in rca["why_it_passed_before"].lower()
     assert rca["last_successful_output"]["present"] is True
     assert emitted["payload"]["section_failure_forensics"]["baseline_confidence"] == "dirty"
+
+
+def test_section_failure_forensics_binds_output_and_revision_to_prior_run(tmp_path: Path) -> None:
+    baseline = tmp_path / "baseline_success"
+    baseline_lane = (
+        baseline
+        / "modular_r4"
+        / "sections"
+        / "executive_summary"
+        / "real"
+        / "exec_summary_prior"
+    )
+    baseline_lane.mkdir(parents=True)
+    baseline_text = "Prior passing executive summary with complete evidence-backed sentences."
+    baseline_output = baseline_lane / "resume_display_text.txt"
+    baseline_output.write_text(baseline_text + "\n", encoding="utf-8")
+    _write_json(
+        baseline / "ingress_raw.json",
+        {"target_company": "Anthropic", "target_role": "Partnerships"},
+    )
+    _write_json(
+        baseline / "agentic_core_spine_proof.json",
+        {
+            "payload": {
+                "git_commit": "a" * 40,
+                "git_commit_subject": "Merge pull request #474 from example/prior-pass",
+            }
+        },
+    )
+    _write_json(
+        baseline / MANDATORY_RUN_OUTPUT_JSON,
+        {
+            "result_summary": {"exit_status": "success", "outcome_authorized": True},
+            "sections": [
+                {
+                    "section": "executive_summary",
+                    "lane_dir": str(baseline_lane.relative_to(baseline)),
+                    "display_txt_path": str(baseline_output),
+                    "x3_code": "X3_ALLOW",
+                    "x2_pass": "PASS",
+                }
+            ],
+        },
+    )
+
+    run = tmp_path / "current_failed"
+    current_lane = run / "lanes" / "executive_summary"
+    current_lane.mkdir(parents=True)
+    current_output = current_lane / "resume_display_text.txt"
+    current_output.write_text("Current fragmented output.\n", encoding="utf-8")
+    _write_json(
+        run / "ingress_raw.json",
+        {"target_company": "Anthropic", "target_role": "Partnerships"},
+    )
+    _write_json(
+        run / "agentic_core_spine_proof.json",
+        {"payload": {"git_commit": "b" * 40, "git_commit_subject": "Current local commit"}},
+    )
+    section = {
+        "section": "executive_summary",
+        "lane_dir": str(current_lane),
+        "display_txt_path": str(current_output),
+        "x3_code": "X3_BLOCK",
+        "x2_pass": "FAIL",
+        "failed_gates": [
+            {"gate_id": "x2_exec_summary_no_sentence_fragment", "pass": False}
+        ],
+    }
+
+    gate = emit_section_failure_forensics(
+        run,
+        repo_root=tmp_path,
+        sections=[section],
+        result={"exit_status": "error", "outcome_authorized": False},
+    )
+
+    assert gate["pass"] is True
+    rca = json.loads(
+        (run / SECTION_FAILURE_FORENSICS_DIR / "executive_summary.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert Path(rca["last_successful_output"]["path"]).resolve() == baseline_output.resolve()
+    assert rca["last_successful_output"]["text"] == baseline_text
+    assert rca["last_successful_output"]["sha256"] != rca["current_output"]["sha256"]
+    assert rca["revision_comparison"]["baseline"]["git_commit"] == "a" * 40
+    assert rca["revision_comparison"]["baseline"]["pr_number"] == 474
+    assert rca["revision_comparison"]["current"]["git_commit"] == "b" * 40
+    assert rca["comparison_complete"] is True
+    assert validate_section_failure_rca(rca) == []
+
+
+def test_mandatory_output_bundle_fails_each_missing_required_artifact(tmp_path: Path) -> None:
+    run = tmp_path / "mandatory_bundle"
+    run.mkdir()
+    payload = {
+        "result_summary": {"exit_status": "success", "outcome_authorized": True},
+        "section_failure_forensics": {
+            "required": False,
+            "pass": True,
+            "artifacts": [],
+            "missing_or_incomplete": [],
+        },
+    }
+    contents = {
+        BCG_EXECUTIVE_OUTPUT_MD: (
+            "# BCG Executive Output\n## Executive Answer\nOK\n"
+            "## Board-Level Readout\nOK\n## Issue Tree\nOK\n## Evidence Map\nOK\n"
+        ),
+        MANDATORY_RUN_OUTPUT_MD: "# apps_rg Mandatory Run Output\n## Section Lane Summary\nOK\n",
+        L7_AUDIT_ABILITY_OUTPUT_MD: "## 3. L7 Audit Ability Output\nAudit evidence rendered.\n",
+        MANDATORY_RUN_OUTPUT_JSON: json.dumps(payload),
+    }
+    for filename, body in contents.items():
+        (run / filename).write_text(body, encoding="utf-8")
+
+    assert validate_mandatory_output_bundle(run, payload)["pass"] is True
+    for filename, body in contents.items():
+        path = run / filename
+        path.unlink()
+        gate = validate_mandatory_output_bundle(run, payload)
+        assert gate["gate_id"] == MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+        assert gate["pass"] is False
+        assert any(filename in error for error in gate["errors"])
+        path.write_text(body, encoding="utf-8")
+
+
+def test_mandatory_output_bundle_rejects_empty_and_malformed_artifacts(tmp_path: Path) -> None:
+    run = tmp_path / "malformed_bundle"
+    run.mkdir()
+    payload = {
+        "result_summary": {"exit_status": "success", "outcome_authorized": True},
+        "section_failure_forensics": {"required": False, "pass": True, "artifacts": []},
+    }
+    (run / BCG_EXECUTIVE_OUTPUT_MD).write_text("", encoding="utf-8")
+    (run / MANDATORY_RUN_OUTPUT_MD).write_text("# wrong ledger\n", encoding="utf-8")
+    (run / L7_AUDIT_ABILITY_OUTPUT_MD).write_text("# wrong audit\n", encoding="utf-8")
+    (run / MANDATORY_RUN_OUTPUT_JSON).write_text("{not-json", encoding="utf-8")
+
+    gate = validate_mandatory_output_bundle(run, payload)
+
+    assert gate["pass"] is False
+    assert f"missing_or_empty:{BCG_EXECUTIVE_OUTPUT_MD}" in gate["errors"]
+    assert any(error.startswith(f"missing_marker:{MANDATORY_RUN_OUTPUT_MD}") for error in gate["errors"])
+    assert any(error.startswith(f"missing_marker:{L7_AUDIT_ABILITY_OUTPUT_MD}") for error in gate["errors"])
+    assert f"malformed_json:{MANDATORY_RUN_OUTPUT_JSON}" in gate["errors"]
+
+
+def test_emitter_writes_all_mandatory_outputs_and_embeds_hard_stop_gate(tmp_path: Path) -> None:
+    run = tmp_path / "complete_bundle"
+    run.mkdir()
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "success", "outcome_authorized": True},
+        section_id="headline",
+        emit_final_outputs=False,
+    )
+
+    assert emitted["mandatory_output_gate"]["pass"] is True
+    for filename in (
+        BCG_EXECUTIVE_OUTPUT_MD,
+        MANDATORY_RUN_OUTPUT_MD,
+        L7_AUDIT_ABILITY_OUTPUT_MD,
+        MANDATORY_RUN_OUTPUT_JSON,
+    ):
+        assert (run / filename).is_file()
+        assert (run / filename).stat().st_size > 0
+    persisted = json.loads((run / MANDATORY_RUN_OUTPUT_JSON).read_text(encoding="utf-8"))
+    assert persisted["mandatory_output_hard_stop"]["pass"] is True
+
+
+def test_mandatory_output_bundle_hard_stops_incomplete_section_comparison(tmp_path: Path) -> None:
+    run = tmp_path / "incomplete_comparison_bundle"
+    run.mkdir()
+    payload = {
+        "result_summary": {"exit_status": "error", "outcome_authorized": False},
+        "section_failure_forensics": {
+            "required": True,
+            "pass": False,
+            "artifacts": [],
+            "missing_or_incomplete": [{"section_id": "executive_summary"}],
+        },
+    }
+    (run / BCG_EXECUTIVE_OUTPUT_MD).write_text(
+        "# BCG\n## Executive Answer\nX\n## Board-Level Readout\nX\n"
+        "## Issue Tree\nX\n## Evidence Map\nX\n",
+        encoding="utf-8",
+    )
+    (run / MANDATORY_RUN_OUTPUT_MD).write_text(
+        "# apps_rg Mandatory Run Output\n## Section Lane Summary\nX\n",
+        encoding="utf-8",
+    )
+    (run / L7_AUDIT_ABILITY_OUTPUT_MD).write_text(
+        "## 3. L7 Audit Ability Output\nX\n",
+        encoding="utf-8",
+    )
+    (run / MANDATORY_RUN_OUTPUT_JSON).write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+
+    gate = validate_mandatory_output_bundle(run, payload)
+
+    assert gate["pass"] is False
+    assert E2E_SECTION_FORENSICS_GATE_ID in gate["errors"]
+    assert "missing:section_failure_forensics_artifacts" in gate["errors"]
+
+
+def test_emitter_marks_result_unauthorized_when_mandatory_output_is_invalid(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    run = tmp_path / "invalid_emitted_bundle"
+    run.mkdir()
+
+    def _emit_invalid_l7(root: Path) -> Path:
+        path = root / L7_AUDIT_ABILITY_OUTPUT_MD
+        path.write_text("# invalid L7 output\n", encoding="utf-8")
+        return path
+
+    monkeypatch.setattr(
+        "apps_rg.runtime.mandatory_run_outputs.emit_l7_audit_ability_output",
+        _emit_invalid_l7,
+    )
+
+    emitted = emit_mandatory_run_outputs(
+        run,
+        repo_root=tmp_path,
+        result={"exit_status": "success", "outcome_authorized": True},
+        section_id="headline",
+        emit_final_outputs=False,
+    )
+
+    assert emitted["mandatory_output_gate"]["pass"] is False
+    summary = emitted["payload"]["result_summary"]
+    assert summary["exit_status"] == "error"
+    assert summary["execution_status"] == "failed"
+    assert summary["outcome_authorized"] is False
+    assert summary["x3_disposition"] == "X3_BLOCK"
+    assert summary["fault"] == MANDATORY_OUTPUT_HARD_STOP_GATE_ID
 
 
 def test_incomplete_section_failure_forensics_is_hard_gate_defect() -> None:

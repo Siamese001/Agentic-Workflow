@@ -29,7 +29,7 @@ from apps_rg.runtime.full_run_section_status import (
     LaneSectionStatusRow,
     collect_full_run_section_status,
 )
-from apps_rg.runtime.runtime_proof_layout import find_repo_root
+from apps_rg.runtime.l7_audit_output import emit_l7_audit_ability_output
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
     APPS_RG_MANDATORY_RUN_OUTPUT_MD,
@@ -39,16 +39,20 @@ from apps_rg.runtime.run_output_contract import (
     FINAL_RESUME_OUTPUT_JSON,
     FINAL_RESUME_OUTPUT_TXT,
     FULL_RUN_SECTION_STATUS_JSON,
+    L7_AUDIT_ABILITY_OUTPUT_MD,
     REVIEW_BUNDLE_FILENAME,
 )
+from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.section_failure_forensics import (
     E2E_SECTION_FORENSICS_GATE_ID,
     SECTION_FAILURE_FORENSICS_DIR,
     emit_section_failure_forensics,
+    validate_section_failure_rca,
 )
 
 MANDATORY_RUN_OUTPUT_JSON = APPS_RG_MANDATORY_RUN_OUTPUT_JSON
 MANDATORY_RUN_OUTPUT_MD = APPS_RG_MANDATORY_RUN_OUTPUT_MD
+MANDATORY_OUTPUT_HARD_STOP_GATE_ID = "APPS_RG_MANDATORY_OUTPUTS_INCOMPLETE"
 
 INLINE_REQUIRED_OUTPUT_SCHEMA_VERSION = "apps_rg.inline_required_output.v1"
 INLINE_REQUIRED_OUTPUT_SECTION_ORDER = (
@@ -138,6 +142,13 @@ def _repo_rel(path: Path, repo: Path) -> str:
 
 def _write_text(path: Path, text: str) -> None:
     path.write_text(text.rstrip() + "\n", encoding="utf-8")
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
 
 
 def _as_list(value: Any) -> list[Any]:
@@ -3303,6 +3314,55 @@ def _render_locked_bcg_from_inline(inline: dict[str, Any], doc: dict[str, Any]) 
             lines.append("  - Required implementation plan:")
             for item in plan:
                 lines.append(f"    - {item}")
+    forensics = doc.get("section_failure_forensics")
+    forensics = forensics if isinstance(forensics, dict) else {}
+    forensic_artifacts = forensics.get("artifacts")
+    forensic_artifacts = forensic_artifacts if isinstance(forensic_artifacts, list) else []
+    if forensic_artifacts:
+        lines.extend(
+            [
+                "",
+                "## Prior Working Revision Comparison",
+                "",
+                "| Section | Prior PR / commit | Current commit | Inputs match | Provider request match | Output match | Gate delta | Complete |",
+                "|---|---|---|---|---|---|---|---|",
+            ]
+        )
+        run_root = Path(str(doc.get("run_root_abs") or ""))
+        for artifact in forensic_artifacts:
+            if not isinstance(artifact, dict):
+                continue
+            section_id = str(artifact.get("section_id") or "unknown")
+            comparison = _load_json(
+                run_root / SECTION_FAILURE_FORENSICS_DIR / f"{section_id}.json"
+            )
+            revisions = comparison.get("revision_comparison")
+            revisions = revisions if isinstance(revisions, dict) else {}
+            baseline_revision = revisions.get("baseline")
+            baseline_revision = baseline_revision if isinstance(baseline_revision, dict) else {}
+            current_revision = revisions.get("current")
+            current_revision = current_revision if isinstance(current_revision, dict) else {}
+            differences = comparison.get("difference_summary")
+            differences = differences if isinstance(differences, dict) else {}
+            prior_identity = (
+                f"PR #{baseline_revision.get('pr_number')} / {baseline_revision.get('git_commit')}"
+                if baseline_revision.get("pr_number")
+                else str(baseline_revision.get("git_commit") or baseline_revision.get("status") or "NOT_OBSERVED")
+            )
+            gate_delta = (
+                f"{differences.get('baseline_x2')}/{differences.get('baseline_x3')} -> "
+                f"{differences.get('current_x2')}/{differences.get('current_x3')}"
+            )
+            lines.append(
+                "| "
+                f"`{section_id}` | `{_markdown_table_escape(prior_identity)}` | "
+                f"`{_markdown_table_escape(current_revision.get('git_commit') or 'NOT_OBSERVED')}` | "
+                f"`{differences.get('inputs_match')}` | "
+                f"`{differences.get('provider_request_match')}` | "
+                f"`{differences.get('materialized_output_match')}` | "
+                f"`{_markdown_table_escape(gate_delta)}` | "
+                f"`{comparison.get('comparison_complete')}` |"
+            )
     lines.extend(["", "## Recommended Next Move", ""])
     for idx, item in enumerate(bcg.get("recommended_next_move") if isinstance(bcg.get("recommended_next_move"), list) else [], 1):
         lines.append(f"{idx}. {item}")
@@ -3501,15 +3561,28 @@ def _render_mandatory_markdown(doc: dict[str, Any]) -> str:
     lines.append(f"- Baseline confidence: `{forensics.get('baseline_confidence') or '-'}`")
     artifacts = forensics.get("artifacts") if isinstance(forensics.get("artifacts"), list) else []
     if artifacts:
-        lines.extend(["", "| Section | Failure type | Complete | JSON | MD |", "|---|---|---:|---|---|"])
+        lines.extend(
+            [
+                "",
+                "| Section | Failure type | Complete | Comparison | JSON | MD |",
+                "|---|---|---:|---:|---|---|",
+            ]
+        )
         for artifact in artifacts:
             if not isinstance(artifact, dict):
                 continue
+            section_id = str(artifact.get("section_id") or "unknown")
+            comparison = _load_json(
+                Path(str(doc.get("run_root_abs") or ""))
+                / SECTION_FAILURE_FORENSICS_DIR
+                / f"{section_id}.json"
+            )
             lines.append(
                 "| "
-                f"`{artifact.get('section_id')}` | "
+                f"`{section_id}` | "
                 f"`{artifact.get('failure_type')}` | "
                 f"`{artifact.get('complete')}` | "
+                f"`{comparison.get('comparison_complete')}` | "
                 f"`{artifact.get('json_path')}` | "
                 f"`{artifact.get('md_path')}` |"
             )
@@ -3812,6 +3885,80 @@ def build_mandatory_run_output(
     return doc
 
 
+def validate_mandatory_output_bundle(
+    run_root: Path,
+    doc: dict[str, Any],
+) -> dict[str, Any]:
+    """Validate mandatory closeout artifacts and failed-section comparisons."""
+    root = Path(run_root).resolve()
+    errors: list[str] = []
+    required_text = {
+        BCG_EXECUTIVE_OUTPUT_MD: (
+            "## Executive Answer",
+            "## Board-Level Readout",
+            "## Issue Tree",
+            "## Evidence Map",
+        ),
+        MANDATORY_RUN_OUTPUT_MD: ("# apps_rg Mandatory Run Output", "## Section Lane Summary"),
+        L7_AUDIT_ABILITY_OUTPUT_MD: ("## 3. L7 Audit Ability Output",),
+    }
+    for filename, markers in required_text.items():
+        path = root / filename
+        if not path.is_file() or path.stat().st_size <= 0:
+            errors.append(f"missing_or_empty:{filename}")
+            continue
+        text = _read_text(path)
+        for marker in markers:
+            if marker not in text:
+                errors.append(f"missing_marker:{filename}:{marker}")
+
+    json_path = root / MANDATORY_RUN_OUTPUT_JSON
+    if not json_path.is_file() or json_path.stat().st_size <= 0:
+        errors.append(f"missing_or_empty:{MANDATORY_RUN_OUTPUT_JSON}")
+    elif not _load_json(json_path):
+        errors.append(f"malformed_json:{MANDATORY_RUN_OUTPUT_JSON}")
+
+    forensics = doc.get("section_failure_forensics")
+    forensics = forensics if isinstance(forensics, dict) else {}
+    if forensics.get("required"):
+        if forensics.get("pass") is not True:
+            errors.append(E2E_SECTION_FORENSICS_GATE_ID)
+        artifacts = forensics.get("artifacts")
+        artifacts = artifacts if isinstance(artifacts, list) else []
+        if not artifacts:
+            errors.append("missing:section_failure_forensics_artifacts")
+        for row in artifacts:
+            if not isinstance(row, dict):
+                errors.append("malformed:section_failure_forensics_row")
+                continue
+            section_id = str(row.get("section_id") or "unknown")
+            json_ref = str(row.get("json_path") or "")
+            json_artifact = Path(json_ref)
+            if not json_artifact.is_absolute():
+                json_artifact = root / SECTION_FAILURE_FORENSICS_DIR / f"{section_id}.json"
+            rca = _load_json(json_artifact)
+            if not rca:
+                errors.append(f"missing_or_malformed:comparison:{section_id}")
+                continue
+            for error in validate_section_failure_rca(rca):
+                errors.append(f"comparison:{section_id}:{error}")
+
+    return {
+        "gate_id": MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+        "required": True,
+        "pass": not errors,
+        "errors": errors,
+        "required_artifacts": [
+            BCG_EXECUTIVE_OUTPUT_MD,
+            MANDATORY_RUN_OUTPUT_MD,
+            L7_AUDIT_ABILITY_OUTPUT_MD,
+            MANDATORY_RUN_OUTPUT_JSON,
+        ],
+        "failed_section_comparison_required": bool(forensics.get("required")),
+        "failure_reason": "" if not errors else MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+    }
+
+
 def emit_mandatory_run_outputs(
     run_root: Path,
     *,
@@ -3842,9 +3989,35 @@ def emit_mandatory_run_outputs(
     json_path = root / MANDATORY_RUN_OUTPUT_JSON
     md_path = root / MANDATORY_RUN_OUTPUT_MD
     bcg_path = root / BCG_EXECUTIVE_OUTPUT_MD
-    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     _write_text(md_path, _render_mandatory_markdown(doc))
     _write_text(bcg_path, _render_bcg_markdown_locked(doc))
+    l7_path = emit_l7_audit_ability_output(root)
+    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    hard_stop_gate = validate_mandatory_output_bundle(root, doc)
+    doc["mandatory_output_hard_stop"] = hard_stop_gate
+    _write_text(md_path, _render_mandatory_markdown(doc))
+    _write_text(bcg_path, _render_bcg_markdown_locked(doc))
+    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    final_gate = validate_mandatory_output_bundle(root, doc)
+    hard_stop_gate = final_gate
+    doc["mandatory_output_hard_stop"] = hard_stop_gate
+    if not hard_stop_gate["pass"]:
+        summary = doc.get("result_summary")
+        summary = summary if isinstance(summary, dict) else {}
+        upstream_fault = str(summary.get("fault") or "")
+        summary["exit_status"] = "error"
+        summary["execution_status"] = "failed"
+        summary["outcome_authorized"] = False
+        summary["x3_disposition"] = "X3_BLOCK"
+        summary["fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
+        summary["mandatory_output_upstream_fault"] = upstream_fault
+        doc["result_summary"] = summary
+    doc["inline_required_output"] = _build_inline_required_output(doc)
+    doc["mandatory_inline_output_gates"] = _inline_output_gates(doc)
+    doc["mandatory_inline_output_gates"].append(hard_stop_gate)
+    _write_text(md_path, _render_mandatory_markdown(doc))
+    _write_text(bcg_path, _render_bcg_markdown_locked(doc))
+    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     if print_stdout:
         print((bcg_path).read_text(encoding="utf-8"), flush=True)
         print((md_path).read_text(encoding="utf-8"), flush=True)
@@ -3853,6 +4026,8 @@ def emit_mandatory_run_outputs(
         "json_path": json_path,
         "markdown_path": md_path,
         "bcg_markdown_path": bcg_path,
+        "l7_audit_ability_path": l7_path,
+        "mandatory_output_gate": hard_stop_gate,
         "payload": doc,
     }
 

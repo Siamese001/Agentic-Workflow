@@ -1630,12 +1630,21 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 if is_integrated_whole_run_artifact_dir(ad) or result.get("full_run_section_status_md"):
                     repo = find_repo_root()
                     emit_full_run_section_status(ad, repo_root=repo, print_stdout=True)
-                    emit_mandatory_run_outputs(
+                    mandatory_emit = emit_mandatory_run_outputs(
                         ad,
                         result=result,
                         repo_root=repo,
                         print_stdout=True,
                     )
+                    mandatory_gate = mandatory_emit.get("mandatory_output_gate") or {}
+                    if mandatory_gate.get("required") and not mandatory_gate.get("pass"):
+                        result["mandatory_output_upstream_fault"] = str(result.get("fault") or "")
+                        result["exit_status"] = "error"
+                        result["execution_status"] = "failed"
+                        result["outcome_authorized"] = False
+                        result["x3_disposition"] = "X3_BLOCK"
+                        result["fault"] = str(mandatory_gate.get("gate_id") or "")
+                        result["mandatory_output_hard_stop"] = mandatory_gate
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}
             from apps_rg.runtime.c0.c02_fact_vector_ingest import (
@@ -1680,16 +1689,29 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             if res_dict.get("artifact_dir"):
                 from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
 
-                emit_mandatory_run_outputs(
+                mandatory_emit = emit_mandatory_run_outputs(
                     Path(str(res_dict["artifact_dir"])),
                     result=res_dict,
                     section_id=section_eff,
                     print_stdout=True,
                 )
+                mandatory_gate = mandatory_emit.get("mandatory_output_gate") or {}
+                if mandatory_gate.get("required") and not mandatory_gate.get("pass"):
+                    res_dict["mandatory_output_upstream_fault"] = str(res_dict.get("fault") or "")
+                    res_dict["exit_status"] = "error"
+                    res_dict["execution_status"] = "failed"
+                    res_dict["outcome_authorized"] = False
+                    res_dict["x3_disposition"] = "X3_BLOCK"
+                    res_dict["fault"] = str(mandatory_gate.get("gate_id") or "")
+                    res_dict["mandatory_output_hard_stop"] = mandatory_gate
             from apps_rg.runtime.cli_exit_codes import exit_code_from_lane_result
 
             rc = exit_code_from_lane_result(res_dict, section_id=section_eff)
-            if allow_exit_flag and rc != 0:
+            if (
+                allow_exit_flag
+                and rc != 0
+                and not res_dict.get("mandatory_output_hard_stop")
+            ):
                 rc = 0
             emit_cli_section_execution_summary(
                 result=res_dict,

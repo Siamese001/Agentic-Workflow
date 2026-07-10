@@ -18,6 +18,7 @@ from apps_rg.runtime.dispatch.spine_stage_receipts import (
     FILENAME_RESEARCH_BRIDGE_RESPONSE,
     FILENAME_SPINE_MANIFEST,
 )
+from apps_rg.runtime.mandatory_run_outputs import MANDATORY_OUTPUT_HARD_STOP_GATE_ID
 from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
     ROUTE_FAMILY_R3R4,
     apps_research_handoff_authorized,
@@ -600,6 +601,12 @@ def test_whole_run_hard_fails_without_complete_section_forensics(
             "json_path": Path(run_root) / "APPS_RG_MANDATORY_RUN_OUTPUT.json",
             "markdown_path": Path(run_root) / "02_section_lane_summary_table.md",
             "bcg_markdown_path": Path(run_root) / "01_BCG_executive_output.md",
+            "mandatory_output_gate": {
+                "gate_id": MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+                "required": True,
+                "pass": False,
+                "errors": ["comparison:headline:invalid:comparison_incomplete"],
+            },
             "payload": {
                 "section_failure_forensics": {
                     "gate_id": E2E_SECTION_FORENSICS_GATE_ID,
