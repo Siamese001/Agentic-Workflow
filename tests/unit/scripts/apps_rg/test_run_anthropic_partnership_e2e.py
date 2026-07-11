@@ -17,6 +17,7 @@ import pytest
 from scripts.apps_rg.run_anthropic_partnership_e2e import (
     extract_exact_run_dir,
     main,
+    render_mandatory_summary,
     validate_pinned_baseline,
 )
 
@@ -100,6 +101,7 @@ def test_validate_pinned_baseline_rejects_digest_drift(tmp_path: Path) -> None:
 def test_launcher_missing_signing_config_still_launches_canonical_child(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
     output_root = tmp_path / "runs"
     run_dir = output_root / "e2e_missing_signing"
@@ -121,6 +123,10 @@ def test_launcher_missing_signing_config_still_launches_canonical_child(
         "scripts.apps_rg.run_anthropic_partnership_e2e.validate_cached_e2e_completion",
         lambda *_args, **_kwargs: SimpleNamespace(valid=False, errors=("preflight_blocked",)),
     )
+    monkeypatch.setattr(
+        "scripts.apps_rg.run_anthropic_partnership_e2e.render_mandatory_summary",
+        lambda *_args, **_kwargs: "# INLINE MANDATORY RCA\n## Locked BCG Output\n",
+    )
 
     rc = main(
         [
@@ -141,3 +147,18 @@ def test_launcher_missing_signing_config_still_launches_canonical_child(
     result = json.loads((run_dir / "e2e_launcher_result.json").read_text(encoding="utf-8"))
     assert result["process_exit_code"] == 2
     assert result["completion_valid"] is False
+    assert result["inline_rca_rendered"] is True
+    assert "# INLINE MANDATORY RCA" in capsys.readouterr().out
+
+
+def test_render_mandatory_summary_rejects_missing_required_inline_sections(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "scripts.apps_rg.run_anthropic_partnership_e2e.render_run_summary",
+        lambda *_args, **_kwargs: "# incomplete\n",
+    )
+
+    with pytest.raises(RuntimeError, match="E2E_INLINE_RCA_INCOMPLETE"):
+        render_mandatory_summary(tmp_path)

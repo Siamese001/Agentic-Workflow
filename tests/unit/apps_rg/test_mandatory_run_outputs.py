@@ -5,6 +5,8 @@ import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import pytest
+
 from apps_rg.runtime.full_resume_review_bundle import write_review_index
 from apps_rg.runtime.full_run_section_status import collect_full_run_section_status
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
@@ -163,9 +165,7 @@ def test_section_failure_forensics_emits_upstream_cascade_rca(tmp_path: Path) ->
         result={"exit_status": "error", "outcome_authorized": False, "fault": "cascade"},
     )
 
-    rca = json.loads(
-        (run / SECTION_FAILURE_FORENSICS_DIR / "headline.json").read_text(encoding="utf-8")
-    )
+    rca = json.loads((run / SECTION_FAILURE_FORENSICS_DIR / "headline.json").read_text(encoding="utf-8"))
     assert rca["failure_type"] == "upstream_cascade"
     assert "upstream" in rca["why_it_failed_now"].lower()
     assert emitted["payload"]["section_failure_forensics"]["pass"] is False
@@ -225,14 +225,7 @@ def test_section_failure_forensics_binds_output_and_revision_to_prior_run(
     monkeypatch,
 ) -> None:
     baseline = tmp_path / "baseline_success"
-    baseline_lane = (
-        baseline
-        / "modular_r4"
-        / "sections"
-        / "executive_summary"
-        / "real"
-        / "exec_summary_prior"
-    )
+    baseline_lane = baseline / "modular_r4" / "sections" / "executive_summary" / "real" / "exec_summary_prior"
     baseline_lane.mkdir(parents=True)
     baseline_text = "Prior passing executive summary with complete evidence-backed sentences."
     baseline_output = baseline_lane / "resume_display_text.txt"
@@ -286,9 +279,7 @@ def test_section_failure_forensics_binds_output_and_revision_to_prior_run(
         "display_txt_path": str(current_output),
         "x3_code": "X3_BLOCK",
         "x2_pass": "FAIL",
-        "failed_gates": [
-            {"gate_id": "x2_exec_summary_no_sentence_fragment", "pass": False}
-        ],
+        "failed_gates": [{"gate_id": "x2_exec_summary_no_sentence_fragment", "pass": False}],
     }
 
     gate = emit_section_failure_forensics(
@@ -300,9 +291,7 @@ def test_section_failure_forensics_binds_output_and_revision_to_prior_run(
 
     assert gate["pass"] is False
     rca = json.loads(
-        (run / SECTION_FAILURE_FORENSICS_DIR / "executive_summary.json").read_text(
-            encoding="utf-8"
-        )
+        (run / SECTION_FAILURE_FORENSICS_DIR / "executive_summary.json").read_text(encoding="utf-8")
     )
     assert Path(rca["last_successful_output"]["path"]).resolve() == baseline_output.resolve()
     assert rca["last_successful_output"]["text"] == baseline_text
@@ -412,19 +401,14 @@ def test_mandatory_output_bundle_hard_stops_without_visible_underlying_root_caus
     )
     bisect_path = run / OUTPUT_BISECT_MD
     bisect_path.write_text(
-        bisect_path.read_text(encoding="utf-8").replace(
-            "### Underlying Root Cause", "### Cause Omitted"
-        ),
+        bisect_path.read_text(encoding="utf-8").replace("### Underlying Root Cause", "### Cause Omitted"),
         encoding="utf-8",
     )
 
     gate = validate_mandatory_output_bundle(run, emitted["payload"])
 
     assert gate["pass"] is False
-    assert (
-        f"missing_marker:{OUTPUT_BISECT_MD}:### Underlying Root Cause"
-        in gate["errors"]
-    )
+    assert f"missing_marker:{OUTPUT_BISECT_MD}:### Underlying Root Cause" in gate["errors"]
 
 
 def test_mandatory_output_bundle_hard_stops_incomplete_section_comparison(tmp_path: Path) -> None:
@@ -440,8 +424,7 @@ def test_mandatory_output_bundle_hard_stops_incomplete_section_comparison(tmp_pa
         },
     }
     (run / BCG_EXECUTIVE_OUTPUT_MD).write_text(
-        "# BCG\n## Executive Answer\nX\n## Board-Level Readout\nX\n"
-        "## Issue Tree\nX\n## Evidence Map\nX\n",
+        "# BCG\n## Executive Answer\nX\n## Board-Level Readout\nX\n## Issue Tree\nX\n## Evidence Map\nX\n",
         encoding="utf-8",
     )
     (run / MANDATORY_RUN_OUTPUT_MD).write_text(
@@ -574,7 +557,12 @@ def test_bcg_forensics_truth_gate_requires_artifact_refs() -> None:
     errors = _bcg_forensics_truth_errors(
         doc,
         [{"section": "headline"}],
-        [{"label": "Mandatory run ledger", "path": "@artifacts/apps_rg/runs/run1/APPS_RG_MANDATORY_RUN_OUTPUT.json"}],
+        [
+            {
+                "label": "Mandatory run ledger",
+                "path": "@artifacts/apps_rg/runs/run1/APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            }
+        ],
     )
 
     assert "bcg.forensics.missing_json_ref:headline" in errors
@@ -711,9 +699,10 @@ def test_emit_mandatory_outputs_for_failed_whole_run(tmp_path: Path) -> None:
     assert gates_by_id["mandatory_inline_required_json_shape_locked"]["pass"] is True
     assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is False
     assert gates_by_id["mandatory_resume_docx_inline_json_present"]["pass"] is False
-    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
-        "current_run_authorized"
-    ] is False
+    assert (
+        gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"]["current_run_authorized"]
+        is False
+    )
     assert (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).is_file()
     assert (run / FINAL_RESUME_OUTPUT_TXT).is_file()
     assert (run / FINAL_RESUME_DOCX_RELPATH).is_file()
@@ -801,9 +790,10 @@ def test_blocked_run_does_not_inline_stale_final_resume_text(tmp_path: Path) -> 
     assert "Databricks Lakehouse" not in inline_resume["text"]
     gates_by_id = {gate["gate_id"]: gate for gate in doc["mandatory_inline_output_gates"]}
     assert gates_by_id["mandatory_resume_docx_inline_json_present"]["pass"] is False
-    assert gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"][
-        "current_run_authorized"
-    ] is False
+    assert (
+        gates_by_id["mandatory_resume_docx_inline_json_present"]["observed_value"]["current_run_authorized"]
+        is False
+    )
 
 
 def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path: Path) -> None:
@@ -828,7 +818,10 @@ def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path
     (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).parent.mkdir(parents=True, exist_ok=True)
     (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).write_text('{"status":"PASS"}\n', encoding="utf-8")
     assembly_dir = run / "modular_r4" / "final_resume_assembly"
-    _write_json(assembly_dir / "final_resume_x2_gate_outputs.json", {"gates": [{"gate_id": "x2_final_resume", "pass": True}]})
+    _write_json(
+        assembly_dir / "final_resume_x2_gate_outputs.json",
+        {"gates": [{"gate_id": "x2_final_resume", "pass": True}]},
+    )
     _write_json(
         assembly_dir / "full_resume_llm_coherence_review.json",
         {
@@ -891,7 +884,8 @@ def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path
     recommendations = payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
     assert any(
         row["priority"] == "PX"
-        and row["recommendation"] == "Review L6 shadow observations as future-run hardening inputs, not product blockers."
+        and row["recommendation"]
+        == "Review L6 shadow observations as future-run hardening inputs, not product blockers."
         and "headline: future_run_advisory_only" in row["evidence"]
         for row in recommendations
     )
@@ -973,8 +967,7 @@ def test_failed_lane_table_hydrates_provider_proof_from_current_run(tmp_path: Pa
     assert row["generation_status"] == "REAL_LLM"
     recommendations = doc["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
     assert not any(
-        "Capture provider attempts" in str(row.get("recommendation") or "")
-        for row in recommendations
+        "Capture provider attempts" in str(row.get("recommendation") or "") for row in recommendations
     )
 
 
@@ -1361,9 +1354,7 @@ def test_bcg_surfaces_final_aggregation_x2_failure_as_p0(tmp_path: Path) -> None
                     "gate_id": "x2_full_resume_llm_coherence_aggregation",
                     "pass": False,
                     "failure_reason": "deterministic_blocker",
-                    "observed_value": {
-                        "blockers": ["judge_quorum_insufficient:model_backed=0 required=2"]
-                    },
+                    "observed_value": {"blockers": ["judge_quorum_insufficient:model_backed=0 required=2"]},
                 }
             ]
         },
@@ -1444,8 +1435,7 @@ def test_bcg_surfaces_final_aggregation_x2_failure_as_p0(tmp_path: Path) -> None
         row["domain"] for row in final_rca["causal_allocation"]["allocation"]
     }
     assert any(
-        "long-path" in item or "long-path" in item.lower()
-        for item in final_rca["implementation_plan"]
+        "long-path" in item or "long-path" in item.lower() for item in final_rca["implementation_plan"]
     )
     assert any(
         row["priority"] == "P0"
@@ -1454,7 +1444,9 @@ def test_bcg_surfaces_final_aggregation_x2_failure_as_p0(tmp_path: Path) -> None
         for row in recommendations
     )
     assert any(row["section"] == "final_resume_aggregation" for row in issue_tree)
-    assert "final_resume_aggregation" in next(row["answer"] for row in board if row["question"] == "Primary blocker")
+    assert "final_resume_aggregation" in next(
+        row["answer"] for row in board if row["question"] == "Primary blocker"
+    )
     assert "x3_blocked=final_resume_aggregation" in next(
         gate["observed_value"]["blockers"]
         for gate in payload["mandatory_inline_output_gates"]
@@ -1463,10 +1455,7 @@ def test_bcg_surfaces_final_aggregation_x2_failure_as_p0(tmp_path: Path) -> None
     assert gates_by_id["mandatory_bcg_p0_p1_px_recommendations_locked"]["pass"] is False
 
     summary = render(run)
-    assert (
-        "Final resume aggregation failed gates: `x2_full_resume_llm_coherence_aggregation`"
-        in summary
-    )
+    assert "Final resume aggregation failed gates: `x2_full_resume_llm_coherence_aggregation`" in summary
 
 
 def test_bcg_classifies_final_aggregation_upstream_certification_failure(tmp_path: Path) -> None:
@@ -1688,6 +1677,23 @@ def test_render_run_summary_surfaces_mandatory_output_status(tmp_path: Path) -> 
     assert "## Locked BCG Output" in out
     assert "## Locked Section Lane Summary Table" in out
     assert "## Resume DOCX Full Version Inline" in out
+
+
+def test_render_run_summary_can_render_without_backfilling_l7(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    run = tmp_path / "non_mutating_render"
+    run.mkdir()
+    monkeypatch.setattr(
+        "tools.apps_rg.render_run_summary.emit_l7_audit_ability_output",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("must not backfill")),
+    )
+
+    out = render(run, emit_missing_l7=False)
+
+    assert "apps_rg Run Summary" in out
+    assert not (run / L7_AUDIT_ABILITY_OUTPUT_MD).exists()
 
 
 def test_render_run_summary_uses_locked_resume_inline_not_raw_final_resume(tmp_path: Path) -> None:
@@ -1950,18 +1956,14 @@ def test_headline_vendor_display_gate_rca_names_positioning_contract() -> None:
             "gate_id": "x2_headline_executive_abstraction_floor",
             "failure_reason": "Each headline segment must express executive scope.",
             "observed_value": {
-                "segments_missing_executive_abstraction": [
-                    "AWS Migration Modernization Execution"
-                ]
+                "segments_missing_executive_abstraction": ["AWS Migration Modernization Execution"]
             },
         },
         {
             "gate_id": "x2_headline_vendor_terms_proof_only",
             "failure_reason": "Vendor/product terms may support proof, but display segments require an executive abstraction.",
             "observed_value": {
-                "vendor_terms_without_executive_abstraction": [
-                    "AWS Migration Modernization Execution"
-                ]
+                "vendor_terms_without_executive_abstraction": ["AWS Migration Modernization Execution"]
             },
         },
     ]

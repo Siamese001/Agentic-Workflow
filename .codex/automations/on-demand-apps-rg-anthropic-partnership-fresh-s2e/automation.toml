@@ -21,6 +21,7 @@ Authority and hard stops:
 - The launcher must not abort on missing signing configuration before the canonical child allocates its exact run directory.
 - APPS_RG_ROUTE_SIGNING_PREFLIGHT is the first hash-chained stage. A blocked preflight must emit its receipt, BCG, prior-pass/current-fail bisect, retry explanation, section/gate/judge table, L7 audit output, and mandatory JSON before returning nonzero.
 - A preflight configuration failure is non-retriable inside the current process. Report zero research, generation, judge, and retry attempts and explain why retrying unchanged configuration cannot recover.
+- The bounded launcher itself must render the existing mandatory BCG, output bisect, section/gate/judge table, and L7 audit inline before exit. A file-only RCA or missing rendered section fails with E2E_INLINE_RCA_INCOMPLETE.
 
 Required external environment:
 - APPS_RG_ROUTE_HMAC_SECRET must already contain the signing secret. The automation must not generate or print it.
@@ -56,7 +57,7 @@ Mandatory evidence in the exact receipt-bound run directory:
 - 03_L7_audit_ability_output.md
 - APPS_RG_MANDATORY_RUN_OUTPUT.json
 
-For a passing preflight, verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. For a blocked preflight, verify those fields are explicitly NOT_REACHED with zero attempt counts. In every outcome verify apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3 or PRE_RUN disposition, completion_status, every judge retry or JUDGES_NOT_REACHED, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present. Render only after verification with python tools/apps_rg/render_run_summary.py <run_dir>.
+For a passing preflight, verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. For a blocked preflight, verify those fields are explicitly NOT_REACHED with zero attempt counts. In every outcome verify inline_rca_rendered=true, apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3 or PRE_RUN disposition, completion_status, every judge retry or JUDGES_NOT_REACHED, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present. The launcher output is authoritative; python tools/apps_rg/render_run_summary.py <run_dir> may be rerun only for inspection and must not repair missing canonical artifacts.
 
 Final report:
 Include readiness, exact command, exact run directory, process exit code, mandatory-output status, producer research paths, stage-ledger status, X3 and completion status, apps_eval_record_ref, l6_shadow_bridge_ref, rendered summary, blockers, and RCA. Use symptom, root_cause, evidence, fix_or_next, and recurrence_guard for failures.

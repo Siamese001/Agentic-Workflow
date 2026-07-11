@@ -23,6 +23,7 @@ Codex integration: per ``.codex/rules/apps-rg-post-run-summary.md``,
 Codex MUST invoke this script after every apps_rg run and surface the
 markdown output inline in chat.
 """
+
 from __future__ import annotations
 
 import html
@@ -84,10 +85,7 @@ def _load_text(path: Path) -> str:
 def _latest_run_dir() -> Optional[Path]:
     if not RUNS_ROOT.is_dir():
         return None
-    candidates = [
-        p for p in RUNS_ROOT.iterdir()
-        if p.is_dir() and not p.name.startswith("_")
-    ]
+    candidates = [p for p in RUNS_ROOT.iterdir() if p.is_dir() and not p.name.startswith("_")]
     if not candidates:
         return None
     return max(candidates, key=lambda p: p.stat().st_mtime)
@@ -207,12 +205,16 @@ def _bundle_role_required(run_dir: Path, role: str, default: bool = False) -> bo
 # ------------------------------------------------------------------- renderers
 
 
-def _render_identity(run_dir: Path, identity: Optional[Dict[str, Any]],
-                     manifest: Optional[Dict[str, Any]]) -> List[str]:
+def _render_identity(
+    run_dir: Path, identity: Optional[Dict[str, Any]], manifest: Optional[Dict[str, Any]]
+) -> List[str]:
     lines: List[str] = ["## Run Identity", ""]
     payload = (identity or {}).get("payload", {}) if identity else {}
     rows: List[Tuple[str, str]] = [
-        ("Run dir", str(run_dir.relative_to(REPO_ROOT)) if run_dir.is_relative_to(REPO_ROOT) else str(run_dir)),
+        (
+            "Run dir",
+            str(run_dir.relative_to(REPO_ROOT)) if run_dir.is_relative_to(REPO_ROOT) else str(run_dir),
+        ),
         ("Run ID", payload.get("run_id") or (manifest or {}).get("run_id") or "—"),
         ("Request ID", payload.get("request_id") or (manifest or {}).get("request_id") or "—"),
         ("Route", payload.get("route_id") or (manifest or {}).get("route_id") or "—"),
@@ -277,7 +279,11 @@ def _render_whole_run_cache_preflight(run_dir: Path) -> List[str]:
     preflight = receipt.get("preflight") if isinstance(receipt.get("preflight"), dict) else {}
     if not eligibility and isinstance(preflight.get("r1b_eligibility"), dict):
         eligibility = preflight.get("r1b_eligibility") or {}
-    reuse_policy = receipt.get("reuse_authority_policy") if isinstance(receipt.get("reuse_authority_policy"), dict) else {}
+    reuse_policy = (
+        receipt.get("reuse_authority_policy")
+        if isinstance(receipt.get("reuse_authority_policy"), dict)
+        else {}
+    )
     rows = [
         ("R1A", str(receipt.get("r1a_preflight_status") or "—"), ""),
         (
@@ -360,17 +366,15 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
     counts = ledger.get("section_counts") if isinstance(ledger.get("section_counts"), dict) else {}
     result = ledger.get("result_summary") if isinstance(ledger.get("result_summary"), dict) else {}
     rca = ledger.get("rca_findings") if isinstance(ledger.get("rca_findings"), list) else []
-    final_out = ledger.get("final_resume_output") if isinstance(ledger.get("final_resume_output"), dict) else {}
+    final_out = (
+        ledger.get("final_resume_output") if isinstance(ledger.get("final_resume_output"), dict) else {}
+    )
     mandatory_gates = (
         ledger.get("mandatory_inline_output_gates")
         if isinstance(ledger.get("mandatory_inline_output_gates"), list)
         else []
     )
-    gate_by_id = {
-        str(gate.get("gate_id") or ""): gate
-        for gate in mandatory_gates
-        if isinstance(gate, dict)
-    }
+    gate_by_id = {str(gate.get("gate_id") or ""): gate for gate in mandatory_gates if isinstance(gate, dict)}
     lines.append("")
     lines.append("| Signal | Value |")
     lines.append("|---|---|")
@@ -413,7 +417,9 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             lines.append(
                 f"| **{label}** | `{art.get('relpath') or '—'}` | `{exists}` | {int(art.get('bytes') or 0)} |"
             )
-        failed_final = final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+        failed_final = (
+            final_out.get("failed_gate_ids") if isinstance(final_out.get("failed_gate_ids"), list) else []
+        )
         failed_aggregation: list[str] = []
         for section in ledger.get("sections") or []:
             if not isinstance(section, dict):
@@ -439,14 +445,20 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
                 else "`none`"
             )
         )
-    lane_table = ledger.get("section_lane_table") if isinstance(ledger.get("section_lane_table"), list) else []
+    lane_table = (
+        ledger.get("section_lane_table") if isinstance(ledger.get("section_lane_table"), list) else []
+    )
     lines.append("")
     lines.append("## Locked Section Lane Summary Table")
     lines.append("")
-    lines.append("| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | <span style=\"display:inline-block; min-width:32ch\">X2</span> | <span style=\"display:inline-block; min-width:32ch\">X3</span> | <span style=\"display:inline-block; min-width:44ch\">Past fail / blocker</span> | Display output | L6 evidence |")
+    lines.append(
+        '| # | Section | Research source class | R1A | R1B | Lane record | Provider call attempted | Primary provider | Primary model observed | Pooling selector LLM | Secondary provider | Secondary model observed | Generation status | Judges run | Judge models / scores | Judge retry / fallback | <span style="display:inline-block; min-width:32ch">X2</span> | <span style="display:inline-block; min-width:32ch">X3</span> | <span style="display:inline-block; min-width:44ch">Past fail / blocker</span> | Display output | L6 evidence |'
+    )
     lines.append("|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     if not lane_table:
-        lines.append("| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |")
+        lines.append(
+            "| 0 | `NO_ROWS` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NO` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `NOT_OBSERVED` | `mandatory section lane table missing` | `MISSING` | `NOT_OBSERVED` |"
+        )
     for row in lane_table:
         if not isinstance(row, dict):
             continue
@@ -474,7 +486,9 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
             f"`{row.get('display_output')}` | "
             f"`{row.get('l6_evidence')}` |"
         )
-    inline = ledger.get("inline_required_output") if isinstance(ledger.get("inline_required_output"), dict) else {}
+    inline = (
+        ledger.get("inline_required_output") if isinstance(ledger.get("inline_required_output"), dict) else {}
+    )
     inline_resume = (
         inline.get("resume_docx_full_version_inline")
         if isinstance(inline.get("resume_docx_full_version_inline"), dict)
@@ -527,9 +541,7 @@ def _render_mandatory_run_outputs(run_dir: Path) -> List[str]:
                 for item in plan:
                     lines.append(f"    - {item}")
             else:
-                lines.append(
-                    "  - **RCA format gap:** missing 3-5 root-cause implementation bullets."
-                )
+                lines.append("  - **RCA format gap:** missing 3-5 root-cause implementation bullets.")
     lines.append("")
     return lines
 
@@ -606,10 +618,11 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     gates = x2.get("gates") or x2.get("gate_outputs") or []
     judges = [row for row in (x1d.get("judges") or []) if isinstance(row, dict)]
     visible_rows = [
-        row for row in (visible.get("rows") or [])
+        row
+        for row in (visible.get("rows") or [])
         if isinstance(row, dict) and row.get("surface") == "competencies"
     ]
-    bridge_room = ((c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {})
+    bridge_room = (c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {}
     c02_room = c0_room.get("c02") if isinstance(c0_room.get("c02"), dict) else {}
     if not c02_room:
         c02_room = bridge_room.get("c02") if isinstance(bridge_room.get("c02"), dict) else {}
@@ -622,7 +635,9 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     preflight = preflight if isinstance(preflight, dict) else {}
     if not preflight:
         preflight = preflight_artifact
-    preflight_collection = preflight.get("collection") if isinstance(preflight.get("collection"), dict) else {}
+    preflight_collection = (
+        preflight.get("collection") if isinstance(preflight.get("collection"), dict) else {}
+    )
     write_receipt = c02_room.get("c02_chroma_write")
     write_receipt = write_receipt if isinstance(write_receipt, dict) else {}
     ingest_receipt = c02_room.get("fact_vectors_ingest")
@@ -663,7 +678,9 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     lines.append("")
     lines.append("| Signal | Value |")
     lines.append("|---|---|")
-    lines.append(f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |")
+    lines.append(
+        f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |"
+    )
     lines.append(f"| Proof eligible | `{x3.get('proof_eligible')}` |")
     lines.append(f"| Role profile | `{traversal.get('target_role_profile') or 'unknown'}` |")
     lines.append(f"| Selection method | `{traversal.get('selection_method') or 'unknown'}` |")
@@ -725,7 +742,9 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
         f"sibling metrics `{traversal.get('rejected_sibling_metric_count') or 0}`, "
         f"selector rejected `{comparison.get('selector_rejected_neighbor_count') or 0}` |"
     )
-    lines.append(f"| Confidence values | `{_sample_values(confidence.get('category_confidence_values'), limit=12)}` |")
+    lines.append(
+        f"| Confidence values | `{_sample_values(confidence.get('category_confidence_values'), limit=12)}` |"
+    )
     lines.append(f"| Covered role axes | `{_sample_values(axes.get('covered_axes'), limit=12)}` |")
     lines.append(f"| Missing role axes | `{_sample_values(axes.get('missing_axes'), limit=12)}` |")
     lines.append(f"| Visible graph surface | `{visible.get('schema_version') or 'missing'}` |")
@@ -738,12 +757,22 @@ def _render_bcg_competencies_report(run_dir: Path) -> List[str]:
     lines.append("**Preserved Quality Controls**" if visible_rows else "**Open Improvement Opportunities**")
     lines.append("")
     if visible_rows:
-        lines.append("1. **Graph-bound visible surface:** each visible category has `resume_display_label`, `competency_bundle_id`, graph skills, and graph-derived terms.")
+        lines.append(
+            "1. **Graph-bound visible surface:** each visible category has `resume_display_label`, `competency_bundle_id`, graph skills, and graph-derived terms."
+        )
     else:
-        lines.append("1. **Block generic visible output:** visible graph surface receipt is missing, so the section may still be using old taxonomy labels only.")
-    lines.append("2. **Partnership-first ordering:** prioritize ecosystem/co-sell fit before generic strategy and leadership wrappers for Anthropic partnership roles.")
-    lines.append("3. **Rejected-path evidence:** report rejected sibling skills/metrics so operators can see what graph paths were explored but not selected.")
-    lines.append("4. **Confidence diversity:** nonconstant per-category confidence remains visible to prevent all categories collapsing onto one default fact.")
+        lines.append(
+            "1. **Block generic visible output:** visible graph surface receipt is missing, so the section may still be using old taxonomy labels only."
+        )
+    lines.append(
+        "2. **Partnership-first ordering:** prioritize ecosystem/co-sell fit before generic strategy and leadership wrappers for Anthropic partnership roles."
+    )
+    lines.append(
+        "3. **Rejected-path evidence:** report rejected sibling skills/metrics so operators can see what graph paths were explored but not selected."
+    )
+    lines.append(
+        "4. **Confidence diversity:** nonconstant per-category confidence remains visible to prevent all categories collapsing onto one default fact."
+    )
     lines.append("")
 
     lines.append("**Graph / Richness Gates**")
@@ -799,7 +828,7 @@ def _render_bcg_unify_bullets_report(run_dir: Path) -> List[str]:
     x2 = _load_json(run_dir / "x2_gate_outputs.json") or {}
     x3 = _load_json(run_dir / "x3_disposition.json") or {}
 
-    bridge_room = ((c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {})
+    bridge_room = (c0_room.get("bridge_doc") or {}).get("c0_evidence_room") or {}
     c02_room = c0_room.get("c02") if isinstance(c0_room.get("c02"), dict) else {}
     if not c02_room:
         c02_room = bridge_room.get("c02") if isinstance(bridge_room.get("c02"), dict) else {}
@@ -854,7 +883,9 @@ def _render_bcg_unify_bullets_report(run_dir: Path) -> List[str]:
     lines.append("")
     lines.append("| Signal | Value |")
     lines.append("|---|---|")
-    lines.append(f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |")
+    lines.append(
+        f"| X3 / runtime | `{x3.get('x3_code') or '—'}` / `{x3.get('runtime_generation_status') or '—'}` |"
+    )
     lines.append(
         "| C0 fact-vector index | "
         f"status `{preflight.get('status') or 'missing'}`, "
@@ -964,9 +995,7 @@ def _render_hop_checkpoints(run_report: Optional[Dict[str, Any]], run_dir: Path 
     lines: List[str] = ["## Narrative HOP Checkpoints (Sub-steps)", ""]
     if not run_report:
         if run_dir is not None and (run_dir / FULL_RUN_SECTION_STATUS_JSON).is_file():
-            lines.append(
-                "_Legacy run_report.json not emitted; modular R4 section status is rendered below._"
-            )
+            lines.append("_Legacy run_report.json not emitted; modular R4 section status is rendered below._")
         else:
             lines.append("_run_report.json not found — narrative HOPs unavailable._")
         lines.append("")
@@ -1013,9 +1042,7 @@ def _render_section_verdicts(run_report: Optional[Dict[str, Any]], run_dir: Path
         accepted = v.get("accepted")
         gate = v.get("failed_gate") or "—"
         icon = "✅" if accepted else "❌"
-        lines.append(
-            f"| `{section}` | {tier} | {source} | {comp:.4f} | {icon} | `{gate}` |"
-        )
+        lines.append(f"| `{section}` | {tier} | {source} | {comp:.4f} | {icon} | `{gate}` |")
     lines.append("")
     return lines
 
@@ -1046,7 +1073,13 @@ def _render_modular_section_status(run_dir: Path) -> List[str]:
                 model = judge.get("model_name") or ""
                 score = judge.get("score", "—")
                 threshold = judge.get("threshold", "—")
-                verdict = "PASS" if judge.get("pass") is True else "FAIL" if judge.get("pass") is False else "UNKNOWN"
+                verdict = (
+                    "PASS"
+                    if judge.get("pass") is True
+                    else "FAIL"
+                    if judge.get("pass") is False
+                    else "UNKNOWN"
+                )
                 model_text = f" `{model}`" if model else ""
                 judge_cells.append(f"{provider}{model_text}: {score}/5 vs {threshold} {verdict}")
             judges = "; ".join(judge_cells)
@@ -1095,22 +1128,28 @@ def _render_quality_reports(run_report: Optional[Dict[str, Any]]) -> List[str]:
     rows.append(("Retry iterations", str(run_report.get("retry_iterations", "—"))))
 
     overfit = run_report.get("overfit_report") or {}
-    rows.append((
-        "Overfit detector",
-        f"score={overfit.get('score', '—')} escalate={_yes_no(overfit.get('escalate'))} flags={len(overfit.get('flags', []))}",
-    ))
+    rows.append(
+        (
+            "Overfit detector",
+            f"score={overfit.get('score', '—')} escalate={_yes_no(overfit.get('escalate'))} flags={len(overfit.get('flags', []))}",
+        )
+    )
     prov = run_report.get("provenance_report") or {}
-    rows.append((
-        "Provenance",
-        f"valid={_yes_no(prov.get('valid'))} reason=`{prov.get('reason', '—')}`",
-    ))
+    rows.append(
+        (
+            "Provenance",
+            f"valid={_yes_no(prov.get('valid'))} reason=`{prov.get('reason', '—')}`",
+        )
+    )
     coverage = (run_report.get("narrative", {}) or {}).get("jd_keyword_coverage") or {}
     if coverage:
         cr = coverage.get("coverage_result") or {}
-        rows.append((
-            "JD keyword coverage",
-            f"coverage={cr.get('coverage', '—')} missing={cr.get('missing', [])}",
-        ))
+        rows.append(
+            (
+                "JD keyword coverage",
+                f"coverage={cr.get('coverage', '—')} missing={cr.get('missing', [])}",
+            )
+        )
     else:
         rows.append(("JD keyword coverage", "_not run / null_"))
 
@@ -1134,7 +1173,9 @@ def _render_post_x3_completion(run_dir: Path) -> List[str]:
     apps_eval = receipt.get("apps_eval") if isinstance(receipt.get("apps_eval"), dict) else {}
     uwg = receipt.get("uwg") if isinstance(receipt.get("uwg"), dict) else {}
     l6 = receipt.get("l6_shadow") if isinstance(receipt.get("l6_shadow"), dict) else {}
-    coverage = apps_eval.get("coverage_summary") if isinstance(apps_eval.get("coverage_summary"), dict) else {}
+    coverage = (
+        apps_eval.get("coverage_summary") if isinstance(apps_eval.get("coverage_summary"), dict) else {}
+    )
     rows: List[Tuple[str, str]] = [
         ("Status", str(receipt.get("status") or "—")),
         ("Completed", _yes_no(receipt.get("completed"))),
@@ -1185,11 +1226,7 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
         if isinstance(ledger.get("mandatory_inline_output_gates"), list)
         else []
     )
-    gate_by_id = {
-        str(gate.get("gate_id") or ""): gate
-        for gate in mandatory_gates
-        if isinstance(gate, dict)
-    }
+    gate_by_id = {str(gate.get("gate_id") or ""): gate for gate in mandatory_gates if isinstance(gate, dict)}
     final_product_authorized = bool(result.get("outcome_authorized")) and all(
         gate_by_id.get(gate_id, {}).get("pass") is True
         for gate_id in (
@@ -1224,7 +1261,9 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
     if "docx_output_required" in output_manifest:
         docx_required = bool(output_manifest.get("docx_output_required"))
     else:
-        docx_required = _bundle_role_required(run_dir, "product_resume_docx_outputs") or _bundle_role_required(
+        docx_required = _bundle_role_required(
+            run_dir, "product_resume_docx_outputs"
+        ) or _bundle_role_required(
             run_dir,
             "product_resume_docx_branded",
         )
@@ -1289,13 +1328,14 @@ def _render_artifacts(run_dir: Path, run_report: Optional[Dict[str, Any]]) -> Li
 # ------------------------------------------------------------------- main
 
 
-def render(run_dir: Path) -> str:
-    """Render the full markdown summary for ``run_dir``."""
+def render(run_dir: Path, *, emit_missing_l7: bool = True) -> str:
+    """Render the full markdown summary for ``run_dir`` without mandatory mutation when requested."""
     run_report = _load_json(run_dir / "run_report.json")
     manifest = _load_json(run_dir / "r4_run_manifest.json")
     identity = _load_json(run_dir / "runtime_identity_envelope.json")
     terminal = _load_json(run_dir / "terminal_ret_packet.json")
-    emit_l7_audit_ability_output(run_dir)
+    if emit_missing_l7:
+        emit_l7_audit_ability_output(run_dir)
 
     title = f"# apps_rg Run Summary — `{run_dir.name}`"
     rendered_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -1328,8 +1368,7 @@ def main(argv: List[str]) -> int:
         latest = _latest_run_dir()
         if latest is None:
             print(
-                f"No run directories found under {RUNS_ROOT}. "
-                "Run `python -m apps_rg ...` first.",
+                f"No run directories found under {RUNS_ROOT}. Run `python -m apps_rg ...` first.",
                 file=sys.stderr,
             )
             return 2

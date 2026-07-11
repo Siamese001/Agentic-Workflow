@@ -22,21 +22,25 @@ from apps_rg.runtime.e2e_stage_ledger import (  # noqa: E402
     emit_e2e_launch_receipt,
     validate_cached_e2e_completion,
 )
+from tools.apps_rg.render_run_summary import render as render_run_summary  # noqa: E402
 
-DEFAULT_OUTPUT_ROOT = Path(
-    "artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e"
-)
-DEFAULT_BASELINE_REF = Path(
-    "apps_rg/config/e2e_baselines/anthropic_partnership.v1.json"
-)
-JD_REF = Path(
-    "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
-)
+DEFAULT_OUTPUT_ROOT = Path("artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e")
+DEFAULT_BASELINE_REF = Path("apps_rg/config/e2e_baselines/anthropic_partnership.v1.json")
+JD_REF = Path("apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt")
 _RUN_DIR_PATTERN = re.compile(r"^FRESH_E2E_ARTIFACT_DIR\s+.*\brun_dir=(.+?)\s+route_flag=")
+_INLINE_RCA_REQUIRED_MARKERS = (
+    "## Mandatory Outputs (1/2/3/4)",
+    "## Locked BCG Output",
+    "## Locked Output Bisect",
+    "## Locked Section Lane Summary Table",
+    "## 3. L7 Audit Ability Output",
+)
 
 
 def extract_exact_run_dir(stdout: str, output_root: Path) -> Path:
-    matches = [match.group(1).strip() for line in stdout.splitlines() if (match := _RUN_DIR_PATTERN.match(line))]
+    matches = [
+        match.group(1).strip() for line in stdout.splitlines() if (match := _RUN_DIR_PATTERN.match(line))
+    ]
     if len(matches) != 1:
         raise RuntimeError(f"FRESH_E2E_ARTIFACT_DIR_COUNT_INVALID:{len(matches)}")
     root = output_root.resolve()
@@ -67,6 +71,22 @@ def build_command(*, output_root: Path) -> list[str]:
         "--artifact-dir",
         str(output_root),
     ]
+
+
+def render_mandatory_summary(run_dir: Path) -> str:
+    """Render existing mandatory evidence and fail if the inline RCA is incomplete."""
+    rendered = render_run_summary(Path(run_dir), emit_missing_l7=False)
+    missing = [marker for marker in _INLINE_RCA_REQUIRED_MARKERS if marker not in rendered]
+    if missing:
+        raise RuntimeError("E2E_INLINE_RCA_INCOMPLETE:" + ",".join(missing))
+    return rendered
+
+
+def _write_launcher_result(run_dir: Path, payload: dict[str, object]) -> None:
+    (run_dir / "e2e_launcher_result.json").write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -143,17 +163,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         },
         "completion_valid": completion.valid,
         "completion_errors": list(completion.errors),
+        "inline_rca_rendered": False,
+        "inline_rca_error": "",
+        "inline_rca_required_markers": list(_INLINE_RCA_REQUIRED_MARKERS),
     }
-    (run_dir / "e2e_launcher_result.json").write_text(
-        json.dumps(result_payload, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    _write_launcher_result(run_dir, result_payload)
+    try:
+        rendered_summary = render_mandatory_summary(run_dir)
+    except (OSError, RuntimeError, UnicodeError, ValueError) as exc:
+        result_payload["inline_rca_error"] = str(exc)
+        _write_launcher_result(run_dir, result_payload)
+        print(str(exc), file=sys.stderr, flush=True)
+        print(
+            "E2E_LAUNCH_RESULT "
+            f"run_dir={run_dir} process_exit_code={completed.returncode} "
+            f"completion_valid={completion.valid} inline_rca_rendered=False",
+            flush=True,
+        )
+        return 2
+    result_payload["inline_rca_rendered"] = True
+    _write_launcher_result(run_dir, result_payload)
     print(
         "E2E_LAUNCH_RESULT "
         f"run_dir={run_dir} process_exit_code={completed.returncode} "
-        f"completion_valid={completion.valid}",
+        f"completion_valid={completion.valid} inline_rca_rendered=True",
         flush=True,
     )
+    print(rendered_summary, end="" if rendered_summary.endswith("\n") else "\n", flush=True)
     return 0 if completed.returncode == 0 and completion.valid else 2
 
 
