@@ -18,6 +18,9 @@ Authority and hard stops:
 - Fail with APPS_RESEARCH_ARTIFACT_MISSING before U0/L1/L0/L2 when apps_research does not persist producer-owned briefing evidence.
 - Never select a run by directory modification time. The exact run directory comes only from FRESH_E2E_ARTIFACT_DIR and e2e_launcher_result.json.
 - Never generate, repair, or backfill mandatory outputs after the canonical run exits. Missing output is a deterministic hard failure.
+- The launcher must not abort on missing signing configuration before the canonical child allocates its exact run directory.
+- APPS_RG_ROUTE_SIGNING_PREFLIGHT is the first hash-chained stage. A blocked preflight must emit its receipt, BCG, prior-pass/current-fail bisect, retry explanation, section/gate/judge table, L7 audit output, and mandatory JSON before returning nonzero.
+- A preflight configuration failure is non-retriable inside the current process. Report zero research, generation, judge, and retry attempts and explain why retrying unchanged configuration cannot recover.
 
 Required external environment:
 - APPS_RG_ROUTE_HMAC_SECRET must already contain the signing secret. The automation must not generate or print it.
@@ -39,6 +42,7 @@ Run exactly:
 python scripts/apps_rg/run_anthropic_partnership_e2e.py --output-root artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e --baseline-ref apps_rg/config/e2e_baselines/anthropic_partnership.v1.json
 
 Mandatory evidence in the exact receipt-bound run directory:
+- e2e_preflight_receipt.json
 - e2e_launch_receipt.json
 - e2e_launcher_result.json
 - e2e_stage_ledger.json
@@ -52,7 +56,7 @@ Mandatory evidence in the exact receipt-bound run directory:
 - 03_L7_audit_ability_output.md
 - APPS_RG_MANDATORY_RUN_OUTPUT.json
 
-Verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. Verify apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3, completion_status, every judge retry, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present. Render only after verification with python tools/apps_rg/render_run_summary.py <run_dir>.
+For a passing preflight, verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. For a blocked preflight, verify those fields are explicitly NOT_REACHED with zero attempt counts. In every outcome verify apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3 or PRE_RUN disposition, completion_status, every judge retry or JUDGES_NOT_REACHED, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present. Render only after verification with python tools/apps_rg/render_run_summary.py <run_dir>.
 
 Final report:
 Include readiness, exact command, exact run directory, process exit code, mandatory-output status, producer research paths, stage-ledger status, X3 and completion status, apps_eval_record_ref, l6_shadow_bridge_ref, rendered summary, blockers, and RCA. Use symptom, root_cause, evidence, fix_or_next, and recurrence_guard for failures.

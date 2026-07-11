@@ -1053,10 +1053,6 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
     from apps_rg.runtime.live_judge_only_guard import assert_production_runtime, is_test_harness
 
-    if section_eff in section_lane_ids or not section_eff:
-        if not is_test_harness():
-            assert_production_runtime(context="python -m apps_rg", args=args)
-
     # W7.1 patch-run mode — re-dispatch only failed lanes of an existing integrated run,
     # re-derive targeting inputs from the run dir's persisted artifacts, re-aggregate.
     # Handles --dry-run itself; never prompts interactively.
@@ -1065,9 +1061,10 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
 
         return run_patch_from_cli(args)
 
-    if bool(getattr(args, "fresh_e2e", False)):
+    fresh_e2e = bool(getattr(args, "fresh_e2e", False))
+    if fresh_e2e:
         fresh_e2e_receipt = _prepare_fresh_e2e_run(
-            find_repo_root(),
+            _repo_root,
             str(getattr(args, "artifact_dir", "") or ""),
         )
         args.artifact_dir = str(fresh_e2e_receipt.get("artifact_dir") or "")
@@ -1078,10 +1075,36 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             f"route_flag={fresh_e2e_receipt.get('managed_route_flag', '')}",
             flush=True,
         )
-        fresh_e2e_fact_vector_bootstrap_receipt = _bootstrap_fact_vectors_for_fresh_e2e(
-            find_repo_root(),
-            str(getattr(args, "artifact_dir", "") or ""),
+        from apps_rg.runtime.e2e_preflight import run_fresh_e2e_preflight
+
+        baseline_ref_text = str(
+            os.environ.get("APPS_RG_E2E_BASELINE_REF")
+            or "apps_rg/config/e2e_baselines/anthropic_partnership.v1.json"
         )
+        preflight = run_fresh_e2e_preflight(
+            artifact_dir=Path(str(args.artifact_dir)),
+            e2e_run_id=Path(str(args.artifact_dir)).name,
+            repo_root=_repo_root,
+            baseline_ref=_resolve_repo_relative_path(_repo_root, baseline_ref_text),
+            runtime_check=(
+                None
+                if is_test_harness()
+                else lambda: assert_production_runtime(context="python -m apps_rg", args=args)
+            ),
+            bootstrap=lambda: _bootstrap_fact_vectors_for_fresh_e2e(
+                _repo_root,
+                str(getattr(args, "artifact_dir", "") or ""),
+            ),
+        )
+        if not preflight.passed:
+            print(
+                "FRESH_E2E_PREFLIGHT "
+                f"status=BLOCKED failure_code={preflight.receipt.get('failure_code', '')} "
+                f"run_dir={args.artifact_dir}",
+                flush=True,
+            )
+            return preflight.exit_code
+        fresh_e2e_fact_vector_bootstrap_receipt = preflight.bootstrap_receipt or {}
         print(
             "FRESH_E2E_FACT_VECTOR_BOOTSTRAP "
             f"status={fresh_e2e_fact_vector_bootstrap_receipt.get('status', '')} "
@@ -1091,6 +1114,9 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
             f"sparse_sidecar_built={fresh_e2e_fact_vector_bootstrap_receipt.get('sparse_sidecar_built', '')}",
             flush=True,
         )
+    elif section_eff in section_lane_ids or not section_eff:
+        if not is_test_harness():
+            assert_production_runtime(context="python -m apps_rg", args=args)
 
     if section_eff == "executive_summary":
         from apps_rg.runtime.section_cli_defaults import (

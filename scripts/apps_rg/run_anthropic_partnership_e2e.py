@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import re
@@ -16,6 +15,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from apps_rg.runtime.e2e_baseline import (  # noqa: E402,F401
+    validate_pinned_baseline as validate_pinned_baseline,
+)
 from apps_rg.runtime.e2e_stage_ledger import (  # noqa: E402
     emit_e2e_launch_receipt,
     validate_cached_e2e_completion,
@@ -31,81 +33,6 @@ JD_REF = Path(
     "apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt"
 )
 _RUN_DIR_PATTERN = re.compile(r"^FRESH_E2E_ARTIFACT_DIR\s+.*\brun_dir=(.+?)\s+route_flag=")
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def validate_pinned_baseline(repo_root: Path, baseline_ref: Path) -> dict[str, str]:
-    ref = baseline_ref if baseline_ref.is_absolute() else repo_root / baseline_ref
-    try:
-        payload = json.loads(ref.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"PINNED_BASELINE_UNREADABLE:{ref}:{exc}") from exc
-    if not isinstance(payload, dict) or payload.get("schema_version") != "apps_rg.e2e_baseline.v1":
-        raise RuntimeError(f"PINNED_BASELINE_SCHEMA_INVALID:{ref}")
-    run_dir_text = str(payload.get("baseline_run_dir") or "").strip()
-    expected_digest = str(payload.get("mandatory_output_sha256") or "").strip().lower()
-    git_commit = str(payload.get("git_commit") or "").strip().lower()
-    baseline_id = str(payload.get("baseline_id") or "").strip()
-    target_company = str(payload.get("target_company") or "").strip()
-    target_role = str(payload.get("target_role") or "").strip()
-    expected_exit = str(payload.get("expected_exit_status") or "").strip().lower()
-    expected_authorized = payload.get("expected_outcome_authorized")
-    expected_x3 = str(payload.get("expected_x3_disposition") or "").strip()
-    if not (
-        run_dir_text
-        and baseline_id
-        and target_company
-        and target_role
-        and re.fullmatch(r"[0-9a-f]{40}", git_commit)
-        and re.fullmatch(r"[0-9a-f]{64}", expected_digest)
-        and expected_exit == "success"
-        and expected_authorized is True
-        and expected_x3
-    ):
-        raise RuntimeError(f"PINNED_BASELINE_IDENTITY_INVALID:{ref}")
-    run_dir = (repo_root / run_dir_text).resolve()
-    mandatory = run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json"
-    if not mandatory.is_file():
-        raise RuntimeError(f"PINNED_BASELINE_ARTIFACT_MISSING:{mandatory}")
-    observed_digest = _sha256(mandatory)
-    if observed_digest != expected_digest:
-        raise RuntimeError(
-            f"PINNED_BASELINE_DIGEST_MISMATCH:expected={expected_digest}:observed={observed_digest}"
-        )
-    try:
-        mandatory_payload = json.loads(mandatory.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise RuntimeError(f"PINNED_BASELINE_MANDATORY_INVALID:{mandatory}:{exc}") from exc
-    summary = (
-        mandatory_payload.get("result_summary")
-        if isinstance(mandatory_payload, dict)
-        and isinstance(mandatory_payload.get("result_summary"), dict)
-        else {}
-    )
-    observed_exit = str(summary.get("exit_status") or "").lower()
-    observed_authorized = summary.get("outcome_authorized") is True
-    observed_x3 = str(summary.get("x3_disposition") or "")
-    if not (
-        observed_exit == expected_exit
-        and observed_authorized is expected_authorized
-        and observed_x3 == expected_x3
-    ):
-        raise RuntimeError(
-            "PINNED_BASELINE_EXPECTATION_MISMATCH:"
-            f"exit={observed_exit}:authorized={observed_authorized}:x3={observed_x3}"
-        )
-    return {
-        "baseline_id": baseline_id,
-        "baseline_ref": str(ref.resolve()),
-        "baseline_run_dir": str(run_dir),
-        "mandatory_output_sha256": observed_digest,
-        "git_commit": git_commit,
-        "target_company": target_company,
-        "target_role": target_role,
-    }
 
 
 def extract_exact_run_dir(stdout: str, output_root: Path) -> Path:
@@ -159,18 +86,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.output_root.is_absolute()
         else (repo_root / args.output_root).resolve()
     )
-    route_secret = str(os.environ.get("APPS_RG_ROUTE_HMAC_SECRET") or "").strip()
     route_key_id = str(os.environ.get("APPS_RG_ROUTE_HMAC_KEY_ID") or "").strip()
-    if not route_secret:
-        raise SystemExit("APPS_RG_ROUTE_HMAC_SECRET_REQUIRED")
-    if not route_key_id:
-        raise SystemExit("APPS_RG_ROUTE_HMAC_KEY_ID_REQUIRED")
-    baseline = validate_pinned_baseline(repo_root, args.baseline_ref)
+    baseline_ref = (
+        args.baseline_ref.resolve()
+        if args.baseline_ref.is_absolute()
+        else (repo_root / args.baseline_ref).resolve()
+    )
     output_root.mkdir(parents=True, exist_ok=True)
     command = build_command(output_root=output_root)
     env = dict(os.environ)
     env["APPS_RG_ENABLE_MANAGED_WORKFLOW_L0"] = "1"
-    env["APPS_RG_E2E_BASELINE_REF"] = baseline["baseline_ref"]
+    env["APPS_RG_E2E_BASELINE_REF"] = str(baseline_ref)
     try:
         completed = subprocess.run(
             command,
@@ -200,7 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         e2e_run_id=run_dir.name,
         command=command,
         route_signing_key_id=route_key_id,
-        baseline_ref=baseline["baseline_ref"],
+        baseline_ref=str(baseline_ref),
     )
     completion = validate_cached_e2e_completion(
         run_dir,
@@ -211,7 +137,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         "run_dir": str(run_dir),
         "process_exit_code": completed.returncode,
         "launch_receipt": str(launch_path),
-        "baseline": baseline,
+        "baseline": {
+            "baseline_ref": str(baseline_ref),
+            "validated_by": "canonical_child_preflight",
+        },
         "completion_valid": completion.valid,
         "completion_errors": list(completion.errors),
     }

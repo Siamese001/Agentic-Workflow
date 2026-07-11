@@ -556,12 +556,20 @@ def run_whole_run_with_route_governance(
         auto_research_internal=auto_research_internal,
         research_via=research_via,
     )
-    from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger
+    from apps_rg.runtime.e2e_stage_ledger import E2E_STAGE_LEDGER_FILENAME, E2EStageLedger
 
-    stage_ledger = E2EStageLedger.create(
-        artifact_dir=art,
-        e2e_run_id=str(envelope.run_id),
-    )
+    if (art / E2E_STAGE_LEDGER_FILENAME).is_file():
+        stage_ledger = E2EStageLedger.open(artifact_dir=art)
+    else:
+        stage_ledger = E2EStageLedger.create(
+            artifact_dir=art,
+            e2e_run_id=str(envelope.run_id),
+        )
+        stage_ledger.record(
+            stage_id="PREFLIGHT",
+            status="PASS",
+            reason_code="NON_FRESH_ORCHESTRATOR_ENTRY_ACCEPTED",
+        )
     handoff_jd_ref = (
         str(job_description_ref or "").strip()
         or str(jd or "").strip()

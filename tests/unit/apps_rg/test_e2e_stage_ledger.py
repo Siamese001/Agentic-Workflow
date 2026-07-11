@@ -25,6 +25,7 @@ def test_stage_ledger_hash_chains_the_canonical_success_path(tmp_path: Path) -> 
         clock=_clock([f"2026-07-10T00:00:{index:02d}+00:00" for index in range(40)]),
     )
     for stage_id in (
+        "PREFLIGHT",
         "RESEARCH",
         "U0",
         "L1",
@@ -73,6 +74,7 @@ def test_stage_ledger_allows_closeout_after_terminal_failure(tmp_path: Path) -> 
     from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger, StageTransitionError
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="e2e-run-failure")
+    ledger.record(stage_id="PREFLIGHT", status="PASS")
     ledger.record(
         stage_id="RESEARCH",
         status="FAIL",
@@ -94,6 +96,7 @@ def test_stage_ledger_requires_contiguous_retry_attempts(tmp_path: Path) -> None
     from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger, StageTransitionError
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="e2e-run-retry")
+    ledger.record(stage_id="PREFLIGHT", status="PASS")
     ledger.record(stage_id="RESEARCH", status="PASS")
     ledger.record(stage_id="U0", status="PASS")
     ledger.record(stage_id="L1", status="PASS")
@@ -112,7 +115,7 @@ def test_stage_ledger_detects_tampering(tmp_path: Path) -> None:
     from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger, verify_e2e_stage_ledger
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="e2e-run-tamper")
-    ledger.record(stage_id="RESEARCH", status="PASS")
+    ledger.record(stage_id="PREFLIGHT", status="PASS")
     payload = json.loads(ledger.path.read_text(encoding="utf-8"))
     payload["entries"][0]["reason_code"] = "ALTERED"
     ledger.path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -120,14 +123,14 @@ def test_stage_ledger_detects_tampering(tmp_path: Path) -> None:
     report = verify_e2e_stage_ledger(ledger.path)
 
     assert report.valid is False
-    assert "receipt_digest_mismatch:RESEARCH:1" in report.errors
+    assert "receipt_digest_mismatch:PREFLIGHT:1" in report.errors
 
 
 def test_stage_ledger_reports_malformed_attempt_without_throwing(tmp_path: Path) -> None:
     from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger, verify_e2e_stage_ledger
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="e2e-run-malformed")
-    ledger.record(stage_id="RESEARCH", status="PASS")
+    ledger.record(stage_id="PREFLIGHT", status="PASS")
     payload = json.loads(ledger.path.read_text(encoding="utf-8"))
     payload["entries"][0]["attempt"] = {"invalid": True}
     ledger.path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -135,7 +138,7 @@ def test_stage_ledger_reports_malformed_attempt_without_throwing(tmp_path: Path)
     report = verify_e2e_stage_ledger(ledger.path)
 
     assert report.valid is False
-    assert "attempt_invalid:RESEARCH" in report.errors
+    assert "attempt_invalid:PREFLIGHT" in report.errors
 
 
 def test_launch_receipt_binds_exact_run_directory_without_secret_value(tmp_path: Path) -> None:
@@ -162,6 +165,28 @@ def test_launch_receipt_binds_exact_run_directory_without_secret_value(tmp_path:
     assert payload["command"] == ["python", "-m", "apps_rg", "--fresh-e2e"]
 
 
+def test_launch_receipt_records_missing_key_id_without_inventing_a_value(tmp_path: Path) -> None:
+    from apps_rg.runtime.e2e_stage_ledger import emit_e2e_launch_receipt
+
+    output_root = tmp_path / "runs"
+    run_dir = output_root / "run-001"
+    run_dir.mkdir(parents=True)
+
+    path = emit_e2e_launch_receipt(
+        output_root=output_root,
+        run_dir=run_dir,
+        e2e_run_id="e2e-run-launch",
+        command=("python", "-m", "apps_rg", "--fresh-e2e"),
+        route_signing_key_id="",
+        baseline_ref="baseline.json",
+    )
+    payload = json.loads(path.read_text(encoding="utf-8"))
+
+    assert payload["route_signing_key_id"] == ""
+    assert payload["route_signing_key_id_present"] is False
+    assert "secret" not in json.dumps(payload).lower()
+
+
 def test_cached_e2e_completion_requires_post_x3_l6_mandatory_and_complete_ledger(
     tmp_path: Path,
 ) -> None:
@@ -172,6 +197,7 @@ def test_cached_e2e_completion_requires_post_x3_l6_mandatory_and_complete_ledger
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="cache-complete")
     for stage_id in (
+        "PREFLIGHT",
         "RESEARCH",
         "U0",
         "L1",
@@ -264,6 +290,7 @@ def test_fresh_completion_requires_executed_research_with_producer_evidence(tmp_
     from apps_rg.runtime.e2e_stage_ledger import E2EStageLedger, validate_cached_e2e_completion
 
     ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="fresh-research-proof")
+    ledger.record(stage_id="PREFLIGHT", status="PASS")
     ledger.record(stage_id="RESEARCH", status="SKIPPED", reason_code="AUTHORIZED_HANDOFF_REUSED")
 
     report = validate_cached_e2e_completion(tmp_path, require_research_execution=True)

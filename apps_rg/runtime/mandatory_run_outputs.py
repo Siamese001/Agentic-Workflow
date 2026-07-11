@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -658,6 +659,18 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
         "proof_gate_status": proof_gate.get("status") or "",
         "proof_classification": proof_gate.get("proof_classification") or "",
         "decisive_reason": proof_gate.get("decisive_reason") or result.get("failure_reason") or "",
+        "operational_failure": (
+            dict(result.get("operational_failure") or {})
+            if isinstance(result.get("operational_failure"), dict)
+            else {}
+        ),
+        "research_artifact_dir": result.get("research_artifact_dir") or "",
+        "research_briefing_path": result.get("research_briefing_path") or "",
+        "research_company_brief_path": result.get("research_company_brief_path") or "",
+        "research_envelope_path": result.get("research_envelope_path") or "",
+        "apps_eval_record_ref": result.get("apps_eval_record_ref") or "",
+        "l6_shadow_bridge_ref": result.get("l6_shadow_bridge_ref") or "",
+        "l7_audit_status": result.get("l7_audit_status") or "",
     }
 
 
@@ -2898,6 +2911,26 @@ def _build_bcg_recommendations(doc: dict[str, Any]) -> list[dict[str, str]]:
     research_status = evidence["research_status"]
     research_source_class = evidence["research_source_class"]
     rows: list[dict[str, str]] = []
+    operational = doc.get("operational_failure_forensics")
+    operational = operational if isinstance(operational, dict) else {}
+    if operational.get("required"):
+        root_cause = str(operational.get("root_cause") or "operational preflight failure")
+        first_causal = operational.get("first_causally_relevant_divergence")
+        first_causal = first_causal if isinstance(first_causal, dict) else {}
+        return [
+            _bcg_row(
+                "P0",
+                "Restore the missing external preflight configuration before starting a new E2E run.",
+                root_cause,
+                f"Blocked at {first_causal.get('stage') or 'PREFLIGHT'} before research, generation, judges, and final assembly.",
+            ),
+            _bcg_row(
+                "P1",
+                "Keep the canonical preflight RCA and zero-retry accounting mandatory on every blocked run.",
+                str(operational.get("retry_analysis") or {}),
+                "Do not replace the recorded failure with a bare launcher exception or post-run backfill.",
+            ),
+        ]
     if research_status == "P0_STATIC_MANUAL_BRIEF_USED":
         rows.extend(
             [
@@ -3914,34 +3947,70 @@ def build_mandatory_run_output(
     repo = (repo_root or find_repo_root(root)).resolve()
     sections = _collect_section_records(root, repo_root=repo, section_id=section_id)
     result_summary = _result_summary(result, root)
+    operational_failure = result_summary.get("operational_failure")
+    operational_failure = operational_failure if isinstance(operational_failure, dict) else {}
+    if operational_failure and not (
+        (root / "lanes").is_dir() or (root / "modular_r4" / "sections").is_dir()
+    ):
+        sections = []
+    operational_forensics: dict[str, Any] = {}
+    display_sections = list(sections)
+    if operational_failure:
+        from apps_rg.runtime.e2e_operational_failure import (
+            build_operational_failure_forensics,
+        )
+
+        baseline_ref = Path(
+            str(operational_failure.get("baseline_ref") or os.environ.get("APPS_RG_E2E_BASELINE_REF") or "")
+        )
+        operational_forensics = build_operational_failure_forensics(
+            run_root=root,
+            repo_root=repo,
+            failure=operational_failure,
+            baseline_ref=baseline_ref,
+        )
+        section_record = operational_forensics.get("section_record")
+        if isinstance(section_record, dict):
+            display_sections.append(section_record)
     final_required = _final_resume_output_required(root, result_summary)
     final_output = _load_json(root / FINAL_RESUME_OUTPUT_JSON)
     if not final_output:
         final_output = build_final_resume_output_contract(root, repo_root=repo, required=final_required)
-    section_lane_table = _build_section_lane_table(root, sections, repo_root=repo)
+    section_lane_table = _build_section_lane_table(root, display_sections, repo_root=repo)
     section_failure_forensics = emit_section_failure_forensics(
         root,
         repo_root=repo,
         sections=sections,
-        result=result_summary,
+        result=None if operational_failure and not sections else result_summary,
     )
     output_bisect_sections = _output_bisect_sections(
         root, section_failure_forensics
     )
+    operational_bisect = operational_forensics.get("output_bisect")
+    if isinstance(operational_bisect, dict):
+        output_bisect_sections.insert(0, operational_bisect)
+    rca_findings = _top_rca_sections(sections)
+    operational_rca = operational_forensics.get("rca_finding")
+    if isinstance(operational_rca, dict):
+        rca_findings.insert(0, operational_rca)
     doc = {
         "schema_version": "apps_rg.mandatory_run_output.v1",
         "generated_at_utc": _utc_now(),
         "run_root_abs": str(root),
         "run_root": _repo_rel(root, repo),
         "result_summary": result_summary,
-        "section_counts": _count_sections(sections),
-        "sections": sections,
+        "section_counts": _count_sections(display_sections),
+        "sections": display_sections,
         "section_lane_table": section_lane_table,
         "final_resume_output": final_output,
-        "rca_findings": _top_rca_sections(sections),
+        "rca_findings": rca_findings,
         "section_failure_forensics": section_failure_forensics,
+        "operational_failure_forensics": operational_forensics,
         "output_bisect": {
-            "required": bool(section_failure_forensics.get("required")),
+            "required": bool(
+                section_failure_forensics.get("required")
+                or operational_forensics.get("required")
+            ),
             "sections": output_bisect_sections,
         },
         "mandatory_artifacts": {
@@ -4032,6 +4101,27 @@ def validate_mandatory_output_bundle(
             for error in validate_section_failure_rca(rca):
                 errors.append(f"comparison:{section_id}:{error}")
 
+    operational = doc.get("operational_failure_forensics")
+    operational = operational if isinstance(operational, dict) else {}
+    if operational.get("required"):
+        from apps_rg.runtime.e2e_operational_failure import (
+            validate_operational_failure_forensics,
+        )
+
+        errors.extend(validate_operational_failure_forensics(operational))
+        bisect_text = _read_text(root / OUTPUT_BISECT_MD)
+        for marker in (
+            "### Layperson RCA",
+            "### Underlying Root Cause",
+            "### Ingestion-To-Outcome Lineage",
+            "### Prior Passing Run",
+            "### Current Failing Run",
+            "### Full X2 Gate Matrix",
+            "### Judge Matrix",
+        ):
+            if marker not in bisect_text:
+                errors.append(f"missing_marker:{OUTPUT_BISECT_MD}:{marker}")
+
     return {
         "gate_id": MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
         "required": True,
@@ -4045,6 +4135,7 @@ def validate_mandatory_output_bundle(
             MANDATORY_RUN_OUTPUT_JSON,
         ],
         "failed_section_comparison_required": bool(forensics.get("required")),
+        "operational_failure_comparison_required": bool(operational.get("required")),
         "failure_reason": "" if not errors else MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
     }
 

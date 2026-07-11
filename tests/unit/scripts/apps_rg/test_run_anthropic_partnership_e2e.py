@@ -10,11 +10,13 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from scripts.apps_rg.run_anthropic_partnership_e2e import (
     extract_exact_run_dir,
+    main,
     validate_pinned_baseline,
 )
 
@@ -93,3 +95,49 @@ def test_validate_pinned_baseline_rejects_digest_drift(tmp_path: Path) -> None:
     mandatory.write_text("drift", encoding="utf-8")
     with pytest.raises(RuntimeError, match="PINNED_BASELINE_DIGEST_MISMATCH"):
         validate_pinned_baseline(tmp_path, contract)
+
+
+def test_launcher_missing_signing_config_still_launches_canonical_child(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output_root = tmp_path / "runs"
+    run_dir = output_root / "e2e_missing_signing"
+    stdout = (
+        f"FRESH_E2E_ARTIFACT_DIR root={output_root} run_dir={run_dir} "
+        "route_flag=APPS_RG_ENABLE_MANAGED_WORKFLOW_L0\n"
+    )
+    calls: list[list[str]] = []
+
+    def fake_run(command: list[str], **_kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append(command)
+        run_dir.mkdir(parents=True)
+        return subprocess.CompletedProcess(command, 2, stdout=stdout, stderr="")
+
+    monkeypatch.delenv("APPS_RG_ROUTE_HMAC_SECRET", raising=False)
+    monkeypatch.delenv("APPS_RG_ROUTE_HMAC_KEY_ID", raising=False)
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        "scripts.apps_rg.run_anthropic_partnership_e2e.validate_cached_e2e_completion",
+        lambda *_args, **_kwargs: SimpleNamespace(valid=False, errors=("preflight_blocked",)),
+    )
+
+    rc = main(
+        [
+            "--repo-root",
+            str(tmp_path),
+            "--output-root",
+            str(output_root),
+            "--baseline-ref",
+            str(tmp_path / "baseline.json"),
+        ]
+    )
+
+    assert rc == 2
+    assert len(calls) == 1
+    launch = json.loads((run_dir / "e2e_launch_receipt.json").read_text(encoding="utf-8"))
+    assert launch["route_signing_key_id"] == ""
+    assert launch["route_signing_key_id_present"] is False
+    result = json.loads((run_dir / "e2e_launcher_result.json").read_text(encoding="utf-8"))
+    assert result["process_exit_code"] == 2
+    assert result["completion_valid"] is False

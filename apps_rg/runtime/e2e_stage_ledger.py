@@ -172,7 +172,7 @@ class E2EStageLedger:
         e2e_run_id: str,
         stage_graph_path: Path | None = None,
         clock: Callable[[], str] = _utc_now,
-    ) -> "E2EStageLedger":
+    ) -> E2EStageLedger:
         run_id = str(e2e_run_id or "").strip()
         if not run_id:
             raise ValueError("e2e_run_id is required")
@@ -217,6 +217,25 @@ class E2EStageLedger:
                 "cannot append to invalid E2E stage ledger: " + "; ".join(report.errors)
             )
         return payload
+
+    @classmethod
+    def open(
+        cls,
+        *,
+        artifact_dir: Path,
+        stage_graph_path: Path | None = None,
+        clock: Callable[[], str] = _utc_now,
+    ) -> E2EStageLedger:
+        graph_path = (stage_graph_path or DEFAULT_STAGE_GRAPH).resolve()
+        ledger = cls(
+            path=Path(artifact_dir) / E2E_STAGE_LEDGER_FILENAME,
+            graph_path=graph_path,
+            clock=clock,
+        )
+        if not ledger.path.is_file():
+            raise FileNotFoundError(f"E2E stage ledger does not exist: {ledger.path}")
+        ledger._load()
+        return ledger
 
     def record(
         self,
@@ -433,8 +452,8 @@ def emit_e2e_launch_receipt(
         raise ValueError(f"run_dir does not exist: {target}")
     run_id = str(e2e_run_id or "").strip()
     key_id = str(route_signing_key_id or "").strip()
-    if not run_id or not key_id:
-        raise ValueError("e2e_run_id and route_signing_key_id are required")
+    if not run_id:
+        raise ValueError("e2e_run_id is required")
     payload = {
         "schema_version": E2E_LAUNCH_RECEIPT_SCHEMA_VERSION,
         "e2e_run_id": run_id,
@@ -443,6 +462,7 @@ def emit_e2e_launch_receipt(
         "run_dir": str(target),
         "command": [str(part) for part in command],
         "route_signing_key_id": key_id,
+        "route_signing_key_id_present": bool(key_id),
         "baseline_ref": str(baseline_ref or ""),
         "stage_graph_ref": str(DEFAULT_STAGE_GRAPH.resolve()),
         "stage_graph_digest": _read_graph(DEFAULT_STAGE_GRAPH.resolve())[2],
@@ -478,6 +498,15 @@ def validate_cached_e2e_completion(
             except (OSError, json.JSONDecodeError):
                 ledger_payload = {}
             entries = ledger_payload.get("entries") if isinstance(ledger_payload, dict) else []
+            preflight_entries = [
+                entry
+                for entry in entries or []
+                if isinstance(entry, dict)
+                and str(entry.get("stage_id") or "").upper() == "PREFLIGHT"
+            ]
+            preflight = preflight_entries[-1] if preflight_entries else {}
+            if str(preflight.get("status") or "").upper() != "PASS":
+                errors.append("preflight_stage_not_passed")
             research_entries = [
                 entry
                 for entry in entries or []
