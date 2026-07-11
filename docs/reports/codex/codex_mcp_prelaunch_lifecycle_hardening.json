@@ -1,0 +1,170 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "codex-mcp-prelaunch-lifecycle-hardening-20260711",
+  "generated_at": "2026-07-11T16:46:00-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH",
+    "branch": "main",
+    "head": "d8fea0ec26a64882eee4864fecab8abfac92c336",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Implement a durable repo-owned Windows lifecycle that makes required ADG and Memory HTTP MCP services protocol-healthy before Codex Desktop initialization.",
+    "plan_id": "codex-mcp-prelaunch-lifecycle-hardening-20260711",
+    "files_changed": [
+      ".codex/hooks/session_start_mcp_bootstrap.py",
+      ".codex/mcp-notes.md",
+      "docs/codex-primary-execution.md",
+      "docs/reports/codex/codex_mcp_prelaunch_lifecycle_hardening.json",
+      "docs/reports/codex/codex_mcp_prelaunch_lifecycle_hardening.md",
+      "ops_scripts/windows/codex_mcp_http_services.psd1",
+      "ops_scripts/windows/codex_mcp_preflight.ps1",
+      "ops_scripts/windows/codex_mcp_service_tasks.ps1",
+      "ops_scripts/windows/install_codex_agentic_shortcut.ps1",
+      "ops_scripts/windows/launch_codex_agentic.ps1",
+      "ops_scripts/windows/run_codex_http_mcp_service.ps1",
+      "tests/unit/ops_scripts/hooks/codex/test_session_start_mcp_bootstrap.py",
+      "tests/unit/ops_scripts/windows/test_codex_mcp_windows_lifecycle.py",
+      "tools/adg/mcp/OPERATIONS.md",
+      "tools/mcp/OPERATIONS.md"
+    ]
+  },
+  "changed_files": [
+    ".codex/hooks/session_start_mcp_bootstrap.py",
+    ".codex/mcp-notes.md",
+    "docs/codex-primary-execution.md",
+    "docs/reports/codex/codex_mcp_prelaunch_lifecycle_hardening.json",
+    "docs/reports/codex/codex_mcp_prelaunch_lifecycle_hardening.md",
+    "ops_scripts/windows/codex_mcp_http_services.psd1",
+    "ops_scripts/windows/codex_mcp_preflight.ps1",
+    "ops_scripts/windows/codex_mcp_service_tasks.ps1",
+    "ops_scripts/windows/install_codex_agentic_shortcut.ps1",
+    "ops_scripts/windows/launch_codex_agentic.ps1",
+    "ops_scripts/windows/run_codex_http_mcp_service.ps1",
+    "tests/unit/ops_scripts/hooks/codex/test_session_start_mcp_bootstrap.py",
+    "tests/unit/ops_scripts/windows/test_codex_mcp_windows_lifecycle.py",
+    "tools/adg/mcp/OPERATIONS.md",
+    "tools/mcp/OPERATIONS.md"
+  ],
+  "tests_added_or_updated": [
+    "tests/unit/ops_scripts/windows/test_codex_mcp_windows_lifecycle.py",
+    "tests/unit/ops_scripts/hooks/codex/test_session_start_mcp_bootstrap.py"
+  ],
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "python -m pytest tests/unit/ops_scripts/windows/test_codex_mcp_windows_lifecycle.py tests/unit/ops_scripts/hooks/codex/test_session_start_mcp_bootstrap.py tests/unit/tools/mcp/test_http_service_supervisor.py tests/unit/tools/mcp/test_http_mcp_launchers.py tests/unit/codex_governance/test_sync_mcp_config_http_routes.py -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "pwsh -NoProfile -File ops_scripts/windows/codex_mcp_service_tasks.ps1 -Install -EnsureRunning -Json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "pwsh -NoProfile -File ops_scripts/windows/launch_codex_agentic.ps1 -RepoRoot C:/Git/Agentic-Workflow-FRESH -NoLaunch -Json",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_primary.py",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      }
+    ],
+    "fallbacks": [
+      {
+        "reason": "ADG MCP was unavailable during explicit lifecycle recovery/RCA.",
+        "substitute": "canonical ADG SQLite snapshot under explicit degraded_sqlite recovery provenance",
+        "route": "degraded_sqlite",
+        "scope": "baseline and test selection only"
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "focused tests",
+        "status": "PASS",
+        "evidence": "20 collected and 20 passed before final closeout rerun."
+      },
+      {
+        "name": "direct MCP protocol probes",
+        "status": "PASS",
+        "evidence": "ADG initialize/tools-list/adg_health and Memory initialize/tools-list/memory_health passed."
+      },
+      {
+        "name": "restart-on-failure",
+        "status": "PASS",
+        "evidence": "ADG 37716 -> 41176; Memory 6608 -> 39432; both replacement processes passed protocol and health probes."
+      },
+      {
+        "name": "active Codex tool calls",
+        "status": "PASS",
+        "evidence": "adg_health and adg_process_identity succeeded at final PID 41176; memory_health and mem_process_identity succeeded at final PID 25068."
+      },
+      {
+        "name": "foreign-port fail-closed behavior",
+        "status": "PASS",
+        "evidence": "Temporary non-MCP listener PID 41036 occupied port 8766; ensure returned exit 1 with foreign_port_conflict and left the listener alive."
+      },
+      {
+        "name": "endpoint-matched PostToolUse proof ledger",
+        "status": "BLOCKED",
+        "evidence": "Deferred MCP calls were nested under functions.exec, so the top-level mcp__.* hook matcher did not record them; diagnosis remains codex_http_route_unproven."
+      },
+      {
+        "name": "Codex primary verifier",
+        "status": "BLOCKED",
+        "evidence": "Pre-existing root .agents directory is reported as repo_duplicate_enforcement_home."
+      }
+    ]
+  },
+  "services": {
+    "adg_sqlite": {
+      "task": "AgenticWorkflow-ADG-HTTP-MCP",
+      "url": "http://127.0.0.1:8765/mcp",
+      "restart_old_pid": 37716,
+      "restart_new_pid": 41176,
+      "current_pid": 41176,
+      "status": "healthy"
+    },
+    "memory": {
+      "task": "AgenticWorkflow-Memory-HTTP-MCP",
+      "url": "http://127.0.0.1:8766/mcp",
+      "restart_old_pid": 6608,
+      "restart_new_pid": 39432,
+      "current_pid": 25068,
+      "status": "healthy"
+    }
+  },
+  "known_gaps": [
+    {
+      "description": "Physical reboot and logon-trigger startup were not executed.",
+      "remediation": "After reboot run codex_mcp_service_tasks.ps1 -Status -Json and require both services healthy and managed."
+    },
+    {
+      "description": "Endpoint-matched PostToolUse proof ledger remains absent despite successful active-session tool calls.",
+      "remediation": "Start a fresh Codex task from the managed shortcut, rerun the four live tools, and rerun both diagnosis commands."
+    },
+    {
+      "description": "Codex primary governance verification is blocked by a pre-existing root .agents directory outside this change.",
+      "remediation": "Disposition the duplicate enforcement home under the repo governance contract, then rerun verify_codex_enforcement_home.py and verify_codex_primary.py."
+    }
+  ],
+  "rca": {
+    "symptom": "Required ADG and Memory URL MCP services were intermittently absent before Codex thread initialization.",
+    "root_cause": "No repo-owned pre-Codex Windows lifecycle owner existed; SessionStart was too late and the old preflight only synchronized configuration.",
+    "evidence": "Baseline had drifted user-profile task actions, no listeners, failed active MCP calls, and a config-only preflight that passed.",
+    "fix_or_next": "next: Use the Codex Agentic Workflow shortcut; it repairs Scheduled Tasks, ensures protocol health, and launches Codex only after both health tools pass.",
+    "recurrence_guard": "Current-user logon plus one-minute watchdog triggers, IgnoreNew, exact ownership receipts, fail-closed foreign-port checks, protocol probes, and status-only SessionStart verification."
+  }
+}

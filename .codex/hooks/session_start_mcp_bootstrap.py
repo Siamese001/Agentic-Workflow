@@ -16,6 +16,7 @@ from datetime import UTC, datetime
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 from typing import Any
@@ -192,6 +193,40 @@ def main() -> int:
             timeout=120,
         ),
     ]
+
+    if os.name == "nt":
+        pwsh = shutil.which("pwsh.exe") or shutil.which("pwsh")
+        task_script = REPO_ROOT / "ops_scripts" / "windows" / "codex_mcp_service_tasks.ps1"
+        if pwsh and task_script.is_file():
+            steps.append(
+                _run_step(
+                    "windows_http_mcp_lifecycle_status",
+                    [
+                        pwsh,
+                        "-NoLogo",
+                        "-NoProfile",
+                        "-NonInteractive",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-File",
+                        str(task_script),
+                        "-RepoRoot",
+                        str(REPO_ROOT),
+                        "-Status",
+                        "-Json",
+                    ],
+                    env=env,
+                    timeout=45,
+                )
+            )
+        else:
+            steps.append(
+                {
+                    "label": "windows_http_mcp_lifecycle_status",
+                    "status": "WARN",
+                    "reason": "pwsh or repo-owned Scheduled Task status script unavailable",
+                }
+            )
 
     if env.get("CODEX_SESSION_START_DETACHED_MCP_BACKSTOP") == "1":
         supervisor_env = dict(env)

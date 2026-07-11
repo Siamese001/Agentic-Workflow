@@ -140,6 +140,38 @@ python .codex/governance/scripts/sync_mcp_config.py --check-user-config --json
 
 The SessionStart hook runs `.codex/hooks/session_start_mcp_bootstrap.py`, which refreshes that projection and runs advisory health probes. It does not claim detached stdio subprocesses, HTTP service process liveness, port-open checks, or protocol-only initialize/tools-list probes as host-attached MCP parity.
 
+### Windows HTTP MCP prelaunch lifecycle
+
+On Windows, `AgenticWorkflow-ADG-HTTP-MCP` and `AgenticWorkflow-Memory-HTTP-MCP` are the lifecycle owners for the required Streamable HTTP routes. They run the repo-owned `ops_scripts/windows/run_codex_http_mcp_service.ps1` under the current user, start at logon, ignore duplicate task instances, and use both native `RestartOnFailure` metadata and a one-minute repeating Task Scheduler trigger after an unexpected service exit. The repeating trigger covers Windows hosts that do not apply native restart behavior to an on-demand task instance. Service definitions live only in `ops_scripts/windows/codex_mcp_http_services.psd1`; `.mcp.json` remains the MCP route SSOT.
+
+One-time install and supported shortcut creation:
+
+```powershell
+pwsh -NoProfile -ExecutionPolicy Bypass -File .\ops_scripts\windows\install_codex_agentic_shortcut.ps1 -RepoRoot $PWD -Json
+```
+
+Expected output has `"status": "PASS"`, task operations of `installed`, `repaired`, or `unchanged`, and the current-user `Codex — Agentic Workflow.lnk` path. Use that shortcut for normal Codex startup. Its prelaunch wrapper synchronizes config, repairs tasks, waits for dependencies, and requires initialize, tools/list, and the configured health tool before opening Codex.
+
+Operational commands:
+
+```powershell
+# Status only
+pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Status -Json
+
+# Idempotent repair and readiness
+pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Install -EnsureRunning -Json
+
+# Full prelaunch proof without opening Codex
+pwsh -NoProfile -File .\ops_scripts\windows\launch_codex_agentic.ps1 -RepoRoot $PWD -NoLaunch -Json
+
+# Remove only the two managed tasks
+pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Uninstall -Json
+```
+
+The task manager fails closed when a configured port is owned by a PID that does not match the repo runner or launcher receipt. It never kills that process. Inspect `artifacts/mcp/*_windows_runner.json`, `artifacts/mcp/*_http_stdout.log`, `artifacts/mcp/*_http_stderr.log`, and `artifacts/mcp/*_http_service.jsonl`, resolve the ownership conflict, then rerun repair.
+
+SessionStart occurs after required MCP initialization, so it cannot repair a service that was unavailable while a thread was being created. Its Windows lifecycle step is status-only and advisory. Making either route optional, reverting to primary stdio, inflating timeouts, or accepting a listener/process as readiness would hide the pre-initialization failure instead of assigning it a durable owner.
+
 The all-enabled per-turn MCP protocol gate is advisory by default for ordinary analysis, design, and refactoring prompts so transport churn does not block low-risk innovation work. It remains blocking for proof, eval, PR/publication, `main` closeout, and explicit strict prompts; malformed MCP config and missing required secret passthrough also always block. Set `REQUIRED_MCP_GATE_ENFORCE=block` to restore the old block-all mode, or `REQUIRED_MCP_GATE_ENFORCE=warn` for explicit warn-only transport checks.
 
 Shell-side scripts cannot see the live Codex MCP namespace. For legacy stdio routes,

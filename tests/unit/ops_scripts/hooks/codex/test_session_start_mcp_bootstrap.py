@@ -54,7 +54,13 @@ def test_main_skips_detached_backstop_by_default(monkeypatch, tmp_path: Path, ca
 
     labels = [label for label, _argv in calls]
     assert "sync_user_config" in labels
+    assert "windows_http_mcp_lifecycle_status" in labels
     assert "detached_mcp_process_backstop" not in labels
+    status_argv = dict(calls)["windows_http_mcp_lifecycle_status"]
+    assert "codex_mcp_service_tasks.ps1" in " ".join(status_argv)
+    assert "-Status" in status_argv
+    assert "-Install" not in status_argv
+    assert "-EnsureRunning" not in status_argv
     assert records[0]["steps"][-1]["status"] == "SKIP"
     assert records[0]["mcp_callability_epoch"]["epoch_id"] == "epoch-1"
     assert epochs[0]["source"] == "SessionStart"

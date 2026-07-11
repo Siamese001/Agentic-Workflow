@@ -33,6 +33,25 @@ Recovery order:
 4. If classification is `codex_http_route_unproven`, reload/reconnect the Codex MCP client once, then call live `mcp__memory.memory_health` or `mcp__memory.mem_process_identity`.
 5. Do not accept process liveness, heartbeat files, direct SQLite, port-open, curl, or tools/list as active-session callability proof. The route is green only after the PostToolUse callability ledger records fresh `route_kind=http` proof for `http://127.0.0.1:8766/mcp`.
 
+## Windows HTTP service lifecycle
+
+Scheduled Tasks `AgenticWorkflow-ADG-HTTP-MCP` and `AgenticWorkflow-Memory-HTTP-MCP` own the two required Windows HTTP services before Codex starts. The shared definition is `ops_scripts/windows/codex_mcp_http_services.psd1`; no user-profile launcher is authoritative.
+
+```powershell
+# Install/repair, start when needed, and require protocol plus health-tool success
+pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Install -EnsureRunning -Json
+
+# Inspect without mutation
+pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Status -Json
+
+# Supported prelaunch verification without opening another Codex instance
+pwsh -NoProfile -File .\ops_scripts\windows\launch_codex_agentic.ps1 -RepoRoot $PWD -NoLaunch -Json
+```
+
+Memory waits boundedly for Redis and uses `redis://localhost:6379/0` only when no non-placeholder `ADG_REDIS_URL` exists. Logs and receipts are `artifacts/mcp/memory_windows_runner.json`, `memory_http_stdout.log`, `memory_http_stderr.log`, and `memory_http_service.jsonl`. A foreign listener on `8765` or `8766` blocks startup without killing it.
+
+The supported shortcut is installed with `install_codex_agentic_shortcut.ps1`. SessionStart only records `-Status -Json` because it runs after required MCP initialization. To remove the lifecycle, run `codex_mcp_service_tasks.ps1 -Uninstall -Json`; this stops and unregisters only the two named tasks.
+
 ## pytest_mcp
 
 ## Health / Verification
