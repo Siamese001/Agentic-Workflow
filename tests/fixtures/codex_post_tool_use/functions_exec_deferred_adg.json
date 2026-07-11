@@ -1,0 +1,21 @@
+{
+  "fixture_provenance": {
+    "captured_at": "2026-07-11T21:41:18.932Z",
+    "sanitization": "Call IDs, turn IDs, paths, and full health payload values removed.",
+    "source": "Live Codex rollout response_item pair from a genuine functions.exec nested adg_health call."
+  },
+  "session_id": "fixture-session",
+  "tool_input": {
+    "source": "const result = await tools.mcp__adg_sqlite__adg_health({}); text(JSON.stringify({schema:\"codex-deferred-mcp-result/v1\",server_id:\"adg_sqlite\",tool_name:\"adg_health\",endpoint:\"http://127.0.0.1:8765/mcp\",completed_at:new Date().toISOString(),result}));"
+  },
+  "tool_name": "functions.exec",
+  "tool_response": {
+    "output": [
+      {
+        "text": "{\"schema\":\"codex-deferred-mcp-result/v1\",\"server_id\":\"adg_sqlite\",\"tool_name\":\"adg_health\",\"endpoint\":\"http://127.0.0.1:8765/mcp\",\"completed_at\":\"2026-07-11T21:41:18.900Z\",\"result\":{\"isError\":false,\"structuredContent\":{\"status\":\"ok\"}}}",
+        "type": "input_text"
+      }
+    ],
+    "status": "completed"
+  }
+}

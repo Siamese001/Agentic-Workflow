@@ -8,18 +8,12 @@ MCP calls. PostToolUse hooks never block.
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_SCRIPT = (
-    _REPO_ROOT
-    / ".codex"
-    / "governance"
-    / "scripts"
-    / "post_adg_mcp_callable_proof.py"
-)
+_SCRIPT = _REPO_ROOT / ".codex" / "governance" / "scripts" / "post_adg_mcp_callable_proof.py"
 
 
 def main() -> int:
