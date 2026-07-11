@@ -1,6 +1,6 @@
 version = 1
 id = "adg-p3-promotion-hygiene"
-kind = "cron"
+kind = "manual"
 name = "ADG P3 Promotion Hygiene"
 prompt = '''
 Run the Agentic-Workflow downstream P3 promotion/hygiene automation.
@@ -38,7 +38,7 @@ Startup gates:
 - Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
 
 Automation-owned planning and approval:
-- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- This TOML overrides any default T2/T3 human approval expectation when this on-demand automation is invoked explicitly.
 - The automation must still create a concrete P3 promotion/watchlist plan before edits, but it must do so inside the run without waiting for user interaction.
 - Treat the generated P3 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P3 KPI/watchlist evidence, and gate artifacts consumed by the run.
 - Do not stop only to request plan approval when the selected P3 item stays within this TOML's standing approval scope.
@@ -85,8 +85,7 @@ End-of-run merge/publication:
 Closeout:
 Summarize the selected BCG/P3 source artifact, generated P3 promotion/watchlist plan, promotion reason, changed files, validation commands and results, branch/worktree status, merge/publication result, final main/origin state, remaining/promoted P3 signal, and whether any PR/publication follow-up remains. Include an RCA block for any stop/failure.
 '''
-status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=5;BYMINUTE=0;BYDAY=FR"
+status = "ON_DEMAND"
 model = "gpt-5.5"
 reasoning_effort = "high"
 execution_environment = "worktree"

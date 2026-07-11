@@ -1,6 +1,6 @@
 version = 1
 id = "adg-bcg-p2-next-action"
-kind = "cron"
+kind = "manual"
 name = "ADG BCG P2 Next Action"
 prompt = '''
 Run the Agentic-Workflow downstream BCG/ADG P2 next-action automation.
@@ -38,7 +38,7 @@ Startup gates:
 - Verify the working surface is clean. If not clean or ambiguous, stop without editing and report the blocker.
 
 Automation-owned planning and approval:
-- This TOML overrides any default T2/T3 human approval expectation for this overnight automation.
+- This TOML overrides any default T2/T3 human approval expectation when this on-demand automation is invoked explicitly.
 - The automation must still create a concrete P2 execution and burndown plan before edits, but it must do so inside the run without waiting for user interaction.
 - Treat the generated P2 plan as auto-approved once it is grounded in the exact released ADG receipt, action queue, burndown table/report, P2 ratchet trace, and gate artifacts consumed by the run.
 - Do not stop only to request plan approval when the selected P2 item stays within this TOML's standing approval scope.
@@ -85,8 +85,7 @@ End-of-run merge/publication:
 Closeout:
 Summarize the selected BCG/P2 source artifact, generated P2 burndown plan, target_rows, planned_rows, attempted_rows, cleared_rows, remaining_rows, target_status, changed files, P2 hotspot count before/after if measurable, validation commands and results, branch/worktree status, merge/publication result, final main/origin state, remaining P2 count or blocked next item, and whether any PR/publication follow-up remains. If cleared_rows < target_rows, set target_status=missed and include an RCA block with blocker_type, blocker_evidence, why additional safe candidates were unavailable, and the next unblock action.
 '''
-status = "ACTIVE"
-rrule = "RRULE:FREQ=WEEKLY;BYHOUR=4;BYMINUTE=20;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+status = "ON_DEMAND"
 model = "gpt-5.5"
 reasoning_effort = "high"
 execution_environment = "worktree"

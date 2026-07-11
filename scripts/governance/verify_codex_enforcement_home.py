@@ -55,6 +55,8 @@ FORBIDDEN_SCHEMA_AUTHORITY_REF_RE = re.compile(
 MANUAL_AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
     "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
+    "adg-bcg-p2-next-action",
+    "adg-p3-promotion-hygiene",
 )
 USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
     "on-demand-pr-main-publisher-2",
