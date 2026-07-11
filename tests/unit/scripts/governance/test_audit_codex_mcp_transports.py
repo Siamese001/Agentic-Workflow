@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import sys
+import types
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -161,6 +162,39 @@ def test_adg_http_launcher_marker_matches_current_mcp_command() -> None:
     assert any(marker.lower().replace("\\", "/") in normalized for marker in markers)
 
 
+def test_process_audit_ignores_no_window_adapter_wrapper(monkeypatch) -> None:
+    class FakeProcess:
+        def __init__(self, pid: int, name: str, cmdline: list[str]) -> None:
+            self.info = {"pid": pid, "name": name, "cmdline": cmdline, "create_time": 1.0}
+
+    processes = [
+        FakeProcess(
+            101,
+            "wscript.exe",
+            [
+                "wscript.exe",
+                "run_hidden_wait.vbs",
+                "python.exe",
+                "-m",
+                "tools.mcp.launch_adg_sqlite_http_mcp",
+            ],
+        ),
+        FakeProcess(
+            102,
+            "python.exe",
+            ["python.exe", "-m", "tools.mcp.launch_adg_sqlite_http_mcp"],
+        ),
+    ]
+    fake_psutil = types.SimpleNamespace(process_iter=lambda _fields: processes)
+    monkeypatch.setitem(sys.modules, "psutil", fake_psutil)
+
+    state = mod._processes()["servers"]["adg_sqlite"]
+
+    assert state["process_count"] == 1
+    assert state["classification"] == "single"
+    assert state["processes"][0]["pid"] == 102
+
+
 def test_gitkraken_marker_registered_for_process_hygiene() -> None:
     config = mod.PROCESS_MARKERS["GitKraken"]
     normalized = "c:/users/amita/appdata/local/gitkrakencli/gk.exe mcp --readonly"
@@ -238,7 +272,11 @@ def test_legacy_codex_route_shape_is_normalized() -> None:
         "routes": [
             {"server_id": "GitKraken", "codex_route": "host_mcp_required", "status": "blocked_degraded"},
             {"server_id": "memory", "codex_route": "host_mcp_required", "status": "blocked"},
-            {"server_id": "adg_sqlite", "codex_route": "raw_mcp", "status": "transport_green_payload_blocked"},
+            {
+                "server_id": "adg_sqlite",
+                "codex_route": "raw_mcp",
+                "status": "transport_green_payload_blocked",
+            },
         ]
     }
 
@@ -384,7 +422,10 @@ def test_adg_http_route_rejects_non_proof_tool(monkeypatch, tmp_path: Path) -> N
     )
 
     assert evidence["servers"]["adg_sqlite"]["classification"] == "codex_http_route_unproven"
-    assert "adg_proof_tool_not_allowed" in evidence["servers"]["adg_sqlite"]["http_callability_acceptance"]["reasons"]
+    assert (
+        "adg_proof_tool_not_allowed"
+        in evidence["servers"]["adg_sqlite"]["http_callability_acceptance"]["reasons"]
+    )
 
 
 def test_build_route_evidence_without_contract_is_explicit() -> None:
@@ -401,11 +442,21 @@ def test_cleanup_selects_older_claude_mcp_cohort_only() -> None:
     records = [
         cleanup.ProcessRecord(10, 1, "claude.exe", ("claude.exe", "--resume", "old"), 100.0),
         cleanup.ProcessRecord(20, 1, "claude.exe", ("claude.exe", "--resume", "new"), 200.0),
-        cleanup.ProcessRecord(11, 10, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 101.0),
-        cleanup.ProcessRecord(12, 10, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
-        cleanup.ProcessRecord(21, 20, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 201.0),
-        cleanup.ProcessRecord(22, 20, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 202.0),
-        cleanup.ProcessRecord(99, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 300.0),
+        cleanup.ProcessRecord(
+            11, 10, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 10, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
+        cleanup.ProcessRecord(
+            21, 20, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 201.0
+        ),
+        cleanup.ProcessRecord(
+            22, 20, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 202.0
+        ),
+        cleanup.ProcessRecord(
+            99, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 300.0
+        ),
     ]
 
     selection = cleanup.select_duplicate_targets(records)
@@ -419,7 +470,9 @@ def test_cleanup_does_not_select_through_nested_claude_parent() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "claude.exe", ("claude.exe", "wrapper"), 300.0),
         cleanup.ProcessRecord(10, 1, "claude.exe", ("claude.exe", "--resume", "agent"), 100.0),
-        cleanup.ProcessRecord(11, 10, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 101.0),
+        cleanup.ProcessRecord(
+            11, 10, "python.exe", ("python", "-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"), 101.0
+        ),
     ]
 
     selection = cleanup.select_duplicate_targets(records)
@@ -456,8 +509,12 @@ def test_cleanup_python_mcp_marker_requires_direct_argv_match() -> None:
 def test_codex_duplicate_cleanup_blocks_without_attached_pid() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
-        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+        cleanup.ProcessRecord(
+            11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
     ]
 
     selection = cleanup.select_codex_guarded_targets(records)
@@ -476,8 +533,12 @@ def test_codex_duplicate_cleanup_blocks_without_attached_pid() -> None:
 def test_codex_duplicate_cleanup_selects_only_unattached_pids() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
-        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+        cleanup.ProcessRecord(
+            11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
     ]
 
     selection = cleanup.select_codex_guarded_targets(records, {"memory": 11})
@@ -490,8 +551,12 @@ def test_codex_duplicate_cleanup_selects_only_unattached_pids() -> None:
 def test_codex_duplicate_cleanup_rejects_unknown_attached_pid() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
-        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+        cleanup.ProcessRecord(
+            11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
     ]
 
     selection = cleanup.select_codex_guarded_targets(records, {"memory": 99})
@@ -504,10 +569,16 @@ def test_codex_duplicate_cleanup_rejects_unknown_attached_pid() -> None:
 def test_codex_cleanup_does_not_block_single_npx_launch_tree() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0),
-        cleanup.ProcessRecord(11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0),
+        cleanup.ProcessRecord(
+            10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0
+        ),
         cleanup.ProcessRecord(12, 11, "cmd.exe", ("cmd.exe", "/d", "/s", "/c", "context7-mcp"), 103.0),
-        cleanup.ProcessRecord(13, 12, "node.exe", ("node.exe", "node_modules/@upstash/context7-mcp/dist/index.js"), 104.0),
+        cleanup.ProcessRecord(
+            13, 12, "node.exe", ("node.exe", "node_modules/@upstash/context7-mcp/dist/index.js"), 104.0
+        ),
     ]
 
     selection = cleanup.select_codex_guarded_targets(records)
@@ -521,10 +592,18 @@ def test_codex_cleanup_does_not_block_single_npx_launch_tree() -> None:
 def test_codex_cleanup_duplicate_npx_launch_tree_targets_unattached_tree() -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0),
-        cleanup.ProcessRecord(11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0),
-        cleanup.ProcessRecord(20, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 201.0),
-        cleanup.ProcessRecord(21, 20, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 202.0),
+        cleanup.ProcessRecord(
+            10, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            11, 10, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 102.0
+        ),
+        cleanup.ProcessRecord(
+            20, 1, "cmd.exe", ("cmd.exe", "/c", "npx", "-y", "@upstash/context7-mcp"), 201.0
+        ),
+        cleanup.ProcessRecord(
+            21, 20, "node.exe", ("node.exe", "npx-cli.js", "-y", "@upstash/context7-mcp"), 202.0
+        ),
     ]
 
     blocked = cleanup.select_codex_guarded_targets(records)
@@ -546,8 +625,12 @@ def test_codex_cleanup_duplicate_npx_launch_tree_targets_unattached_tree() -> No
 def test_cleanup_apply_refuses_blocked_codex_duplicates(monkeypatch) -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
-        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+        cleanup.ProcessRecord(
+            11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
     ]
     monkeypatch.setattr(cleanup, "_snapshot_processes", lambda: records)
     monkeypatch.setattr(cleanup, "_attached_pids_from_env", lambda: {})
@@ -563,8 +646,12 @@ def test_cleanup_apply_refuses_blocked_codex_duplicates(monkeypatch) -> None:
 def test_cleanup_apply_with_attached_pid_targets_only_unattached(monkeypatch) -> None:
     records = [
         cleanup.ProcessRecord(1, 0, "codex.exe", ("codex.exe",), 100.0),
-        cleanup.ProcessRecord(11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0),
-        cleanup.ProcessRecord(12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0),
+        cleanup.ProcessRecord(
+            11, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 101.0
+        ),
+        cleanup.ProcessRecord(
+            12, 1, "python.exe", ("python", "-u", "tools/memory/adg_memory_server.py"), 102.0
+        ),
     ]
     terminated: list[list[int]] = []
     monkeypatch.setattr(cleanup, "_snapshot_processes", lambda: records)

@@ -11,13 +11,12 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import shutil
 import socket
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
-
 
 ROOT = Path(__file__).resolve().parents[2]
 PRIMARY_ROOT = Path(os.environ.get("AGENTIC_PRIMARY_ROOT", r"C:/Git/Agentic-Workflow-FRESH"))
@@ -27,7 +26,6 @@ if str(CODEX_GOVERNANCE_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(CODEX_GOVERNANCE_SCRIPTS))
 
 import mcp_callability_epoch
-
 
 SCRIPT_PATHS = [
     "tools/adg/mcp/server.py",
@@ -182,6 +180,15 @@ def _processes() -> dict[str, Any]:
         for server_id, config in PROCESS_MARKERS.items():
             markers = [marker.lower().replace("\\", "/") for marker in config["markers"]]
             if any(marker in normalized for marker in markers):
+                expected = str(config.get("expected") or "")
+                process_name = str(info.get("name") or "").lower()
+                if expected.startswith("single-python-") and process_name not in {
+                    "python",
+                    "python.exe",
+                    "pythonw",
+                    "pythonw.exe",
+                }:
+                    continue
                 found[server_id].append(
                     {
                         "pid": pid,
@@ -194,11 +201,7 @@ def _processes() -> dict[str, Any]:
     classified: dict[str, Any] = {}
     for server_id, rows in found.items():
         expected = PROCESS_MARKERS[server_id]["expected"]
-        root_launchers = [
-            row
-            for row in rows
-            if _is_root_launcher(server_id, row.get("cmdline") or [])
-        ]
+        root_launchers = [row for row in rows if _is_root_launcher(server_id, row.get("cmdline") or [])]
         if not rows:
             classification = "none"
         elif expected.startswith("dormant"):
@@ -419,7 +422,11 @@ def _normalize_selected_route(route: dict[str, Any]) -> str:
     if selected == "raw_mcp_callable":
         return "raw_mcp_callable"
     if selected == "raw_mcp":
-        return "host_mcp_required" if str(route.get("server_id", "")) in ALWAYS_ON_CORE_SERVERS else "degraded_fallback"
+        return (
+            "host_mcp_required"
+            if str(route.get("server_id", "")) in ALWAYS_ON_CORE_SERVERS
+            else "degraded_fallback"
+        )
     if selected == "none":
         server_id = str(route.get("server_id", ""))
         status = str(route.get("status", ""))
@@ -613,7 +620,9 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
     env_file = Path(r"C:/Users/amita/env/.env")
     tavily_env_file = {"exists": env_file.exists(), "present": False, "line": None, "length": 0}
     if env_file.exists():
-        for line_number, line in enumerate(env_file.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        for line_number, line in enumerate(
+            env_file.read_text(encoding="utf-8", errors="replace").splitlines(), 1
+        ):
             if line.strip().startswith("TAVILY_API_KEY="):
                 value = line.split("=", 1)[1].strip()
                 tavily_env_file = {
@@ -625,7 +634,9 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
 
     processes = _processes()
     env_contract = os.environ.get("CODEX_MCP_ROUTE_CONTRACT")
-    contract_path = route_contract_path or (Path(env_contract) if env_contract else None) or _latest_route_contract_path()
+    contract_path = (
+        route_contract_path or (Path(env_contract) if env_contract else None) or _latest_route_contract_path()
+    )
     route_contract = _load_route_contract(contract_path)
     trust_contract_callable_proof = os.environ.get(TRUST_ROUTE_CONTRACT_ENV, "").strip() == "1"
 
@@ -634,7 +645,9 @@ def build_report(route_contract_path: Path | None = None) -> dict[str, Any]:
         "primary_root": str(PRIMARY_ROOT),
         "registry_path": str(registry_path),
         "route_contract_path": str(contract_path) if contract_path else None,
-        "command_paths": {name: shutil.which(name) for name in ["python", "cmd", "npx", "node", "git", "gk", "redis-cli"]},
+        "command_paths": {
+            name: shutil.which(name) for name in ["python", "cmd", "npx", "node", "git", "gk", "redis-cli"]
+        },
         "script_compile": {rel: _compile_script(ROOT / rel) for rel in sorted(set(SCRIPT_PATHS))},
         "tcp": {"localhost:6379": _tcp_probe("localhost", 6379)},
         "env": env_state,
