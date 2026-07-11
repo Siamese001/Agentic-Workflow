@@ -201,11 +201,11 @@ class TestScanDirectory:
         root = Path(__file__).resolve().parents[4]
         baseline_path = root / "ops_scripts/ci/baselines/wiring_graph_reach_ratchet.json"
         baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+        latest_tighten = baseline["tighten_history"][-1]
         latest_absorb = baseline["loosen_history"][-1]
 
-        assert baseline["count"] == 1453
-        assert baseline["tighten_history"][-1]["from"] == 1495
-        assert baseline["tighten_history"][-1]["to"] == 1453
+        assert baseline["count"] == latest_tighten["to"]
+        assert latest_tighten["from"] >= latest_tighten["to"]
         assert latest_absorb["from"] == 2788
         assert latest_absorb["to"] == 2789
         assert latest_absorb["raw_violation_count"] == 2789

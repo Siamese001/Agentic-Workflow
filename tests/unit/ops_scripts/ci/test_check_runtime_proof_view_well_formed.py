@@ -52,6 +52,7 @@ def _run_gate(snapshot: Path, *, strict: bool = False, env: dict | None = None) 
     if strict:
         cmd.append("--strict")
     full_env = os.environ.copy()
+    full_env["RUNTIME_PROOF_VIEW_STRICT"] = "1" if strict else "0"
     if env:
         full_env.update(env)
     proc = subprocess.run(
