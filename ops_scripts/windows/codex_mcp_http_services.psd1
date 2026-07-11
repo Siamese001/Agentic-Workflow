@@ -23,7 +23,8 @@
                     Name = 'redis'
                     Host = '127.0.0.1'
                     Port = 6379
-                    Required = $true
+                    TimeoutSeconds = 15
+                    FailurePolicy = 'continue_degraded'
                 }
             )
             RestartPolicy = @{
@@ -56,7 +57,8 @@
                     Name = 'redis'
                     Host = '127.0.0.1'
                     Port = 6379
-                    Required = $true
+                    TimeoutSeconds = 120
+                    FailurePolicy = 'block'
                 }
             )
             RestartPolicy = @{

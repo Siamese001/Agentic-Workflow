@@ -3,6 +3,7 @@ param(
     [string]$CodexShortcut,
     [string]$CodexLaunchTarget,
     [switch]$NoLaunch,
+    [switch]$SuppressErrorDialog,
     [switch]$Json
 )
 
@@ -16,6 +17,13 @@ function Write-JsonAtomic {
     $temporary = "$Path.tmp"
     $Payload | ConvertTo-Json -Depth 30 | Set-Content -LiteralPath $temporary -Encoding UTF8
     Move-Item -LiteralPath $temporary -Destination $Path -Force
+}
+
+function Protect-ReceiptText {
+    param([AllowNull()][string]$Text)
+    if ($null -eq $Text) { return $null }
+    $redacted = $Text -replace '(?i)(redis|rediss|https?)://[^\s/"'']+@', '$1://[REDACTED]@'
+    return $redacted -replace '(?i)(password|token|secret|api[_-]?key)\s*[=:]\s*[^\s,;]+', '$1=[REDACTED]'
 }
 
 function Find-CodexShortcut {
@@ -90,7 +98,14 @@ try {
 }
 catch {
     $receipt.status = 'FAIL'
-    $receipt.error = $_.Exception.Message
+    $receipt.error = Protect-ReceiptText -Text $_.Exception.Message
+    if (-not $SuppressErrorDialog) {
+        try {
+            $shell = New-Object -ComObject WScript.Shell
+            [void]$shell.Popup("Agentic Workflow MCP prelaunch failed.`nSee: $receiptPath", 0, 'Codex - Agentic Workflow', 16)
+        }
+        catch { }
+    }
 }
 
 Write-JsonAtomic -Path $receiptPath -Payload $receipt

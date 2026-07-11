@@ -12,15 +12,14 @@ manual stdio processes as callable MCP parity.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
-
 
 REPO_ROOT = Path(os.environ.get("AGENTIC_REPO_ROOT") or Path(__file__).resolve().parents[2])
 LOG_PATH = REPO_ROOT / "artifacts" / "mcp" / "session_start_mcp_bootstrap.jsonl"
@@ -94,6 +93,7 @@ def _prepare_env() -> dict[str, str]:
 
 
 def _run_step(label: str, argv: list[str], *, env: dict[str, str], timeout: int) -> dict[str, Any]:
+    creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
     try:
         proc = subprocess.run(
             argv,
@@ -104,6 +104,7 @@ def _run_step(label: str, argv: list[str], *, env: dict[str, str], timeout: int)
             shell=False,
             check=False,
             env=env,
+            creationflags=creationflags,
         )
         return {
             "label": label,
@@ -265,10 +266,7 @@ def main() -> int:
     _append_log(record)
 
     warn_count = sum(1 for step in steps if step.get("status") == "WARN")
-    print(
-        "[session-start] MCP bootstrap complete "
-        f"(warn={warn_count}; log={LOG_PATH})"
-    )
+    print(f"[session-start] MCP bootstrap complete (warn={warn_count}; log={LOG_PATH})")
     return 0
 
 
