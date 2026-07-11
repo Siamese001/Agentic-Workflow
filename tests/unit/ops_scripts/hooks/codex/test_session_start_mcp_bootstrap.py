@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import importlib.util
+import subprocess
 from pathlib import Path
 from typing import Any
-
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
 BOOTSTRAP = REPO_ROOT / ".codex" / "hooks" / "session_start_mcp_bootstrap.py"
@@ -27,6 +27,22 @@ def test_prepare_env_sets_mcp_defaults(monkeypatch) -> None:
     assert env["ADG_REDIS_URL"] == "redis://localhost:6379/0"
     assert env["MEMORY_DB"] == "artifacts/memory/knowledge_graph.sqlite"
     assert "Agentic-Workflow-FRESH" in env["PYTHONPATH"]
+
+
+def test_run_step_uses_create_no_window_on_windows(monkeypatch) -> None:
+    captured: dict[str, Any] = {}
+
+    def fake_run(argv, **kwargs):
+        captured.update(kwargs)
+        return subprocess.CompletedProcess(argv, 0, "", "")
+
+    monkeypatch.setattr(bootstrap.os, "name", "nt")
+    monkeypatch.setattr(bootstrap.subprocess, "run", fake_run)
+
+    result = bootstrap._run_step("probe", ["pwsh.exe", "-NoProfile"], env={}, timeout=5)
+
+    assert result["status"] == "PASS"
+    assert captured["creationflags"] == subprocess.CREATE_NO_WINDOW
 
 
 def test_main_skips_detached_backstop_by_default(monkeypatch, tmp_path: Path, capsys) -> None:

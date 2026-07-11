@@ -5,6 +5,7 @@ param(
     [switch]$EnsureRunning,
     [switch]$Status,
     [switch]$Uninstall,
+    [switch]$FunctionsOnly,
     [switch]$Json,
     [ValidateRange(5, 600)]
     [int]$DependencyWaitSeconds = 120,
@@ -17,6 +18,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $script:DefinitionPath = Join-Path $PSScriptRoot 'codex_mcp_http_services.psd1'
 $script:RunnerPath = Join-Path $PSScriptRoot 'run_codex_http_mcp_service.ps1'
+$script:HiddenAdapterPath = Join-Path $PSScriptRoot 'run_hidden_wait.vbs'
 
 function Get-UtcTimestamp { return [DateTime]::UtcNow.ToString('o') }
 
@@ -43,20 +45,21 @@ function Resolve-RepoPath {
 
 function Quote-TaskArgument {
     param([string]$Value)
-    return '"' + $Value.Replace('"', '\"') + '"'
+    if ($Value -match '["\r\n]') { throw 'Scheduled Task arguments may not contain quotes or line breaks.' }
+    return '"' + $Value + '"'
 }
 
 function Get-ExpectedTaskAction {
-    param([hashtable]$Service, [string]$Root, [string]$Pwsh, [string]$Python)
+    param([hashtable]$Service, [string]$Root, [string]$Wscript, [string]$Pwsh, [string]$Python)
     $arguments = @(
+        '//B', '//NoLogo', (Quote-TaskArgument $script:HiddenAdapterPath), (Quote-TaskArgument $Pwsh),
         '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
         '-File', (Quote-TaskArgument $script:RunnerPath),
         '-ServerId', $Service.ServerId,
         '-RepoRoot', (Quote-TaskArgument $Root),
-        '-PythonExe', (Quote-TaskArgument $Python),
-        '-DependencyWaitSeconds', [string]$DependencyWaitSeconds
+        '-PythonExe', (Quote-TaskArgument $Python)
     ) -join ' '
-    return [ordered]@{ execute = $Pwsh; arguments = $arguments; working_directory = $Root }
+    return [ordered]@{ execute = $Wscript; arguments = $arguments; working_directory = $Root }
 }
 
 function Test-TaskActionMatch {
@@ -78,7 +81,9 @@ function Test-TaskSettingsMatch {
         [bool]$settings.StartWhenAvailable -and
         -not [bool]$settings.DisallowStartIfOnBatteries -and
         -not [bool]$settings.StopIfGoingOnBatteries -and
+        [string]$settings.ExecutionTimeLimit -eq 'PT0S' -and
         [int]$settings.RestartCount -eq [int]$Service.RestartPolicy.Count -and
+        [string]$settings.RestartInterval -eq "PT$([int]$Service.RestartPolicy.IntervalMinutes)M" -and
         [string]$settings.MultipleInstances -match 'IgnoreNew'
     )
 }
@@ -87,12 +92,53 @@ function Test-TaskTriggersMatch {
     param($Task, [hashtable]$Service)
     if (-not $Task) { return $false }
     $triggers = @($Task.Triggers)
-    $hasLogon = [bool]($triggers | Where-Object { $_.CimClass.CimClassName -eq 'MSFT_TaskLogonTrigger' } | Select-Object -First 1)
+    $expectedUser = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+    $logons = @($triggers | Where-Object { $_.CimClass.CimClassName -eq 'MSFT_TaskLogonTrigger' })
+    $watchdogs = @($triggers | Where-Object { $_.CimClass.CimClassName -eq 'MSFT_TaskTimeTrigger' })
+    $hasLogon = $logons.Count -eq 1 -and [string]::Equals([string]$logons[0].UserId, $expectedUser, [StringComparison]::OrdinalIgnoreCase)
     $expectedInterval = "PT$([int]$Service.RestartPolicy.WatchdogIntervalMinutes)M"
-    $hasWatchdog = [bool]($triggers | Where-Object {
-        $_.CimClass.CimClassName -eq 'MSFT_TaskTimeTrigger' -and $_.Repetition.Interval -eq $expectedInterval
-    } | Select-Object -First 1)
-    return $hasLogon -and $hasWatchdog
+    $expectedDuration = "P$([int]$Service.RestartPolicy.WatchdogDurationDays)D"
+    $hasWatchdog = $watchdogs.Count -eq 1 -and
+        [string]$watchdogs[0].Repetition.Interval -eq $expectedInterval -and
+        [string]$watchdogs[0].Repetition.Duration -eq $expectedDuration -and
+        [bool]$watchdogs[0].Repetition.StopAtDurationEnd
+    return $triggers.Count -eq 2 -and $hasLogon -and $hasWatchdog
+}
+
+function Test-TaskPrincipalMatch {
+    param($Task)
+    if (-not $Task) { return $false }
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $expectedUsers = @($identity.Name, $identity.Name.Split('\')[-1], $identity.User.Value)
+    $logonType = [string]$Task.Principal.LogonType
+    return (
+        $expectedUsers -contains [string]$Task.Principal.UserId -and
+        $logonType -in @('Interactive', 'InteractiveToken') -and
+        [string]$Task.Principal.RunLevel -eq 'Limited'
+    )
+}
+
+function Get-TaskDriftFields {
+    param($Task, [hashtable]$Expected, [hashtable]$Service)
+    if (-not $Task) { return @('task_missing') }
+    $drift = @()
+    if (-not (Test-TaskActionMatch -Task $Task -Expected $Expected)) { $drift += @('action', 'arguments', 'working_directory') }
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $expectedUsers = @($identity.Name, $identity.Name.Split('\')[-1], $identity.User.Value)
+    if ($expectedUsers -notcontains [string]$Task.Principal.UserId) { $drift += 'user' }
+    if ([string]$Task.Principal.LogonType -notin @('Interactive', 'InteractiveToken')) { $drift += 'logon_type' }
+    if ([string]$Task.Principal.RunLevel -ne 'Limited') { $drift += 'run_level' }
+    if (-not [bool]$Task.Settings.Enabled) { $drift += 'enabled' }
+    if (-not (Test-TaskTriggersMatch -Task $Task -Service $Service)) { $drift += @('trigger_count', 'logon_trigger_user', 'watchdog_interval', 'watchdog_duration') }
+    $settings = $Task.Settings
+    if (-not [bool]$settings.StartWhenAvailable) { $drift += 'start_when_available' }
+    if ([bool]$settings.DisallowStartIfOnBatteries) { $drift += 'disallow_start_on_battery' }
+    if ([bool]$settings.StopIfGoingOnBatteries) { $drift += 'stop_on_battery' }
+    if ([string]$settings.ExecutionTimeLimit -ne 'PT0S') { $drift += 'execution_limit' }
+    if ([int]$settings.RestartCount -ne [int]$Service.RestartPolicy.Count) { $drift += 'restart_count' }
+    if ([string]$settings.RestartInterval -ne "PT$([int]$Service.RestartPolicy.IntervalMinutes)M") { $drift += 'restart_interval' }
+    if ([string]$settings.MultipleInstances -notmatch 'IgnoreNew') { $drift += 'multiple_instances' }
+    return @($drift | Select-Object -Unique)
 }
 
 function Wait-TaskNotRunning {
@@ -107,13 +153,11 @@ function Wait-TaskNotRunning {
 }
 
 function Install-ManagedTask {
-    param([hashtable]$Service, [string]$Root, [string]$Pwsh, [string]$Python)
-    $expected = Get-ExpectedTaskAction -Service $Service -Root $Root -Pwsh $Pwsh -Python $Python
+    param([hashtable]$Service, [string]$Root, [string]$Wscript, [string]$Pwsh, [string]$Python)
+    $expected = Get-ExpectedTaskAction -Service $Service -Root $Root -Wscript $Wscript -Pwsh $Pwsh -Python $Python
     $existing = Get-ScheduledTask -TaskName $Service.TaskName -ErrorAction SilentlyContinue
-    $expectedActionMatch = Test-TaskActionMatch -Task $existing -Expected $expected
-    $settingsMatch = Test-TaskSettingsMatch -Task $existing -Service $Service
-    $triggersMatch = Test-TaskTriggersMatch -Task $existing -Service $Service
-    if ($existing -and $expectedActionMatch -and $settingsMatch -and $triggersMatch -and [bool]$existing.Settings.Enabled) {
+    $driftFields = Get-TaskDriftFields -Task $existing -Expected $expected -Service $Service
+    if ($existing -and $driftFields.Count -eq 0) {
         return [ordered]@{ server_id = $Service.ServerId; task_name = $Service.TaskName; action = 'unchanged'; expected_action_match = $true }
     }
 
@@ -136,12 +180,14 @@ function Install-ManagedTask {
 
     $installed = Get-ScheduledTask -TaskName $Service.TaskName -ErrorAction Stop
     $actionMatches = Test-TaskActionMatch -Task $installed -Expected $expected
-    if (-not $actionMatches) { throw "Scheduled Task action validation failed after registration: $($Service.TaskName)" }
+    $installedDrift = Get-TaskDriftFields -Task $installed -Expected $expected -Service $Service
+    if ($installedDrift.Count -gt 0) { throw "Scheduled Task fingerprint validation failed after registration: $($Service.TaskName) fields=$($installedDrift -join ',')" }
     return [ordered]@{
         server_id = $Service.ServerId
         task_name = $Service.TaskName
         action = if ($existing) { 'repaired' } else { 'installed' }
         expected_action_match = $actionMatches
+        repaired_drift_fields = $driftFields
     }
 }
 
@@ -244,8 +290,8 @@ function Find-ServicePid {
 }
 
 function Get-ManagedServiceStatus {
-    param([hashtable]$Service, [string]$Root, [string]$Pwsh, [string]$Python)
-    $expected = Get-ExpectedTaskAction -Service $Service -Root $Root -Pwsh $Pwsh -Python $Python
+    param([hashtable]$Service, [string]$Root, [string]$Wscript, [string]$Pwsh, [string]$Python)
+    $expected = Get-ExpectedTaskAction -Service $Service -Root $Root -Wscript $Wscript -Pwsh $Pwsh -Python $Python
     $task = Get-ScheduledTask -TaskName $Service.TaskName -ErrorAction SilentlyContinue
     $taskInfo = if ($task) { Get-ScheduledTaskInfo -TaskName $Service.TaskName -ErrorAction SilentlyContinue } else { $null }
     $listener = Get-PortListener -Port $Service.Port
@@ -269,7 +315,13 @@ function Get-ManagedServiceStatus {
             $launcherState.pid -and
             [int]$launcherState.pid -eq [int]$listener.pid
         )
-        $ownership = if ($runnerOwnsListener -and $launcherMatches) { 'managed' } else { 'foreign' }
+        $listenerProcess = Get-CimInstance Win32_Process -Filter "ProcessId=$($listener.pid)" -ErrorAction SilentlyContinue
+        $processMatches = [bool](
+            $listenerProcess -and
+            $listenerProcess.CommandLine -match [regex]::Escape($Service.Module) -and
+            $listenerProcess.CommandLine -match [regex]::Escape($Root)
+        )
+        $ownership = if ($launcherMatches -and $processMatches -and ($runnerOwnsListener -or [string]$task.State -eq 'Running')) { 'managed' } else { 'foreign' }
     }
 
     $healthProbe = if ($listener) { Invoke-McpProbe -Service $Service -Python $Python -Tool $Service.HealthTool } else { $null }
@@ -278,7 +330,9 @@ function Get-ManagedServiceStatus {
     } else { $null }
     $protocolHealthy = [bool]($healthProbe -and $healthProbe.initialize -and $healthProbe.tools_list -and $healthProbe.tool)
     $actionMatch = Test-TaskActionMatch -Task $task -Expected $expected
-    $overall = if (-not $task) { 'task_missing' } elseif (-not $actionMatch) { 'task_drifted' } elseif ($listener -and $ownership -eq 'foreign') { 'foreign_port_conflict' } elseif ($protocolHealthy) { 'healthy' } elseif ([string]$task.State -eq 'Running') { 'running_unhealthy' } else { 'stopped' }
+    $driftFields = Get-TaskDriftFields -Task $task -Expected $expected -Service $Service
+    $fingerprintMatch = $driftFields.Count -eq 0
+    $overall = if (-not $task) { 'task_missing' } elseif (-not $fingerprintMatch) { 'task_drifted' } elseif ($listener -and $ownership -eq 'foreign') { 'foreign_port_conflict' } elseif ($protocolHealthy -and $ownership -eq 'managed') { 'healthy' } elseif ([string]$task.State -eq 'Running') { 'running_unhealthy' } else { 'stopped' }
 
     return [ordered]@{
         server_id = $Service.ServerId
@@ -293,6 +347,11 @@ function Get-ManagedServiceStatus {
         action_arguments = if ($task) { @($task.Actions)[0].Arguments } else { $null }
         expected_action = $expected
         expected_action_match = $actionMatch
+        task_fingerprint_match = $fingerprintMatch
+        task_drift_fields = $driftFields
+        principal_user = if ($task) { [string]$task.Principal.UserId } else { $null }
+        principal_logon_type = if ($task) { [string]$task.Principal.LogonType } else { $null }
+        principal_run_level = if ($task) { [string]$task.Principal.RunLevel } else { $null }
         trigger_types = if ($task) { @($task.Triggers | ForEach-Object { $_.CimClass.CimClassName }) } else { @() }
         endpoint_listener = [bool]$listener
         listener_pid = if ($listener) { $listener.pid } else { $null }
@@ -309,8 +368,8 @@ function Get-ManagedServiceStatus {
 }
 
 function Ensure-ManagedService {
-    param([hashtable]$Service, [string]$Root, [string]$Pwsh, [string]$Python)
-    $before = Get-ManagedServiceStatus -Service $Service -Root $Root -Pwsh $Pwsh -Python $Python
+    param([hashtable]$Service, [string]$Root, [string]$Wscript, [string]$Pwsh, [string]$Python)
+    $before = Get-ManagedServiceStatus -Service $Service -Root $Root -Wscript $Wscript -Pwsh $Pwsh -Python $Python
     if ($before.overall_classification -eq 'healthy') {
         return [ordered]@{ server_id = $Service.ServerId; action = 'already_healthy'; status = 'PASS'; before = $before; after = $before }
     }
@@ -331,7 +390,7 @@ function Ensure-ManagedService {
     $deadline = [DateTime]::UtcNow.AddSeconds($StartupTimeoutSeconds)
     do {
         Start-Sleep -Seconds 1
-        $after = Get-ManagedServiceStatus -Service $Service -Root $Root -Pwsh $Pwsh -Python $Python
+        $after = Get-ManagedServiceStatus -Service $Service -Root $Root -Wscript $Wscript -Pwsh $Pwsh -Python $Python
         if ($after.overall_classification -eq 'healthy') {
             return [ordered]@{ server_id = $Service.ServerId; action = $action; status = 'PASS'; before = $before; after = $after }
         }
@@ -342,6 +401,7 @@ function Ensure-ManagedService {
     return [ordered]@{ server_id = $Service.ServerId; action = $action; status = 'FAIL'; reason = 'startup_timeout'; before = $before; after = $after }
 }
 
+if ($FunctionsOnly) { return }
 if (-not ($Install -or $EnsureRunning -or $Status -or $Uninstall)) { $Status = $true }
 $resolvedRoot = [IO.Path]::GetFullPath($RepoRoot)
 if (-not (Test-Path -LiteralPath (Join-Path $resolvedRoot '.mcp.json') -PathType Leaf)) { throw "Invalid RepoRoot: $resolvedRoot" }
@@ -351,6 +411,9 @@ $definition = Import-PowerShellDataFile -LiteralPath $script:DefinitionPath
 $services = @($definition.Services.Values | Sort-Object { $_.Port })
 $python = Resolve-Executable -Requested $PythonExe -Candidates @('python.exe', 'python') -Label 'Python'
 $pwsh = Resolve-Executable -Candidates @('pwsh.exe', 'pwsh') -Label 'pwsh.exe'
+$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+if (-not (Test-Path -LiteralPath $wscript -PathType Leaf)) { throw "Unable to resolve wscript.exe: $wscript" }
+if (-not (Test-Path -LiteralPath $script:HiddenAdapterPath -PathType Leaf)) { throw "Missing no-window adapter: $script:HiddenAdapterPath" }
 
 $report = [ordered]@{
     schema_version = 'codex-mcp-service-tasks/v1'
@@ -377,19 +440,19 @@ try {
     } else {
         if ($Install -or $EnsureRunning) {
             foreach ($service in $services) {
-                $report.operations += Install-ManagedTask -Service $service -Root $resolvedRoot -Pwsh $pwsh -Python $python
+                $report.operations += Install-ManagedTask -Service $service -Root $resolvedRoot -Wscript $wscript -Pwsh $pwsh -Python $python
             }
         }
         if ($EnsureRunning) {
             foreach ($service in $services) {
-                $result = Ensure-ManagedService -Service $service -Root $resolvedRoot -Pwsh $pwsh -Python $python
+                $result = Ensure-ManagedService -Service $service -Root $resolvedRoot -Wscript $wscript -Pwsh $pwsh -Python $python
                 $report.operations += $result
                 if ($result.status -ne 'PASS') { $report.status = 'FAIL' }
             }
         }
         if ($Status -or $Install -or $EnsureRunning) {
             foreach ($service in $services) {
-                $serviceStatus = Get-ManagedServiceStatus -Service $service -Root $resolvedRoot -Pwsh $pwsh -Python $python
+                $serviceStatus = Get-ManagedServiceStatus -Service $service -Root $resolvedRoot -Wscript $wscript -Pwsh $pwsh -Python $python
                 $report.services += $serviceStatus
                 if ($EnsureRunning -and $serviceStatus.overall_classification -ne 'healthy') { $report.status = 'FAIL' }
             }

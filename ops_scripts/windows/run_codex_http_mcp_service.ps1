@@ -6,10 +6,14 @@ param(
     [string]$RepoRoot,
     [string]$PythonExe,
     [switch]$Json,
-    [ValidateRange(1, 600)]
-    [int]$DependencyWaitSeconds = 120,
+    [ValidateRange(0, 600)]
+    [int]$DependencyWaitSeconds = 0,
     [ValidateRange(100, 10000)]
-    [int]$RetryIntervalMilliseconds = 1000
+    [int]$RetryIntervalMilliseconds = 1000,
+    [switch]$DependencyProbeOnly,
+    [string]$DependencyHostOverride,
+    [ValidateRange(0, 65535)]
+    [int]$DependencyPortOverride = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -77,8 +81,7 @@ function Test-TcpDependency {
 }
 
 function Wait-ServiceDependencies {
-    param([hashtable]$Service, [int]$TimeoutSeconds, [int]$PollMilliseconds)
-    $started = [DateTime]::UtcNow
+    param([hashtable]$Service, [int]$TimeoutOverrideSeconds, [int]$PollMilliseconds)
     $receipts = @()
     foreach ($dependency in @($Service.Dependencies)) {
         if ($dependency.Kind -ne 'tcp') {
@@ -86,7 +89,12 @@ function Wait-ServiceDependencies {
         }
         $ready = $false
         $attempts = 0
-        while ((([DateTime]::UtcNow - $started).TotalSeconds -lt $TimeoutSeconds) -and -not $ready) {
+        $started = [DateTime]::UtcNow
+        $timeoutSeconds = if ($TimeoutOverrideSeconds -gt 0) { $TimeoutOverrideSeconds } else { [int]$dependency.TimeoutSeconds }
+        $policy = [string]$dependency.FailurePolicy
+        if ($timeoutSeconds -le 0) { throw "Dependency timeout must be positive: $($dependency.Name)" }
+        if ($policy -notin @('block', 'continue_degraded')) { throw "Unsupported dependency failure policy: $policy" }
+        while ((([DateTime]::UtcNow - $started).TotalSeconds -lt $timeoutSeconds) -and -not $ready) {
             $attempts++
             $ready = Test-TcpDependency -HostName $dependency.Host -Port $dependency.Port -TimeoutMilliseconds ([Math]::Min($PollMilliseconds, 2000))
             if (-not $ready) { Start-Sleep -Milliseconds $PollMilliseconds }
@@ -96,12 +104,11 @@ function Wait-ServiceDependencies {
             kind = $dependency.Kind
             host = $dependency.Host
             port = $dependency.Port
-            required = [bool]$dependency.Required
+            timeout_seconds = $timeoutSeconds
+            failure_policy = $policy
             ready = $ready
             attempts = $attempts
-        }
-        if ($dependency.Required -and -not $ready) {
-            throw "Required dependency '$($dependency.Name)' was not ready within $TimeoutSeconds seconds."
+            outcome = if ($ready) { 'ready' } elseif ($policy -eq 'continue_degraded') { 'continue_degraded' } else { 'blocked' }
         }
     }
     return $receipts
@@ -121,8 +128,8 @@ function Get-PortListener {
 
 function Quote-ProcessArgument {
     param([string]$Value)
-    if ($Value -notmatch '[\s"]') { return $Value }
-    return '"' + $Value.Replace('"', '\"') + '"'
+    if ($Value -match '["\r\n]') { throw 'No-window adapter arguments may not contain quotes or line breaks.' }
+    return '"' + $Value + '"'
 }
 
 $resolvedRoot = [IO.Path]::GetFullPath($RepoRoot)
@@ -136,11 +143,19 @@ if (-not (Test-Path -LiteralPath $script:DefinitionPath -PathType Leaf)) {
 $definition = Import-PowerShellDataFile -LiteralPath $script:DefinitionPath
 $service = $definition.Services[$ServerId]
 if (-not $service) { throw "Unknown managed HTTP MCP service: $ServerId" }
+foreach ($dependency in @($service.Dependencies)) {
+    if ($DependencyHostOverride) { $dependency.Host = $DependencyHostOverride }
+    if ($DependencyPortOverride -gt 0) { $dependency.Port = $DependencyPortOverride }
+}
 $python = Resolve-PythonExecutable -Requested $PythonExe
 $statePath = Resolve-RepoPath -Root $resolvedRoot -RelativePath $service.StatePath
 $launcherStatePath = Resolve-RepoPath -Root $resolvedRoot -RelativePath $service.LauncherStatePath
 $stdoutPath = Resolve-RepoPath -Root $resolvedRoot -RelativePath $service.StdoutLogPath
 $stderrPath = Resolve-RepoPath -Root $resolvedRoot -RelativePath $service.StderrLogPath
+$hiddenAdapter = Join-Path $PSScriptRoot 'run_hidden_wait.vbs'
+$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+if (-not (Test-Path -LiteralPath $hiddenAdapter -PathType Leaf)) { throw "No-window adapter is missing: $hiddenAdapter" }
+if (-not (Test-Path -LiteralPath $wscript -PathType Leaf)) { throw "wscript.exe is missing: $wscript" }
 New-Item -ItemType Directory -Path (Split-Path -Parent $stdoutPath) -Force | Out-Null
 
 $baseReceipt = @{
@@ -156,6 +171,31 @@ $baseReceipt = @{
 }
 
 try {
+    $dependencies = Wait-ServiceDependencies -Service $service -TimeoutOverrideSeconds $DependencyWaitSeconds -PollMilliseconds $RetryIntervalMilliseconds
+    $blockedDependencies = @($dependencies | Where-Object { $_.outcome -eq 'blocked' })
+    $dependencyStatus = if (@($dependencies | Where-Object { $_.outcome -eq 'continue_degraded' }).Count -gt 0) { 'degraded' } else { 'ready' }
+    if ($blockedDependencies.Count -gt 0) {
+        $receipt = $baseReceipt.Clone()
+        $receipt.status = 'blocked'
+        $receipt.dependencies = $dependencies
+        $receipt.dependency_status = 'blocked'
+        $receipt.exit_code = 78
+        $receipt.termination_classification = 'dependency_blocked'
+        $receipt.terminated_at = Get-UtcTimestamp
+        Write-JsonAtomic -Path $statePath -Payload $receipt
+        if ($Json) { $receipt | ConvertTo-Json -Depth 20 }
+        exit 78
+    }
+    if ($DependencyProbeOnly) {
+        $receipt = $baseReceipt.Clone()
+        $receipt.status = if ($dependencyStatus -eq 'degraded') { 'degraded' } else { 'ok' }
+        $receipt.dependencies = $dependencies
+        $receipt.dependency_status = $dependencyStatus
+        $receipt.terminated_at = Get-UtcTimestamp
+        if ($Json) { $receipt | ConvertTo-Json -Depth 20 }
+        exit 0
+    }
+
     $listener = Get-PortListener -Port $service.Port
     if ($listener) {
         $receipt = $baseReceipt.Clone()
@@ -177,7 +217,6 @@ try {
     $env:PYTHONUNBUFFERED = '1'
     $env:PYTHONPATH = if ($env:PYTHONPATH) { "$resolvedRoot$([IO.Path]::PathSeparator)$env:PYTHONPATH" } else { $resolvedRoot }
 
-    $dependencies = Wait-ServiceDependencies -Service $service -TimeoutSeconds $DependencyWaitSeconds -PollMilliseconds $RetryIntervalMilliseconds
     Push-Location $resolvedRoot
     try {
         $preflightLines = & $python -m $service.Module --preflight-only --json 2>&1
@@ -209,13 +248,23 @@ try {
         '--state-path', $launcherStatePath,
         '--service-log-path', (Resolve-RepoPath -Root $resolvedRoot -RelativePath $service.ServiceLogPath)
     )
-    $argumentText = ($arguments | ForEach-Object { Quote-ProcessArgument -Value $_ }) -join ' '
-    $child = Start-Process -FilePath $python -ArgumentList $argumentText -WorkingDirectory $resolvedRoot `
-        -RedirectStandardOutput $stdoutPath -RedirectStandardError $stderrPath -PassThru
+    $hiddenArguments = @('//B', '//NoLogo', $hiddenAdapter, $python) + $arguments
+    $argumentText = ($hiddenArguments | ForEach-Object { Quote-ProcessArgument -Value $_ }) -join ' '
+    $child = Start-Process -FilePath $wscript -ArgumentList $argumentText -WorkingDirectory $resolvedRoot -PassThru
+    $listenerDeadline = [DateTime]::UtcNow.AddSeconds(30)
+    do {
+        Start-Sleep -Milliseconds 200
+        $listener = Get-PortListener -Port $service.Port
+        if (-not $listener) { $child.Refresh() }
+    } while (-not $listener -and -not $child.HasExited -and [DateTime]::UtcNow -lt $listenerDeadline)
+    if (-not $listener) { throw "Managed service did not open port $($service.Port) through the no-window adapter." }
     $running = $baseReceipt.Clone()
     $running.status = 'running'
-    $running.python_pid = $child.Id
+    $running.adapter_pid = $child.Id
+    $running.python_pid = [int]$listener.pid
+    $running.no_window_adapter = $hiddenAdapter
     $running.dependencies = $dependencies
+    $running.dependency_status = $dependencyStatus
     $running.preflight = $preflight
     $running.stdout_log = $stdoutPath
     $running.stderr_log = $stderrPath

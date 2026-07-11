@@ -166,5 +166,47 @@
     "evidence": "Baseline had drifted user-profile task actions, no listeners, failed active MCP calls, and a config-only preflight that passed.",
     "fix_or_next": "next: Use the Codex Agentic Workflow shortcut; it repairs Scheduled Tasks, ensures protocol health, and launches Codex only after both health tools pass.",
     "recurrence_guard": "Current-user logon plus one-minute watchdog triggers, IgnoreNew, exact ownership receipts, fail-closed foreign-port checks, protocol probes, and status-only SessionStart verification."
+  },
+  "closeout_20260711": {
+    "branch": "codex/codex-mcp-lifecycle-closeout",
+    "baseline": "231dc6245a763710db5d1046884e5a7845cb950c",
+    "status": "PARTIAL",
+    "proof_capture": {
+      "implementation": "strict structured direct/deferred event validation",
+      "rejections": [
+        "shell_output",
+        "direct_http_probe",
+        "fabricated_mcp_text",
+        "transport_failure",
+        "missing_response",
+        "stale_receipt",
+        "endpoint_mismatch",
+        "unconfigured_tool"
+      ],
+      "active_session_status": "BLOCKED_HOST_RELOAD_REQUIRED",
+      "synthetic_proof_used": false
+    },
+    "redis": {
+      "adg_sqlite": {"timeout_seconds": 15, "failure_policy": "continue_degraded", "unreachable_probe_exit": 0},
+      "memory": {"timeout_seconds": 120, "failure_policy": "block", "unreachable_probe_exit": 78},
+      "real_redis_stopped_for_test": false
+    },
+    "restart_proof": {
+      "adg_sqlite": {"before_pid": 42172, "after_pid": 45144, "healthy": true},
+      "memory": {"before_pid": 37440, "after_pid": 36340, "healthy": true}
+    },
+    "foreign_port_proof": {"pid": 6848, "ensure_exit": 1, "survived": true, "adg_restored_pid": 46568},
+    "watchdog_proof": {
+      "intervals": 3,
+      "interval_seconds": 65,
+      "ensure_passes": 2,
+      "shortcut_launches": 2,
+      "listener_count_each_endpoint": 1,
+      "visible_console_windows": 0
+    },
+    "tests": {"focused_passed": 45, "combined_regression_passed": 129},
+    "governance_debt": "Pre-existing root .agents directory blocks Codex enforcement-home verification and was not modified.",
+    "physical_sleep_resume": "PENDING_NOT_EXECUTED",
+    "physical_reboot_logon": "PENDING_NOT_EXECUTED"
   }
 }

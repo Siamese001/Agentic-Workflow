@@ -170,7 +170,7 @@ pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Install
 python scripts/governance/probe_mcp_http_server.py --url http://127.0.0.1:8765/mcp --tool adg_health --json
 ```
 
-The runner state is `artifacts/mcp/adg_sqlite_windows_runner.json`; stdout, stderr, and service events are under `artifacts/mcp/adg_sqlite_http_*`. A listener whose PID does not match the runner or launcher receipt is a foreign-port conflict and is never terminated automatically.
+The runner state is `artifacts/mcp/adg_sqlite_windows_runner.json`; stdout, stderr, and service events are under `artifacts/mcp/adg_sqlite_http_*`. Redis has a bounded `continue_degraded` policy for ADG because SQLite remains authoritative. The task and child service enter through the synchronous `run_hidden_wait.vbs` adapter, which prevents console windows while preserving task ownership and exit codes. A listener whose PID does not match the runner or launcher receipt is a foreign-port conflict and is never terminated automatically.
 
 To verify restart-on-failure, first capture `service_pid` from `-Status -Json`, confirm ownership is `managed`, stop only that verified task-owned PID, wait at least the configured one-minute restart interval, then rerun status and the probe. A different PID plus initialize, tools/list, and `adg_health` success is the restart proof. This direct HTTP proof still does not replace a live endpoint-matched Codex tool call.
 4. If the class is `codex_http_route_unproven`, reload/reconnect the Codex MCP client once, then call live `mcp__adg_sqlite.adg_health` or `mcp__adg_sqlite.adg_process_identity`.

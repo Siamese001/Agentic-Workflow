@@ -46,7 +46,8 @@ function Find-CodexPackageTarget {
 
 function Quote-ShortcutArgument {
     param([string]$Value)
-    return '"' + $Value.Replace('"', '\"') + '"'
+    if ($Value -match '["\r\n]') { throw 'Shortcut arguments may not contain quotes or line breaks.' }
+    return '"' + $Value + '"'
 }
 
 $resolvedRoot = [IO.Path]::GetFullPath($RepoRoot)
@@ -81,15 +82,19 @@ try {
             throw 'No official Codex shortcut or launch target was found. Supply -SourceShortcut or -CodexLaunchTarget.'
         }
         $pwsh = (Get-Command pwsh.exe -ErrorAction Stop).Source
+        $wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
+        $adapter = Join-Path $PSScriptRoot 'run_hidden_wait.vbs'
+        if (-not (Test-Path -LiteralPath $wscript -PathType Leaf)) { throw "wscript.exe is missing: $wscript" }
+        if (-not (Test-Path -LiteralPath $adapter -PathType Leaf)) { throw "No-window adapter is missing: $adapter" }
         $launcher = Join-Path $PSScriptRoot 'launch_codex_agentic.ps1'
-        $arguments = @('-NoLogo', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', (Quote-ShortcutArgument $launcher), '-RepoRoot', (Quote-ShortcutArgument $resolvedRoot))
+        $arguments = @('//B', '//NoLogo', (Quote-ShortcutArgument $adapter), (Quote-ShortcutArgument $pwsh), '-NoLogo', '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', (Quote-ShortcutArgument $launcher), '-RepoRoot', (Quote-ShortcutArgument $resolvedRoot))
         if ($source) { $arguments += @('-CodexShortcut', (Quote-ShortcutArgument ([IO.Path]::GetFullPath($source)))) }
         else { $arguments += @('-CodexLaunchTarget', (Quote-ShortcutArgument $(if ($isPackageTarget) { $target } else { [IO.Path]::GetFullPath($target) }))) }
 
         New-Item -ItemType Directory -Path $DestinationDirectory -Force | Out-Null
         $shell = New-Object -ComObject WScript.Shell
         $shortcut = $shell.CreateShortcut($shortcutPath)
-        $shortcut.TargetPath = $pwsh
+        $shortcut.TargetPath = $wscript
         $shortcut.Arguments = $arguments -join ' '
         $shortcut.WorkingDirectory = $resolvedRoot
         $shortcut.Description = 'Launch Codex after Agentic Workflow HTTP MCP services are healthy.'

@@ -124,7 +124,7 @@
             "command": "python \"$AGENTIC_REPO_ROOT/.codex/hooks/before_mcp_execution.py\""
           }
         ],
-        "matcher": "mcp__.*"
+        "matcher": "mcp__.*|(^|functions\\.)exec$"
       },
       {
         "hooks": [
