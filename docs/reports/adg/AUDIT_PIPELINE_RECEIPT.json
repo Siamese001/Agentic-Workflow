@@ -4,7 +4,7 @@
     "certification_status": "failed",
     "generator_exit_code": 1,
     "report_exit_code": 0,
-    "runtime_proof_status": "attested",
+    "runtime_proof_status": "view_present_zero_attested",
     "reasons": [
       "generator exit_code=1",
       "required gate 'config-ref' status=fail",
@@ -15,52 +15,52 @@
   },
   "artifact_status": "repair_ready",
   "artifact_status_source": "direct",
-  "adg_run_id": "07082026_2319",
-  "started_at_utc": "2026-07-09T03:19:48Z",
-  "completed_at_utc": "2026-07-09T03:41:01Z",
+  "adg_run_id": "07092026_0618",
+  "started_at_utc": "2026-07-09T10:18:43Z",
+  "completed_at_utc": "2026-07-09T10:35:47Z",
   "repair_handoff": {
     "status": "repair_ready",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07082026_2319.sqlite",
-        "sha256": "3f3b4e61a702e6619dc07ccd75269ea4d875d62df26eb1452ab75b768537c274"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07092026_0618.sqlite",
+        "sha256": "57473fefa09a790dec883afbedbad0212b65e1c6b7d03109a72717d6fad2156d"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260709_033256.json",
-        "sha256": "705e89faa0fe8e06c687a46b84cd396e8236b51dd78ee4d84ff587e8a9b7673f"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260709_103213.json",
+        "sha256": "a0affa91c54b8541b5d588c3ad755a781b205043be12385904144ff9fedf0b1b"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07082026_2319.json",
-        "sha256": "1443a7b1fe264ee0c0a7f67e6cddec9cd6d1c2d3207a1ec33b76173d7a1da99e"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07092026_0618.json",
+        "sha256": "3aae45ea5c3eceabf48c162228630950c7acf3e1a1d2054497e6c4c266e40b08"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07082026_2319.md",
-        "sha256": "519775979175d4d35deb0c7a0a4e177f732f66c2d67b6a2388e2cf1cfd5ac36d"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07092026_0618.md",
+        "sha256": "7ec4a6ef6e93a7cff0a575ee2248f03a0344183825d4814799c2af47f0b61d90"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07082026_2319.json",
-        "sha256": "03cf0c31683bf81f85e1ecd2a23e19e36540862497bbd5ad9b3874ed9fbe898a"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07092026_0618.json",
+        "sha256": "f250f3b98c63e7545ef5e6c592a669847cd55f70c99ae3d76b7d1d2659e01590"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07082026_2319.json",
-        "sha256": "03e2246344de8b186fa32556182a55d065ef23ccc676b4ec4a9d6762ef3789ec"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07092026_0618.json",
+        "sha256": "39c0390b4efd7a8af27ce5e2a1d10104d650fa0eaa2a018db10661c6e674326b"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07082026_2319.json",
-        "sha256": "96c278f327edf26d497995bb6994ca82e79f6b483d9b18afcf4233d30906f805"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07092026_0618.json",
+        "sha256": "65441596c272d4533307748508ecb9f35001ebf1cf7aaa3a56f1a088da6540d5"
       }
     },
     "counts": {
       "P0_FIX": 0,
       "P0_WAVE": 0,
-      "P0_TRACKED_BACKLOG": 4,
+      "P0_TRACKED_BACKLOG": 0,
       "P1_FIX": 0,
       "P1_RATCHET_REGRESSION": 0,
       "P1_RATCHET_FLOOR_BACKLOG": 7

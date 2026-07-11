@@ -27,7 +27,7 @@ Fix now:
 | 3 | Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation risk inventory=200; audit net backlog=6; live merge drivers=0. | Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
 | 4 | Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing. | runtime_spine=present_failing. | Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision. |
 | 5 | After P0 is green and mapped tests are decided, open a scoped refactor/test slice for agentic_core/adg/extraction/static_scanner.py only if ADG still flags it or the P0 fix touches it. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 6 | Burn down ratchet G_REACH_l0_reachability. Burn down the ratchet after the current red gates clear. | 1,450 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 6 | Burn down ratchet I2_replay_surface_gaps_ratchet. Burn down the ratchet after the current red gates clear. | 1,000 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 7 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps. Deprecate only after the higher-risk surfaces are handled. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 8 | Do not open a separate product/app workstream; validate app-owned wiring only if the P0 adapter fix touches it. | App/product risks were promoted only where hotspot or test evidence changes funding posture. | Touched app wiring has targeted validation, or no app-owned surface was touched. |
 | 9 | Keep deletion/deprecation cleanup after P0, report consistency, and runtime proof are green unless cleanup blocks the P0 fix. | ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics. | Cleanup is scheduled as a separate after-green wave or explicitly tied to the P0 fix. |
@@ -36,9 +36,9 @@ ADG Run Metrics
 
 | Metric | Value |
 |---|---|
-| Run ID | 07082026_2319 |
-| Snapshot | 2026-07-09T03:32:56.409358+00:00 |
-| SQLite snapshot | artifacts/adg/adg_indexed_07082026_2319.sqlite |
+| Run ID | 07092026_0618 |
+| Snapshot | 2026-07-09T10:32:13.479226+00:00 |
+| SQLite snapshot | artifacts/adg/adg_indexed_07092026_0618.sqlite |
 | Audit caveat | REPORT_INCONSISTENT; report consistency=FAIL |
 | FIX gates (all bands) | 0 |
 | Live P0 gate drivers | 0 |
@@ -55,8 +55,8 @@ P0-P3 Severity Inventory
 |---|---|---|---|---|---|
 | P0 | 38 | 32 | 6 | 200 | 0 |
 | P1 | 1,143 | 1,143 | 0 | n/a | 0 |
-| P2 | 727 | 698 | 29 | n/a | 0 |
-| P3 | 19,439 | 87 | 19,352 | n/a | 0 |
+| P2 | 728 | 698 | 30 | n/a | 0 |
+| P3 | 19,448 | 87 | 19,361 | n/a | 0 |
 
 ### Recommended Next Steps
 
@@ -67,7 +67,7 @@ P0-P3 Severity Inventory
 | 3 | Classify remaining P0 counts after the rerun: live merge drivers block merge; foundation/audit net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation risk inventory=200; audit net backlog=6; live merge drivers=0. | Receipt shows P0 FIX=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
 | 4 | Repair runtime proof if it is still missing or failing after the P0 rerun; do not rely on runtime evidence until it is present and passing. | runtime_spine=present_failing. | Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision. |
 | 5 | After P0 is green and mapped tests are decided, open a scoped refactor/test slice for agentic_core/adg/extraction/static_scanner.py only if ADG still flags it or the P0 fix touches it. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
-| 6 | Burn down ratchet G_REACH_l0_reachability. Burn down the ratchet after the current red gates clear. | 1,450 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
+| 6 | Burn down ratchet I2_replay_surface_gaps_ratchet. Burn down the ratchet after the current red gates clear. | 1,000 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 7 | Refine/deprecate low-value ADG signal mv_capability_and_egress_gaps. Deprecate only after the higher-risk surfaces are handled. | Empty or stale-looking signal; keep out of inline output until it proves decision value. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 8 | Do not open a separate product/app workstream; validate app-owned wiring only if the P0 adapter fix touches it. | App/product risks were promoted only where hotspot or test evidence changes funding posture. | Touched app wiring has targeted validation, or no app-owned surface was touched. |
 | 9 | Keep deletion/deprecation cleanup after P0, report consistency, and runtime proof are green unless cleanup blocks the P0 fix. | ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics. | Cleanup is scheduled as a separate after-green wave or explicitly tied to the P0 fix. |
