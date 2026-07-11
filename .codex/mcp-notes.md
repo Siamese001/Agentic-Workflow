@@ -78,6 +78,8 @@ want the structured surface back. (`tavily` also needs `TAVILY_API_KEY` from htt
 Install/repair with `pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Install -EnsureRunning -Json`. Verify without launching Codex with `pwsh -NoProfile -File .\ops_scripts\windows\launch_codex_agentic.ps1 -RepoRoot $PWD -NoLaunch -Json`. The supported daily entrypoint is the current-user `Codex — Agentic Workflow` shortcut created by `install_codex_agentic_shortcut.ps1`.
 
 SessionStart is status-only because required routes initialize before the hook executes. TCP/process evidence is diagnostic only; readiness requires initialize, tools/list, and the configured health tool, while active-session acceptance additionally requires fresh endpoint-matched Codex tool proof. Foreign listeners fail closed and are never killed by lifecycle scripts.
+
+The Scheduled Tasks and shortcut use `run_hidden_wait.vbs`, not a visible PowerShell target. The adapter waits synchronously and preserves exact exit codes. ADG's Redis dependency is `continue_degraded` with SQLite remaining authoritative; Memory's Redis dependency is `block`. Task repair compares the complete principal, action, trigger, restart, battery, execution-limit, enabled, and `IgnoreNew` fingerprint before declaring the task healthy.
 - **playwright** writes browser session output to `artifacts/mcp/playwright/` (gitignored).
 - **adg_sqlite** tool names appear as `mcp__adg_sqlite__<tool>` in Claude Code (e.g.
   `mcp__adg_sqlite__adg_health`).

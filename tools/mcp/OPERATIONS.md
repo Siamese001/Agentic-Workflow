@@ -48,9 +48,9 @@ pwsh -NoProfile -File .\ops_scripts\windows\codex_mcp_service_tasks.ps1 -Status 
 pwsh -NoProfile -File .\ops_scripts\windows\launch_codex_agentic.ps1 -RepoRoot $PWD -NoLaunch -Json
 ```
 
-Memory waits boundedly for Redis and uses `redis://localhost:6379/0` only when no non-placeholder `ADG_REDIS_URL` exists. Logs and receipts are `artifacts/mcp/memory_windows_runner.json`, `memory_http_stdout.log`, `memory_http_stderr.log`, and `memory_http_service.jsonl`. A foreign listener on `8765` or `8766` blocks startup without killing it.
+Redis behavior is service-specific and declared with a timeout plus failure policy. ADG uses `continue_degraded` so SQLite-backed HTTP service can start when Redis is unavailable; Memory uses `block` and cannot start without Redis. Logs and receipts are `artifacts/mcp/*_windows_runner.json`, `*_http_stdout.log`, `*_http_stderr.log`, and `*_http_service.jsonl`. A foreign listener on `8765` or `8766` blocks startup without killing it.
 
-The supported shortcut is installed with `install_codex_agentic_shortcut.ps1`. SessionStart only records `-Status -Json` because it runs after required MCP initialization. To remove the lifecycle, run `codex_mcp_service_tasks.ps1 -Uninstall -Json`; this stops and unregisters only the two named tasks.
+The task actions and supported shortcut use the synchronous repo-owned `run_hidden_wait.vbs` adapter through `wscript.exe //B //NoLogo`. It waits for the runner, preserves its exit code, and prevents PowerShell, Python, and console-host windows. SessionStart uses `CREATE_NO_WINDOW` for status checks and remains advisory because it runs after required MCP initialization. To remove the lifecycle, run `codex_mcp_service_tasks.ps1 -Uninstall -Json`; this stops and unregisters only the two named tasks.
 
 ## pytest_mcp
 

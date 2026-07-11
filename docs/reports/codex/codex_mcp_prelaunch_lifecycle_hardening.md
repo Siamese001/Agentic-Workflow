@@ -146,3 +146,27 @@ Normal daily use is the `Codex — Agentic Workflow` shortcut. Foreign listeners
 Foreign-port fail-closed proof also passed: temporary non-MCP listener PID `41036` occupied `8766`; ensure returned exit `1`, classified `foreign_port_conflict`, and left that PID alive. The test exposed and fixed a watchdog/ensure race by making unhealthy repair an atomic disable, verified cleanup, re-enable, and single-start transaction. Memory was restored healthy and managed at final PID `25068`.
 
 Rejected fixes remain: `required = false`, primary stdio rollback, timeout inflation, process-only readiness, and port-only readiness.
+
+## 2026-07-11 Lifecycle Closeout
+
+### Defects closed
+
+- PostToolUse now recognizes direct MCP events and deferred `functions.exec` events, but writes proof only from an approved structured result envelope with exact source-call, server, tool, endpoint, freshness, and success agreement. Missing responses, shell/probe output, text-only claims, failures, stale receipts, endpoint mismatch, and unapproved tools are rejected.
+- ADG Redis dependency is `continue_degraded` after 15 seconds; Memory is `block` after 120 seconds. Behavioral probes used unreachable port `1` and did not stop or reconfigure Redis.
+- Task health now includes the complete action, principal, enabled, trigger, restart, battery, execution-limit, and `IgnoreNew` fingerprint plus verified ownership and MCP protocol health.
+- Blank-window RCA was the interactive Task Scheduler chain `pwsh.exe -> python.exe -> conhost.exe`. Tasks, child services, and the supported shortcut now use synchronous `run_hidden_wait.vbs`; SessionStart subprocesses use `CREATE_NO_WINDOW`.
+
+### Live evidence
+
+- Focused tests: 45 passed after adding strict proof, dependency, fingerprint, adapter, and SessionStart tests.
+- Combined MCP lifecycle, audit, readiness, config, supervisor, and launcher regression set: 129 passed.
+- Restart proof: ADG `42172 -> 45144`; Memory `37440 -> 36340`. Both replacements had initialize, tools/list, health success, and window handle `0`.
+- Foreign-port proof: test listener PID `6848` survived ensure exit `1` with `foreign_port_conflict`; ADG restored healthy at PID `46568`.
+- Watchdog proof: four samples across three 65-second intervals showed exactly one listener on each endpoint, stable PIDs, and no visible console window. Two ensure passes returned PASS/already-healthy for both services. Two managed shortcut launches completed.
+- Windows window inventory after the observation reported no PowerShell, Command Prompt, console-host, WScript, or CScript window.
+
+### Honest pending gates
+
+- A genuine deferred ADG call succeeded in this task, but this task loaded the old hook table before the fix; the proof ledger correctly remained unchanged. A newly reloaded interactive Codex host is still required before diagnosis can become `codex_http_route_callable`. No proof file or environment override was manufactured.
+- Physical sleep/resume and reboot/logon were not performed.
+- `verify_codex_enforcement_home.py` and `verify_codex_primary.py` remain blocked only by the pre-existing root `.agents` directory, which this change does not modify.
