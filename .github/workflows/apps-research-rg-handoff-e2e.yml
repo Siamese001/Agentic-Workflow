@@ -1,0 +1,116 @@
+name: apps-research-rg-handoff-e2e
+
+on:
+  pull_request:
+    paths:
+      - "apps_research/integrations/apps_rg_handoff.py"
+      - "apps_rg/integrations/apps_research_bridge.py"
+      - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/briefing_validator.py"
+      - "apps_rg/runtime/bindings/briefing_u0_signals.py"
+      - "apps_rg/runtime/bindings/u0_binding.py"
+      - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
+      - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
+      - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
+      - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".github/workflows/apps-research-rg-handoff-e2e.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps_research/integrations/apps_rg_handoff.py"
+      - "apps_rg/integrations/apps_research_bridge.py"
+      - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/briefing_validator.py"
+      - "apps_rg/runtime/bindings/briefing_u0_signals.py"
+      - "apps_rg/runtime/bindings/u0_binding.py"
+      - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
+      - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
+      - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
+      - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".github/workflows/apps-research-rg-handoff-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: dev
+
+      - name: Compile runtime authority surfaces
+        run: |
+          python -m py_compile \
+            apps_research/integrations/apps_rg_handoff.py \
+            apps_rg/prerequisites/briefing_validator.py \
+            apps_rg/runtime/bindings/briefing_u0_signals.py \
+            tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py
+
+      - name: Enforce single-X3 and post-Exit publication structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          producer = Path("apps_research/integrations/apps_rg_handoff.py").read_text(
+              encoding="utf-8"
+          )
+          consumer = Path("apps_rg/prerequisites/briefing_validator.py").read_text(
+              encoding="utf-8"
+          )
+          u0_signal = Path(
+              "apps_rg/runtime/bindings/briefing_u0_signals.py"
+          ).read_text(encoding="utf-8")
+
+          assert "exit_bind_and_finalize_apps_research(" in producer
+          assert "if not authorization.allows_finish:" in producer
+          assert producer.index("if not authorization.allows_finish:") < producer.index(
+              "run_dir.mkdir("
+          )
+          assert '"canonical_exit_authorized": True' in producer
+          assert '"x3_code": receipt.x3_code' in producer
+          assert '"canonical_x3_code": receipt.x3_code' in producer
+          assert '"reason": "model_backed_x2_passed"' not in producer
+          assert "validate_canonical_apps_research_exit" in consumer
+          assert "require_canonical_exit=True" in u0_signal
+          PY
+
+      - name: Run canonical producer-consumer handoff tests
+        run: |
+          python -m pytest \
+            tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py \
+            tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py \
+            tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py \
+            tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py \
+            tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py \
+            -q --tb=short --no-header -p no:cacheprovider
+
+      - name: Run whole-run delegation regressions
+        run: |
+          python -m pytest \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py \
+            -q --tb=short --no-header -p no:cacheprovider
+
+  certification-summary:
+    if: always()
+    needs: canonical-handoff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require canonical handoff proof
+        env:
+          RESULT: ${{ needs.canonical-handoff.result }}
+        run: |
+          test "$RESULT" = "success"
+          echo "apps_research -> briefing.md -> apps_rg U0 canonical handoff proof: PASS"
