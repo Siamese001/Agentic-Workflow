@@ -22,8 +22,12 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
         tenant_id="tenant-l6-v40-e2e",
         l5_certification_ref="l5-cert-ref:e2e",
     )
-    rg_package = json.loads(rg_outputs["l6_v40_shadow_eval_package"].read_text(encoding="utf-8"))
-    rg_alignment = json.loads(rg_outputs["l6_apps_eval_alignment"].read_text(encoding="utf-8"))
+    rg_package = json.loads(
+        rg_outputs["l6_v40_shadow_eval_package"].read_text(encoding="utf-8")
+    )
+    rg_closure = json.loads(
+        rg_outputs["l6_observability_closure_receipt"].read_text(encoding="utf-8")
+    )
 
     eval_record = run_eval(
         EvalRequest(
@@ -34,9 +38,17 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
             emit_l6_handoff=True,
         )
     )
-    eval_bridge = json.loads(Path(eval_record.artifact_paths["l6_shadow_bridge"]).read_text(encoding="utf-8"))
-    eval_alignment = json.loads(Path(eval_record.artifact_paths["l6_apps_eval_alignment"]).read_text(encoding="utf-8"))
-    eval_grain_parity = json.loads(Path(eval_record.artifact_paths["l6_apps_eval_grain_parity"]).read_text(encoding="utf-8"))
+    eval_bridge = json.loads(
+        Path(eval_record.artifact_paths["l6_shadow_bridge"]).read_text(encoding="utf-8")
+    )
+    eval_alignment = json.loads(
+        Path(eval_record.artifact_paths["l6_apps_eval_alignment"]).read_text(encoding="utf-8")
+    )
+    eval_grain_parity = json.loads(
+        Path(eval_record.artifact_paths["l6_apps_eval_grain_parity"]).read_text(
+            encoding="utf-8"
+        )
+    )
 
     assert rg_package["valid_v40_shadow_exhaust"] is True
     assert rg_package["g28_audit_completeness"]["verdict"] == "PASS"
@@ -45,13 +57,10 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert rg_package["current_run_x3_mutation_assertion"] is False
     assert rg_package["direct_l4_write_assertion"] is False
     assert rg_package["future_run_only_assertion"] is True
-    assert rg_package["l6_microstep_observations_ref"]
-    assert rg_package["l6_apps_eval_alignment_ref"]
     assert rg_package["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
-    assert rg_package["l6_trace_observability_summary_ref"]
-    assert rg_package["l6_observability_closure_receipt_ref"]
-    assert rg_alignment["missing_in_l6"] == []
-    assert rg_alignment["authority_mismatch"] is False
+    assert rg_package["eval_binding_status"] == "PENDING"
+    assert rg_closure["observability_closure_status"] == "PASS"
+    assert rg_closure["eval_binding_status"] == "PENDING"
 
     assert eval_bridge["g28_audit_completeness"]["verdict"] == "PASS"
     assert eval_bridge["g29_learning_firewall"]["verdict"] == "PASS"
@@ -61,9 +70,16 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["future_run_only"] is True
     assert eval_bridge["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
     assert eval_bridge["projection_consistency_only"] is True
+    assert eval_bridge["independent_observation_required_for_bound_proof"] is True
     assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
-    assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_rows"] == eval_record.artifact_paths["diagnostic_rows"]
-    assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_summary"] == eval_record.artifact_paths["diagnostic_summary"]
+    assert (
+        eval_bridge["diagnostic_artifact_refs"]["diagnostic_rows"]
+        == eval_record.artifact_paths["diagnostic_rows"]
+    )
+    assert (
+        eval_bridge["diagnostic_artifact_refs"]["diagnostic_summary"]
+        == eval_record.artifact_paths["diagnostic_summary"]
+    )
     required_rows = [
         row for row in eval_record.scorecard.scorecard_rows if row.get("required", True)
     ]
@@ -74,6 +90,7 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_alignment["apps_eval_rows_bound"] is False
     assert eval_grain_parity["grain_parity_status"] == "WARN"
     assert eval_grain_parity["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert eval_grain_parity["apps_eval_rows_bound"] is False
     assert eval_grain_parity["projection_consistency_only"] is True
     assert eval_alignment["missing_in_l6"] == []
     assert eval_alignment["missing_in_apps_eval"] == []
