@@ -2,6 +2,173 @@
   "registry_version": "1.0.0",
   "metrics": [
     {
+      "metric_id": "RH.FRESH.001",
+      "version": "1.0.0",
+      "name": "Projection freshness and conservation",
+      "health_dimension": "graph_integrity",
+      "decision": "Determine whether graph-derived health signals are eligible for authoritative consumption.",
+      "definition": "Digest parity plus node, edge, relation-exclusion, parallel-occurrence, schema, and algorithm-version lineage stored in proj_meta.",
+      "formula": "PASS only when source_artifact_digest equals the selected certified artifact digest and included plus excluded canonical edges conserve the canonical population.",
+      "source_table": "proj_meta",
+      "value_columns": [
+        "value"
+      ],
+      "key_columns": [
+        "key"
+      ],
+      "population": "The complete current graph-projection build metadata manifest.",
+      "exclusions": [],
+      "unit": "pass_fail_unknown_with_counts",
+      "normalization": "No averaging; any missing digest or conservation field is UNKNOWN and any mismatch is FAIL.",
+      "exactness": "exact",
+      "confidence_derivation": "Exact hashes and integer conservation counts; unavailable metadata yields UNKNOWN.",
+      "baseline_strategy": "Evaluate against the currently selected certified snapshot, never the newest repair candidate.",
+      "threshold_strategy": "Zero tolerance for digest, foreign-key, or conservation mismatch.",
+      "severity_mapping": "FAIL is critical and disables authoritative graph metrics; UNKNOWN is also non-healthy.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "Freshness proves alignment and conservation, not that every relation belongs in the chosen projection."
+      ],
+      "evidence_query": "SELECT key, value FROM proj_meta WHERE key IN ('schema_version','source_artifact_digest','canonical_node_count','canonical_edge_count','graph_node_count','graph_edge_count','excluded_edge_count','parallel_edge_occurrence_count','included_relation_types','layer_weight_version') ORDER BY key",
+      "consumers": [
+        "MCP health",
+        "Certification diagnostics",
+        "Graph metric eligibility"
+      ],
+      "refresh_cadence": "Every graph-projection build and MCP health check.",
+      "validation": "Digest mutation, excluded-edge imbalance, or foreign-key defects fail closed in focused fixtures.",
+      "remediation": "Rebuild the projection from the selected certified SQLite and investigate any conservation or digest mismatch before serving metrics."
+    },
+    {
+      "metric_id": "RH.GRAPH.003",
+      "version": "1.0.0",
+      "name": "Directed cycle burden",
+      "health_dimension": "dependency_risk",
+      "decision": "Identify newly introduced or expanding directed module cycles on the declared dependency-evidence projection.",
+      "definition": "Non-trivial exact strongly connected components, their member counts, maximum size, and versioned layer-weighted burden.",
+      "formula": "Group proj_scc by scc_id; component burden is the persisted scc_risk_score and every component has scc_size greater than one.",
+      "source_table": "proj_scc",
+      "value_columns": [
+        "scc_size",
+        "scc_risk_score"
+      ],
+      "key_columns": [
+        "scc_id",
+        "adg_name"
+      ],
+      "population": "Module members in non-trivial exact directed SCCs produced from the versioned dependency-evidence projection.",
+      "exclusions": [
+        "Trivial one-node SCCs.",
+        "Canonical relations explicitly excluded by proj_meta.included_relation_types."
+      ],
+      "unit": "component_and_member_count",
+      "normalization": "Report component count, member count, maximum component size, and weighted burden separately.",
+      "exactness": "exact",
+      "confidence_derivation": "Exact for the declared directed endpoint-presence aggregation when projection conservation and freshness pass.",
+      "baseline_strategy": "Compare stable SCC member sets only across certified snapshots with the same projection and weight versions.",
+      "threshold_strategy": "Any new SCC touching a critical layer is review-required; other SCC changes remain ranked diagnostics.",
+      "severity_mapping": "Critical-layer SCCs inherit architecture-policy severity; component size alone never determines severity.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "SCC identity changes when membership changes.",
+        "Symbol intermediaries can connect module members according to the declared projection relation set."
+      ],
+      "evidence_query": "SELECT scc_id, scc_size, scc_risk_score, adg_name FROM proj_scc ORDER BY scc_risk_score DESC, scc_id, adg_name",
+      "consumers": [
+        "Architecture health reporting",
+        "Cycle remediation planning"
+      ],
+      "refresh_cadence": "Every certified graph-projection build.",
+      "validation": "Golden directed graphs match NetworkX strongly_connected_components exactly and projection foreign-key checks pass.",
+      "remediation": "Break the smallest dependency edge that restores an acyclic layer-respecting boundary and add a regression fixture."
+    },
+    {
+      "metric_id": "RH.GRAPH.004",
+      "version": "1.0.0",
+      "name": "Bounded blast-radius distribution",
+      "health_dimension": "change_risk",
+      "decision": "Rank modules by the number of distinct production modules that depend on them within one and two directed hops.",
+      "definition": "Distinct module predecessors reachable within bounded depth on the directed endpoint-presence graph.",
+      "formula": "blast_radius_direct is distinct module predecessors at depth one; blast_radius_2hop is distinct module predecessors at depths one through two.",
+      "source_table": "proj_centrality",
+      "value_columns": [
+        "blast_radius_direct",
+        "blast_radius_2hop"
+      ],
+      "key_columns": [
+        "adg_name"
+      ],
+      "population": "Canonical module nodes on the versioned dependency-evidence projection.",
+      "exclusions": [
+        "Non-module nodes are traversal intermediaries but not counted.",
+        "Relations excluded by the projection contract."
+      ],
+      "unit": "distinct_module_count",
+      "normalization": "Emit raw counts and population percentiles; do not merge them into an opaque score.",
+      "exactness": "exact",
+      "confidence_derivation": "Exact bounded BFS after explicit parallel-edge aggregation when conservation and freshness pass.",
+      "baseline_strategy": "Compare percentiles and module-level values across certified snapshots with the same projection version.",
+      "threshold_strategy": "Ranking and impacted-test selection only; no fixed global merge threshold.",
+      "severity_mapping": "Severity comes from the changed module, affected layers, and missing test evidence, not blast radius alone.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "Only one-hop and two-hop values are currently persisted in proj_centrality.",
+        "Reachability storage is capped for high-impact seed detail beyond the aggregate counts."
+      ],
+      "evidence_query": "SELECT adg_name, blast_radius_direct, blast_radius_2hop, reverse_dep_score FROM proj_centrality ORDER BY blast_radius_2hop DESC, blast_radius_direct DESC, adg_name",
+      "consumers": [
+        "Change-risk reporting",
+        "Impacted-test selection",
+        "Refactor prioritization"
+      ],
+      "refresh_cadence": "Every certified graph-projection build.",
+      "validation": "Golden bounded-BFS fixtures conserve distinct module membership and exclude parallel-edge double counting.",
+      "remediation": "Add focused tests and reviewers for affected dependents, then reduce unnecessary inbound dependencies at stable boundaries."
+    },
+    {
+      "metric_id": "RH.GRAPH.005",
+      "version": "1.0.0",
+      "name": "Chokepoint risk evidence",
+      "health_dimension": "dependency_risk",
+      "decision": "Surface modules that combine high inbound and outbound dependency exposure for architecture review.",
+      "definition": "A decomposed report containing persisted bridge_score, bridge_type, and sampled directed betweenness without presenting the sample as exact proof.",
+      "formula": "bridge_score equals fan_in times fan_out divided by absolute fan-in/fan-out imbalance plus one; betweenness_approx is deterministic sampled directed betweenness.",
+      "source_table": "proj_centrality",
+      "value_columns": [
+        "bridge_score",
+        "betweenness_approx",
+        "fan_in",
+        "fan_out"
+      ],
+      "key_columns": [
+        "adg_name"
+      ],
+      "population": "Canonical module nodes on the versioned dependency-evidence projection.",
+      "exclusions": [
+        "Exact articulation and bridge claims are not made on this directed projection."
+      ],
+      "unit": "rank_score_and_approximate_centrality",
+      "normalization": "Keep bridge_score and sampled betweenness as separate labeled components.",
+      "exactness": "mixed",
+      "confidence_derivation": "Fan counts and bridge formula are deterministic; betweenness remains approximate with fixed seed and recorded sample contract.",
+      "baseline_strategy": "Trend component ranks across certified snapshots with identical projection and algorithm versions.",
+      "threshold_strategy": "Report-only until validated against incident and refactor outcomes.",
+      "severity_mapping": "No automatic blocker severity; policy breaches evidenced by the module are reported separately.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "bridge_score is a ranking heuristic, not an articulation proof.",
+        "Sampled betweenness can change when the graph population changes."
+      ],
+      "evidence_query": "SELECT adg_name, fan_in, fan_out, bridge_score, bridge_type, betweenness_approx FROM proj_centrality ORDER BY bridge_score DESC, adg_name",
+      "consumers": [
+        "Architecture review",
+        "Refactor prioritization"
+      ],
+      "refresh_cadence": "Every certified graph-projection build.",
+      "validation": "Deterministic fixtures preserve parallel fan counts and mark betweenness approximate in proj_meta.",
+      "remediation": "Reduce cross-domain fan-out, introduce a governed boundary, or distribute responsibility while preserving behavior."
+    },
+    {
       "metric_id": "RH.TREND.D000",
       "version": "1.0.0",
       "name": "Snapshot aggregate deltas",
