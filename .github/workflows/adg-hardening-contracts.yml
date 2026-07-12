@@ -5,6 +5,7 @@ on:
     branches: ["**"]
     paths:
       - ".github/workflows/adg-hardening-contracts.yml"
+      - ".codex/governance/scripts/pre_mcp_gate.py"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
@@ -24,6 +25,7 @@ on:
     branches: [main, master]
     paths:
       - ".github/workflows/adg-hardening-contracts.yml"
+      - ".codex/governance/scripts/pre_mcp_gate.py"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
