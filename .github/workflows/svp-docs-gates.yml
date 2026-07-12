@@ -39,13 +39,11 @@ jobs:
           git checkout -B "$branch"
           git fetch --quiet --depth=50 origin main:refs/remotes/origin/main
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up repository Python
+        uses: ./.github/actions/python-setup
         with:
           python-version: "3.12"
-
-      - name: Install focused test dependencies
-        run: python -m pip install --disable-pip-version-check pytest pytest-timeout
+          install-mode: editable
 
       - name: Compile deterministic gates
         run: |
