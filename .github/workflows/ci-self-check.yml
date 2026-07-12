@@ -11,6 +11,8 @@ on:
       - ".github/workflow-config.yaml"
       - "ops_scripts/ci/audit_required_checks.py"
       - "ops_scripts/ci/check_workflow_references.py"
+      - "ops_scripts/ci/check_adg_metric_registry.py"
+      - "tools/adg/contracts/**"
   workflow_dispatch:
 
 permissions:
@@ -46,3 +48,5 @@ jobs:
           fi
       - name: Audit required-check manifest
         run: python ops_scripts/ci/audit_required_checks.py --config .github/workflow-config.yaml
+      - name: Validate ADG metric registry
+        run: python ops_scripts/ci/check_adg_metric_registry.py
