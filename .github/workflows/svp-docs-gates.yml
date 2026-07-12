@@ -82,5 +82,15 @@ jobs:
           --output-dir artifacts/codex/svp_docs/ci
           --json
 
+      - name: Upload SVP review receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svp-docs-review-receipts
+          path: artifacts/codex/svp_docs/ci
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Run architecture conformance proof
+        if: always()
         run: python ops_scripts/ci/run_architecture_proof.py --suite S1
