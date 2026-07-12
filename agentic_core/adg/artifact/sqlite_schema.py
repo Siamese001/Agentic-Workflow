@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS nodes (
 CREATE INDEX IF NOT EXISTS idx_nodes_type  ON nodes(entity_type);
 CREATE INDEX IF NOT EXISTS idx_nodes_layer ON nodes(layer);
 CREATE INDEX IF NOT EXISTS idx_nodes_name  ON nodes(adg_name);
+CREATE INDEX IF NOT EXISTS idx_nodes_resolved_path ON nodes(resolved_path);
 CREATE INDEX IF NOT EXISTS idx_nodes_precision_type ON nodes(precision_type)
     WHERE precision_type != 'symbol';
 CREATE INDEX IF NOT EXISTS idx_nodes_sequence ON nodes(logical_sequence_id)
@@ -92,6 +93,8 @@ CREATE TABLE IF NOT EXISTS edges (
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
+CREATE INDEX IF NOT EXISTS idx_edges_src_rel ON edges(src_id, relation_type);
+CREATE INDEX IF NOT EXISTS idx_edges_dst_rel ON edges(dst_id, relation_type);
 CREATE INDEX IF NOT EXISTS idx_edges_authority ON edges(authority)
     WHERE authority IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_edges_bucket ON edges(bucket)
