@@ -38,8 +38,17 @@ Landed on `agent/adg-sqlite-repo-health-hardening`:
 - Exact Phase D membership deltas with `NO_BASELINE` semantics
 - P0 write-sovereignty baseline failure closure
 - Versioned metric registry and CI validation
+- One canonical SQLite DDL with a compatibility-delegated legacy writer and drift guard
+- Canonical composite indexes, ANALYZE/optimize, governed query catalog, and certification-time query-plan validation
+- Typed COMPLETE/EMPTY/UNAVAILABLE/STALE/TRUNCATED/UNKNOWN query metadata propagated through MCP
+- Artifact-digest plus metric-version Redis namespaces for service read-through keys
+- Focused ADG hardening CI covering the executable contracts
 
-Remaining waves continue incrementally behind compatibility surfaces and the draft PR.
+Still deferred to follow-on increments because they require representative full-snapshot
+baselines or coordinated multi-consumer migration: schema-v5 stable keys/evidence tables,
+confidence calibration, bounded governed traversal integration, full Redis v2 key migration,
+producer-side reachability truncation receipts, duplicate metric-authority retirement, and
+real-artifact p50/p95/size reproducibility certification.
 
 ## Source-of-Truth and Provenance
 
