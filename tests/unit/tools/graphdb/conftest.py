@@ -123,25 +123,60 @@ def sample_metadata(minimal_graph: nx.DiGraph) -> SnapshotMetadata:
 
 @pytest.fixture
 def minimal_sqlite(tmp_path: Path) -> Path:
-    """Minimal ADG SQLite file with required schema for projection tests."""
+    """Minimal canonical ADG SQLite file for projection tests."""
     db_path = tmp_path / "test_adg.sqlite"
     with sqlite3.connect(db_path) as conn:
-        conn.execute("CREATE TABLE entities (id TEXT PRIMARY KEY, type TEXT, name TEXT, properties TEXT)")
         conn.execute(
-            "CREATE TABLE relations (id TEXT PRIMARY KEY, from_id TEXT, to_id TEXT, type TEXT, properties TEXT)"
+            """CREATE TABLE nodes (
+                id TEXT PRIMARY KEY,
+                entity_type TEXT NOT NULL,
+                adg_name TEXT NOT NULL UNIQUE,
+                layer TEXT,
+                resolved_path TEXT,
+                span_line INTEGER,
+                enclosing_symbol TEXT,
+                identity_kind TEXT,
+                confidence REAL
+            )"""
         )
-        conn.execute("CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT)")
         conn.execute(
-            "INSERT INTO entities VALUES (?, ?, ?, ?)",
-            ("mod_l0", "module", "router", json.dumps({"layer": "L0"})),
+            """CREATE TABLE edges (
+                id TEXT PRIMARY KEY,
+                src_id TEXT NOT NULL,
+                dst_id TEXT NOT NULL,
+                relation_type TEXT NOT NULL,
+                edge_kind TEXT,
+                source_file TEXT,
+                line_no INTEGER,
+                symbol TEXT,
+                semantic_type TEXT,
+                confidence_score REAL
+            )"""
+        )
+        conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+        conn.execute(
+            "INSERT INTO nodes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "mod_l0", "module", "router", "L0", "router.py",
+                1, None, "module", 1.0,
+            ),
         )
         conn.execute(
-            "INSERT INTO entities VALUES (?, ?, ?, ?)",
-            ("mod_l1", "module", "reasoner", json.dumps({"layer": "L1"})),
+            "INSERT INTO nodes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "mod_l1", "module", "reasoner", "L1", "reasoner.py",
+                1, None, "module", 1.0,
+            ),
         )
         conn.execute(
-            "INSERT INTO relations VALUES (?, ?, ?, ?, ?)",
-            ("rel_001", "mod_l0", "mod_l1", "imports", json.dumps({"line_number": 5})),
+            "INSERT INTO edges VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                "rel_001", "mod_l0", "mod_l1", "imports", "static",
+                "router.py", 5, None, None, 1.0,
+            ),
+        )
+        conn.execute(
+            "INSERT INTO meta VALUES ('artifact_digest', 'fixture-digest')"
         )
         conn.commit()
     return db_path
