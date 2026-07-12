@@ -2,10 +2,13 @@
 
 Runs only after the section RuntimeExhaustBundle is sealed. Outputs are
 additive post-runtime artifacts and never change X3, Exit, L2, or L4 state.
+The section runner closes *observability* independently from later apps_eval
+binding; contract-only section evidence is not misreported as eval proof.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from dataclasses import asdict, is_dataclass
@@ -39,6 +42,7 @@ L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT = "l6_v40_shadow_eval_package.json"
 L6_V40_SHADOW_EVAL_SPANS_ARTIFACT = "l6_v40_shadow_eval_spans.json"
 L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT = "l6_v40_shadow_eval_spans.jsonl"
 L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT = "l6_observability_closure_receipt.json"
+L6_APPS_EVAL_BINDING_CLOSURE_RECEIPT_ARTIFACT = "l6_apps_eval_binding_closure_receipt.json"
 
 APPS_RG_V40_STAGE_BY_FILE: dict[str, str] = {
     "runtime_exhaust_bundle.json": "EXIT",
@@ -94,12 +98,39 @@ def _jsonable(value: object) -> object:
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(dict(payload), indent=2, sort_keys=True, default=str) + "\n",
         encoding="utf-8",
         newline="\n",
     )
     return path
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return {}
+    return dict(value) if isinstance(value, Mapping) else {}
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return "sha256:" + digest.hexdigest()
+
+
+def _gate_pass(value: Any) -> bool:
+    if not isinstance(value, Mapping):
+        return False
+    return str(value.get("verdict") or value.get("status") or "").upper() == "PASS"
+
+
+def _existing(path: Path | None) -> bool:
+    return bool(path is not None and path.is_file())
 
 
 def _emit_l6_observability_closure_receipt(
@@ -110,48 +141,76 @@ def _emit_l6_observability_closure_receipt(
     package: Mapping[str, Any],
     trace_reconciliation_paths: Mapping[str, Path],
     microstep_paths: Mapping[str, Path],
+    span_paths: Mapping[str, Path] | None = None,
 ) -> Path:
+    """Seal post-run observability without pretending apps_eval is already bound."""
+
+    span_paths = dict(span_paths or {})
+    artifacts: dict[str, Path] = {
+        "runtime_exhaust_bundle": artifact_dir / "runtime_exhaust_bundle.json",
+        "exit_disposition_receipt": artifact_dir / "exit_disposition_receipt.json",
+        "trace_reconciliation": trace_reconciliation_paths.get("trace_reconciliation", Path()),
+        "trace_reconciliation_rows": trace_reconciliation_paths.get("trace_reconciliation_rows", Path()),
+        "l6_trace_observability_summary": trace_reconciliation_paths.get(
+            "l6_trace_observability_summary", Path()
+        ),
+        "l6_microstep_observations": microstep_paths.get("l6_microstep_observations", Path()),
+        "l6_microstep_coverage": microstep_paths.get("l6_microstep_coverage", Path()),
+        "l6_microstep_rca": microstep_paths.get("l6_microstep_rca", Path()),
+        "l6_microstep_patterns": microstep_paths.get("l6_microstep_patterns", Path()),
+        "l6_microstep_future_run_proposals": microstep_paths.get(
+            "l6_microstep_future_run_proposals", Path()
+        ),
+        "l6_apps_eval_alignment": microstep_paths.get("l6_apps_eval_alignment", Path()),
+        "l6_apps_eval_grain_parity": microstep_paths.get("l6_apps_eval_grain_parity", Path()),
+        "l6_v40_shadow_eval_spans": span_paths.get(
+            "span_export_json", artifact_dir / L6_V40_SHADOW_EVAL_SPANS_ARTIFACT
+        ),
+        "l6_v40_shadow_eval_spans_jsonl": span_paths.get(
+            "span_export_jsonl", artifact_dir / L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT
+        ),
+        "l6_v40_shadow_eval_package": package_path,
+    }
     checks = {
-        "runtime_exhaust_exists": (artifact_dir / "runtime_exhaust_bundle.json").is_file(),
-        "exit_disposition_exists": (artifact_dir / "exit_disposition_receipt.json").is_file(),
-        "g28_receipt_exists": bool(package.get("g28_audit_completeness")),
-        "g29_receipt_exists": bool(package.get("g29_learning_firewall")),
-        "trace_reconciliation_exists": trace_reconciliation_paths["trace_reconciliation"].is_file(),
-        "trace_summary_exists": trace_reconciliation_paths["l6_trace_observability_summary"].is_file(),
-        "microstep_observations_exists": microstep_paths["l6_microstep_observations"].is_file(),
-        "grain_parity_exists": microstep_paths["l6_apps_eval_grain_parity"].is_file(),
-        "v40_package_exists": package_path.is_file(),
+        **{f"{name}_exists": _existing(path) for name, path in artifacts.items()},
         "valid_v40_shadow_exhaust": package.get("valid_v40_shadow_exhaust") is True,
-        "readiness_ready": package.get("readiness_decision") == "READY_FOR_6B",
-        "grain_parity_pass": package.get("grain_parity_status") == "PASS",
-        "apps_eval_rows_bound": package.get("apps_eval_rows_bound") is True,
-        "apps_eval_bound_evidence": package.get("evidence_class") == "APPS_EVAL_BOUND_PROOF",
+        "readiness_scorable": str(package.get("readiness_decision") or "")
+        in {"READY_FOR_6B", "PARTIAL_BUT_SCORABLE"},
+        "g28_pass": _gate_pass(package.get("g28_audit_completeness")),
+        "g29_pass": _gate_pass(package.get("g29_learning_firewall")),
         "no_current_run_mutation_assertion": package.get("current_run_mutation_assertion") is False
         and package.get("current_run_x3_mutation_assertion") is False,
         "no_direct_l4_write_assertion": package.get("direct_l4_write_assertion") is False,
         "no_durable_write_assertion": package.get("durable_write_assertion") is False,
         "future_run_only_assertion": package.get("future_run_only_assertion") is True,
     }
-    failed_checks = [name for name, passed in checks.items() if not passed]
+    failed_checks = sorted(name for name, passed in checks.items() if not passed)
+    digest_map = {
+        name: _sha256_file(path)
+        for name, path in sorted(artifacts.items())
+        if _existing(path)
+    }
+    closure_seed = {
+        "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
+        "checks": checks,
+        "artifact_digests": digest_map,
+    }
     receipt = {
-        "schema_version": "apps_rg.l6_observability_closure_receipt.v1",
+        "schema_version": "apps_rg.l6_observability_closure_receipt.v2",
         "section_id": str(package.get("section_id") or ""),
         "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
+        "observability_closure_status": "PASS" if not failed_checks else "FAIL",
         "closure_status": "PASS" if not failed_checks else "FAIL",
+        "eval_binding_status": "PENDING",
+        "eval_binding_required_for_future_run_promotion": True,
         "checks": checks,
         "failed_checks": failed_checks,
-        "refs": {
-            "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
-            "exit_disposition_receipt": _repo_rel(repo_root, artifact_dir / "exit_disposition_receipt.json"),
-            "trace_reconciliation": _repo_rel(repo_root, trace_reconciliation_paths["trace_reconciliation"]),
-            "l6_trace_observability_summary": _repo_rel(
-                repo_root,
-                trace_reconciliation_paths["l6_trace_observability_summary"],
-            ),
-            "l6_microstep_observations": _repo_rel(repo_root, microstep_paths["l6_microstep_observations"]),
-            "l6_apps_eval_grain_parity": _repo_rel(repo_root, microstep_paths["l6_apps_eval_grain_parity"]),
-            "l6_v40_shadow_eval_package": _repo_rel(repo_root, package_path),
-        },
+        "refs": {name: _repo_rel(repo_root, path) for name, path in artifacts.items() if _existing(path)},
+        "artifact_digests": digest_map,
+        "closure_digest": "sha256:"
+        + hashlib.sha256(
+            json.dumps(closure_seed, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest(),
         "current_run_mutation_assertion": False,
         "current_run_x3_mutation_assertion": False,
         "direct_l4_write_assertion": False,
@@ -159,6 +218,51 @@ def _emit_l6_observability_closure_receipt(
         "future_run_only_assertion": True,
     }
     return _write_json(artifact_dir / L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT, receipt)
+
+
+def emit_l6_apps_eval_binding_closure_receipt(
+    *,
+    artifact_dir: Path,
+    observability_closure_ref: str,
+    independent_parity_ref: str,
+    run_id: str,
+) -> Path:
+    """Emit additive binding closure after apps_eval; never rewrite section packages."""
+
+    observation_path = Path(observability_closure_ref)
+    parity_path = Path(independent_parity_ref)
+    if not observation_path.is_absolute():
+        observation_path = artifact_dir / observation_path
+    if not parity_path.is_absolute():
+        parity_path = artifact_dir / parity_path
+    observation = _load_json(observation_path)
+    parity = _load_json(parity_path)
+    checks = {
+        "observability_closure_pass": str(
+            observation.get("observability_closure_status") or observation.get("closure_status") or ""
+        )
+        == "PASS",
+        "independent_parity_pass": parity.get("grain_parity_status") == "PASS",
+        "apps_eval_rows_bound": parity.get("apps_eval_rows_bound") is True,
+        "apps_eval_bound_evidence": parity.get("evidence_class") == "APPS_EVAL_BOUND_PROOF",
+        "independent_observations": parity.get("independent_observations") is True,
+        "authority_clean": parity.get("authority_mismatch") is False,
+    }
+    failed = sorted(name for name, passed in checks.items() if not passed)
+    payload = {
+        "schema_version": "apps_rg.l6_apps_eval_binding_closure_receipt.v1",
+        "run_id": run_id,
+        "binding_closure_status": "PASS" if not failed else "FAIL",
+        "checks": checks,
+        "failed_checks": failed,
+        "observability_closure_ref": observability_closure_ref,
+        "independent_parity_ref": independent_parity_ref,
+        "current_run_mutation_assertion": False,
+        "direct_l4_write_assertion": False,
+        "durable_write_assertion": False,
+        "future_run_only": True,
+    }
+    return _write_json(artifact_dir / L6_APPS_EVAL_BINDING_CLOSURE_RECEIPT_ARTIFACT, payload)
 
 
 def run_l6_v40_shadow_eval_for_section(
@@ -170,7 +274,10 @@ def run_l6_v40_shadow_eval_for_section(
     tenant_id: str = "",
     l5_certification_ref: str = "",
 ) -> dict[str, Path]:
-    """Build v40 exhaust, run 6A + observer readiness, and write artifacts."""
+    """Build v40 exhaust, run L6.1/L6.2, and seal post-run observability."""
+
+    artifact_dir = Path(artifact_dir)
+    repo_root = Path(repo_root)
     l5_ref = l5_certification_ref or os.environ.get(APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV, "")
     preliminary_exhaust = from_section_artifacts(
         artifact_dir,
@@ -182,12 +289,11 @@ def run_l6_v40_shadow_eval_for_section(
         tenant_id=tenant_id,
         l5_certification_ref=l5_ref,
     )
-    run_id_hint = str(preliminary_exhaust.get("run_id") or section_id)
     trace_reconciliation_paths = emit_trace_reconciliation_artifacts(
         artifact_dir=artifact_dir,
         repo_root=repo_root,
         section_id=section_id,
-        run_id=run_id_hint,
+        run_id=str(preliminary_exhaust.get("run_id") or section_id),
     )
     raw_exhaust = from_section_artifacts(
         artifact_dir,
@@ -214,23 +320,17 @@ def run_l6_v40_shadow_eval_for_section(
         jsonl_name=L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT,
         source="apps_rg_l6_v40_shadow_eval",
     )
-    run_id = ingest.bundle.run_id
     microstep_paths = emit_apps_rg_l6_microstep_artifacts(
         output_dir=artifact_dir,
         artifact_dir=artifact_dir,
         repo_root=repo_root,
-        run_id=run_id,
+        run_id=ingest.bundle.run_id,
         runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
         section_id=section_id,
     )
-    parity_payload = {}
-    try:
-        parity_payload = json.loads(microstep_paths["l6_apps_eval_grain_parity"].read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError, KeyError):
-        parity_payload = {}
-
+    parity_payload = _load_json(microstep_paths["l6_apps_eval_grain_parity"])
     package: dict[str, Any] = {
-        "schema_version": "apps_rg.l6_v40_shadow_eval.v1",
+        "schema_version": "apps_rg.l6_v40_shadow_eval.v2",
         "section_id": section_id,
         "runtime_exhaust_bundle_id": ingest.bundle.runtime_exhaust_bundle_id,
         "runtime_exhaust_bundle_digest": ingest.bundle.deterministic_digest,
@@ -243,43 +343,46 @@ def run_l6_v40_shadow_eval_for_section(
         "ingest_gap_report": _jsonable(ingest.gap_report),
         "span_export_ref": _repo_rel(repo_root, span_paths["span_export_json"]),
         "span_export_jsonl_ref": _repo_rel(repo_root, span_paths["span_export_jsonl"]),
-        "l6_microstep_observations_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_observations"]),
+        "l6_microstep_observations_ref": _repo_rel(
+            repo_root, microstep_paths["l6_microstep_observations"]
+        ),
         "l6_microstep_coverage_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_coverage"]),
         "l6_microstep_rca_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_rca"]),
         "l6_microstep_patterns_ref": _repo_rel(repo_root, microstep_paths["l6_microstep_patterns"]),
         "l6_microstep_future_run_proposals_ref": _repo_rel(
-            repo_root,
-            microstep_paths["l6_microstep_future_run_proposals"],
+            repo_root, microstep_paths["l6_microstep_future_run_proposals"]
         ),
         "l6_apps_eval_alignment_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_alignment"]),
-        "l6_apps_eval_grain_parity_ref": _repo_rel(repo_root, microstep_paths["l6_apps_eval_grain_parity"]),
+        "l6_apps_eval_grain_parity_ref": _repo_rel(
+            repo_root, microstep_paths["l6_apps_eval_grain_parity"]
+        ),
         "alignment_source": str(parity_payload.get("alignment_source") or "contract_only_pseudo_rows"),
-        "apps_eval_rows_bound": bool(parity_payload.get("apps_eval_rows_bound") is True),
+        "apps_eval_rows_bound": False,
         "grain_parity_status": str(parity_payload.get("grain_parity_status") or "WARN"),
-        "evidence_class": str(parity_payload.get("evidence_class") or "CONTRACT_ONLY_ADVISORY"),
+        "evidence_class": "CONTRACT_ONLY_ADVISORY",
+        "eval_binding_status": "PENDING",
         "trace_reconciliation_ref": _repo_rel(
-            repo_root,
-            trace_reconciliation_paths["trace_reconciliation"],
+            repo_root, trace_reconciliation_paths["trace_reconciliation"]
         ),
         "trace_reconciliation_rows_ref": _repo_rel(
-            repo_root,
-            trace_reconciliation_paths["trace_reconciliation_rows"],
+            repo_root, trace_reconciliation_paths["trace_reconciliation_rows"]
         ),
         "l6_trace_observability_summary_ref": _repo_rel(
-            repo_root,
-            trace_reconciliation_paths["l6_trace_observability_summary"],
+            repo_root, trace_reconciliation_paths["l6_trace_observability_summary"]
         ),
         "l6_observability_closure_receipt_ref": _repo_rel(
-            repo_root,
-            artifact_dir / L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT,
+            repo_root, artifact_dir / L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT
         ),
         "input_refs": {
             "artifact_dir": _repo_rel(repo_root, artifact_dir),
-            "runtime_exhaust_bundle": _repo_rel(repo_root, artifact_dir / "runtime_exhaust_bundle.json"),
-            "exit_disposition_receipt": _repo_rel(repo_root, artifact_dir / "exit_disposition_receipt.json"),
+            "runtime_exhaust_bundle": _repo_rel(
+                repo_root, artifact_dir / "runtime_exhaust_bundle.json"
+            ),
+            "exit_disposition_receipt": _repo_rel(
+                repo_root, artifact_dir / "exit_disposition_receipt.json"
+            ),
             "trace_reconciliation": _repo_rel(
-                repo_root,
-                trace_reconciliation_paths["trace_reconciliation"],
+                repo_root, trace_reconciliation_paths["trace_reconciliation"]
             ),
         },
         "current_run_mutation_assertion": False,
@@ -288,8 +391,7 @@ def run_l6_v40_shadow_eval_for_section(
         "durable_write_assertion": False,
         "future_run_only_assertion": True,
     }
-    package_path = artifact_dir / L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT
-    _write_json(package_path, package)
+    package_path = _write_json(artifact_dir / L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT, package)
     closure_path = _emit_l6_observability_closure_receipt(
         artifact_dir=artifact_dir,
         repo_root=repo_root,
@@ -297,6 +399,7 @@ def run_l6_v40_shadow_eval_for_section(
         package=package,
         trace_reconciliation_paths=trace_reconciliation_paths,
         microstep_paths=microstep_paths,
+        span_paths=span_paths,
     )
     return {
         "l6_v40_shadow_eval_package": package_path,
@@ -334,10 +437,12 @@ __all__ = [
     "APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV",
-    "L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT",
+    "L6_APPS_EVAL_BINDING_CLOSURE_RECEIPT_ARTIFACT",
     "L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT",
+    "L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_ARTIFACT",
     "L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT",
+    "emit_l6_apps_eval_binding_closure_receipt",
     "l6_v40_shadow_eval_enabled",
     "maybe_run_l6_v40_shadow_eval_for_section",
     "run_l6_v40_shadow_eval_for_section",
