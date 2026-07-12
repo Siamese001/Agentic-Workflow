@@ -52,10 +52,16 @@ jobs:
           python -m py_compile ops_scripts/ci/run_architecture_proof.py
 
       - name: Test SVP X2 and X3 logic
-        run: pytest -q --tb=short tests/unit/scripts/governance/test_svp_docs_review.py
+        run: >-
+          pytest -q --tb=short
+          --confcutdir=tests/unit/scripts/governance
+          tests/unit/scripts/governance/test_svp_docs_review.py
 
       - name: Test Codex primary SVP anchors
-        run: pytest -q --tb=short tests/unit/scripts/governance/test_verify_codex_primary.py
+        run: >-
+          pytest -q --tb=short
+          --confcutdir=tests/unit/scripts/governance
+          tests/unit/scripts/governance/test_verify_codex_primary.py
 
       - name: Verify Codex primary contract
         run: python scripts/governance/verify_codex_primary.py
