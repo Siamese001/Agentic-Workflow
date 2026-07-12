@@ -33,7 +33,7 @@ The SVP documentation automations do not merge or push directly to `main`.
 - Weekly automation is read-only and cannot emit `ALLOW_TO_PR`.
 - Manual editing requires a machine-readable approval receipt.
 - X2 gates emit explicit PASS, WARN, FAIL, or NOT_APPLICABLE results.
-- X3 emits exactly one allowed disposition.
+- X3 emits one disposition from the checked-in allowed-decision enum.
 - Receipt schemas are checked in and validated.
 - App classification and counts are derived from `APP_REGISTRY`.
 - Architecture proof output contains no hard-coded five-governed/two-exception narrative.
@@ -44,10 +44,10 @@ The SVP documentation automations do not merge or push directly to `main`.
 
 ```bash
 python scripts/governance/verify_codex_primary.py
-python scripts/governance/verify_codex_enforcement_home.py --json
+python scripts/governance/verify_codex_enforcement_home_portable.py --json
 python scripts/governance/svp_docs_review.py --mode audit --phase pre --json
 python ops_scripts/ci/run_architecture_proof.py --suite S1
 pytest -q tests/unit/scripts/governance/test_svp_docs_review.py
-pytest -q tests/unit/scripts/governance/test_verify_codex_enforcement_home.py
+pytest -q tests/unit/scripts/governance/test_verify_codex_primary.py
 git diff --check
 ```
