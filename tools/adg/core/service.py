@@ -33,17 +33,24 @@ class ADGService:
     _adg_snapshot_id: str
     _mv_reader: MVRedisReader
 
-    def __init__(self, redis_url: str | None = None):
-        # SQLite is mandatory — fail fast if unavailable
-        self._sqlite = SQLiteBackend()
-
-        # Get snapshot ID from SQLite
+    def __init__(
+        self,
+        redis_url: str | None = None,
+        *,
+        snapshot_selection: str = "latest",
+    ):
+        """Create the service over an explicitly selected snapshot role."""
+        self._sqlite = SQLiteBackend(
+            snapshot_selection=snapshot_selection,
+            allow_unavailable=snapshot_selection != "latest",
+            verify_pointer_digest=True,
+        )
         status = self._sqlite.get_status()
-        self._adg_snapshot_id = status["timestamp"]
+        self._adg_snapshot_id = str(
+            status.get("timestamp") or "unavailable"
+        )
 
-        # SSOT: Redis URL resolution - env var (ADG_REDIS_URL) -> explicit arg.
-        # Redis is an optional accelerator; absence must leave ADG in
-        # sqlite_only mode instead of collapsing the MCP transport.
+        # Redis is a projection/accelerator and never snapshot authority.
         self._redis_url = resolve_adg_redis_url(redis_url)
         self._redis = None
         self._connect_redis()
@@ -66,31 +73,103 @@ class ADGService:
         return bool(self._redis is not None and getattr(self._redis, "_available", False))
 
     def health(self) -> HealthStatus:
-        """Return comprehensive health status."""
-        sqlite_status, _sqlite_meta = self._sqlite.health()
+        """Return fail-closed certification and completeness health."""
+        sqlite_status, sqlite_meta = self._sqlite.health()
+        status = self._sqlite.get_status()
 
         if self._redis is None:
-            redis_status, _redis_meta = "unavailable", {}
+            redis_status = "unavailable"
         else:
             try:
                 redis_status, _redis_meta = self._redis.health()
-            except Exception as exc:  # guardian: allow-broad-exception -- Redis health probes can fail for the same optional-cache reasons as reads; service health must still return
+            except Exception as exc:  # guardian: allow-broad-exception -- optional cache health must not hide SQLite health
                 logger.debug("Redis health probe failed: %s", exc)
-                redis_status, _redis_meta = "unavailable", {}
+                redis_status = "unavailable"
 
-        mode = "full" if redis_status == "healthy" else "sqlite_only"
-        cache_hit_capable = redis_status == "healthy"
-        _vma = self._sqlite.get_views_materialized_at()
-        views_materialized_at: str | None = _vma if isinstance(_vma, str) else None
+        if sqlite_status == "unavailable":
+            mode = "unavailable"
+        else:
+            mode = "full" if redis_status == "healthy" else "sqlite_only"
 
+        materialization = sqlite_meta.get("materialization")
+        if not isinstance(materialization, dict):
+            materialization = self._sqlite.get_materialization_status()
+
+        reasons: list[str] = []
+        if sqlite_status == "unavailable":
+            reasons.append(
+                str(
+                    sqlite_meta.get("selection_error")
+                    or "SQLite snapshot unavailable"
+                )
+            )
+        if not status.get("certified", False):
+            reasons.append(
+                "active snapshot is not certified "
+                f"(selection={status.get('snapshot_selection')}, "
+                f"certification={status.get('certification_status')})"
+            )
+        if not status.get("digest_verified", False):
+            reasons.append("certified snapshot digest was not verified")
+        if materialization.get("status") != "PASS":
+            reasons.append(
+                "required materialization status="
+                + str(materialization.get("status", "UNKNOWN"))
+            )
+
+        if (
+            sqlite_status == "unavailable"
+            or not status.get("certified", False)
+            or not status.get("digest_verified", False)
+            or materialization.get("status") != "PASS"
+        ):
+            overall = "critical"
+        elif sqlite_meta.get("is_stale") or not sqlite_meta.get(
+            "is_fresh",
+            True,
+        ):
+            overall = "degraded"
+            reasons.append(
+                "selected certified snapshot changed; reopen required"
+            )
+        else:
+            overall = "healthy"
+
+        views_materialized_at = self._sqlite.get_views_materialized_at()
         return HealthStatus(
             mode=mode,
             sqlite=sqlite_status,
             redis=redis_status,
-            cache_hit_capable=cache_hit_capable,
-            schema_version="1.0",
+            cache_hit_capable=redis_status == "healthy",
+            schema_version=str(
+                status.get("schema_version") or "unknown"
+            ),
             adg_snapshot_id=self._adg_snapshot_id,
-            views_materialized_at=views_materialized_at,
+            views_materialized_at=(
+                views_materialized_at
+                if isinstance(views_materialized_at, str)
+                else None
+            ),
+            overall_status=overall,
+            reasons=list(dict.fromkeys(reasons)),
+            snapshot_selection=str(
+                status.get("snapshot_selection") or "unknown"
+            ),
+            certified=bool(status.get("certified")),
+            certification_status=str(
+                status.get("certification_status") or "unknown"
+            ),
+            artifact_status=str(
+                status.get("artifact_status") or "unknown"
+            ),
+            pointer_path=status.get("pointer_path"),
+            digest_verified=bool(status.get("digest_verified")),
+            materialization_status=str(
+                materialization.get("status") or "UNKNOWN"
+            ),
+            materialization_counts=dict(
+                materialization.get("counts") or {}
+            ),
         )
 
     def _query_with_fallback(
@@ -259,18 +338,18 @@ class ADGService:
         )
 
     def get_status(self) -> ADGResponse:
-        """Get ADG snapshot status."""
+        """Get ADG snapshot status, preserving unavailable semantics."""
         status = self._sqlite.get_status()
-
+        available = status.get("available") is True
         return ADGResponse(
-            status="ok",
+            status="ok" if available else "error",
             data=status,
             backend_used="sqlite",
             cache_meta={
-                "is_fresh": True,
-                "timestamp": status["timestamp"],
-                "node_count": status["node_count"],
-                "edge_count": status["edge_count"],
+                "is_fresh": available,
+                "timestamp": status.get("timestamp"),
+                "node_count": status.get("node_count"),
+                "edge_count": status.get("edge_count"),
             },
         )
 
@@ -302,7 +381,9 @@ class ADGService:
             # Refresh snapshot ID so Redis cache keys reflect the active snapshot.
             # Without this, Redis lookups after a reload use the stale snapshot ID.
             status = self._sqlite.get_status()
-            self._adg_snapshot_id = status["timestamp"]
+            self._adg_snapshot_id = str(
+                status.get("timestamp") or "unavailable"
+            )
 
         if self._redis is not None:
             self._redis.close()
