@@ -417,6 +417,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         # Saves ~1.4s on the node executemany phase (1.76s → 0.53s measured).
         # MEMORY journal is safe here: if the process dies mid-write the file is
         # simply incomplete/corrupt, which is acceptable for a re-generable artifact.
+        conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("PRAGMA journal_mode=MEMORY")
         conn.execute("PRAGMA synchronous=OFF")
         conn.executescript(_DDL)
