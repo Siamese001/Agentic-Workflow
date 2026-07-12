@@ -1,0 +1,193 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p0_blocker_burndown_20260712T205914Z",
+  "generated_at": "2026-07-12T21:01:35Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+    "branch": "codex/adg-p0-blocker-burndown-20260712T2047Z",
+    "head": "79e831d507f819a370323c57ba1b1353a4665e19",
+    "dirty_before": false,
+    "dirty_after": true,
+    "source_commit": "79e831d507f819a370323c57ba1b1353a4665e19",
+    "base_commit": "16379207d0fab9ff746668378ca50ffd2f7257a4"
+  },
+  "source_handoff": {
+    "adg_run_id": "07122026_0907",
+    "artifact_status": "repair_ready",
+    "artifact_status_source": "direct",
+    "dependency_status": "ready",
+    "pointer": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json",
+      "sha256": "c67685cab15604acf37966b4fee6aae4ee301cbefa3d8f03b991b5c9bc9feb2a"
+    },
+    "immutable_handoff": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_07122026_0907.json",
+      "sha256": "6210d0f43a74945a304c925df9fd7d322f06d4931f76fbfd6d0ad65665397a31"
+    },
+    "receipt": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_audit_pipeline_receipt_07122026_0907.json",
+      "sha256": "3789a7480ae4bc2bbc614fa3c48c8b84234c93cb63c271c69a91be61301777e4"
+    },
+    "fresh_execution_plan": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\issues\\p0_burndown_execution_plan_07122026_0907_20260712_204902.json",
+      "sha256": "969af119adf3bb2eb848481793e2bf30368a507d4d70e1643375029e363f3f5b"
+    }
+  },
+  "scope": {
+    "request": "Run the repo-owned ADG P0 blocker burndown from a fresh wave-based plan and burn down the released P0 backlog.",
+    "plan_id": ".codex/automations/adg-p0-blocker-burndown/automation.toml",
+    "files_changed": [
+      "agentic_core/L0_routing/package_driven_l0_binding.py",
+      "tests/unit/agentic_core/L0_routing/test_prompt_governance_reachability_anchors.py",
+      "artifacts/codex/run_receipts/adg_p0_blocker_burndown_20260712T205914Z.json"
+    ],
+    "treatment": "Restore explicit L0 imports for prompt_governance.mixins and prompt_governance.validation while preserving the same exported callable identities. This restores the three graph edges removed by commit 85ba07a81e without changing runtime behavior or the ratchet baseline."
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/adg/prepare_p0_burndown.py --handoff-pointer <producer-root-pointer> --output-dir <producer-root-issues> --fallback-reason <explicit degraded fallback> --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "pytest -q <69 focused prompt-governance, infra, and reachability-anchor tests>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/analysis/p0_incremental_reach_proof.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/analysis/p0_incremental_gates.py --shadow artifacts/adg/shadow_reach_proof.sqlite",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ops_scripts.ci.adg_gates.p0_runner --sqlite <immutable-shadow> --modified-files agentic_core/L0_routing/package_driven_l0_binding.py --skip-preflight --no-artifacts",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "ruff check --select F401,I <changed Python files> && git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "adg_sqlite_mcp",
+        "reason": "ADG MCP health reported a missing certified snapshot pointer and the P0 wave-plan tool returned no snapshot.",
+        "substitute": "Use the direct digest-bound handoff snapshot with the supported incremental shadow reindex and explicit DEGRADED_FALLBACK provenance."
+      },
+      {
+        "route": "full_adg_regeneration",
+        "reason": "The downstream P0 lane contract forbids regenerating full ADG.",
+        "substitute": "Run the supported incremental graph proof, regenerate timestamped post-fix gate/wave/queue artifacts, and bind their digests in this receipt."
+      }
+    ]
+  },
+  "adg_provenance": {
+    "backend": "degraded_sqlite",
+    "reason": "DEGRADED_FALLBACK: adg_health reported a missing certified snapshot pointer and adg_p0_wave_plan returned no ADG SQLite snapshot; the direct digest-bound handoff snapshot and supported incremental shadow reindex were used.",
+    "source_snapshot": "adg_indexed_07122026_0907.sqlite",
+    "source_snapshot_sha256": "37d343deb676896de385ef1e6ecf1b2a3155c9d47c760595eab73735897eae20"
+  },
+  "postfix_artifacts": {
+    "shadow_snapshot": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p0_runs\\adg_p0_shadow_p0_20260712_205914.sqlite",
+      "sha256": "282353df053194dc78f99d344035e0a0f41100ad241c6f272ce1f3c692ee58b2"
+    },
+    "g_reach_proof": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p0_runs\\G_REACH_l0_reachability_p0_20260712_205914.json",
+      "sha256": "c907a6c6c623391c90de9598973aec65d5d52e5cd2988b6f0b710ee40d1b415d"
+    },
+    "gate_results": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p0_runs\\adg_gate_results_p0_20260712_205914.json",
+      "sha256": "f74cf165fd566d3230a9f0357d7482753cd325cdbd03f2ef2029282d1566b7e3"
+    },
+    "wave_plan": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p0_runs\\p0_remediation_wave_plan_p0_20260712_205914.json",
+      "sha256": "8ef2d17b2de649df852be133e0f366a1009ded730c3f01aedaa6f03ff20a2412"
+    },
+    "action_queue": {
+      "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\p0_runs\\adg_action_queue_p0_20260712_205914.json",
+      "sha256": "a2ce06c879d38c27d5a1637f1bd0cce9f7c6e4aeffdc192c68cc0af722aaea98",
+      "validation_errors": [],
+      "degraded_optional_inputs": [
+        "refactor_accelerator",
+        "structural_outputs",
+        "graphdb_queries"
+      ]
+    }
+  },
+  "verification": {
+    "P0_FIX": 0,
+    "P0_WAVE": 0,
+    "P0_TRACKED_BACKLOG": 3,
+    "G_REACH_l0_reachability": 1419,
+    "G_REACH_baseline": 1450,
+    "baseline_changed": false,
+    "checks": [
+      {
+        "name": "P0_FIX",
+        "status": "PASS",
+        "evidence": "Regenerated action queue reports critical_open_blocker_fix_count=0."
+      },
+      {
+        "name": "P0_WAVE",
+        "status": "PASS",
+        "evidence": "Regenerated action queue reports candidate_blocker_triage_count=0 after G_REACH returned below baseline."
+      },
+      {
+        "name": "G_REACH_l0_reachability",
+        "status": "PASS",
+        "evidence": "Incremental shadow proof reports 1419 rows against approved baseline 1450 without changing the baseline."
+      },
+      {
+        "name": "canonical_p0_runner",
+        "status": "PASS",
+        "evidence": "All eight canonical P0 gates passed against the immutable shadow snapshot."
+      },
+      {
+        "name": "focused_tests",
+        "status": "PASS",
+        "evidence": "69 tests collected and 69 passed across prompt governance, infra wiring, and the new reachability-anchor guard."
+      },
+      {
+        "name": "static_hygiene",
+        "status": "PASS",
+        "evidence": "Ruff F401/I and git diff --check passed."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "The released handoff reported G_REACH=1453 against baseline=1450 and promoted the first three alphabetic orphan files as P0 wave candidates.",
+    "root_cause": "Commit 85ba07a81e replaced direct L0 imports of prompt_governance.mixins and prompt_governance.validation with package-level re-exports. Runtime behavior stayed intact, but the ADG lost direct edges to mixins.py, validation/__init__.py, and validation/apply_patch_validator.py. The wave candidate selector then exposed unrelated alphabetic backlog rows instead of the actual delta subjects.",
+    "evidence": "Snapshot comparison isolated two newly indexed prompt-governance orphans, and the prior P0 receipt identified the complete +3 set. Restoring direct anchors produced G_REACH=1419, P0_FIX=0, and P0_WAVE=0.",
+    "fix": "Restore the explicit module imports and add an AST regression test that requires those direct anchors.",
+    "fix_or_next": "fix: keep direct L0 prompt-governance module anchors and require regenerated post-fix queue evidence before publication.",
+    "recurrence_guard": "The active L0 unit test now fails if either direct prompt-governance module import is replaced by a package-level re-export, and the post-fix queue must recompute P0_FIX/P0_WAVE from a passing G_REACH row."
+  },
+  "closeout": {
+    "status": "P0_CLEAR",
+    "merge_eligible": true,
+    "next_lane": "generate_full_adg must produce a fresh post-P0 direct receipt proving P0=0 before P1 may start"
+  }
+}
