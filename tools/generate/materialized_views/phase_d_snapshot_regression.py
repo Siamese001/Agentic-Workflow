@@ -1,20 +1,17 @@
-"""Phase D materialized views — Snapshot baseline anchor and historical regression diffs.
+"""Phase D materialized views for snapshot baselines and exact current-row diffs.
 
-Covers view family 11:
-    mv_snapshot_baseline            (anchor — written FIRST, one row per snapshot)
-    mv_snapshot_regression_summary  (aggregate delta vs previous baseline)
-    mv_newly_introduced_critical_paths
-    mv_new_cross_layer_dependencies
-    mv_new_provider_surfaces
-    mv_new_write_bypass_paths
+Phase D keeps the aggregate baseline contract while comparing the current rows
+to the immediately preceding Phase D materialization.  A prior state is read
+from the current database before DROP/CREATE; for a freshly generated database,
+the newest prior ``adg_indexed_*.sqlite`` is used.
 
-First-run behaviour: baseline is written from current state; all delta tables show
-is_new=1 for every row (no previous baseline to compare against). This is correct
-and expected — the second run produces the first meaningful diffs.
+``is_new`` is deliberately tri-state:
 
-Depends on Phase A: mv_path_criticality_rollup, mv_hotspot_centrality
-Depends on Phase B: mv_gateway_bypass_paths, mv_write_sovereignty_paths (via Phase A)
-Depends on Phase C: mv_debt_concentration_hotspots
+* ``1``: the stable row key is absent from an available prior snapshot;
+* ``0``: the stable row key is present in the prior snapshot;
+* ``NULL``: no prior snapshot exists, so newness is not knowable.
+
+This prevents first-run inventory from being mislabeled as regression evidence.
 """
 
 from __future__ import annotations
@@ -36,46 +33,6 @@ _BASELINE_COLS: tuple[str, ...] = (
     "debt_score",
 )
 
-
-def _baseline_row_to_dict(row: tuple[Any, ...]) -> dict[str, Any]:
-    return dict(zip(_BASELINE_COLS, row, strict=True))
-
-
-def _load_prior_snapshot_baseline(current_sqlite: Path) -> dict[str, Any]:
-    """Load baseline from the newest prior ``adg_indexed_*.sqlite`` on disk.
-
-    Each ADG run builds a fresh indexed sqlite, so in-file ``mv_snapshot_baseline``
-    is empty on first materialization. Cross-run regression must read the previous
-    committed snapshot's baseline row instead of treating every run as first-run.
-    """
-    adg_dir = current_sqlite.parent
-    if not adg_dir.is_dir():
-        return {}
-    candidates = sorted(
-        (
-            p
-            for p in adg_dir.glob("adg_indexed_*.sqlite")
-            if p.resolve() != current_sqlite.resolve() and "smoketest" not in p.name
-        ),
-        key=lambda p: p.stat().st_mtime,
-        reverse=True,
-    )
-    for prior in candidates:
-        try:
-            with sqlite3.connect(prior) as prior_conn:
-                row = prior_conn.execute(
-                    "SELECT snapshot_id, node_count, edge_count, violation_count, "
-                    "cross_layer_edge_count, provider_surface_count, "
-                    "write_bypass_count, debt_score "
-                    "FROM mv_snapshot_baseline LIMIT 1",
-                ).fetchone()
-        except sqlite3.OperationalError:
-            continue
-        if row and str(row[0] or "").strip():
-            return _baseline_row_to_dict(row)
-    return {}
-
-
 _PHASE_D_TABLES: tuple[str, ...] = (
     "mv_snapshot_baseline",
     "mv_snapshot_regression_summary",
@@ -85,311 +42,690 @@ _PHASE_D_TABLES: tuple[str, ...] = (
     "mv_new_write_bypass_paths",
 )
 
+_PREVIOUS_STATE_TABLES: tuple[str, ...] = (
+    "_phase_d_prev_critical_paths",
+    "_phase_d_prev_cross_layer",
+    "_phase_d_prev_provider_surfaces",
+    "_phase_d_prev_write_bypass",
+    "_phase_d_prev_write_bypass_legacy",
+)
+
+_COPY_BATCH_SIZE = 1_000
+_CRITICALITY_THRESHOLD = 5.0
+
 
 def _snapshot_id_expr() -> str:
-    return "(SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1)"
+    return (
+        "COALESCE("
+        "(SELECT NULLIF(value, '') FROM meta WHERE key='artifact_digest' LIMIT 1), "
+        "(SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1), "
+        "'')"
+    )
 
 
-def materialize_phase_d(sqlite_path: Path, *, conn: sqlite3.Connection | None = None) -> dict[str, int]:
-    """Create all Phase D materialized tables. Idempotent — safe to call repeatedly.
+def _baseline_row_to_dict(row: tuple[Any, ...]) -> dict[str, Any]:
+    return dict(zip(_BASELINE_COLS, row, strict=True))
 
-    mv_snapshot_baseline is refreshed last-in / first-written: the OLD baseline row is
-    read for delta computation, then replaced with the current snapshot values.
 
-    Returns:
-        dict mapping table_name -> row_count for each Phase D table.
-    """
-    _owns_conn = conn is None
+def _table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
+    row = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type='table' AND name=? LIMIT 1",
+        (table_name,),
+    ).fetchone()
+    return row is not None
+
+
+def _table_columns(conn: sqlite3.Connection, table_name: str) -> set[str]:
+    if not _table_exists(conn, table_name):
+        return set()
+    return {str(row[1]) for row in conn.execute(f"PRAGMA table_info({table_name})")}
+
+
+def _read_baseline(conn: sqlite3.Connection) -> dict[str, Any]:
+    if not _table_exists(conn, "mv_snapshot_baseline"):
+        return {}
+    row = conn.execute(
+        "SELECT snapshot_id, node_count, edge_count, violation_count, "
+        "cross_layer_edge_count, provider_surface_count, write_bypass_count, debt_score "
+        "FROM mv_snapshot_baseline LIMIT 1"
+    ).fetchone()
+    if not row or not str(row[0] or "").strip():
+        return {}
+    return _baseline_row_to_dict(row)
+
+
+def _prior_snapshot_candidates(current_sqlite: Path) -> list[Path]:
+    adg_dir = current_sqlite.parent
+    if not adg_dir.is_dir():
+        return []
+    current = current_sqlite.resolve()
+    candidates = (
+        path
+        for path in adg_dir.glob("adg_indexed_*.sqlite")
+        if path.resolve() != current and "smoketest" not in path.name
+    )
+    return sorted(candidates, key=lambda path: path.stat().st_mtime, reverse=True)
+
+
+def _open_read_only(sqlite_path: Path) -> sqlite3.Connection:
+    return sqlite3.connect(f"{sqlite_path.resolve().as_uri()}?mode=ro", uri=True)
+
+
+def _create_previous_state_tables(cur: sqlite3.Cursor) -> None:
+    for table_name in _PREVIOUS_STATE_TABLES:
+        cur.execute(f"DROP TABLE IF EXISTS temp.{table_name}")
+    cur.executescript(
+        """
+        CREATE TEMP TABLE _phase_d_prev_critical_paths (
+            adg_name TEXT NOT NULL,
+            file TEXT NOT NULL,
+            criticality_score REAL NOT NULL,
+            PRIMARY KEY (adg_name, file)
+        ) WITHOUT ROWID;
+
+        CREATE TEMP TABLE _phase_d_prev_cross_layer (
+            src_layer TEXT NOT NULL,
+            dst_layer TEXT NOT NULL,
+            relation_type TEXT NOT NULL,
+            edge_count INTEGER NOT NULL,
+            PRIMARY KEY (src_layer, dst_layer, relation_type)
+        ) WITHOUT ROWID;
+
+        CREATE TEMP TABLE _phase_d_prev_provider_surfaces (
+            caller_file TEXT NOT NULL,
+            caller_layer TEXT NOT NULL,
+            provider_name TEXT NOT NULL,
+            provider_path TEXT NOT NULL,
+            invocation_count INTEGER NOT NULL,
+            PRIMARY KEY (caller_file, caller_layer, provider_name, provider_path)
+        ) WITHOUT ROWID;
+
+        CREATE TEMP TABLE _phase_d_prev_write_bypass (
+            writer_file TEXT NOT NULL,
+            writer_layer TEXT NOT NULL,
+            write_symbol TEXT NOT NULL,
+            write_line INTEGER NOT NULL,
+            source_file TEXT NOT NULL,
+            PRIMARY KEY (writer_file, writer_layer, write_symbol, write_line, source_file)
+        ) WITHOUT ROWID;
+
+        CREATE TEMP TABLE _phase_d_prev_write_bypass_legacy (
+            writer_file TEXT NOT NULL,
+            writer_layer TEXT NOT NULL,
+            write_symbol TEXT NOT NULL,
+            PRIMARY KEY (writer_file, writer_layer, write_symbol)
+        ) WITHOUT ROWID;
+        """
+    )
+
+
+def _copy_rows(
+    source: sqlite3.Connection,
+    target: sqlite3.Connection,
+    *,
+    select_sql: str,
+    insert_sql: str,
+) -> bool:
+    try:
+        source_cur = source.execute(select_sql)
+    except sqlite3.OperationalError:
+        return False
+
+    while True:
+        rows = source_cur.fetchmany(_COPY_BATCH_SIZE)
+        if not rows:
+            break
+        target.executemany(insert_sql, rows)
+    return True
+
+
+def _copy_previous_detail_state(
+    source: sqlite3.Connection,
+    target: sqlite3.Connection,
+    *,
+    source_is_current_database: bool,
+) -> None:
+    _copy_rows(
+        source,
+        target,
+        select_sql=(
+            "SELECT adg_name, COALESCE(file, ''), MAX(criticality_score) "
+            "FROM mv_newly_introduced_critical_paths "
+            "GROUP BY adg_name, COALESCE(file, '')"
+        ),
+        insert_sql=(
+            "INSERT OR REPLACE INTO _phase_d_prev_critical_paths"
+            "(adg_name, file, criticality_score) VALUES (?, ?, ?)"
+        ),
+    )
+    _copy_rows(
+        source,
+        target,
+        select_sql=(
+            "SELECT COALESCE(src_layer, ''), COALESCE(dst_layer, ''), relation_type, MAX(edge_count) "
+            "FROM mv_new_cross_layer_dependencies "
+            "GROUP BY COALESCE(src_layer, ''), COALESCE(dst_layer, ''), relation_type"
+        ),
+        insert_sql=(
+            "INSERT OR REPLACE INTO _phase_d_prev_cross_layer"
+            "(src_layer, dst_layer, relation_type, edge_count) VALUES (?, ?, ?, ?)"
+        ),
+    )
+    _copy_rows(
+        source,
+        target,
+        select_sql=(
+            "SELECT COALESCE(caller_file, ''), COALESCE(caller_layer, ''), "
+            "COALESCE(provider_name, ''), COALESCE(provider_path, ''), MAX(invocation_count) "
+            "FROM mv_new_provider_surfaces "
+            "GROUP BY COALESCE(caller_file, ''), COALESCE(caller_layer, ''), "
+            "COALESCE(provider_name, ''), COALESCE(provider_path, '')"
+        ),
+        insert_sql=(
+            "INSERT OR REPLACE INTO _phase_d_prev_provider_surfaces"
+            "(caller_file, caller_layer, provider_name, provider_path, invocation_count) "
+            "VALUES (?, ?, ?, ?, ?)"
+        ),
+    )
+
+    phase_d_columns = _table_columns(source, "mv_new_write_bypass_paths")
+    exact_columns = {"writer_file", "writer_layer", "write_symbol", "write_line", "source_file"}
+    if exact_columns.issubset(phase_d_columns):
+        _copy_rows(
+            source,
+            target,
+            select_sql=(
+                "SELECT DISTINCT COALESCE(writer_file, ''), COALESCE(writer_layer, ''), "
+                "COALESCE(write_symbol, ''), COALESCE(write_line, 0), COALESCE(source_file, '') "
+                "FROM mv_new_write_bypass_paths"
+            ),
+            insert_sql=(
+                "INSERT OR REPLACE INTO _phase_d_prev_write_bypass"
+                "(writer_file, writer_layer, write_symbol, write_line, source_file) "
+                "VALUES (?, ?, ?, ?, ?)"
+            ),
+        )
+        return
+
+    # A fresh database can recover exact prior path locations from the prior
+    # snapshot's Phase A source table.  On an in-place refresh Phase A has
+    # already been rebuilt for the current snapshot, so it must not be used.
+    if not source_is_current_database and _table_exists(source, "mv_write_sovereignty_paths"):
+        _copy_rows(
+            source,
+            target,
+            select_sql=(
+                "SELECT DISTINCT COALESCE(writer_file, ''), COALESCE(writer_layer, ''), "
+                "COALESCE(write_symbol, ''), COALESCE(write_line, 0), COALESCE(source_file, '') "
+                "FROM mv_write_sovereignty_paths WHERE is_uwg_routed = 0"
+            ),
+            insert_sql=(
+                "INSERT OR REPLACE INTO _phase_d_prev_write_bypass"
+                "(writer_file, writer_layer, write_symbol, write_line, source_file) "
+                "VALUES (?, ?, ?, ?, ?)"
+            ),
+        )
+        return
+
+    # Compatibility for one upgrade cycle from the legacy Phase D schema,
+    # which omitted source location.  The comparison remains conservative and
+    # is explicitly labeled LEGACY_COARSE in the output.
+    if {"writer_file", "writer_layer", "write_symbol"}.issubset(phase_d_columns):
+        _copy_rows(
+            source,
+            target,
+            select_sql=(
+                "SELECT DISTINCT COALESCE(writer_file, ''), COALESCE(writer_layer, ''), "
+                "COALESCE(write_symbol, '') FROM mv_new_write_bypass_paths"
+            ),
+            insert_sql=(
+                "INSERT OR REPLACE INTO _phase_d_prev_write_bypass_legacy"
+                "(writer_file, writer_layer, write_symbol) VALUES (?, ?, ?)"
+            ),
+        )
+
+
+def _load_previous_state(
+    current_sqlite: Path,
+    conn: sqlite3.Connection,
+) -> dict[str, Any]:
+    _create_previous_state_tables(conn.cursor())
+
+    current_baseline = _read_baseline(conn)
+    if current_baseline:
+        _copy_previous_detail_state(
+            conn,
+            conn,
+            source_is_current_database=True,
+        )
+        return current_baseline
+
+    for prior_path in _prior_snapshot_candidates(current_sqlite):
+        try:
+            with _open_read_only(prior_path) as prior_conn:
+                baseline = _read_baseline(prior_conn)
+                if not baseline:
+                    continue
+                _copy_previous_detail_state(
+                    prior_conn,
+                    conn,
+                    source_is_current_database=False,
+                )
+                return baseline
+        except (OSError, sqlite3.DatabaseError):
+            continue
+    return {}
+
+
+def _drop_previous_state_tables(cur: sqlite3.Cursor) -> None:
+    for table_name in _PREVIOUS_STATE_TABLES:
+        cur.execute(f"DROP TABLE IF EXISTS temp.{table_name}")
+
+
+def materialize_phase_d(
+    sqlite_path: Path,
+    *,
+    conn: sqlite3.Connection | None = None,
+) -> dict[str, int]:
+    """Create Phase D tables using exact stable-key membership comparisons."""
+    owns_conn = conn is None
     if conn is None:
         conn = _connect_sqlite(sqlite_path)
     cur = conn.cursor()
 
-    # -------------------------------------------------------------------------
-    # Read previous baseline BEFORE dropping (needed for delta computation)
-    # -------------------------------------------------------------------------
-    _prev: dict[str, Any] = {}
-    try:
-        row = cur.execute(
-            "SELECT snapshot_id, node_count, edge_count, violation_count, "
-            "       cross_layer_edge_count, provider_surface_count, "
-            "       write_bypass_count, debt_score "
-            "FROM mv_snapshot_baseline LIMIT 1"
-        ).fetchone()
-        if row and str(row[0] or "").strip():
-            _prev = _baseline_row_to_dict(row)
-    except sqlite3.OperationalError:
-        pass  # Table doesn't exist yet — first run.
-    if not _prev:
-        _prev = _load_prior_snapshot_baseline(sqlite_path)
+    previous = _load_previous_state(sqlite_path, conn)
+    for table_name in reversed(_PHASE_D_TABLES):
+        cur.execute(f"DROP TABLE IF EXISTS {table_name}")
 
-    for tbl in reversed(_PHASE_D_TABLES):
-        cur.execute(f"DROP TABLE IF EXISTS {tbl}")
+    current_snapshot_row = cur.execute(
+        "SELECT COALESCE("
+        "(SELECT NULLIF(value, '') FROM meta WHERE key='artifact_digest' LIMIT 1), "
+        "(SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1), "
+        "'')"
+    ).fetchone()
+    current_snapshot_id = str(current_snapshot_row[0] if current_snapshot_row else "")
 
-    # -------------------------------------------------------------------------
-    # mv_snapshot_baseline — anchor row for the CURRENT snapshot
-    # -------------------------------------------------------------------------
-    cur.execute("""
-        CREATE TABLE mv_snapshot_baseline (
-            snapshot_id            TEXT NOT NULL,
-            node_count             INTEGER NOT NULL,
-            edge_count             INTEGER NOT NULL,
-            violation_count        INTEGER NOT NULL,
-            cross_layer_edge_count INTEGER NOT NULL,
-            provider_surface_count INTEGER NOT NULL,
-            write_bypass_count     INTEGER NOT NULL,
-            debt_score             REAL NOT NULL
-        )
-    """)
-
-    cross_layer_count = cur.execute("""
-        SELECT COUNT(*) FROM edges e
-        JOIN nodes src ON src.id = e.src_id
-        JOIN nodes dst ON dst.id = e.dst_id
-        WHERE src.layer != dst.layer
-          AND e.relation_type IN ('imports', 'calls')
-          AND src.layer IS NOT NULL AND src.layer != ''
-          AND dst.layer IS NOT NULL AND dst.layer != ''
-    """).fetchone()[0]
-
-    provider_count = cur.execute("""
-        SELECT COUNT(DISTINCT e.id) FROM edges e
-        WHERE e.relation_type = 'invokes_provider'
-    """).fetchone()[0]
-
-    # Write bypass count: check if mv_write_sovereignty_paths exists; fall back to raw count.
-    try:
-        bypass_count = cur.execute(
-            "SELECT COUNT(*) FROM mv_write_sovereignty_paths WHERE is_uwg_routed = 0"
+    cross_layer_count = int(
+        cur.execute(
+            """
+            SELECT COUNT(*) FROM edges e
+            JOIN nodes src ON src.id = e.src_id
+            JOIN nodes dst ON dst.id = e.dst_id
+            WHERE src.layer != dst.layer
+              AND e.relation_type IN ('imports', 'calls')
+              AND COALESCE(src.layer, '') != ''
+              AND COALESCE(dst.layer, '') != ''
+            """
         ).fetchone()[0]
+    )
+    provider_count = int(
+        cur.execute(
+            "SELECT COUNT(DISTINCT e.id) FROM edges e WHERE e.relation_type='invokes_provider'"
+        ).fetchone()[0]
+    )
+    try:
+        bypass_count = int(
+            cur.execute(
+                "SELECT COUNT(*) FROM mv_write_sovereignty_paths WHERE is_uwg_routed=0"
+            ).fetchone()[0]
+        )
     except sqlite3.OperationalError:
         bypass_count = 0
-
-    # Debt score: check if mv_debt_concentration_hotspots exists; fall back to violations count.
     try:
         debt_row = cur.execute(
             "SELECT COALESCE(SUM(total_debt_score), 0) FROM mv_debt_concentration_hotspots"
         ).fetchone()
-        debt_score = debt_row[0] if debt_row else 0.0
+        debt_score = float(debt_row[0] if debt_row else 0.0)
     except sqlite3.OperationalError:
         debt_score = float(cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0])
 
-    node_count = cur.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
-    edge_count = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
-    violation_count = cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0]
+    node_count = int(cur.execute("SELECT COUNT(*) FROM nodes").fetchone()[0])
+    edge_count = int(cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0])
+    violation_count = int(cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0])
 
+    cur.execute(
+        """
+        CREATE TABLE mv_snapshot_baseline (
+            snapshot_id TEXT NOT NULL,
+            node_count INTEGER NOT NULL,
+            edge_count INTEGER NOT NULL,
+            violation_count INTEGER NOT NULL,
+            cross_layer_edge_count INTEGER NOT NULL,
+            provider_surface_count INTEGER NOT NULL,
+            write_bypass_count INTEGER NOT NULL,
+            debt_score REAL NOT NULL
+        )
+        """
+    )
     cur.execute(
         "INSERT INTO mv_snapshot_baseline VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
         (
-            cur.execute("SELECT COALESCE(value, '') FROM meta WHERE key='commit_sha' LIMIT 1").fetchone()[0]
-            or "",
+            current_snapshot_id,
             node_count,
             edge_count,
             violation_count,
             cross_layer_count,
             provider_count,
             bypass_count,
-            float(debt_score),
+            debt_score,
         ),
     )
+    cur.execute("CREATE INDEX idx_mv_baseline_snap ON mv_snapshot_baseline(snapshot_id)")
 
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_mv_baseline_snap ON mv_snapshot_baseline(snapshot_id)")
+    def _previous_int(key: str, default: int) -> int:
+        value = previous.get(key)
+        return int(value) if value is not None else default
 
-    # -------------------------------------------------------------------------
-    # mv_snapshot_regression_summary
-    # -------------------------------------------------------------------------
-    def _gi(key: str, default: int) -> int:
-        v = _prev.get(key)
-        return int(v) if v is not None else default  # type: ignore[arg-type]
+    def _previous_float(key: str, default: float) -> float:
+        value = previous.get(key)
+        return float(value) if value is not None else default
 
-    def _gf(key: str, default: float) -> float:
-        v = _prev.get(key)
-        return float(v) if v is not None else default  # type: ignore[arg-type]
-
-    prev_snap_id = str(_prev.get("snapshot_id") or "")
-    prev_nodes = _gi("node_count", node_count)
-    prev_edges = _gi("edge_count", edge_count)
-    prev_violations = _gi("violation_count", violation_count)
-    prev_cross = _gi("cross_layer_edge_count", cross_layer_count)
-    prev_providers = _gi("provider_surface_count", provider_count)
-    prev_bypass = _gi("write_bypass_count", bypass_count)
-    prev_debt = _gf("debt_score", float(debt_score))
-
-    is_first_run = not bool(prev_snap_id)
-
-    cur.execute(f"""
-        CREATE TABLE mv_snapshot_regression_summary AS
-        SELECT
-            {_snapshot_id_expr()} AS snapshot_id,
-            '{prev_snap_id}'      AS prev_snapshot_id,
-            {node_count}          AS node_count,
-            {prev_nodes}          AS prev_node_count,
-            {node_count - prev_nodes} AS node_delta,
-            {edge_count}          AS edge_count,
-            {prev_edges}          AS prev_edge_count,
-            {edge_count - prev_edges} AS edge_delta,
-            {violation_count}     AS violation_count,
-            {prev_violations}     AS prev_violation_count,
-            {violation_count - prev_violations} AS violation_delta,
-            {cross_layer_count}   AS cross_layer_edge_count,
-            {prev_cross}          AS prev_cross_layer_edge_count,
-            {cross_layer_count - prev_cross} AS cross_layer_delta,
-            {provider_count}      AS provider_surface_count,
-            {prev_providers}      AS prev_provider_surface_count,
-            {provider_count - prev_providers} AS provider_delta,
-            {bypass_count}        AS write_bypass_count,
-            {prev_bypass}         AS prev_write_bypass_count,
-            {bypass_count - prev_bypass} AS bypass_delta,
-            ROUND({float(debt_score)}, 2)  AS debt_score,
-            ROUND({prev_debt}, 2)           AS prev_debt_score,
-            ROUND({float(debt_score) - prev_debt}, 2) AS debt_delta,
-            {1 if is_first_run else 0}      AS is_first_run
-    """)
+    previous_snapshot_id = str(previous.get("snapshot_id") or "")
+    has_prior_snapshot = bool(previous_snapshot_id)
+    previous_nodes = _previous_int("node_count", node_count)
+    previous_edges = _previous_int("edge_count", edge_count)
+    previous_violations = _previous_int("violation_count", violation_count)
+    previous_cross_layer = _previous_int("cross_layer_edge_count", cross_layer_count)
+    previous_providers = _previous_int("provider_surface_count", provider_count)
+    previous_bypass = _previous_int("write_bypass_count", bypass_count)
+    previous_debt = _previous_float("debt_score", debt_score)
 
     cur.execute(
-        "CREATE INDEX IF NOT EXISTS idx_mv_reg_summary ON mv_snapshot_regression_summary(snapshot_id)"
+        """
+        CREATE TABLE mv_snapshot_regression_summary (
+            snapshot_id TEXT NOT NULL,
+            prev_snapshot_id TEXT NOT NULL,
+            node_count INTEGER NOT NULL,
+            prev_node_count INTEGER NOT NULL,
+            node_delta INTEGER NOT NULL,
+            edge_count INTEGER NOT NULL,
+            prev_edge_count INTEGER NOT NULL,
+            edge_delta INTEGER NOT NULL,
+            violation_count INTEGER NOT NULL,
+            prev_violation_count INTEGER NOT NULL,
+            violation_delta INTEGER NOT NULL,
+            cross_layer_edge_count INTEGER NOT NULL,
+            prev_cross_layer_edge_count INTEGER NOT NULL,
+            cross_layer_delta INTEGER NOT NULL,
+            provider_surface_count INTEGER NOT NULL,
+            prev_provider_surface_count INTEGER NOT NULL,
+            provider_delta INTEGER NOT NULL,
+            write_bypass_count INTEGER NOT NULL,
+            prev_write_bypass_count INTEGER NOT NULL,
+            bypass_delta INTEGER NOT NULL,
+            debt_score REAL NOT NULL,
+            prev_debt_score REAL NOT NULL,
+            debt_delta REAL NOT NULL,
+            is_first_run INTEGER NOT NULL CHECK (is_first_run IN (0, 1)),
+            comparison_status TEXT NOT NULL
+                CHECK (comparison_status IN ('EXACT', 'NO_BASELINE'))
+        )
+        """
     )
+    cur.execute(
+        "INSERT INTO mv_snapshot_regression_summary VALUES "
+        "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            current_snapshot_id,
+            previous_snapshot_id,
+            node_count,
+            previous_nodes,
+            node_count - previous_nodes,
+            edge_count,
+            previous_edges,
+            edge_count - previous_edges,
+            violation_count,
+            previous_violations,
+            violation_count - previous_violations,
+            cross_layer_count,
+            previous_cross_layer,
+            cross_layer_count - previous_cross_layer,
+            provider_count,
+            previous_providers,
+            provider_count - previous_providers,
+            bypass_count,
+            previous_bypass,
+            bypass_count - previous_bypass,
+            round(debt_score, 2),
+            round(previous_debt, 2),
+            round(debt_score - previous_debt, 2),
+            0 if has_prior_snapshot else 1,
+            "EXACT" if has_prior_snapshot else "NO_BASELINE",
+        ),
+    )
+    cur.execute("CREATE INDEX idx_mv_reg_summary ON mv_snapshot_regression_summary(snapshot_id)")
 
-    # -------------------------------------------------------------------------
-    # mv_newly_introduced_critical_paths
-    # -------------------------------------------------------------------------
-    prev_crit_threshold = 5.0  # Treat nodes above this score as "critical" in baseline
-
-    cur.execute(f"""
+    cur.execute(
+        f"""
         CREATE TABLE mv_newly_introduced_critical_paths AS
         SELECT
             {_snapshot_id_expr()} AS snapshot_id,
             cr.node_id,
             cr.adg_name,
             cr.layer,
-            cr.resolved_path      AS file,
+            cr.resolved_path AS file,
             cr.criticality_score,
-            CAST(NULL AS REAL)    AS prev_score,
-            cr.criticality_score  AS delta,
-            CASE WHEN '{prev_snap_id}' = '' THEN 1
-                 WHEN cr.criticality_score > {prev_crit_threshold} THEN 1
-                 ELSE 0
-            END AS is_new
+            prev.criticality_score AS prev_score,
+            ROUND(cr.criticality_score - COALESCE(prev.criticality_score, 0), 2) AS delta,
+            CASE
+                WHEN ? = 0 THEN NULL
+                WHEN prev.adg_name IS NULL THEN 1
+                ELSE 0
+            END AS is_new,
+            CASE WHEN ? = 0 THEN 'NO_BASELINE' ELSE 'EXACT' END AS comparison_status
         FROM mv_path_criticality_rollup cr
-        WHERE cr.criticality_score > {prev_crit_threshold}
-        ORDER BY cr.criticality_score DESC
-    """)
-
+        LEFT JOIN _phase_d_prev_critical_paths prev
+          ON prev.adg_name = cr.adg_name
+         AND prev.file = COALESCE(cr.resolved_path, '')
+        WHERE cr.criticality_score > ?
+        ORDER BY is_new DESC, cr.criticality_score DESC, cr.adg_name
+        """,
+        (int(has_prior_snapshot), int(has_prior_snapshot), _CRITICALITY_THRESHOLD),
+    )
     cur.execute(
-        "CREATE INDEX IF NOT EXISTS idx_mv_new_crit ON mv_newly_introduced_critical_paths(is_new, criticality_score DESC)"
+        "CREATE INDEX idx_mv_new_crit ON "
+        "mv_newly_introduced_critical_paths(is_new, criticality_score DESC)"
     )
 
-    # -------------------------------------------------------------------------
-    # mv_new_cross_layer_dependencies
-    # -------------------------------------------------------------------------
-    cur.execute(f"""
+    cur.execute(
+        f"""
         CREATE TABLE mv_new_cross_layer_dependencies AS
-        SELECT
-            {_snapshot_id_expr()} AS snapshot_id,
-            src.layer             AS src_layer,
-            dst.layer             AS dst_layer,
-            e.relation_type       AS relation_type,
-            COUNT(DISTINCT e.id)  AS edge_count,
-            {prev_edges}          AS prev_total_edges,
-            CASE WHEN '{prev_snap_id}' = '' THEN 1 ELSE
-                CASE WHEN COUNT(DISTINCT e.id) > 0 THEN 1 ELSE 0 END
-            END AS is_new
-        FROM edges e
-        JOIN nodes src ON src.id = e.src_id
-        JOIN nodes dst ON dst.id = e.dst_id
-        WHERE src.layer != dst.layer
-          AND e.relation_type IN ('imports', 'calls', 'violates')
-          AND src.layer IS NOT NULL AND src.layer != ''
-          AND dst.layer IS NOT NULL AND dst.layer != ''
-          AND src.resolved_path NOT LIKE 'tests/%'
-        GROUP BY src.layer, dst.layer, e.relation_type
-        ORDER BY is_new DESC, edge_count DESC
-    """)
-
-    cur.execute(
-        "CREATE INDEX IF NOT EXISTS idx_mv_new_cross ON mv_new_cross_layer_dependencies(is_new, src_layer, dst_layer)"
-    )
-
-    # -------------------------------------------------------------------------
-    # mv_new_provider_surfaces
-    # -------------------------------------------------------------------------
-    cur.execute(f"""
-        CREATE TABLE mv_new_provider_surfaces AS
-        SELECT
-            {_snapshot_id_expr()} AS snapshot_id,
-            src.resolved_path     AS caller_file,
-            src.layer             AS caller_layer,
-            dst.adg_name          AS provider_name,
-            dst.resolved_path     AS provider_path,
-            COUNT(DISTINCT e.id)  AS invocation_count,
-            CASE WHEN '{prev_snap_id}' = '' THEN 1 ELSE 1 END AS is_new
-        FROM edges e
-        JOIN nodes src ON src.id = e.src_id
-        JOIN nodes dst ON dst.id = e.dst_id
-        WHERE e.relation_type = 'invokes_provider'
-          AND src.resolved_path NOT LIKE 'tests/%'
-          AND src.resolved_path NOT LIKE 'tools/%'
-        GROUP BY src.resolved_path, src.layer, dst.adg_name, dst.resolved_path
-        ORDER BY is_new DESC, invocation_count DESC
-    """)
-
-    cur.execute(
-        "CREATE INDEX IF NOT EXISTS idx_mv_new_providers ON mv_new_provider_surfaces(is_new, caller_layer)"
-    )
-
-    # -------------------------------------------------------------------------
-    # mv_new_write_bypass_paths
-    # -------------------------------------------------------------------------
-    try:
-        cur.execute(f"""
-            CREATE TABLE mv_new_write_bypass_paths AS
+        WITH current_dependencies AS (
             SELECT
-                {_snapshot_id_expr()} AS snapshot_id,
-                ws.writer_file        AS writer_file,
-                ws.writer_layer       AS writer_layer,
-                ws.write_symbol       AS write_symbol,
-                ws.severity           AS severity,
-                ws.is_uwg_routed      AS is_uwg_routed,
-                ws.is_direct_infra_write AS is_direct_infra_write,
-                CASE WHEN '{prev_snap_id}' = '' THEN 1
-                     WHEN {bypass_count} > {prev_bypass} THEN 1
-                     WHEN ws.severity = 'critical' THEN 1
-                     ELSE 0
-                END AS is_new
+                COALESCE(src.layer, '') AS src_layer,
+                COALESCE(dst.layer, '') AS dst_layer,
+                e.relation_type AS relation_type,
+                COUNT(DISTINCT e.id) AS edge_count
+            FROM edges e
+            JOIN nodes src ON src.id = e.src_id
+            JOIN nodes dst ON dst.id = e.dst_id
+            WHERE src.layer != dst.layer
+              AND e.relation_type IN ('imports', 'calls', 'violates')
+              AND COALESCE(src.layer, '') != ''
+              AND COALESCE(dst.layer, '') != ''
+              AND src.resolved_path NOT LIKE 'tests/%'
+            GROUP BY src.layer, dst.layer, e.relation_type
+        )
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            current.src_layer,
+            current.dst_layer,
+            current.relation_type,
+            current.edge_count,
+            ? AS prev_total_edges,
+            prev.edge_count AS prev_edge_count,
+            current.edge_count - COALESCE(prev.edge_count, 0) AS edge_delta,
+            CASE
+                WHEN ? = 0 THEN NULL
+                WHEN prev.src_layer IS NULL THEN 1
+                ELSE 0
+            END AS is_new,
+            CASE WHEN ? = 0 THEN 'NO_BASELINE' ELSE 'EXACT' END AS comparison_status
+        FROM current_dependencies current
+        LEFT JOIN _phase_d_prev_cross_layer prev
+          ON prev.src_layer = current.src_layer
+         AND prev.dst_layer = current.dst_layer
+         AND prev.relation_type = current.relation_type
+        ORDER BY is_new DESC, current.edge_count DESC,
+                 current.src_layer, current.dst_layer, current.relation_type
+        """,
+        (previous_edges, int(has_prior_snapshot), int(has_prior_snapshot)),
+    )
+    cur.execute(
+        "CREATE INDEX idx_mv_new_cross ON "
+        "mv_new_cross_layer_dependencies(is_new, src_layer, dst_layer, relation_type)"
+    )
+
+    cur.execute(
+        f"""
+        CREATE TABLE mv_new_provider_surfaces AS
+        WITH current_surfaces AS (
+            SELECT
+                COALESCE(src.resolved_path, '') AS caller_file,
+                COALESCE(src.layer, '') AS caller_layer,
+                COALESCE(dst.adg_name, '') AS provider_name,
+                COALESCE(dst.resolved_path, '') AS provider_path,
+                COUNT(DISTINCT e.id) AS invocation_count
+            FROM edges e
+            JOIN nodes src ON src.id = e.src_id
+            JOIN nodes dst ON dst.id = e.dst_id
+            WHERE e.relation_type = 'invokes_provider'
+              AND src.resolved_path NOT LIKE 'tests/%'
+              AND src.resolved_path NOT LIKE 'tools/%'
+            GROUP BY src.resolved_path, src.layer, dst.adg_name, dst.resolved_path
+        )
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            current.caller_file,
+            current.caller_layer,
+            current.provider_name,
+            current.provider_path,
+            current.invocation_count,
+            prev.invocation_count AS prev_invocation_count,
+            current.invocation_count - COALESCE(prev.invocation_count, 0) AS invocation_delta,
+            CASE
+                WHEN ? = 0 THEN NULL
+                WHEN prev.caller_file IS NULL THEN 1
+                ELSE 0
+            END AS is_new,
+            CASE WHEN ? = 0 THEN 'NO_BASELINE' ELSE 'EXACT' END AS comparison_status
+        FROM current_surfaces current
+        LEFT JOIN _phase_d_prev_provider_surfaces prev
+          ON prev.caller_file = current.caller_file
+         AND prev.caller_layer = current.caller_layer
+         AND prev.provider_name = current.provider_name
+         AND prev.provider_path = current.provider_path
+        ORDER BY is_new DESC, current.invocation_count DESC,
+                 current.caller_file, current.provider_name
+        """,
+        (int(has_prior_snapshot), int(has_prior_snapshot)),
+    )
+    cur.execute(
+        "CREATE INDEX idx_mv_new_providers ON "
+        "mv_new_provider_surfaces(is_new, caller_layer, caller_file)"
+    )
+
+    cur.execute("DROP TABLE IF EXISTS temp._phase_d_current_write_bypass")
+    try:
+        cur.execute(
+            """
+            CREATE TEMP TABLE _phase_d_current_write_bypass AS
+            SELECT
+                ws.edge_id,
+                COALESCE(ws.writer_file, '') AS writer_file,
+                COALESCE(ws.writer_layer, '') AS writer_layer,
+                COALESCE(ws.write_symbol, '') AS write_symbol,
+                COALESCE(ws.write_line, 0) AS write_line,
+                COALESCE(ws.source_file, '') AS source_file,
+                ws.severity,
+                ws.is_uwg_routed,
+                ws.is_direct_infra_write
             FROM mv_write_sovereignty_paths ws
             WHERE ws.is_uwg_routed = 0
-            ORDER BY is_new DESC, ws.severity
-        """)
+            """
+        )
     except sqlite3.OperationalError:
-        # mv_write_sovereignty_paths may be absent if Phase A was not run.
-        cur.execute(f"""
-            CREATE TABLE mv_new_write_bypass_paths AS
+        cur.execute(
+            """
+            CREATE TEMP TABLE _phase_d_current_write_bypass AS
             SELECT
-                {_snapshot_id_expr()} AS snapshot_id,
-                e.source_file         AS writer_file,
-                src.layer             AS writer_layer,
-                e.symbol              AS write_symbol,
-                'unknown'             AS severity,
-                0                     AS is_uwg_routed,
-                0                     AS is_direct_infra_write,
-                1                     AS is_new
+                e.id AS edge_id,
+                COALESCE(e.source_file, '') AS writer_file,
+                COALESCE(src.layer, '') AS writer_layer,
+                COALESCE(e.symbol, '') AS write_symbol,
+                COALESCE(e.line_no, 0) AS write_line,
+                COALESCE(e.source_file, '') AS source_file,
+                'unknown' AS severity,
+                0 AS is_uwg_routed,
+                0 AS is_direct_infra_write
             FROM edges e
             JOIN nodes src ON src.id = e.src_id
             WHERE e.relation_type IN ('writes_to', 'writes_through')
               AND e.source_file NOT LIKE 'tests/%'
               AND e.source_file NOT LIKE 'tools/%'
-            ORDER BY src.layer
-        """)
+            """
+        )
 
-    cur.execute("CREATE INDEX IF NOT EXISTS idx_mv_new_bypass ON mv_new_write_bypass_paths(is_new, severity)")
+    cur.execute(
+        f"""
+        CREATE TABLE mv_new_write_bypass_paths AS
+        SELECT
+            {_snapshot_id_expr()} AS snapshot_id,
+            current.edge_id,
+            current.writer_file,
+            current.writer_layer,
+            current.write_symbol,
+            current.write_line,
+            current.source_file,
+            current.severity,
+            current.is_uwg_routed,
+            current.is_direct_infra_write,
+            current.writer_file AS src_file,
+            current.writer_layer AS src_layer,
+            current.write_symbol AS bypass_type,
+            current.write_line AS line_no,
+            CASE
+                WHEN ? = 0 THEN NULL
+                WHEN exact.writer_file IS NULL AND legacy.writer_file IS NULL THEN 1
+                ELSE 0
+            END AS is_new,
+            CASE
+                WHEN ? = 0 THEN 'NO_BASELINE'
+                WHEN exact.writer_file IS NOT NULL THEN 'EXACT'
+                WHEN legacy.writer_file IS NOT NULL THEN 'LEGACY_COARSE'
+                ELSE 'EXACT'
+            END AS comparison_status
+        FROM _phase_d_current_write_bypass current
+        LEFT JOIN _phase_d_prev_write_bypass exact
+          ON exact.writer_file = current.writer_file
+         AND exact.writer_layer = current.writer_layer
+         AND exact.write_symbol = current.write_symbol
+         AND exact.write_line = current.write_line
+         AND exact.source_file = current.source_file
+        LEFT JOIN _phase_d_prev_write_bypass_legacy legacy
+          ON legacy.writer_file = current.writer_file
+         AND legacy.writer_layer = current.writer_layer
+         AND legacy.write_symbol = current.write_symbol
+        ORDER BY is_new DESC, current.severity, current.writer_file,
+                 current.write_line, current.write_symbol
+        """,
+        (int(has_prior_snapshot), int(has_prior_snapshot)),
+    )
+    cur.execute("DROP TABLE temp._phase_d_current_write_bypass")
+    cur.execute(
+        "CREATE INDEX idx_mv_new_bypass ON "
+        "mv_new_write_bypass_paths(is_new, severity, writer_file, write_line)"
+    )
 
+    _drop_previous_state_tables(cur)
     conn.commit()
 
     counts: dict[str, int] = {}
     try:
-        for tbl in _PHASE_D_TABLES:
-            row = cur.execute(f"SELECT COUNT(*) FROM {tbl}").fetchone()
-            counts[tbl] = row[0] if row else 0
+        for table_name in _PHASE_D_TABLES:
+            row = cur.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()
+            counts[table_name] = int(row[0] if row else 0)
     finally:
-        if _owns_conn:
+        if owns_conn:
             conn.close()
     return counts
