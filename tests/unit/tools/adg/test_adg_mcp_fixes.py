@@ -11,6 +11,7 @@ Covers exactly the five behavioral invariants introduced by the patch:
 
 from __future__ import annotations
 
+import importlib
 import sqlite3
 import sys
 import threading
@@ -155,9 +156,12 @@ class TestLatestOnlyGateProbe:
     def _clear_probe_cache(self):
         import pre_mcp_gate as _gate
 
-        _gate._PROBE_CACHE.clear()
+        cache = getattr(_gate, "_PROBE_CACHE", None)
+        if cache is not None:
+            cache.clear()
         yield
-        _gate._PROBE_CACHE.clear()
+        if cache is not None:
+            cache.clear()
 
     def test_stale_corrupt_old_snapshot_does_not_block(self, tmp_path):
         """Gate must NOT block when old snapshot is corrupt but latest is healthy."""
@@ -211,6 +215,15 @@ class TestLatestOnlyGateProbe:
 # ---------------------------------------------------------------------------
 
 
+def _load_adg_server_module():
+    """Import the server with its optional MCP transport isolated."""
+    with patch(
+        "tools.mcp.mcp_bootstrap.create_mcp_server",
+        return_value=MagicMock(),
+    ):
+        return importlib.import_module("tools.adg.mcp.server")
+
+
 class TestAdgReloadHygiene:
     def _make_mock_service(self, *, old_id: str, new_id: str) -> MagicMock:
         """Build a mock ADGService that simulates a stale-snapshot transition."""
@@ -236,7 +249,7 @@ class TestAdgReloadHygiene:
 
     def test_reload_clears_old_snapshot_redis_keys(self):
         """adg_reload must call clear_snapshot(old_id) when reload occurs."""
-        import tools.adg.mcp.server as server_module
+        server_module = _load_adg_server_module()
 
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
 
@@ -252,7 +265,7 @@ class TestAdgReloadHygiene:
 
     def test_reload_not_needed_redis_not_touched(self):
         """When already on latest snapshot, clear_snapshot must NOT be called."""
-        import tools.adg.mcp.server as server_module
+        server_module = _load_adg_server_module()
 
         svc = MagicMock()
         svc._adg_snapshot_id = "snap_current"
@@ -270,7 +283,7 @@ class TestAdgReloadHygiene:
 
     def test_reload_redis_cleared_false_when_redis_unavailable(self):
         """redis_cleared must be False when Redis is not available."""
-        import tools.adg.mcp.server as server_module
+        server_module = _load_adg_server_module()
 
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
         svc._redis._available = False  # Redis down
@@ -284,7 +297,7 @@ class TestAdgReloadHygiene:
 
     def test_reload_redis_cleared_false_when_clear_snapshot_raises(self):
         """clear_snapshot() exception must not prevent reload succeeding — redis_cleared=False."""
-        import tools.adg.mcp.server as server_module
+        server_module = _load_adg_server_module()
 
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
         svc._redis.clear_snapshot.side_effect = RuntimeError("Redis SCAN failed")
