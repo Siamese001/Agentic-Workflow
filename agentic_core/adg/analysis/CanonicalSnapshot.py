@@ -25,7 +25,8 @@ class CanonicalSnapshot:
     """A deterministic, replayable ADG snapshot.
 
     Attributes:
-        graph_hash: SHA-256 over canonical_edges (sorted, stable).
+        graph_hash: SHA-256 over canonical nodes and lossless edge occurrences.
+        graph_hash_version: Versioned hashing contract for compatibility.
         scanner_hash: digest from ScanResult.digest.
         schema_version: ADG schema version string.
         scanner_version: static_scanner version string.
@@ -36,12 +37,14 @@ class CanonicalSnapshot:
         call_count: number of `calls` edges.
         governance_count: number of `writes_through` + `routes_through` edges.
         canonical_node_order: sorted list of all module ADG names.
-        canonical_edge_order: sorted list of (from, relation, to) tuples.
+        canonical_edge_order: compatibility list of unique (from, relation, to) tuples.
+        canonical_edge_occurrences: sorted, lossless occurrence tuples used for hashing.
         edge_counts_by_relation: per-relation breakdown.
         commit_sha: originating commit SHA (may be empty).
     """
 
     graph_hash: str = ""
+    graph_hash_version: str = "edge-occurrence-v2"
     scanner_hash: str = ""
     schema_version: str = ""
     scanner_version: str = ""
@@ -53,6 +56,7 @@ class CanonicalSnapshot:
     governance_count: int = 0
     canonical_node_order: list[str] = field(default_factory=list)
     canonical_edge_order: list[tuple[str, str, str]] = field(default_factory=list)
+    canonical_edge_occurrences: list[tuple] = field(default_factory=list)
     edge_counts_by_relation: dict[str, int] = field(default_factory=dict)
     commit_sha: str = ""
 
@@ -60,6 +64,7 @@ class CanonicalSnapshot:
         """Convert to dictionary for JSON serialization."""
         return {
             "graph_hash": self.graph_hash,
+            "graph_hash_version": self.graph_hash_version,
             "scanner_hash": self.scanner_hash,
             "schema_version": self.schema_version,
             "scanner_version": self.scanner_version,
@@ -71,6 +76,7 @@ class CanonicalSnapshot:
             "governance_count": self.governance_count,
             "canonical_node_order": self.canonical_node_order,
             "canonical_edge_order": self.canonical_edge_order,
+            "canonical_edge_occurrences": self.canonical_edge_occurrences,
             "edge_counts_by_relation": self.edge_counts_by_relation,
             "commit_sha": self.commit_sha,
         }
@@ -81,9 +87,12 @@ class CanonicalSnapshot:
         # Convert lists back to tuples for canonical_edge_order
         edge_order = d.get("canonical_edge_order", [])
         edge_order_tuples = [tuple(e) if isinstance(e, list) else e for e in edge_order]
+        occurrences = d.get("canonical_edge_occurrences", [])
+        occurrence_tuples = [tuple(e) if isinstance(e, list) else e for e in occurrences]
 
         return cls(
             graph_hash=d["graph_hash"],
+            graph_hash_version=d.get("graph_hash_version", "triple-set-v1"),
             scanner_hash=d.get("scanner_hash", ""),
             schema_version=d.get("schema_version", ""),
             scanner_version=d.get("scanner_version", ""),
@@ -95,6 +104,7 @@ class CanonicalSnapshot:
             governance_count=d.get("governance_count", 0),
             canonical_node_order=d.get("canonical_node_order", []),
             canonical_edge_order=edge_order_tuples,
+            canonical_edge_occurrences=occurrence_tuples,
             edge_counts_by_relation=d.get("edge_counts_by_relation", {}),
             commit_sha=d.get("commit_sha", ""),
         )
@@ -156,39 +166,65 @@ def load_latest_snapshot(artifacts_dir: Path) -> CanonicalSnapshot | None:
 
 
 def build_snapshot(result: ScanResult) -> CanonicalSnapshot:
-    """Build a deterministic CanonicalSnapshot from a ScanResult.
+    """Build a deterministic, lossless CanonicalSnapshot from a ScanResult.
 
-    The graph_hash is derived solely from the sorted canonical edge list,
-    making it reproducible given identical source code regardless of scan
-    order or Python version.
-
-    E4: Single-pass observer — edge tuples, node names, and relation counts
-    are all collected in one iteration over result.edges instead of three.
+    The v2 graph hash includes every declared module and every edge occurrence,
+    including edge kind, source location, symbol, semantic fields, confidence,
+    spans, and dynamic-resolution evidence.  The compatibility triple list is
+    retained for older GraphDiff consumers, but it is no longer the hash input.
     """
     from agentic_core.adg.extraction.static_scanner import (
         _SCANNER_VERSION,
         _SCHEMA_VERSION,
     )
 
-    edge_set: set[tuple[str, str, str]] = set()
-    node_set: set[str] = set()
+    edge_triples: set[tuple[str, str, str]] = set()
+    edge_occurrences: list[tuple] = []
+    node_set: set[str] = set(result.modules)
     edge_counts: dict[str, int] = {}
 
     for e in result.edges:
-        tup = (e.from_name, e.relation_type, e.to_name)
-        edge_set.add(tup)
+        edge_triples.add((e.from_name, e.relation_type, e.to_name))
         node_set.add(e.from_name)
         node_set.add(e.to_name)
         edge_counts[e.relation_type] = edge_counts.get(e.relation_type, 0) + 1
+        edge_occurrences.append(
+            (
+                e.from_name,
+                e.relation_type,
+                e.to_name,
+                e.edge_kind,
+                e.source_file,
+                int(e.line_no),
+                e.symbol,
+                e.semantic_type,
+                format(float(e.confidence), ".17g"),
+                int(e.source_span_start),
+                int(e.source_span_end),
+                int(e.source_span_line),
+                int(e.source_span_column),
+                int(e.target_span_start),
+                int(e.target_span_end),
+                int(e.target_span_line),
+                int(e.target_span_column),
+                e.dynamic_resolution,
+            )
+        )
 
-    canonical_edges: list[tuple[str, str, str]] = sorted(edge_set)
-    canonical_nodes: list[str] = sorted(node_set)
+    canonical_edges = sorted(edge_triples)
+    canonical_occurrences = sorted(edge_occurrences)
+    canonical_nodes = sorted(node_set)
 
-    edge_payload = json.dumps(canonical_edges, sort_keys=True, separators=(",", ":"))
-    graph_hash = hashlib.sha256(edge_payload.encode()).hexdigest()
+    hash_payload = json.dumps(
+        {"nodes": canonical_nodes, "edge_occurrences": canonical_occurrences},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    graph_hash = hashlib.sha256(hash_payload.encode()).hexdigest()
 
     return CanonicalSnapshot(
         graph_hash=graph_hash,
+        graph_hash_version="edge-occurrence-v2",
         scanner_hash=result.digest,
         schema_version=_SCHEMA_VERSION,
         scanner_version=_SCANNER_VERSION,
@@ -201,5 +237,6 @@ def build_snapshot(result: ScanResult) -> CanonicalSnapshot:
         governance_count=edge_counts.get("writes_through", 0) + edge_counts.get("routes_through", 0),
         canonical_node_order=canonical_nodes,
         canonical_edge_order=canonical_edges,
+        canonical_edge_occurrences=canonical_occurrences,
         edge_counts_by_relation=edge_counts,
     )
