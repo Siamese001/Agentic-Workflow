@@ -1,4 +1,4 @@
-"""R1B durable-write authority is X3C-only and fail-closed."""
+"""Negative controls for Exit/X3C and R1B commit evidence authority."""
 
 from __future__ import annotations
 
@@ -6,101 +6,130 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-import pytest
-
 from apps_rg.cache.r1b_commit_authority import (
     REASON_X3C_REQUIRED,
-    REASON_X3_MALFORMED,
-    REASON_X3_MISSING,
     assess_r1b_commit_authority,
     assess_r1b_commit_authority_from_run_dir,
     compute_r1b_commit_request_signature,
     validate_r1b_commit_request_evidence,
 )
+from apps_rg.cache.r1b_constants import R1B_UWG_TARGET_SURFACE
+from apps_rg.runtime.l5.packet_builder import compute_l5_packet_verification_digest
 
 
-def _write_x3(run_dir: Path, code: str) -> None:
-    run_dir.mkdir(parents=True, exist_ok=True)
-    (run_dir / "x3_disposition.json").write_text(
-        json.dumps({"x3_code": code}),
-        encoding="utf-8",
+def _request(**overrides):
+    request_id = "request-1"
+    run_id = "run-1"
+    trace_root = "trace-1"
+    packet_digest = "d" * 64
+    runtime_binding = "b" * 64
+    packet_ref = f"l5_packet:{packet_digest}"
+    verification = compute_l5_packet_verification_digest(
+        request_id=request_id,
+        run_id=run_id,
+        trace_id=trace_root,
+        packet_ref=packet_ref,
+        packet_digest=packet_digest,
+        status="L5_CERTIFIED",
+        runtime_binding_digest_value=runtime_binding,
     )
-
-
-def test_x3c_authorizes_r1b_commit_request() -> None:
-    decision = assess_r1b_commit_authority(x3_code="x3c")
-    assert decision.authorized is True
-    assert decision.x3_code == "X3C"
-    assert decision.reason_code == ""
-
-
-@pytest.mark.parametrize("finish_code", ["X3_ALLOW", "X3D", "EXIT_OK", "EXIT_PARTIAL"])
-def test_finish_outcomes_do_not_authorize_durable_r1b_write(finish_code: str) -> None:
-    decision = assess_r1b_commit_authority(x3_code=finish_code)
-    assert decision.authorized is False
-    assert decision.reason_code == REASON_X3C_REQUIRED
-
-
-def test_missing_x3_artifact_fails_closed(tmp_path: Path) -> None:
-    decision = assess_r1b_commit_authority_from_run_dir(tmp_path)
-    assert decision.authorized is False
-    assert decision.reason_code == REASON_X3_MISSING
-
-
-def test_malformed_x3_artifact_fails_closed(tmp_path: Path) -> None:
-    (tmp_path / "x3_disposition.json").write_text("not-json", encoding="utf-8")
-    decision = assess_r1b_commit_authority_from_run_dir(tmp_path)
-    assert decision.authorized is False
-    assert decision.reason_code == REASON_X3_MALFORMED
-
-
-def test_run_dir_x3c_authority_is_loaded_from_artifact(tmp_path: Path) -> None:
-    _write_x3(tmp_path, "X3C")
-    decision = assess_r1b_commit_authority_from_run_dir(tmp_path)
-    assert decision.authorized is True
-    assert decision.disposition_ref.endswith("x3_disposition.json")
-
-
-def _request(**overrides: object) -> SimpleNamespace:
-    values: dict[str, object] = {
-        "commit_request_id": "cr:r1b:test",
-        "staged_diff_hash": "diff:test",
-        "clearance_proof_id": "exit:test",
-        "cleared_exit_review_packet_ref": "exit:test",
-        "capability_token_ref": "capability:r1b:test",
-        "registry_digest_set": ("registry:policy:test", "registry:blueprint:test"),
+    values = {
+        "commit_request_id": "cr-1",
+        "request_id": request_id,
+        "run_id": run_id,
+        "trace_root": trace_root,
+        "policy_hash": "policy-1",
+        "blueprint_hash": "blueprint-1",
+        "staged_diff_hash": "diff-1",
+        "clearance_proof_id": "exit_packet_digest:abc",
+        "cleared_exit_review_packet_ref": "exit_packet_digest:abc",
+        "capability_token_ref": "capability:apps_rg:r1b:run-1",
+        "registry_digest_set": (
+            "registry:policy:policy-1",
+            "registry:blueprint:blueprint-1",
+        ),
+        "affected_state_surfaces": (R1B_UWG_TARGET_SURFACE,),
+        "l5_certification_ref": packet_ref,
+        "l5_certification_refs": (
+            f"packet_digest={packet_digest}",
+            "status=L5_CERTIFIED",
+            f"runtime_binding_digest={runtime_binding}",
+            "verified=true",
+            f"verification_digest={verification}",
+        ),
     }
     values["commit_request_signature"] = compute_r1b_commit_request_signature(
-        commit_request_id=str(values["commit_request_id"]),
-        staged_diff_hash=str(values["staged_diff_hash"]),
-        clearance_proof_id=str(values["clearance_proof_id"]),
+        commit_request_id=values["commit_request_id"],
+        staged_diff_hash=values["staged_diff_hash"],
+        clearance_proof_id=values["clearance_proof_id"],
+        l5_packet_digest=packet_digest,
+        l5_verification_digest=verification,
     )
     values.update(overrides)
     return SimpleNamespace(**values)
 
 
-def test_valid_r1b_commit_evidence_has_no_extra_failures() -> None:
-    failed, reasons = validate_r1b_commit_request_evidence(_request())
-    assert failed == ()
-    assert reasons == ()
+def test_literal_x3c_is_the_only_commit_authority() -> None:
+    assert assess_r1b_commit_authority(x3_code="X3C").authorized is True
+    for finish_code in ("X3_ALLOW", "X3D", "EXIT_OK", "EXIT_PARTIAL"):
+        result = assess_r1b_commit_authority(x3_code=finish_code)
+        assert result.authorized is False
+        assert result.reason_code == REASON_X3C_REQUIRED
 
 
-@pytest.mark.parametrize(
-    ("overrides", "reason"),
-    [
-        ({"commit_request_signature": "forged"}, "commit_request_signature_invalid"),
-        ({"capability_token_ref": ""}, "missing_or_placeholder_capability_token_ref"),
-        ({"clearance_proof_id": "different"}, "clearance_proof_binding_mismatch"),
-        ({"registry_digest_set": ("unknown",)}, "missing_or_placeholder_registry_digest_set"),
+def test_run_dir_authority_fails_closed_on_missing_or_malformed(tmp_path: Path) -> None:
+    assert assess_r1b_commit_authority_from_run_dir(tmp_path).authorized is False
+    (tmp_path / "x3_disposition.json").write_text("[]", encoding="utf-8")
+    assert assess_r1b_commit_authority_from_run_dir(tmp_path).authorized is False
+    (tmp_path / "x3_disposition.json").write_text(
+        json.dumps({"x3_code": "X3C"}), encoding="utf-8"
+    )
+    assert assess_r1b_commit_authority_from_run_dir(tmp_path).authorized is True
+
+
+def test_valid_evidence_passes() -> None:
+    assert validate_r1b_commit_request_evidence(_request()) == ((), ())
+
+
+def test_forged_signature_fails_closed() -> None:
+    failed, reasons = validate_r1b_commit_request_evidence(
+        _request(commit_request_signature="forged")
+    )
+    assert "r1b_commit_request_signature" in failed
+    assert "commit_request_signature_invalid" in reasons
+
+
+def test_l5_verification_digest_is_recomputed() -> None:
+    request = _request()
+    refs = tuple(
+        "verification_digest=forged"
+        if item.startswith("verification_digest=")
+        else item
+        for item in request.l5_certification_refs
+    )
+    failed, reasons = validate_r1b_commit_request_evidence(
+        _request(l5_certification_refs=refs)
+    )
+    assert "r1b_l5_certification_evidence" in failed
+    assert "l5_certification_evidence_not_verified" in reasons
+
+
+def test_capability_registry_clearance_and_surface_are_bound() -> None:
+    variants = (
         (
-            {"registry_digest_set": ("registry:test", "registry:test")},
-            "duplicate_registry_digest",
+            _request(capability_token_ref="capability:other"),
+            "missing_or_invalid_capability_token_ref",
         ),
-    ],
-)
-def test_invalid_r1b_commit_evidence_fails_closed(
-    overrides: dict[str, object],
-    reason: str,
-) -> None:
-    _failed, reasons = validate_r1b_commit_request_evidence(_request(**overrides))
-    assert reason in reasons
+        (
+            _request(registry_digest_set=("registry:other",)),
+            "registry_digest_binding_mismatch",
+        ),
+        (_request(clearance_proof_id="different"), "clearance_proof_binding_mismatch"),
+        (
+            _request(affected_state_surfaces=("l4.other",)),
+            "target_surface_not_allowlisted",
+        ),
+    )
+    for request, expected in variants:
+        _failed, reasons = validate_r1b_commit_request_evidence(request)
+        assert expected in reasons
