@@ -1,0 +1,76 @@
+name: apps-rg-anthropic-cache-live
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps_rg/runtime/providers/anthropic_prompt_cache.py"
+      - "apps_rg/runtime/providers/anthropic_section_cache_payload.py"
+      - "apps_rg/runtime/providers/anthropic_cache_suite_summary.py"
+      - "apps_rg/runtime/providers/anthropic_cache_live_probe.py"
+      - "apps_rg/runtime/providers/section_provider_call.py"
+      - "ops_scripts/apps_rg/run_anthropic_cache_live_probe.py"
+      - "tests/unit/apps_rg/runtime/providers/test_anthropic_cache_*.py"
+      - ".github/workflows/apps-rg-anthropic-cache-live.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cache-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip pytest pyyaml
+      - name: Run prompt-cache unit contracts
+        run: >-
+          python -m pytest -q
+          tests/unit/apps_rg/runtime/providers/test_anthropic_prompt_cache_wave0.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_payload.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_fallback.py
+          tests/unit/apps_rg/runtime/providers/test_section_provider_anthropic_cache.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_costs.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_suite_summary.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_live_probe.py
+          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_role_episode_coverage.py
+
+  live-cache-hit:
+    needs: cache-contracts
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION: ${{ vars.APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run live Anthropic cache-hit probe
+        if: env.ANTHROPIC_API_KEY != ''
+        run: >-
+          python ops_scripts/apps_rg/run_anthropic_cache_live_probe.py
+          --output artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json
+      - name: Record unavailable live secret
+        if: env.ANTHROPIC_API_KEY == ''
+        run: |
+          mkdir -p artifacts/apps_rg/cache_promotion
+          cat > artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json <<'JSON'
+          {
+            "schema": "apps_rg_anthropic_cache_live_probe_v1",
+            "status": "SKIPPED_SECRET_UNAVAILABLE",
+            "pass": false,
+            "promotion_reasons": ["ANTHROPIC_API_KEY unavailable to this workflow"]
+          }
+          JSON
+      - name: Upload live cache evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-rg-anthropic-cache-live-evidence
+          path: artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json
+          if-no-files-found: error
