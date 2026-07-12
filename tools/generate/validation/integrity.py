@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from tqdm import tqdm
 
+from tools.adg.core.query_catalog import validate_query_plans
+
 
 def _connect_sqlite(path: Path) -> sqlite3.Connection:
     """Open an ADG database with referential-integrity enforcement enabled."""
@@ -104,6 +106,16 @@ def _check_sqlite_integrity(sqlite_path: Path) -> None:
         missing_tables = required_tables - existing_tables
         if missing_tables:
             print(f"\n[ERROR] SQLite missing required tables: {', '.join(missing_tables)}")
+            conn.close()
+            sys.exit(1)
+
+        query_plan_issues = validate_query_plans(conn)
+        if query_plan_issues:
+            for issue in query_plan_issues:
+                print(
+                    f"[ERROR] ADG query plan {issue.query_id}: "
+                    f"{issue.code}: {issue.detail}"
+                )
             conn.close()
             sys.exit(1)
 
