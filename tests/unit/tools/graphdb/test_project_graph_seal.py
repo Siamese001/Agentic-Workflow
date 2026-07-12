@@ -21,6 +21,14 @@ def test_project_graph_seals_before_opening_projector(tmp_path: Path, monkeypatc
     output_dir = tmp_path / "out"
     events: list[str] = []
 
+    def _refresh_health(path: Path):
+        assert path == sqlite_path
+        events.append("phase_g")
+        return {
+            "mv_repo_health_signals": 21,
+            "mv_repo_health_hotspots": 2,
+        }
+
     def _seal(path: Path):
         assert path == sqlite_path
         events.append("seal")
@@ -65,6 +73,7 @@ def test_project_graph_seals_before_opening_projector(tmp_path: Path, monkeypatc
             assert keep_count == 30
             return []
 
+    monkeypatch.setattr(project_graph_module, "materialize_phase_g", _refresh_health)
     monkeypatch.setattr(project_graph_module, "seal_sqlite_path", _seal)
     monkeypatch.setattr(project_graph_module, "GraphProjector", _Projector)
     monkeypatch.setattr(project_graph_module, "SnapshotManager", _Snapshots)
@@ -73,6 +82,6 @@ def test_project_graph_seals_before_opening_projector(tmp_path: Path, monkeypatc
 
     graph, metadata = project_graph_module.project_graph(sqlite_path, output_dir, run_id="run")
 
-    assert events[:2] == ["seal", "projector"]
+    assert events[:3] == ["phase_g", "seal", "projector"]
     assert graph.number_of_nodes() == 2
     assert metadata.commit_sha == "sha"
