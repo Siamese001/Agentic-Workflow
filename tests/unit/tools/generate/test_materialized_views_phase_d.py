@@ -149,14 +149,14 @@ class TestPhaseDTableCreation:
         counts2 = materialize_phase_d(db)
         assert counts1 == counts2
 
-    def test_snapshot_id_in_baseline(self, tmp_path: Path) -> None:
+    def test_artifact_digest_in_baseline(self, tmp_path: Path) -> None:
         db = _create_minimal_db(tmp_path, commit_sha="snap_test_001")
         _run_all_phases(db)
         conn = sqlite3.connect(str(db))
         row = conn.execute("SELECT snapshot_id FROM mv_snapshot_baseline").fetchone()
         conn.close()
         assert row is not None
-        assert row[0] == "snap_test_001"
+        assert row[0] == "digest_ddd"
 
 
 # ---------------------------------------------------------------------------
@@ -243,6 +243,9 @@ class TestSnapshotRegressionSummary:
         conn = sqlite3.connect(str(db))
         _node(conn, 1, "new_mod", "L2", "agentic_core/L2_execution/reasoning/new.py")
         conn.execute("UPDATE meta SET value='snap_v2' WHERE key='commit_sha'")
+        conn.execute(
+            "UPDATE meta SET value='digest_v2' WHERE key='artifact_digest'"
+        )
         conn.commit()
         conn.close()
 
@@ -259,7 +262,7 @@ class TestSnapshotRegressionSummary:
         conn.close()
         assert row is not None
         assert row[0] == 0  # NOT first run
-        assert row[1] == "snap_v1"  # previous snapshot recorded
+        assert row[1] == "digest_ddd"  # previous artifact recorded
         assert row[2] == 1  # one node added
 
     def test_violation_delta_increases(self, tmp_path: Path) -> None:
