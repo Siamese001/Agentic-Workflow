@@ -12,6 +12,8 @@ on:
       - "ops_scripts/ci/audit_required_checks.py"
       - "ops_scripts/ci/check_workflow_references.py"
       - "ops_scripts/ci/check_adg_metric_registry.py"
+      - "ops_scripts/ci/check_adg_query_plans.py"
+      - "tools/adg/core/query_catalog.py"
       - "ops_scripts/ci/check_adg_writer_authority.py"
       - "agentic_core/adg/artifact/sqlite_schema.py"
       - "agentic_core/adg/artifact/ArtifactPaths.py"
