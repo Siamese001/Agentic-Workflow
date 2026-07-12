@@ -1,0 +1,53 @@
+{
+  "schema_version": "codex.run_receipt.v1",
+  "plan_id": "apps-rg-l6-semantic-closure-d7e4a1",
+  "branch": "agent/apps-rg-l6-semantic-closure-final",
+  "base_branch": "main",
+  "generated_at_utc": "2026-07-12T00:00:00Z",
+  "scope": [
+    "Exit-to-UWG authority order before apps_eval/L6",
+    "independent persisted-observation parity",
+    "observability and eval-binding closure split",
+    "legacy package advisory downgrade",
+    "trace trends and distinct-run recurrence",
+    "four-level eval-ladder claim enforcement",
+    "semantic governance CI"
+  ],
+  "verification": {
+    "semantic_checker": {
+      "command": "python scripts/governance/check_apps_rg_l6_semantic_closure.py --json",
+      "result": "PASS",
+      "exit_code": 0
+    },
+    "py_compile": {
+      "result": "PASS",
+      "exit_code": 0
+    },
+    "focused_pytest": {
+      "result": "PASS",
+      "exit_code": 0,
+      "tests_passed": 29
+    },
+    "extended_l6_regression_slice": {
+      "result": "PASS",
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "result": "PASS",
+      "exit_code": 0
+    }
+  },
+  "authority_assertions": {
+    "exit_precedes_uwg": true,
+    "uwg_closes_before_apps_eval_l6": true,
+    "l6_can_rescue_current_run": false,
+    "apps_eval_can_veto_current_uwg": false,
+    "l6_direct_l4_write_allowed": false,
+    "future_run_only_learning": true
+  },
+  "evidence_notes": [
+    "Deterministic pytest coverage is micro/E2E contract evidence, not a live lane, suite, or meta promotion run.",
+    "Live provider and human-label evidence remain separately governed operational runs.",
+    "The GitHub workflow repeats the semantic checker, compilation, and targeted suite on the pull request."
+  ]
+}
