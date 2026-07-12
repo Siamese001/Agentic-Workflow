@@ -31,7 +31,7 @@ CLI (Increment 4):
   - diff, bridges, regressions, reachability subcommands exit 0
 
 Hardening (Increment 5):
-  - schema_version is 1.1
+  - schema_version is 1.2
   - proj_diff stores no unchanged rows
   - new indexes present: idx_proj_diff_metric_dir, idx_proj_diff_delta,
     idx_proj_viol_blast, idx_proj_reach_src_hop
@@ -53,6 +53,7 @@ Guarding
 
 from __future__ import annotations
 
+import json
 import sqlite3
 from pathlib import Path
 
@@ -380,27 +381,40 @@ class TestGraphProjectionBackendStale:
             assert backend.is_available(), "Stale projection should still be available"
             assert backend.is_stale(), "Backend must detect digest mismatch as stale"
 
-    def test_stale_backend_still_returns_results(self, tmp_canonical_sqlite, tmp_path, monkeypatch):
-        """A stale projection is still queryable — callers use is_stale() to decide."""
+    def test_stale_backend_fails_closed(self, tmp_canonical_sqlite, tmp_path, monkeypatch):
+        """Stale projections expose status but no authoritative values."""
         from tools.generate.graph_projection import build_graph_projection
 
         build_graph_projection(tmp_canonical_sqlite, tmp_path, "stale02")
 
         conn = sqlite3.connect(str(tmp_canonical_sqlite))
-        conn.execute("UPDATE meta SET value = 'mutated' WHERE key = 'artifact_digest'")
+        conn.execute(
+            "UPDATE meta SET value = 'mutated' "
+            "WHERE key = 'artifact_digest'"
+        )
         conn.commit()
         conn.close()
 
         from tools.adg.core import graph_projection_backend as gpb_mod
 
         monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+        from tools.adg.core.graph_projection_backend import (
+            GraphProjectionBackend,
+        )
 
-        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
-
-        with GraphProjectionBackend(canonical_sqlite_path=tmp_canonical_sqlite) as backend:
+        with GraphProjectionBackend(
+            canonical_sqlite_path=tmp_canonical_sqlite
+        ) as backend:
+            assert backend.get_centrality("ADG::Module::tools/a") is None
+            assert backend.get_scc("ADG::Module::tools/a") is None
+            assert backend.get_diff() == []
+            assert backend.get_top_bridges() == []
+            assert backend.get_top_regressions() == []
+            assert backend.get_reachability("ADG::Module::tools/a") == []
             result = backend.get_blast_radius("ADG::Module::tools/a")
-            assert isinstance(result, dict), "Stale backend must still return dict from get_blast_radius"
             assert result["stale"] is True
+            assert result["blast_radius_direct"] == 0
+            assert result["blast_radius_2hop"] == 0
 
 
 # -----------------------------------------------------------------------
@@ -687,12 +701,12 @@ class TestCLINewSubcommands:
 
 
 # -----------------------------------------------------------------------
-# Hardening tests (Increment 5 — schema 1.1, indexes, caps, metadata)
+# Hardening tests (Increment 5 — schema 1.2, indexes, caps, metadata)
 # -----------------------------------------------------------------------
 
 
-class TestHardeningSchemaV11:
-    """Verify schema 1.1 hardening: indexes, metadata, unchanged exclusion, per-seed cap."""
+class TestHardeningSchemaV12:
+    """Verify schema 1.2 hardening: indexes, metadata, unchanged exclusion, per-seed cap."""
 
     @pytest.fixture
     def proj_path(self, tmp_canonical_sqlite, tmp_path):
@@ -720,16 +734,16 @@ class TestHardeningSchemaV11:
 
     # --- Schema version ---
 
-    def test_schema_version_is_1_1(self, proj_conn):
+    def test_schema_version_is_1_2(self, proj_conn):
         row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='schema_version'").fetchone()
         assert row is not None
-        assert row["value"] == "1.1", f"Expected schema 1.1, got {row['value']!r}"
+        assert row["value"] == "1.1", f"Expected schema 1.2, got {row['value']!r}"
 
     # --- Unchanged rows excluded from proj_diff ---
 
     def test_proj_diff_has_no_unchanged_rows(self, proj_conn):
         count = proj_conn.execute("SELECT COUNT(*) FROM proj_diff WHERE direction='unchanged'").fetchone()[0]
-        assert count == 0, f"proj_diff must not store unchanged rows in schema 1.1, found {count}"
+        assert count == 0, f"proj_diff must not store unchanged rows in schema 1.2, found {count}"
 
     # --- Required indexes present ---
 
@@ -824,3 +838,154 @@ class TestHardeningSchemaV11:
         assert val is None or isinstance(val, (int, float)), (
             f"build_duration_s must be numeric or None, got {val!r}"
         )
+
+
+
+class TestProjectionSemanticHardening:
+    def test_lossless_multidigraph_preserves_parallel_edges(
+        self,
+        tmp_canonical_sqlite,
+    ):
+        import networkx as nx
+
+        from tools.generate.graph_projection import _load_graph
+
+        with sqlite3.connect(tmp_canonical_sqlite) as conn:
+            conn.execute(
+                "INSERT INTO edges "
+                "(id, src_id, dst_id, relation_type, edge_kind, source_file, "
+                "line_no, confidence_score) "
+                "VALUES (4, 1, 2, 'imports', 'runtime', "
+                "'tools/a.py', 8, 0.0)"
+            )
+
+        graph, _ = _load_graph(tmp_canonical_sqlite, nx)
+        assert isinstance(graph, nx.MultiDiGraph)
+        assert graph.number_of_edges(
+            "ADG::Module::tools/a",
+            "ADG::Module::tools/b",
+        ) == 2
+        assert graph.edges[
+            "ADG::Module::tools/a",
+            "ADG::Module::tools/b",
+            4,
+        ]["weight"] == 0.0
+
+    def test_all_nodes_indexed_but_algorithm_outputs_are_module_only(
+        self,
+        tmp_canonical_sqlite,
+        tmp_path,
+    ):
+        from tools.generate.graph_projection import build_graph_projection
+
+        with sqlite3.connect(tmp_canonical_sqlite) as conn:
+            conn.execute(
+                "INSERT INTO nodes VALUES "
+                "(4, 'ADG::Symbol::tools/a.fn', 'symbol', 'L0_routing', "
+                "'tools/a.py', 'tools/a.py', 'symbol')"
+            )
+            conn.execute(
+                "INSERT INTO edges "
+                "(id, src_id, dst_id, relation_type, edge_kind, source_file, "
+                "line_no, confidence_score) "
+                "VALUES (4, 1, 4, 'exports', 'static', "
+                "'tools/a.py', 10, 1.0)"
+            )
+
+        out = build_graph_projection(
+            tmp_canonical_sqlite,
+            tmp_path,
+            "moduleonly",
+        )
+        with sqlite3.connect(out) as conn:
+            assert conn.execute(
+                "SELECT COUNT(*) FROM proj_nodes"
+            ).fetchone()[0] == 4
+            centrality_types = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT DISTINCT n.entity_type "
+                    "FROM proj_centrality c "
+                    "JOIN proj_nodes n ON n.adg_name = c.adg_name"
+                )
+            }
+            assert centrality_types == {"module"}
+            assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+
+    def test_excluded_relations_are_accounted_for(
+        self,
+        tmp_canonical_sqlite,
+        tmp_path,
+    ):
+        from tools.generate.graph_projection import build_graph_projection
+
+        with sqlite3.connect(tmp_canonical_sqlite) as conn:
+            conn.execute(
+                "INSERT INTO edges "
+                "(id, src_id, dst_id, relation_type, edge_kind, source_file, "
+                "line_no, confidence_score) "
+                "VALUES (4, 1, 2, 'covers', 'static', "
+                "'tools/a.py', 12, 1.0)"
+            )
+
+        out = build_graph_projection(
+            tmp_canonical_sqlite,
+            tmp_path,
+            "exclusions",
+        )
+        meta = _proj_meta(out)
+        assert meta["excluded_edge_count"] == "1"
+        assert json.loads(meta["excluded_edge_relation_counts"]) == {
+            "covers": 1
+        }
+        assert (
+            int(meta["graph_edge_count"]) + int(meta["excluded_edge_count"])
+            == int(meta["canonical_edge_count"])
+        )
+
+    def test_current_snapshot_id_is_populated_in_diff(
+        self,
+        tmp_canonical_sqlite,
+        tmp_path,
+    ):
+        from tools.generate.graph_projection import build_graph_projection
+
+        build_graph_projection(tmp_canonical_sqlite, tmp_path, "prior")
+        current_digest = "cafebabecafebabecafebabecafebabe"
+        with sqlite3.connect(tmp_canonical_sqlite) as conn:
+            conn.execute(
+                "UPDATE meta SET value=? WHERE key='artifact_digest'",
+                (current_digest,),
+            )
+            conn.execute(
+                "INSERT INTO edges "
+                "(id, src_id, dst_id, relation_type, edge_kind, source_file, "
+                "line_no, confidence_score) "
+                "VALUES (4, 1, 2, 'imports', 'runtime', "
+                "'tools/a.py', 13, 1.0)"
+            )
+
+        out = build_graph_projection(
+            tmp_canonical_sqlite,
+            tmp_path,
+            "current",
+        )
+        with sqlite3.connect(out) as conn:
+            values = {
+                row[0]
+                for row in conn.execute(
+                    "SELECT DISTINCT curr_snapshot_id FROM proj_diff"
+                )
+            }
+        assert values == {current_digest}
+
+    def test_layer_weights_follow_authoritative_order(self):
+        from tools.generate.graph_projection import (
+            _layer_criticality_weight,
+        )
+
+        assert _layer_criticality_weight("L0_routing") == 2.0
+        assert _layer_criticality_weight("L2_execution") == 1.8
+        assert _layer_criticality_weight("L5") == 1.7
+        assert _layer_criticality_weight("L6") == 1.0
+        assert _layer_criticality_weight("unknown") == 0.2
