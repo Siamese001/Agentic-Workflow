@@ -94,6 +94,12 @@ class ADGService:
         materialization = sqlite_meta.get("materialization")
         if not isinstance(materialization, dict):
             materialization = self._sqlite.get_materialization_status()
+        if not isinstance(materialization, dict):
+            materialization = {
+                "status": "UNKNOWN",
+                "counts": {},
+                "reason": "materialization status unavailable",
+            }
 
         reasons: list[str] = []
         if sqlite_status == "unavailable":
