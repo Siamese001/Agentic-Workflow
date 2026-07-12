@@ -16,6 +16,11 @@ Generate-full-ADG dependency gate:
 - Run this exact validator before editing:
   python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json
 - Accept only validator exit code 0 with artifact_status=certified or artifact_status=repair_ready.
+- After the validator succeeds and before any source edit, run this exact fresh-plan command:
+  python tools/adg/prepare_p0_burndown.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --output-dir C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\issues --json
+- Require the fresh-plan command to exit 0 and emit a timestamped `adg-p0-execution-plan/v1` JSON and Markdown pair bound to the same immutable handoff, receipt, snapshot, gate results, action queue, burndown report/table, generation manifest, and gate manifest digests.
+- If the fresh-plan command exits non-zero, emits no timestamped pair, reports a digest mismatch, or reports a P0 count mismatch, stop without editing and report artifact_status=incomplete.
+- Do not reuse a prior `p0_remediation_wave_plan_<run_id>` or any latest-only plan as the in-run execution plan.
 - The validator must resolve the producer-root latest pointer to an immutable timestamped handoff, then verify the receipt SHA, run ID, and artifact digests before the lane may edit.
 - If the validator exits non-zero with dependency_status=dependency_not_ready, stop as DEPENDENCY_NOT_READY and name the upstream generate_full_adg run state instead of regenerating full ADG inside this lane.
 - Require the receipt/artifact timestamps to be after the latest scheduled generate_full_adg audit window and before this downstream lane starts editing.
@@ -114,6 +119,9 @@ validator = "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:
 consumable_artifact_statuses = ["certified", "repair_ready"]
 requires_direct_artifact_status_source = true
 requires_digest_bound_handoff_pointer = true
+requires_fresh_p0_execution_plan = true
+fresh_plan_generator = "python tools/adg/prepare_p0_burndown.py"
+fresh_plan_schema = "adg-p0-execution-plan/v1"
 depends_on = ["weekly-adg-audit-and-burndown"]
 unblocks = ["adg-p1-ratchet-burndown"]
 requires_prior_lane_clean = []
