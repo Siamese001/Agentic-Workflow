@@ -1,4 +1,5 @@
-"""apps_rg prerequisite gate — historical research briefing validator."""
+"""apps_rg prerequisite gate — historical and apps_research handoff validators."""
+
 from __future__ import annotations
 
 import hashlib
@@ -7,7 +8,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 __all__ = [
     "BriefingValidationResult",
@@ -16,6 +17,7 @@ __all__ = [
     "HistoricalBriefingValidator",
     "find_apps_research_envelope_for_briefing",
     "validate_apps_research_handoff",
+    "validate_canonical_apps_research_exit",
     "check_briefing_prerequisite",
 ]
 
@@ -25,6 +27,7 @@ _REQUIRES_RESEARCH_STATUSES = frozenset({
     "incomplete",
     "scope_mismatch",
 })
+_CANONICAL_X3_ALLOW = "X3D_ALLOW_FINISH"
 
 
 class BriefingValidationResult(str, Enum):
@@ -72,7 +75,7 @@ class AppsResearchHandoffValidation:
         if self.receipt is not None:
             return dict(self.receipt)
         return {
-            "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v1",
+            "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v2",
             "observed": self.observed,
             "valid": self.valid,
             "reason": self.reason,
@@ -82,6 +85,17 @@ class AppsResearchHandoffValidation:
 
 def _sha256_text(text: str) -> str:
     return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _sha256_json(payload: Any) -> str:
+    raw = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def _read_text_ref(ref: str) -> tuple[str, str]:
@@ -131,6 +145,121 @@ def _numeric_or_none(value: Any) -> float | None:
         return None
 
 
+def validate_canonical_apps_research_exit(
+    envelope: Mapping[str, Any] | None,
+) -> tuple[bool, tuple[str, ...]]:
+    """Validate the canonical GateMesh -> Exit -> exhaust authorization chain."""
+    failures: list[str] = []
+    if not isinstance(envelope, Mapping):
+        return False, ("envelope_not_object",)
+
+    if envelope.get("canonical_exit_authorized") is not True:
+        failures.append("canonical_exit_not_authorized")
+
+    receipt_raw = envelope.get("apps_research_exit_disposition_receipt")
+    receipt = dict(receipt_raw) if isinstance(receipt_raw, Mapping) else {}
+    if not receipt:
+        failures.append("missing_canonical_exit_disposition_receipt")
+        return False, tuple(failures)
+
+    expected_receipt_digest = str(
+        envelope.get("exit_disposition_receipt_digest") or ""
+    ).strip()
+    embedded_receipt_digest = str(receipt.get("deterministic_digest") or "").strip()
+    if not expected_receipt_digest:
+        failures.append("missing_exit_disposition_receipt_digest")
+    elif embedded_receipt_digest != expected_receipt_digest:
+        failures.append("exit_disposition_receipt_digest_field_mismatch")
+    receipt_seed = dict(receipt)
+    receipt_seed["deterministic_digest"] = ""
+    computed_receipt_digest = _sha256_json(receipt_seed)
+    if expected_receipt_digest and computed_receipt_digest != expected_receipt_digest:
+        failures.append("exit_disposition_receipt_digest_mismatch")
+
+    if receipt.get("x3_code") != _CANONICAL_X3_ALLOW:
+        failures.append("canonical_x3_not_allow_finish")
+    if receipt.get("required_gates_passed") is not True:
+        failures.append("canonical_required_gates_not_passed")
+    for key in ("hard_fail_count", "unknown_count", "missing_gate_count"):
+        try:
+            count = int(receipt.get(key) or 0)
+        except (TypeError, ValueError):
+            count = -1
+        if count != 0:
+            failures.append(f"canonical_{key}_nonzero")
+
+    run_id = str(envelope.get("run_id") or "")
+    if str(receipt.get("run_id") or "") != run_id:
+        failures.append("canonical_exit_run_id_mismatch")
+    brief_sha = str(envelope.get("brief_sha256") or "")
+    if str(receipt.get("output_artifact_digest") or "") != brief_sha:
+        failures.append("canonical_exit_output_digest_mismatch")
+    sealed_ref = str(envelope.get("sealed_workflow_package_ref") or "")
+    if not sealed_ref:
+        failures.append("missing_sealed_workflow_package_ref")
+    elif str(receipt.get("sealed_workflow_package_ref") or "") != sealed_ref:
+        failures.append("sealed_workflow_package_ref_mismatch")
+    if str(envelope.get("sealed_workflow_package_digest") or "") != brief_sha:
+        failures.append("sealed_workflow_package_digest_mismatch")
+    if not str(receipt.get("exit_profile_ref") or "").strip():
+        failures.append("missing_exit_profile_ref")
+
+    mesh_raw = envelope.get("apps_research_gate_mesh_result")
+    mesh = dict(mesh_raw) if isinstance(mesh_raw, Mapping) else {}
+    if not mesh:
+        failures.append("missing_gate_mesh_result")
+    else:
+        mesh_digest = str(mesh.get("deterministic_digest") or "")
+        if mesh_digest != str(envelope.get("gate_mesh_result_digest") or ""):
+            failures.append("gate_mesh_envelope_digest_mismatch")
+        if mesh_digest != str(receipt.get("gate_mesh_result_ref") or ""):
+            failures.append("gate_mesh_exit_receipt_ref_mismatch")
+        if bool(mesh.get("hard_fail_present")):
+            failures.append("gate_mesh_hard_fail_present")
+        if bool(mesh.get("unknown_material_present")):
+            failures.append("gate_mesh_unknown_present")
+        if list(mesh.get("missing_gate_ids") or []):
+            failures.append("gate_mesh_missing_gates")
+        required = set(str(item) for item in (mesh.get("required_gate_ids") or []))
+        passed = {
+            str(row.get("gate_id"))
+            for row in (mesh.get("verdicts") or [])
+            if isinstance(row, Mapping) and row.get("result") == "PASS"
+        }
+        if not required or not required.issubset(passed):
+            failures.append("gate_mesh_required_gates_not_all_pass")
+
+    exhaust_raw = envelope.get("apps_research_runtime_exhaust_bundle")
+    exhaust = dict(exhaust_raw) if isinstance(exhaust_raw, Mapping) else {}
+    if not exhaust:
+        failures.append("missing_runtime_exhaust_bundle")
+    else:
+        if exhaust.get("created_after_exit") is not True:
+            failures.append("runtime_exhaust_not_after_exit")
+        if str(exhaust.get("exit_disposition_ref") or "") != expected_receipt_digest:
+            failures.append("runtime_exhaust_exit_ref_mismatch")
+        if str(exhaust.get("gate_mesh_result_ref") or "") != str(
+            envelope.get("gate_mesh_result_digest") or ""
+        ):
+            failures.append("runtime_exhaust_gate_mesh_ref_mismatch")
+        if str(exhaust.get("sealed_result_ref") or "") != sealed_ref:
+            failures.append("runtime_exhaust_sealed_result_ref_mismatch")
+
+    projection = envelope.get("apps_research_x1_x3_authorization")
+    if isinstance(projection, Mapping):
+        if projection.get("authority_source") != (
+            "agentic_core.runtime.exit.ExitPackageDrivenBinding"
+        ):
+            failures.append("compat_projection_not_derived_from_canonical_exit")
+        projected_x3 = projection.get("x3")
+        if not isinstance(projected_x3, Mapping):
+            failures.append("compat_projection_missing_x3")
+        elif projected_x3.get("canonical_x3_code") != _CANONICAL_X3_ALLOW:
+            failures.append("compat_projection_x3_mismatch")
+
+    return not failures, tuple(failures)
+
+
 def validate_apps_research_handoff(
     *,
     brief_ref: str,
@@ -138,13 +267,14 @@ def validate_apps_research_handoff(
     now: datetime | None = None,
     require_observed: bool = False,
     require_x1_x3_authorization: bool = False,
+    require_canonical_exit: bool = False,
 ) -> AppsResearchHandoffValidation:
     """Fail-closed validator for apps_research handoff envelopes.
 
-    Absence of a sidecar is not a failure because ordinary user-authored
-    ``--manual-brief`` files remain supported. Once an apps_research sidecar
-    is present, it becomes authoritative for freshness, dry-run/stub status,
-    handoff eligibility, and digest coherence.
+    Ordinary user-authored ``--manual-brief`` files remain supported when
+    ``require_observed`` is false. Once an apps_research envelope is present it
+    becomes authoritative for freshness, digest coherence, and—when present or
+    required—the canonical GateMesh/Exit authorization chain.
     """
     envelope_path = find_apps_research_envelope_for_briefing(brief_ref)
     if envelope_path is None:
@@ -278,8 +408,20 @@ def validate_apps_research_handoff(
                 if disposition not in {"ALLOW", "X3_ALLOW", "X3D_ALLOW_FINISH"}:
                     failures.append("x3_disposition_not_allow")
 
+    canonical_present = isinstance(
+        envelope.get("apps_research_exit_disposition_receipt"),
+        Mapping,
+    )
+    canonical_valid = False
+    canonical_failures: tuple[str, ...] = ()
+    if canonical_present or require_canonical_exit:
+        canonical_valid, canonical_failures = validate_canonical_apps_research_exit(
+            envelope
+        )
+        failures.extend(canonical_failures)
+
     receipt = {
-        "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v1",
+        "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v2",
         "observed": True,
         "valid": not failures,
         "reason": "ok" if not failures else ";".join(failures),
@@ -292,7 +434,11 @@ def validate_apps_research_handoff(
         "envelope_jd_sha256": str(envelope.get("jd_sha256") or "").strip(),
         "require_observed": require_observed,
         "require_x1_x3_authorization": require_x1_x3_authorization,
+        "require_canonical_exit": require_canonical_exit,
         "x1_x3_authorization_observed": isinstance(authorization, dict),
+        "canonical_exit_observed": canonical_present,
+        "canonical_exit_valid": canonical_valid,
+        "canonical_exit_failures": list(canonical_failures),
         "checked_at_utc": observed_now.isoformat(),
     }
     return AppsResearchHandoffValidation(
@@ -306,17 +452,9 @@ def validate_apps_research_handoff(
 
 
 class HistoricalBriefingValidator:
-    """Validates that a company research briefing meets prerequisite policy.
+    """Validates that a company research briefing meets prerequisite policy."""
 
-    Parameters
-    ----------
-    max_freshness_hours:
-        Briefings older than this (in hours) are considered stale.
-    required_sections:
-        Section keys that must be present in a non-stale briefing.
-    """
-
-    DEFAULT_MAX_FRESHNESS_HOURS: float = 168.0  # 7 days
+    DEFAULT_MAX_FRESHNESS_HOURS: float = 168.0
     DEFAULT_REQUIRED_SECTIONS: frozenset[str] = frozenset({
         "company_overview",
         "role_context",
@@ -348,28 +486,34 @@ class HistoricalBriefingValidator:
                 reason="No briefing provided",
             )
 
-        # Policy hash check
         if self.policy_hash:
             bp_hash = briefing.get("policy_hash", "")
             if bp_hash and bp_hash != self.policy_hash:
                 return BriefingCheck(
                     result=BriefingValidationResult.POLICY_MISMATCH,
                     briefing=briefing,
-                    reason=f"Policy hash mismatch: expected {self.policy_hash!r}, got {bp_hash!r}",
+                    reason=(
+                        f"Policy hash mismatch: expected {self.policy_hash!r}, "
+                        f"got {bp_hash!r}"
+                    ),
                 )
 
-        # Blueprint/company mismatch
         if target_company:
-            brief_company = briefing.get("company", "") or briefing.get("target_company", "")
+            brief_company = briefing.get("company", "") or briefing.get(
+                "target_company", ""
+            )
             if brief_company and brief_company.lower() != target_company.lower():
                 return BriefingCheck(
                     result=BriefingValidationResult.BLUEPRINT_MISMATCH,
                     briefing=briefing,
-                    reason=f"Briefing company {brief_company!r} != target {target_company!r}",
+                    reason=(
+                        f"Briefing company {brief_company!r} "
+                        f"!= target {target_company!r}"
+                    ),
                 )
 
-        # Freshness check
         import datetime
+
         generated_at = briefing.get("generated_at") or briefing.get("created_at")
         freshness_hours: Optional[float] = None
         if generated_at:
@@ -389,13 +533,15 @@ class HistoricalBriefingValidator:
                     return BriefingCheck(
                         result=BriefingValidationResult.STALE,
                         briefing=briefing,
-                        reason=f"Briefing is {age_hours:.1f}h old (limit: {self.max_freshness_hours}h)",
+                        reason=(
+                            f"Briefing is {age_hours:.1f}h old "
+                            f"(limit: {self.max_freshness_hours}h)"
+                        ),
                         freshness_hours=age_hours,
                     )
             except Exception:
                 pass
 
-        # Required sections
         missing = self.required_sections - set(briefing.keys())
         if missing:
             return BriefingCheck(
@@ -421,7 +567,9 @@ def check_briefing_prerequisite(
     max_freshness_hours: float = HistoricalBriefingValidator.DEFAULT_MAX_FRESHNESS_HOURS,
 ) -> BriefingCheck:
     """Convenience wrapper — validates a briefing with default policy."""
-    validator = HistoricalBriefingValidator(max_freshness_hours=max_freshness_hours)
+    validator = HistoricalBriefingValidator(
+        max_freshness_hours=max_freshness_hours
+    )
     return validator.validate(
         briefing,
         target_company=target_company,

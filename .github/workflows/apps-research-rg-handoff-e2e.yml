@@ -1,0 +1,79 @@
+name: apps-research-rg-handoff-e2e
+
+on:
+  pull_request:
+    paths:
+      - "apps_research/integrations/apps_rg_handoff.py"
+      - "apps_rg/integrations/apps_research_bridge.py"
+      - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/apps_research_exit_validator.py"
+      - "apps_rg/prerequisites/briefing_validator.py"
+      - "apps_rg/runtime/bindings/briefing_u0_signals.py"
+      - "apps_rg/runtime/bindings/u0_binding.py"
+      - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
+      - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
+      - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
+      - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
+      - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".github/workflows/apps-research-rg-handoff-e2e.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps_research/integrations/apps_rg_handoff.py"
+      - "apps_rg/integrations/apps_research_bridge.py"
+      - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/apps_research_exit_validator.py"
+      - "apps_rg/prerequisites/briefing_validator.py"
+      - "apps_rg/runtime/bindings/briefing_u0_signals.py"
+      - "apps_rg/runtime/bindings/u0_binding.py"
+      - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
+      - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
+      - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
+      - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
+      - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
+      - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".github/workflows/apps-research-rg-handoff-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: dev
+
+      - name: Run canonical producer-consumer handoff certification
+        run: python ops_scripts/ci/check_apps_research_rg_handoff_e2e.py
+
+      - name: Upload handoff test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-research-rg-handoff-test-evidence-${{ github.run_id }}
+          path: artifacts/apps_research_rg_handoff/**
+          retention-days: 14
+
+  certification-summary:
+    if: always()
+    needs: canonical-handoff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require canonical handoff proof
+        env:
+          RESULT: ${{ needs.canonical-handoff.result }}
+        run: |
+          test "$RESULT" = "success"
+          echo "apps_research -> briefing.md -> apps_rg U0 canonical handoff proof: PASS"

@@ -1,4 +1,5 @@
 """Managed apps_research delegation for apps_rg R3R4 whole-run briefing."""
+
 from __future__ import annotations
 
 import hashlib
@@ -11,6 +12,9 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.integrations.apps_research_bridge import ResearchResult
+from apps_rg.prerequisites.apps_research_exit_validator import (
+    validate_canonical_apps_research_exit,
+)
 
 
 class ResearchFailureReason(str, Enum):
@@ -135,6 +139,8 @@ def dispatch_resume_research_briefing(
     *,
     bridge: Any,
 ) -> ResumeBriefingReady | ResearchDispatchFailure:
+    """Dispatch apps_research and admit only a canonical Exit-authorized bundle."""
+
     t_start = _utc_ms()
     if not request.research_authorized:
         return ResearchDispatchFailure(
@@ -197,6 +203,25 @@ def dispatch_resume_research_briefing(
             detail=artifact_detail,
             dispatch_duration_ms=_utc_ms() - t_start,
         )
+
+    jd_ref = str(
+        request.job_description_ref or request.job_description_text or ""
+    ).strip()
+    canonical_exit = validate_canonical_apps_research_exit(
+        brief_ref=artifact_refs["briefing_path"],
+        jd_ref=jd_ref,
+        require_observed=True,
+    )
+    if not canonical_exit.valid:
+        return ResearchDispatchFailure(
+            request_id=request.request_id,
+            run_id=request.run_id,
+            trace_id=request.trace_id,
+            r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
+            detail=f"canonical_exit_validation_failed:{canonical_exit.reason}",
+            dispatch_duration_ms=_utc_ms() - t_start,
+        )
+
     if not research_result.evidence_items:
         return ResearchDispatchFailure(
             request_id=request.request_id,
@@ -228,8 +253,6 @@ def dispatch_resume_research_briefing(
             dispatch_duration_ms=_utc_ms() - t_start,
         )
 
-    # Fail closed: the delegated briefing MUST be a sealed, contract-valid
-    # company_brief_text. No evidence-label or generic-heading fallback.
     briefing_text = str(research_result.company_brief_text or "").strip()
     if not briefing_text:
         return ResearchDispatchFailure(
