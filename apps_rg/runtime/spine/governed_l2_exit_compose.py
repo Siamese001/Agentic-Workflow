@@ -1,10 +1,4 @@
-"""Governed L2 + Exit compose — integrated spine (W6).
-
-Section lanes: ``section_l2_spine_receipt`` + ``exit_artifacts`` (lane receipts).
-Integrated: ``l2_execute_apps_rg`` → ``exit_finalize_apps_rg`` + ``ExitEvalPipeline``
-→ canonical ``RuntimeExhaustBundle`` (L6 handoff boundary).
-"""
-
+"""Governed L2 + Exit compose for the integrated apps_rg spine."""
 from __future__ import annotations
 
 import os
@@ -19,45 +13,75 @@ from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
 GOVERNED_L2_EXIT_MODE_INTEGRATED = "integrated_spine_l2_exit"
 GOVERNED_EXIT_SPINE_MARKER = "governed_l2_exit:v1"
+CANONICAL_L2_AUTHORITY_MARKER = "canonical_l2_authority:v2"
 
 
 def governed_l2_exit_enabled() -> bool:
-    if os.environ.get("APPS_RG_GOVERNED_L2_EXIT_SKIP", "").strip().lower() in (
+    return os.environ.get("APPS_RG_GOVERNED_L2_EXIT_SKIP", "").strip().lower() not in (
         "1",
         "true",
         "yes",
-    ):
-        return False
-    return True
+    )
+
+
+def _canonical_l2_authority_proven(sealed: SealedL2Artifact) -> bool:
+    return (
+        str(getattr(sealed, "audit_manifest_ref", "") or "") == "l2_receipt_bundle.json"
+        and str(getattr(sealed, "sovereign_execution_receipt", "") or "").startswith(
+            "l2_packet:"
+        )
+        and getattr(sealed, "state_diff_authorized", False) is False
+        and getattr(sealed, "is_uwg_write_authority", False) is False
+    )
 
 
 def _stamp_sealed_governed_marker(sealed: SealedL2Artifact) -> SealedL2Artifact:
-    refs = tuple(getattr(sealed, "gate_verdict_refs", ()) or ())
-    if GOVERNED_EXIT_SPINE_MARKER in refs:
-        return sealed
-    updated_refs = refs + (GOVERNED_EXIT_SPINE_MARKER,)
-    try:
-        object.__setattr__(sealed, "gate_verdict_refs", updated_refs)
-        return sealed
-    except (AttributeError, TypeError):
-        from dataclasses import replace
+    """Stamp wrapper provenance; canonical authority gets a separate proof marker."""
+    refs = list(tuple(getattr(sealed, "gate_verdict_refs", ()) or ()))
+    if GOVERNED_EXIT_SPINE_MARKER not in refs:
+        refs.append(GOVERNED_EXIT_SPINE_MARKER)
+    if _canonical_l2_authority_proven(sealed) and CANONICAL_L2_AUTHORITY_MARKER not in refs:
+        refs.append(CANONICAL_L2_AUTHORITY_MARKER)
+    from dataclasses import replace
 
-        return replace(sealed, gate_verdict_refs=updated_refs)
+    return replace(sealed, gate_verdict_refs=tuple(refs))
 
 
-def governed_l2_seal_integrated(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
-    """Integrated L2 — core executor plus an attached, verified L5 packet."""
+def governed_l2_seal_integrated(
+    prompt: CompiledPromptArtifact,
+    *,
+    route_contract: Any | None = None,
+    validated_request: Any | None = None,
+    artifact_dir: str | None = None,
+    product_mode: bool = True,
+    attempt_number: int = 1,
+    enable_heal: bool = False,
+    max_heal_attempts: int = 3,
+    resume_artifact_contract_mode: Any | None = None,
+) -> SealedL2Artifact:
+    """Integrated L2 with signed upstream authority and verified L5 attachment."""
     from apps_rg.runtime.bindings.l2_binding_adapter import _l2_execute_apps_rg_core
     from apps_rg.runtime.l5.packet_builder import (
         attach_l5_packet_to_sealed,
         build_l5_certification_packet,
     )
 
-    sealed = _l2_execute_apps_rg_core(prompt)
+    sealed = _l2_execute_apps_rg_core(
+        prompt,
+        route_contract=route_contract,
+        validated_request=validated_request,
+        artifact_dir=artifact_dir,
+        product_mode=product_mode,
+        attempt_number=attempt_number,
+        enable_heal=enable_heal,
+        max_heal_attempts=max_heal_attempts,
+        resume_artifact_contract_mode=resume_artifact_contract_mode,
+    )
     sealed = _stamp_sealed_governed_marker(sealed)
     packet_result = build_l5_certification_packet(
         sealed=sealed,
         prompt_artifact=prompt,
+        validated_request=validated_request,
         allow_test_l5_cert_ref=bool(getattr(prompt, "allow_test_l5_cert_ref", False)),
     )
     return attach_l5_packet_to_sealed(
@@ -104,6 +128,9 @@ def _build_exit_eval_receipts(
         if getattr(disp, "outcome_authorized", False)
         else "failure",
         "compilation_hash": str(getattr(sealed, "compilation_hash", "") or ""),
+        "l2_receipt_bundle_ref": str(getattr(sealed, "audit_manifest_ref", "") or ""),
+        "canonical_l2_authority": CANONICAL_L2_AUTHORITY_MARKER
+        in tuple(getattr(sealed, "gate_verdict_refs", ()) or ()),
         "l5_certification_ref": str(getattr(sealed, "l5_certification_ref", "") or ""),
         "l5_certification_packet_ref": str(
             getattr(sealed, "l5_certification_packet_ref", "") or ""
@@ -131,7 +158,7 @@ def _build_exit_eval_receipts(
 
 @dataclass(frozen=True)
 class GovernedIntegratedExitBundle:
-    """Integrated Exit outcome — exactly one spine eval disposition + exhaust for L6."""
+    """Integrated Exit outcome — one spine eval disposition and L6 exhaust."""
 
     exit_result: Any
     spine_eval: Any
@@ -148,7 +175,7 @@ def governed_exit_finalize_integrated(
     target_role: str = "",
     prompt_artifact: Any = None,
 ) -> GovernedIntegratedExitBundle:
-    """Integrated Exit — apps_rg gates + ``ExitEvalPipeline`` + ``RuntimeExhaustBundle``."""
+    """Integrated Exit — apps_rg gates + ExitEvalPipeline + RuntimeExhaustBundle."""
     from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
     from apps_rg.runtime.bindings.exit_binding import (
         _exit_finalize_apps_rg_impl,
@@ -186,6 +213,7 @@ def governed_exit_finalize_integrated(
 
 
 __all__ = [
+    "CANONICAL_L2_AUTHORITY_MARKER",
     "GOVERNED_EXIT_SPINE_MARKER",
     "GOVERNED_L2_EXIT_MODE_INTEGRATED",
     "GovernedIntegratedExitBundle",
