@@ -6,6 +6,7 @@ import sqlite3
 
 import pytest
 
+from agentic_core.adg.artifact.sqlite_schema import DDL
 from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv
 from tools.generate.validation.integrity import _check_sqlite_integrity, _connect_sqlite
 
@@ -13,30 +14,22 @@ from tools.generate.validation.integrity import _check_sqlite_integrity, _connec
 def _create_required_schema(path) -> None:
     conn = sqlite3.connect(path)
     try:
-        conn.executescript(
-            """
-            CREATE TABLE nodes (
-                id INTEGER PRIMARY KEY
-            );
-            CREATE TABLE edges (
-                id INTEGER PRIMARY KEY,
-                src_id INTEGER NOT NULL REFERENCES nodes(id),
-                dst_id INTEGER NOT NULL REFERENCES nodes(id)
-            );
-            CREATE TABLE violations (
-                id INTEGER PRIMARY KEY,
-                edge_id INTEGER REFERENCES edges(id)
-            );
-            CREATE TABLE meta (
-                key TEXT PRIMARY KEY,
-                value TEXT NOT NULL
-            );
-            """
-        )
+        conn.executescript(DDL)
         conn.commit()
     finally:
         conn.close()
 
+
+def _insert_node(conn: sqlite3.Connection, node_id: int) -> None:
+    conn.execute(
+        """
+        INSERT INTO nodes(
+            id, adg_name, entity_type, layer, identity_kind,
+            confidence, resolved_path
+        ) VALUES (?, ?, 'module', 'L2', 'internal_module', 'high', ?)
+        """,
+        (node_id, f"node_{node_id}", f"node_{node_id}.py"),
+    )
 
 def test_validation_connection_enables_foreign_keys(tmp_path):
     sqlite_path = tmp_path / "adg.sqlite"
@@ -69,7 +62,14 @@ def test_integrity_check_rejects_orphaned_edges(tmp_path):
     conn = sqlite3.connect(sqlite_path)
     try:
         conn.execute("PRAGMA foreign_keys=OFF")
-        conn.execute("INSERT INTO edges(id, src_id, dst_id) VALUES (1, 100, 200)")
+        conn.execute(
+            """
+            INSERT INTO edges(
+                id, src_id, dst_id, relation_type, edge_kind,
+                source_file, line_no
+            ) VALUES (1, 100, 200, 'imports', 'static', 'orphan.py', 1)
+            """
+        )
         conn.commit()
     finally:
         conn.close()
@@ -87,9 +87,20 @@ def test_integrity_check_accepts_referentially_sound_database(tmp_path):
     conn = sqlite3.connect(sqlite_path)
     try:
         conn.execute("PRAGMA foreign_keys=ON")
-        conn.executemany("INSERT INTO nodes(id) VALUES (?)", [(1,), (2,)])
-        conn.execute("INSERT INTO edges(id, src_id, dst_id) VALUES (1, 1, 2)")
-        conn.execute("INSERT INTO violations(id, edge_id) VALUES (1, 1)")
+        _insert_node(conn, 1)
+        _insert_node(conn, 2)
+        conn.execute(
+            """
+            INSERT INTO edges(
+                id, src_id, dst_id, relation_type, edge_kind,
+                source_file, line_no
+            ) VALUES (1, 1, 2, 'imports', 'static', 'sound.py', 1)
+            """
+        )
+        conn.execute(
+            "INSERT INTO violations(id, edge_id, category) "
+            "VALUES (1, 1, 'test')"
+        )
         conn.commit()
     finally:
         conn.close()
