@@ -768,6 +768,9 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         conn.executemany("INSERT OR REPLACE INTO meta(key,value) VALUES (?,?)", meta_rows)
 
         conn.commit()
+        conn.execute("ANALYZE")
+        conn.execute("PRAGMA optimize")
+        conn.commit()
     except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         write_failed = True
         raise
