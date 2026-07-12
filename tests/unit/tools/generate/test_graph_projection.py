@@ -737,7 +737,7 @@ class TestHardeningSchemaV12:
     def test_schema_version_is_1_2(self, proj_conn):
         row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='schema_version'").fetchone()
         assert row is not None
-        assert row["value"] == "1.1", f"Expected schema 1.2, got {row['value']!r}"
+        assert row["value"] == "1.2", f"Expected schema 1.2, got {row['value']!r}"
 
     # --- Unchanged rows excluded from proj_diff ---
 
