@@ -187,10 +187,13 @@ def test_consumer_rejects_tampered_exit_receipt() -> None:
         run_apps_rg_handoff_exit_authorization,
     )
 
+    # The producer writer canonicalizes artifact text with strip() before GateMesh
+    # evaluation and persistence. Mirror that boundary in this direct-helper test.
+    canonical_brief = record.company_brief_text.strip()
     authorization = run_apps_rg_handoff_exit_authorization(
         run_id=record.run_id,
         trace_root=record.trace_id,
-        briefing_text=record.company_brief_text,
+        briefing_text=canonical_brief,
         jd_text="JD",
         sidecar=sidecar,
     )
@@ -199,7 +202,7 @@ def test_consumer_rejects_tampered_exit_receipt() -> None:
         run_id=record.run_id,
         target_company="Anthropic",
         target_role="Manager",
-        briefing_text=record.company_brief_text,
+        briefing_text=canonical_brief,
         jd_text="JD",
         generated_at_utc="2026-07-12T12:00:00+00:00",
         exit_authorization=authorization,
