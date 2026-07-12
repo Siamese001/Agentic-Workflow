@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-07-11T23:53:43+00:00
+- **Generated:** 2026-07-12T02:27:23+00:00
 - **Report status:** present
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_07112026_1937.sqlite`
+- **Published sqlite:** `artifacts/adg/adg_indexed_07112026_2208.sqlite`
 - **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07112026_1937.json`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07112026_2208.json`
 
 ### BCG Cleanup Brief
 
@@ -14,7 +14,7 @@
 - **Deletion status:** DELETION_CANDIDATES
 - **Source report status:** PASS
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_07112026_1937.sqlite (snapshot 07112026_1937)
+  - ADG source: artifacts/adg/adg_indexed_07112026_2208.sqlite (snapshot 07112026_2208)
   - Dead code candidates: 935
   - Dead imports: 935
   - Unresolved imports: 466
@@ -70,12 +70,12 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 - **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
 - **P2 ratchet status:** WITHIN_CEILING
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_07112026_1937.sqlite
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_07112026_2208.sqlite
   - P2 ceiling: 34
   - Current MEDIUM hygiene count: 34
   - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_07112026_1937.sqlite
-  - Latest failed run: 2026-07-11T23:53:42Z (failed)
+  - Baseline snapshot: adg_indexed_07112026_2208.sqlite
+  - Latest failed run: 2026-07-12T02:27:23Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 Fix now:
@@ -95,9 +95,9 @@ Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the co
 - **Current MEDIUM hygiene count:** 34
 - **Ceiling:** 34
 - **Delta:** +0
-- **Baseline snapshot:** adg_indexed_07112026_1937.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_07112026_1937.sqlite
-- **Latest failed run:** 2026-07-11T23:53:42Z (failed)
+- **Baseline snapshot:** adg_indexed_07112026_2208.sqlite
+- **Published snapshot:** artifacts/adg/adg_indexed_07112026_2208.sqlite
+- **Latest failed run:** 2026-07-12T02:27:23Z (failed)
 
 ### Evidence Buckets
 
