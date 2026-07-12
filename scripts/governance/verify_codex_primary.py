@@ -11,8 +11,8 @@ import argparse
 import json
 import re
 import subprocess
-from pathlib import Path
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 import verify_codex_enforcement_home
 
@@ -26,17 +26,26 @@ REQUIRED_FILES = [
     "scripts/governance/codex_main_closeout.py",
     "scripts/governance/codex_readiness.py",
     "scripts/governance/ensure_searxng_readiness.py",
+    "scripts/governance/svp_docs_review.py",
     "scripts/governance/verify_codex_enforcement_home.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",
     ".codex/config.toml",
     ".codex/automations/on-demand-pr-main-publisher/automation.toml",
+    ".codex/automations/on-demand-svp-documentation-refresh/automation.toml",
     ".codex/automations/adg-audit-and-burndown/automation.toml",
     ".codex/automations/adg-p0-blocker-burndown/automation.toml",
     ".codex/automations/adg-p1-ratchet-burndown/automation.toml",
     ".codex/automations/adg-bcg-p2-next-action/automation.toml",
     ".codex/automations/adg-p3-promotion-hygiene/automation.toml",
     ".codex/automations/svp-readme-documentation-refresh/automation.toml",
+    ".codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json",
+    ".codex/schemas/svp_docs_approval_v1.schema.json",
+    ".codex/schemas/svp_docs_x1d_v1.schema.json",
+    ".codex/schemas/svp_docs_x2_v1.schema.json",
+    ".codex/schemas/svp_docs_x3_v1.schema.json",
+    ".codex/schemas/svp_docs_run_v1.schema.json",
+    ".github/workflows/svp-docs-gates.yml",
     ".codex/hooks.json",
     ".codex/hooks/selected_avatar_guard.py",
     ".codex/skills/agentic-workflow-governance/SKILL.md",
@@ -72,6 +81,32 @@ REQUIRED_ANCHORS = {
         ".codex/hooks.json",
         ".codex/automations/",
     ],
+    ".codex/automations/svp-readme-documentation-refresh/automation.toml": [
+        'mode = "audit_only"',
+        "allow_edits = false",
+        "allow_publication = false",
+        'publication_handoff = "on-demand-pr-main-publisher"',
+        "The weekly job must never emit ALLOW_TO_PR",
+        "scripts/governance/svp_docs_review.py",
+    ],
+    ".codex/automations/on-demand-svp-documentation-refresh/automation.toml": [
+        'mode = "approved_edit"',
+        "require_approval_receipt = true",
+        "allow_publication = false",
+        'publication_handoff = "on-demand-pr-main-publisher"',
+        "ALLOW_TO_PR",
+        "scripts/governance/svp_docs_review.py",
+    ],
+    ".codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json": [
+        '"schema_version": "svp_docs_reviewer_packet/v1"',
+        '"publication_handoff": "on-demand-pr-main-publisher"',
+        '"apps_shared/integrations/app_registry.py"',
+    ],
+    ".codex/schemas/svp_docs_x1d_v1.schema.json": ['"$id": "svp_docs_x1d/v1"'],
+    ".codex/schemas/svp_docs_x2_v1.schema.json": ['"$id": "svp_docs_x2/v1"'],
+    ".codex/schemas/svp_docs_x3_v1.schema.json": ['"$id": "svp_docs_x3/v1"'],
+    ".codex/schemas/svp_docs_run_v1.schema.json": ['"$id": "svp_docs_run/v1"'],
+    ".codex/schemas/svp_docs_approval_v1.schema.json": ['"$id": "svp_docs_approval/v1"'],
 }
 
 FORBIDDEN_CODEX_ONLY_TEXT = ("CLAUDE" + ".md", "CLAUDE_PROJECT" + "_DIR")
