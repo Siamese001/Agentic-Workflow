@@ -1,0 +1,61 @@
+name: SVP Documentation Gates
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - ".codex/automations/svp-readme-documentation-refresh/**"
+      - ".codex/automations/on-demand-svp-documentation-refresh/**"
+      - ".codex/schemas/svp_docs_*"
+      - "scripts/governance/svp_docs_review.py"
+      - "ops_scripts/ci/run_architecture_proof.py"
+      - "tests/unit/scripts/governance/test_svp_docs_review.py"
+      - ".github/workflows/svp-docs-gates.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  svp-docs-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install focused test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Compile deterministic gate
+        run: python -m py_compile scripts/governance/svp_docs_review.py
+
+      - name: Run focused gate tests
+        run: pytest -q tests/unit/scripts/governance/test_svp_docs_review.py
+
+      - name: Verify Codex primary contract
+        run: python scripts/governance/verify_codex_primary.py
+
+      - name: Verify Codex enforcement home
+        run: python scripts/governance/verify_codex_enforcement_home.py --json
+
+      - name: Run SVP implementation review
+        run: >-
+          python scripts/governance/svp_docs_review.py
+          --mode audit
+          --phase pre
+          --base-ref origin/main
+          --implementation-change
+          --output-dir artifacts/codex/svp_docs/ci
+          --json
+
+      - name: Run architecture conformance proof
+        run: python ops_scripts/ci/run_architecture_proof.py --suite S1
