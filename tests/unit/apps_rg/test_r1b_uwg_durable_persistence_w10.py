@@ -46,11 +46,12 @@ def _record() -> HistoricalIntentRecord:
         )
         data["record_id"] = "hir_w10_001"
         data["source_run_id"] = "run_w10"
+        data["normalized_intent_digest"] = "1" * 64
         return HistoricalIntentRecord.from_dict(data)
     return HistoricalIntentRecord.from_dict(
         {
             "record_id": "hir_w10_001",
-            "normalized_intent_digest": "digest_w10",
+            "normalized_intent_digest": "1" * 64,
             "request_intent_text": "apps_rg|role_target_run|acme|vp",
             "request_intent_vector_ref": "vectors/hir_w10_001.json",
             "target_company": "Acme",
