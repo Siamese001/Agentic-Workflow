@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install test dependencies
-        run: python -m pip install -q --upgrade pip pytest pyyaml
+        run: python -m pip install -q --upgrade pip pytest pyyaml redis
       - name: Run focused prompt-cache contracts
         id: focused
         continue-on-error: true
