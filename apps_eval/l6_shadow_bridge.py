@@ -1,7 +1,9 @@
 """apps_eval bridge into core L6 shadow observability.
 
-apps_eval is a proof harness. This bridge emits completed-eval evidence for L6
-observation only; it never requests current-run mutation or durable writes.
+apps_eval is a proof harness.  Rows projected into L6 observations inside this
+module are explicitly labelled projection consistency, not independent
+apps_eval-bound proof.  Independent bound proof is emitted only by the
+post-boundary binder over persisted apps_rg L6 observations.
 """
 
 from __future__ import annotations
@@ -12,11 +14,12 @@ from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Mapping
 
+from agentic_core.L2_execution.utils import write_gateway as _wg
 from agentic_core.L6_observability.shadow_eval.grain_parity import (
     build_l6_apps_eval_grain_parity,
 )
 from agentic_core.L6_observability.shadow_eval.microsteps import (
-    EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF,
+    EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
     build_apps_eval_alignment,
     build_future_run_proposals,
     build_microstep_coverage,
@@ -30,7 +33,6 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_observer,
 )
 from agentic_core.L6_observability.shadow_eval.span_export import write_span_artifacts
-from agentic_core.L2_execution.utils import write_gateway as _wg
 from apps_eval.contracts import CURRENT_EVAL_RECORD_SCHEMA_VERSION, CompletedEvalRecord
 
 L6_SHADOW_BRIDGE_ARTIFACT = "l6_shadow_bridge.json"
@@ -89,19 +91,47 @@ def _trace_reconciliation_refs(record: CompletedEvalRecord) -> list[str]:
             continue
         if str(row.get("artifact_role") or "") != "trace_reconciliation":
             continue
-        ref = str(row.get("artifact_ref") or "").strip()
+        ref = str(row.get("artifact_ref") or "").strip().replace("\\", "/")
         if ref and ref not in refs:
-            refs.append(ref.replace("\\", "/"))
+            refs.append(ref)
     return refs
 
 
-def _trace_observability_summary_refs(record: CompletedEvalRecord) -> list[str]:
+def _resolve_ref(ref: str, *, record_ref: str) -> Path | None:
+    path = Path(ref)
+    candidates = [path] if path.is_absolute() else [Path(record_ref).parent / path, Path.cwd() / path]
+    return next((candidate.resolve() for candidate in candidates if candidate.is_file()), None)
+
+
+def _trace_observability_summary_refs(
+    record: CompletedEvalRecord,
+    *,
+    eval_record_path: str,
+) -> list[str]:
+    """Return only existing, schema-valid summaries; never trust filename inference alone."""
+
     refs: list[str] = []
-    for ref in _trace_reconciliation_refs(record):
-        if ref.endswith("trace_reconciliation.json"):
-            summary_ref = ref[: -len("trace_reconciliation.json")] + "l6_trace_observability_summary.json"
-            if summary_ref not in refs:
-                refs.append(summary_ref)
+    for reconciliation_ref in _trace_reconciliation_refs(record):
+        if not reconciliation_ref.endswith("trace_reconciliation.json"):
+            continue
+        candidate_ref = (
+            reconciliation_ref[: -len("trace_reconciliation.json")]
+            + "l6_trace_observability_summary.json"
+        )
+        candidate = _resolve_ref(candidate_ref, record_ref=eval_record_path)
+        if candidate is None:
+            continue
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError, TypeError):
+            continue
+        if not isinstance(payload, Mapping):
+            continue
+        if str(payload.get("schema_version") or "") != "apps_rg.l6_trace_observability_summary.v1":
+            continue
+        normalized = candidate.as_posix()
+        if normalized not in refs:
+            refs.append(normalized)
     return refs
 
 
@@ -123,52 +153,90 @@ def _emit_record_microstep_artifacts(
     if record.app_id != "apps_rg":
         return {}
     scorecard_rows = [
-        row
+        dict(row)
         for row in list(record.scorecard.scorecard_rows or [])
         if isinstance(row, Mapping) and row.get("required", True)
     ]
     if not scorecard_rows:
         return {}
+
     observations = build_observations_from_eval_rows(
         scorecard_rows,
         runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
     )
     observation_dicts = [observation.to_dict() for observation in observations]
-    observation_path = _write_jsonl_artifact(run_dir / L6_MICROSTEP_OBSERVATIONS_ARTIFACT, observation_dicts)
-    coverage_path = _write_json_artifact(run_dir / L6_MICROSTEP_COVERAGE_ARTIFACT, build_microstep_coverage(observation_dicts))
-    rca_path = _write_json_artifact(run_dir / L6_MICROSTEP_RCA_ARTIFACT, build_microstep_rca(observation_dicts))
-    patterns_path = _write_json_artifact(run_dir / L6_MICROSTEP_PATTERNS_ARTIFACT, build_microstep_patterns(observation_dicts))
+    observation_path = _write_jsonl_artifact(
+        run_dir / L6_MICROSTEP_OBSERVATIONS_ARTIFACT,
+        observation_dicts,
+    )
+    coverage_path = _write_json_artifact(
+        run_dir / L6_MICROSTEP_COVERAGE_ARTIFACT,
+        build_microstep_coverage(observation_dicts),
+    )
+    rca_path = _write_json_artifact(
+        run_dir / L6_MICROSTEP_RCA_ARTIFACT,
+        build_microstep_rca(observation_dicts),
+    )
+    patterns_path = _write_json_artifact(
+        run_dir / L6_MICROSTEP_PATTERNS_ARTIFACT,
+        build_microstep_patterns(observation_dicts),
+    )
     proposals_path = _write_json_artifact(
         run_dir / L6_MICROSTEP_FUTURE_RUN_PROPOSALS_ARTIFACT,
         build_future_run_proposals(observation_dicts),
     )
-    scorecard_ref = str(record.artifact_paths.get("scorecard_rows") or (run_dir / "scorecard_rows.jsonl")).replace("\\", "/")
+    scorecard_ref = str(
+        record.artifact_paths.get("scorecard_rows") or (run_dir / "scorecard_rows.jsonl")
+    ).replace("\\", "/")
+    contract_digest = str(record.record_seed.get("apps_rg_microstep_contract_digest") or "")
+
+    alignment = build_apps_eval_alignment(
+        run_id=record.record_id,
+        runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+        microstep_contract_digest=contract_digest,
+        apps_eval_scorecard_ref=scorecard_ref,
+        l6_observation_ref=observation_path.as_posix(),
+        apps_eval_rows=scorecard_rows,
+        l6_observations=observation_dicts,
+        alignment_source="contract_only_pseudo_rows",
+        apps_eval_rows_bound=False,
+    )
+    alignment.update(
+        {
+            "projection_consistency_only": True,
+            "projection_source": "apps_eval_scorecard_rows",
+            "independent_observation_required_for_bound_proof": True,
+            "evidence_class": EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
+        }
+    )
     alignment_path = _write_json_artifact(
         run_dir / L6_APPS_EVAL_ALIGNMENT_ARTIFACT,
-        build_apps_eval_alignment(
-            run_id=record.record_id,
-            runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
-            microstep_contract_digest=str(record.record_seed.get("apps_rg_microstep_contract_digest") or ""),
-            apps_eval_scorecard_ref=scorecard_ref,
-            l6_observation_ref=observation_path.as_posix(),
-            apps_eval_rows=scorecard_rows,
-            l6_observations=observation_dicts,
-            alignment_source="apps_eval_scorecard_rows",
-            apps_eval_rows_bound=True,
-        ),
+        alignment,
+    )
+
+    parity = build_l6_apps_eval_grain_parity(
+        run_id=record.record_id,
+        runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
+        microstep_contract_digest=contract_digest,
+        apps_eval_scorecard_ref=scorecard_ref,
+        l6_observation_ref=observation_path.as_posix(),
+        apps_eval_rows=scorecard_rows,
+        l6_observations=observation_dicts,
+        alignment_source="contract_only_pseudo_rows",
+    )
+    parity.update(
+        {
+            "projection_consistency_only": True,
+            "projection_source": "apps_eval_scorecard_rows",
+            "independent_observations": False,
+            "apps_eval_rows_bound": False,
+            "grain_parity_status": "WARN",
+            "evidence_class": EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
+        }
     )
     parity_path = _write_json_artifact(
         run_dir / L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT,
-        build_l6_apps_eval_grain_parity(
-            run_id=record.record_id,
-            runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
-            microstep_contract_digest=str(record.record_seed.get("apps_rg_microstep_contract_digest") or ""),
-            apps_eval_scorecard_ref=scorecard_ref,
-            l6_observation_ref=observation_path.as_posix(),
-            apps_eval_rows=scorecard_rows,
-            l6_observations=observation_dicts,
-            alignment_source="apps_eval_scorecard_rows",
-        ),
+        parity,
     )
     return {
         "l6_microstep_observations": observation_path.as_posix(),
@@ -187,16 +255,84 @@ def build_completed_eval_shadow_exhaust(
     eval_record_path: str,
     l6_handoff_path: str = "",
 ) -> dict[str, object]:
-    """Build a v40-like completed-run exhaust payload for an apps_eval record."""
+    """Build completed-eval exhaust without inventing trusted trace sidecars."""
+
     scorecard = record.scorecard.to_dict()
     record_ref = eval_record_path.replace("\\", "/")
     handoff_ref = l6_handoff_path.replace("\\", "/") if l6_handoff_path else ""
-    trace_reconciliation_refs = _trace_reconciliation_refs(record)
-    trace_summary_refs = _trace_observability_summary_refs(record)
+    trace_refs = _trace_reconciliation_refs(record)
+    trace_summary_refs = _trace_observability_summary_refs(
+        record,
+        eval_record_path=eval_record_path,
+    )
     diagnostic_refs = _diagnostic_refs(record)
     outcome_class = "normal_success" if record.scorecard.verdict == "pass" else "policy_failure"
     trace_root = f"trace:apps_eval:{record.record_id}"
-    policy_hash = _hash_ref(record.rubric_ids)
+    generated = [record_ref] + ([handoff_ref] if handoff_ref else []) + trace_refs + trace_summary_refs
+    generated += list(diagnostic_refs.values())
+
+    source_exhaust: list[dict[str, object]] = [
+        {
+            "source_type": "apps_eval_completed_eval_record",
+            "source_ref": record_ref,
+            "source_hash": _hash_ref(record.to_dict()),
+            "source_schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
+            "observed_stage": "EXIT",
+            "expected_stage_order": 7,
+            "lineage_parent_refs": [trace_root],
+            "completeness_status": "COMPLETE",
+            "trust_status": "TRUSTED",
+        }
+    ]
+    source_exhaust.extend(
+        {
+            "source_type": "apps_rg_trace_reconciliation",
+            "source_ref": ref,
+            "source_hash": _hash_ref({"trace_reconciliation_ref": ref}),
+            "source_schema_version": "apps_rg.trace_reconciliation.v1",
+            "observed_stage": "L6",
+            "expected_stage_order": 11,
+            "lineage_parent_refs": [trace_root, record_ref],
+            "completeness_status": "COMPLETE",
+            "trust_status": "TRUSTED",
+        }
+        for ref in trace_refs
+    )
+    source_exhaust.extend(
+        {
+            "source_type": "apps_rg_l6_trace_observability_summary",
+            "source_ref": ref,
+            "source_hash": _hash_ref(Path(ref).read_text(encoding="utf-8")),
+            "source_schema_version": "apps_rg.l6_trace_observability_summary.v1",
+            "observed_stage": "L6",
+            "expected_stage_order": 11,
+            "lineage_parent_refs": [trace_root, record_ref],
+            "completeness_status": "COMPLETE",
+            "trust_status": "TRUSTED",
+        }
+        for ref in trace_summary_refs
+    )
+    source_exhaust.extend(
+        {
+            "source_type": f"apps_eval_{key}",
+            "source_ref": ref,
+            "source_hash": _hash_ref({"diagnostic_ref": ref, "diagnostic_role": key}),
+            "source_schema_version": (
+                "apps_eval.diagnostic_observation.v1"
+                if key == "diagnostic_rows"
+                else "apps_eval.diagnostic_summary.v1"
+            ),
+            "observed_stage": "L6",
+            "expected_stage_order": 11,
+            "lineage_parent_refs": [trace_root, record_ref],
+            "completeness_status": "COMPLETE",
+            "trust_status": "TRUSTED",
+        }
+        for key, ref in diagnostic_refs.items()
+    )
+
+    file_hashes = {record_ref: _hash_ref(record.to_dict())}
+    file_hashes.update({ref: _hash_ref({"ref": ref}) for ref in generated if ref != record_ref})
     return {
         "runtime_boundary_crossed": True,
         "completed_at": record.created_at,
@@ -211,7 +347,7 @@ def build_completed_eval_shadow_exhaust(
         "execution_form": "apps_eval_completed_eval_record",
         "terminal_class": outcome_class,
         "outcome_class": outcome_class,
-        "policy_hash": policy_hash,
+        "policy_hash": _hash_ref(record.rubric_ids),
         "blueprint_hash": _hash_ref({"suite_id": record.suite_id, "app_id": record.app_id}),
         "replay_key": f"apps_eval:deterministic:{record.record_id}",
         "route_contract_ref": record.suite_id,
@@ -221,61 +357,7 @@ def build_completed_eval_shadow_exhaust(
         "l2_artifact_refs": [record_ref],
         "source_lineage_manifest_ref": record_ref,
         "l5_certification_ref": f"l5-cert-ref:apps_eval:{record.record_id}",
-        "source_exhaust": [
-            {
-                "source_type": "apps_eval_completed_eval_record",
-                "source_ref": record_ref,
-                "source_hash": _hash_ref(record.to_dict()),
-                "source_schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
-                "observed_stage": "EXIT",
-                "expected_stage_order": 7,
-                "lineage_parent_refs": [trace_root],
-                "completeness_status": "COMPLETE",
-                "trust_status": "TRUSTED",
-            }
-        ]
-        + [
-            {
-                "source_type": "apps_rg_trace_reconciliation",
-                "source_ref": ref,
-                "source_hash": _hash_ref({"trace_reconciliation_ref": ref}),
-                "source_schema_version": "apps_rg.trace_reconciliation.v1",
-                "observed_stage": "L6",
-                "expected_stage_order": 11,
-                "lineage_parent_refs": [trace_root, record_ref],
-                "completeness_status": "COMPLETE",
-                "trust_status": "TRUSTED",
-            }
-            for ref in trace_reconciliation_refs
-        ]
-        + [
-            {
-                "source_type": "apps_rg_l6_trace_observability_summary",
-                "source_ref": ref,
-                "source_hash": _hash_ref({"l6_trace_observability_summary_ref": ref}),
-                "source_schema_version": "apps_rg.l6_trace_observability_summary.v1",
-                "observed_stage": "L6",
-                "expected_stage_order": 11,
-                "lineage_parent_refs": [trace_root, record_ref],
-                "completeness_status": "COMPLETE",
-                "trust_status": "TRUSTED",
-            }
-            for ref in trace_summary_refs
-        ]
-        + [
-            {
-                "source_type": f"apps_eval_{key}",
-                "source_ref": ref,
-                "source_hash": _hash_ref({"diagnostic_ref": ref, "diagnostic_role": key}),
-                "source_schema_version": "apps_eval.diagnostic_observation.v1" if key == "diagnostic_rows" else "apps_eval.diagnostic_summary.v1",
-                "observed_stage": "L6",
-                "expected_stage_order": 11,
-                "lineage_parent_refs": [trace_root, record_ref],
-                "completeness_status": "COMPLETE",
-                "trust_status": "TRUSTED",
-            }
-            for key, ref in diagnostic_refs.items()
-        ],
+        "source_exhaust": source_exhaust,
         "events": [
             {
                 "event_type": "apps_eval.scorecard",
@@ -293,23 +375,10 @@ def build_completed_eval_shadow_exhaust(
             }
         ],
         "artifacts": {
-            "generated": [record_ref]
-            + ([handoff_ref] if handoff_ref else [])
-            + trace_reconciliation_refs
-            + trace_summary_refs
-            + list(diagnostic_refs.values()),
+            "generated": generated,
             "sealed": [record_ref],
-            "file_hashes": {
-                record_ref: _hash_ref(record.to_dict()),
-                **{ref: _hash_ref({"diagnostic_ref": ref}) for ref in diagnostic_refs.values()},
-                **{ref: _hash_ref({"l6_trace_observability_summary_ref": ref}) for ref in trace_summary_refs},
-            },
-            "artifact_lineage": {
-                record_ref: [trace_root],
-                **{ref: [trace_root, record_ref] for ref in trace_reconciliation_refs},
-                **{ref: [trace_root, record_ref] for ref in trace_summary_refs},
-                **{ref: [trace_root, record_ref] for ref in diagnostic_refs.values()},
-            },
+            "file_hashes": file_hashes,
+            "artifact_lineage": {ref: [trace_root, record_ref] for ref in generated},
             "missing": [],
             "orphans": [],
         },
@@ -323,7 +392,6 @@ def emit_completed_eval_l6_shadow_bridge(
     eval_record_path: str,
     l6_handoff_path: str = "",
 ) -> dict[str, str]:
-    """Run 6A + observer readiness for a completed apps_eval record."""
     raw_exhaust = build_completed_eval_shadow_exhaust(
         record,
         eval_record_path=eval_record_path,
@@ -347,7 +415,7 @@ def emit_completed_eval_l6_shadow_bridge(
         runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
     )
     bridge = {
-        "schema_version": "apps_eval.l6_shadow_bridge.v1",
+        "schema_version": "apps_eval.l6_shadow_bridge.v2",
         "record_id": record.record_id,
         "suite_id": record.suite_id,
         "app_id": record.app_id,
@@ -359,9 +427,14 @@ def emit_completed_eval_l6_shadow_bridge(
         "span_export_ref": span_paths["span_export_json"].as_posix(),
         "span_export_jsonl_ref": span_paths["span_export_jsonl"].as_posix(),
         "l6_microstep_artifact_refs": dict(microstep_paths),
-        "evidence_class": EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF if microstep_paths else "",
+        "evidence_class": EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY if microstep_paths else "",
+        "projection_consistency_only": bool(microstep_paths),
+        "independent_observation_required_for_bound_proof": True,
         "trace_reconciliation_refs": _trace_reconciliation_refs(record),
-        "trace_observability_summary_refs": _trace_observability_summary_refs(record),
+        "trace_observability_summary_refs": _trace_observability_summary_refs(
+            record,
+            eval_record_path=eval_record_path,
+        ),
         "diagnostic_artifact_refs": _diagnostic_refs(record),
         "requested_action": "consume_completed_eval_record_only",
         "current_run_mutated": False,
@@ -378,31 +451,12 @@ def emit_completed_eval_l6_shadow_bridge(
     }
 
 
-def emit_driver_l6_shadow_bridge(
-    run_dir: Path,
-    *,
-    eval_id: str | None,
-    app_scorecards: list[Mapping[str, Any]],
-    output_refs: Mapping[str, str],
-) -> dict[str, str]:
-    """Write a lightweight downstream L6 bridge for trend/gate outputs."""
-    run_dir.mkdir(parents=True, exist_ok=True)
-    bridge = build_driver_l6_shadow_bridge_payload(
-        eval_id=eval_id,
-        app_scorecards=app_scorecards,
-        output_refs=output_refs,
-    )
-    bridge_path = _write_json_artifact(run_dir / L6_SHADOW_BRIDGE_ARTIFACT, bridge)
-    return {"l6_shadow_bridge": bridge_path.as_posix()}
-
-
 def build_driver_l6_shadow_bridge_payload(
     *,
     eval_id: str | None,
     app_scorecards: list[Mapping[str, Any]],
     output_refs: Mapping[str, str],
 ) -> dict[str, Any]:
-    """Build a lightweight bridge payload for apps_shared proof drivers."""
     return {
         "schema_version": "apps_eval.driver_l6_shadow_bridge.v1",
         "eval_id": eval_id,
@@ -418,12 +472,29 @@ def build_driver_l6_shadow_bridge_payload(
     }
 
 
+def emit_driver_l6_shadow_bridge(
+    run_dir: Path,
+    *,
+    eval_id: str | None,
+    app_scorecards: list[Mapping[str, Any]],
+    output_refs: Mapping[str, str],
+) -> dict[str, str]:
+    run_dir.mkdir(parents=True, exist_ok=True)
+    bridge = build_driver_l6_shadow_bridge_payload(
+        eval_id=eval_id,
+        app_scorecards=app_scorecards,
+        output_refs=output_refs,
+    )
+    bridge_path = _write_json_artifact(run_dir / L6_SHADOW_BRIDGE_ARTIFACT, bridge)
+    return {"l6_shadow_bridge": bridge_path.as_posix()}
+
+
 __all__ = [
     "L6_SHADOW_BRIDGE_ARTIFACT",
     "L6_SHADOW_BRIDGE_SPANS_ARTIFACT",
     "L6_SHADOW_BRIDGE_SPANS_JSONL_ARTIFACT",
     "build_completed_eval_shadow_exhaust",
     "build_driver_l6_shadow_bridge_payload",
-    "emit_driver_l6_shadow_bridge",
     "emit_completed_eval_l6_shadow_bridge",
+    "emit_driver_l6_shadow_bridge",
 ]
