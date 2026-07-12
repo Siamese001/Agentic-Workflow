@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import networkx as nx
+from tools.generate.materialized_views.phase_g_repo_health import materialize_phase_g
 from tools.generate.sqlite_hardening import seal_sqlite_path
 
 from .projection import GraphProjector
@@ -94,9 +95,16 @@ def project_graph(
     Returns:
         Tuple of (graph, metadata)
     """
-    # P6b is the first hard pipeline boundary after optional three-bucket
-    # enrichment and the final authority backfill. Seal late WAL frames before
-    # any projection, gate, or packaging consumer reads the canonical artifact.
+    # P6b runs after optional three-bucket enrichment and the final authority
+    # backfill. Refresh the lightweight Phase G roll-up against those final
+    # nodes/edges, then seal every late WAL frame before gates or packaging read
+    # the canonical artifact. The earlier A-F materialization remains untouched.
+    health_counts = materialize_phase_g(sqlite_path)
+    print(
+        "[GraphDB] Phase G repo health refreshed: "
+        f"signals={health_counts.get('mv_repo_health_signals', 0)} "
+        f"hotspots={health_counts.get('mv_repo_health_hotspots', 0)}"
+    )
     seal = seal_sqlite_path(sqlite_path)
     print(
         "[GraphDB] Canonical SQLite sealed: "
