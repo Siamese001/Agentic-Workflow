@@ -420,7 +420,7 @@ class TestRedisAvailabilityRefresh:
 class TestViewsMaterializedAt:
     """Regression f7ece2e937: health surfaces views_materialized_at from P-view presence."""
 
-    def test_get_views_materialized_at_returns_snapshot_stem_when_views_exist(self, tmp_path: Path) -> None:
+    def test_any_single_view_no_longer_satisfies_materialization(self, tmp_path: Path) -> None:
         db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
         conn = sqlite3.connect(str(db_path))
         conn.execute("CREATE VIEW mv_test_probe AS SELECT 1 AS ok")
@@ -432,7 +432,36 @@ class TestViewsMaterializedAt:
         backend._lifecycle_lock = threading.RLock()
         backend._conn = conn
         backend._sqlite_path = db_path
-        assert backend.get_views_materialized_at() == "20260611_120000"
+        assert backend.get_views_materialized_at() is None
+        assert backend.get_materialization_status()["status"] == "FAIL"
+
+    def test_complete_materialization_families_return_snapshot_stem(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
+        conn = sqlite3.connect(str(db_path))
+        for index in range(30):
+            conn.execute(
+                f"CREATE TABLE mv_contract_{index} (id INTEGER)"
+            )
+        for index in range(3):
+            conn.execute(
+                f"CREATE VIEW v_p0_contract_{index} AS SELECT 1 AS ok"
+            )
+        conn.execute("CREATE TABLE infrastructure_wiring (id INTEGER)")
+        conn.commit()
+
+        from tools.adg.core.sqlite_backend import SQLiteBackend
+
+        backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._lifecycle_lock = threading.RLock()
+        backend._conn = conn
+        backend._sqlite_path = db_path
+        assert (
+            backend.get_views_materialized_at()
+            == "20260611_120000"
+        )
 
     def test_get_views_materialized_at_none_without_views(self, tmp_path: Path) -> None:
         db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
