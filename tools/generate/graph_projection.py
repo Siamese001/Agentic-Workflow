@@ -51,30 +51,52 @@ from tqdm import tqdm
 
 
 def _connect_sqlite(path: Path, timeout: int = 10, *, uri: bool = False) -> sqlite3.Connection:
-    return sqlite3.connect(str(path), timeout=timeout, uri=uri)
+    """Open SQLite with referential-integrity enforcement enabled."""
+    conn = sqlite3.connect(str(path), timeout=timeout, uri=uri)
+    conn.execute("PRAGMA foreign_keys=ON")
+    return conn
 
 
-_PROJECTION_SCHEMA_VERSION = "1.1"
+_PROJECTION_SCHEMA_VERSION = "1.2"
+_LAYER_WEIGHT_VERSION = "blast-radius-v1-normalized"
 
 _REACHABILITY_SEED_THRESHOLD = 10
 _REACHABILITY_MAX_HOPS = 4
-_REACHABILITY_PER_SEED_LIMIT = 2000  # hard cap: rows stored per seed node
+_REACHABILITY_PER_SEED_LIMIT = 2000
 _BETWEENNESS_K_SAMPLE = 200
-# proj_diff: only store changed rows (direction != 'unchanged'). Unchanged rows
-# are 58.7% of the table on real artifacts and are never returned by any query.
 _DIFF_STORE_UNCHANGED = False
+
+# Normalized from agentic_core.adg.applications.blast_radius while preserving
+# the established L0=2.0 scale.
 _LAYER_CRITICALITY_WEIGHTS: dict[str, float] = {
     "L0": 2.0,
-    "L1": 2.0,
-    "L2": 2.0,
-    "L3": 2.0,
-    "L4": 2.0,
-    "L5": 2.0,
-    "L6": 2.0,
-    "L_APP": 2.0,
-    "L_SHARED": 2.0,
-    "L_RUNTIME": 2.0,
+    "L1": 1.6,
+    "L2": 1.8,
+    "L3": 1.4,
+    "L4": 1.2,
+    "L5": 1.7,
+    "L6": 1.0,
+    "L_APP": 0.8,
+    "L_SL": 0.9,
+    "L_SHARED": 0.9,
+    "L_RUNTIME": 1.0,
+    "L_TOOLS": 0.6,
+    "L_OPS": 0.4,
+    "L_UNKNOWN": 0.2,
 }
+
+
+def _layer_criticality_weight(layer: str) -> float:
+    """Return the versioned, normalized criticality weight for a layer."""
+    if layer in _LAYER_CRITICALITY_WEIGHTS:
+        return _LAYER_CRITICALITY_WEIGHTS[layer]
+    short = layer.split("_", 1)[0]
+    return _LAYER_CRITICALITY_WEIGHTS.get(
+        short,
+        _LAYER_CRITICALITY_WEIGHTS["L_UNKNOWN"],
+    )
+
+
 # Relation types encoded in the ADG canonical artifact.
 # The ADG uses a bipartite module↔symbol graph: imports go module→symbol (not
 # module→module). The graph loaded here includes both module and symbol nodes
@@ -141,8 +163,10 @@ CREATE INDEX IF NOT EXISTS idx_proj_scc_id ON proj_scc(scc_id);
 CREATE INDEX IF NOT EXISTS idx_proj_scc_risk ON proj_scc(scc_risk_score DESC);
 
 CREATE TABLE IF NOT EXISTS proj_violations (
-    adg_name_from        TEXT NOT NULL,
-    adg_name_to          TEXT NOT NULL,
+    violation_id         INTEGER PRIMARY KEY,
+    edge_id              INTEGER NOT NULL,
+    adg_name_from        TEXT NOT NULL REFERENCES proj_nodes(adg_name),
+    adg_name_to          TEXT NOT NULL REFERENCES proj_nodes(adg_name),
     relation_type        TEXT NOT NULL,
     edge_kind            TEXT NOT NULL,
     source_file          TEXT NOT NULL DEFAULT '',
@@ -152,17 +176,17 @@ CREATE TABLE IF NOT EXISTS proj_violations (
     disposition          TEXT NOT NULL DEFAULT 'untriaged',
     category             TEXT NOT NULL DEFAULT '',
     blast_radius_direct  INTEGER NOT NULL DEFAULT 0,
-    snapshot_id          TEXT NOT NULL DEFAULT '',
-    PRIMARY KEY (adg_name_from, adg_name_to, relation_type, source_file, line_no)
+    snapshot_id          TEXT NOT NULL DEFAULT ''
 );
+CREATE INDEX IF NOT EXISTS idx_proj_viol_edge ON proj_violations(edge_id);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_from ON proj_violations(adg_name_from);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_sev ON proj_violations(severity);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_disp ON proj_violations(disposition);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_blast ON proj_violations(blast_radius_direct DESC);
 
 CREATE TABLE IF NOT EXISTS proj_reachability (
-    src_adg_name  TEXT NOT NULL,
-    dst_adg_name  TEXT NOT NULL,
+    src_adg_name  TEXT NOT NULL REFERENCES proj_nodes(adg_name),
+    dst_adg_name  TEXT NOT NULL REFERENCES proj_nodes(adg_name),
     hop_count     INTEGER NOT NULL,
     path_weight   REAL NOT NULL DEFAULT 1.0,
     snapshot_id   TEXT NOT NULL DEFAULT '',
@@ -203,22 +227,8 @@ def build_graph_projection(
     out_dir: Path,
     ts: str,
 ) -> Path:
-    """Build `adg_graph_<ts>.sqlite` from the canonical `adg_indexed_<ts>.sqlite`.
-
-    Args:
-        canonical_sqlite: Path to the canonical ADG SQLite artifact.
-        out_dir:          Directory to write the derived projection file.
-        ts:               Timestamp string (MMDDYYYY format, must match canonical stem).
-
-    Returns:
-        Path to the written projection sqlite file.
-
-    Raises:
-        ImportError:      If networkx is not installed.
-        FileNotFoundError: If canonical_sqlite does not exist.
-        RuntimeError:     If the canonical sqlite is missing expected tables.
-    """
-    import networkx as nx  # lazy — ImportError surfaces clearly to caller
+    """Build a deterministic graph projection from canonical ADG SQLite."""
+    import networkx as nx
     import time as _time
 
     if not canonical_sqlite.exists():
@@ -227,33 +237,78 @@ def build_graph_projection(
     out_dir.mkdir(parents=True, exist_ok=True)
     proj_path = out_dir / f"adg_graph_{ts}.sqlite"
     tmp_path = out_dir / f"adg_graph_{ts}.sqlite.tmp"
-
     if tmp_path.exists():
         tmp_path.unlink()
 
     print(f"[graph_projection] Canonical : {canonical_sqlite.name}")
     print(f"[graph_projection] Output    : {proj_path.name}")
-
     build_start = _time.perf_counter()
 
     graph, node_attrs = _load_graph(canonical_sqlite, nx)
+    module_names = frozenset(
+        name
+        for name, attrs in node_attrs.items()
+        if attrs["entity_type"] == "module"
+    )
 
-    print(f"[graph_projection] Graph     : {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
+    # Lossless topology retains parallel occurrences. Path algorithms consume
+    # an explicit directed endpoint-presence aggregation.
+    analysis_graph = nx.DiGraph()
+    analysis_graph.add_nodes_from(sorted(graph.nodes()))
+    analysis_graph.add_edges_from(
+        (src, dst)
+        for src, dst, _edge_id in graph.edges(keys=True)
+    )
 
-    centrality = _compute_centrality(graph, node_attrs, nx)
-    sccs = _compute_scc(graph, nx)
-    reachability = _compute_reachability(graph, centrality)
-    diff_rows = _compute_diff(centrality, out_dir)
+    print(
+        f"[graph_projection] Graph     : {graph.number_of_nodes()} nodes, "
+        f"{graph.number_of_edges()} edge occurrences"
+    )
+
+    centrality = _compute_centrality(
+        graph,
+        analysis_graph,
+        node_attrs,
+        module_names,
+        nx,
+    )
+    sccs = _compute_scc(analysis_graph, module_names, nx)
+    reachability = _compute_reachability(analysis_graph, centrality)
+    current_snapshot_id = _read_canonical_artifact_digest(canonical_sqlite)
+    diff_rows = _compute_diff(
+        centrality,
+        out_dir,
+        current_snapshot_id=current_snapshot_id,
+    )
 
     build_duration_s = round(_time.perf_counter() - build_start, 2)
-
-    # Collect build-quality metadata for proj_meta
     seed_count = len({row[0] for row in reachability})
-    changed_diff_count = sum(1 for r in diff_rows if r[6] != "unchanged")
+    changed_diff_count = sum(1 for row in diff_rows if row[6] != "unchanged")
     build_meta = {
+        "projection_name": "dependency-evidence-v1",
         "build_duration_s": str(build_duration_s),
+        "canonical_node_count": str(graph.graph["canonical_node_count"]),
+        "canonical_edge_count": str(graph.graph["canonical_edge_count"]),
         "graph_node_count": str(graph.number_of_nodes()),
         "graph_edge_count": str(graph.number_of_edges()),
+        "algorithm_module_node_count": str(len(module_names)),
+        "algorithm_unique_directed_pair_count": str(analysis_graph.number_of_edges()),
+        "parallel_edge_occurrence_count": str(
+            graph.number_of_edges() - analysis_graph.number_of_edges()
+        ),
+        "excluded_edge_count": str(graph.graph["excluded_edge_count"]),
+        "excluded_edge_relation_counts": json.dumps(
+            graph.graph["excluded_edge_relation_counts"],
+            sort_keys=True,
+            separators=(",", ":"),
+        ),
+        "included_relation_types": json.dumps(
+            sorted(_GRAPH_EDGE_RELATION_TYPES),
+            separators=(",", ":"),
+        ),
+        "layer_weight_version": _LAYER_WEIGHT_VERSION,
+        "scc_exact": "true",
+        "betweenness_exact": "false",
         "reachability_seed_count": str(seed_count),
         "reachability_row_count": str(len(reachability)),
         "reachability_per_seed_cap": str(_REACHABILITY_PER_SEED_LIMIT),
@@ -275,9 +330,8 @@ def build_graph_projection(
         build_meta=build_meta,
     )
 
-    tmp_path.replace(proj_path)  # replace() is atomic on POSIX; on Windows it overwrites atomically
+    tmp_path.replace(proj_path)
     gc.collect()
-
     print(f"[graph_projection] Written   : {proj_path}")
     return proj_path
 
@@ -291,79 +345,106 @@ def _load_graph(
     canonical_sqlite: Path,
     nx: Any,
 ) -> tuple[Any, dict[str, dict]]:
-    """Load canonical nodes and edges into a networkx DiGraph.
+    """Load canonical nodes and selected edges into a lossless MultiDiGraph.
 
-    Reads only `nodes`, `edges`, and `meta` from the canonical sqlite.
-    Never reads `mv_*` tables — projection must be rebuildable from any
-    canonical sqlite regardless of whether Phase A-E views have been run.
-
-    Graph topology note
-    -------------------
-    The ADG uses a bipartite graph: `imports` edges go module→symbol, not
-    module→module. `proj_nodes` (the projection index) stores only module nodes,
-    but the DiGraph built here includes both module and symbol nodes so that
-    fan-in/fan-out, betweenness, and BFS reachability reflect the real ADG
-    topology. Centrality metrics stored in `proj_centrality` are for module
-    nodes only — symbol nodes are dropped before writing.
-
-    Returns:
-        (DiGraph, node_attrs) where node_attrs maps adg_name → attribute dict
-        for **module** nodes only (entity_type, layer, resolved_path,
-        precision_type). The returned DiGraph may contain additional symbol
-        nodes as graph intermediaries.
+    All canonical nodes are indexed so FK-backed violation evidence remains
+    lossless. Algorithm output tables are restricted to module nodes.
     """
     conn = _connect_sqlite(canonical_sqlite, timeout=10)
     conn.row_factory = sqlite3.Row
+    try:
+        _verify_canonical_tables(conn)
 
-    _verify_canonical_tables(conn)
+        node_attrs: dict[str, dict] = {}
+        node_rows = conn.execute(
+            "SELECT adg_name, entity_type, layer, resolved_path, precision_type "
+            "FROM nodes ORDER BY adg_name"
+        ).fetchall()
+        for row in node_rows:
+            node_attrs[row["adg_name"]] = {
+                "entity_type": row["entity_type"],
+                "layer": row["layer"] or "",
+                "resolved_path": row["resolved_path"] or "",
+                "precision_type": row["precision_type"] or "symbol",
+            }
 
-    # node_attrs: module nodes only — these become proj_nodes rows
-    node_attrs: dict[str, dict] = {}
+        graph = nx.MultiDiGraph()
+        graph.add_nodes_from(sorted(node_attrs))
 
-    module_rows = conn.execute(
-        "SELECT adg_name, entity_type, layer, resolved_path, precision_type"
-        " FROM nodes WHERE entity_type = 'module'"
-    ).fetchall()
-
-    for row in module_rows:
-        node_attrs[row["adg_name"]] = {
-            "entity_type": row["entity_type"],
-            "layer": row["layer"] or "",
-            "resolved_path": row["resolved_path"] or "",
-            "precision_type": row["precision_type"] or "symbol",
+        relation_counts = {
+            row["relation_type"]: int(row["edge_count"])
+            for row in conn.execute(
+                "SELECT relation_type, COUNT(*) AS edge_count "
+                "FROM edges GROUP BY relation_type"
+            ).fetchall()
+        }
+        canonical_edge_count = sum(relation_counts.values())
+        included_count = sum(
+            relation_counts.get(relation_type, 0)
+            for relation_type in _GRAPH_EDGE_RELATION_TYPES
+        )
+        excluded_counts = {
+            relation_type: count
+            for relation_type, count in sorted(relation_counts.items())
+            if relation_type not in _GRAPH_EDGE_RELATION_TYPES
         }
 
-    # Build DiGraph with all nodes that participate in selected edge types.
-    # Module nodes seeded first; symbol/other nodes added on demand as edges load.
-    graph = nx.DiGraph()
-    for adg_name in node_attrs:
-        graph.add_node(adg_name)
+        rel_placeholders = ",".join("?" for _ in _GRAPH_EDGE_RELATION_TYPES)
+        edge_rows = conn.execute(
+            f"SELECT e.id AS edge_id, "
+            f"src.adg_name AS from_name, "
+            f"dst.adg_name AS to_name, "
+            f"e.relation_type, "
+            f"e.confidence_score "
+            f"FROM edges e "
+            f"JOIN nodes src ON e.src_id = src.id "
+            f"JOIN nodes dst ON e.dst_id = dst.id "
+            f"WHERE e.relation_type IN ({rel_placeholders}) "
+            f"ORDER BY e.id",
+            _GRAPH_EDGE_RELATION_TYPES,
+        ).fetchall()
 
-    rel_placeholders = ",".join("?" * len(_GRAPH_EDGE_RELATION_TYPES))
-    edge_rows = conn.execute(
-        f"SELECT src.adg_name AS from_name,"
-        f" dst.adg_name AS to_name,"
-        f" e.relation_type,"
-        f" e.confidence_score"
-        f" FROM edges e"
-        f" JOIN nodes src ON e.src_id = src.id"
-        f" JOIN nodes dst ON e.dst_id = dst.id"
-        f" WHERE e.relation_type IN ({rel_placeholders})",
-        _GRAPH_EDGE_RELATION_TYPES,
-    ).fetchall()
+        if len(edge_rows) != included_count:
+            raise RuntimeError(
+                "Selected projection edges failed endpoint conservation: "
+                f"eligible={included_count}, joined={len(edge_rows)}"
+            )
 
-    for row in edge_rows:
-        from_name = row["from_name"]
-        to_name = row["to_name"]
-        if from_name not in graph:
-            graph.add_node(from_name)
-        if to_name not in graph:
-            graph.add_node(to_name)
-        conf = row["confidence_score"] if row["confidence_score"] else 1.0
-        graph.add_edge(from_name, to_name, relation_type=row["relation_type"], weight=conf)
+        for row in edge_rows:
+            confidence = (
+                row["confidence_score"]
+                if row["confidence_score"] is not None
+                else 1.0
+            )
+            graph.add_edge(
+                row["from_name"],
+                row["to_name"],
+                key=row["edge_id"],
+                edge_id=row["edge_id"],
+                relation_type=row["relation_type"],
+                weight=confidence,
+            )
 
-    conn.close()
-    return graph, node_attrs
+        if graph.number_of_nodes() != len(node_attrs):
+            raise RuntimeError(
+                "Projection node conservation failed: "
+                f"canonical={len(node_attrs)}, projected={graph.number_of_nodes()}"
+            )
+        if graph.number_of_edges() != included_count:
+            raise RuntimeError(
+                "Projection edge conservation failed: "
+                f"eligible={included_count}, projected={graph.number_of_edges()}"
+            )
+        if included_count + sum(excluded_counts.values()) != canonical_edge_count:
+            raise RuntimeError("Projection relation accounting failed conservation")
+
+        graph.graph["canonical_node_count"] = len(node_attrs)
+        graph.graph["canonical_edge_count"] = canonical_edge_count
+        graph.graph["excluded_edge_count"] = sum(excluded_counts.values())
+        graph.graph["excluded_edge_relation_counts"] = excluded_counts
+        return graph, node_attrs
+    finally:
+        conn.close()
 
 
 def _verify_canonical_tables(conn: sqlite3.Connection) -> None:
@@ -380,51 +461,85 @@ def _verify_canonical_tables(conn: sqlite3.Connection) -> None:
         )
 
 
+def _read_canonical_artifact_digest(canonical_sqlite: Path) -> str:
+    """Read the immutable artifact identity required by derived projections."""
+    conn = _connect_sqlite(canonical_sqlite, timeout=10)
+    try:
+        row = conn.execute(
+            "SELECT value FROM meta WHERE key = 'artifact_digest'"
+        ).fetchone()
+    finally:
+        conn.close()
+    digest = str(row[0]) if row and row[0] else ""
+    if not digest:
+        raise RuntimeError("Canonical sqlite has no non-empty meta.artifact_digest")
+    return digest
+
+
 # ---------------------------------------------------------------------------
 # Graph algorithm helpers
 # ---------------------------------------------------------------------------
 
 
 def _compute_centrality(
-    graph: Any,
+    raw_graph: Any,
+    analysis_graph: Any,
     node_attrs: dict[str, dict],
+    module_names: frozenset[str],
     nx: Any,
 ) -> dict[str, dict]:
-    """Compute per-node centrality metrics.
-
-    Returns dict mapping adg_name → metric dict with keys:
-        fan_in, fan_out, import_fan_in, import_fan_out,
-        betweenness_approx, reverse_dep_score,
-        blast_radius_direct, blast_radius_2hop,
-        bridge_score, bridge_type
-    """
+    """Compute module-only metrics over declared lossless/aggregate graphs."""
     import random as _random
 
     _random.seed(0)
-
     result: dict[str, dict] = {}
 
     betweenness: dict[str, float] = {}
-    if graph.number_of_nodes() > 0 and graph.number_of_edges() > 0:
-        k = min(_BETWEENNESS_K_SAMPLE, graph.number_of_nodes())
-        betweenness = nx.betweenness_centrality(graph, k=k, normalized=True, seed=0)
+    if analysis_graph.number_of_nodes() > 0 and analysis_graph.number_of_edges() > 0:
+        k = min(_BETWEENNESS_K_SAMPLE, analysis_graph.number_of_nodes())
+        betweenness = nx.betweenness_centrality(
+            analysis_graph,
+            k=k,
+            normalized=True,
+            seed=0,
+        )
 
-    for adg_name in tqdm(graph.nodes(), desc="centrality", leave=False, disable=True):
-        fan_in = graph.in_degree(adg_name)
-        fan_out = graph.out_degree(adg_name)
-
+    for adg_name in tqdm(
+        sorted(module_names),
+        desc="centrality",
+        leave=False,
+        disable=True,
+    ):
+        fan_in = raw_graph.in_degree(adg_name)
+        fan_out = raw_graph.out_degree(adg_name)
         import_fan_in = sum(
-            1 for _, _, d in graph.in_edges(adg_name, data=True) if d.get("relation_type") == "imports"
+            1
+            for _, _, _, data in raw_graph.in_edges(
+                adg_name,
+                keys=True,
+                data=True,
+            )
+            if data.get("relation_type") == "imports"
         )
         import_fan_out = sum(
-            1 for _, _, d in graph.out_edges(adg_name, data=True) if d.get("relation_type") == "imports"
+            1
+            for _, _, _, data in raw_graph.out_edges(
+                adg_name,
+                keys=True,
+                data=True,
+            )
+            if data.get("relation_type") == "imports"
         )
 
         layer = node_attrs.get(adg_name, {}).get("layer", "")
-        layer_w = _LAYER_CRITICALITY_WEIGHTS.get(layer, 1.0)
+        layer_w = _layer_criticality_weight(layer)
         rev_dep_score = round(fan_in * layer_w, 4)
-
-        blast_direct = fan_in
+        blast_direct = _bfs_count(
+            analysis_graph,
+            adg_name,
+            max_hops=1,
+            count_nodes=module_names,
+        )
 
         bridge_score = 0.0
         if fan_in > 0 and fan_out > 0:
@@ -453,21 +568,31 @@ def _compute_centrality(
             "blast_radius_2hop": 0,
             "bridge_score": bridge_score,
             "bridge_type": bridge_type,
-            "_layer": layer,  # transient — used by _compute_diff, not written to proj_centrality
+            "_layer": layer,
         }
 
-    seeds = [n for n, m in result.items() if m["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD]
-
+    seeds = [
+        name
+        for name, metrics in result.items()
+        if metrics["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD
+    ]
     for seed in seeds:
-        reachable_2hop = _bfs_count(graph, seed, max_hops=2)
-        result[seed]["blast_radius_2hop"] = reachable_2hop
-
+        result[seed]["blast_radius_2hop"] = _bfs_count(
+            analysis_graph,
+            seed,
+            max_hops=2,
+            count_nodes=module_names,
+        )
     return result
 
 
-def _bfs_count(graph: Any, start: str, max_hops: int) -> int:
-    """Return count of distinct nodes reachable from `start` within `max_hops`
-    following reversed edges (i.e. nodes that depend on `start`)."""
+def _bfs_count(
+    graph: Any,
+    start: str,
+    max_hops: int,
+    count_nodes: frozenset[str],
+) -> int:
+    """Count distinct selected predecessors reachable within a bounded depth."""
     visited: set[str] = {start}
     frontier: set[str] = {start}
     for _ in range(max_hops):
@@ -480,18 +605,29 @@ def _bfs_count(graph: Any, start: str, max_hops: int) -> int:
         frontier = next_frontier
         if not frontier:
             break
-    return len(visited) - 1
+    return sum(
+        1
+        for node in visited
+        if node != start and node in count_nodes
+    )
 
 
-def _compute_scc(graph: Any, nx: Any) -> list[frozenset[str]]:
-    """Return non-trivial SCCs (size > 1) via networkx Kosaraju algorithm.
-
-    Trivial SCCs (single nodes with no self-loop) are filtered out.
-    An empty return list is architecturally positive — it means no import cycles.
-    """
+def _compute_scc(
+    graph: Any,
+    module_names: frozenset[str],
+    nx: Any,
+) -> list[frozenset[str]]:
+    """Return exact non-trivial directed SCCs projected to module members."""
     all_sccs = list(nx.strongly_connected_components(graph))
-    non_trivial = [frozenset(scc) for scc in all_sccs if len(scc) > 1]
-    print(f"[graph_projection] SCCs      : {len(all_sccs)} total, {len(non_trivial)} non-trivial")
+    non_trivial: list[frozenset[str]] = []
+    for scc in all_sccs:
+        module_members = frozenset(scc).intersection(module_names)
+        if len(module_members) > 1:
+            non_trivial.append(module_members)
+    print(
+        f"[graph_projection] SCCs      : {len(all_sccs)} total, "
+        f"{len(non_trivial)} non-trivial module SCCs"
+    )
     return non_trivial
 
 
@@ -499,16 +635,13 @@ def _compute_reachability(
     graph: Any,
     centrality: dict[str, dict],
 ) -> list[tuple[str, str, int, float]]:
-    """Pre-compute BFS reachability from high-blast-radius seed nodes.
-
-    Seeds: nodes with blast_radius_direct > _REACHABILITY_SEED_THRESHOLD.
-    Direction: upstream (predecessors) — nodes that depend on the seed.
-    Max depth: _REACHABILITY_MAX_HOPS.
-
-    Returns list of (src_adg_name, dst_adg_name, hop_count, path_weight) tuples.
-    path_weight is the hop_count (uniform weight; edge-weighted path is deferred).
-    """
-    seeds = [n for n, m in centrality.items() if m["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD]
+    """Pre-compute bounded upstream module reachability from impact seeds."""
+    seeds = [
+        name
+        for name, metrics in centrality.items()
+        if metrics["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD
+    ]
+    module_names = frozenset(centrality)
     rows: list[tuple[str, str, int, float]] = []
     capped_seeds = 0
 
@@ -518,31 +651,32 @@ def _compute_reachability(
         for hop in range(1, _REACHABILITY_MAX_HOPS + 1):
             next_frontier: dict[str, int] = {}
             for node in list(frontier):
-                for pred in graph.predecessors(node):
-                    if pred not in visited:
-                        visited[pred] = hop
-                        next_frontier[pred] = hop
+                for predecessor in graph.predecessors(node):
+                    if predecessor not in visited:
+                        visited[predecessor] = hop
+                        next_frontier[predecessor] = hop
             frontier = next_frontier
             if not frontier:
                 break
 
-        seed_rows: list[tuple[str, str, int, float]] = []
-        for reached_node, hops in visited.items():
-            if reached_node == seed:
-                continue
-            seed_rows.append((seed, reached_node, hops, float(hops)))
-
+        seed_rows = [
+            (seed, reached_node, hops, float(hops))
+            for reached_node, hops in visited.items()
+            if reached_node != seed and reached_node in module_names
+        ]
         if len(seed_rows) > _REACHABILITY_PER_SEED_LIMIT:
-            # Keep the nearest hops first (smallest hop_count = most actionable)
-            seed_rows.sort(key=lambda r: (r[2], r[1]))
+            seed_rows.sort(key=lambda row: (row[2], row[1]))
             seed_rows = seed_rows[:_REACHABILITY_PER_SEED_LIMIT]
             capped_seeds += 1
-
         rows.extend(seed_rows)
 
     print(
         f"[graph_projection] Reachability: {len(rows)} pairs from {len(seeds)} seeds"
-        + (f" ({capped_seeds} capped at {_REACHABILITY_PER_SEED_LIMIT})" if capped_seeds else "")
+        + (
+            f" ({capped_seeds} capped at {_REACHABILITY_PER_SEED_LIMIT})"
+            if capped_seeds
+            else ""
+        )
     )
     return rows
 
@@ -550,64 +684,62 @@ def _compute_reachability(
 def _compute_diff(
     current_centrality: dict[str, dict],
     out_dir: Path,
+    *,
+    current_snapshot_id: str,
 ) -> list[tuple]:
-    """Compare current centrality metrics against the previous projection file.
-
-    Looks for the most-recent `adg_graph_*.sqlite` (excluding any `.tmp` file)
-    in `out_dir`. If none exists, returns an empty list — this is expected on
-    the first run. `proj_diff` will have zero rows; this is not an error.
-
-    Returns list of tuples:
-        (adg_name, metric, prev_value, curr_value, delta, delta_pct, direction,
-         layer, prev_snapshot_id, curr_snapshot_id)
-    """
-    prev_files = sorted(f for f in out_dir.glob("adg_graph_*.sqlite") if not f.name.endswith(".tmp"))
+    """Compare centrality against the prior projection using artifact identity."""
+    prev_files = sorted(
+        path
+        for path in out_dir.glob("adg_graph_*.sqlite")
+        if not path.name.endswith(".tmp")
+    )
     if not prev_files:
-        print("[graph_projection] Diff       : no prior projection file — proj_diff will be empty")
+        print("[graph_projection] Diff       : no prior projection file")
         return []
 
     prev_path = prev_files[-1]
     print(f"[graph_projection] Diff base  : {prev_path.name}")
-
     try:
         prev_conn = _connect_sqlite(prev_path, timeout=5)
         prev_conn.row_factory = sqlite3.Row
-
-        prev_centrality: dict[str, dict] = {}
-        for row in prev_conn.execute(
-            f"SELECT adg_name, {', '.join(_DIFF_METRICS)} FROM proj_centrality"
-        ).fetchall():
-            prev_centrality[row["adg_name"]] = dict(row)
-
-        prev_snapshot_id = ""
-        snap_row = prev_conn.execute(
-            "SELECT value FROM proj_meta WHERE key = 'source_artifact_digest'"
-        ).fetchone()
-        if snap_row:
-            prev_snapshot_id = snap_row[0]
-
-        prev_conn.close()
+        try:
+            prev_centrality = {
+                row["adg_name"]: dict(row)
+                for row in prev_conn.execute(
+                    f"SELECT adg_name, {', '.join(_DIFF_METRICS)} "
+                    "FROM proj_centrality"
+                ).fetchall()
+            }
+            snap_row = prev_conn.execute(
+                "SELECT value FROM proj_meta "
+                "WHERE key = 'source_artifact_digest'"
+            ).fetchone()
+            prev_snapshot_id = str(snap_row[0]) if snap_row else ""
+        finally:
+            prev_conn.close()
     except sqlite3.Error as exc:
-        print(f"[graph_projection] Diff       : could not read prior projection ({exc}) — skipping diff")
+        print(
+            "[graph_projection] Diff       : could not read prior projection "
+            f"({exc}) — skipping diff"
+        )
         return []
-
-    curr_snapshot_id = ""
 
     rows: list[tuple] = []
     all_names = set(current_centrality) | set(prev_centrality)
     for adg_name in tqdm(sorted(all_names), desc="diff", leave=False, disable=True):
         curr = current_centrality.get(adg_name, {})
         prev = prev_centrality.get(adg_name, {})
-        # Populate layer from the current run's centrality dict if available;
-        # fall back to empty string for nodes that only existed in the prior run.
         layer = curr.get("_layer", "")
-        for m in tqdm(_DIFF_METRICS, desc="diff-metrics", leave=False, disable=True):
-            curr_val = float(curr.get(m, 0))
-            prev_val = float(prev.get(m, 0))
+        for metric in tqdm(
+            _DIFF_METRICS,
+            desc="diff-metrics",
+            leave=False,
+            disable=True,
+        ):
+            curr_val = float(curr.get(metric, 0))
+            prev_val = float(prev.get(metric, 0))
             delta = curr_val - prev_val
-            delta_pct = 0.0
-            if prev_val != 0.0:
-                delta_pct = round(delta / prev_val * 100.0, 4)
+            delta_pct = round(delta / prev_val * 100.0, 4) if prev_val else 0.0
             if delta > 0:
                 direction = "worsened"
             elif delta < 0:
@@ -619,7 +751,7 @@ def _compute_diff(
             rows.append(
                 (
                     adg_name,
-                    m,
+                    metric,
                     prev_val,
                     curr_val,
                     round(delta, 4),
@@ -627,11 +759,11 @@ def _compute_diff(
                     direction,
                     layer,
                     prev_snapshot_id,
-                    curr_snapshot_id,
+                    current_snapshot_id,
                 )
             )
 
-    changed = sum(1 for r in rows if r[6] != "unchanged")
+    changed = sum(1 for row in rows if row[6] != "unchanged")
     print(f"[graph_projection] Diff       : {len(rows)} metric rows, {changed} changed")
     return rows
 
@@ -651,28 +783,28 @@ def _write_projection_sqlite(
     diff_rows: list[tuple],
     build_meta: dict[str, str] | None = None,
 ) -> None:
-    """Write all projection tables to `db_path` atomically (single transaction).
-
-    Reads lineage fields from canonical sqlite meta table.
-    All writes happen with MEMORY journal for speed on a temp file.
-    """
+    """Write projection tables transactionally and validate every FK."""
     canon_conn = _connect_sqlite(canonical_sqlite, timeout=10)
     canon_conn.row_factory = sqlite3.Row
+    try:
+        canon_meta = {
+            row["key"]: row["value"]
+            for row in canon_conn.execute("SELECT key, value FROM meta").fetchall()
+        }
+        source_artifact_digest = canon_meta.get("artifact_digest", "")
+        commit_sha = canon_meta.get("commit_sha", "")
+        repo_state_hash = canon_meta.get("repo_state_hash", "")
+        canonical_schema_version = canon_meta.get("schema_version", "")
+        snapshot_id = source_artifact_digest or "unknown"
+        violation_rows = _load_violation_rows(
+            canon_conn,
+            centrality,
+            snapshot_id,
+        )
+    finally:
+        canon_conn.close()
 
-    meta_rows_raw = canon_conn.execute("SELECT key, value FROM meta").fetchall()
-    canon_meta: dict[str, str] = {r["key"]: r["value"] for r in meta_rows_raw}
-
-    source_artifact_digest = canon_meta.get("artifact_digest", "")
-    commit_sha = canon_meta.get("commit_sha", "")
-    repo_state_hash = canon_meta.get("repo_state_hash", "")
-    canonical_schema_version = canon_meta.get("schema_version", "")
-
-    violation_rows = _load_violation_rows(canon_conn, centrality)
-    canon_conn.close()
-
-    snapshot_id = source_artifact_digest[:16] if source_artifact_digest else "unknown"
     generated_ts = datetime.now(tz=timezone.utc).isoformat()
-
     conn = _connect_sqlite(db_path, timeout=30)
     try:
         conn.execute("PRAGMA journal_mode=MEMORY")
@@ -687,7 +819,7 @@ def _write_projection_sqlite(
             ("source_canonical_schema_version", canonical_schema_version),
             ("generated_ts", generated_ts),
             ("node_count", str(len(node_attrs))),
-            ("edge_count", str(sum(m["fan_in"] + m["fan_out"] for m in centrality.values()) // 2)),
+            ("edge_count", (build_meta or {}).get("graph_edge_count", "0")),
             ("networkx_version", _networkx_version()),
         ]
         if build_meta:
@@ -718,26 +850,25 @@ def _write_projection_sqlite(
         centrality_rows = [
             (
                 adg_name,
-                m["fan_in"],
-                m["fan_out"],
-                m["import_fan_in"],
-                m["import_fan_out"],
-                m["betweenness_approx"],
-                m["reverse_dep_score"],
-                m["blast_radius_direct"],
-                m["blast_radius_2hop"],
-                m["bridge_score"],
-                m["bridge_type"],
+                metrics["fan_in"],
+                metrics["fan_out"],
+                metrics["import_fan_in"],
+                metrics["import_fan_out"],
+                metrics["betweenness_approx"],
+                metrics["reverse_dep_score"],
+                metrics["blast_radius_direct"],
+                metrics["blast_radius_2hop"],
+                metrics["bridge_score"],
+                metrics["bridge_type"],
                 snapshot_id,
             )
-            for adg_name, m in sorted(centrality.items())
-            # _layer is a transient key used by _compute_diff; excluded from DB writes
+            for adg_name, metrics in sorted(centrality.items())
         ]
         conn.executemany(
             "INSERT OR REPLACE INTO proj_centrality"
             "(adg_name, fan_in, fan_out, import_fan_in, import_fan_out, "
-            "betweenness_approx, reverse_dep_score, blast_radius_direct, blast_radius_2hop, "
-            "bridge_score, bridge_type, snapshot_id) "
+            "betweenness_approx, reverse_dep_score, blast_radius_direct, "
+            "blast_radius_2hop, bridge_score, bridge_type, snapshot_id) "
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             centrality_rows,
         )
@@ -754,15 +885,19 @@ def _write_projection_sqlite(
 
         conn.executemany(
             "INSERT OR REPLACE INTO proj_violations"
-            "(adg_name_from, adg_name_to, relation_type, edge_kind, source_file, "
-            "line_no, severity, violation_class, disposition, category, "
-            "blast_radius_direct, snapshot_id) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "(violation_id, edge_id, adg_name_from, adg_name_to, "
+            "relation_type, edge_kind, source_file, line_no, severity, "
+            "violation_class, disposition, category, blast_radius_direct, "
+            "snapshot_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             violation_rows,
         )
         print(f"[graph_projection] proj_violations: {len(violation_rows)} rows")
 
-        reachability_rows = [(src, dst, hop, weight, snapshot_id) for src, dst, hop, weight in reachability]
+        reachability_rows = [
+            (src, dst, hop, weight, snapshot_id)
+            for src, dst, hop, weight in reachability
+        ]
         conn.executemany(
             "INSERT OR REPLACE INTO proj_reachability"
             "(src_adg_name, dst_adg_name, hop_count, path_weight, snapshot_id) "
@@ -781,16 +916,17 @@ def _write_projection_sqlite(
             )
         print(f"[graph_projection] proj_diff : {len(diff_rows)} rows")
 
+        foreign_key_errors = conn.execute("PRAGMA foreign_key_check").fetchall()
+        if foreign_key_errors:
+            raise RuntimeError(
+                "Projection foreign-key validation failed: "
+                f"{foreign_key_errors[:10]}"
+            )
         conn.commit()
-    except (
-        sqlite3.Error,
-        OSError,
-        ValueError,
-    ):  # database write errors — propagate; caller's guard handles non-blocking
-        conn.close()
-        gc.collect()
+    except (sqlite3.Error, OSError, ValueError, RuntimeError):
+        conn.rollback()
         raise
-    else:
+    finally:
         conn.close()
         gc.collect()
 
@@ -803,17 +939,16 @@ def _write_projection_sqlite(
 def _load_violation_rows(
     canon_conn: sqlite3.Connection,
     centrality: dict[str, dict],
+    snapshot_id: str,
 ) -> list[tuple]:
-    """Join canonical violations+edges+nodes to produce proj_violations rows.
-
-    Uses `adg_name` (not integer IDs) as the stable identity for from/to nodes.
-    Blast radius is looked up from the current run's centrality dict.
-    """
+    """Join violations to stable names without discarding parallel findings."""
     try:
         rows = canon_conn.execute(
             """SELECT
-                   src.adg_name  AS from_name,
-                   dst.adg_name  AS to_name,
+                   v.id            AS violation_id,
+                   e.id            AS edge_id,
+                   src.adg_name     AS from_name,
+                   dst.adg_name     AS to_name,
                    e.relation_type,
                    e.edge_kind,
                    e.source_file,
@@ -825,29 +960,32 @@ def _load_violation_rows(
                FROM violations v
                JOIN edges e     ON v.edge_id = e.id
                JOIN nodes src   ON e.src_id = src.id
-               JOIN nodes dst   ON e.dst_id = dst.id"""
+               JOIN nodes dst   ON e.dst_id = dst.id
+               ORDER BY v.id"""
         ).fetchall()
     except sqlite3.OperationalError:
         return []
 
     result: list[tuple] = []
     for row in tqdm(rows, desc="violations-join", leave=False, disable=True):
-        from_name = row[0]
+        from_name = row[2]
         blast = centrality.get(from_name, {}).get("blast_radius_direct", 0)
         result.append(
             (
-                from_name,
+                row[0],
                 row[1],
-                row[2],
+                from_name,
                 row[3],
-                row[4] or "",
-                row[5] or 0,
-                row[6] or "MEDIUM",
-                row[7] or "hygiene",
-                row[8] or "untriaged",
-                row[9] or "",
+                row[4],
+                row[5],
+                row[6] or "",
+                row[7] or 0,
+                row[8] or "MEDIUM",
+                row[9] or "hygiene",
+                row[10] or "untriaged",
+                row[11] or "",
                 blast,
-                "",
+                snapshot_id,
             )
         )
     return result
@@ -885,7 +1023,7 @@ def _build_scc_rows(
         risk_score = 0.0
         for member in tqdm(scc, desc="scc-risk", leave=False, disable=True):
             layer = node_attrs.get(member, {}).get("layer", "")
-            weight = _LAYER_CRITICALITY_WEIGHTS.get(layer, 1.0)
+            weight = _layer_criticality_weight(layer)
             risk_score += size * weight
 
         for member in tqdm(sorted(scc), desc="scc-members", leave=False, disable=True):

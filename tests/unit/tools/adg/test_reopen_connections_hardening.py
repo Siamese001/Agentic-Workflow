@@ -26,6 +26,10 @@ class _FakeSqliteBackend:
         self._sqlite_path = path
         self._last_mtime = mtime
 
+    def selected_snapshot_path(self) -> Path:
+        """Return the role-selected snapshot used by the live backend."""
+        return self._sqlite_path
+
 
 def _make_runtime_with_service(
     monkeypatch: pytest.MonkeyPatch,

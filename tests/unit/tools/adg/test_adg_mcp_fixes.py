@@ -155,9 +155,12 @@ class TestLatestOnlyGateProbe:
     def _clear_probe_cache(self):
         import pre_mcp_gate as _gate
 
-        _gate._PROBE_CACHE.clear()
+        cache = getattr(_gate, "_PROBE_CACHE", None)
+        if cache is not None:
+            cache.clear()
         yield
-        _gate._PROBE_CACHE.clear()
+        if cache is not None:
+            cache.clear()
 
     def test_stale_corrupt_old_snapshot_does_not_block(self, tmp_path):
         """Gate must NOT block when old snapshot is corrupt but latest is healthy."""
@@ -211,6 +214,16 @@ class TestLatestOnlyGateProbe:
 # ---------------------------------------------------------------------------
 
 
+def _runtime_for(service: MagicMock):
+    """Build a lightweight runtime around an injected service double."""
+    from tools.adg.mcp.runtime import ADGServerRuntime
+
+    runtime = ADGServerRuntime.__new__(ADGServerRuntime)
+    runtime._service = service
+    runtime._health = None
+    return runtime
+
+
 class TestAdgReloadHygiene:
     def _make_mock_service(self, *, old_id: str, new_id: str) -> MagicMock:
         """Build a mock ADGService that simulates a stale-snapshot transition."""
@@ -218,30 +231,35 @@ class TestAdgReloadHygiene:
         svc._adg_snapshot_id = old_id
         svc._redis._available = True
 
-        # First health() call → stale
+        # First health() call → stale relative to the selected certified snapshot.
         svc._sqlite.health.return_value = (
             "healthy",
-            {"is_stale": True, "path": "/old.sqlite", "latest_path": "/new.sqlite"},
+            {
+                "is_stale": True,
+                "path": "/old.sqlite",
+                "selected_path": "/new.sqlite",
+            },
         )
 
         def _reopen_side_effect():
             svc._adg_snapshot_id = new_id
             svc._sqlite.health.return_value = (
                 "healthy",
-                {"is_stale": False, "path": "/new.sqlite"},
+                {
+                    "is_stale": False,
+                    "path": "/new.sqlite",
+                    "selected_path": "/new.sqlite",
+                },
             )
 
         svc.reopen.side_effect = _reopen_side_effect
         return svc
 
     def test_reload_clears_old_snapshot_redis_keys(self):
-        """adg_reload must call clear_snapshot(old_id) when reload occurs."""
-        import tools.adg.mcp.server as server_module
-
+        """Runtime reload clears the old snapshot namespace after transition."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["status"] == "ok"
         assert result["data"]["reloaded"] is True
@@ -251,46 +269,41 @@ class TestAdgReloadHygiene:
         svc._redis.clear_snapshot.assert_called_once_with("snap_old")
 
     def test_reload_not_needed_redis_not_touched(self):
-        """When already on latest snapshot, clear_snapshot must NOT be called."""
-        import tools.adg.mcp.server as server_module
-
+        """When already selected, reload leaves Redis untouched."""
         svc = MagicMock()
         svc._adg_snapshot_id = "snap_current"
         svc._sqlite.health.return_value = (
             "healthy",
-            {"is_stale": False, "path": "/current.sqlite"},
+            {
+                "is_stale": False,
+                "path": "/current.sqlite",
+                "selected_path": "/current.sqlite",
+            },
         )
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["data"]["reloaded"] is False
         assert result["data"]["redis_cleared"] is False
         svc._redis.clear_snapshot.assert_not_called()
 
     def test_reload_redis_cleared_false_when_redis_unavailable(self):
-        """redis_cleared must be False when Redis is not available."""
-        import tools.adg.mcp.server as server_module
-
+        """A successful reload reports Redis cold when Redis is unavailable."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
-        svc._redis._available = False  # Redis down
+        svc._redis._available = False
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["data"]["reloaded"] is True
         assert result["data"]["redis_cleared"] is False
         svc._redis.clear_snapshot.assert_not_called()
 
     def test_reload_redis_cleared_false_when_clear_snapshot_raises(self):
-        """clear_snapshot() exception must not prevent reload succeeding — redis_cleared=False."""
-        import tools.adg.mcp.server as server_module
-
+        """Redis cleanup failure cannot roll back a successful SQLite reload."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
         svc._redis.clear_snapshot.side_effect = RuntimeError("Redis SCAN failed")
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["status"] == "ok"
         assert result["data"]["reloaded"] is True
@@ -420,7 +433,7 @@ class TestRedisAvailabilityRefresh:
 class TestViewsMaterializedAt:
     """Regression f7ece2e937: health surfaces views_materialized_at from P-view presence."""
 
-    def test_get_views_materialized_at_returns_snapshot_stem_when_views_exist(self, tmp_path: Path) -> None:
+    def test_any_single_view_no_longer_satisfies_materialization(self, tmp_path: Path) -> None:
         db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
         conn = sqlite3.connect(str(db_path))
         conn.execute("CREATE VIEW mv_test_probe AS SELECT 1 AS ok")
@@ -432,7 +445,36 @@ class TestViewsMaterializedAt:
         backend._lifecycle_lock = threading.RLock()
         backend._conn = conn
         backend._sqlite_path = db_path
-        assert backend.get_views_materialized_at() == "20260611_120000"
+        assert backend.get_views_materialized_at() is None
+        assert backend.get_materialization_status()["status"] == "FAIL"
+
+    def test_complete_materialization_families_return_snapshot_stem(
+        self,
+        tmp_path: Path,
+    ) -> None:
+        db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"
+        conn = sqlite3.connect(str(db_path))
+        for index in range(30):
+            conn.execute(
+                f"CREATE TABLE mv_contract_{index} (id INTEGER)"
+            )
+        for index in range(3):
+            conn.execute(
+                f"CREATE VIEW v_p0_contract_{index} AS SELECT 1 AS ok"
+            )
+        conn.execute("CREATE TABLE infrastructure_wiring (id INTEGER)")
+        conn.commit()
+
+        from tools.adg.core.sqlite_backend import SQLiteBackend
+
+        backend = SQLiteBackend.__new__(SQLiteBackend)
+        backend._lifecycle_lock = threading.RLock()
+        backend._conn = conn
+        backend._sqlite_path = db_path
+        assert (
+            backend.get_views_materialized_at()
+            == "20260611_120000"
+        )
 
     def test_get_views_materialized_at_none_without_views(self, tmp_path: Path) -> None:
         db_path = tmp_path / "adg_indexed_20260611_120000.sqlite"

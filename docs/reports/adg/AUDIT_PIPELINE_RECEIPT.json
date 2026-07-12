@@ -17,63 +17,63 @@
   },
   "artifact_status": "repair_ready",
   "artifact_status_source": "direct",
-  "adg_run_id": "07112026_1937",
-  "started_at_utc": "2026-07-11T23:37:09Z",
-  "completed_at_utc": "2026-07-11T23:55:16Z",
+  "adg_run_id": "07112026_2208",
+  "started_at_utc": "2026-07-12T02:08:10Z",
+  "completed_at_utc": "2026-07-12T02:29:05Z",
   "repair_handoff": {
     "status": "repair_ready",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07112026_1937.sqlite",
-        "sha256": "a061c440a43f632c8c23466358ce2d7189d61e542005f540ee4bd7649b3b1d78"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07112026_2208.sqlite",
+        "sha256": "bf2ead299eda062b394c3c0c7fd9eb537d141db3711d23fc88579f7fb1a6ba00"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260711_235025.json",
-        "sha256": "e133beb9c6f686e7a8452bc84d99dc9e2966d9e3b9a581720c65611f6e9dff25"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260712_022356.json",
+        "sha256": "4335eb2f4b153303a0f757223bf4e3ca4f0e039a8f79cdc0935dd53ed9cab47e"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07112026_1937.json",
-        "sha256": "92205fe9a82d4e6095f51d9c2c532716497b81197c31e385c80d3c2df42cbd98"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07112026_2208.json",
+        "sha256": "247dd09d1d48607b1a292566f426533236be7bde89a6fb3bf4969855bf05bdcd"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07112026_1937.md",
-        "sha256": "ef4dadafce97b4f3ebf7bdc96faebe367f538f43bae3c6549c3a96a90e9b7bca"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07112026_2208.md",
+        "sha256": "21ffe0545725dd0cd6871116d62538ce77ae33daf85c67a8333a3119273c1f5a"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07112026_1937.json",
-        "sha256": "740bae6e0dba609d9a07b3734d35bd7552c62c8099490e1c1fe6c50cea2b782e"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07112026_2208.json",
+        "sha256": "f7d306a1f2843b4e868d3fd466b86a887f91fa179bb5acc29f04647ed2d79d38"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07112026_1937.json",
-        "sha256": "87557242ff2bf32cf76570c3a65fdece3a827a17f199f546c66088ad1b749384"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07112026_2208.json",
+        "sha256": "289d19b78a608c358d5c65bf4433eea065652e5c9fe5dc4b5e5d38a9b41b4cab"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07112026_1937.json",
-        "sha256": "85a3b7ddd063dd175d4ccad5544d15f9d127d32317bd43197c0b7fa896583028"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07112026_2208.json",
+        "sha256": "9e3b63afc9bbd70f95ebb31f2e457c15f11fc069301b4a2354ae2d78a0e30d30"
       }
     },
     "counts": {
-      "open_blocker_fix_count": 3,
+      "open_blocker_fix_count": 2,
       "critical_open_blocker_fix_count": 2,
       "candidate_blocker_triage_count": 3,
       "critical_tracked_debt_count": 2,
-      "high_open_blocker_fix_count": 1,
-      "high_ratchet_regression_count": 1,
+      "high_open_blocker_fix_count": 0,
+      "high_ratchet_regression_count": 0,
       "high_ratchet_floor_tracked_debt_count": 7
     },
     "legacy_counts": {
       "P0_FIX": 2,
       "P0_WAVE": 3,
       "P0_TRACKED_BACKLOG": 2,
-      "P1_FIX": 1,
-      "P1_RATCHET_REGRESSION": 1,
+      "P1_FIX": 0,
+      "P1_RATCHET_REGRESSION": 0,
       "P1_RATCHET_FLOOR_BACKLOG": 7
     },
     "validation_errors": []

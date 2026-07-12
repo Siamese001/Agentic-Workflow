@@ -4,12 +4,18 @@ import logging
 from typing import Any, Callable
 
 from tools.adg.cache.redis_cache import RedisCache
-from tools.adg.core.models import ADGResponse, HealthStatus
+from tools.adg.core.graph_projection_backend import (
+    ProjectionReadError,
+    ProjectionStaleError,
+    ProjectionUnavailableError,
+)
+from tools.adg.core.models import ADGResponse, HealthStatus, QueryMeta
 from tools.adg.core.sqlite_backend import SQLiteBackend
 from tools.adg.mv_reader import MVRedisReader
 from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
+CANONICAL_CACHE_METRIC_VERSION = "canonical-4.0.0"
 
 
 class ADGService:
@@ -33,17 +39,29 @@ class ADGService:
     _adg_snapshot_id: str
     _mv_reader: MVRedisReader
 
-    def __init__(self, redis_url: str | None = None):
-        # SQLite is mandatory — fail fast if unavailable
-        self._sqlite = SQLiteBackend()
-
-        # Get snapshot ID from SQLite
+    def __init__(
+        self,
+        redis_url: str | None = None,
+        *,
+        snapshot_selection: str = "latest",
+    ):
+        """Create the service over an explicitly selected snapshot role."""
+        self._sqlite = SQLiteBackend(
+            snapshot_selection=snapshot_selection,
+            allow_unavailable=snapshot_selection != "latest",
+            verify_pointer_digest=True,
+        )
         status = self._sqlite.get_status()
-        self._adg_snapshot_id = status["timestamp"]
+        cache_identity = (
+            status.get("artifact_digest")
+            or status.get("timestamp")
+            or "unavailable"
+        )
+        self._adg_snapshot_id = (
+            f"{cache_identity}:{CANONICAL_CACHE_METRIC_VERSION}"
+        )
 
-        # SSOT: Redis URL resolution - env var (ADG_REDIS_URL) -> explicit arg.
-        # Redis is an optional accelerator; absence must leave ADG in
-        # sqlite_only mode instead of collapsing the MCP transport.
+        # Redis is a projection/accelerator and never snapshot authority.
         self._redis_url = resolve_adg_redis_url(redis_url)
         self._redis = None
         self._connect_redis()
@@ -66,31 +84,109 @@ class ADGService:
         return bool(self._redis is not None and getattr(self._redis, "_available", False))
 
     def health(self) -> HealthStatus:
-        """Return comprehensive health status."""
-        sqlite_status, _sqlite_meta = self._sqlite.health()
+        """Return fail-closed certification and completeness health."""
+        sqlite_status, sqlite_meta = self._sqlite.health()
+        status = self._sqlite.get_status()
 
         if self._redis is None:
-            redis_status, _redis_meta = "unavailable", {}
+            redis_status = "unavailable"
         else:
             try:
                 redis_status, _redis_meta = self._redis.health()
-            except Exception as exc:  # guardian: allow-broad-exception -- Redis health probes can fail for the same optional-cache reasons as reads; service health must still return
+            except Exception as exc:  # guardian: allow-broad-exception -- optional cache health must not hide SQLite health
                 logger.debug("Redis health probe failed: %s", exc)
-                redis_status, _redis_meta = "unavailable", {}
+                redis_status = "unavailable"
 
-        mode = "full" if redis_status == "healthy" else "sqlite_only"
-        cache_hit_capable = redis_status == "healthy"
-        _vma = self._sqlite.get_views_materialized_at()
-        views_materialized_at: str | None = _vma if isinstance(_vma, str) else None
+        if sqlite_status == "unavailable":
+            mode = "unavailable"
+        else:
+            mode = "full" if redis_status == "healthy" else "sqlite_only"
 
+        materialization = sqlite_meta.get("materialization")
+        if not isinstance(materialization, dict):
+            materialization = self._sqlite.get_materialization_status()
+        if not isinstance(materialization, dict):
+            materialization = {
+                "status": "UNKNOWN",
+                "counts": {},
+                "reason": "materialization status unavailable",
+            }
+
+        reasons: list[str] = []
+        if sqlite_status == "unavailable":
+            reasons.append(
+                str(
+                    sqlite_meta.get("selection_error")
+                    or "SQLite snapshot unavailable"
+                )
+            )
+        if not status.get("certified", False):
+            reasons.append(
+                "active snapshot is not certified "
+                f"(selection={status.get('snapshot_selection')}, "
+                f"certification={status.get('certification_status')})"
+            )
+        if not status.get("digest_verified", False):
+            reasons.append("certified snapshot digest was not verified")
+        if materialization.get("status") != "PASS":
+            reasons.append(
+                "required materialization status="
+                + str(materialization.get("status", "UNKNOWN"))
+            )
+
+        if (
+            sqlite_status == "unavailable"
+            or not status.get("certified", False)
+            or not status.get("digest_verified", False)
+            or materialization.get("status") != "PASS"
+        ):
+            overall = "critical"
+        elif sqlite_meta.get("is_stale") or not sqlite_meta.get(
+            "is_fresh",
+            True,
+        ):
+            overall = "degraded"
+            reasons.append(
+                "selected certified snapshot changed; reopen required"
+            )
+        else:
+            overall = "healthy"
+
+        views_materialized_at = self._sqlite.get_views_materialized_at()
         return HealthStatus(
             mode=mode,
             sqlite=sqlite_status,
             redis=redis_status,
-            cache_hit_capable=cache_hit_capable,
-            schema_version="1.0",
+            cache_hit_capable=redis_status == "healthy",
+            schema_version=str(
+                status.get("schema_version") or "unknown"
+            ),
             adg_snapshot_id=self._adg_snapshot_id,
-            views_materialized_at=views_materialized_at,
+            views_materialized_at=(
+                views_materialized_at
+                if isinstance(views_materialized_at, str)
+                else None
+            ),
+            overall_status=overall,
+            reasons=list(dict.fromkeys(reasons)),
+            snapshot_selection=str(
+                status.get("snapshot_selection") or "unknown"
+            ),
+            certified=bool(status.get("certified")),
+            certification_status=str(
+                status.get("certification_status") or "unknown"
+            ),
+            artifact_status=str(
+                status.get("artifact_status") or "unknown"
+            ),
+            pointer_path=status.get("pointer_path"),
+            digest_verified=bool(status.get("digest_verified")),
+            materialization_status=str(
+                materialization.get("status") or "UNKNOWN"
+            ),
+            materialization_counts=dict(
+                materialization.get("counts") or {}
+            ),
         )
 
     def _query_with_fallback(
@@ -259,18 +355,18 @@ class ADGService:
         )
 
     def get_status(self) -> ADGResponse:
-        """Get ADG snapshot status."""
+        """Get ADG snapshot status, preserving unavailable semantics."""
         status = self._sqlite.get_status()
-
+        available = status.get("available") is True
         return ADGResponse(
-            status="ok",
+            status="ok" if available else "error",
             data=status,
             backend_used="sqlite",
             cache_meta={
-                "is_fresh": True,
-                "timestamp": status["timestamp"],
-                "node_count": status["node_count"],
-                "edge_count": status["edge_count"],
+                "is_fresh": available,
+                "timestamp": status.get("timestamp"),
+                "node_count": status.get("node_count"),
+                "edge_count": status.get("edge_count"),
             },
         )
 
@@ -302,7 +398,14 @@ class ADGService:
             # Refresh snapshot ID so Redis cache keys reflect the active snapshot.
             # Without this, Redis lookups after a reload use the stale snapshot ID.
             status = self._sqlite.get_status()
-            self._adg_snapshot_id = status["timestamp"]
+            cache_identity = (
+                status.get("artifact_digest")
+                or status.get("timestamp")
+                or "unavailable"
+            )
+            self._adg_snapshot_id = (
+                f"{cache_identity}:{CANONICAL_CACHE_METRIC_VERSION}"
+            )
 
         if self._redis is not None:
             self._redis.close()
@@ -310,31 +413,133 @@ class ADGService:
         self._mv_reader = MVRedisReader(redis_url=self._redis_url)
         logger.info("ADGService reopened backend connections")
 
+    def _projection_meta(
+        self,
+        result_state: str,
+        *,
+        metric_id: str | None = None,
+        requested_limit: int | None = None,
+        returned_count: int | None = None,
+        reason_code: str | None = None,
+        reason: str | None = None,
+    ) -> QueryMeta:
+        canonical = self._sqlite.get_status()
+        projection = self._sqlite.get_projection_status()
+        return QueryMeta(
+            result_state=result_state,
+            selected_artifact_digest=canonical.get("artifact_digest"),
+            source_artifact_digest=projection.get(
+                "source_artifact_digest"
+            ),
+            schema_version=str(
+                projection.get("proj_schema_version")
+                or canonical.get("schema_version")
+                or "unknown"
+            ),
+            metric_id=metric_id,
+            metric_version="1.0.0" if metric_id else None,
+            requested_limit=requested_limit,
+            returned_count=returned_count,
+            reason_code=reason_code,
+            reason=reason,
+        )
+
+    def _projection_failure(
+        self,
+        exc: Exception,
+        data: dict[str, Any],
+        *,
+        metric_id: str | None = None,
+        requested_limit: int | None = None,
+    ) -> ADGResponse:
+        state = (
+            "STALE"
+            if isinstance(exc, ProjectionStaleError)
+            else "UNAVAILABLE"
+        )
+        return ADGResponse(
+            status="error",
+            data=data,
+            backend_used="projection",
+            query_meta=self._projection_meta(
+                state,
+                metric_id=metric_id,
+                requested_limit=requested_limit,
+                reason_code=exc.__class__.__name__,
+                reason=str(exc),
+            ),
+        )
+
     def get_projection_status(self) -> ADGResponse:
         """Return graph projection availability, staleness, and metadata."""
         data = self._sqlite.get_projection_status()
+        state = str(data.get("result_state") or "UNKNOWN")
         return ADGResponse(
-            status="ok",
+            status="ok" if state == "COMPLETE" else "error",
             data=data,
             backend_used="projection",
+            query_meta=self._projection_meta(state),
         )
 
     def get_blast_radius(self, node_id: str, hops: int = 2) -> ADGResponse:
-        """Return blast-radius summary for a node from the graph projection."""
-        data = self._sqlite.get_blast_radius(node_id, hops=hops)
+        """Return blast radius without substituting zero for unavailable."""
+        try:
+            data = self._sqlite.get_blast_radius(node_id, hops=hops)
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {
+                    "adg_name": node_id,
+                    "blast_radius_direct": None,
+                    "blast_radius_2hop": None,
+                    "reachability_rows": None,
+                    "hops_requested": hops,
+                },
+                metric_id="RH.GRAPH.004",
+            )
+        state = "COMPLETE" if data.get("found") else "EMPTY"
         return ADGResponse(
             status="ok",
             data=data,
             backend_used="projection",
+            query_meta=self._projection_meta(
+                state,
+                metric_id="RH.GRAPH.004",
+                returned_count=1 if data.get("found") else 0,
+            ),
         )
 
     def get_scc(self, node_id: str) -> ADGResponse:
-        """Return SCC membership for a node from the graph projection."""
-        data = self._sqlite.get_scc(node_id)
+        """Return exact SCC membership with explicit empty/unavailable state."""
+        try:
+            data = self._sqlite.get_scc(node_id)
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {"adg_name": node_id, "scc": None},
+                metric_id="RH.GRAPH.003",
+            )
         return ADGResponse(
             status="ok",
-            data=data if data is not None else {"adg_name": node_id, "scc": None},
+            data=(
+                data
+                if data is not None
+                else {"adg_name": node_id, "scc": None}
+            ),
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if data is not None else "EMPTY",
+                metric_id="RH.GRAPH.003",
+                returned_count=1 if data is not None else 0,
+            ),
         )
 
     def get_violations_with_impact(
@@ -343,12 +548,32 @@ class ADGService:
         severity: str | None = None,
         limit: int = 100,
     ) -> ADGResponse:
-        """Return violations with blast-radius impact from the graph projection."""
-        rows = self._sqlite.get_violations_with_impact(layer=layer, severity=severity, limit=limit)
+        """Return violations with explicit empty/unavailable state."""
+        try:
+            rows = self._sqlite.get_violations_with_impact(
+                layer=layer,
+                severity=severity,
+                limit=limit,
+            )
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {"violations": None, "count": None},
+                requested_limit=limit,
+            )
         return ADGResponse(
             status="ok",
             data={"violations": rows, "count": len(rows)},
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if rows else "EMPTY",
+                requested_limit=limit,
+                returned_count=len(rows),
+            ),
         )
 
     def get_p0_remediation_wave_plan(self, limit: int = 100) -> ADGResponse:
@@ -367,21 +592,60 @@ class ADGService:
         layer: str | None = None,
         limit: int = 100,
     ) -> ADGResponse:
-        """Return cross-run metric deltas from the graph projection."""
-        rows = self._sqlite.get_diff(metric=metric, direction=direction, layer=layer, limit=limit)
+        """Return graph deltas with explicit empty/unavailable state."""
+        try:
+            rows = self._sqlite.get_diff(
+                metric=metric,
+                direction=direction,
+                layer=layer,
+                limit=limit,
+            )
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {"diff": None, "count": None},
+                requested_limit=limit,
+            )
         return ADGResponse(
             status="ok",
             data={"diff": rows, "count": len(rows)},
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if rows else "EMPTY",
+                requested_limit=limit,
+                returned_count=len(rows),
+            ),
         )
 
     def get_top_bridges(self, limit: int = 20) -> ADGResponse:
-        """Return top bridge/chokepoint nodes from the graph projection."""
-        rows = self._sqlite.get_top_bridges(limit=limit)
+        """Return bridge evidence with explicit empty/unavailable state."""
+        try:
+            rows = self._sqlite.get_top_bridges(limit=limit)
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {"bridges": None, "count": None},
+                metric_id="RH.GRAPH.005",
+                requested_limit=limit,
+            )
         return ADGResponse(
             status="ok",
             data={"bridges": rows, "count": len(rows)},
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if rows else "EMPTY",
+                metric_id="RH.GRAPH.005",
+                requested_limit=limit,
+                returned_count=len(rows),
+            ),
         )
 
     def get_top_regressions(
@@ -389,21 +653,71 @@ class ADGService:
         metric: str = "blast_radius_direct",
         limit: int = 20,
     ) -> ADGResponse:
-        """Return top metric regressions from the graph projection."""
-        rows = self._sqlite.get_top_regressions(metric=metric, limit=limit)
+        """Return metric regressions with explicit evaluation state."""
+        try:
+            rows = self._sqlite.get_top_regressions(
+                metric=metric,
+                limit=limit,
+            )
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {"regressions": None, "count": None},
+                requested_limit=limit,
+            )
         return ADGResponse(
             status="ok",
             data={"regressions": rows, "count": len(rows)},
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if rows else "EMPTY",
+                requested_limit=limit,
+                returned_count=len(rows),
+            ),
         )
 
-    def get_reachability(self, src_adg_name: str, limit: int = 50) -> ADGResponse:
-        """Return reachability rows for a seed module from the graph projection."""
-        rows = self._sqlite.get_reachability(src_adg_name, limit=limit)
+    def get_reachability(
+        self,
+        src_adg_name: str,
+        limit: int = 50,
+    ) -> ADGResponse:
+        """Return reachability with explicit empty/unavailable state."""
+        try:
+            rows = self._sqlite.get_reachability(
+                src_adg_name,
+                limit=limit,
+            )
+        except (
+            ProjectionUnavailableError,
+            ProjectionStaleError,
+            ProjectionReadError,
+        ) as exc:
+            return self._projection_failure(
+                exc,
+                {
+                    "reachability": None,
+                    "count": None,
+                    "src": src_adg_name,
+                },
+                requested_limit=limit,
+            )
         return ADGResponse(
             status="ok",
-            data={"reachability": rows, "count": len(rows), "src": src_adg_name},
+            data={
+                "reachability": rows,
+                "count": len(rows),
+                "src": src_adg_name,
+            },
             backend_used="projection",
+            query_meta=self._projection_meta(
+                "COMPLETE" if rows else "EMPTY",
+                requested_limit=limit,
+                returned_count=len(rows),
+            ),
         )
 
     def find_node(self, name: str, limit: int = 10) -> ADGResponse:

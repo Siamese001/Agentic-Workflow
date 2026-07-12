@@ -36,6 +36,33 @@ class ADGEdge(BaseModel):
         extra = "allow"
 
 
+QueryResultState = Literal[
+    "COMPLETE",
+    "EMPTY",
+    "UNAVAILABLE",
+    "STALE",
+    "TRUNCATED",
+    "UNKNOWN",
+]
+
+
+class QueryMeta(BaseModel):
+    """Provenance and evaluation state for an ADG query result."""
+
+    result_state: QueryResultState = "UNKNOWN"
+    selected_artifact_digest: str | None = None
+    source_artifact_digest: str | None = None
+    schema_version: str = "unknown"
+    metric_id: str | None = None
+    metric_version: str | None = None
+    requested_limit: int | None = None
+    returned_count: int | None = None
+    has_more: bool | None = None
+    truncation_reason: str | None = None
+    reason_code: str | None = None
+    reason: str | None = None
+
+
 class ADGResponse(BaseModel):
     """Unified response shape regardless of backend."""
 
@@ -46,15 +73,31 @@ class ADGResponse(BaseModel):
         description="redis|sqlite|projection",
     )
     cache_meta: dict[str, Any] = Field(default_factory=dict)
+    query_meta: QueryMeta = Field(default_factory=QueryMeta)
 
 
 class HealthStatus(BaseModel):
-    """Health check response."""
+    """Certification-aware ADG health response."""
 
-    mode: str  # "sqlite_only" | "full"
-    sqlite: str  # "healthy" | "degraded" | "unavailable"
-    redis: str  # "healthy" | "degraded" | "unavailable"
+    mode: str
+    sqlite: str
+    redis: str
     cache_hit_capable: bool
     schema_version: str
     adg_snapshot_id: str
-    views_materialized_at: str | None = None  # snapshot timestamp when infra P-views exist, else None
+    views_materialized_at: str | None = None
+    overall_status: Literal[
+        "healthy",
+        "degraded",
+        "critical",
+        "unknown",
+    ] = "unknown"
+    reasons: list[str] = Field(default_factory=list)
+    snapshot_selection: str = "unknown"
+    certified: bool = False
+    certification_status: str = "unknown"
+    artifact_status: str = "unknown"
+    pointer_path: str | None = None
+    digest_verified: bool = False
+    materialization_status: str = "UNKNOWN"
+    materialization_counts: dict[str, int] = Field(default_factory=dict)

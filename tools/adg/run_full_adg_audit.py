@@ -428,7 +428,11 @@ def _find_recent_sqlite_run_stamp(*, since_wall_start: float) -> str | None:
     return None
 
 
-def _run_retention_sweep(adg_run_id: str | None) -> None:
+def _run_retention_sweep(
+    adg_run_id: str | None,
+    *,
+    adg_dir: Path | None = None,
+) -> None:
     """Best-effort ADG artifact cleanup shared by scheduled wrapper runs."""
     if not adg_run_id:
         print("[audit] retention skipped: no ADG run id available")
@@ -436,7 +440,17 @@ def _run_retention_sweep(adg_run_id: str | None) -> None:
     try:
         from tools.generate.archiving import _archive_old_artifacts  # noqa: PLC0415
 
-        _archive_old_artifacts(ARTIFACTS_ADG, adg_run_id, keep_runs=1)
+        from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
+            protected_snapshot_run_ids,
+        )
+
+        target_dir = (adg_dir or ARTIFACTS_ADG).resolve()
+        _archive_old_artifacts(
+            target_dir,
+            adg_run_id,
+            keep_runs=1,
+            protected_run_ids=protected_snapshot_run_ids(target_dir),
+        )
         print(f"[audit] retention sweep complete: current_ts={adg_run_id}")
     except (ImportError, OSError, RuntimeError, ValueError) as exc:
         print(f"[audit] retention sweep failed: {exc}", file=sys.stderr)
@@ -1410,6 +1424,71 @@ def _write_repair_handoff_pointer(
     print(f"[audit] wrote repair handoff pointer: {display}")
 
 
+def _publish_result_snapshot_pointer(
+    result: WrapperResult,
+    *,
+    artifacts_adg: Path,
+) -> list[str]:
+    """Publish exactly one role pointer for a finalized wrapper result."""
+    if (
+        result.artifact_status == "certified"
+        and result.certification_status == "clean"
+    ):
+        role = "certified"
+    elif (
+        result.artifact_status == "repair_ready"
+        and result.certification_status in {"failed", "diagnostic_only"}
+    ):
+        role = "repair"
+    else:
+        return []
+
+    handoff = result.repair_handoff or {}
+    refs = (
+        handoff.get("artifacts")
+        if isinstance(handoff.get("artifacts"), dict)
+        else {}
+    )
+    snapshot_ref = (
+        refs.get("snapshot")
+        if isinstance(refs.get("snapshot"), dict)
+        else {}
+    )
+    raw_snapshot = snapshot_ref.get("path")
+    if not isinstance(raw_snapshot, str):
+        return [
+            f"{role} pointer publication failed: snapshot handoff path missing"
+        ]
+
+    sources: dict[str, Path] = {}
+    for key in ("generation_manifest", "gate_manifest", "gate_results"):
+        ref = refs.get(key)
+        if isinstance(ref, dict) and isinstance(ref.get("path"), str):
+            sources[key] = Path(ref["path"])
+
+    try:
+        from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
+            SnapshotPointerError,
+            publish_snapshot_pointer,
+        )
+
+        known_sha = snapshot_ref.get("sha256")
+        publish_snapshot_pointer(
+            adg_dir=artifacts_adg,
+            role=role,
+            snapshot_path=Path(raw_snapshot),
+            snapshot_sha256=(
+                known_sha if isinstance(known_sha, str) else None
+            ),
+            certification_status=result.certification_status,
+            artifact_status=result.artifact_status,
+            source_artifacts=sources,
+        )
+    except (OSError, ValueError, SnapshotPointerError) as exc:
+        return [f"{role} pointer publication failed: {exc}"]
+    return []
+
+
 def _write_receipt(result: WrapperResult, *, producer_artifacts: Path | None = None) -> None:
     if producer_artifacts is None:
         producer_artifacts = _handoff_producer_artifacts_adg()
@@ -1659,7 +1738,6 @@ def run_audit(
     retention_run_id = adg_run_id or adg_run_id_for_outputs or _find_recent_sqlite_run_stamp(
         since_wall_start=wall_start,
     )
-    _run_retention_sweep(retention_run_id)
     completed_at_utc = _utcnow_iso()
 
     result = WrapperResult(
@@ -1677,6 +1755,34 @@ def run_audit(
         completed_at_utc=completed_at_utc,
         repair_handoff=repair_handoff,
     )
+    result = _copy_result_for_handoff_root(
+        result,
+        producer_artifacts=producer_artifacts,
+    )
+    promotion_errors = _publish_result_snapshot_pointer(
+        result,
+        artifacts_adg=producer_artifacts,
+    )
+    if promotion_errors:
+        result.reasons.extend(promotion_errors)
+        result.artifact_status = "incomplete"
+        if result.certification_status == "clean":
+            result.certification_status = "failed"
+        if result.repair_handoff is not None:
+            result.repair_handoff["status"] = "incomplete"
+            validation_errors = result.repair_handoff.setdefault(
+                "validation_errors",
+                [],
+            )
+            validation_errors.extend(promotion_errors)
+
+    _run_retention_sweep(
+        retention_run_id,
+        adg_dir=producer_artifacts,
+    )
+    status = result.certification_status
+    artifact_status = result.artifact_status
+    reasons = result.reasons
     _write_receipt(result, producer_artifacts=producer_artifacts)
     if enforcement_path is not None:
         print(f"[audit] enforcement report: {enforcement_path}")

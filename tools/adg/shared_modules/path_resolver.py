@@ -14,10 +14,18 @@ Related Tools:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime
 import os
 import sqlite3
 from pathlib import Path
+from typing import Literal
+
+from tools.adg.shared_modules.snapshot_registry import (
+    POINTER_FILENAMES,
+    SnapshotPointerError,
+    load_snapshot_pointer,
+)
 
 
 def connect_adg_snapshot_readonly(snapshot: Path, *, timeout: float = 5.0) -> sqlite3.Connection:
@@ -176,57 +184,145 @@ def _has_nodes_table(path: Path) -> bool:
     return _has_required_tables(path, ("nodes",))
 
 
-def latest_sqlite(
-    require_nodes_table: bool = False,
-    required_tables: tuple[str, ...] | None = None,
-) -> Path | None:
-    """Return the most recent adg_indexed_*.sqlite file in ADG_DIR.
+SnapshotSelection = Literal["latest", "certified", "repair", "candidate"]
 
-    Args:
-        require_nodes_table: If True, skip files without a `nodes` table
-            (filters out stub/sentinel snapshots even further).
-        required_tables: Optional table contract. When provided, skip files
-            missing any of these tables. Use this for gate consumers that need
-            materialized views, not just base `nodes`/`edges`.
 
-    Returns None if no SQLite files found.
-    """
+@dataclass(frozen=True)
+class SnapshotResolution:
+    """Resolved snapshot plus the provenance that authorized its use."""
+
+    path: Path
+    selection: SnapshotSelection
+    snapshot_id: str
+    certification_status: str
+    artifact_status: str
+    pointer_path: Path | None = None
+    digest_verified: bool = False
+
+
+def _is_valid_snapshot_file(path: Path) -> bool:
+    snapshot_id = path.stem.replace("adg_indexed_", "")
+    try:
+        datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
+        return True
+    except ValueError:
+        return False
+
+
+def _snapshot_search_dirs() -> tuple[Path, ...]:
+    """Return local then primary-checkout directories for pointer resolution."""
+    if os.environ.get("ADG_DIR"):
+        return (get_adg_dir().resolve(),)
+
+    repo_root = get_repo_root()
+    directories = [repo_root / "artifacts" / "adg"]
+    primary_root = _worktree_primary_root(repo_root)
+    if primary_root is not None and primary_root != repo_root:
+        directories.append(primary_root / "artifacts" / "adg")
+    return tuple(dict.fromkeys(path.resolve() for path in directories))
+
+
+def _latest_candidate(required_tables: tuple[str, ...]) -> Path | None:
     adg_dir = get_adg_dir()
     if not adg_dir.exists():
         return None
+    candidates = [
+        path
+        for path in adg_dir.glob("adg_indexed_*.sqlite")
+        if _is_valid_snapshot_file(path)
+    ]
+    for candidate in sorted(
+        candidates,
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    ):
+        if not required_tables or _has_required_tables(candidate, required_tables):
+            return candidate
+    return None
 
-    files = list(adg_dir.glob("adg_indexed_*.sqlite"))
-    if not files:
-        return None
 
-    def _is_valid_snapshot_file(path: Path) -> bool:
-        snapshot_id = path.stem.replace("adg_indexed_", "")
+def resolve_snapshot(
+    *,
+    selection: SnapshotSelection = "latest",
+    require_nodes_table: bool = False,
+    required_tables: tuple[str, ...] | None = None,
+    verify_digest: bool = False,
+    strict: bool = False,
+) -> SnapshotResolution | None:
+    """Resolve an explicitly selected snapshot role without role fallback."""
+    if selection not in {"latest", "certified", "repair", "candidate"}:
+        raise ValueError(f"unsupported ADG snapshot selection: {selection!r}")
+
+    requested = tuple(required_tables or ())
+    tables = tuple(
+        dict.fromkeys(
+            requested + (("nodes",) if require_nodes_table else ())
+        )
+    )
+    if selection == "latest":
+        selected = _latest_candidate(tables)
+        if selected is None:
+            if strict:
+                raise SnapshotPointerError("latest ADG snapshot is missing")
+            return None
+        return SnapshotResolution(
+            path=selected,
+            selection="latest",
+            snapshot_id=selected.stem.replace("adg_indexed_", ""),
+            certification_status="unknown",
+            artifact_status="candidate",
+        )
+
+    role = selection
+    for adg_dir in _snapshot_search_dirs():
+        pointer_path = adg_dir / POINTER_FILENAMES[role]
+        if not pointer_path.exists():
+            continue
         try:
-            datetime.strptime(snapshot_id, "%m%d%Y_%H%M")
-            return True
-        except ValueError:
-            return False
+            pointer = load_snapshot_pointer(
+                adg_dir,
+                role,
+                verify_digest=verify_digest,
+            )
+            if tables and not _has_required_tables(pointer.path, tables):
+                raise SnapshotPointerError(
+                    f"{role} snapshot missing required tables: "
+                    + ", ".join(tables)
+                )
+        except SnapshotPointerError:
+            if strict:
+                raise
+            return None
+        return SnapshotResolution(
+            path=pointer.path,
+            selection=selection,
+            snapshot_id=pointer.snapshot_id,
+            certification_status=pointer.certification_status,
+            artifact_status=pointer.artifact_status,
+            pointer_path=pointer.pointer_path,
+            digest_verified=pointer.digest_verified,
+        )
 
-    valid_files = [p for p in files if _is_valid_snapshot_file(p)]
-    if not valid_files:
-        return None
+    if strict:
+        raise SnapshotPointerError(f"{role} snapshot pointer is missing")
+    return None
 
-    # Sort by mtime descending for selection
-    sorted_files = sorted(valid_files, key=lambda p: p.stat().st_mtime, reverse=True)
 
-    if required_tables:
-        for candidate in sorted_files:
-            if _has_required_tables(candidate, required_tables):
-                return candidate
-        return None
-
-    if require_nodes_table:
-        for candidate in sorted_files:
-            if _has_nodes_table(candidate):
-                return candidate
-        return None
-
-    return sorted_files[0]
+def latest_sqlite(
+    require_nodes_table: bool = False,
+    required_tables: tuple[str, ...] | None = None,
+    *,
+    selection: SnapshotSelection = "latest",
+    verify_digest: bool = False,
+) -> Path | None:
+    """Return the selected SQLite snapshot, retaining latest as the default."""
+    resolved = resolve_snapshot(
+        selection=selection,
+        require_nodes_table=require_nodes_table,
+        required_tables=required_tables,
+        verify_digest=verify_digest,
+    )
+    return resolved.path if resolved else None
 
 
 def get_reports_dir() -> Path:
