@@ -482,7 +482,7 @@ def _probe_sqlite_read(db_path: Path) -> tuple[bool, str]:
             return False, f"read_failed: {exc}"
         finally:
             conn.close()
-    except sqlite3.OperationalError as exc:
+    except sqlite3.Error as exc:
         return False, f"open_failed: {exc}"
     except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as exc:
         return False, f"unexpected: {exc}"
@@ -551,6 +551,7 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
         journal_mode = row[0] if row else "unknown"
         c.close()
     except (
+        sqlite3.Error,
         AttributeError,
         OSError,
         RuntimeError,
