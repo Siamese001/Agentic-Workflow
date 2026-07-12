@@ -1,4 +1,10 @@
-"""apps_research -> apps_rg targeting-brief handoff contract."""
+"""apps_research -> apps_rg targeting-brief handoff contract.
+
+The producer may only publish ``briefing.md`` after the generic package-driven
+Exit binding emits ``X3D_ALLOW_FINISH``. Runtime GateVerdicts are evidence;
+they never mint X3. The envelope carries a digest-bound projection of the
+canonical Exit result for apps_rg U0 verification.
+"""
 
 from __future__ import annotations
 
@@ -13,6 +19,26 @@ from typing import Any, Mapping
 from agentic_core.L3_orchestration.exit_eval.dimension import Dimension, GraderClass
 from agentic_core.L3_orchestration.exit_eval.graders.base import GraderError
 from agentic_core.L3_orchestration.exit_eval.judges.google_judge import GoogleJudge
+from agentic_core.runtime.contracts.sealed_workflow_types import SealedWorkflowPackage
+from agentic_core.runtime.exit.apps_research_exit_binding import (
+    exit_bind_and_finalize_apps_research,
+)
+from agentic_core.runtime.exit.exit_disposition import (
+    X3D_ALLOW_FINISH,
+    ExitDispositionReceipt,
+    ExitReviewPacket,
+    RuntimeExhaustBundle,
+)
+from agentic_core.runtime.exit.exit_package_driven_binding import ExitInput, ExitPolicy
+from agentic_core.runtime.gates.gate_profile_resolver import GateProfile
+from agentic_core.runtime.gates.gate_types import (
+    GateMeshResult,
+    GateVerdict,
+    build_gate_mesh_result,
+)
+from apps_research.types.apps_rg_targeting_brief_contract import (
+    validate_targeting_brief_text,
+)
 
 APPS_RG_HANDOFF_GENERATION_PROVIDER = "external_openai"
 APPS_RG_HANDOFF_JUDGE_NAME = "gemini_pro"
@@ -21,6 +47,8 @@ APPS_RG_HANDOFF_JUDGE_MODEL = "gemini-3.1-pro-preview"
 APPS_RG_HANDOFF_X2_THRESHOLD = 0.75
 APPS_RG_HANDOFF_JUDGE_MAX_TOKENS = 4096
 APPS_RG_HANDOFF_X2_MAX_ATTEMPTS = 2
+APPS_RG_HANDOFF_EXIT_PROFILE_ID = "apps_research.apps_rg_handoff.exit.v1"
+APPS_RG_HANDOFF_GATE_MESH_SCHEMA = "apps_research.apps_rg_handoff_gate_mesh.v1"
 _RETRYABLE_JUDGE_PARSE_MARKERS = (
     "no JSON object",
     "incomplete JSON object",
@@ -28,6 +56,29 @@ _RETRYABLE_JUDGE_PARSE_MARKERS = (
     "judge response was not JSON",
     "response had no text part",
 )
+_HANDOFF_REQUIRED_GATE_IDS = (
+    "G5_ANSWER_PRESENT",
+    "G6_ANSWER_RELEVANT",
+    "G7_FACTUAL_CLAIMS_HAVE_EVIDENCE",
+    "G21_OUTPUT_SCHEMA",
+    "G24_REPLAY_ELIGIBLE",
+    "G26_EXIT_ELIGIBILITY",
+)
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class AppsRgHandoffExitAuthorization:
+    """Canonical Exit artifacts required before publishing the handoff."""
+
+    gate_mesh_result: GateMeshResult
+    sealed_workflow_package: SealedWorkflowPackage
+    exit_review_packet: ExitReviewPacket
+    exit_disposition_receipt: ExitDispositionReceipt
+    runtime_exhaust_bundle: RuntimeExhaustBundle
+
+    @property
+    def allows_finish(self) -> bool:
+        return self.exit_disposition_receipt.x3_code == X3D_ALLOW_FINISH
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -41,10 +92,26 @@ class AppsRgTargetingArtifactBundle:
     envelope_path: Path
     metadata_path: Path
     envelope: dict[str, Any]
+    gate_mesh_path: Path | None = None
+    sealed_workflow_path: Path | None = None
+    exit_review_path: Path | None = None
+    exit_disposition_path: Path | None = None
+    runtime_exhaust_path: Path | None = None
 
 
 def sha256_text(text: str) -> str:
     return hashlib.sha256(str(text or "").encode("utf-8")).hexdigest()
+
+
+def _sha256_json(payload: Any) -> str:
+    raw = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
 def looks_like_stub_company_brief(text: str) -> bool:
@@ -226,6 +293,309 @@ def validate_apps_rg_handoff_sidecar(
     return True, "ok"
 
 
+def _verdict(
+    *,
+    gate_id: str,
+    result: str,
+    run_id: str,
+    trace_root: str,
+    packet_ref: str,
+    reason_code: str,
+    score: float = 0.0,
+    threshold: float = 0.0,
+    evidence_refs: tuple[str, ...] = (),
+) -> GateVerdict:
+    evaluated_at = datetime.now(timezone.utc).isoformat()
+    severity = "hard_fail" if result == "FAIL" else "warn" if result == "WARN" else "advisory"
+    payload = {
+        "gate_id": gate_id,
+        "result": result,
+        "run_id": run_id,
+        "trace_root": trace_root,
+        "packet_ref": packet_ref,
+        "reason_code": reason_code,
+        "score": score,
+        "threshold": threshold,
+        "evidence_refs": list(evidence_refs),
+        "evaluated_at": evaluated_at,
+    }
+    return GateVerdict(
+        gate_id=gate_id,
+        gate_family="apps_research_apps_rg_handoff",
+        evaluated_stage="Exit",
+        evaluated_surface="apps_rg_targeting_brief",
+        evaluated_packet_ref=packet_ref,
+        result=result,
+        severity=severity,
+        reason_codes=(reason_code,),
+        score=score,
+        threshold=threshold,
+        evidence_refs=evidence_refs,
+        confidence=score if score else (1.0 if result == "PASS" else 0.0),
+        deterministic_digest=_sha256_json(payload),
+        request_id=run_id,
+        run_id=run_id,
+        trace_root=trace_root,
+        evidence_digest=_sha256_json(
+            {
+                "packet_ref": packet_ref,
+                "evidence_refs": list(evidence_refs),
+                "reason_code": reason_code,
+            }
+        ),
+        evaluator_version=APPS_RG_HANDOFF_GATE_MESH_SCHEMA,
+        evaluated_at=evaluated_at,
+        unknown_reason=reason_code if result == "UNKNOWN" else "",
+        created_at=evaluated_at,
+    )
+
+
+def build_apps_rg_handoff_gate_mesh(
+    *,
+    run_id: str,
+    trace_root: str,
+    briefing_text: str,
+    jd_text: str,
+    sidecar: Mapping[str, Any] | None,
+) -> GateMeshResult:
+    """Build current-run GateVerdicts; Exit remains the sole X3 authority."""
+    brief_sha = sha256_text(briefing_text)
+    jd_sha = sha256_text(jd_text) if jd_text else ""
+    sidecar_map = dict(sidecar or {})
+    x2 = sidecar_map.get("x2_judge_receipt")
+    x2_map = dict(x2) if isinstance(x2, Mapping) else {}
+
+    answer_present = bool(briefing_text.strip()) and not looks_like_stub_company_brief(briefing_text)
+    validation = validate_targeting_brief_text(
+        briefing_text,
+        jd_text=jd_text,
+        profile="apps_rg",
+    )
+    source_register = sidecar_map.get("source_register")
+    source_rows = list(source_register) if isinstance(source_register, (list, tuple)) else []
+    evidence_present = any(
+        isinstance(row, Mapping) and bool(row.get("has_content"))
+        for row in source_rows
+    )
+    sidecar_sha = str(sidecar_map.get("brief_text_sha256") or "").strip()
+    replay_ok = bool(run_id and brief_sha and (not sidecar_sha or sidecar_sha == brief_sha))
+    sidecar_eligible, sidecar_reason = validate_apps_rg_handoff_sidecar(
+        sidecar_map,
+        expected_brief_sha=brief_sha,
+    )
+
+    x2_status = str(x2_map.get("status") or "UNKNOWN").upper()
+    if x2_judge_receipt_passes(x2_map):
+        x2_result = "PASS"
+        x2_reason = "model_backed_x2_pass"
+    elif x2_status == "UNKNOWN":
+        x2_result = "UNKNOWN"
+        x2_reason = "model_backed_x2_unknown"
+    else:
+        x2_result = "FAIL"
+        x2_reason = str(x2_map.get("reason") or "model_backed_x2_fail")
+    try:
+        x2_score = float(x2_map.get("score") or 0.0)
+        x2_threshold = float(x2_map.get("threshold") or APPS_RG_HANDOFF_X2_THRESHOLD)
+    except (TypeError, ValueError):
+        x2_score = 0.0
+        x2_threshold = APPS_RG_HANDOFF_X2_THRESHOLD
+
+    verdicts = (
+        _verdict(
+            gate_id="G5_ANSWER_PRESENT",
+            result="PASS" if answer_present else "FAIL",
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code="brief_present_non_stub" if answer_present else "brief_missing_or_stub",
+            evidence_refs=(brief_sha,),
+        ),
+        _verdict(
+            gate_id="G6_ANSWER_RELEVANT",
+            result=x2_result,
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code=x2_reason,
+            score=x2_score,
+            threshold=x2_threshold,
+            evidence_refs=(str(x2_map.get("judge_model") or ""),),
+        ),
+        _verdict(
+            gate_id="G7_FACTUAL_CLAIMS_HAVE_EVIDENCE",
+            result="PASS" if evidence_present else "FAIL",
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code="source_register_present" if evidence_present else "source_register_empty",
+            evidence_refs=tuple(
+                str(row.get("family") or "")
+                for row in source_rows
+                if isinstance(row, Mapping) and row.get("has_content")
+            ),
+        ),
+        _verdict(
+            gate_id="G21_OUTPUT_SCHEMA",
+            result="PASS" if validation.valid else "FAIL",
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code=(
+                "targeting_brief_contract_valid"
+                if validation.valid
+                else "targeting_brief_contract_invalid:"
+                + ",".join(validation.violations[:8])
+            ),
+            evidence_refs=(brief_sha,),
+        ),
+        _verdict(
+            gate_id="G24_REPLAY_ELIGIBLE",
+            result="PASS" if replay_ok else "FAIL",
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code="digest_lineage_bound" if replay_ok else "digest_lineage_mismatch",
+            evidence_refs=tuple(ref for ref in (brief_sha, jd_sha, sidecar_sha) if ref),
+        ),
+        _verdict(
+            gate_id="G26_EXIT_ELIGIBILITY",
+            result="PASS" if sidecar_eligible else "FAIL",
+            run_id=run_id,
+            trace_root=trace_root,
+            packet_ref=brief_sha,
+            reason_code="handoff_sidecar_eligible" if sidecar_eligible else sidecar_reason,
+            evidence_refs=(brief_sha,),
+        ),
+    )
+    return build_gate_mesh_result(
+        request_id=run_id,
+        run_id=run_id,
+        trace_root=trace_root,
+        route_id="apps_research.company_brief_v1",
+        evaluated_surface="apps_rg_targeting_brief",
+        evaluated_packet_ref=brief_sha,
+        required_gate_ids=_HANDOFF_REQUIRED_GATE_IDS,
+        verdicts=verdicts,
+    )
+
+
+def _seal_exit_receipt(
+    *,
+    receipt: ExitDispositionReceipt,
+    output_artifact_digest: str,
+) -> ExitDispositionReceipt:
+    seed = receipt.as_dict()
+    seed["deterministic_digest"] = ""
+    seed["output_artifact_digest"] = output_artifact_digest
+    digest = _sha256_json(seed)
+    return dataclasses.replace(
+        receipt,
+        output_artifact_digest=output_artifact_digest,
+        deterministic_digest=digest,
+    )
+
+
+class _ExitGateMeshProxy:
+    """Compatibility proxy for generic Exit bindings expecting ``summarize``."""
+
+    def __init__(self, mesh: GateMeshResult) -> None:
+        self._mesh = mesh
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._mesh, name)
+
+    def summarize(self) -> dict[str, Any]:
+        return self._mesh.as_dict()
+
+
+def run_apps_rg_handoff_exit_authorization(
+    *,
+    run_id: str,
+    trace_root: str,
+    briefing_text: str,
+    jd_text: str,
+    sidecar: Mapping[str, Any] | None,
+) -> AppsRgHandoffExitAuthorization:
+    """Run GateMesh -> package-driven Exit and return the canonical X3 artifacts."""
+    brief_sha = sha256_text(briefing_text)
+    mesh = build_apps_rg_handoff_gate_mesh(
+        run_id=run_id,
+        trace_root=trace_root,
+        briefing_text=briefing_text,
+        jd_text=jd_text,
+        sidecar=sidecar,
+    )
+    sealed = SealedWorkflowPackage(
+        package_id=f"apps_research:{run_id}:apps_rg_targeting_brief",
+        route_contract_ref="apps_research.company_brief_v1",
+        workflow_ref="apps_research.single_step.targeting_brief",
+        workflow_id=run_id,
+        run_id=run_id,
+        app_context="apps_research",
+        trace_root=trace_root,
+        completed_at=datetime.now(timezone.utc).isoformat(),
+        merged_content=briefing_text,
+        merged_content_digest=brief_sha,
+        merged_payload_digest=brief_sha,
+        runtime_gate_refs=(mesh.deterministic_digest,),
+        terminal_class="success" if briefing_text.strip() else "failed",
+        decisive_reason="targeting_brief_candidate_sealed_for_exit",
+        replay_manifest=json.dumps(
+            {
+                "run_id": run_id,
+                "trace_root": trace_root,
+                "brief_sha256": brief_sha,
+                "jd_sha256": sha256_text(jd_text) if jd_text else "",
+                "gate_mesh_digest": mesh.deterministic_digest,
+            },
+            sort_keys=True,
+        ),
+    )
+    gate_profile = GateProfile(
+        profile_id=APPS_RG_HANDOFF_EXIT_PROFILE_ID,
+        app_id="apps_research",
+        task_class="company_brief",
+        version="1",
+        required_exit_gates=_HANDOFF_REQUIRED_GATE_IDS,
+        gate_definitions={
+            gate_id: {"required": "always"} for gate_id in _HANDOFF_REQUIRED_GATE_IDS
+        },
+    )
+    review, receipt, exhaust = exit_bind_and_finalize_apps_research(
+        gate_profile=gate_profile,
+        exit_policy=ExitPolicy(),
+        exit_input=ExitInput(
+            sealed_l2_artifact=sealed,
+            gate_mesh_result=_ExitGateMeshProxy(mesh),
+            evidence={
+                "brief_sha256": brief_sha,
+                "jd_sha256": sha256_text(jd_text) if jd_text else "",
+            },
+        ),
+        request_id=run_id,
+        run_id=run_id,
+        trace_root=trace_root,
+        route_id="apps_research.company_brief_v1",
+        commit_requested=False,
+    )
+    receipt = _seal_exit_receipt(
+        receipt=receipt,
+        output_artifact_digest=brief_sha,
+    )
+    exhaust = dataclasses.replace(
+        exhaust,
+        exit_disposition_ref=receipt.deterministic_digest,
+    )
+    return AppsRgHandoffExitAuthorization(
+        gate_mesh_result=mesh,
+        sealed_workflow_package=sealed,
+        exit_review_packet=review,
+        exit_disposition_receipt=receipt,
+        runtime_exhaust_bundle=exhaust,
+    )
+
+
 def build_apps_rg_handoff_envelope(
     *,
     sidecar: Mapping[str, Any],
@@ -235,19 +605,33 @@ def build_apps_rg_handoff_envelope(
     briefing_text: str,
     jd_text: str,
     generated_at_utc: str,
+    exit_authorization: AppsRgHandoffExitAuthorization,
     briefing_path: str = "",
     company_brief_path: str = "",
+    exit_disposition_path: str = "",
 ) -> dict[str, Any]:
-    """Build the authoritative apps_research handoff envelope."""
+    """Build a digest-bound handoff envelope from canonical Exit artifacts."""
     expected_brief_sha = sha256_text(briefing_text)
     if looks_like_stub_company_brief(briefing_text):
         raise RuntimeError("apps_research targeting run produced stub-like handoff brief")
-    eligible, reason = validate_apps_rg_handoff_sidecar(
-        sidecar,
-        expected_brief_sha=expected_brief_sha,
-    )
-    if not eligible:
-        raise RuntimeError(f"apps_research targeting handoff not eligible: {reason}")
+    if not exit_authorization.allows_finish:
+        receipt = exit_authorization.exit_disposition_receipt
+        raise RuntimeError(
+            "apps_research canonical Exit did not authorize handoff: "
+            f"x3={receipt.x3_code} reason={receipt.decisive_reason}"
+        )
+
+    receipt = exit_authorization.exit_disposition_receipt
+    review = exit_authorization.exit_review_packet
+    mesh = exit_authorization.gate_mesh_result
+    exhaust = exit_authorization.runtime_exhaust_bundle
+    sealed = exit_authorization.sealed_workflow_package
+    if receipt.output_artifact_digest != expected_brief_sha:
+        raise RuntimeError("canonical Exit output digest does not match briefing")
+    if receipt.gate_mesh_result_ref != mesh.deterministic_digest:
+        raise RuntimeError("canonical Exit gate mesh digest mismatch")
+    if exhaust.exit_disposition_ref != receipt.deterministic_digest:
+        raise RuntimeError("runtime exhaust is not bound to canonical Exit receipt")
 
     emitted_at = datetime.fromisoformat(generated_at_utc.replace("Z", "+00:00"))
     expires_at = emitted_at + timedelta(days=7)
@@ -255,35 +639,41 @@ def build_apps_rg_handoff_envelope(
     x2_receipt = dict(sidecar.get("x2_judge_receipt") or {})
     score = x2_receipt.get("score")
     threshold = x2_receipt.get("threshold")
-    x1_x3_authorization = {
+    x1_x3_projection = {
         "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
+        "authority_source": "agentic_core.runtime.exit.ExitPackageDrivenBinding",
+        "authoritative": False,
         "run_id": run_id,
         "brief_sha256": expected_brief_sha,
         "jd_sha256": jd_sha,
+        "exit_disposition_receipt_digest": receipt.deterministic_digest,
         "x1": {
-            "gate_id": "X1_TARGETING_BRIEF_CONTRACT",
-            "status": "PASS",
-            "evidence": "brief text present, non-stub, digest-bound",
+            "gate_id": "X1_CANONICAL_EXIT_CHECKOUT",
+            "status": "PASS" if review.x1_checkout_result.overall_pass else "FAIL",
+            "checks": review.x1_checkout_result.checks,
         },
         "x2": {
             "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
-            "status": "PASS",
+            "status": x2_receipt.get("status"),
             "score": score,
             "threshold": threshold,
             "judge_name": x2_receipt.get("judge_name"),
             "judge_provider": x2_receipt.get("judge_provider"),
             "judge_model": x2_receipt.get("judge_model"),
-            "model_backed": True,
+            "model_backed": x2_receipt.get("model_backed") is True,
             "provider_status": x2_receipt.get("provider_status"),
         },
         "x3": {
-            "gate_id": "X3_HANDOFF_AUTHORIZATION",
+            "gate_id": "X3_CANONICAL_EXIT_DISPOSITION",
             "status": "PASS",
             "disposition": "ALLOW",
-            "reason": "model_backed_x2_passed",
+            "canonical_x3_code": receipt.x3_code,
+            "reason": receipt.decisive_reason,
         },
     }
     return {
+        # Keep v1 envelope ID for reader compatibility; canonical Exit fields are additive
+        # and become mandatory for auto-research/U0 validation.
         "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
         "producer_app": "apps_research",
         "consumer_app": "apps_rg",
@@ -296,12 +686,24 @@ def build_apps_rg_handoff_envelope(
         "stub_detected": False,
         "is_stale": False,
         "handoff_eligible": True,
+        "canonical_exit_authorized": True,
         "generation_provider": sidecar.get("generation_provider"),
         "generation_model": sidecar.get("generation_model"),
         "provider_call_attempted": bool(sidecar.get("provider_call_attempted", True)),
         "brief_sha256": expected_brief_sha,
         "jd_sha256": jd_sha,
-        "apps_research_x1_x3_authorization": x1_x3_authorization,
+        "sealed_workflow_package_ref": sealed.package_id,
+        "sealed_workflow_package_digest": sealed.merged_content_digest,
+        "gate_mesh_result_digest": mesh.deterministic_digest,
+        "exit_disposition_receipt_digest": receipt.deterministic_digest,
+        "exit_disposition_receipt_path": exit_disposition_path,
+        "x3_code": receipt.x3_code,
+        "apps_research_gate_mesh_result": mesh.as_dict(),
+        "apps_research_exit_review_packet": review.as_dict(),
+        "apps_research_exit_disposition_receipt": receipt.as_dict(),
+        "apps_research_runtime_exhaust_bundle": exhaust.as_dict(),
+        # Compatibility projection only. The embedded canonical Exit receipt is authority.
+        "apps_research_x1_x3_authorization": x1_x3_projection,
         "apps_research_x2_judge_receipt": x2_receipt,
         "briefing_path": briefing_path,
         "company_brief_path": company_brief_path,
@@ -352,14 +754,11 @@ def persist_apps_rg_targeting_brief_artifacts(
     mode: str = "brief",
     depth_profile: str = "",
 ) -> AppsRgTargetingArtifactBundle:
-    """Validate and persist the apps_research-owned handoff bundle.
-
-    Both the direct apps_research CLI and the managed apps_rg bridge call this
-    writer. A handoff is not product evidence until every returned path exists.
-    """
+    """Authorize through canonical Exit, then persist the handoff bundle."""
     run_id = str(getattr(record, "run_id", "") or "").strip()
     if not run_id:
         raise RuntimeError("apps_research targeting run missing run_id")
+    trace_root = str(getattr(record, "trace_id", "") or run_id).strip()
     company = str(target_company or getattr(record, "topic", "") or "").strip()
     role = str(target_role or "").strip()
     if not company or not role:
@@ -376,6 +775,20 @@ def persist_apps_rg_targeting_brief_artifacts(
     if not sidecar:
         raise RuntimeError("apps_research targeting run missing apps_rg handoff sidecar")
 
+    authorization = run_apps_rg_handoff_exit_authorization(
+        run_id=run_id,
+        trace_root=trace_root,
+        briefing_text=briefing_text,
+        jd_text=str(jd_text or ""),
+        sidecar=sidecar,
+    )
+    if not authorization.allows_finish:
+        receipt = authorization.exit_disposition_receipt
+        raise RuntimeError(
+            "apps_research targeting handoff blocked by canonical Exit: "
+            f"x3={receipt.x3_code} reason={receipt.decisive_reason}"
+        )
+
     safe_run_id = "".join(
         char if char.isalnum() or char in "._-" else "_" for char in run_id
     ).strip("._-")
@@ -386,6 +799,11 @@ def persist_apps_rg_targeting_brief_artifacts(
     company_brief_path = run_dir / "company_brief.json"
     envelope_path = run_dir / "apps_research_briefing_envelope.json"
     metadata_path = run_dir / "run_metadata.json"
+    gate_mesh_path = run_dir / "apps_research_gate_mesh_result.json"
+    sealed_workflow_path = run_dir / "sealed_workflow_package.json"
+    exit_review_path = run_dir / "exit_review_packet.json"
+    exit_disposition_path = run_dir / "exit_disposition_receipt.json"
+    runtime_exhaust_path = run_dir / "runtime_exhaust_bundle.json"
     emitted_at = generated_at_utc or datetime.now(timezone.utc).isoformat()
     envelope = build_apps_rg_handoff_envelope(
         sidecar=sidecar,
@@ -395,16 +813,23 @@ def persist_apps_rg_targeting_brief_artifacts(
         briefing_text=briefing_text,
         jd_text=str(jd_text or ""),
         generated_at_utc=emitted_at,
+        exit_authorization=authorization,
         briefing_path=str(briefing_path.resolve()),
         company_brief_path=str(company_brief_path.resolve()),
+        exit_disposition_path=str(exit_disposition_path.resolve()),
     )
     payload = {
-        "schema_version": "apps_research.company_brief_artifact.v2",
+        "schema_version": "apps_research.company_brief_artifact.v3",
         "company": company,
         "run_id": run_id,
         "generated_at_utc": emitted_at,
         "targeting_format": "apps_rg_targeting_brief_v1",
         "company_brief_text": briefing_text,
+        "brief_sha256": sha256_text(briefing_text),
+        "exit_disposition_receipt_digest": (
+            authorization.exit_disposition_receipt.deterministic_digest
+        ),
+        "x3_code": authorization.exit_disposition_receipt.x3_code,
         "confidence_score": float(getattr(record, "confidence_score", 0.0) or 0.0),
         "support_coverage": float(getattr(record, "support_coverage", 0.0) or 0.0),
         "hop_terminal_error": str(getattr(record, "hop_terminal_error", "") or ""),
@@ -419,9 +844,69 @@ def persist_apps_rg_targeting_brief_artifacts(
         "company_brief_path": str(company_brief_path.resolve()),
         "briefing_path": str(briefing_path.resolve()),
         "apps_research_briefing_envelope_path": str(envelope_path.resolve()),
+        "gate_mesh_result_path": str(gate_mesh_path.resolve()),
+        "sealed_workflow_package_path": str(sealed_workflow_path.resolve()),
+        "exit_review_packet_path": str(exit_review_path.resolve()),
+        "exit_disposition_receipt_path": str(exit_disposition_path.resolve()),
+        "runtime_exhaust_bundle_path": str(runtime_exhaust_path.resolve()),
+        "exit_disposition_receipt_digest": (
+            authorization.exit_disposition_receipt.deterministic_digest
+        ),
+        "x3_code": authorization.exit_disposition_receipt.x3_code,
     }
 
+    # No producer artifact directory exists until canonical Exit authorizes X3D.
     run_dir.mkdir(parents=True, exist_ok=True)
+    gate_mesh_path.write_text(
+        json.dumps(
+            authorization.gate_mesh_result.as_dict(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    sealed_workflow_path.write_text(
+        json.dumps(
+            authorization.sealed_workflow_package.as_dict(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    exit_review_path.write_text(
+        json.dumps(
+            authorization.exit_review_packet.as_dict(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    exit_disposition_path.write_text(
+        json.dumps(
+            authorization.exit_disposition_receipt.as_dict(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    runtime_exhaust_path.write_text(
+        json.dumps(
+            authorization.runtime_exhaust_bundle.as_dict(),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     company_brief_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -436,6 +921,11 @@ def persist_apps_rg_targeting_brief_artifacts(
         encoding="utf-8",
     )
     for required in (
+        gate_mesh_path,
+        sealed_workflow_path,
+        exit_review_path,
+        exit_disposition_path,
+        runtime_exhaust_path,
         briefing_path,
         company_brief_path,
         envelope_path,
@@ -451,20 +941,29 @@ def persist_apps_rg_targeting_brief_artifacts(
         envelope_path=envelope_path.resolve(),
         metadata_path=metadata_path.resolve(),
         envelope=envelope,
+        gate_mesh_path=gate_mesh_path.resolve(),
+        sealed_workflow_path=sealed_workflow_path.resolve(),
+        exit_review_path=exit_review_path.resolve(),
+        exit_disposition_path=exit_disposition_path.resolve(),
+        runtime_exhaust_path=runtime_exhaust_path.resolve(),
     )
 
 
 __all__ = [
+    "APPS_RG_HANDOFF_EXIT_PROFILE_ID",
     "APPS_RG_HANDOFF_GENERATION_PROVIDER",
     "APPS_RG_HANDOFF_JUDGE_MODEL",
     "APPS_RG_HANDOFF_JUDGE_NAME",
     "APPS_RG_HANDOFF_JUDGE_PROVIDER",
     "APPS_RG_HANDOFF_X2_THRESHOLD",
+    "AppsRgHandoffExitAuthorization",
     "AppsRgTargetingArtifactBundle",
     "build_apps_rg_handoff_envelope",
+    "build_apps_rg_handoff_gate_mesh",
     "find_apps_rg_targeting_sidecar",
     "looks_like_stub_company_brief",
     "persist_apps_rg_targeting_brief_artifacts",
+    "run_apps_rg_handoff_exit_authorization",
     "run_apps_rg_handoff_x2_judge",
     "sha256_text",
     "validate_apps_rg_handoff_sidecar",
