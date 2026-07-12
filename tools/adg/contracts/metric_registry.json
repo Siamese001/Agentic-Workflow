@@ -1,0 +1,233 @@
+{
+  "registry_version": "1.0.0",
+  "metrics": [
+    {
+      "metric_id": "RH.TREND.D000",
+      "version": "1.0.0",
+      "name": "Snapshot aggregate deltas",
+      "health_dimension": "temporal",
+      "decision": "Determine whether repository-scale graph inventory, violation, provider, bypass, or debt totals changed from the selected prior snapshot.",
+      "definition": "The signed current-minus-prior deltas persisted in the single current snapshot regression-summary row.",
+      "formula": "current aggregate minus the same aggregate from the immediately preceding available Phase D baseline",
+      "source_table": "mv_snapshot_regression_summary",
+      "value_columns": [
+        "node_delta",
+        "edge_delta",
+        "violation_delta",
+        "cross_layer_delta",
+        "provider_delta",
+        "bypass_delta",
+        "debt_delta"
+      ],
+      "key_columns": [
+        "snapshot_id"
+      ],
+      "population": "All canonical nodes, edges, violations, eligible cross-layer imports and calls, provider invocations, non-UWG write paths, and Phase C debt rows in the current snapshot.",
+      "exclusions": [
+        "Rows excluded by the authoritative upstream materialized-view definitions."
+      ],
+      "unit": "signed_count_or_score_delta",
+      "normalization": "None; consumers must pair raw deltas with current and prior denominators.",
+      "exactness": "exact",
+      "confidence_derivation": "Exact for the selected prior snapshot when comparison_status is EXACT; unknown when comparison_status is NO_BASELINE.",
+      "baseline_strategy": "The prior in-file Phase D baseline, otherwise the newest readable prior adg_indexed SQLite artifact.",
+      "threshold_strategy": "Diagnostic only until certified-snapshot selection and normalized thresholds are implemented.",
+      "severity_mapping": "No automatic severity; downstream policy must evaluate each decomposed delta independently.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "The incremental implementation selects prior artifacts by modification time, not certification state.",
+        "Raw aggregate deltas do not identify which stable rows changed."
+      ],
+      "evidence_query": "SELECT * FROM mv_snapshot_regression_summary ORDER BY snapshot_id",
+      "consumers": [
+        "ADG health reporting",
+        "ADG regression diagnostics"
+      ],
+      "refresh_cadence": "Every full ADG materialization.",
+      "validation": "First run has zero deltas and NO_BASELINE; identical consecutive materializations have zero deltas and EXACT.",
+      "remediation": "Drill into the corresponding row-level Phase D metric before changing code or a baseline."
+    },
+    {
+      "metric_id": "RH.TREND.D001",
+      "version": "1.0.0",
+      "name": "New critical-path memberships",
+      "health_dimension": "temporal",
+      "decision": "Identify modules that newly crossed into the configured critical-path population.",
+      "definition": "Count of current critical-path rows whose stable module key was absent from an available prior snapshot.",
+      "formula": "COUNT(*) WHERE is_new = 1",
+      "source_table": "mv_newly_introduced_critical_paths",
+      "value_columns": [
+        "is_new",
+        "criticality_score",
+        "prev_score",
+        "delta"
+      ],
+      "key_columns": [
+        "adg_name",
+        "file"
+      ],
+      "population": "Current module rows with criticality_score greater than 5.0.",
+      "exclusions": [
+        "Rows at or below the Phase D criticality threshold."
+      ],
+      "unit": "module_membership_count",
+      "normalization": "Report count and current critical-path population; do not interpret the raw count as repository health alone.",
+      "exactness": "exact",
+      "confidence_derivation": "1.0 for exact stable-key membership comparison; unknown without a prior baseline.",
+      "baseline_strategy": "Compare adg_name plus resolved file path to the immediately preceding available Phase D population.",
+      "threshold_strategy": "Diagnostic; rank by score and score delta until an approved certified baseline exists.",
+      "severity_mapping": "Severity is inherited from the affected layer and downstream decision contract, not from is_new alone.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "A module rename or move creates a new stable key in this pre-schema-v5 implementation."
+      ],
+      "evidence_query": "SELECT adg_name, file, layer, criticality_score, prev_score, delta FROM mv_newly_introduced_critical_paths WHERE is_new = 1 ORDER BY criticality_score DESC, adg_name",
+      "consumers": [
+        "ADG hotspot reporting",
+        "Refactor planning"
+      ],
+      "refresh_cadence": "Every full ADG materialization.",
+      "validation": "Identical consecutive populations yield zero new rows; adding one stable module key yields exactly one new row.",
+      "remediation": "Inspect fan-in, fan-out, violations, changed files, and impacted tests for each newly critical module."
+    },
+    {
+      "metric_id": "RH.TREND.D002",
+      "version": "1.0.0",
+      "name": "New cross-layer dependency groups",
+      "health_dimension": "temporal",
+      "decision": "Identify newly present directed layer-to-layer relation groups and distinguish them from growth inside an existing group.",
+      "definition": "Count of current directed source-layer, destination-layer, and relation-type groups absent from an available prior snapshot.",
+      "formula": "COUNT(*) WHERE is_new = 1; edge_delta is current group edge_count minus prior group edge_count",
+      "source_table": "mv_new_cross_layer_dependencies",
+      "value_columns": [
+        "is_new",
+        "edge_count",
+        "prev_edge_count",
+        "edge_delta"
+      ],
+      "key_columns": [
+        "src_layer",
+        "dst_layer",
+        "relation_type"
+      ],
+      "population": "Non-test cross-layer imports, calls, and violates relations with non-empty source and destination layers.",
+      "exclusions": [
+        "Same-layer relations.",
+        "Relations emitted from tests paths.",
+        "Relations other than imports, calls, and violates."
+      ],
+      "unit": "dependency_group_count",
+      "normalization": "Report group membership separately from within-group edge_delta.",
+      "exactness": "exact",
+      "confidence_derivation": "1.0 for exact stable group-key comparison; unknown without a prior baseline.",
+      "baseline_strategy": "Compare the directed layer-pair and relation-type key to the immediately preceding available Phase D population.",
+      "threshold_strategy": "Use versioned layer policy for severity; do not classify a group as harmful solely because it is new.",
+      "severity_mapping": "Illegal policy transitions inherit policy severity; otherwise diagnostic.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "The table is grouped by layers and relation type, not by individual stable edge key."
+      ],
+      "evidence_query": "SELECT src_layer, dst_layer, relation_type, edge_count, prev_edge_count, edge_delta FROM mv_new_cross_layer_dependencies WHERE is_new = 1 ORDER BY edge_count DESC, src_layer, dst_layer, relation_type",
+      "consumers": [
+        "Architecture conformance reporting",
+        "Layer-boundary diagnostics"
+      ],
+      "refresh_cadence": "Every full ADG materialization.",
+      "validation": "Growth in an existing group leaves is_new at zero and changes edge_delta; a new group key yields exactly one new row.",
+      "remediation": "Inspect the underlying edges and either route through an approved boundary or document the sanctioned dependency."
+    },
+    {
+      "metric_id": "RH.TREND.D003",
+      "version": "1.0.0",
+      "name": "New provider surfaces",
+      "health_dimension": "temporal",
+      "decision": "Identify production caller-to-provider surfaces that appeared since the selected prior snapshot.",
+      "definition": "Count of current caller file, caller layer, provider name, and provider path groups absent from an available prior snapshot.",
+      "formula": "COUNT(*) WHERE is_new = 1; invocation_delta is current invocation_count minus prior invocation_count",
+      "source_table": "mv_new_provider_surfaces",
+      "value_columns": [
+        "is_new",
+        "invocation_count",
+        "prev_invocation_count",
+        "invocation_delta"
+      ],
+      "key_columns": [
+        "caller_file",
+        "caller_layer",
+        "provider_name",
+        "provider_path"
+      ],
+      "population": "Non-test and non-tools invokes_provider relations grouped by caller and provider surface.",
+      "exclusions": [
+        "Callers under tests paths.",
+        "Callers under tools paths."
+      ],
+      "unit": "provider_surface_count",
+      "normalization": "Report new surface count with the total current provider-surface population.",
+      "exactness": "exact",
+      "confidence_derivation": "1.0 for exact stable surface-key comparison; unknown without a prior baseline.",
+      "baseline_strategy": "Compare the caller/provider surface key to the immediately preceding available Phase D population.",
+      "threshold_strategy": "Diagnostic until provider policy maps approved and unapproved surfaces.",
+      "severity_mapping": "Provider-policy violations inherit policy severity; approved new surfaces remain informational.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "Caller or provider renames and moves create new keys before schema-v5 stable identities exist."
+      ],
+      "evidence_query": "SELECT caller_file, caller_layer, provider_name, provider_path, invocation_count, prev_invocation_count, invocation_delta FROM mv_new_provider_surfaces WHERE is_new = 1 ORDER BY invocation_count DESC, caller_file, provider_name",
+      "consumers": [
+        "Provider-governance reporting",
+        "Cost and egress review"
+      ],
+      "refresh_cadence": "Every full ADG materialization.",
+      "validation": "Identical consecutive surfaces yield zero new rows; replacing a surface at constant aggregate count still yields the replacement as new.",
+      "remediation": "Verify routing, credentials, egress controls, observability, caching, and approved-provider policy for each new surface."
+    },
+    {
+      "metric_id": "RH.TREND.D004",
+      "version": "1.0.0",
+      "name": "New write-bypass paths",
+      "health_dimension": "security_governance",
+      "decision": "Identify a non-UWG durable-write call site that was not present in the selected prior snapshot.",
+      "definition": "Count of current non-UWG write rows whose stable source-location key was absent from an available prior snapshot.",
+      "formula": "COUNT(*) WHERE is_new = 1",
+      "source_table": "mv_new_write_bypass_paths",
+      "value_columns": [
+        "is_new",
+        "severity",
+        "is_direct_infra_write"
+      ],
+      "key_columns": [
+        "writer_file",
+        "writer_layer",
+        "write_symbol",
+        "write_line",
+        "source_file"
+      ],
+      "population": "Current Phase A write-sovereignty rows where is_uwg_routed equals zero.",
+      "exclusions": [
+        "Writes excluded by the authoritative Phase A write-sovereignty contract.",
+        "UWG-routed writes."
+      ],
+      "unit": "write_path_count",
+      "normalization": "No composite normalization; every new bypass retains its own evidence and severity.",
+      "exactness": "exact",
+      "confidence_derivation": "1.0 when comparison_status is EXACT; conservative legacy match when LEGACY_COARSE; unknown when NO_BASELINE.",
+      "baseline_strategy": "Compare writer file, layer, symbol, line, and source file to the immediately preceding available Phase D population.",
+      "threshold_strategy": "Any exact new bypass is eligible for the existing P0 write-sovereignty policy; NO_BASELINE must not be treated as pass or new.",
+      "severity_mapping": "Use the Phase A severity and direct-infrastructure classification without overriding them from aggregate count changes.",
+      "minimum_sample_size": 1,
+      "limitations": [
+        "One upgrade cycle may use LEGACY_COARSE matching because the previous Phase D schema omitted source location.",
+        "The pre-schema-v5 key changes when a call site moves to another line."
+      ],
+      "evidence_query": "SELECT edge_id, writer_file, writer_layer, write_symbol, write_line, source_file, severity, is_direct_infra_write FROM mv_new_write_bypass_paths WHERE is_new = 1 ORDER BY severity, writer_file, write_line, write_symbol",
+      "consumers": [
+        "P0 write-sovereignty gate",
+        "Write-surface health reporting"
+      ],
+      "refresh_cadence": "Every full ADG materialization.",
+      "validation": "An unchanged critical bypass is not new; replacing one bypass with another at constant aggregate count identifies only the replacement as new.",
+      "remediation": "Route the write through UWG or correct an upstream scanner false positive with exact evidence."
+    }
+  ]
+}
