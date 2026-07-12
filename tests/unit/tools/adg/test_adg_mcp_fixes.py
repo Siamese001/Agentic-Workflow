@@ -216,10 +216,14 @@ class TestLatestOnlyGateProbe:
 
 
 def _load_adg_server_module():
-    """Import the server with its optional MCP transport isolated."""
+    """Import the server with an identity-decorator MCP test transport."""
+    fake_mcp = MagicMock()
+    fake_mcp.tool.side_effect = lambda *args, **kwargs: (
+        lambda function: function
+    )
     with patch(
         "tools.mcp.mcp_bootstrap.create_mcp_server",
-        return_value=MagicMock(),
+        return_value=fake_mcp,
     ):
         return importlib.import_module("tools.adg.mcp.server")
 
