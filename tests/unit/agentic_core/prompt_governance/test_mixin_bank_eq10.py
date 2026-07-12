@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.prompt_governance.mixins import (
+from agentic_core.prompt_governance import (
     BUNDLED_MIXIN_IDS,
     MixinNotFoundError,
     bundled_mixin_content_hash,

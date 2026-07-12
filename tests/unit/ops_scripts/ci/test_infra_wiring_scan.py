@@ -196,6 +196,21 @@ class TestScanDirectory:
             for path in violations
         )
 
+    @pytest.mark.parametrize(
+        "relative_path",
+        [
+            "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+            "apps_rg/runtime/c03_graph_sqlite_context.py",
+            "apps_rg/runtime/doctor.py",
+        ],
+    )
+    def test_apps_rg_p0_infra_consumers_use_sanctioned_adapters(
+        self, relative_path: str
+    ) -> None:
+        """Regression guard for the 07112026_1937 infra-wiring blockers."""
+        root = Path(__file__).resolve().parents[4]
+        assert scan_file(root / relative_path) is None
+
     def test_search_retrieval_reach_absorb_is_documented(self) -> None:
         """Regression guard for the one-file G_REACH ratchet absorb."""
         root = Path(__file__).resolve().parents[4]

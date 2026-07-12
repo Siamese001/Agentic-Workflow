@@ -21,10 +21,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sqlite3
 from collections import defaultdict, deque
 from datetime import datetime, timezone
 from typing import Any, Iterable
+
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 GRAPH_INDEX_SCHEMA_VERSION = "apps_rg.graph_sqlite_path_index.v1"
 

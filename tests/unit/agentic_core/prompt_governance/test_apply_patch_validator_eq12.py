@@ -2,13 +2,10 @@
 
 from __future__ import annotations
 
-import pytest
-
-from agentic_core.prompt_governance.validation.apply_patch_validator import (
+from agentic_core.prompt_governance import (
     ApplyPatchReport,
     validate_apply_patch,
 )
-
 
 _CANONICAL = """Some preamble prose the model may add.
 

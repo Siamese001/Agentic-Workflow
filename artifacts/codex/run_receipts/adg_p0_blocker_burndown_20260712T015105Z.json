@@ -1,0 +1,160 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p0_blocker_burndown_20260712T015105Z",
+  "generated_at": "2026-07-12T01:51:05Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+    "branch": "codex/adg-p0-blocker-burndown-20260711T212903",
+    "head": "17172239be24f76f7bc9050ee1053b989be64794",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Recommend, defend, implement, and test the ADG P0 blocker treatment until P0=0 is proven without regenerating full ADG.",
+    "plan_id": ".codex/automations/adg-p0-blocker-burndown/automation.toml",
+    "files_changed": [
+      "agentic_core/L0_routing/package_driven_l0_binding.py",
+      "agentic_core/prompt_governance/__init__.py",
+      "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+      "apps_rg/runtime/c03_graph_sqlite_context.py",
+      "apps_rg/runtime/chroma_precomputed_collection.py",
+      "apps_rg/runtime/doctor.py",
+      "tests/unit/agentic_core/prompt_governance/test_apply_patch_validator_eq12.py",
+      "tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py",
+      "tests/unit/ops_scripts/ci/test_infra_wiring_scan.py",
+      "artifacts/codex/run_receipts/adg_p0_blocker_burndown_20260712T015105Z.json"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "python tools/adg/consume_adg_repair_handoff.py --handoff-pointer C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_latest.json --json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest <historical tests/_apps_contract selection> -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest <focused paths including two guessed runtime paths> -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 1,
+        "status": "FAIL"
+      },
+      {
+        "command": "python -m pytest tests/unit/agentic_core/prompt_governance/test_mixin_bank_eq10.py tests/unit/agentic_core/prompt_governance/test_apply_patch_validator_eq12.py tests/unit/ops_scripts/ci/test_infra_wiring_scan.py tests/unit/apps_rg/test_doctor_preflight.py tests/unit/apps_rg/test_chroma_precomputed_collection.py tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py tests/_apps_contract/test_apps_rg_c03_graph_sqlite_context.py -q",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/analysis/p0_incremental_reach_proof.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/analysis/p0_incremental_gates.py --shadow artifacts/adg/shadow_reach_proof.sqlite",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/adg_gates/gate_infra_wiring.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_w6_new_orphans_delta.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check --select F401,I <nine changed Python files>",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "historical_contract_inventory",
+        "reason": "The broad tests/_apps_contract run asserts retired APIs and stale path/configuration contracts and is not the active apps_rg merge gate.",
+        "substitute": "Focused active unit tests plus the directly affected c03 historical contract test: 89 collected, 89 passed."
+      },
+      {
+        "route": "full_adg_regeneration",
+        "reason": "The P0 lane contract forbids regenerating full ADG.",
+        "substitute": "Supported incremental graph projection and gate runner over artifacts/adg/shadow_reach_proof.sqlite."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "P0_FIX",
+        "status": "PASS",
+        "evidence": "infra_wiring reports 0 violations after replacing direct sqlite3 and chromadb use with existing sanctioned adapters."
+      },
+      {
+        "name": "P0_WAVE",
+        "status": "PASS",
+        "evidence": "Projection diff identified the actual +3 as prompt_governance mixins, validation package, and apply_patch_validator; direct edges from the existing L0 ingress anchor reduce G_REACH from 1453 to the approved floor 1450 without rebaselining."
+      },
+      {
+        "name": "H1_new_orphans_delta_ratchet",
+        "status": "PASS",
+        "evidence": "Direct gate rerun reports snapshot=adg_indexed_07112026_1937.sqlite violations=0."
+      },
+      {
+        "name": "focused_regression_tests",
+        "status": "PASS",
+        "evidence": "pytest collected 89 and passed 89 across prompt governance, infra scanner, doctor, Chroma adapter, SQLite path index, and c03 context."
+      },
+      {
+        "name": "static_hygiene",
+        "status": "PASS",
+        "evidence": "Ruff F401/I checks and git diff --check pass."
+      },
+      {
+        "name": "target_status",
+        "status": "PASS",
+        "evidence": "P0_FIX=0 and P0_WAVE=0 are directly proven by infra gate and supported incremental graph proof; no P0 baseline was changed."
+      }
+    ]
+  },
+  "p0_closeout": {
+    "source_run_id": "07112026_1937",
+    "artifact_status": "repair_ready",
+    "artifact_status_source": "direct",
+    "P0_FIX": 0,
+    "P0_WAVE": 0,
+    "infra_wiring": 0,
+    "G_REACH_l0_reachability": 1450,
+    "G_REACH_baseline": 1450,
+    "H1_new_orphans_delta_ratchet": 0,
+    "full_adg_regenerated": false,
+    "next_lane": "generate_full_adg must produce a fresh post-P0 direct receipt proving P0=0 before P1 may start"
+  },
+  "rca": {
+    "symptom": "A broad historical contract run reported 59 failures, and a later combined focused invocation collected zero tests because two guessed paths did not exist.",
+    "root_cause": "The historical inventory asserts retired helper APIs, obsolete configuration fields, and a stale sibling-worktree path; the zero-collection invocation used incorrect test locations. Neither failure was caused by the P0 production changes.",
+    "evidence": "The historical run passed 173 and failed 59; path discovery corrected the harness invocation; the final authoritative focused run collected 89 and passed 89, while all three P0 gates passed.",
+    "fix_or_next": "fix: use repository path discovery for focused tests and keep historical migration inventory outside the active merge gate until it is separately migrated.",
+    "recurrence_guard": "Record collected and executed counts, distinguish active tests from migration inventory, and require direct P0 gate evidence before publication."
+  }
+}

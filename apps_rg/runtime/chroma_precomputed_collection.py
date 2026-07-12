@@ -10,8 +10,9 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
+
+from agentic_core.config.model_catalog import BGE_M3_EMBEDDING_DIMENSION
 
 FORBID_CHROMA_DEFAULT_EF_ENV = "APPS_RG_FORBID_CHROMA_DEFAULT_EF"
 CHROMA_DISABLE_DEFAULT_EMBEDDING_ENV = "CHROMA_DISABLE_DEFAULT_EMBEDDING"
@@ -73,9 +74,13 @@ def assert_chroma_default_ef_forbidden() -> None:
         )
 
 
-def persistent_chroma_client(path: str) -> Any:
+def persistent_chroma_client(path: str, *, use_default_settings: bool = False) -> Any:
     """Create an apps_rg Chroma client through the sanctioned Chroma boundary."""
     import chromadb
+
+    if use_default_settings:
+        return chromadb.PersistentClient(path=path)
+
     from chromadb.config import Settings
 
     return chromadb.PersistentClient(

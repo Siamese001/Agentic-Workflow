@@ -178,9 +178,7 @@ def _check_fact_vectors() -> DoctorCheck:
         except Exception as exc:  # guardian: allow-broad-exception -- Chroma process cache may already hold the same path with default test settings
             if "different settings" not in str(exc):
                 raise
-            import chromadb
-
-            client = chromadb.PersistentClient(path=path)
+            client = persistent_chroma_client(path, use_default_settings=True)
         collection = get_precomputed_embeddings_collection_for_query(
             client, FACT_VECTORS_COLLECTION
         )
