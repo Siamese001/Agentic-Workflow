@@ -1,6 +1,6 @@
 # ADG SQLite Repo-Health Hardening
 
-**Status:** APPROVED — direct user implementation request on 2026-07-11  
+**Status:** IMPLEMENTED — direct user implementation request on 2026-07-11  
 **Base:** `main@f7ad1899ad07a509b93981340ee2c5eb54900901`  
 **Branch:** `agent/adg-sqlite-repo-health`
 
@@ -32,7 +32,8 @@ Make the canonical `adg_indexed_*.sqlite` artifact the highest-value source for 
 3. Integrate Phase G and hardening into the shared materialized-view connection.
 4. Expose Phase G through the existing `adg_health` report using read-only, fail-soft access.
 5. Fix WAL checkpoint handling when callers pass a SQLite file rather than its directory.
-6. Add deterministic micro-evals for scoring, idempotency, missing-evidence behavior, integrity metadata, query indexes, health reading, and WAL checkpoint targeting.
+6. At the post-three-bucket P6b boundary, refresh Phase G against the final graph, checkpoint both data and seal receipt into the main SQLite file, and bind GraphDB metadata to the SQLite schema version.
+7. Add deterministic micro-evals for scoring, idempotency, missing/stale evidence, integrity metadata, query-plan index use, health reading, WAL portability, and projection ordering.
 
 ## Health model
 
@@ -51,13 +52,15 @@ Overall scores are weight-normalized over available dimensions. Confidence measu
 
 ## Validation
 
-- Unit tests use synthetic SQLite snapshots and run zero models.
-- Verify Phase G idempotency and stable schema.
-- Verify missing optional MVs lower confidence instead of silently producing green.
-- Verify `PRAGMA quick_check`, FK counts, application/user version, composite indexes, and optimizer metadata.
-- Verify health diagnostics remain fail-soft on legacy snapshots.
-- Run targeted pytest files; inspect the resulting PR diff and changed-file list.
+- 24 targeted deterministic micro-evals pass on synthetic SQLite snapshots; zero models run.
+- Phase G idempotency, schema stability, module filtering, hotspot ranking, and no fabricated risk drivers are covered.
+- Missing optional MVs and source-count staleness force `UNKNOWN` instead of silently producing green.
+- `PRAGMA quick_check`, FK counts, application/user version, composite-index query plans, optimizer metadata, and strict-FK escalation are covered.
+- WAL sealing is verified while the writer connection remains open, including the post-receipt checkpoint.
+- Health diagnostics remain fail-soft on legacy snapshots.
+- Ruff and Python compilation pass for the changed implementation and test files.
+- A full repository checkout/suite was not available in the execution environment; CI remains the integration authority.
 
 ## Rollback
 
-Revert the Phase G/orchestrator commit. Existing A→F tables and all canonical nodes/edges/violations remain unchanged; Phase G tables are derived and rebuildable.
+Revert the Phase G/orchestrator/finalization commits. Existing A→F tables and all canonical nodes/edges/violations remain unchanged; Phase G tables are derived and rebuildable.
