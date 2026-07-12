@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import sqlite3
 
 import pytest
@@ -127,6 +128,10 @@ def test_resolver_never_substitutes_repair_for_certified(
         certification_status="failed",
         artifact_status="repair_ready",
     )
+    # Make the legacy latest-by-mtime assertion deterministic even on
+    # filesystems with coarse timestamp resolution.
+    os.utime(certified, ns=(1_000_000_000, 1_000_000_000))
+    os.utime(repair, ns=(2_000_000_000, 2_000_000_000))
     monkeypatch.setenv("ADG_DIR", str(tmp_path))
     monkeypatch.setenv("ADG_ALLOW_EXTERNAL_DIR", "1")
 
