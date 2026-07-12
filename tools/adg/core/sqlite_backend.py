@@ -22,7 +22,11 @@ from urllib.parse import quote
 
 from tqdm import tqdm
 
-from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+from tools.adg.core.graph_projection_backend import (
+    GraphProjectionBackend,
+    ProjectionStaleError,
+    ProjectionUnavailableError,
+)
 from tools.adg.core.models import ADGEdge, ADGNode
 from tools.adg.core.p0_wave_plan import build_p0_remediation_wave_plan
 from tools.adg.shared_modules.path_resolver import (
@@ -225,6 +229,19 @@ class SQLiteBackend:
         except Exception as exc:  # guardian: allow-broad-exception -- GraphProjectionBackend init can fail for many environmental reasons (missing file, sqlite error, bad schema); all are non-fatal and must not block SQLiteBackend construction
             logger.debug("GraphProjectionBackend initialization failed: %s", exc)
             self._graph_store = None
+
+    def _require_graph_store(self) -> GraphProjectionBackend:
+        """Return a fresh projection or fail without empty-value substitution."""
+        store = self._graph_store
+        if store is None or not store.is_available():
+            raise ProjectionUnavailableError(
+                "graph projection unavailable for selected ADG snapshot"
+            )
+        if store.is_stale():
+            raise ProjectionStaleError(
+                "graph projection is stale for selected ADG snapshot"
+            )
+        return store
 
     def _connect(self) -> None:
         """Establish a read-only connection to the configured snapshot role."""
@@ -760,10 +777,11 @@ class SQLiteBackend:
         return {
             "available": False,
             "stale": False,
+            "result_state": "UNAVAILABLE",
             "projection_path": None,
             "source_artifact_digest": "",
             "proj_schema_version": "",
-            "node_count": 0,
+            "node_count": None,
         }
 
     def get_blast_radius(self, node_id: str, hops: int = 2) -> dict[str, Any]:
@@ -772,27 +790,17 @@ class SQLiteBackend:
         Delegates to GraphProjectionBackend.get_blast_radius(). Always returns
         a dict — empty counts when projection is unavailable.
         """
-        if self._graph_store:
-            return self._graph_store.get_blast_radius(node_id, hops=hops)
-        return {
-            "adg_name": node_id,
-            "blast_radius_direct": 0,
-            "blast_radius_2hop": 0,
-            "reachability_rows": 0,
-            "hops_requested": hops,
-            "derived_from": "",
-            "stale": False,
-            "available": False,
-        }
+        return self._require_graph_store().get_blast_radius(
+            node_id,
+            hops=hops,
+        )
 
     def get_scc(self, node_id: str) -> dict[str, Any] | None:
         """Return SCC membership for a node from the graph projection.
 
         Returns None if projection unavailable or node is in a trivial SCC.
         """
-        if self._graph_store:
-            return self._graph_store.get_scc(node_id)
-        return None
+        return self._require_graph_store().get_scc(node_id)
 
     def get_violations_with_impact(
         self,
@@ -805,9 +813,11 @@ class SQLiteBackend:
         Delegates to GraphProjectionBackend.get_violations_with_impact().
         Returns [] if projection is unavailable.
         """
-        if self._graph_store:
-            return self._graph_store.get_violations_with_impact(layer=layer, severity=severity, limit=limit)
-        return []
+        return self._require_graph_store().get_violations_with_impact(
+            layer=layer,
+            severity=severity,
+            limit=limit,
+        )
 
     def get_p0_remediation_wave_plan(self, limit: int = 100) -> dict[str, Any]:
         """Return a wave-based P0 remediation plan from the canonical SQLite snapshot."""
@@ -827,18 +837,19 @@ class SQLiteBackend:
 
         Delegates to GraphProjectionBackend.get_diff(). Returns [] if unavailable.
         """
-        if self._graph_store:
-            return self._graph_store.get_diff(metric=metric, direction=direction, layer=layer, limit=limit)
-        return []
+        return self._require_graph_store().get_diff(
+            metric=metric,
+            direction=direction,
+            layer=layer,
+            limit=limit,
+        )
 
     def get_top_bridges(self, limit: int = 20) -> list[dict[str, Any]]:
         """Return top bridge/chokepoint nodes by bridge_score from the projection.
 
         Returns [] if projection is unavailable.
         """
-        if self._graph_store:
-            return self._graph_store.get_top_bridges(limit=limit)
-        return []
+        return self._require_graph_store().get_top_bridges(limit=limit)
 
     def get_top_regressions(
         self,
@@ -849,18 +860,20 @@ class SQLiteBackend:
 
         Returns [] if projection is unavailable.
         """
-        if self._graph_store:
-            return self._graph_store.get_top_regressions(metric=metric, limit=limit)
-        return []
+        return self._require_graph_store().get_top_regressions(
+            metric=metric,
+            limit=limit,
+        )
 
     def get_reachability(self, src_adg_name: str, limit: int = 50) -> list[dict[str, Any]]:
         """Return proj_reachability rows for a seed module from the projection.
 
         Returns [] if projection is unavailable or node is not a seed.
         """
-        if self._graph_store:
-            return self._graph_store.get_reachability(src_adg_name, limit=limit)
-        return []
+        return self._require_graph_store().get_reachability(
+            src_adg_name,
+            limit=limit,
+        )
 
     def traverse(self, start_id: str, max_depth: int = 2, relation_types: list[str] | None = None) -> list:
         """Traverse graph from start node using graph store if available."""
