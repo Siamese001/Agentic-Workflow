@@ -152,18 +152,35 @@ class SQLiteBackend:
         """
         with self._lifecycle_lock:
             if self._conn is None or self._sqlite_path is None:
+                selection_error = getattr(
+                    self,
+                    "_selection_error",
+                    None,
+                )
+                selection = getattr(
+                    self,
+                    "_snapshot_selection",
+                    "latest",
+                )
                 raise RuntimeError(
                     "ADG query unavailable: "
                     + (
-                        self._selection_error
-                        or f"no {self._snapshot_selection} snapshot"
+                        selection_error
+                        or f"no {selection} snapshot"
                     )
                 )
             try:
                 current_mtime = self._sqlite_path.stat().st_mtime
             except OSError as exc:
                 raise RuntimeError("active ADG snapshot disappeared") from exc
-            if current_mtime != self._last_mtime:
+            # Compatibility for tests/legacy factories that construct via
+            # __new__ and inject a live read-only connection.
+            last_mtime = (
+                self._last_mtime
+                if "_last_mtime" in self.__dict__
+                else current_mtime
+            )
+            if current_mtime != last_mtime:
                 raise RuntimeError(
                     "active ADG snapshot changed after selection; reopen required"
                 )
