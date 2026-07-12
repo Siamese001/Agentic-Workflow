@@ -12,6 +12,10 @@ on:
       - "ops_scripts/ci/audit_required_checks.py"
       - "ops_scripts/ci/check_workflow_references.py"
       - "ops_scripts/ci/check_adg_metric_registry.py"
+      - "ops_scripts/ci/check_adg_writer_authority.py"
+      - "agentic_core/adg/artifact/sqlite_schema.py"
+      - "agentic_core/adg/artifact/ArtifactPaths.py"
+      - "agentic_core/adg/artifact/multi_writer.py"
       - "tools/adg/contracts/**"
   workflow_dispatch:
 
@@ -50,3 +54,5 @@ jobs:
         run: python ops_scripts/ci/audit_required_checks.py --config .github/workflow-config.yaml
       - name: Validate ADG metric registry
         run: python ops_scripts/ci/check_adg_metric_registry.py
+      - name: Validate ADG SQLite writer authority
+        run: python ops_scripts/ci/check_adg_writer_authority.py
