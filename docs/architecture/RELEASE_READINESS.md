@@ -1,110 +1,104 @@
-# Release Readiness Register
+# Architecture Release Readiness Register
 
-> **Rollout:** Governed-app substrate + formal exception framework  
-> **Date:** April 2026  
-> **Verdict:** ✅ GREEN WITH TRACKED KNOWN GAPS  
+> **Status source:** current command output and receipts  
+> **Registry source:** `apps_shared/integrations/app_registry.py`  
 > **Proof command:** `python ops_scripts/ci/run_architecture_proof.py`
 
----
+This register tracks the reviewer-facing architecture posture. It is not a substitute for current proof execution.
 
-## Cleanup completed in this pass
+## Current registry shape
 
-| Item | File | Action |
+The committed registry currently records:
+
+- **3 governed entries:** `apps_exec`, `apps_research`, `apps_rg`;
+- **5 formal exceptions:** `apps_architect`, `apps_eval`, `apps_lic`, `apps_qna`, `apps_underwriting_ai`;
+- **0 ad hoc statuses.**
+
+The release runner derives these counts from `APP_REGISTRY` and prints them with the suite result.
+
+## Current proof matrix
+
+| Surface | Command | Authority |
 |---|---|---|
-| Stale "Phase 3 target" docstring | `apps_rfp/integrations/governed_rfp_run.py` | Updated to "Migration complete; status = GOVERNED" |
-| Stale "Phase 4 target" docstring | `apps_rg/integrations/governed_rg_run.py` | Updated to "Migration complete; status = GOVERNED" |
-| Stale "Phase 4 target" docstring | `apps_lic/integrations/governed_lic_run.py` | Updated to "Migration complete; status = GOVERNED" |
-| Unused `auto` import | `apps_shared/integrations/app_registry.py` | Removed |
-| Unused `ExceptionAppEntry` import | `tools/eval/retrieval_benchmark.py` (`run_exception_framework_proof`) | Removed |
-| `subprocess.run` missing `check=` | `ops_scripts/ci/run_architecture_proof.py` | Added `check=False` explicitly |
-| Scattered doc entry points | `docs/architecture/` | Consolidated via REVIEWER_GUIDE + ROLLOUT_CLOSEOUT |
+| Codex primary contract | `python scripts/governance/verify_codex_primary.py` | Repo governance structure and required anchors |
+| Codex enforcement home | `python scripts/governance/verify_codex_enforcement_home.py --json` | Repo-owned automation and skill placement |
+| App conformance | `python ops_scripts/ci/check_governed_app_conformance.py` | Registry, governed entrypoints, formal exceptions, compensating controls |
+| Architecture proof | `python ops_scripts/ci/run_architecture_proof.py` | Structural, behavioral, and regression composition |
+| SVP documentation review | `python scripts/governance/svp_docs_review.py --mode audit --phase pre --json` | X2 deterministic review and one X3 disposition |
 
-No TODO/FIXME/HACK/STUB/NotImplemented markers found in any newly created or modified file.
+A green claim requires current command evidence. Dated counts or historical release notes do not certify the current branch.
 
----
+## SVP documentation publication posture
 
-## Known gaps — tracked, non-blocking
+| Control | Current design |
+|---|---|
+| Weekly cadence | Read-only audit |
+| Edit authority | Separate manual automation with approval receipt |
+| Deterministic review | X2 pre and post receipts |
+| Senior-reader judgment | X1D receipt; unavailable transport degrades to WARN |
+| Final decision | One X3 receipt |
+| Publication | `ALLOW_TO_PR` handoff to `on-demand-pr-main-publisher` |
+| Direct main push | Forbidden |
 
-### GAP-01 — No live vector collections in proof environment
-- **Severity:** LOW
-- **Scope:** `apps_research`, `apps_exec`, `apps_rfp`, `apps_rg`, `apps_lic` — all C0 collection lookups
-- **Behavior:** `raw=0`, `shaped=0` → `disposition=abstain` on degraded path. **This is correct behavior.**
-- **Why left open:** Proof environment intentionally has no live ChromaDB. Degraded-path proofs validate
-  the abstain disposition explicitly. Wiring live collections is a deployment concern, not an arch concern.
-- **Recommended next owner:** Deployment/infra team
-- **Gate impact:** None — degraded path is a passing proof check.
+## Tracked gaps
 
-### GAP-02 — `ClockProvider.emit_determinism_digest()` kwargs mismatch
-- **Severity:** LOW
-- **Scope:** `GovernedAppRunner._l0_route` (all 5 governed apps) — L0 graceful fallback
-- **Behavior:** `[graceful fallback app=X: ClockProvider.emit_determinism_digest() got an unexpected keyword argument 'context']` — router still succeeds via fallback path.
-- **Why left open:** ClockProvider is not in scope for this rollout. Fallback path is the tested,
-  expected behavior in the proof environment. No routing failure occurs.
-- **Recommended next owner:** Platform team (ClockProvider interface alignment)
-- **Gate impact:** None — fallback is the expected degraded test path.
+### GAP-01 — Live retrieval dependency may be absent in proof environments
 
-### GAP-03 — `SovereignLLMGateway.generate()` missing `artifact` argument
-- **Severity:** LOW
-- **Scope:** Prompt assembly context mismatch → `INVALID_CONTEXT_TYPE` log in LIC, RG paths
-- **Behavior:** `Prompt assembly failed: INVALID_CONTEXT_TYPE` / `Mutation failed` logged. L2 still
-  runs; disposition recorded correctly. No proof failure.
-- **Why left open:** `SovereignLLMGateway` interface evolution is not in scope for this rollout.
-  The governed pipeline records the disposition regardless of LLM gateway state.
-- **Recommended next owner:** Platform team (gateway interface versioning)
-- **Gate impact:** None — disposition and telemetry paths are fully exercised.
+- **Severity:** low
+- **Behavior:** C0 may return no shaped evidence and drive a governed abstain/degraded result.
+- **Required proof:** disposition, evidence-status, and telemetry remain present.
+- **Owner:** deployment/platform.
+- **Release impact:** non-blocking when the degraded path is the expected test posture.
 
-### GAP-04 — No live unit tests for new governed runner modules
-- **Severity:** MEDIUM
-- **Scope:** `apps_rfp/integrations/governed_rfp_run.py`, `apps_rg/integrations/governed_rg_run.py`,
-  `apps_lic/integrations/governed_lic_run.py`, `apps_eval/integrations/governed_eval_exception.py`,
-  `apps_underwriting_ai/integrations/governed_uw_exception.py`
-- **Behavior:** These modules are validated by the integration-level E2E proofs in `retrieval_benchmark.py`
-  (RFP01-12, RG01-12, LIC01-12, EVAL01-10, UW01-10). No dedicated pytest unit tests exist.
-- **Why left open:** The E2E proof harness provides behavioral coverage. Unit test authoring is
-  a follow-on task to be tracked separately.
-- **Recommended next owner:** Platform team — next sprint
-- **Gate impact:** E2E proof harness provides passing coverage. Unit tests add depth but are not
-  required for current green state.
+### GAP-02 — Test-harness clock/provider interface drift
 
-### GAP-05 — `ExceptionAppEntry` still importable from registry (backward compat)
-- **Severity:** LOW
-- **Scope:** `apps_shared/integrations/app_registry.py`
-- **Behavior:** `ExceptionAppEntry` remains defined and exported. No apps use it anymore (both
-  exception apps use `FormalExceptionEntry`). It exists as a compatibility symbol.
-- **Why left open:** Safe to delete once confirmed no external consumers. ADG fan-in check
-  required before removal.
-- **Recommended next owner:** Platform team — use `mcp1_adg_edge_fanin` to confirm zero consumers
-  before removing.
-- **Gate impact:** None.
+- **Severity:** low
+- **Behavior:** a bounded fallback may be exercised when test doubles lag the current interface.
+- **Required proof:** route and disposition remain deterministic and the fallback is visible.
+- **Owner:** platform.
+- **Release impact:** non-blocking only when the selected proof explicitly expects that path.
 
----
+### GAP-03 — Prompt/provider context mismatch in isolated proof paths
 
-## Proof/gate results after cleanup
+- **Severity:** low
+- **Behavior:** provider invocation may reject a malformed or outdated context shape.
+- **Required proof:** failure classification, sealed output, and Exit evidence remain available.
+- **Owner:** platform/provider integration.
+- **Release impact:** evaluated by the current suite, not pre-declared green.
 
-```
-python ops_scripts/ci/run_architecture_proof.py
+### GAP-04 — Historical architecture documents can outlive registry changes
 
-S1  Conformance Gate (CONF + EXCF)   PASS   ~1s   36/36 checks
-S2  Exception Framework Proof        PASS  ~10s   penta + eval + uw + no-adhoc
-S3  Regression Check                 PASS   ~5s   RC01-RC12
+- **Severity:** medium
+- **Behavior:** dated rollout notes may retain retired app groupings or check counts.
+- **Control:** active reviewer packet, registry consistency gate, link/command checks, and explicit historical labeling.
+- **Owner:** platform documentation.
+- **Release impact:** blocks public reviewer claims when active documents disagree with `APP_REGISTRY`.
 
-VERDICT: PASS   total ~17s
-```
+### GAP-05 — Judge quality requires periodic calibration
 
----
+- **Severity:** medium
+- **Behavior:** X1D may drift toward persuasive prose rather than evidence-backed senior-reader judgment.
+- **Control:** frozen rubric version, judge identity, prompt hash, packet digest, and periodic human-labeled replay.
+- **Owner:** evaluation platform.
+- **Release impact:** X1D does not override deterministic X2 failures.
 
-## Release-readiness verdict
+## Historical note
 
-| Dimension | Status | Notes |
-|---|---|---|
-| Architecture correctness | ✅ GREEN | Conformance gate 36/36 PASS |
-| Behavioral correctness | ✅ GREEN | All 7 apps proven via E2E harness |
-| Exception governance | ✅ GREEN | Both exceptions formalized, gate-verified |
-| Regression baseline | ✅ GREEN | RC01-RC12 PASS |
-| Known gaps tracked | ✅ GREEN | GAP-01..GAP-05 explicit, non-blocking |
-| Dead code / stale comments | ✅ CLEAN | All closed in this pass |
-| Unit test coverage (new modules) | 🟡 PARTIAL | E2E coverage exists; unit tests TBD (GAP-04) |
+The initial governed-app rollout was documented in April 2026. Those records are useful history, but app classifications, proof counts, and handler names have changed since that snapshot. Active reviewer documents and current command output are the operational sources.
 
-**Final verdict: ✅ GREEN WITH TRACKED KNOWN GAPS**  
-The rollout is release-ready. GAP-04 (unit tests) and GAP-05 (ExceptionAppEntry cleanup) are
-tracked and recommended for the next sprint. No gap blocks release.
+## Release decision rule
+
+A reviewer-facing architecture update is ready for PR handoff when:
+
+1. app classifications agree with `APP_REGISTRY`;
+2. required links and proof commands resolve;
+3. Codex primary and enforcement-home verifiers pass;
+4. architecture conformance and selected behavioral proofs pass;
+5. X2 post is `ALLOW` or bounded `WARN`;
+6. X1D is `ALLOW` or bounded `WARN` with no high-severity finding;
+7. X3 is `ALLOW_TO_PR`;
+8. the branch is handed to the PR-only main publisher.
+
+## Current reviewer statement
+
+> The repository has a registry-backed governed-entry and formal-exception model, executable architecture proofs, and a separated documentation audit/edit/publication workflow. Current green status must be established from commands and receipts on the reviewed commit.
