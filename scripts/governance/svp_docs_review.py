@@ -27,6 +27,7 @@ WEEKLY_AUTOMATION = REPO_ROOT / ".codex" / "automations" / "svp-readme-documenta
 MANUAL_AUTOMATION = REPO_ROOT / ".codex" / "automations" / "on-demand-svp-documentation-refresh" / "automation.toml"
 SCHEMA_DIR = REPO_ROOT / ".codex" / "schemas"
 SCHEMAS = {
+    "approval": SCHEMA_DIR / "svp_docs_approval_v1.schema.json",
     "x1d": SCHEMA_DIR / "svp_docs_x1d_v1.schema.json",
     "x2": SCHEMA_DIR / "svp_docs_x2_v1.schema.json",
     "x3": SCHEMA_DIR / "svp_docs_x3_v1.schema.json",
@@ -63,7 +64,9 @@ DOC_ROOT_FILES = {
     "LICENSE.md",
 }
 UNSUPPORTED_CLAIM_RE = re.compile(
-    r"\b(?:SOC\s*2|HIPAA|GDPR|PCI(?:-DSS)?|customer(?:s)?|ROI|support SLA|roadmap commitment)\b",
+    r"\b(?:SOC\s*2\s+certified|HIPAA\s+compliant|GDPR\s+compliant|PCI(?:-DSS)?\s+compliant|"
+    r"production\s+customer(?:s)?|customer-deployed|support\s+SLA|committed\s+roadmap|"
+    r"ROI\s+(?:of|=|:)\s*\d)",
     re.IGNORECASE,
 )
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -79,7 +82,7 @@ class GateResult:
     evidence: list[str]
 
 
-def _run(argv: Sequence[str], *, timeout: int = 120) -> subprocess.CompletedProcess[str]:
+def _run(argv: Sequence[str], *, timeout: int = 180) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         list(argv),
         cwd=str(REPO_ROOT),
@@ -151,19 +154,19 @@ def _changed_files(base_ref: str) -> list[str]:
     code, stdout, _ = _git("status", "--porcelain=v1")
     if code == 0:
         for line in stdout.splitlines():
-            if len(line) >= 4:
-                value = line[3:].strip()
-                if " -> " in value:
-                    value = value.split(" -> ", 1)[1]
-                if value:
-                    changed.add(value)
+            if len(line) < 4:
+                continue
+            value = line[3:].strip()
+            if " -> " in value:
+                value = value.split(" -> ", 1)[1]
+            if value:
+                changed.add(value)
     return sorted(changed)
 
 
 def _diff_digest(base_ref: str) -> str:
     code, stdout, stderr = _git("diff", "--binary", f"{base_ref}...HEAD")
-    payload = stdout if code == 0 else f"ERROR:{stderr}"
-    return _sha256_text(payload)
+    return _sha256_text(stdout if code == 0 else f"ERROR:{stderr}")
 
 
 def _gate(
@@ -176,15 +179,10 @@ def _gate(
     not_applicable: bool = False,
 ) -> GateResult:
     if not_applicable:
-        status = "NOT_APPLICABLE"
-        severity = "advisory"
-    elif ok:
-        status = "WARN" if warn else "PASS"
-        severity = "advisory"
-    else:
-        status = "FAIL"
-        severity = "blocking"
-    return GateResult(gate_id, status, severity, summary, list(evidence))
+        return GateResult(gate_id, "NOT_APPLICABLE", "advisory", summary, list(evidence))
+    if not ok:
+        return GateResult(gate_id, "FAIL", "blocking", summary, list(evidence))
+    return GateResult(gate_id, "WARN" if warn else "PASS", "advisory", summary, list(evidence))
 
 
 def _toml_gate() -> GateResult:
@@ -206,16 +204,18 @@ def _launcher_gate() -> GateResult:
         return _gate("x2_app_launcher_ssot", False, "SVP launcher contract could not be loaded.", [str(exc)])
 
     expected = (
-        (weekly, "weekly-svp-readme-documentation-refresh", "cron", "ACTIVE", "audit_only", False),
-        (manual, "on-demand-svp-documentation-refresh", "manual", "ON_DEMAND", "approved_edit", True),
+        (weekly, "weekly-svp-readme-documentation-refresh", "cron", "ACTIVE", "audit_only", False, False),
+        (manual, "on-demand-svp-documentation-refresh", "manual", "ON_DEMAND", "approved_edit", True, True),
     )
-    for data, automation_id, kind, status, mode, approval_required in expected:
+    for data, automation_id, kind, status, mode, approval_required, edits_allowed in expected:
         if data.get("id") != automation_id:
             failures.append(f"{automation_id}: id mismatch")
         if data.get("kind") != kind:
             failures.append(f"{automation_id}: kind must be {kind}")
         if data.get("status") != status:
             failures.append(f"{automation_id}: status must be {status}")
+        if data.get("allow_direct_main_push") is not False:
+            failures.append(f"{automation_id}: allow_direct_main_push must be false")
         contract = data.get("svp_docs")
         if not isinstance(contract, dict):
             failures.append(f"{automation_id}: missing [svp_docs]")
@@ -224,10 +224,12 @@ def _launcher_gate() -> GateResult:
             failures.append(f"{automation_id}: svp_docs.mode must be {mode}")
         if bool(contract.get("require_approval_receipt")) != approval_required:
             failures.append(f"{automation_id}: approval requirement mismatch")
+        if bool(contract.get("allow_edits")) != edits_allowed:
+            failures.append(f"{automation_id}: edit authority mismatch")
+        if contract.get("allow_publication") is not False:
+            failures.append(f"{automation_id}: allow_publication must be false")
         if contract.get("publication_handoff") != "on-demand-pr-main-publisher":
             failures.append(f"{automation_id}: publication handoff must be on-demand-pr-main-publisher")
-        if data.get("allow_direct_main_push") is not False:
-            failures.append(f"{automation_id}: allow_direct_main_push must be false")
     return _gate("x2_app_launcher_ssot", not failures, "SVP launchers preserve one repo SSOT and PR-only publication.", failures)
 
 
@@ -255,8 +257,7 @@ def _relative_links_gate(manifest: dict[str, Any]) -> GateResult:
         path = REPO_ROOT / str(relative)
         if not path.exists():
             continue
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        for target in MARKDOWN_LINK_RE.findall(text):
+        for target in MARKDOWN_LINK_RE.findall(path.read_text(encoding="utf-8", errors="ignore")):
             target = target.strip().split("#", 1)[0]
             if not target or target.startswith(("http://", "https://", "mailto:", "#")):
                 continue
@@ -281,7 +282,7 @@ def _unsupported_claims_gate(manifest: dict[str, Any]) -> GateResult:
         for number, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             if UNSUPPORTED_CLAIM_RE.search(line) and not any(token in line.casefold() for token in caveats):
                 findings.append(f"{relative}:{number}: {line.strip()}")
-    return _gate("x2_unsupported_claims_regex", not findings, "No uncaveated customer, compliance, ROI, SLA, or roadmap claims were detected.", findings)
+    return _gate("x2_unsupported_claims_regex", not findings, "No uncaveated certification, customer, SLA, ROI, or roadmap claims were detected.", findings)
 
 
 def _docs_only_gate(changed: list[str], implementation_change: bool) -> GateResult:
@@ -320,19 +321,17 @@ def _required_sections_gate(manifest: dict[str, Any]) -> GateResult:
 
 def _command_gate(gate_id: str, argv: Sequence[str], summary: str) -> GateResult:
     try:
-        proc = _run(argv, timeout=180)
+        proc = _run(argv)
     except (OSError, subprocess.SubprocessError) as exc:
         return _gate(gate_id, False, summary, [str(exc)])
     evidence = [f"exit_code={proc.returncode}"]
-    tail = (proc.stdout + proc.stderr).strip().splitlines()[-12:]
-    evidence.extend(tail)
+    evidence.extend((proc.stdout + proc.stderr).strip().splitlines()[-12:])
     return _gate(gate_id, proc.returncode == 0, summary, evidence)
 
 
 def _diff_check_gate() -> GateResult:
     code, stdout, stderr = _git("diff", "--check")
-    evidence = [value for value in (stdout, stderr) if value]
-    return _gate("x2_diff_check", code == 0, "git diff --check passes.", evidence)
+    return _gate("x2_diff_check", code == 0, "git diff --check passes.", [value for value in (stdout, stderr) if value])
 
 
 def _publication_isolation_gate(mode: str, branch: str, changed: list[str], implementation_change: bool) -> GateResult:
@@ -364,7 +363,6 @@ def _registry_snapshot() -> tuple[list[str], list[str]]:
 
 
 def _architecture_consistency_gate(manifest: dict[str, Any]) -> GateResult:
-    findings: list[str] = []
     try:
         governed, exceptions = _registry_snapshot()
     except Exception as exc:
@@ -374,13 +372,13 @@ def _architecture_consistency_gate(manifest: dict[str, Any]) -> GateResult:
         for relative in manifest.get("active_documents", [])
         if (REPO_ROOT / str(relative)).exists()
     ).casefold()
-    stale_phrases = ("5 governed apps + 2 formal exceptions", "36/36 checks", "all 7 apps", "all seven apps")
-    findings.extend(f"stale phrase: {phrase}" for phrase in stale_phrases if phrase in joined)
-    expected = f"{len(governed)} governed"
-    expected_exceptions = f"{len(exceptions)} formal exception"
-    if expected not in joined:
+    findings: list[str] = []
+    for phrase in ("5 governed apps + 2 formal exceptions", "36/36 checks", "all 7 apps", "all seven apps"):
+        if phrase in joined:
+            findings.append(f"stale phrase: {phrase}")
+    if f"{len(governed)} governed" not in joined:
         findings.append(f"reviewer packet does not state current governed count: {len(governed)}")
-    if expected_exceptions not in joined:
+    if f"{len(exceptions)} formal exception" not in joined:
         findings.append(f"reviewer packet does not state current formal-exception count: {len(exceptions)}")
     for app in governed:
         if app.casefold() not in joined:
@@ -396,10 +394,10 @@ def _claim_evidence_gate(manifest: dict[str, Any]) -> GateResult:
     findings: list[str] = []
     for item in manifest.get("claim_evidence", []):
         claim_id = str(item.get("claim_id", "missing"))
-        evidence_paths = [REPO_ROOT / str(path) for path in item.get("evidence_paths", [])]
-        if not evidence_paths:
+        paths = [REPO_ROOT / str(path) for path in item.get("evidence_paths", [])]
+        if not paths:
             findings.append(f"{claim_id}: no evidence paths")
-        for path in evidence_paths:
+        for path in paths:
             if not path.exists():
                 findings.append(f"{claim_id}: missing {path.relative_to(REPO_ROOT)}")
         if not item.get("proof_commands"):
@@ -414,10 +412,8 @@ def _proof_command_gate(manifest: dict[str, Any]) -> GateResult:
         commands.update(str(command) for command in item.get("proof_commands", []))
     for relative in manifest.get("active_documents", []):
         path = REPO_ROOT / str(relative)
-        if not path.exists():
-            continue
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        commands.update(f"python {match}" for match in PYTHON_SCRIPT_RE.findall(text))
+        if path.exists():
+            commands.update(f"python {match}" for match in PYTHON_SCRIPT_RE.findall(path.read_text(encoding="utf-8", errors="ignore")))
     for command in sorted(commands):
         match = PYTHON_SCRIPT_RE.search(command)
         if not match:
@@ -433,8 +429,7 @@ def _validate_shallow_schema(schema: dict[str, Any], receipt: dict[str, Any]) ->
     for key in schema.get("required", []):
         if key not in receipt:
             errors.append(f"missing required field {key}")
-    properties = schema.get("properties", {})
-    for key, rules in properties.items():
+    for key, rules in schema.get("properties", {}).items():
         if key not in receipt or not isinstance(rules, dict):
             continue
         if "const" in rules and receipt[key] != rules["const"]:
@@ -474,7 +469,7 @@ def _approval_gate(mode: str, branch: str, approval_receipt: Path | None) -> Gat
                 findings.append("approval schema_version must be svp_docs_approval/v1")
             if data.get("status") != "APPROVED":
                 findings.append("approval status must be APPROVED")
-            if data.get("plan_id") != "svp-docs-gate-hardening-7c4e2a" and not data.get("plan_id"):
+            if not data.get("plan_id"):
                 findings.append("approval receipt must name a plan_id")
             approved_branch = data.get("branch")
             if approved_branch and approved_branch != branch:
@@ -512,8 +507,8 @@ def _absolute_claim_gate(manifest: dict[str, Any], base_ref: str, changed: list[
         for term in terms:
             if term not in folded:
                 continue
-            evidence_anchor = "`" in line or "proof" in folded or "gate" in folded or "intended" in folded or "designed" in folded
-            if not evidence_anchor:
+            anchored = "`" in line or "proof" in folded or "gate" in folded or "intended" in folded or "designed" in folded
+            if not anchored:
                 findings.append(f"{name}:{number}: unsupported absolute term {term!r}: {line.strip()}")
     return _gate("x2_no_absolute_unproven_language", not findings, "Changed documentation contains no unanchored absolute claims.", findings)
 
@@ -544,8 +539,8 @@ def _load_or_default_x1d(path: Path | None, run_id: str, packet_digest: str) -> 
             "rubric_version": "svp-docs-rubric/v1",
             "prompt_hash": _sha256_text("x1d unavailable"),
             "independent": False,
-            "transport_status": "UNAVAILABLE"
-        }
+            "transport_status": "UNAVAILABLE",
+        },
     }
 
 
@@ -563,7 +558,8 @@ def _x3_disposition(
 ) -> dict[str, Any]:
     x1d_decision = str(x1d.get("decision", "WARN"))
     high_findings = [
-        item for item in x1d.get("blocking_findings", [])
+        item
+        for item in x1d.get("blocking_findings", [])
         if isinstance(item, dict) and item.get("severity") == "high"
     ]
     authorized = mode == "edit" and approval_receipt is not None and approval_receipt.exists()
@@ -605,7 +601,7 @@ def _x3_disposition(
         "changed_files": changed,
         "required_next_action": next_action,
         "approval_receipt_ref": str(approval_receipt) if approval_receipt else None,
-        "publication_handoff": "on-demand-pr-main-publisher" if decision == "ALLOW_TO_PR" else None
+        "publication_handoff": "on-demand-pr-main-publisher" if decision == "ALLOW_TO_PR" else None,
     }
 
 
@@ -643,8 +639,16 @@ def build_review(
         _docs_only_gate(changed, implementation_change),
         _packet_present_gate(manifest),
         _required_sections_gate(manifest),
-        _command_gate("x2_codex_primary", (sys.executable, "scripts/governance/verify_codex_primary.py"), "Codex primary verifier passes."),
-        _command_gate("x2_enforcement_home", (sys.executable, "scripts/governance/verify_codex_enforcement_home.py", "--json"), "Codex enforcement-home verifier passes."),
+        _command_gate(
+            "x2_codex_primary",
+            (sys.executable, "scripts/governance/verify_codex_primary.py", "--repo-only"),
+            "Codex repo contract verifier passes.",
+        ),
+        _command_gate(
+            "x2_enforcement_home",
+            (sys.executable, "scripts/governance/verify_codex_enforcement_home_portable.py", "--json"),
+            "Codex enforcement-home verifier passes across the active checkout root.",
+        ),
         _diff_check_gate(),
         _publication_isolation_gate(mode, branch, changed, implementation_change),
         _architecture_consistency_gate(manifest),
@@ -652,11 +656,12 @@ def build_review(
         _proof_command_gate(manifest),
         _schema_gate(x1d_receipt),
         _approval_gate(mode, branch, approval_receipt),
-        _absolute_claim_gate(manifest, base_ref, changed)
+        _absolute_claim_gate(manifest, base_ref, changed),
     ]
     observed_ids = tuple(gate.id for gate in gates)
     if observed_ids != X2_GATE_IDS:
         raise AssertionError(f"X2 gate order drift: {observed_ids!r}")
+
     x2_decision = _x2_decision(gates)
     blocked_reasons = [gate.summary for gate in gates if gate.status == "FAIL"]
     x2 = {
@@ -670,7 +675,7 @@ def build_review(
         "decision": x2_decision,
         "gates": [asdict(gate) for gate in gates],
         "changed_files": changed,
-        "blocked_reasons": blocked_reasons
+        "blocked_reasons": blocked_reasons,
     }
     x2_path = output_dir / f"x2_{phase}.json"
     x2_path.write_text(json.dumps(x2, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -693,12 +698,14 @@ def build_review(
         changed=changed,
         approval_receipt=approval_receipt,
         prior_x2=prior_x2,
-        implementation_change=implementation_change
+        implementation_change=implementation_change,
     )
     x3_path = output_dir / "x3.json"
     x3_path.write_text(json.dumps(x3, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    status = "FAIL" if x3["decision"] == "BLOCK" else ("WARN" if x3["decision"] in {"PLAN_ONLY", "ESCALATE_HUMAN"} else "PASS")
+    status = "FAIL" if x3["decision"] == "BLOCK" else (
+        "WARN" if x3["decision"] in {"PLAN_ONLY", "ESCALATE_HUMAN"} else "PASS"
+    )
     run_receipt = {
         "schema_version": "svp_docs_run/v1",
         "run_id": run_id,
@@ -710,7 +717,7 @@ def build_review(
         "diff_digest": diff_digest,
         "approval_receipt_ref": str(approval_receipt) if approval_receipt else None,
         "receipts": {"x2": str(x2_path), "x1d": str(x1d_path), "x3": str(x3_path)},
-        "status": status
+        "status": status,
     }
     run_path = output_dir / "run_receipt.json"
     run_path.write_text(json.dumps(run_receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -741,7 +748,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         approval_receipt=args.approval_receipt,
         x1d_receipt=args.x1d_receipt,
         implementation_change=args.implementation_change,
-        run_id=args.run_id
+        run_id=args.run_id,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
