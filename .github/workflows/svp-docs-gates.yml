@@ -9,8 +9,10 @@ on:
       - ".codex/automations/on-demand-svp-documentation-refresh/**"
       - ".codex/schemas/svp_docs_*"
       - "scripts/governance/svp_docs_review.py"
+      - "scripts/governance/verify_codex_primary.py"
       - "ops_scripts/ci/run_architecture_proof.py"
       - "tests/unit/scripts/governance/test_svp_docs_review.py"
+      - "tests/unit/scripts/governance/test_verify_codex_primary.py"
       - ".github/workflows/svp-docs-gates.yml"
   workflow_dispatch:
 
@@ -26,6 +28,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+      - name: Establish named branch context
+        shell: bash
+        run: |
+          branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-svp-docs-ci}}"
+          git checkout -B "$branch"
+          git fetch origin main:refs/remotes/origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,11 +45,17 @@ jobs:
       - name: Install focused test dependency
         run: python -m pip install --disable-pip-version-check pytest
 
-      - name: Compile deterministic gate
-        run: python -m py_compile scripts/governance/svp_docs_review.py
+      - name: Compile deterministic gates
+        run: |
+          python -m py_compile scripts/governance/svp_docs_review.py
+          python -m py_compile scripts/governance/verify_codex_primary.py
+          python -m py_compile ops_scripts/ci/run_architecture_proof.py
 
-      - name: Run focused gate tests
-        run: pytest -q tests/unit/scripts/governance/test_svp_docs_review.py
+      - name: Run focused governance tests
+        run: >-
+          pytest -q
+          tests/unit/scripts/governance/test_svp_docs_review.py
+          tests/unit/scripts/governance/test_verify_codex_primary.py
 
       - name: Verify Codex primary contract
         run: python scripts/governance/verify_codex_primary.py
