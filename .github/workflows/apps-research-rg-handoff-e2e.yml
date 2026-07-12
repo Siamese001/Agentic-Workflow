@@ -3,6 +3,7 @@ name: apps-research-rg-handoff-e2e
 on:
   pull_request:
     paths:
+      - "apps_research/integrations/apps_rg_exit_authorization.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
@@ -10,6 +11,7 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
       - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
       - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
       - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
@@ -20,6 +22,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "apps_research/integrations/apps_rg_exit_authorization.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
@@ -27,6 +30,7 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
       - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
       - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
       - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
@@ -51,61 +55,8 @@ jobs:
           python-version: "3.12"
           install-mode: dev
 
-      - name: Compile runtime authority surfaces
-        run: |
-          python -m py_compile \
-            apps_research/integrations/apps_rg_handoff.py \
-            apps_rg/prerequisites/briefing_validator.py \
-            apps_rg/runtime/bindings/briefing_u0_signals.py \
-            tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py
-
-      - name: Enforce single-X3 and post-Exit publication structure
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          producer = Path("apps_research/integrations/apps_rg_handoff.py").read_text(
-              encoding="utf-8"
-          )
-          consumer = Path("apps_rg/prerequisites/briefing_validator.py").read_text(
-              encoding="utf-8"
-          )
-          u0_signal = Path(
-              "apps_rg/runtime/bindings/briefing_u0_signals.py"
-          ).read_text(encoding="utf-8")
-
-          assert "exit_bind_and_finalize_apps_research(" in producer
-          assert "if not authorization.allows_finish:" in producer
-          assert producer.index("if not authorization.allows_finish:") < producer.index(
-              "run_dir.mkdir("
-          )
-          assert '"canonical_exit_authorized": True' in producer
-          assert '"x3_code": receipt.x3_code' in producer
-          assert '"canonical_x3_code": receipt.x3_code' in producer
-          assert '"reason": "model_backed_x2_passed"' not in producer
-          assert "validate_canonical_apps_research_exit" in consumer
-          assert "require_canonical_exit=True" in u0_signal
-          PY
-
-      - name: Run canonical producer-consumer handoff tests
-        run: |
-          mkdir -p artifacts/apps_research_rg_handoff
-          python -m pytest \
-            tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py \
-            tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py \
-            tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py \
-            tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py \
-            tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py \
-            -q --tb=short --no-header -p no:cacheprovider \
-            --junitxml=artifacts/apps_research_rg_handoff/canonical-tests.xml
-
-      - name: Run research-delegation whole-run regressions
-        run: |
-          python -m pytest \
-            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py \
-            -k "research_enabled_when_brief_missing_and_auto_research_on or no_delegation_when_auto_research_disabled_and_brief_present or auto_research_static_brief_requires_delegation or auto_research_authorized_handoff_skips_delegation or whole_run_research_failure_fails_closed_with_manual_brief or whole_run_u0_rejection_emits_terminal_closeout or research_hop_rejects_ready_result_without_producer_artifact or whole_run_route_mismatch_fails_closed_when_apps_research_required" \
-            -q --tb=short --no-header -p no:cacheprovider \
-            --junitxml=artifacts/apps_research_rg_handoff/whole-run-tests.xml
+      - name: Run canonical producer-consumer handoff certification
+        run: python ops_scripts/ci/check_apps_research_rg_handoff_e2e.py
 
       - name: Upload handoff test evidence
         if: always()
