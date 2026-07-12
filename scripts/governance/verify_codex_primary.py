@@ -14,7 +14,7 @@ import subprocess
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 
-import verify_codex_enforcement_home
+import verify_codex_enforcement_home_portable as verify_codex_enforcement_home
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,6 +28,7 @@ REQUIRED_FILES = [
     "scripts/governance/ensure_searxng_readiness.py",
     "scripts/governance/svp_docs_review.py",
     "scripts/governance/verify_codex_enforcement_home.py",
+    "scripts/governance/verify_codex_enforcement_home_portable.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",
     ".codex/config.toml",
