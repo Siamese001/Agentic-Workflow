@@ -8,17 +8,15 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
 import subprocess
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 import networkx as nx
+from tools.generate.sqlite_hardening import seal_sqlite_path
 
 from .projection import GraphProjector
-from .schema import NODE_TYPE_MAPPING, EDGE_TYPE_MAPPING
 from .snapshot import SnapshotManager, SnapshotMetadata
 
 
@@ -77,14 +75,14 @@ def get_scanner_digest() -> str:
 
 def generate_run_id() -> str:
     """Generate a unique run identifier."""
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     return f"graphdb_{timestamp}"
 
 
 def project_graph(
     sqlite_path: Path,
     output_dir: Path,
-    run_id: Optional[str] = None,
+    run_id: str | None = None,
 ) -> tuple[nx.Graph, SnapshotMetadata]:
     """Project ADG SQLite to NetworkX graph with full metadata.
 
@@ -96,6 +94,16 @@ def project_graph(
     Returns:
         Tuple of (graph, metadata)
     """
+    # P6b is the first hard pipeline boundary after optional three-bucket
+    # enrichment and the final authority backfill. Seal late WAL frames before
+    # any projection, gate, or packaging consumer reads the canonical artifact.
+    seal = seal_sqlite_path(sqlite_path)
+    print(
+        "[GraphDB] Canonical SQLite sealed: "
+        f"quick_check={seal.quick_check} journal={seal.journal_mode} "
+        f"wal_busy={seal.wal_busy} user_version={seal.user_version}"
+    )
+
     # Initialize components
     projector = GraphProjector(sqlite_path)
     snapshot_manager = SnapshotManager(output_dir)
@@ -112,11 +120,12 @@ def project_graph(
     scanner_digest = get_scanner_digest()
     scanner_version = "0.1.0"  # TODO: Get from actual scanner version
 
-    # Get schema version
-    schema_version = "1.0"  # TODO: Get from ADG schema
+    # Bind projection lineage to the canonical SQLite schema contract rather
+    # than a hard-coded GraphDB-local version string.
+    schema_version = f"adg-sqlite-v{seal.user_version}"
 
     # Generate timestamp
-    timestamp = datetime.utcnow().isoformat() + "Z"
+    timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     # Project the graph
     print(f"[GraphDB] Projecting graph from {sqlite_path}")
@@ -173,7 +182,7 @@ def main() -> int:
     parser.add_argument(
         "--run-id",
         type=str,
-        help="Run identifier (auto-generated if not provided)",
+        help="Run identifier (auto-generated if None)",
     )
     parser.add_argument(
         "--stats",
@@ -233,7 +242,7 @@ def main() -> int:
             for edge_type, count in sorted(stats["edge_type_counts"].items()):
                 print(f"{edge_type}: {count}")
 
-        print(f"\n=== Projection Complete ===")
+        print("\n=== Projection Complete ===")
         print(f"Commit: {metadata.commit_sha}")
         print(f"Run ID: {metadata.run_id}")
         print(f"Timestamp: {metadata.timestamp}")
