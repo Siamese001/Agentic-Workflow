@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "svp_docs_x2/v1",
+  "title": "SVP documentation X2 deterministic receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "phase",
+    "repo_sha",
+    "origin_main_sha",
+    "packet_digest",
+    "diff_digest",
+    "decision",
+    "gates",
+    "changed_files",
+    "blocked_reasons"
+  ],
+  "properties": {
+    "schema_version": {"const": "svp_docs_x2/v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "phase": {"enum": ["pre", "post"]},
+    "repo_sha": {"type": "string", "minLength": 7},
+    "origin_main_sha": {"type": "string", "minLength": 7},
+    "packet_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "diff_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "decision": {"enum": ["ALLOW", "WARN", "BLOCK"]},
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "status", "severity", "summary", "evidence"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^x2_"},
+          "status": {"enum": ["PASS", "WARN", "FAIL", "NOT_APPLICABLE"]},
+          "severity": {"enum": ["advisory", "blocking"]},
+          "summary": {"type": "string"},
+          "evidence": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "changed_files": {"type": "array", "items": {"type": "string"}},
+    "blocked_reasons": {"type": "array", "items": {"type": "string"}}
+  }
+}

@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-import sys
 import json
+import sys
 from pathlib import Path
 from types import SimpleNamespace
-
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO_ROOT / "scripts" / "governance"))
@@ -44,6 +43,7 @@ def _automation_toml(automation_id: str, prompt: str, root: Path) -> str:
 def _valid_root(tmp_path: Path) -> Path:
     for relative in mod.REQUIRED_FILES:
         _write(tmp_path / relative)
+
     _write(
         tmp_path / ".codex" / "automations" / "on-demand-pr-main-publisher" / "automation.toml",
         _automation_toml(
@@ -76,45 +76,44 @@ def _valid_root(tmp_path: Path) -> Path:
             tmp_path,
         ),
     )
+
+    weekly_path = tmp_path / ".codex" / "automations" / "svp-readme-documentation-refresh" / "automation.toml"
+    weekly_anchors = mod.REQUIRED_ANCHORS[str(weekly_path.relative_to(tmp_path)).replace("\\", "/")]
+    weekly_prompt = "\n".join(
+        [
+            *mod.verify_codex_enforcement_home.SVP_DOCS_REQUIRED_PROMPT_SNIPPETS,
+            *weekly_anchors,
+        ]
+    )
+    _write(
+        weekly_path,
+        _automation_toml("weekly-svp-readme-documentation-refresh", weekly_prompt, tmp_path)
+        + "\n\n[svp_docs]\n"
+        + 'mode = "audit_only"\n'
+        + "require_approval_receipt = false\n"
+        + "allow_edits = false\n"
+        + "allow_publication = false\n"
+        + 'publication_handoff = "on-demand-pr-main-publisher"\n',
+    )
+
     _write(tmp_path / ".codex" / "hooks.json", json.dumps({"hooks": {}}))
     _write(
         tmp_path / "AGENTS.md",
-        "\n".join(
-            [
-                "## Codex primary execution adapter",
-                "docs/codex-primary-execution.md",
-                "scripts/governance/audit_codex_mcp_transports.py",
-                "scripts/governance/codex_readiness.py",
-                "scripts/governance/codex_main_closeout.py",
-                "scripts/governance/verify_codex_enforcement_home.py",
-                "scripts/governance/verify_codex_run_receipt.py",
-                "scripts/governance/verify_codex_primary.py",
-                "GitKraken",
-                "Codex must ask a plain-text clarifying question directly in the assistant response",
-                ".codex/hooks.json",
-                ".codex/automations/",
-            ]
-        ),
+        "\n".join(mod.REQUIRED_ANCHORS["AGENTS.md"]),
     )
     _write(
         tmp_path / "docs/codex-primary-execution.md",
-        "\n".join(
-            [
-                "Codex primary execution surface",
-                "GitKraken",
-                "scripts/governance/audit_codex_mcp_transports.py",
-                "scripts/governance/codex_readiness.py",
-                "scripts/governance/codex_main_closeout.py",
-                "scripts/governance/verify_codex_enforcement_home.py",
-                "scripts/governance/verify_codex_run_receipt.py",
-                "scripts/governance/verify_codex_primary.py",
-                "No parallel registry",
-                "Codex must ask a plain-text clarifying question directly in the assistant response",
-                ".codex/hooks.json",
-                ".codex/automations/",
-            ]
-        ),
+        "\n".join(mod.REQUIRED_ANCHORS["docs/codex-primary-execution.md"]),
     )
+
+    for relative, anchors in mod.REQUIRED_ANCHORS.items():
+        if relative in {
+            "AGENTS.md",
+            "docs/codex-primary-execution.md",
+            ".codex/automations/svp-readme-documentation-refresh/automation.toml",
+        }:
+            continue
+        _write(tmp_path / relative, "\n".join(anchors))
     return tmp_path
 
 
@@ -146,5 +145,13 @@ def test_missing_anchor_fails(tmp_path: Path) -> None:
     (root / "AGENTS.md").write_text("## Codex primary execution adapter\n", encoding="utf-8")
 
     failures = mod.validate(root)
-
     assert any("missing anchor" in failure for failure in failures)
+
+
+def test_missing_svp_schema_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    target = root / ".codex" / "schemas" / "svp_docs_x3_v1.schema.json"
+    target.unlink()
+
+    failures = mod.validate(root, repo_only=True)
+    assert any("svp_docs_x3_v1.schema.json" in failure for failure in failures)

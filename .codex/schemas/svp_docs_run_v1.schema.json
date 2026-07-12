@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "svp_docs_run/v1",
+  "title": "SVP documentation review run receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "generated_at",
+    "mode",
+    "phase",
+    "repo",
+    "packet_digest",
+    "diff_digest",
+    "receipts",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {"const": "svp_docs_run/v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "mode": {"enum": ["audit", "edit"]},
+    "phase": {"enum": ["pre", "post"]},
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root", "branch", "head", "origin_main"],
+      "properties": {
+        "root": {"type": "string"},
+        "branch": {"type": "string"},
+        "head": {"type": "string"},
+        "origin_main": {"type": "string"}
+      }
+    },
+    "packet_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "diff_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "approval_receipt_ref": {"type": ["string", "null"]},
+    "receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x2", "x1d", "x3"],
+      "properties": {
+        "x2": {"type": "string"},
+        "x1d": {"type": ["string", "null"]},
+        "x3": {"type": "string"}
+      }
+    },
+    "status": {"enum": ["PASS", "WARN", "FAIL"]}
+  }
+}

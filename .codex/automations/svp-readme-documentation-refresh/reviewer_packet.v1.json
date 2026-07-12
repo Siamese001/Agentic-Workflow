@@ -1,0 +1,104 @@
+{
+  "schema_version": "svp_docs_reviewer_packet/v1",
+  "active_documents": [
+    "README.md",
+    "docs/EXECUTIVE_OVERVIEW.md",
+    "docs/RECRUITER_GUIDE.md",
+    "docs/RUNTIME_CONTROL_PLANE.md",
+    "docs/SVP_ENGINEERING_GOVERNANCE_README.md",
+    "docs/svp/README.md",
+    "docs/architecture/REVIEWER_GUIDE.md",
+    "docs/architecture/architecture-proof-pack.md",
+    "docs/architecture/adr/README.md"
+  ],
+  "authority_files": [
+    "AGENTS.md",
+    "docs/codex-primary-execution.md",
+    "apps_shared/integrations/app_registry.py",
+    "ops_scripts/ci/run_architecture_proof.py",
+    ".codex/automations/svp-readme-documentation-refresh/automation.toml",
+    ".codex/automations/on-demand-svp-documentation-refresh/automation.toml"
+  ],
+  "required_readme_sections": [
+    "The Thesis",
+    "Why This Matters for SVP Engineering Hiring",
+    "Quickstart",
+    "Governed Architecture Proof Pack",
+    "How This Repository Is Governed",
+    "Start Here"
+  ],
+  "stale_active_terms": [
+    ".windsurf/",
+    ".cursor/",
+    "legacy editor",
+    "5 governed apps + 2 formal exceptions",
+    "36/36 checks",
+    "all 7 apps",
+    "all seven apps"
+  ],
+  "historical_context_markers": [
+    "historical",
+    "archived",
+    "retired",
+    "superseded",
+    "not the current source of truth"
+  ],
+  "claim_evidence": [
+    {
+      "claim_id": "route_authority",
+      "claim": "Routing authority is separated from planning and execution.",
+      "evidence_paths": [
+        "agentic_core/L0_routing",
+        "docs/RUNTIME_CONTROL_PLANE.md"
+      ],
+      "proof_commands": [
+        "python ops_scripts/ci/run_architecture_proof.py --suite S1"
+      ]
+    },
+    {
+      "claim_id": "write_sovereignty",
+      "claim": "Durable-write admission is governed through the UWG contract.",
+      "evidence_paths": [
+        "agentic_core/L4_state",
+        "docs/SVP_ENGINEERING_GOVERNANCE_README.md"
+      ],
+      "proof_commands": [
+        "python ops_scripts/ci/run_architecture_proof.py"
+      ]
+    },
+    {
+      "claim_id": "app_registry",
+      "claim": "Current governed and formal-exception status is registry-backed.",
+      "evidence_paths": [
+        "apps_shared/integrations/app_registry.py",
+        "ops_scripts/ci/check_governed_app_conformance.py"
+      ],
+      "proof_commands": [
+        "python ops_scripts/ci/check_governed_app_conformance.py"
+      ]
+    },
+    {
+      "claim_id": "codex_governance",
+      "claim": "Codex governance is repo-owned and publication is PR-only.",
+      "evidence_paths": [
+        "docs/codex-primary-execution.md",
+        "scripts/governance/verify_codex_primary.py",
+        "scripts/governance/verify_codex_enforcement_home.py",
+        ".codex/automations/on-demand-pr-main-publisher/automation.toml"
+      ],
+      "proof_commands": [
+        "python scripts/governance/verify_codex_primary.py",
+        "python scripts/governance/verify_codex_enforcement_home.py --json"
+      ]
+    }
+  ],
+  "absolute_claim_terms": [
+    "every",
+    "exactly",
+    "structurally impossible",
+    "no bypass",
+    "no hidden",
+    "any past run"
+  ],
+  "publication_handoff": "on-demand-pr-main-publisher"
+}

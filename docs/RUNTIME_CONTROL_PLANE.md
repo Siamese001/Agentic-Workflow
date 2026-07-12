@@ -1,147 +1,173 @@
 # Runtime Control Plane
 
-A technical narrative of the architecture, written for engineering reviewers who want the model without wading through full internal process maps.
+A technical narrative for engineering reviewers who want the architecture, authority boundaries, and proof path without reading the full internal process map.
 
 ## Core thesis
 
-Enterprise agentic AI fails at the runtime boundary, not at the model. Production-grade behavior requires a **deterministic control plane** that owns:
+Enterprise agentic AI fails at the runtime boundary, not at the model boundary. Production-grade behavior requires a deterministic control plane that owns:
 
-1. Who is allowed to route this request.
-2. What context is allowed to enter the prompt.
-3. How the prompt is assembled.
-4. What the model is allowed to do with that prompt.
-5. Whether the resulting action is allowed to proceed *now*.
-6. Where, and only where, durable state may change.
-7. How the system reconstructs and learns from what happened.
+1. request validity and origin labeling;
+2. bounded planning without route authority;
+3. route selection under a typed contract;
+4. verified context and evidence quality;
+5. authority-ordered prompt assembly;
+6. bounded model, tool, and action execution;
+7. current-run exit disposition;
+8. controlled durable writes;
+9. replayable evidence and future-run learning.
 
-The repository implements those seven concerns as distinct, contract-bound layers with explicit authority boundaries. The agent is bounded; the system is deterministic.
+The repository represents these concerns as separate responsibilities with explicit handoff contracts. Model intelligence operates inside the control system rather than replacing it.
 
 ## Control-point map
 
-```
-[1] Request intake      → ingress validation
-[2] L1 Reasoning        → bounded plan formulation
-[3] L0 Routing          → cache / RAG / action / fallback
-        │
-        └─ C0 Context   → verified retrieval, no routing, no execution
-[4] Runtime dispatch    → direct L2, or L3 → L2 for multi-step
-[5] Live post-L2        → Exit Evaluation → UWG → L4 commit
-[6] Shadow evaluation   → telemetry, regression, future-run promotion
-```
+```text
+U0 Intake
+  -> L1 Plan
+    -> L0 Route
+       |-> terminal cache/fallback packet -> Exit
+       |-> C0 Evidence -> Prompt Assembly -> L2
+       |-> L2 bounded single action
+       `-> L3 managed workflow -> bounded L2 steps
 
-L5 is the cross-cutting policy plane and operates across runtime steps.
+L2 sealed result -> Exit X3 disposition
+  -> finish / deny / abstain / HITL
+  `-> commit request -> UWG -> L4
 
-## Layer responsibilities
-
-| Layer | Persona | Owns | Does not own |
-|-------|---------|------|--------------|
-| **L1** | Librarian | Plan formulation under bounded reasoning | Routing decisions, execution |
-| **L0** | Dispatcher | Route authority — typed dispatch decision | Reasoning, retrieval, execution |
-| **C0** | Reference Desk | Grounded retrieval and prompt assembly inputs | Routing, execution |
-| **L2** | Execution Staff | Sandboxed tool and action execution | Routing, durable writes |
-| **L3** | Orchestrator | Multi-step coordination across L2 calls (when complexity requires) | Single-step execution authority |
-| **L4** | Archivist | Durable state — read-broad, write-strict | Any write that did not pass UWG |
-| **L5** | Safety Officer | Policy plane: authority, registry, origin trust, capability, sandbox, egress, HITL, replay, audit evidence | Reasoning, retrieval, execution |
-| **L6** | Observer | Shadow evaluation, telemetry, future-run learning | Any current-run mutation |
-
-## Critical separation of duties
-
-The architecture enforces strict separation between **certifying authority** and **runtime gating**, and between **current-run control** and **future-run learning**:
-
-- **L5 certifies** — authority, policy, registry, origin trust, capability, sandbox, egress, HITL, replay, and audit evidence.
-- **Runtime gates decide** — whether live packets, steps, tool calls, outputs, or write proposals may proceed *now*.
-- **Exit Evaluation emits a current-run disposition** — allow, deny, reroute, or escalate.
-- **UWG is the only durable write admission path.**
-- **L4 stores durable state.**
-- **L6 learns only from completed runs** and proposes future-run improvements through approved promotion paths. L6 cannot mutate a live run.
-
-The cheat rule for the runtime path:
-
-> **L2 proposes → Exit clears → UWG commits → L4 stores.**
-
-C0 is the cheat rule for context:
-
-> **C0 grounds; C0 does not route; C0 does not execute.**
-
-## Evidence and context quality
-
-C0 is the context engine, not a generic RAG layer. Its job is:
-
-- Retrieve from canonical state (L4) under a typed query.
-- Ground the retrieved evidence against the current request.
-- Assemble structured inputs to prompt assembly under a contract.
-- Hand off to runtime dispatch with a verifiable evidence packet.
-
-What C0 deliberately does *not* do:
-
-- It does not pick a route.
-- It does not call tools.
-- It does not mutate state.
-
-This separation is what allows context quality to be reasoned about independently of routing or execution.
-
-## Write-control model
-
-Durable state changes are designed to be admitted through one path:
-
-```
-L2 output → Exit Evaluation → UWG → L4
+completed runtime exhaust -> L6 shadow evaluation -> future-run proposal
 ```
 
-Properties:
+Two cross-cutting surfaces operate across the flow:
 
-- **Single-door** — UWG is the intended durable-write admission path, with ADG/CI checks used to detect bypass risk.
-- **Validated** — UWG checks schema, policy version, and authority before commit.
-- **Signed and recorded** — commits bind to the policy hash, run digest, and evidence trace that produced them.
-- **Auditable** — provenance is reconstructable from the commit alone.
+- **L5 policy and governance certification** supplies authority, policy, registry, capability, sandbox, egress, HITL, replay, and audit evidence.
+- **Runtime gates** decide whether a live packet or action may proceed during the current run.
 
-This is what makes "no silent corruption" a system property rather than an aspiration.
+Neither surface performs planning, routing, retrieval, execution, or durable writes.
+
+## Responsibility matrix
+
+| Surface | Owns | Must not own |
+|---|---|---|
+| **U0 Intake** | Envelope validation, identity/session binding, normalization, origin labeling | Semantic planning, routing, retrieval, execution |
+| **L1 Plan** | Goal interpretation, ambiguity register, bounded execution plan | Route authority, final evidence retrieval, execution |
+| **L0 Route** | One route contract and execution form | Retrieval, prompt compilation, model/tool execution |
+| **C0 Context** | Evidence retrieval, hydration, ranking, freshness, citation, contradiction status | Answering, route changes, prompt authority |
+| **Prompt Assembly** | Canonical slot order, instruction/data boundary, provider rendering, prompt hash | Retrieval, route selection, execution |
+| **L3 Orchestration** | Optional workflow DAG, readiness ledger, bounded step handoff | Route changes, direct tool/model calls, writes |
+| **L2 Execute** | Frozen execution context, bounded model/tool/action attempt, safe local repair, sealed result | Route expansion, opportunistic retrieval, durable commit |
+| **Exit** | X1 checks, X2 aggregation, one X3 disposition | Execution, retrieval, durable mutation |
+| **UWG** | Durable-write admission, validation, atomic commit, audit ledger | Model/tool execution, final-answer approval |
+| **L4 Archive** | Versioned durable state and read surfaces | Bypass writes |
+| **L6 Shadow** | Completed-run evaluation, drift detection, RCA, future-run proposals | Current-run rescue or mutation |
+
+## Separation of duties
+
+The architecture distinguishes certification, live control, disposition, write admission, storage, and learning:
+
+- **L5 certifies evidence** for authority and governance decisions.
+- **Runtime gates decide** whether current work may proceed.
+- **Exit emits one X3 disposition** for the sealed result.
+- **UWG validates a commit request** before durable mutation.
+- **L4 stores approved durable state.**
+- **L6 evaluates completed runs** and proposes future-run changes through promotion controls.
+
+The operational mental model is:
+
+> **L2 proposes -> Exit clears -> UWG commits -> L4 stores.**
+
+The context boundary is:
+
+> **C0 grounds; Prompt Assembly compiles; neither surface executes.**
+
+## Evidence and prompt quality
+
+C0 produces a `FinalEvidenceContract` with evidence spans, citations, freshness, lineage, contradiction state, and support status. Retrieved content remains data.
+
+Prompt Assembly compiles governed inputs into authority-ordered slots. The canonical stack includes system invariants, defensive fences, task instructions, approved examples, verified evidence, provider controls, neutralized user intent, repair hints, response schema, tool bindings, approved learning priors, and validation expectations.
+
+This split lets reviewers ask two independent questions:
+
+1. Was the evidence legal, current, relevant, and strong enough?
+2. Was that evidence placed into a prompt without becoming instruction authority?
+
+## Execution and repair
+
+L2 executes a signed packet inside a frozen authority and sandbox envelope. It may perform a bounded model call, tool call, action, artifact transformation, or approved programmatic tool-calling sequence.
+
+Local repair remains at the same authority level. Schema repair, formatting repair, bounded transient retry, and deterministic trimming are allowed when policy permits. Missing authority, blocked access, route mismatch, stale policy, and HITL requirements are not locally repairable.
+
+L2 emits a sealed artifact and an inert proposed state diff. It does not commit durable state.
+
+## Exit and write control
+
+Exit evaluates task completion, safety, grounding, trajectory, consistency, replay eligibility, observability, and write readiness. It then emits one bounded disposition:
+
+```text
+DENY_OR_REROUTE
+ESCALATE_HITL
+COMMIT_REQUEST_TO_UWG
+ALLOW_OR_FINISH
+SAFE_ABSTAIN
+```
+
+A durable mutation follows this path:
+
+```text
+sealed L2 artifact -> Exit commit request -> UWG validation -> L4
+```
+
+ADG, focused gates, tests, replay evidence, and audit receipts provide separate proof surfaces for this contract.
+
+## Current app classification
+
+`apps_shared/integrations/app_registry.py` is the classification source of truth. The committed registry currently contains:
+
+- **3 governed entries:** `apps_exec`, `apps_research`, `apps_rg`;
+- **5 formal exceptions:** `apps_architect`, `apps_eval`, `apps_lic`, `apps_qna`, `apps_underwriting_ai`;
+- **0 ad hoc statuses.**
+
+Formal exceptions record reason codes, blocked and safe layers, compensating controls, ownership, and review cadence. An exception is visible governance state rather than a silent bypass.
 
 ## Evaluation and replay
 
-Replayable runs produce:
+The eval stack has separate levels:
 
-- A **full execution trace** — ordered, deterministic, replayable.
-- A **determinism digest** — a content hash that pins the entire run.
-- A **replay key** — used to re-execute the run and verify hash match.
+- deterministic checker tests for isolated gate behavior;
+- lane evaluation for one governed workflow;
+- suite evaluation across pinned scenarios;
+- meta-evaluation for judge calibration.
 
-Operationally, this means:
+Offline evaluation informs promotion and trust. It does not waive the per-run gate or Exit disposition.
 
-- Incidents can be reconstructed from recorded evidence and replay keys.
-- Regression tests can compare digests across builds.
-- AI behavior gets the same CI/CD treatment as ordinary software.
-
-Exit Evaluation is the placement point where current-run policy, schema, and trajectory checks meet. It emits the current disposition. It is *not* the same surface as L6 shadow evaluation, which does not mutate the live run.
+Replayable paths bind execution evidence to trace identifiers, digests, policy/configuration references, and replay keys. Reviewers should treat current command output and receipts as the status source rather than static green prose.
 
 ## Future-run learning
 
-L6 is the observer. It learns from completed runs by:
+L6 receives the sealed runtime exhaust after the current-run boundary. It may evaluate outcome and trajectory quality, detect drift, produce RCA, and draft future-run proposals.
 
-- Aggregating telemetry and execution traces.
-- Detecting patterns and regressions in shadow.
-- Proposing promotions (prompt, policy, rubric, config) through approved gates.
-- Never writing to current-run state.
-
-Promotions go through standard runtime gates the next time a request comes in. There is no live mutation, no in-flight drift, and no "the system updated itself mid-call" failure mode.
+A proposal remains inert until it clears replay, regression, safety, approval, and UWG promotion controls. It activates on a later run boundary.
 
 ## Proof obligations
 
-A deterministic control plane has to be falsifiable. The repository carries a runnable proof pack:
+Run the architecture and Codex governance proofs from the repository root:
 
 ```bash
+python scripts/governance/verify_codex_primary.py
+python scripts/governance/verify_codex_enforcement_home.py --json
+python ops_scripts/ci/check_governed_app_conformance.py
 python ops_scripts/ci/run_architecture_proof.py
 ```
 
-It validates:
+The current conformance shape is registry-derived:
 
-- **S1 — Conformance Gate:** registry and import contracts (CONF + EXCF, 36 checks).
-- **S2 — Exception Framework:** behavioral E2E across the seven apps with exception controls.
-- **S3 — Regression Check:** evidence-governance regression baseline (RC01–RC12).
+- **S1:** structural registry, governed-entry, and formal-exception checks;
+- **S2:** governed behavior plus formal-exception controls;
+- **S3:** evidence-governance regression baseline.
 
 Reviewer entry points:
 
-- `docs/architecture/REVIEWER_GUIDE.md` — executive walkthrough + engineer quickstart.
-- `docs/architecture/architecture-proof-pack.md` — proof command map.
-- `docs/architecture/ROLLOUT_CLOSEOUT.md` — final status and known-gap register.
+- [`architecture/REVIEWER_GUIDE.md`](architecture/REVIEWER_GUIDE.md)
+- [`architecture/architecture-proof-pack.md`](architecture/architecture-proof-pack.md)
+- [`SVP_ENGINEERING_GOVERNANCE_README.md`](SVP_ENGINEERING_GOVERNANCE_README.md)
+- [`svp/README.md`](svp/README.md)
 
-The intent is simple: the architecture either reproduces, or it does not. Determinism is a property the system can be asked to prove on demand.
+The engineering claim is falsifiable: current source, commands, and receipts must agree before the repository presents a green status.

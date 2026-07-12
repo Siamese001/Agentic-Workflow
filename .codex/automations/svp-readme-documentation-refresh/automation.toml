@@ -1,152 +1,70 @@
 version = 1
 id = "weekly-svp-readme-documentation-refresh"
 kind = "cron"
-name = "SVP README Documentation Refresh"
+name = "SVP README Documentation Audit"
+allow_direct_main_push = false
 prompt = '''
-Run a bounded, evidence-backed README and GitHub documentation refresh for Agentic-Workflow.
+Run the read-only, evidence-backed SVP documentation audit for Agentic-Workflow.
 
 Mission:
-Bring README-family and GitHub-facing documentation to senior/SVP-engineering quality. Optimize for a CTO or SVP Engineering reviewer, a senior maintainer checking architecture and verification paths, and a new contributor needing safe onboarding.
+Evaluate the active GitHub reviewer packet for CTO, SVP Engineering, senior maintainer, hiring, and contributor audiences. Produce replayable X1D, X2, X3, and run receipts. This weekly automation is audit-only: it must not edit files, create a publication commit, push a branch, open or merge a PR, or emit ALLOW_TO_PR.
 
-Primary outcome:
-- Make the repository's strongest differentiators easy to notice for hiring, reputation, and senior engineering review.
-- Clear first-page positioning.
-- Accurate architecture and operating-model navigation.
-- Fast developer onboarding.
-- Explicit verification paths.
-- Governance, security, support, and license signposts when supported by repo evidence.
-- Reduced stale or duplicated guidance.
-
-Standing authorization:
-Bounded documentation-only edits are allowed when the change is evidence-backed by the current repo, stays within README-family files or GitHub documentation surfaces, does not alter runtime behavior, test behavior, package metadata, app configuration, CI behavior, generated outputs, or product logic, and improves clarity, accuracy, navigation, onboarding, verification, governance/security/support signposting, or removes stale/duplicated guidance.
-
-Stop before editing if the change requires product strategy decisions, architecture decisions not already documented, code behavior changes, policy choices, licensing/security/support commitments, broad generated artifact churn, resolving unrelated dirty work, or guessing about ownership, maturity, customers, compliance, benchmarks, support SLAs, or roadmap.
-
-End-goal priority:
-The automation must not let unrelated generated ADG report churn, cleanup queues, ratchet baselines, or other automation-output noise prevent the documentation mission. The goal is to surface the repository's key differentiators and make the GitHub-facing narrative stronger. Dirty generated artifacts may change what can be published from the current worktree, but they must not block read-only audit, differentiator extraction, README gap analysis, or a proposed edit plan.
-
-Governance contract:
+Authority:
 - Follow AGENTS.md and docs/codex-primary-execution.md.
-- For non-trivial work, read memory/MEMORY.md and memory/codex/memory_summary.md before relying on global/user memory.
 - Keep .codex as the only repo governance tree.
-- Do not create, revive, or reference legacy governance directories as active policy.
-- Use bounded PowerShell-compatible commands.
-- Do not set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1.
+- Read memory/MEMORY.md and memory/codex/memory_summary.md for non-trivial repo-local context.
+- Treat apps_shared/integrations/app_registry.py as the app-classification source of truth.
+- Treat .codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json as the reviewer-packet manifest.
+- Publication authority remains exclusively with on-demand-pr-main-publisher.
 
-Planning gate:
-- T0/T1 narrow single-file documentation corrections may edit directly.
-- T2/T3 work touching 2+ files, crossing documentation layers, changing architecture/governance wording, updating root navigation, or creating a PR-ready documentation refresh must produce a plan first and wait for approval.
-- If this automation is running unattended and approval cannot be obtained, stop after producing the audit and proposed plan.
+Startup:
+1. Run git fetch origin --prune when available.
+2. Run git status --short --branch.
+3. Run python scripts/governance/codex_readiness.py --docs-only --json.
+4. Run python scripts/governance/svp_docs_review.py --mode audit --phase pre --base-ref origin/main --json.
+5. Do not modify the repository even when gaps are found.
 
-Startup gates:
-- Run git status --short --branch.
-- Classify dirty worktree entries before deciding whether to stop:
-  - If dirty entries are limited to generated ADG reports, cleanup outputs, ratchet baselines, run receipts, or other unrelated automation artifacts, continue with read-only inventory, differentiator audit, README gap analysis, and a proposed edit plan.
-  - Treat dirty generated/automation artifacts as non-authoritative unless they are committed, timestamp-consistent, and certified by the repo workflow. Do not base SVP claims on local generated churn alone.
-  - If documentation edits are warranted while unrelated generated/automation artifacts are dirty, create or use an isolated clean docs branch/worktree from origin/main before editing, or stop after the audit if isolation is unavailable.
-  - Stop before editing when dirty entries include active README-family files, GitHub community-health files, Codex automation contracts, governance docs relevant to the edit, source/config files that would affect the claims being made, conflicts, staged mixed-scope changes, or ambiguous user work.
-- For long or PR-producing docs-only runs, run python scripts/governance/codex_readiness.py --docs-only --json.
-- A codex_readiness.py failure caused only by unrelated dirty generated/automation artifacts is a publication blocker for the current dirty surface, not a blocker for read-only audit or isolated-branch documentation work. Record the failure and continue within the allowed scope above.
-- If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts are touched, validation must include python scripts/governance/verify_codex_primary.py.
+Required audit output:
+- README inventory and classification.
+- Material gap table with file, line, claim, evidence, severity, and proposed correction.
+- Current registry-derived governed/formal-exception status.
+- Proof-command and link resolution findings.
+- X1D, X2, X3, and run receipt paths.
+- X3 may be only NOOP, PLAN_ONLY, BLOCK, or ESCALATE_HUMAN.
 
-Evidence rules:
-Use current repository files, authoritative docs, ADG SQLite evidence when relevant, rg discovery, and existing validation scripts or workflows. Do not infer undocumented architecture from naming alone. When evidence is missing, label the gap instead of inventing maturity, customer usage, compliance status, security posture, benchmarks, support commitments, ownership, roadmap, or branch-protection guarantees.
+X1D LLM judge contract:
+- Emit schema_version svp_docs_x1d/v1.
+- Judge first_page_thesis_clarity, svp_cto_hiring_signal, differentiation, evidence_credibility, governance_maturity, onboarding_clarity, reader_path_integrity, executive_signal_without_hype, claim_to_proof_traceability, and maintenance_freshness.
+- Every blocking X1D finding must include file, line, claim, finding_type, severity, evidence, and required_fix.
+- X1D transport failure or abstention is WARN, never ALLOW.
 
-Best-practice baseline:
-Apply README and documentation standards from GitHub README guidance, GitHub community profile guidance, Open Source Guides, Google documentation best practices, Diataxis, and OpenSSF SCM guidance. Use these as review heuristics, not as a reason to make unsupported claims.
+X2 deterministic contract:
+- Emit schema_version svp_docs_x2/v1.
+- Run x2_toml_parse, x2_app_launcher_ssot, x2_stale_active_terms, x2_relative_links, x2_unsupported_claims_regex, x2_docs_only_scope, x2_high_signal_packet_present, x2_required_sections, x2_codex_primary, x2_enforcement_home, x2_diff_check, x2_publication_isolation, x2_architecture_status_consistency, x2_claim_evidence_map, x2_proof_command_resolves, x2_receipt_schema_validate, x2_approval_mode, and x2_no_absolute_unproven_language.
+- x2_architecture_status_consistency compares active reviewer docs with APP_REGISTRY and executable proof output.
+- x2_claim_evidence_map requires major claims to map to a file, command, receipt, or explicit caveat.
+- x2_proof_command_resolves verifies referenced Python proof targets exist.
+- x2_receipt_schema_validate validates the checked-in X1D, X2, X3, and run schemas.
+- x2_approval_mode must confirm this weekly run has no edit or publication authority.
+- x2_no_absolute_unproven_language blocks new unanchored absolute claims.
 
-Inventory:
-- Dynamically inventory README-like and GitHub-facing documentation with rg --files -g '*README*' -g '*readme*'.
-- Also inspect CONTRIBUTING*, SECURITY*, SUPPORT*, CODE_OF_CONDUCT*, LICENSE*, .github/ISSUE_TEMPLATE/**, .github/PULL_REQUEST_TEMPLATE*, .github/pull_request_template*, .github/workflows/**, docs/**/README*, and tests/**/README* when present.
-- Avoid broad scans of generated, cache, vendor, or archive-heavy folders unless a current active README points to them.
-
-Classification:
-Classify each README-like file as one of primary_github_landing, active_subsystem_or_app, active_governance_or_operations, architecture_or_adr, test_or_data, tooling_or_infrastructure, generated_or_template, archival_or_historical, or unknown_requires_review.
-
-Prioritization:
-Prioritize active GitHub-facing surfaces in this order: root README.md; docs/svp/README.md if present; docs/SVP_ENGINEERING_GOVERNANCE_README.md if present; README files directly linked from the root README; app READMEs; agentic_core and shared-type READMEs; tooling and infrastructure READMEs; architecture / ADR README surfaces; tests, eval, fixture, and golden-data README surfaces; GitHub community-health files.
-
-Required README audit:
-Before editing, build an audit table with columns file, classification, current purpose, stale/confusing gaps, proposed action, and risk. Use risk values low, medium, or high. Stop on high-risk architecture, policy, security, support, or ownership claims unless already explicit in authoritative repo docs.
-
-SVP gates:
-Run the SVP documentation review as X1D + X2 + X3.
-
-X1D LLM judge:
-- Emit a JSON receipt with schema_version svp_docs_x1d/v1.
-- Judge whether the docs read like serious CTO/SVP Engineering material, but do not waive deterministic gates.
-- Score first_page_thesis_clarity >= 4.3, svp_cto_hiring_signal >= 4.2, differentiation >= 4.3, evidence_credibility >= 4.2, governance_maturity >= 4.2, onboarding_clarity >= 4.0, reader_path_integrity >= 4.2, executive_signal_without_hype >= 4.3, claim_to_proof_traceability >= 4.2, maintenance_freshness >= 4.0.
-- stale_reference_risk and unsupported_claim_risk should be <= 1.0, but X2 owns deterministic stale and unsupported-claim detection.
-- Every blocking X1D finding must include file, line, claim, finding_type, severity, evidence, and required_fix. Findings without file/line/claim/evidence are advisory only.
-- X1D availability, abstain, or transport failure must not fail open. Treat unavailable X1D as WARN for prose quality and let X2/X3 decide publication safety.
-
-X2 deterministic gates:
-- Emit a JSON receipt with schema_version svp_docs_x2/v1.
-- Required gates: x2_toml_parse, x2_app_launcher_ssot, x2_stale_active_terms, x2_relative_links, x2_unsupported_claims_regex, x2_docs_only_scope, x2_high_signal_packet_present, x2_required_sections, x2_codex_primary, x2_enforcement_home, x2_diff_check, x2_publication_isolation, x2_architecture_status_consistency, x2_claim_evidence_map, x2_proof_command_resolves, x2_receipt_schema_validate, x2_approval_mode, x2_no_absolute_unproven_language.
-- x2_architecture_status_consistency compares active reviewer docs against apps_shared/integrations/app_registry.py, the root README app portfolio, and current architecture proof-pack status. It blocks when active reviewer docs disagree on whether an app is governed, archived, or a formal exception.
-- x2_claim_evidence_map requires each major architecture, governance, security, support, benchmark, maturity, or roadmap claim to map to a file, command, receipt, or explicit caveat.
-- x2_proof_command_resolves verifies commands referenced in active reviewer docs exist and are runnable or intentionally caveated.
-- x2_receipt_schema_validate validates X1D, X2, and X3 JSON receipts against checked-in schemas when present; if schemas are not yet present, record that as a gap and keep the receipt shape explicit in the final report.
-- x2_approval_mode blocks publication when unattended T2/T3 work lacks approval; in that case X3 must choose PLAN_ONLY unless no material gap exists.
-- x2_no_absolute_unproven_language blocks uncaveated absolute claims such as every, exactly, structurally impossible, no bypass, no hidden, or any past run unless backed by a direct proof anchor or softened.
-
-X3 final disposition:
-- Emit one JSON receipt with schema_version svp_docs_x3/v1.
-- Allowed decisions: ALLOW_TO_PR, PLAN_ONLY, BLOCK, NOOP, ESCALATE_HUMAN.
-- ALLOW_TO_PR requires X2 pre PASS, X1D ALLOW or WARN with no high-severity finding, X2 post PASS, docs-only isolation, and publication approval.
-- PLAN_ONLY means audit and proposed plan only; use it when unattended T2/T3 work lacks approval or isolation is unavailable.
-- BLOCK means X2 failure or X1D high-severity stale/unsupported finding.
-- NOOP means no material GitHub-facing documentation gap was found.
-- ESCALATE_HUMAN means strategy, claim, ownership, support, compliance, roadmap, or licensing judgment is required.
-- X3 must include decision, reason, x2_pre, x1d, x2_post, publication_authorized, changed_files, and required_next_action.
+X3 contract:
+- Emit schema_version svp_docs_x3/v1.
+- Allowed weekly decisions: NOOP, PLAN_ONLY, BLOCK, ESCALATE_HUMAN.
+- PLAN_ONLY identifies a coherent remediation plan for later explicit approval.
+- BLOCK records deterministic failures or high-severity unsupported/stale claims.
+- ESCALATE_HUMAN is used for strategy, ownership, support, compliance, licensing, or roadmap judgment.
+- The weekly job must never emit ALLOW_TO_PR.
 
 Final SVP-grade operating rule:
 X1D decides whether the docs read like serious SVP/CTO engineering material. X2 decides whether the docs are mechanically true, scoped, current, and safe. X3 decides whether this weekly Codex run may publish, must stop at plan, or must block. Eval never waives a runtime or publication gate.
 
-Edit standards:
-- Root README should concisely answer what the repo is, who it is for, why it matters, current operating status, quick start, primary workflows, verification commands, architecture map, governance model, contribution/security/support/license links, and where deeper docs live.
-- Component READMEs should state responsibility, public entrypoints, prerequisites, common commands, tests or verification path, status when evidence supports it, dependencies, upstream/downstream links, and related deeper docs.
-- Governance README surfaces should distinguish active Codex-owned policy from archive/historical material, link to authoritative files, avoid duplicating long rule text, and avoid implying enforcement not backed by code, CI, hooks, scripts, or documented process.
-- Test, eval, fixture, and golden-data README surfaces should explain purpose, how to run or refresh, expected outputs, safety constraints, generated vs source-of-truth status, and what not to hand-edit.
-
-Style:
-Prefer concise sections, accurate relative links, runnable command snippets, explicit status labels, and clear next-step navigation. Avoid unsupported executive-sounding claims, broad rewrites with weak evidence, formatting churn, duplicated governance language, and generated or archived material unless required for active navigation.
-
-Workflow:
-1. Run startup gates.
-2. Read authority files and repo-local memory.
-3. Classify any dirty worktree entries as blocking, non-blocking generated/automation churn, or requiring isolation.
-4. Inventory README/community-health surfaces.
-5. Extract the repository differentiators that matter for CTO/SVP/hiring review, backed by committed source/docs and authoritative repo evidence.
-6. Build the README audit table.
-7. Classify the work as T0/T1 or T2/T3.
-8. If T2/T3, produce a plan and wait for approval before editing unless the run is explicitly operating in an approved isolated docs branch/worktree.
-9. Make only the smallest coherent documentation-only edit set, and only on a clean or isolated docs surface.
-10. Stop expanding scope when broad rewrite pressure appears.
-11. Record remaining work as backlog instead of touching every file.
-12. Re-check git status and confirm changed files are documentation-only and isolated from unrelated generated/automation churn.
-13. Validate.
-14. If edits were made and publication is authorized by the run context, stage every dirty file produced by the automation run, commit the complete run diff, merge it to main, push main, fetch, and prove local main equals origin/main.
-
-Validation:
-- Always run git diff --check.
-- Validate edited Markdown links and headings using existing repo tooling if available.
-- If no Markdown tooling exists, run a focused relative-link existence check against changed README-family files.
-- If Codex governance docs, .codex files, hooks, automation contracts, or governance scripts were touched, run python scripts/governance/verify_codex_primary.py.
-- For substantial Codex-primary implementation or verification runs, create and validate a run receipt with python scripts/governance/verify_codex_run_receipt.py artifacts/codex/run_receipts/<run-id>.json.
-- Do not run broad test suites unless current repo docs require them for documentation-only changes.
-
-Publication:
-If edits are made and publication is authorized, create or use an isolated branch/worktree from origin/main named codex/docs-readme-refresh-YYYYMMDD, then commit the full dirty set produced in that automation worktree. Do not leave automation-produced dirty files behind as unstaged, staged-but-uncommitted, or unmerged residue.
-
-When the user explicitly authorizes publication or this TOML is invoked in an approved publication mode, merge the complete committed run diff to local main, push main to origin, fetch origin, and prove `git rev-parse main` equals `git rev-parse origin/main`. The final local main and origin/main refs must be identical, and `git status --short --branch` on main must show no dirty files from the automation run.
-
-Dirty files in another protected worktree are not background once the user or automation mode says to include dirty files in the merge. In that mode, enumerate every dirty path from every participating worktree, classify ownership/scope, bring each included dirty file into the publication commit or stop with RCA if a conflict or unsafe ownership question prevents inclusion. Never force-push main, squash without explicit user authorization, or merge a partial subset of the approved dirty-file publication set.
-
-Final report:
-Return branch name, PR URL if created, changed files, README audit highlights, validation evidence, best-practice sources applied, remaining documentation backlog, degraded route or fallback used, and stopped or unsafe items.
-
-If stopped or failed, include RCA with symptom, root_cause, evidence, fix_or_next, and recurrence_guard. fix_or_next must begin with fix: if fixed in-run or next: if follow-up remains.
+Stop conditions:
+- Never repair findings in this cron.
+- Never infer approval from schedule, branch name, worktree, or prior discussion.
+- Never stage every dirty file or include unrelated worktree state.
+- Never push or merge directly to main.
+- Return RCA fields symptom, root_cause, evidence, fix_or_next, and recurrence_guard for failures.
 '''
 status = "ACTIVE"
 rrule = "RRULE:FREQ=WEEKLY;BYHOUR=0;BYMINUTE=0;BYDAY=SA"
@@ -155,4 +73,13 @@ reasoning_effort = "high"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH", "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\on-demand-pr-main-publisher-2"]
 created_at = 1782255108967
-updated_at = 1782551404099
+updated_at = 1783900000000
+
+[svp_docs]
+mode = "audit_only"
+require_approval_receipt = false
+allow_edits = false
+allow_publication = false
+publication_handoff = "on-demand-pr-main-publisher"
+reviewer_packet = ".codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json"
+x2_entrypoint = "python scripts/governance/svp_docs_review.py --mode audit --phase pre --base-ref origin/main --json"

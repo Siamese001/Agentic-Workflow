@@ -1,0 +1,94 @@
+name: SVP Documentation Gates
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - ".codex/automations/svp-readme-documentation-refresh/**"
+      - ".codex/automations/on-demand-svp-documentation-refresh/**"
+      - ".codex/schemas/svp_docs_*"
+      - "scripts/governance/svp_docs_review.py"
+      - "scripts/governance/verify_codex_enforcement_home_portable.py"
+      - "scripts/governance/verify_codex_primary.py"
+      - "ops_scripts/ci/run_architecture_proof.py"
+      - "tests/unit/scripts/governance/test_svp_docs_review.py"
+      - "tests/unit/scripts/governance/test_verify_codex_primary.py"
+      - ".github/workflows/svp-docs-gates.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  svp-docs-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout bounded history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+          show-progress: false
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
+
+      - name: Establish named branch context
+        shell: bash
+        run: |
+          branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-svp-docs-ci}}"
+          git checkout -B "$branch"
+          git fetch --quiet --depth=50 origin main:refs/remotes/origin/main
+
+      - name: Set up repository Python
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+
+      - name: Compile deterministic gates
+        run: |
+          python -m py_compile scripts/governance/svp_docs_review.py
+          python -m py_compile scripts/governance/verify_codex_enforcement_home_portable.py
+          python -m py_compile scripts/governance/verify_codex_primary.py
+          python -m py_compile ops_scripts/ci/run_architecture_proof.py
+
+      - name: Test SVP X2 and X3 logic
+        run: >-
+          pytest -q --tb=short
+          --confcutdir=tests/unit/scripts/governance
+          tests/unit/scripts/governance/test_svp_docs_review.py
+
+      - name: Test Codex primary SVP anchors
+        run: >-
+          pytest -q --tb=short
+          --confcutdir=tests/unit/scripts/governance
+          tests/unit/scripts/governance/test_verify_codex_primary.py
+
+      - name: Verify Codex repo contract
+        run: python scripts/governance/verify_codex_primary.py --repo-only
+
+      - name: Verify Codex enforcement home
+        run: python scripts/governance/verify_codex_enforcement_home_portable.py --json
+
+      - name: Run SVP implementation review
+        run: >-
+          python scripts/governance/svp_docs_review.py
+          --mode audit
+          --phase pre
+          --base-ref origin/main
+          --implementation-change
+          --output-dir artifacts/codex/svp_docs/ci
+          --json
+
+      - name: Upload SVP review receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: svp-docs-review-receipts
+          path: artifacts/codex/svp_docs/ci
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Run architecture conformance proof
+        if: always()
+        run: python ops_scripts/ci/run_architecture_proof.py --suite S1

@@ -1,159 +1,147 @@
 # Reviewer Guide — Governed Architecture
 
-> **Start here.** This is the single entry point for anyone reviewing the governed architecture.  
-> Read time: ~5 minutes.  
+> **Start here.** This is the technical entry point for reviewing the governed architecture.  
+> Read time: about five minutes.  
 > One-command proof: `python ops_scripts/ci/run_architecture_proof.py`
-
----
 
 ## What was built
 
-A **shared agentic substrate** for app packages that have adopted the governed runtime path.
-Instead of each adopted app implementing its own routing, retrieval, and governance logic, the
-governed entries reuse one pipeline:
+Agentic Workflow provides a shared control-plane substrate for app packages that have adopted the governed runtime path. Governed entries use shared planning, routing, context, execution, exit, write-control, replay, and observation surfaces rather than rebuilding those responsibilities inside each app.
 
+```text
+U0 -> L1 -> L0 -> C0/Prompt Assembly -> L2 or L3/L2 -> Exit -> UWG -> L4
+                                                               |
+                                                               `-> L6 after run boundary
 ```
-L1 (intent decomposition) → L0 (routing) → C0 (grounded retrieval)
-  → L2 (governed execution chokepoint) → L5 (exit gate) → L6 (shadow telemetry)
-```
 
-For governed entries, this is enforced structurally: the shared base class or canonical dispatch
-entrypoint owns the pipeline, and app code supplies bounded app-specific mapping.
-
-Apps that structurally cannot adopt this pattern have **formal governed exceptions** — not
-ad hoc bypasses — with reason codes, compensating controls, and annual review cadence.
-
----
+Apps that cannot use the generic runner or entrypoint are recorded as formal exceptions with reason codes, safe/blocked surfaces, compensating controls, owners, and review cadence.
 
 ## Reading order
 
-| Step | Read | Purpose |
+| Step | Read or run | Purpose |
 |---|---|---|
-| 1 | This file | Orientation and reviewer journey |
-| 2 | `docs/architecture/architecture-proof-pack.md` | Proof command map, app registry, gap list |
-| 3 | `python ops_scripts/ci/run_architecture_proof.py` | Run the proofs yourself |
-| 4 | `docs/architecture/governed-app-contract.md` | Contract schema detail (optional deep-dive) |
-| 5 | `docs/architecture/ROLLOUT_CLOSEOUT.md` | Final status + known gaps |
+| 1 | This file | Reviewer orientation |
+| 2 | [`../RUNTIME_CONTROL_PLANE.md`](../RUNTIME_CONTROL_PLANE.md) | Authority and runtime model |
+| 3 | [`architecture-proof-pack.md`](architecture-proof-pack.md) | Proof command map and current registry shape |
+| 4 | `python ops_scripts/ci/run_architecture_proof.py` | Current executable status |
+| 5 | [`governed-app-contract.md`](governed-app-contract.md) | Governed and formal-exception contracts |
+| 6 | [`ROLLOUT_CLOSEOUT.md`](ROLLOUT_CLOSEOUT.md) | Current closeout and tracked gaps |
 
----
+## Executive walkthrough
 
-## Executive walkthrough (2-minute version)
+**Problem:** application packages can drift into separate routing, retrieval, execution, and governance implementations. Static architecture prose does not prevent that drift.
 
-**Problem:** App packages can drift into separate routing, retrieval, and governance wiring unless
-the shared substrate and exception model are checked continuously.
+**Control model:**
 
-**Solution:**
-1. Built `GovernedAppRunner` — a shared base class that runs the full L1→L0→C0→L2→L5→L6 pipeline.
-2. Classified the current registry as three governed entries: `apps_exec`, `apps_research`, and `apps_rg`.
-3. Formalized five exceptions: `apps_architect` (pending runner migration), `apps_eval` (circular
-   dependency), `apps_lic` (canonical-dispatch product spine), `apps_qna` (pending runner migration),
-   and `apps_underwriting_ai` (regulated domain). Each has reason codes, compensating controls, and
-   gate-verifiable metadata.
-4. One conformance gate (`check_governed_app_conformance.py`) enforces the schema at CI time.
-5. One proof harness (`retrieval_benchmark.py`) verifies governed behavior and exception controls.
-6. One release gate (`run_architecture_proof.py`) composes all checks into one command.
+1. `APP_REGISTRY` classifies governed entries and formal exceptions.
+2. Governed entrypoints bind apps to the shared runtime controls.
+3. Formal exceptions expose compensating controls instead of hiding bypasses.
+4. The conformance gate checks registry shape, imports, capability tokens, exception metadata, and control hooks.
+5. The behavioral proof exercises governed behavior and exception controls.
+6. The release runner composes the structural, behavioral, and regression suites.
+7. Reviewer-facing counts are derived from the registry at runtime rather than copied into the runner.
 
-**Result:** Any reviewer can inspect the architecture and current gap list in one command.
+**Current registry snapshot:**
 
----
+- **3 governed entries:** `apps_exec`, `apps_research`, `apps_rg`;
+- **5 formal exceptions:** `apps_architect`, `apps_eval`, `apps_lic`, `apps_qna`, `apps_underwriting_ai`;
+- **0 ad hoc statuses.**
+
+The registry and current command output outrank dated prose when status changes.
 
 ## Engineer quickstart
 
 ```bash
-# 1. Verify the whole governed architecture (fast — ~12s)
-python ops_scripts/ci/run_architecture_proof.py --skip-regression
+# Codex governance contract
+python scripts/governance/verify_codex_primary.py
+python scripts/governance/verify_codex_enforcement_home.py --json
 
-# 2. Full proof including regression baseline (~17s)
-python ops_scripts/ci/run_architecture_proof.py
-
-# 3. Structural checks only (fastest — ~1s)
+# Structural registry and exception checks
 python ops_scripts/ci/run_architecture_proof.py --suite S1
 
-# 4. Behavioral checks only (governed apps + formal exceptions)
-python ops_scripts/ci/run_architecture_proof.py --suite S2
+# Structural plus behavioral proof
+python ops_scripts/ci/run_architecture_proof.py --skip-regression
+
+# Full architecture proof
+python ops_scripts/ci/run_architecture_proof.py
 ```
 
-To inspect individual apps:
+Targeted behavioral commands remain available through `tools/eval/retrieval_benchmark.py`. Prefer `--exception-framework-proof` for the current registry model; older grouped proof names may remain as compatibility surfaces.
+
+Inspect the registry directly:
 
 ```bash
-# Per-app targeted proof
-python tools/eval/retrieval_benchmark.py --rg-pilot-proof
-python tools/eval/retrieval_benchmark.py --lic-pilot-proof
-python tools/eval/retrieval_benchmark.py --eval-exception-proof
-python tools/eval/retrieval_benchmark.py --uw-exception-proof
-
-# Exception framework only
-python tools/eval/retrieval_benchmark.py --exception-framework-proof
+python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; [print(k, v.status) for k, v in APP_REGISTRY.items()]"
 ```
 
-To inspect the registry directly:
+## What to inspect
 
-```bash
-python -c "from apps_shared.integrations.app_registry import APP_REGISTRY; \
-  [print(k, v.status) for k, v in APP_REGISTRY.items()]"
-```
+### Structural correctness
 
----
+- App packages appear in the registry.
+- Governed entries expose an importable governed runner or canonical callable.
+- Capability tokens are versioned.
+- Formal exceptions use canonical reason codes.
+- Blocked and safe surfaces are declared.
+- Compensating controls and review cadence are present.
+- Partial-adoption handlers import and report control state.
+- Ad hoc status values are rejected.
 
-## What to look for when reviewing
+### Behavioral correctness
 
-**Structural correctness (S1 — 52 checks):**
-- Registry completeness is checked against `app_registry.py`.
-- Governed apps: runner importable, subclass of `GovernedAppRunner`, versioned capability token.
-- Exception apps: `FormalExceptionEntry` in registry (not ad hoc), valid reason code, blocked/safe
-  layers declared, ≥2 compensating controls, partial adoption module importable, controls verified.
+- Governed entries exercise happy and degraded behavior.
+- Degraded evidence paths abstain or fail safely rather than inflating support.
+- Exception handlers emit the required telemetry and conformance evidence.
+- Exit and disposition evidence is recorded.
+- Current results align with the registry rather than a retired app grouping.
 
-**Behavioral correctness (S2):**
-- Each governed app runs both a **happy path** (grounded, proceed) and a **degraded path**
-  (no vector store → abstain). The substrate handles degradation correctly.
-- Exception app handlers instantiate without errors, emit telemetry, and pass CC checks.
-- Zero ad hoc exception statuses remain in the registry.
+### Governance correctness
 
-**Regression baseline (S3 — 12 checks):**
-- Evidence grounding thresholds, citation constants, and disposition logic match baseline.
+- `.codex` remains the repo governance home.
+- The weekly SVP documentation automation is audit-only.
+- Approved documentation edits use the separate manual refresh.
+- `ALLOW_TO_PR` is a handoff to the PR-only main publisher, not merge authority.
+- X1D judgment does not override X2 deterministic failures.
+- X3 emits one bounded disposition.
 
----
+## Current validation posture
 
-## Current Validation Posture
+The proof runner now derives its registry summary from `apps_shared/integrations/app_registry.py`. It does not maintain a second app-count constant.
 
-The direct conformance-gate output is the source of truth for registry counts. A docs-refresh
-validation run on this snapshot found the direct S1 conformance gate green:
+Use current output as the authority:
 
 ```bash
 python ops_scripts/ci/check_governed_app_conformance.py
+python ops_scripts/ci/run_architecture_proof.py
 ```
 
-Result: `PASS 52/52 checks pass`.
+A static document may describe the expected proof shape, but it must not claim current green status without command or receipt evidence.
 
-**Registry state:** 3 governed + 5 formal exceptions + 0 ad hoc, per `apps_shared/integrations/app_registry.py`.
+## Known non-blocking environment gaps
 
-Known documentation/tooling gap: the top-level `run_architecture_proof.py` runner may still print
-stale summary prose for registry counts. Use the registry and direct conformance gate for the count
-until that executable summary text is updated.
-
----
-
-## Known non-blocking gaps
-
-| Gap | Status |
+| Gap | Expected treatment |
 |---|---|
-| C0 raw=0 in degraded path (no live ChromaDB) | Expected — abstain is the correct governed response |
-| `ClockProvider` kwargs mismatch in test harness | Expected — L0 graceful fallback path tested |
-| No live vector collections in proof environment | Expected — proof validates both paths explicitly |
+| No live vector collection in a proof environment | Validate the governed abstain/degraded path |
+| Clock or provider test-harness mismatch | Record the bounded fallback and keep disposition evidence |
+| Provider prompt-context mismatch in a test harness | Preserve failure classification and sealed output evidence |
 
-Full gap list with severity and recommended next owner: `docs/architecture/RELEASE_READINESS.md`
-
----
+The tracked register is [`RELEASE_READINESS.md`](RELEASE_READINESS.md). Current executable results outrank its dated history sections.
 
 ## Key files
 
 | File | Role |
 |---|---|
-| `apps_shared/integrations/governed_app_runner.py` | Shared base class — the governed pipeline |
-| `apps_shared/integrations/app_registry.py` | Single source of truth for all app classifications |
-| `ops_scripts/ci/check_governed_app_conformance.py` | Structural conformance gate (CONF + EXCF) |
-| `ops_scripts/ci/run_architecture_proof.py` | One-command release gate |
-| `tools/eval/retrieval_benchmark.py` | All behavioral proof suites |
-| `docs/architecture/architecture-proof-pack.md` | Full proof command map and gap maps |
-| `docs/architecture/governed-app-contract.md` | FormalExceptionEntry schema detail |
-| `docs/architecture/ROLLOUT_CLOSEOUT.md` | Final rollout status and known-gap register |
+| `apps_shared/integrations/app_registry.py` | App classification source of truth |
+| `apps_shared/integrations/governed_app_runner.py` | Shared governed runner |
+| `ops_scripts/ci/check_governed_app_conformance.py` | Structural conformance gate |
+| `ops_scripts/ci/run_architecture_proof.py` | Registry-driven release runner |
+| `tools/eval/retrieval_benchmark.py` | Behavioral and regression proof suites |
+| `scripts/governance/svp_docs_review.py` | Deterministic SVP documentation X2/X3 engine |
+| `.codex/automations/svp-readme-documentation-refresh/automation.toml` | Weekly read-only audit contract |
+| `.codex/automations/on-demand-svp-documentation-refresh/automation.toml` | Approval-bound edit contract |
+| `architecture-proof-pack.md` | Proof map and registry snapshot |
+| `governed-app-contract.md` | Governed and exception schema |
+
+## Reviewer takeaway
+
+The leadership signal is not the number of gates. It is the operating model: architecture claims have an authority source, a deterministic check, a behavioral proof path, a bounded exception model, and a publication control surface.

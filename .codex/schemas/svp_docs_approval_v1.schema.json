@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "svp_docs_approval/v1",
+  "title": "SVP documentation edit approval receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "plan_id", "approved_by", "approved_at"],
+  "properties": {
+    "schema_version": {"const": "svp_docs_approval/v1"},
+    "status": {"const": "APPROVED"},
+    "plan_id": {"type": "string", "minLength": 1},
+    "branch": {"type": ["string", "null"]},
+    "approved_by": {"type": "string", "minLength": 1},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "scope": {"type": "array", "items": {"type": "string"}}
+  }
+}
