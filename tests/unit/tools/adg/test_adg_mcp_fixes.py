@@ -11,7 +11,6 @@ Covers exactly the five behavioral invariants introduced by the patch:
 
 from __future__ import annotations
 
-import importlib
 import sqlite3
 import sys
 import threading
@@ -215,17 +214,14 @@ class TestLatestOnlyGateProbe:
 # ---------------------------------------------------------------------------
 
 
-def _load_adg_server_module():
-    """Import the server with an identity-decorator MCP test transport."""
-    fake_mcp = MagicMock()
-    fake_mcp.tool.side_effect = lambda *args, **kwargs: (
-        lambda function: function
-    )
-    with patch(
-        "tools.mcp.mcp_bootstrap.create_mcp_server",
-        return_value=fake_mcp,
-    ):
-        return importlib.import_module("tools.adg.mcp.server")
+def _runtime_for(service: MagicMock):
+    """Build a lightweight runtime around an injected service double."""
+    from tools.adg.mcp.runtime import ADGServerRuntime
+
+    runtime = ADGServerRuntime.__new__(ADGServerRuntime)
+    runtime._service = service
+    runtime._health = None
+    return runtime
 
 
 class TestAdgReloadHygiene:
@@ -235,30 +231,35 @@ class TestAdgReloadHygiene:
         svc._adg_snapshot_id = old_id
         svc._redis._available = True
 
-        # First health() call → stale
+        # First health() call → stale relative to the selected certified snapshot.
         svc._sqlite.health.return_value = (
             "healthy",
-            {"is_stale": True, "path": "/old.sqlite", "latest_path": "/new.sqlite"},
+            {
+                "is_stale": True,
+                "path": "/old.sqlite",
+                "selected_path": "/new.sqlite",
+            },
         )
 
         def _reopen_side_effect():
             svc._adg_snapshot_id = new_id
             svc._sqlite.health.return_value = (
                 "healthy",
-                {"is_stale": False, "path": "/new.sqlite"},
+                {
+                    "is_stale": False,
+                    "path": "/new.sqlite",
+                    "selected_path": "/new.sqlite",
+                },
             )
 
         svc.reopen.side_effect = _reopen_side_effect
         return svc
 
     def test_reload_clears_old_snapshot_redis_keys(self):
-        """adg_reload must call clear_snapshot(old_id) when reload occurs."""
-        server_module = _load_adg_server_module()
-
+        """Runtime reload clears the old snapshot namespace after transition."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["status"] == "ok"
         assert result["data"]["reloaded"] is True
@@ -268,46 +269,41 @@ class TestAdgReloadHygiene:
         svc._redis.clear_snapshot.assert_called_once_with("snap_old")
 
     def test_reload_not_needed_redis_not_touched(self):
-        """When already on latest snapshot, clear_snapshot must NOT be called."""
-        server_module = _load_adg_server_module()
-
+        """When already selected, reload leaves Redis untouched."""
         svc = MagicMock()
         svc._adg_snapshot_id = "snap_current"
         svc._sqlite.health.return_value = (
             "healthy",
-            {"is_stale": False, "path": "/current.sqlite"},
+            {
+                "is_stale": False,
+                "path": "/current.sqlite",
+                "selected_path": "/current.sqlite",
+            },
         )
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["data"]["reloaded"] is False
         assert result["data"]["redis_cleared"] is False
         svc._redis.clear_snapshot.assert_not_called()
 
     def test_reload_redis_cleared_false_when_redis_unavailable(self):
-        """redis_cleared must be False when Redis is not available."""
-        server_module = _load_adg_server_module()
-
+        """A successful reload reports Redis cold when Redis is unavailable."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
-        svc._redis._available = False  # Redis down
+        svc._redis._available = False
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["data"]["reloaded"] is True
         assert result["data"]["redis_cleared"] is False
         svc._redis.clear_snapshot.assert_not_called()
 
     def test_reload_redis_cleared_false_when_clear_snapshot_raises(self):
-        """clear_snapshot() exception must not prevent reload succeeding — redis_cleared=False."""
-        server_module = _load_adg_server_module()
-
+        """Redis cleanup failure cannot roll back a successful SQLite reload."""
         svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
         svc._redis.clear_snapshot.side_effect = RuntimeError("Redis SCAN failed")
 
-        with patch.object(server_module, "_init_service", return_value=svc):
-            result = server_module.adg_reload()
+        result = _runtime_for(svc).reload_latest_snapshot()
 
         assert result["status"] == "ok"
         assert result["data"]["reloaded"] is True
