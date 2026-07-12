@@ -103,7 +103,7 @@ def test_mcp_serializer_forwards_query_metadata() -> None:
 
     response = ADGResponse(
         status="ok",
-        data={"adg_name": "module", "scc": None},
+        data={"adg_name": "module", "blast_radius_direct": 0},
         backend_used="projection",
         query_meta=QueryMeta(
             result_state="EMPTY",
@@ -111,10 +111,10 @@ def test_mcp_serializer_forwards_query_metadata() -> None:
         ),
     )
     service = MagicMock()
-    service.get_scc.return_value = response
+    service.get_blast_radius.return_value = response
 
     with patch.object(tool_handlers.runtime, "_service", service):
-        result = tool_handlers.adg_scc("module")
+        result = tool_handlers.adg_blast_radius("module", 2)
 
     assert result["query_meta"]["result_state"] == "EMPTY"
     assert (
