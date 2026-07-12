@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "svp_docs_x3/v1",
+  "title": "SVP documentation X3 disposition receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "decision",
+    "reason",
+    "x2_pre",
+    "x1d",
+    "x2_post",
+    "publication_authorized",
+    "changed_files",
+    "required_next_action"
+  ],
+  "properties": {
+    "schema_version": {"const": "svp_docs_x3/v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["ALLOW_TO_PR", "PLAN_ONLY", "BLOCK", "NOOP", "ESCALATE_HUMAN"]},
+    "reason": {"type": "string", "minLength": 1},
+    "x2_pre": {"enum": ["ALLOW", "WARN", "BLOCK", "NOT_RUN"]},
+    "x1d": {"enum": ["ALLOW", "WARN", "BLOCK", "NOT_RUN"]},
+    "x2_post": {"enum": ["ALLOW", "WARN", "BLOCK", "NOT_RUN"]},
+    "publication_authorized": {"type": "boolean"},
+    "changed_files": {"type": "array", "items": {"type": "string"}},
+    "required_next_action": {"type": "string", "minLength": 1},
+    "approval_receipt_ref": {"type": ["string", "null"]},
+    "publication_handoff": {"type": ["string", "null"]}
+  }
+}
