@@ -259,6 +259,21 @@ def seal_sqlite_connection(conn: sqlite3.Connection) -> SQLiteSealReport:
         },
     )
     conn.commit()
+
+    # The receipt write above is itself a WAL transaction.  A second checkpoint
+    # is therefore load-bearing: without it, the main database would be sealed
+    # and then immediately made dependent on a fresh unshipped WAL frame.
+    final_checkpoint_row = conn.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+    final_busy, final_log_frames, final_checkpointed_frames = (
+        tuple(int(value) for value in final_checkpoint_row)
+        if final_checkpoint_row is not None
+        else (0, -1, -1)
+    )
+    if final_busy:
+        raise RuntimeError(
+            "SQLite final receipt checkpoint failed: checkpoint remained busy "
+            f"(log={final_log_frames}, checkpointed={final_checkpointed_frames})"
+        )
     return report
 
 
