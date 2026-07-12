@@ -1,14 +1,11 @@
-"""L1 planning evidence — validation receipt + ambiguity register (W3)."""
+"""L1 planning evidence — validation receipt and ambiguity register."""
 
 from __future__ import annotations
 
 import hashlib
 from typing import Any, Mapping
 
-__all__ = [
-    "build_ambiguity_register",
-    "build_validation_receipt_id",
-]
+__all__ = ["build_ambiguity_register", "build_validation_receipt_id"]
 
 
 def build_validation_receipt_id(
@@ -16,14 +13,16 @@ def build_validation_receipt_id(
     request_id: str,
     profile_manifest_digest: str,
     planning_profile_digest: str,
+    capsule_digest: str = "",
 ) -> str:
-    """Stable validation receipt id for L1 plan path (REQ-L1-PLAN-VALIDATION-001)."""
+    """Stable validation receipt ID binding request, profile, and capsule."""
 
     canonical = "|".join(
         (
             request_id,
             profile_manifest_digest,
             planning_profile_digest,
+            capsule_digest,
         )
     )
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
@@ -36,8 +35,9 @@ def build_ambiguity_register(
     ambiguity_rules: tuple[Mapping[str, Any], ...] | None = None,
     request_id: str = "",
     planning_profile_digest: str = "",
+    generation_mode: str = "",
 ) -> dict[str, Any]:
-    """Deterministic ambiguity register when ingress/planning signals are incomplete."""
+    """Deterministic, mode-aware ambiguity register for compatibility callers."""
 
     from apps_rg.runtime.bindings.l1_planning_capsule import stable_ambiguity_register
 
@@ -71,11 +71,21 @@ def build_ambiguity_register(
             "field": "source_resume_text",
             "severity": "high",
             "blocks_progress": True,
+            "excluded_modes": ["generate_scratch"],
         },
+    )
+    task_spec = (
+        app_payload.get("task_spec")
+        if isinstance(app_payload.get("task_spec"), Mapping)
+        else {}
+    )
+    mode = generation_mode or str(
+        task_spec.get("generation_mode") or app_payload.get("generation_mode") or ""
     )
     return stable_ambiguity_register(
         app_payload=app_payload,
         ambiguity_rules=rules,
         request_id=request_id,
         planning_profile_digest=planning_profile_digest,
+        generation_mode=mode,
     )
