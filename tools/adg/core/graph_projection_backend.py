@@ -39,6 +39,18 @@ _MAX_QUERY_LIMIT = 1000
 _MAX_HOPS = 5
 
 
+class ProjectionUnavailableError(RuntimeError):
+    """The selected canonical snapshot has no usable graph projection."""
+
+
+class ProjectionStaleError(RuntimeError):
+    """The projection does not derive from the selected canonical snapshot."""
+
+
+class ProjectionReadError(RuntimeError):
+    """A fresh projection could not complete an authoritative read."""
+
+
 class GraphProjectionBackend:
     """Read-only adapter over `adg_graph_<ts>.sqlite`.
 
@@ -313,6 +325,7 @@ class GraphProjectionBackend:
             "derived_from": self._source_artifact_digest[:16],
             "stale": self._stale,
             "available": self._available,
+            "found": False,
         }
 
         if not self._queryable():
@@ -330,6 +343,7 @@ class GraphProjectionBackend:
         if row:
             base["blast_radius_direct"] = row["blast_radius_direct"]
             base["blast_radius_2hop"] = row["blast_radius_2hop"]
+            base["found"] = True
 
         if safe_hops >= 2:
             try:
@@ -450,6 +464,13 @@ class GraphProjectionBackend:
         status: dict[str, Any] = {
             "available": self._available,
             "stale": self._stale,
+            "result_state": (
+                "UNAVAILABLE"
+                if not self._available
+                else "STALE"
+                if self._stale
+                else "COMPLETE"
+            ),
             "projection_path": str(self._proj_path) if self._proj_path else None,
             "source_artifact_digest": self._source_artifact_digest,
             "proj_schema_version": self._proj_schema_version,
