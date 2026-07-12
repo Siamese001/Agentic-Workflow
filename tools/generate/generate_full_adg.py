@@ -2050,7 +2050,18 @@ def generate_full_adg(
     # --- Archive old runs (keep_runs=1 leaves only the current run in artifacts/adg/) ---
     # Runs even when zip creation failed — loose artifacts gzip/move under _archive/.
     if archive_old:
-        _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
+        from tools.adg.shared_modules.snapshot_registry import (
+            protected_snapshot_run_ids,
+        )
+
+        _archive_old_artifacts(
+            adg_artifacts_dir,
+            ts,
+            keep_runs=1,
+            protected_run_ids=protected_snapshot_run_ids(
+                adg_artifacts_dir
+            ),
+        )
         if not zip_created:
             print(
                 "[ADG] Archive: retention ran despite zip failure; "
@@ -2551,6 +2562,44 @@ def main() -> None:
             )
         except Exception as _e:  # noqa: BLE001
             print(f"[ADG] WARN manifest finalize failed: {_e}")
+
+        # Candidate publication never grants certified read authority. The
+        # audit wrapper promotes only a clean, fully validated result.
+        if sqlite_candidate.is_file():
+            try:
+                from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
+                    SnapshotPointerError,
+                    publish_snapshot_pointer,
+                )
+
+                source_artifacts = {}
+                for label, candidate_path in {
+                    "generation_manifest": (
+                        adg_artifacts_dir
+                        / f"adg_generation_manifest_{ts}.json"
+                    ),
+                    "gate_manifest": (
+                        adg_artifacts_dir
+                        / f"adg_gate_invocation_manifest_{ts}.json"
+                    ),
+                }.items():
+                    if candidate_path.is_file():
+                        source_artifacts[label] = candidate_path
+                publish_snapshot_pointer(
+                    adg_dir=adg_artifacts_dir,
+                    role="candidate",
+                    snapshot_path=sqlite_candidate,
+                    certification_status=(
+                        "clean" if gen_rc == 0 else "failed"
+                    ),
+                    artifact_status="candidate",
+                    source_artifacts=source_artifacts,
+                )
+            except (OSError, ValueError, SnapshotPointerError) as exc:
+                print(
+                    "[ADG] WARN candidate pointer publication failed: "
+                    f"{exc}"
+                )
         try:
             from tools.reports.adg_bcg_adapter import emit_bcg_gate_adapter  # noqa: PLC0415
 
