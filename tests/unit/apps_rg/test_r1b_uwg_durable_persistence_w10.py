@@ -27,12 +27,23 @@ from apps_rg.cache.r1b_uwg_promotion import (
     promote_and_project_r1b_cache,
     promote_r1b_cache_via_uwg,
 )
+from tests.unit.apps_rg.l5_uwg_fixture import write_verified_l5_sealed_artifact
 
 
 def _record() -> HistoricalIntentRecord:
-    w7 = Path(__file__).resolve().parents[3] / "artifacts" / "apps_rg" / "r1b_semantic_cache" / "w7_fixtures"
+    w7 = (
+        Path(__file__).resolve().parents[3]
+        / "artifacts"
+        / "apps_rg"
+        / "r1b_semantic_cache"
+        / "w7_fixtures"
+    )
     if (w7 / "historical_intent_record_admissible.json").is_file():
-        data = json.loads((w7 / "historical_intent_record_admissible.json").read_text(encoding="utf-8"))
+        data = json.loads(
+            (w7 / "historical_intent_record_admissible.json").read_text(
+                encoding="utf-8"
+            )
+        )
         data["record_id"] = "hir_w10_001"
         data["source_run_id"] = "run_w10"
         return HistoricalIntentRecord.from_dict(data)
@@ -102,12 +113,22 @@ def _candidate(tmp_path: Path) -> object:
         encoding="utf-8",
     )
     rec = _record()
+    l5_metadata = write_verified_l5_sealed_artifact(
+        run_dir,
+        request_id=rec.record_id,
+        run_id="run_w10",
+        trace_id="trace:run_w10",
+    )
     ch = _chunks(rec.record_id)
     assessment = {
         "admissible": True,
         "record": rec.to_dict(),
         "chunks": [c.to_dict() for c in ch],
-        "exit_metadata": {"source_run_id": "run_w10", "x3_disposition": "X3_ALLOW"},
+        "exit_metadata": {
+            "source_run_id": "run_w10",
+            "x3_disposition": "X3_ALLOW",
+            **l5_metadata,
+        },
     }
     return build_r1b_promotion_candidate(
         record=rec,
@@ -150,12 +171,15 @@ def test_commit_request_fields(tmp_path: Path) -> None:
     cr, sds, _rb, _rf = build_r1b_commit_bundle(cand)
     assert cr.source_surface == "Exit"
     assert cr.gate_verdict_refs
-    assert cr.l5_certification_ref
+    assert cr.l5_certification_ref == cand.l5_certification_packet_ref
+    assert cr.l5_certification_refs
     assert sds[0].target_surface == R1B_UWG_TARGET_SURFACE
     assert sds[0].operation_type == "memory_promotion"
 
 
-def test_uwg_admitted_promotion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_uwg_admitted_promotion(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.delenv("APPS_RG_R1B_SKIP_UWG", raising=False)
     cand = _candidate(tmp_path)
     store = R1BSemanticCacheStore(tmp_path / "fixture")
@@ -168,16 +192,25 @@ def test_uwg_admitted_promotion(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
     assert outcome.status == "ADMITTED"
     assert outcome.uwg_commit_receipt_id
     assert outcome.c0_fact_vectors_consulted is False
-    durable = store.root / "durable" / "uwg_admitted" / "intents" / f"{cand.record.record_id}.json"
+    durable = (
+        store.root
+        / "durable"
+        / "uwg_admitted"
+        / "intents"
+        / f"{cand.record.record_id}.json"
+    )
     assert durable.is_file()
     bundle = json.loads(durable.read_text(encoding="utf-8"))
     assert bundle["storage_tier"] == "uwg_admitted_durable_projection"
     assert bundle["parent_intent_record"]["record_id"] == cand.record.record_id
+    assert bundle["governance_receipt"]["l5_certification_verified"] is True
 
 
 def test_blocked_when_not_cache_admissible(tmp_path: Path) -> None:
     cand = _candidate(tmp_path)
-    rec = HistoricalIntentRecord.from_dict({**cand.record.to_dict(), "cache_admissible": False})
+    rec = HistoricalIntentRecord.from_dict(
+        {**cand.record.to_dict(), "cache_admissible": False}
+    )
     cand = build_r1b_promotion_candidate(
         record=rec,
         chunks=cand.chunks,
@@ -188,7 +221,9 @@ def test_blocked_when_not_cache_admissible(tmp_path: Path) -> None:
     assert "cache_not_admissible" in outcome.blocked_reason_codes
 
 
-def test_blocked_uwg_when_skip_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_blocked_uwg_when_skip_env(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     monkeypatch.setenv("APPS_RG_R1B_SKIP_UWG", "1")
     cand = _candidate(tmp_path)
     outcome = promote_r1b_cache_via_uwg(cand, gateway=AppsRgR1BUwgGateway())

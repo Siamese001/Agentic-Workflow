@@ -1,0 +1,70 @@
+name: apps-rg-l5-hardening
+
+on:
+  pull_request:
+    paths:
+      - "agentic_core/runtime/contracts/sealed_l2_artifact.py"
+      - "apps_rg/runtime/l5/**"
+      - "apps_rg/runtime/bindings/exit_binding.py"
+      - "apps_rg/runtime/spine/governed_l2_exit_compose.py"
+      - "apps_rg/runtime/schemas/**"
+      - "apps_rg/cache/r1b_uwg_**"
+      - "apps_rg/cache/r1b_governed_receipt_emission.py"
+      - "ops_scripts/ci/check_apps_rg_l5_**"
+      - "tests/unit/apps_rg/*l5*"
+      - "tests/unit/apps_rg/*uwg*"
+      - "tests/unit/apps_rg/w6_r1b_fixture.py"
+      - "tests/_apps_contract/test_apps_rg_l5_runtime_wiring.py"
+      - ".github/ci-lanes.yaml"
+      - ".github/workflows/apps-rg-l5-hardening.yml"
+  push:
+    branches: [main]
+    paths:
+      - "agentic_core/runtime/contracts/sealed_l2_artifact.py"
+      - "apps_rg/runtime/l5/**"
+      - "apps_rg/runtime/bindings/exit_binding.py"
+      - "apps_rg/runtime/spine/governed_l2_exit_compose.py"
+      - "apps_rg/runtime/schemas/**"
+      - "apps_rg/cache/r1b_uwg_**"
+      - "apps_rg/cache/r1b_governed_receipt_emission.py"
+      - "ops_scripts/ci/check_apps_rg_l5_**"
+      - "tests/unit/apps_rg/*l5*"
+      - "tests/unit/apps_rg/*uwg*"
+      - "tests/unit/apps_rg/w6_r1b_fixture.py"
+      - "tests/_apps_contract/test_apps_rg_l5_runtime_wiring.py"
+      - ".github/ci-lanes.yaml"
+      - ".github/workflows/apps-rg-l5-hardening.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Run fail-closed L5 static gates
+        env:
+          APPS_RG_L5_CERT_REFS_FAIL_CLOSED: "1"
+          APPS_RG_L5_CERT_REFS_BYPASS: "0"
+        run: |
+          python ops_scripts/ci/check_apps_rg_l5_cert_refs.py
+          python ops_scripts/ci/check_apps_rg_l5_no_authority_widening.py
+          python ops_scripts/ci/check_apps_rg_l5_packet_runtime_wiring.py
+          python ops_scripts/ci/check_apps_rg_no_direct_durable_writes.py
+      - name: Run L5 authenticity and UWG regression tests
+        run: |
+          python -m pytest \
+            tests/unit/apps_rg/test_l5_packet_authenticity.py \
+            tests/unit/apps_rg/test_r1b_l5_uwg_admission.py \
+            tests/unit/apps_rg/test_r1b_uwg_durable_persistence_w10.py \
+            tests/unit/apps_rg/test_r1b_uwg_receipt_contract_parity_w10b.py \
+            tests/unit/apps_rg/test_c0_semantic_cache_payload_uwg_l4.py \
+            tests/_apps_contract/test_apps_rg_l5_runtime_wiring.py \
+            -q --no-header -p no:cacheprovider

@@ -78,6 +78,14 @@ class SealedL2Artifact:
     l5_certification_packet_ref: str = ""
     l5_certification_packet_digest: str = ""
     l5_certification_status: str = ""
+    # Full immutable evidence object plus app-owned verification bindings.  These
+    # fields are evidence only and do not grant Exit, gate, or write authority.
+    l5_certification_packet: Any | None = None
+    l5_runtime_binding_digest: str = ""
+    l5_prompt_artifact_digest: str = ""
+    l5_evidence_contract_digest: str = ""
+    l5_certification_verified: bool = False
+    l5_certification_verification_digest: str = ""
     l5_egress_receipt_refs: tuple[str, ...] = field(default_factory=tuple)
     l5_egress_receipt_digests: tuple[str, ...] = field(default_factory=tuple)
     l5_egress_receipts: tuple[Any, ...] = field(default_factory=tuple)
@@ -110,6 +118,7 @@ class SealedL2Artifact:
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+
         if not verify_certification_ref(self.l5_certification_ref):
             raise ValueError(
                 f"SealedL2Artifact: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "

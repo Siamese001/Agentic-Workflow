@@ -23,6 +23,21 @@ def _canonical_digest(value: Any) -> str:
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
+def _canonical_response_content_digest(value: Any) -> str:
+    """Bind the receipt to response content without storing response text."""
+
+    text = str(value or "").replace("\r\n", "\n").replace("\r", "\n").strip()
+    try:
+        parsed = json.loads(text)
+    except (json.JSONDecodeError, TypeError):
+        canonical = text
+    else:
+        canonical = json.dumps(
+            parsed, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _safe_mapping(value: Any) -> Mapping[str, Any]:
     if is_dataclass(value):
         return asdict(value)
@@ -41,7 +56,7 @@ def build_apps_rg_egress_receipt(
     l5_governance_context_digest: str = "",
     egress_status: str = "EGRESS_CERTIFIED",
 ) -> EgressCertificationReceipt:
-    """Build a metadata-only egress receipt without raw prompt/response payload."""
+    """Build a metadata-only receipt over canonical request/response digests."""
 
     return MetadataOnlyEgressCertifier().certify_egress(
         provider_ref=SYMBOLIC_APPS_RG_PROVIDER_REF,
@@ -53,7 +68,7 @@ def build_apps_rg_egress_receipt(
         redaction_receipt_ref=f"redaction:{_canonical_digest(dict(response_metadata))[:16]}",
         egress_status=egress_status,
         egress_policy_ref=egress_policy_ref,
-        schema_version="apps_rg_l5_egress_receipt.v1",
+        schema_version="apps_rg_l5_egress_receipt.v2",
     )
 
 
@@ -75,7 +90,7 @@ def receipt_from_provider_exchange(
     call_purpose_ref: str,
     egress_policy_ref: str = "",
 ) -> EgressCertificationReceipt:
-    """Convert a ProviderGateway exchange into a redacted metadata receipt."""
+    """Convert a ProviderGateway exchange into a content-bound metadata receipt."""
 
     request_metadata = {
         "request_id": str(getattr(provider_request, "request_id", "") or ""),
@@ -95,6 +110,9 @@ def receipt_from_provider_exchange(
         "success": bool(getattr(provider_response, "success", False)),
         "error_class": type(getattr(provider_response, "error_message", None)).__name__,
         "has_text": bool(str(getattr(provider_response, "text", "") or "")),
+        "response_content_sha256": _canonical_response_content_digest(
+            getattr(provider_response, "text", "")
+        ),
         "latency_ms": round(float(latency_ms), 4),
         "token_total": int(getattr(usage, "total_tokens", 0) or 0),
     }

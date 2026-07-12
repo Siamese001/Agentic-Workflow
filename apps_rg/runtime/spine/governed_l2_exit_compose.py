@@ -11,7 +11,9 @@ import os
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from agentic_core.runtime.contracts.compiled_prompt_artifact import CompiledPromptArtifact
+from agentic_core.runtime.contracts.compiled_prompt_artifact import (
+    CompiledPromptArtifact,
+)
 from agentic_core.runtime.contracts.final_evidence_contract import FinalEvidenceContract
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
@@ -44,7 +46,7 @@ def _stamp_sealed_governed_marker(sealed: SealedL2Artifact) -> SealedL2Artifact:
 
 
 def governed_l2_seal_integrated(prompt: CompiledPromptArtifact) -> SealedL2Artifact:
-    """Integrated L2 — core executor (package-driven or v4 envelope) + L5 packet."""
+    """Integrated L2 — core executor plus an attached, verified L5 packet."""
     from apps_rg.runtime.bindings.l2_binding_adapter import _l2_execute_apps_rg_core
     from apps_rg.runtime.l5.packet_builder import (
         attach_l5_packet_to_sealed,
@@ -58,13 +60,19 @@ def governed_l2_seal_integrated(prompt: CompiledPromptArtifact) -> SealedL2Artif
         prompt_artifact=prompt,
         allow_test_l5_cert_ref=bool(getattr(prompt, "allow_test_l5_cert_ref", False)),
     )
-    return attach_l5_packet_to_sealed(sealed, packet_result)
+    return attach_l5_packet_to_sealed(
+        sealed,
+        packet_result,
+        prompt_artifact=prompt,
+    )
 
 
 def _x3_code_from_eval(eval_result: Any) -> str:
     packet = getattr(eval_result, "x3_packet", None)
     if packet is not None:
-        code = getattr(packet, "x3_code", None) or getattr(packet, "disposition_code", None)
+        code = getattr(packet, "x3_code", None) or getattr(
+            packet, "disposition_code", None
+        )
         if code:
             return str(code)
     disp = getattr(eval_result, "disposition", None)
@@ -92,7 +100,9 @@ def _build_exit_eval_receipts(
         "target_role": target_role,
         "outcome_authorized": bool(getattr(disp, "outcome_authorized", False)),
         "c0_blocking": bool(getattr(disp, "c0_blocking", False)),
-        "terminal_class": "success" if getattr(disp, "outcome_authorized", False) else "failure",
+        "terminal_class": "success"
+        if getattr(disp, "outcome_authorized", False)
+        else "failure",
         "compilation_hash": str(getattr(sealed, "compilation_hash", "") or ""),
         "l5_certification_ref": str(getattr(sealed, "l5_certification_ref", "") or ""),
         "l5_certification_packet_ref": str(
@@ -104,7 +114,18 @@ def _build_exit_eval_receipts(
         "l5_certification_status": str(
             getattr(sealed, "l5_certification_status", "") or ""
         ),
-        "fec_support_status": str(getattr(fec, "support_status", "") or "") if fec else "",
+        "l5_runtime_binding_digest": str(
+            getattr(sealed, "l5_runtime_binding_digest", "") or ""
+        ),
+        "l5_certification_verified": bool(
+            getattr(sealed, "l5_certification_verified", False)
+        ),
+        "l5_certification_verification_digest": str(
+            getattr(sealed, "l5_certification_verification_digest", "") or ""
+        ),
+        "fec_support_status": str(getattr(fec, "support_status", "") or "")
+        if fec
+        else "",
     }
 
 
