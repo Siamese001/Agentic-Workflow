@@ -25,6 +25,49 @@ def _failures() -> list[str]:
     if '"fixture_store_consulted": False' not in derived:
         failures.append("derived-index unavailable report does not prove fixture_store_consulted=false")
 
+    authority = _text("apps_rg/cache/r1b_commit_authority.py")
+    for needle in (
+        'X3C_COMMIT_AUTHORITY = "X3C"',
+        "assess_r1b_commit_authority_from_run_dir",
+        "compute_r1b_commit_request_signature",
+        "commit_request_signature_invalid",
+        "missing_or_placeholder_capability_token_ref",
+        "clearance_proof_binding_mismatch",
+    ):
+        if needle not in authority:
+            failures.append(f"R1B commit authority module missing {needle}")
+    if 'authorized=normalized in {' in authority or '"X3D"' in authority:
+        failures.append("R1B durable write authority aliases finish outcomes to X3C")
+
+    strict_gateway = _text("apps_rg/cache/r1b_strict_gateway.py")
+    for needle in (
+        "class R1BStrictUWGGateway",
+        "validate_r1b_commit_request_evidence",
+        "_r1b_validation_cache",
+        "get_r1b_strict_gateway",
+    ):
+        if needle not in strict_gateway:
+            failures.append(f"strict R1B gateway missing {needle}")
+
+    adapter = _text("apps_rg/cache/r1b_adapter.py")
+    if "assess_r1b_commit_authority_from_run_dir" not in adapter:
+        failures.append("R1B adapter does not enforce X3C commit authority")
+    if "get_r1b_strict_gateway" not in adapter:
+        failures.append("R1B adapter does not use the process-shared strict gateway")
+    if "mirror_fixture_on_blocked=True" in adapter:
+        failures.append("R1B adapter enables blocked fixture mirroring")
+    for forbidden in ("self._store.write_intent", "self._store.write_chunk"):
+        if forbidden in adapter:
+            failures.append(f"R1B adapter contains direct fixture write path: {forbidden}")
+
+    ingest = _text("apps_rg/cache/r1b_post_exit_ingest.py")
+    if "assess_r1b_commit_authority_from_run_dir" not in ingest:
+        failures.append("post-Exit ingest does not enforce X3C commit authority")
+    if "get_r1b_strict_gateway" not in ingest:
+        failures.append("post-Exit ingest does not use strict shared UWG")
+    if "chain.promotion_outcome.uwg_commit_receipt = asdict(core_receipt)" not in ingest:
+        failures.append("post-Exit projection is not rebound to the actual core commit receipt")
+
     promotion = _text("apps_rg/cache/r1b_uwg_promotion.py")
     if "mirror_fixture_on_blocked: bool = False" not in promotion:
         failures.append("mirror_fixture_on_blocked default is not false")
