@@ -29,6 +29,7 @@ def connect_sqlite_for_mv(sqlite_path: Path, *, timeout: float = 30.0) -> sqlite
     large CREATE AS SELECT spills off disk where possible.
     """
     conn = sqlite3.connect(str(validate_sqlite_path(sqlite_path)), timeout=timeout)
+    conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA synchronous=NORMAL")
     conn.execute("PRAGMA temp_store=MEMORY")
