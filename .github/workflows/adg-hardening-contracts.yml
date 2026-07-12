@@ -10,6 +10,7 @@ on:
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "tests/unit/agentic_core/adg/**"
+      - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
       - "tests/unit/tools/adg/**"
       - "tests/unit/tools/generate/**"
@@ -26,6 +27,7 @@ on:
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "tests/unit/agentic_core/adg/**"
+      - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
       - "tests/unit/tools/adg/**"
       - "tests/unit/tools/generate/**"
@@ -51,9 +53,12 @@ jobs:
           install-mode: editable
       - name: Validate metric contracts
         run: python ops_scripts/ci/check_adg_metric_registry.py
+      - name: Validate SQLite writer authority
+        run: python ops_scripts/ci/check_adg_writer_authority.py
       - name: Run focused ADG hardening contracts
         run: |
           python -m pytest \
+            tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py \
             tests/unit/agentic_core/adg/test_canonical_snapshot_identity.py \
             tests/unit/ops_scripts/ci/adg_gates/test_write_sovereignty_temporal_contract.py \
             tests/unit/tools/adg/contracts/test_metric_registry.py \
