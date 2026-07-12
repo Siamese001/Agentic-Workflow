@@ -9,6 +9,8 @@ on:
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
+      - "ops_scripts/ci/check_adg_query_plans.py"
+      - "ops_scripts/ci/check_adg_writer_authority.py"
       - "tests/unit/agentic_core/adg/**"
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
@@ -26,6 +28,8 @@ on:
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
+      - "ops_scripts/ci/check_adg_query_plans.py"
+      - "ops_scripts/ci/check_adg_writer_authority.py"
       - "tests/unit/agentic_core/adg/**"
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
@@ -64,6 +68,8 @@ jobs:
             tests/unit/tools/adg/contracts/test_metric_registry.py \
             tests/unit/tools/adg/shared_modules/test_snapshot_registry.py \
             tests/unit/tools/adg/test_adg_mcp_fixes.py \
+            tests/unit/tools/adg/test_adg_consumer_contract.py \
+            tests/unit/tools/adg/test_query_catalog.py \
             tests/unit/tools/adg/test_audit_snapshot_promotion.py \
             tests/unit/tools/adg/test_reopen_connections_hardening.py \
             tests/unit/tools/generate/test_graph_projection.py \
