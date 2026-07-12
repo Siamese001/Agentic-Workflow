@@ -1,10 +1,10 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-12T02:27:23+00:00
+- **Generated:** 2026-07-12T13:17:13+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-12T02:23:56.275619+00:00
-- **Work sections:** 13 gate(s) / 6,247 row(s)
-- **KPI/watchlist:** 5 gate(s) / 12,072 row(s)
+- **Source timestamp:** 2026-07-12T13:13:51.912301+00:00
+- **Work sections:** 12 gate(s) / 6,248 row(s)
+- **KPI/watchlist:** 5 gate(s) / 12,066 row(s)
 
 This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.
 
@@ -14,8 +14,7 @@ Current blockers, regressions, or missing seeds. These are the only rows that sh
 
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
-| `G_REACH_l0_reachability` | architecture_backlog | P0 | ratchet | FIX | regr | 1,451 | Regression +1 over baseline 1450 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
-| `L2_lpg_drift_ratchet` | architecture_backlog | P0 | ratchet | FIX | regr | 1 | Regression +1 over baseline 0 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
+| `G_REACH_l0_reachability` | architecture_backlog | P0 | ratchet | FIX | regr | 1,453 | Regression +3 over baseline 1450 (P0): investigate each NEW path; fix the regression — re-baseline only with explicit sign-off. |
 
 ## Burn down / owned backlog
 
@@ -42,7 +41,7 @@ Trend and hygiene signals. Report separately; do not treat as burn-down work wit
 | Gate | Materiality | Band | Enforcement | Verdict | Sub | Rows | Next step |
 |------|-------------|:----:|-------------|:-------:|:---:|-----:|-----------|
 | `D2_role_duplication_warn` | governance_hygiene | P2 | warn | TRACK | advis | 105 | Advisory KPI: watch the trend; no action required to pass CI. |
-| `S4_unused_imports_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 10,260 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `S4_unused_imports_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 10,254 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `Q2_cyclomatic_complexity_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 1,262 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `M1_module_loc_ratchet` | governance_hygiene | P3 | ratchet | TRACK | floor | 442 | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D1_layer_doc_binding` | governance_hygiene | P3 | warn | TRACK | advis | 3 | Advisory KPI: watch the trend; no action required to pass CI. |
@@ -64,4 +63,4 @@ Zero-action rows.
 | `9_executor_theater` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `C1_uwg_bypass_pview` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
 | `J1_canonical_pipeline_wiring` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
-| `W5_waiver_expiry` | architecture_backlog | P0 | block | CLEAR | — | 0 | None — gate clean (zero rows). |
+| `L2_lpg_drift_ratchet` | architecture_backlog | P0 | ratchet | CLEAR | — | 0 | None — gate clean (zero rows). |

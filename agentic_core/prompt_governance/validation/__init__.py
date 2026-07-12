@@ -1,8 +1,8 @@
 """Prompt-governance validation helpers."""
 
-from agentic_core.prompt_governance.validation.apply_patch_validator import (
-    ApplyPatchReport,
-    validate_apply_patch,
-)
+from . import apply_patch_validator as _apply_patch_validator
+
+ApplyPatchReport = _apply_patch_validator.ApplyPatchReport
+validate_apply_patch = _apply_patch_validator.validate_apply_patch
 
 __all__ = ["ApplyPatchReport", "validate_apply_patch"]

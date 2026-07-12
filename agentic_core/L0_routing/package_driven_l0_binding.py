@@ -17,8 +17,6 @@ try:
 except ImportError:
     yaml = None
 
-import agentic_core.prompt_governance.mixins as prompt_mixins
-import agentic_core.prompt_governance.validation as prompt_validation
 from agentic_core.knowledge.retrieval import PromptEnvelope
 
 # L0 ingress anchors for C0 + PA + L_PG (ADG G_REACH / J1 canonical pipeline wiring).
@@ -27,7 +25,11 @@ from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cach
 from agentic_core.L1_cognition.package_driven_l1_binding import (  # guardian: allow-layer-violation -- L0 route evaluation consumes L1 PackageDrivenL1Plan from the package-driven pipeline; app-agnostic binding, no app-specific route logic
     PackageDrivenL1Plan,
 )
-from agentic_core.prompt_governance import assemble_prompt
+from agentic_core.prompt_governance import (
+    assemble_prompt,
+    get_bundled_mixin,
+    validate_apply_patch,
+)
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import GraphTraversePolicy, RouteContract
 
@@ -37,8 +39,8 @@ _LOGGER = logging.getLogger(__name__)
 L0_C0_RUN_ENTRY = run_c0
 L0_PA_ASSEMBLE_ENTRY = assemble_prompt
 L0_PROMPT_ENVELOPE_TYPE = PromptEnvelope
-L0_PROMPT_MIXIN_LOOKUP = prompt_mixins.get_bundled_mixin
-L0_APPLY_PATCH_VALIDATE_ENTRY = prompt_validation.validate_apply_patch
+L0_PROMPT_MIXIN_LOOKUP = get_bundled_mixin
+L0_APPLY_PATCH_VALIDATE_ENTRY = validate_apply_patch
 
 
 class RouteStatus(Enum):
@@ -149,7 +151,7 @@ def _load_cache_profile(profile_ref: str) -> Optional[Dict[str, Any]]:
         return None
 
 
-def _read_semantic_cache_profile(cache_profile: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def _read_semantic_cache_config(cache_profile: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """Generic reader for the semantic cache configuration block.
 
     Handles two canonical profile shapes without any app_id branching:
@@ -177,61 +179,72 @@ def _read_semantic_cache_profile(cache_profile: Dict[str, Any]) -> Optional[Dict
         wiring_gate          str
         profile_id           str
 
-    Returns None when the profile cannot be read or enabled is definitively false.
-    Returns None when live_wiring_deferred is True (caller must skip the live call).
+    Returns a normalized config dict even when the profile is disabled.
     """
-    profile_id: str = cache_profile.get("cache_profile_id", "")
+    profile: Dict[str, Any] = cache_profile if isinstance(cache_profile, dict) else {}
+    profile_id: str = str(profile.get("cache_profile_id", ""))
+
+    # Already-normalized config dicts may be passed in by callers that have
+    # already parsed the profile shape. Preserve those values directly.
+    if "enabled" in profile and "semantic_cache" not in profile and "semantic_cache_enabled" not in profile:
+        return {
+            "enabled": bool(profile.get("enabled", False)),
+            "namespace": str(profile.get("namespace") or profile_id),
+            "similarity_threshold": float(profile.get("similarity_threshold", 0.98)),
+            "compatibility_check_fields": list(profile.get("compatibility_check_fields") or []),
+            "live_wiring_deferred": bool(profile.get("live_wiring_deferred", False)),
+            "wiring_gate": str(profile.get("wiring_gate", "")),
+            "profile_id": profile_id,
+        }
 
     # --- Shape A: nested semantic_cache block ---
-    nested: Optional[Dict[str, Any]] = cache_profile.get("semantic_cache")  # type: ignore[assignment]
+    nested: Optional[Dict[str, Any]] = profile.get("semantic_cache")  # type: ignore[assignment]
     if isinstance(nested, dict):
         enabled: bool = bool(nested.get("enabled", False))
-        if not enabled:
-            return None
         live_wiring_deferred: bool = bool(nested.get("live_wiring_deferred", False))
-        if live_wiring_deferred:
-            _LOGGER.debug(
-                "_read_semantic_cache_profile: R1B live_wiring_deferred=true for profile=%s — skipping call",
-                profile_id,
-            )
-            return None
-        namespace: str = nested.get("namespace") or profile_id
+        namespace: str = str(nested.get("namespace") or profile_id)
         threshold: float = float(nested.get("similarity_threshold", 0.98))
         compat_fields: List[str] = list(nested.get("compatibility_check_fields") or [])
-        wiring_gate: str = nested.get("wiring_gate", "")
+        wiring_gate: str = str(nested.get("wiring_gate", ""))
         return {
-            "enabled": True,
+            "enabled": enabled,
             "namespace": namespace,
             "similarity_threshold": threshold,
             "compatibility_check_fields": compat_fields,
-            "live_wiring_deferred": False,
+            "live_wiring_deferred": live_wiring_deferred,
             "wiring_gate": wiring_gate,
             "profile_id": profile_id,
         }
 
     # --- Shape B: flat keys ---
-    flat_enabled: bool = bool(cache_profile.get("semantic_cache_enabled", False))
-    if not flat_enabled:
-        return None
-    flat_deferred: bool = bool(cache_profile.get("live_wiring_deferred", False))
-    if flat_deferred:
-        _LOGGER.debug(
-            "_read_semantic_cache_profile: R1B live_wiring_deferred=true (flat) for profile=%s — skipping call",
-            profile_id,
-        )
-        return None
-    flat_namespace: str = cache_profile.get("namespace") or profile_id
-    flat_threshold: float = float(cache_profile.get("similarity_threshold", 0.98))
-    flat_compat: List[str] = list(cache_profile.get("compatibility_check_fields") or [])
+    flat_enabled: bool = bool(profile.get("semantic_cache_enabled", False))
+    flat_deferred: bool = bool(profile.get("live_wiring_deferred", False))
+    flat_namespace: str = str(profile.get("namespace") or profile_id)
+    flat_threshold: float = float(profile.get("similarity_threshold", 0.98))
+    flat_compat: List[str] = list(profile.get("compatibility_check_fields") or [])
     return {
-        "enabled": True,
+        "enabled": flat_enabled,
         "namespace": flat_namespace,
         "similarity_threshold": flat_threshold,
         "compatibility_check_fields": flat_compat,
-        "live_wiring_deferred": False,
-        "wiring_gate": "",
+        "live_wiring_deferred": flat_deferred,
+        "wiring_gate": str(profile.get("wiring_gate", "")),
         "profile_id": profile_id,
     }
+
+
+def _read_semantic_cache_profile(cache_profile: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    """Return the normalized cache config when R1B live wiring is active."""
+    cfg = _read_semantic_cache_config(cache_profile)
+    if not cfg["enabled"]:
+        return None
+    if cfg["live_wiring_deferred"]:
+        _LOGGER.debug(
+            "_read_semantic_cache_profile: R1B live_wiring_deferred=true for profile=%s — skipping call",
+            cfg["profile_id"],
+        )
+        return None
+    return cfg
 
 
 def _read_graph_traverse_policy(route_profile: Dict[str, Any]) -> Optional[GraphTraversePolicy]:
@@ -370,18 +383,22 @@ def _check_r1b_semantic_cache(
             requires_cache_hit=False,
         )
     
-    # Get compatibility requirements
-    compat_reqs = r1b_config.get("compatibility_requirements", {})
-    
-    # Build compatibility checks (these would be evaluated by actual cache lookup)
-    # For route selection, we only check if R1B is configured and enabled
-    semantic_cache_config = cache_profile.get("semantic_cache", {})
-    if not semantic_cache_config.get("enabled", False):
+    semantic_cache_config = _read_semantic_cache_config(cache_profile)
+    if not semantic_cache_config["enabled"]:
         return RouteEvaluation(
             route_id="R1B_SEMANTIC_CACHE",
             status=RouteStatus.INELIGIBLE,
             eligible=False,
             reason="Semantic cache disabled in profile",
+            terminal=False,
+            requires_cache_hit=False,
+        )
+    if semantic_cache_config["live_wiring_deferred"]:
+        return RouteEvaluation(
+            route_id="R1B_SEMANTIC_CACHE",
+            status=RouteStatus.INELIGIBLE,
+            eligible=False,
+            reason="Semantic cache deferred in profile",
             terminal=False,
             requires_cache_hit=False,
         )
@@ -532,54 +549,10 @@ def l0_evaluate_routes_package_driven(
             evaluations.append(eval_result)
             
             if eval_result.eligible:
-                # W1 (chroma-graphrag-core-wiring-gaps-b3f7a1 GAP-01/GAP-02):
-                # Read the generic semantic cache profile; call check_d2_semantic_cache()
-                # when live wiring is active.  On miss, fall through to the next route
-                # (do NOT break here).  On hit, emit RETTerminalPacket — never RouteContract.
-                r1b_cfg = _read_semantic_cache_profile(cache_profile or {})
-                if r1b_cfg is not None:
-                    # Build the minimal request dict for the cache key.
-                    app_payload_for_cache: Dict[str, Any] = validated_request.app_payload or {}
-                    request_dict: Dict[str, Any] = {
-                        "task_class": validated_request.task_class,
-                        "app_id": validated_request.app_id,
-                        "payload": app_payload_for_cache,
-                    }
-                    d2_hit = check_d2_semantic_cache(
-                        request_dict,
-                        namespace=r1b_cfg["namespace"],
-                        tenant_id=validated_request.tenant_id,
-                        similarity_threshold_override=r1b_cfg["similarity_threshold"],
-                    )
-                    if d2_hit is not None:
-                        # Cache HIT — emit RETTerminalPacket to Exit.
-                        # Never route to C0, Prompt Assembly, L3, or L2.
-                        hit_similarity: Optional[float] = (
-                            d2_hit.get("similarity")
-                            or d2_hit.get("similarity_score")
-                        )
-                        selected_route = _build_r1b_ret_packet(
-                            validated_request=validated_request,
-                            d2_hit=d2_hit,
-                            r1b_cfg=r1b_cfg,
-                            hit_similarity=hit_similarity,
-                        )
-                        break
-                    else:
-                        # Cache MISS — continue to next route (fall through, do NOT break).
-                        _LOGGER.debug(
-                            "R1B semantic cache miss for app=%s namespace=%s — continuing to next route",
-                            validated_request.app_id,
-                            r1b_cfg["namespace"],
-                        )
-                        # continue loop; do not break
-                else:
-                    # live_wiring_deferred=true or profile disabled — skip R1B, continue.
-                    _LOGGER.debug(
-                        "R1B skipped (live_wiring_deferred or disabled) for app=%s",
-                        validated_request.app_id,
-                    )
-                    # continue loop; do not break
+                r1b_cfg = _read_semantic_cache_config(cache_profile)
+                selected_route = _execute_r1b_semantic_cache_lookup(validated_request, r1b_cfg)
+                if selected_route is not None:
+                    break
         
         elif route_id == "R3_SIMPLE_GROUNDED_READ":
             eval_result = _check_r3_simple_grounded_read(validated_request, route_profile)
@@ -665,6 +638,49 @@ def _build_r1b_ret_packet(
     )
 
 
+def _execute_r1b_semantic_cache_lookup(
+    validated_request: ValidatedRequest,
+    cache_config: Optional[Dict[str, Any]],
+) -> Optional[RETerminalPacket]:
+    """Execute the generic R1B semantic cache lookup and return a RET packet on hit."""
+    r1b_cfg = _read_semantic_cache_config(cache_config)
+    if not r1b_cfg["enabled"] or r1b_cfg["live_wiring_deferred"]:
+        return None
+
+    namespace = r1b_cfg["namespace"]
+    if not namespace:
+        return None
+
+    app_payload_for_cache: Dict[str, Any] = validated_request.app_payload or {}
+    request_dict: Dict[str, Any] = {
+        "task_class": validated_request.task_class,
+        "app_id": validated_request.app_id,
+        "payload": app_payload_for_cache,
+    }
+    d2_hit = check_d2_semantic_cache(
+        request_dict,
+        namespace=namespace,
+        tenant_id=validated_request.tenant_id,
+        similarity_threshold_override=r1b_cfg["similarity_threshold"],
+    )
+    if not d2_hit or not isinstance(d2_hit, dict):
+        return None
+
+    if d2_hit.get("support_status") != "PASS":
+        return None
+
+    hit_similarity: Optional[float] = (
+        d2_hit.get("similarity")
+        or d2_hit.get("similarity_score")
+    )
+    return _build_r1b_ret_packet(
+        validated_request=validated_request,
+        d2_hit=d2_hit,
+        r1b_cfg=r1b_cfg,
+        hit_similarity=hit_similarity,
+    )
+
+
 def emit_r1b_ret_terminal_packet(
     route_contract: RouteContract,
     cache_entry: Dict[str, Any],
@@ -701,7 +717,9 @@ __all__ = [
     "RETTerminalPacket",
     "RouteEvaluation",
     "RouteStatus",
+    "_read_semantic_cache_config",
     "_read_semantic_cache_profile",
+    "_execute_r1b_semantic_cache_lookup",
     "L0_C0_RUN_ENTRY",
     "L0_PA_ASSEMBLE_ENTRY",
     "L0_PROMPT_ENVELOPE_TYPE",

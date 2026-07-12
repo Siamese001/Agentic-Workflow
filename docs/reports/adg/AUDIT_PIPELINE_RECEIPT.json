@@ -4,7 +4,7 @@
     "certification_status": "failed",
     "generator_exit_code": 1,
     "report_exit_code": 0,
-    "runtime_proof_status": "attested",
+    "runtime_proof_status": "view_present_zero_attested",
     "reasons": [
       "generator exit_code=1",
       "required gate 'adg_gate_dispatcher' status=fail",
@@ -17,51 +17,51 @@
   },
   "artifact_status": "repair_ready",
   "artifact_status_source": "direct",
-  "adg_run_id": "07112026_2208",
-  "started_at_utc": "2026-07-12T02:08:10Z",
-  "completed_at_utc": "2026-07-12T02:29:05Z",
+  "adg_run_id": "07122026_0907",
+  "started_at_utc": "2026-07-12T13:06:59Z",
+  "completed_at_utc": "2026-07-12T13:18:20Z",
   "repair_handoff": {
     "status": "repair_ready",
     "artifacts": {
       "snapshot": {
         "artifact_key": "snapshot",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07112026_2208.sqlite",
-        "sha256": "bf2ead299eda062b394c3c0c7fd9eb537d141db3711d23fc88579f7fb1a6ba00"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_indexed_07122026_0907.sqlite",
+        "sha256": "37d343deb676896de385ef1e6ecf1b2a3155c9d47c760595eab73735897eae20"
       },
       "gate_results": {
         "artifact_key": "gate_results",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260712_022356.json",
-        "sha256": "4335eb2f4b153303a0f757223bf4e3ca4f0e039a8f79cdc0935dd53ed9cab47e"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_results_20260712_131351.json",
+        "sha256": "d8cb7ca59f3ef93d43b5743c5b591bc819a4eabd5b57247ff71d839b3833894b"
       },
       "action_queue": {
         "artifact_key": "action_queue",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07112026_2208.json",
-        "sha256": "247dd09d1d48607b1a292566f426533236be7bde89a6fb3bf4969855bf05bdcd"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_action_queue_07122026_0907.json",
+        "sha256": "ed2e1c4c103d81c48b557a00f991635d6edb8f963a96b92885785b554993c457"
       },
       "burndown_report": {
         "artifact_key": "burndown_report",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07112026_2208.md",
-        "sha256": "21ffe0545725dd0cd6871116d62538ce77ae33daf85c67a8333a3119273c1f5a"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_report_07122026_0907.md",
+        "sha256": "cc15a4fa717d3bf89deacafd0c8de794f39ea88b656aa92867313c13d702b6e7"
       },
       "burndown_table": {
         "artifact_key": "burndown_table",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07112026_2208.json",
-        "sha256": "f7d306a1f2843b4e868d3fd466b86a887f91fa179bb5acc29f04647ed2d79d38"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_burndown_table_07122026_0907.json",
+        "sha256": "f2e8f2ef3093a1566e7cd20cda4ceeb8d71f76a2dd0fed5e6f9c0a2be75529cb"
       },
       "generation_manifest": {
         "artifact_key": "generation_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07112026_2208.json",
-        "sha256": "289d19b78a608c358d5c65bf4433eea065652e5c9fe5dc4b5e5d38a9b41b4cab"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_generation_manifest_07122026_0907.json",
+        "sha256": "507b869493eb784bdd96f686b7a43f14c09d40524b483fd79e48d23d2eca46d4"
       },
       "gate_manifest": {
         "artifact_key": "gate_manifest",
-        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07112026_2208.json",
-        "sha256": "9e3b63afc9bbd70f95ebb31f2e457c15f11fc069301b4a2354ae2d78a0e30d30"
+        "path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\adg_gate_invocation_manifest_07122026_0907.json",
+        "sha256": "5a6651736a07502179ed7964f6312300bb453a98cf43249bf431521cfccc4aec"
       }
     },
     "counts": {
-      "open_blocker_fix_count": 2,
-      "critical_open_blocker_fix_count": 2,
+      "open_blocker_fix_count": 1,
+      "critical_open_blocker_fix_count": 1,
       "candidate_blocker_triage_count": 3,
       "critical_tracked_debt_count": 2,
       "high_open_blocker_fix_count": 0,
@@ -69,7 +69,7 @@
       "high_ratchet_floor_tracked_debt_count": 7
     },
     "legacy_counts": {
-      "P0_FIX": 2,
+      "P0_FIX": 1,
       "P0_WAVE": 3,
       "P0_TRACKED_BACKLOG": 2,
       "P1_FIX": 0,
