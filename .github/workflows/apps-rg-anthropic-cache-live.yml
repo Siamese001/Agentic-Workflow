@@ -22,22 +22,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - name: Install test dependencies
-        run: python -m pip install --upgrade pip pytest pyyaml
-      - name: Run prompt-cache unit contracts
-        run: >-
-          python -m pytest -q
-          tests/unit/apps_rg/runtime/providers/test_anthropic_prompt_cache_wave0.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_payload.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_fallback.py
-          tests/unit/apps_rg/runtime/providers/test_section_provider_anthropic_cache.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_costs.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_suite_summary.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_live_probe.py
-          tests/unit/apps_rg/runtime/providers/test_anthropic_cache_role_episode_coverage.py
+        run: python -m pip install -q --upgrade pip pytest pyyaml
+      - name: Wave 0 flags and receipts
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_prompt_cache_wave0.py
+      - name: PA prefix renderer
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_payload.py
+      - name: Legacy repeated-prefix safety
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_fallback.py
+      - name: Provider-native transport
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_section_provider_anthropic_cache.py
+      - name: Cost estimation
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_cache_costs.py
+      - name: Suite aggregation
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_cache_suite_summary.py
+      - name: Live-probe contracts
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_cache_live_probe.py
+      - name: InsurTech and EY coverage
+        run: python -m pytest -q --tb=short tests/unit/apps_rg/runtime/providers/test_anthropic_cache_role_episode_coverage.py
 
   live-cache-hit:
     needs: cache-contracts
@@ -47,6 +54,8 @@ jobs:
       APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION: ${{ vars.APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          show-progress: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
