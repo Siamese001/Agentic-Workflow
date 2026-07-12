@@ -1,0 +1,67 @@
+version = 1
+id = "on-demand-svp-documentation-refresh"
+kind = "manual"
+name = "On-Demand SVP Documentation Refresh"
+allow_direct_main_push = false
+prompt = '''
+Run an explicitly approved, bounded SVP documentation refresh for Agentic-Workflow.
+
+Authority requirements:
+- This automation is manual and must receive a machine-readable approval receipt.
+- The approval receipt must use schema_version svp_docs_approval/v1, status APPROVED, name the approved plan_id, and bind the selected non-main branch when supplied.
+- Work from a clean isolated branch created from current origin/main.
+- The allowed edit scope is documentation only. Do not modify runtime code, tests, package metadata, app configuration, CI behavior, generated reports, ratchet baselines, or product logic.
+- This automation cannot merge or push directly to main. ALLOW_TO_PR is only a handoff to on-demand-pr-main-publisher.
+
+Pre-edit gate:
+python scripts/governance/svp_docs_review.py --mode edit --phase pre --base-ref origin/main --approval-receipt <approval.json> --output-dir artifacts/codex/svp_docs/<run-id> --json
+
+Editing rules:
+- Apply only the approved plan.
+- Use apps_shared/integrations/app_registry.py for current app status.
+- Use .codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json for the active packet.
+- Preserve historical documents or label them historical; do not silently rewrite history as current status.
+- Major claims require a proof file, command, receipt, or explicit caveat.
+- Keep links relative and runnable commands current.
+- Stop when a strategy, ownership, support, compliance, licensing, roadmap, or architecture decision is not already explicit in authoritative repo evidence.
+
+X1D judge:
+- Produce a schema-valid svp_docs_x1d/v1 receipt over the final packet and changed diff.
+- Every blocking X1D finding must include file, line, claim, finding_type, severity, evidence, and required_fix.
+- Judge transport failure is WARN and cannot waive X2.
+
+Post-edit gate:
+python scripts/governance/svp_docs_review.py --mode edit --phase post --base-ref origin/main --approval-receipt <approval.json> --x1d-receipt <x1d.json> --output-dir artifacts/codex/svp_docs/<run-id> --json
+
+Disposition:
+- ALLOW_TO_PR requires pre X2 ALLOW/WARN, post X2 ALLOW/WARN, X1D ALLOW/WARN with no high-severity finding, docs-only isolation, and valid approval.
+- PLAN_ONLY stops before publication when approval or post-edit proof is incomplete.
+- BLOCK stops on deterministic failure or high-severity stale/unsupported claims.
+- ESCALATE_HUMAN stops for judgment outside the approved documentation scope.
+- On ALLOW_TO_PR, commit the coherent documentation-only diff to the current branch and hand the branch to on-demand-pr-main-publisher. Do not create an alternate publication path.
+
+Required final report:
+- approval receipt reference;
+- branch and base SHA;
+- changed and excluded files;
+- X1D, X2 pre, X2 post, X3, and run receipt paths;
+- focused validation evidence;
+- publication handoff status;
+- RCA for any stop or failure.
+'''
+status = "ON_DEMAND"
+model = "gpt-5.5"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
+created_at = 1783900000000
+updated_at = 1783900000000
+
+[svp_docs]
+mode = "approved_edit"
+require_approval_receipt = true
+allow_edits = true
+allow_publication = false
+publication_handoff = "on-demand-pr-main-publisher"
+reviewer_packet = ".codex/automations/svp-readme-documentation-refresh/reviewer_packet.v1.json"
+x2_entrypoint = "python scripts/governance/svp_docs_review.py"
