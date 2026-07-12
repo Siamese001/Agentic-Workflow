@@ -1,0 +1,79 @@
+name: apps-rg-l1-p0
+
+on:
+  pull_request:
+    paths:
+      - "agentic_core/runtime/contracts/l1_plan_contract.py"
+      - "agentic_core/runtime/entry/apps_rg_dispatch.py"
+      - "apps_rg/profiles/rg_planning_profile.yaml"
+      - "apps_rg/runtime/bindings/l1_*.py"
+      - "apps_rg/runtime/bindings/l0_route_evidence.py"
+      - "apps_rg/runtime/bindings/c0_planned_binding.py"
+      - "apps_rg/runtime/bindings/pa_planned_binding.py"
+      - "apps_rg/runtime/spine/section_c0_retrieve.py"
+      - "tests/unit/apps_rg/test_l1_planning_capsule*.py"
+      - "tests/_apps_contract/test_apps_rg_ag2_direct_binding_import.py"
+      - "tests/_apps_contract/test_apps_rg_spine_c0_w4.py"
+      - "tests/_apps_contract/test_l0_routing_hardening.py"
+      - ".github/workflows/apps-rg-l1-p0.yml"
+  push:
+    branches: [main]
+    paths:
+      - "agentic_core/runtime/contracts/l1_plan_contract.py"
+      - "agentic_core/runtime/entry/apps_rg_dispatch.py"
+      - "apps_rg/profiles/rg_planning_profile.yaml"
+      - "apps_rg/runtime/bindings/l1_*.py"
+      - "apps_rg/runtime/bindings/l0_route_evidence.py"
+      - "apps_rg/runtime/bindings/c0_planned_binding.py"
+      - "apps_rg/runtime/bindings/pa_planned_binding.py"
+      - "apps_rg/runtime/spine/section_c0_retrieve.py"
+      - "tests/unit/apps_rg/test_l1_planning_capsule*.py"
+      - "tests/_apps_contract/test_apps_rg_ag2_direct_binding_import.py"
+      - "tests/_apps_contract/test_apps_rg_spine_c0_w4.py"
+      - "tests/_apps_contract/test_l0_routing_hardening.py"
+      - ".github/workflows/apps-rg-l1-p0.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Compile P0 boundary files
+        run: |
+          python -m py_compile \
+            agentic_core/runtime/contracts/l1_plan_contract.py \
+            agentic_core/runtime/entry/apps_rg_dispatch.py \
+            apps_rg/runtime/bindings/l1_planning_capsule.py \
+            apps_rg/runtime/bindings/l1_plan_evidence.py \
+            apps_rg/runtime/bindings/l1_binding.py \
+            apps_rg/runtime/bindings/l0_route_evidence.py \
+            apps_rg/runtime/bindings/c0_planned_binding.py \
+            apps_rg/runtime/bindings/pa_planned_binding.py \
+            apps_rg/runtime/spine/section_c0_retrieve.py
+      - name: Run L1 P0 closure tests
+        run: |
+          python -m pytest \
+            tests/unit/apps_rg/test_l1_planning_capsule.py \
+            tests/unit/apps_rg/test_l1_planning_capsule_p0.py \
+            tests/unit/apps_rg/runtime/bindings/test_l1_plan_evidence.py \
+            tests/_apps_contract/test_apps_rg_l1_binding.py \
+            tests/_apps_contract/test_apps_rg_l1_l0_w3_evidence.py \
+            tests/_apps_contract/test_apps_rg_l1_route_authority_advisory.py \
+            tests/_apps_contract/test_apps_rg_l1_profile_wiring.py \
+            tests/_apps_contract/test_apps_rg_app_payload_consumption.py \
+            tests/_apps_contract/test_apps_rg_ag2_direct_binding_import.py \
+            tests/_apps_contract/test_apps_rg_spine_c0_w4.py \
+            tests/_apps_contract/test_l0_routing_hardening.py \
+            tests/_apps_contract/test_l0_gate_verdicts.py \
+            tests/agentic_core/runtime/contracts/test_l1_plan_contract.py \
+            tests/unit/agentic_core/runtime/contracts/test_l1_plan_contract.py \
+            -q --no-header -p no:cacheprovider
