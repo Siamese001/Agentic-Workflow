@@ -1,72 +1,77 @@
 # SVP Engineering Reviewer Hub
 
-Status: **Active navigation hub**.
+Status: **Active reviewer navigation and proof hub**.
 
-This directory used to hold a narrow "System Value Proposition" packet for the
-retrieval subsystem. The current GitHub-facing SVP Engineering story is broader:
-Agentic Workflow is a deterministic AI control plane for governed enterprise
-agents.
-
-Use this page as a reviewer path for CTO, SVP Engineering, platform leadership,
-and hiring audiences.
-
----
+Agentic Workflow is presented as a deterministic control plane for governed enterprise agents. Use this page to choose the shortest credible review path for CTO, SVP Engineering, platform, governance, hiring, and contributor audiences.
 
 ## Start Here
 
 | Audience | Read first | Why |
 |---|---|---|
-| Hiring manager / recruiter | [`../RECRUITER_GUIDE.md`](../RECRUITER_GUIDE.md) | Plain-English role fit and leadership signal |
-| CTO / SVP Engineering | [`../EXECUTIVE_OVERVIEW.md`](../EXECUTIVE_OVERVIEW.md) | Bottom-line thesis and platform-leadership narrative |
-| Engineering reviewer | [`../RUNTIME_CONTROL_PLANE.md`](../RUNTIME_CONTROL_PLANE.md) | Technical model for routing, context, execution, exit, write control, replay, and learning |
-| Governance reviewer | [`../SVP_ENGINEERING_GOVERNANCE_README.md`](../SVP_ENGINEERING_GOVERNANCE_README.md) | Codex-primary governance, ADG CI, and runtime proof model |
-| Deep technical reviewer | [`../architecture/REVIEWER_GUIDE.md`](../architecture/REVIEWER_GUIDE.md) | Proof commands and inspection path |
-
----
+| Hiring manager / recruiter | [`../RECRUITER_GUIDE.md`](../RECRUITER_GUIDE.md) | Plain-English leadership and role signal |
+| CTO / SVP Engineering | [`../EXECUTIVE_OVERVIEW.md`](../EXECUTIVE_OVERVIEW.md) | Platform thesis and executive implications |
+| Engineering reviewer | [`../RUNTIME_CONTROL_PLANE.md`](../RUNTIME_CONTROL_PLANE.md) | Runtime authority, evidence, execution, exit, write control, and learning |
+| Governance reviewer | [`../SVP_ENGINEERING_GOVERNANCE_README.md`](../SVP_ENGINEERING_GOVERNANCE_README.md) | Codex-primary, ADG, commit-time, and runtime evidence layers |
+| Deep technical reviewer | [`../architecture/REVIEWER_GUIDE.md`](../architecture/REVIEWER_GUIDE.md) | Registry, proof commands, and inspection path |
+| Documentation governance reviewer | [`../../scripts/governance/svp_docs_review.py`](../../scripts/governance/svp_docs_review.py) | Deterministic X2 checks and one X3 disposition |
 
 ## What This Repository Demonstrates
 
-- **Platform strategy:** the agent is not the product; the governed runtime
-  around the agent is the product.
-- **System design:** route authority, verified context, bounded execution,
-  runtime gates, controlled writes, replay, and shadow learning are separated
-  into explicit responsibilities.
-- **Governance maturity:** Codex-primary execution discipline, commit-time
-  gates, ADG CI, and runtime proof are distinct evidence layers.
-- **Operating judgment:** the repo is built to keep AI-assisted development fast
-  without turning architecture into a pile of local exceptions.
-- **Reviewer proof:** architecture claims are paired with commands and files a
-  reviewer can inspect.
+- **Platform strategy:** the governed runtime around the agent is the product boundary.
+- **System design:** planning, route authority, evidence, prompt compilation, bounded execution, exit disposition, durable writes, replay, and learning are separated.
+- **Governance maturity:** Codex execution discipline, commit-time controls, architecture-graph checks, runtime evidence, and documentation publication authority are distinct surfaces.
+- **Exception discipline:** app deviations are formal registry state with compensating controls rather than silent bypasses.
+- **Reviewer proof:** material claims point to source, commands, or receipts.
 
----
+## Current Registry Snapshot
+
+`apps_shared/integrations/app_registry.py` currently records:
+
+- **3 governed entries:** `apps_exec`, `apps_research`, `apps_rg`;
+- **5 formal exceptions:** `apps_architect`, `apps_eval`, `apps_lic`, `apps_qna`, `apps_underwriting_ai`;
+- **0 ad hoc statuses.**
+
+Run the proof commands for current branch status rather than relying on this static snapshot.
 
 ## Proof Commands
 
-Run these from the repository root:
+Run from the repository root:
 
 ```bash
 python scripts/governance/verify_codex_primary.py
 python scripts/governance/verify_codex_enforcement_home.py --json
+python scripts/governance/svp_docs_review.py --mode audit --phase pre --json
+python ops_scripts/ci/check_governed_app_conformance.py
 python ops_scripts/ci/run_architecture_proof.py
 ```
 
-For the full README and reviewer path, start at [`../../README.md`](../../README.md).
+## Documentation Governance
 
----
+The weekly SVP documentation automation is read-only. It may emit `NOOP`, `PLAN_ONLY`, `BLOCK`, or `ESCALATE_HUMAN`.
+
+Approved edits use the separate manual automation and require:
+
+1. a schema-valid approval receipt;
+2. an isolated non-main branch;
+3. X2 pre and post receipts;
+4. an X1D receipt over the final packet and diff;
+5. one X3 disposition;
+6. `ALLOW_TO_PR` handoff to the existing PR-only main publisher.
+
+The documentation automation does not merge or push directly to `main`.
+
+For the complete GitHub landing page and portfolio navigation, start at [`../../README.md`](../../README.md).
 
 ## Historical Retrieval SVP Packet
 
-The following files are retained as historical retrieval-system notes. They are
-not the current source of truth for repository-wide SVP Engineering positioning
-and should not be treated as current ROI, roadmap, or support commitments:
+The files below are retained as historical retrieval-system notes. They are not the current source of truth for repository-wide SVP positioning and should not be treated as current ROI, roadmap, or support commitments:
 
 - [`Retrieval_System_SVP.md`](./Retrieval_System_SVP.md)
 - [`Technical_Implementation_Guide.md`](./Technical_Implementation_Guide.md)
 - [`demo_script.py`](./demo_script.py)
 
-When updating public GitHub-facing positioning, prefer the active documents
-listed in [Start Here](#start-here).
+Prefer the active documents in [Start Here](#start-here) for current public positioning.
 
 ---
 
-Last updated: June 2026.
+Last updated: July 2026.
