@@ -117,17 +117,28 @@ def _l2_execute_apps_rg_core(
 
     from apps_rg.runtime.bindings.l2_envelope_adapter import run_apps_rg_l2_envelope
 
-    out = run_apps_rg_l2_envelope(
-        prompt,
-        route_contract=route_contract,
-        validated_request=validated_request,
-        attempt_number=attempt_number,
-        enable_heal=enable_heal,
-        max_heal_attempts=max_heal_attempts,
-        resume_artifact_contract_mode=resume_artifact_contract_mode,
-        artifact_dir=artifact_dir,
-        product_mode=False,
-    )
+    if (
+        route_contract is None
+        and validated_request is None
+        and artifact_dir is None
+        and attempt_number == 1
+        and enable_heal is False
+        and max_heal_attempts == 3
+        and resume_artifact_contract_mode is None
+    ):
+        out = run_apps_rg_l2_envelope(prompt)
+    else:
+        out = run_apps_rg_l2_envelope(
+            prompt,
+            route_contract=route_contract,
+            validated_request=validated_request,
+            attempt_number=attempt_number,
+            enable_heal=enable_heal,
+            max_heal_attempts=max_heal_attempts,
+            resume_artifact_contract_mode=resume_artifact_contract_mode,
+            artifact_dir=artifact_dir,
+            product_mode=False,
+        )
     if out is None:
         raise ValueError("APPS_RG_L2_V4_ENVELOPE_RETURNED_NONE")
     return out  # type: ignore[return-value]
@@ -173,7 +184,9 @@ def l2_execute_apps_rg(
         max_heal_attempts=max_heal_attempts,
         resume_artifact_contract_mode=resume_artifact_contract_mode,
     )
-    if governed_l2_exit_enabled():
+    if governed_l2_exit_enabled() and (
+        resolved_product_mode or os.environ.get("APPS_RG_L2_FORCE_STUB", "").strip() == "1"
+    ):
         return governed_l2_seal_integrated(prompt, **kwargs)
     return _l2_execute_apps_rg_core(prompt, **kwargs)
 
