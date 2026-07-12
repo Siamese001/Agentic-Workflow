@@ -1,21 +1,14 @@
-"""apps_rg Exit binding — C0 evidence consumption and gate evaluation.
+"""apps_rg Exit binding — C0 evidence and authenticated L5 packet evaluation.
 
-W4: apps_rg owns all JD/resume-specific Exit gate logic here.
-agentic_core Exit must remain generic.
-
-W5 vocabulary (boundary remediation f8e3c1):
-    ``ExitGateVerdict`` below is **apps_rg-local** resume Exit helper typing only.
-    It is **not** ``agentic_core.runtime_gates.definitions.GateVerdict`` (**00C**
-    runtime GateMesh live proceed/stop evidence). Do not conflate the two types.
-    Exactly **one** runtime X3 disposition is owned by the generic Exit spine after
-    X1/X2 aggregation — not by these local enums.
-
-No L6 current-run rescue path is introduced here (category 9 invariant).
-
-Plan: apps-rg-retrieval-metrics-ownership-and-c0-evidence-plan W4
+The local ``ExitGateVerdict`` is not the 00C ``GateVerdict`` type.  L5 remains
+an evidence-only plane; Exit consumes its verified packet as a fail-closed
+precondition and never lets L5 authorize a runtime disposition.
 """
+
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
@@ -36,28 +29,19 @@ from apps_rg.runtime.schemas import SectionCacheWriteProposal
 if TYPE_CHECKING:
     from agentic_core.runtime.exhaust.runtime_exhaust_bundle import RuntimeExhaustBundle
 
-# ---------------------------------------------------------------------------
-# Blocking status set — apps_rg-owned; never in agentic_core
-# ---------------------------------------------------------------------------
-
-_BLOCKING_SUPPORT_STATUSES: frozenset[str] = frozenset({
-    STATUS_UNKNOWN,
-    SUPPORT_STATUS_EMPTY,
-    SUPPORT_STATUS_BLOCKED,
-    SUPPORT_STATUS_CONFLICTED,
-})
-
-_NON_BLOCKING_STATUSES: frozenset[str] = frozenset({
-    SUPPORT_STATUS_PASS,
-    SUPPORT_STATUS_WEAK_WITH_CAVEATS,
-})
-
+_BLOCKING_SUPPORT_STATUSES: frozenset[str] = frozenset(
+    {
+        STATUS_UNKNOWN,
+        SUPPORT_STATUS_EMPTY,
+        SUPPORT_STATUS_BLOCKED,
+        SUPPORT_STATUS_CONFLICTED,
+    }
+)
+_NON_BLOCKING_STATUSES: frozenset[str] = frozenset(
+    {SUPPORT_STATUS_PASS, SUPPORT_STATUS_WEAK_WITH_CAVEATS}
+)
 _PLACEHOLDER_TEST_L5_CERT_REF = "test:valid:w6"
 
-
-# ---------------------------------------------------------------------------
-# Gate verdict enum (apps_rg-local; NOT 00C GateVerdict / GateMesh)
-# ---------------------------------------------------------------------------
 
 class ExitGateVerdict(str, Enum):
     PASS = "PASS"
@@ -66,10 +50,6 @@ class ExitGateVerdict(str, Enum):
     UNKNOWN = "UNKNOWN"
 
 
-# ---------------------------------------------------------------------------
-# Gate result shape
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class ExitGateResult:
     gate_id: str
@@ -77,32 +57,20 @@ class ExitGateResult:
     reason: str = ""
 
 
-# ---------------------------------------------------------------------------
-# apps_rg-owned Exit inert artifact candidate
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class InertArtifactCommitCandidate:
-    """Non-durable artifact proposal — never written to L4 directly.
-
-    All candidates produced by apps_rg Exit MUST be inert (proposal-only).
-    """
+    """Non-durable proposal; UWG remains the sole durable-write authority."""
 
     artifact_type: str
     proposed_path: str
     content_digest: str
     serialized_content: dict[str, Any]
-
     mutation_candidate_inert: bool = True
     non_durable: bool = True
     not_l4_truth: bool = True
     not_replay_source: bool = True
     proposal_status: str = "PENDING_UWG"
 
-
-# ---------------------------------------------------------------------------
-# Exit disposition shape
-# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class ExitDisposition:
@@ -113,10 +81,6 @@ class ExitDisposition:
     final_output: Optional[str] = None
 
 
-# ---------------------------------------------------------------------------
-# Exit result shape
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class ExitResult:
     disposition: ExitDisposition
@@ -124,144 +88,159 @@ class ExitResult:
     cache_write_proposals: tuple[SectionCacheWriteProposal, ...] = ()
 
 
-# ---------------------------------------------------------------------------
-# Gate helpers
-# ---------------------------------------------------------------------------
-
 def _evaluate_c0_evidence_gates(
     fec: Optional[FinalEvidenceContract],
 ) -> tuple[list[ExitGateResult], bool, str]:
-    """Evaluate C0 evidence gates and return (results, is_blocking, reason).
-
-    Gates evaluated:
-    - G_SUPPORT_STATUS  — blocks if support_status is in _BLOCKING_SUPPORT_STATUSES
-    - G09               — warns if no freshness_receipts
-    - G13               — fails (blocking) if citation_map empty + excluded_refs present;
-                          warns if citation_map empty + no excluded_refs;
-                          passes otherwise
-
-    Parameters
-    ----------
-    fec:
-        FinalEvidenceContract or None.  None is treated as no-evidence
-        (non-blocking warn).
-
-    Returns
-    -------
-    tuple[list[ExitGateResult], bool, str]
-        (gate_results, is_blocking, blocking_reason)
-    """
     results: list[ExitGateResult] = []
     is_blocking = False
     blocking_reasons: list[str] = []
 
     if fec is None:
-        results.append(ExitGateResult(
-            gate_id="G_SUPPORT_STATUS",
-            verdict=ExitGateVerdict.WARN,
-            reason="fec=None; no C0 evidence for this run",
-        ))
-        results.append(ExitGateResult(
-            gate_id="G09",
-            verdict=ExitGateVerdict.WARN,
-            reason="fec=None; no freshness receipts",
-        ))
-        results.append(ExitGateResult(
-            gate_id="G13",
-            verdict=ExitGateVerdict.WARN,
-            reason="fec=None; no citation map",
-        ))
-        return results, False, ""
+        return (
+            [
+                ExitGateResult(
+                    "G_SUPPORT_STATUS",
+                    ExitGateVerdict.WARN,
+                    "fec=None; no C0 evidence for this run",
+                ),
+                ExitGateResult(
+                    "G09", ExitGateVerdict.WARN, "fec=None; no freshness receipts"
+                ),
+                ExitGateResult(
+                    "G13", ExitGateVerdict.WARN, "fec=None; no citation map"
+                ),
+            ],
+            False,
+            "",
+        )
 
-    # G_SUPPORT_STATUS
-    support_status: str = getattr(fec, "support_status", STATUS_UNKNOWN) or STATUS_UNKNOWN
-    support_target_met: bool = bool(getattr(fec, "support_target_met", False))
-
+    support_status = str(
+        getattr(fec, "support_status", STATUS_UNKNOWN) or STATUS_UNKNOWN
+    )
+    support_target_met = bool(getattr(fec, "support_target_met", False))
     if support_status in _BLOCKING_SUPPORT_STATUSES:
-        results.append(ExitGateResult(
-            gate_id="G_SUPPORT_STATUS",
-            verdict=ExitGateVerdict.FAIL,
-            reason=f"support_status={support_status} is blocking",
-        ))
+        results.append(
+            ExitGateResult(
+                "G_SUPPORT_STATUS",
+                ExitGateVerdict.FAIL,
+                f"support_status={support_status} is blocking",
+            )
+        )
         is_blocking = True
         blocking_reasons.append(support_status)
     elif not support_target_met:
-        results.append(ExitGateResult(
-            gate_id="G_SUPPORT_STATUS",
-            verdict=ExitGateVerdict.WARN,
-            reason=f"support_status={support_status} but support_target_met=False",
-        ))
+        results.append(
+            ExitGateResult(
+                "G_SUPPORT_STATUS",
+                ExitGateVerdict.WARN,
+                f"support_status={support_status} but support_target_met=False",
+            )
+        )
     else:
-        results.append(ExitGateResult(
-            gate_id="G_SUPPORT_STATUS",
-            verdict=ExitGateVerdict.PASS,
-            reason=f"support_status={support_status}",
-        ))
+        results.append(
+            ExitGateResult(
+                "G_SUPPORT_STATUS",
+                ExitGateVerdict.PASS,
+                f"support_status={support_status}",
+            )
+        )
 
-    # G09 — freshness
-    freshness: tuple = tuple(getattr(fec, "freshness_receipts", ()) or ())
-    if freshness:
-        results.append(ExitGateResult(
-            gate_id="G09",
-            verdict=ExitGateVerdict.PASS,
-            reason=f"{len(freshness)} freshness receipts",
-        ))
-    else:
-        results.append(ExitGateResult(
-            gate_id="G09",
-            verdict=ExitGateVerdict.WARN,
-            reason="no freshness receipts",
-        ))
+    freshness = tuple(getattr(fec, "freshness_receipts", ()) or ())
+    results.append(
+        ExitGateResult(
+            "G09",
+            ExitGateVerdict.PASS if freshness else ExitGateVerdict.WARN,
+            f"{len(freshness)} freshness receipts"
+            if freshness
+            else "no freshness receipts",
+        )
+    )
 
-    # G13 — citation map
-    citation_map: tuple = tuple(getattr(fec, "citation_map", ()) or ())
-    excluded_refs: tuple = tuple(getattr(fec, "excluded_evidence_refs", ()) or ())
-
+    citation_map = tuple(getattr(fec, "citation_map", ()) or ())
+    excluded_refs = tuple(getattr(fec, "excluded_evidence_refs", ()) or ())
     if citation_map:
-        results.append(ExitGateResult(
-            gate_id="G13",
-            verdict=ExitGateVerdict.PASS,
-            reason=f"{len(citation_map)} citation(s)",
-        ))
+        results.append(
+            ExitGateResult(
+                "G13", ExitGateVerdict.PASS, f"{len(citation_map)} citation(s)"
+            )
+        )
     elif excluded_refs:
-        results.append(ExitGateResult(
-            gate_id="G13",
-            verdict=ExitGateVerdict.FAIL,
-            reason=(
-                f"G13: citation_map is empty but {len(excluded_refs)} "
-                "excluded_evidence_refs present — citation hard-fail"
-            ),
-        ))
+        results.append(
+            ExitGateResult(
+                "G13",
+                ExitGateVerdict.FAIL,
+                f"G13: citation_map is empty but {len(excluded_refs)} excluded_evidence_refs present",
+            )
+        )
         is_blocking = True
         blocking_reasons.append("G13")
     else:
-        results.append(ExitGateResult(
-            gate_id="G13",
-            verdict=ExitGateVerdict.WARN,
-            reason="citation_map empty; no excluded refs",
-        ))
+        results.append(
+            ExitGateResult(
+                "G13", ExitGateVerdict.WARN, "citation_map empty; no excluded refs"
+            )
+        )
 
-    blocking_reason = ", ".join(blocking_reasons) if blocking_reasons else ""
-    return results, is_blocking, blocking_reason
+    return results, is_blocking, ", ".join(blocking_reasons)
+
+
+def _is_valid_l5_packet_digest(value: str) -> bool:
+    return len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def _l5_verification(
+    sealed: SealedL2Artifact,
+    *,
+    prompt_artifact: Any = None,
+    fec: Optional[FinalEvidenceContract] = None,
+    allow_test_l5_cert_ref: bool = False,
+):
+    from apps_rg.runtime.l5.packet_builder import verify_l5_packet_against_runtime
+
+    return verify_l5_packet_against_runtime(
+        sealed,
+        prompt_artifact=prompt_artifact,
+        fec=fec,
+        allow_test_l5_cert_ref=allow_test_l5_cert_ref,
+        require_stored_verification=True,
+    )
+
+
+def _evaluate_l5_certification_gate(
+    sealed: SealedL2Artifact,
+    *,
+    prompt_artifact: Any = None,
+    fec: Optional[FinalEvidenceContract] = None,
+    allow_test_l5_cert_ref: bool = False,
+) -> tuple[ExitGateResult, bool, str]:
+    """Verify the full attached packet and its runtime binding, fail closed."""
+
+    verification = _l5_verification(
+        sealed,
+        prompt_artifact=prompt_artifact,
+        fec=fec,
+        allow_test_l5_cert_ref=allow_test_l5_cert_ref,
+    )
+    if not verification.verified:
+        reason = "L5 packet verification failed: " + ";".join(verification.reason_codes)
+        return (
+            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
+            True,
+            reason,
+        )
+    return (
+        ExitGateResult(
+            "G_L5_CERTIFICATION", ExitGateVerdict.PASS, "L5_CERTIFIED_VERIFIED"
+        ),
+        False,
+        "",
+    )
 
 
 def _compute_apps_rg_owned_fields(
     fec: Optional[FinalEvidenceContract],
     sealed: SealedL2Artifact,
 ) -> dict[str, Any]:
-    """Compute apps_rg-owned evidence metrics fields.
-
-    These fields are specific to the resume generation task and must
-    NOT appear in agentic_core Exit files.
-
-    Fields returned:
-    - jd_keyword_coverage         float [0, 1]
-    - overfit_score               float [0, 1]
-    - provenance_valid            bool
-    - material_claim_support_rate float [0, 1]
-    - unsupported_material_claim_rate float [0, 1]
-    - citation_anchor_coverage    float [0, 1]
-    """
     if fec is None:
         return {
             "jd_keyword_coverage": 0.0,
@@ -272,102 +251,31 @@ def _compute_apps_rg_owned_fields(
             "citation_anchor_coverage": 0.0,
         }
 
-    # jd_keyword_coverage: fraction of retrieval sources from jd_payload
-    retrieval_sources: tuple = tuple(getattr(fec, "retrieval_sources", ()) or ())
-    jd_count = sum(1 for s in retrieval_sources if s.startswith("jd_payload"))
+    retrieval_sources = tuple(getattr(fec, "retrieval_sources", ()) or ())
+    jd_count = sum(1 for source in retrieval_sources if source.startswith("jd_payload"))
     jd_coverage = jd_count / len(retrieval_sources) if retrieval_sources else 0.0
-
-    # overfit_score: stub — 0.0 means no detected overfitting
-    overfit_score = 0.0
-
-    # provenance_valid: requires non-empty compilation_hash + certified L5 packet
-    compilation_hash: str = getattr(sealed, "compilation_hash", "") or ""
-    l5_packet_digest: str = getattr(sealed, "l5_certification_packet_digest", "") or ""
-    l5_status: str = getattr(sealed, "l5_certification_status", "") or ""
-    provenance_valid = bool(
-        compilation_hash
-        and _is_valid_l5_packet_digest(l5_packet_digest)
-        and l5_status == "L5_CERTIFIED"
-    )
-
-    # citation_anchor_coverage
-    citation_map: tuple = tuple(getattr(fec, "citation_map", ()) or ())
+    citation_map = tuple(getattr(fec, "citation_map", ()) or ())
     evidence_count = len(getattr(fec, "evidence_items", ()) or ())
     citation_coverage = (
         min(len(citation_map) / evidence_count, 1.0) if evidence_count else 0.0
     )
-
+    provenance_valid = bool(
+        getattr(sealed, "compilation_hash", "")
+        and _is_valid_l5_packet_digest(
+            str(getattr(sealed, "l5_certification_packet_digest", "") or "")
+        )
+        and getattr(sealed, "l5_certification_status", "") == "L5_CERTIFIED"
+        and bool(getattr(sealed, "l5_certification_verified", False))
+    )
     return {
         "jd_keyword_coverage": round(jd_coverage, 4),
-        "overfit_score": overfit_score,
+        "overfit_score": 0.0,
         "provenance_valid": provenance_valid,
         "material_claim_support_rate": round(jd_coverage, 4),
         "unsupported_material_claim_rate": round(1.0 - jd_coverage, 4),
         "citation_anchor_coverage": round(citation_coverage, 4),
     }
 
-
-def _is_valid_l5_packet_digest(value: str) -> bool:
-    return len(value) == 64 and all(c in "0123456789abcdef" for c in value)
-
-
-def _evaluate_l5_certification_gate(
-    sealed: SealedL2Artifact,
-    *,
-    allow_test_l5_cert_ref: bool = False,
-) -> tuple[ExitGateResult, bool, str]:
-    """Return the apps_rg L5 packet gate result.
-
-    L5 is evidence-only: this gate consumes the packet as a precondition for
-    Exit allow/cache proposals. It never turns a failed C0/Exit decision into
-    an allow decision.
-    """
-
-    old_ref = str(getattr(sealed, "l5_certification_ref", "") or "").strip()
-    packet_ref = str(getattr(sealed, "l5_certification_packet_ref", "") or "").strip()
-    packet_digest = str(
-        getattr(sealed, "l5_certification_packet_digest", "") or ""
-    ).strip()
-    status = str(getattr(sealed, "l5_certification_status", "") or "").strip()
-
-    if old_ref == _PLACEHOLDER_TEST_L5_CERT_REF and not allow_test_l5_cert_ref:
-        reason = "placeholder l5_certification_ref rejected in governed mode"
-        return (
-            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
-            True,
-            reason,
-        )
-    if not packet_ref:
-        reason = "missing l5_certification_packet_ref"
-        return (
-            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
-            True,
-            reason,
-        )
-    if not _is_valid_l5_packet_digest(packet_digest):
-        reason = "malformed l5_certification_packet_digest"
-        return (
-            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
-            True,
-            reason,
-        )
-    if status != "L5_CERTIFIED":
-        reason = f"l5_certification_status={status or 'missing'}"
-        return (
-            ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.FAIL, reason),
-            True,
-            reason,
-        )
-    return (
-        ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.PASS, status),
-        False,
-        "",
-    )
-
-
-# ---------------------------------------------------------------------------
-# Public Exit API
-# ---------------------------------------------------------------------------
 
 def exit_finalize_apps_rg(
     sealed: SealedL2Artifact,
@@ -377,30 +285,6 @@ def exit_finalize_apps_rg(
     target_company: str = "",
     target_role: str = "",
 ) -> ExitResult:
-    """apps_rg Exit gate evaluation and disposition assembly.
-
-    When governed L2/Exit is enabled (W6), also runs ``ExitEvalPipeline`` and
-    builds a canonical ``RuntimeExhaustBundle`` (attached on the returned
-    ``ExitResult`` via private attribute for integrated callers).
-
-    Parameters
-    ----------
-    sealed:
-        SealedL2Artifact from L2 execution.
-    prompt_artifact:
-        Positional arg accepted for dispatch compatibility; ignored.
-    fec:
-        FinalEvidenceContract from C0 retrieval.  None is handled gracefully.
-    target_company:
-        Target company name for run metadata.
-    target_role:
-        Target role name for run metadata.
-
-    Returns
-    -------
-    ExitResult
-        Disposition + list of inert artifact commit candidates.
-    """
     from apps_rg.runtime.spine.governed_l2_exit_compose import (
         governed_exit_finalize_integrated,
         governed_l2_exit_enabled,
@@ -417,7 +301,6 @@ def exit_finalize_apps_rg(
         result = bundle.exit_result
         object.__setattr__(result, "_governed_integrated_exit_bundle", bundle)
         return result
-
     return _exit_finalize_apps_rg_impl(
         sealed,
         prompt_artifact=prompt_artifact,
@@ -436,47 +319,70 @@ def _exit_finalize_apps_rg_impl(
     target_role: str = "",
     allow_test_l5_cert_ref: bool = False,
 ) -> ExitResult:
-    """Core apps_rg Exit gate evaluation (no spine ExitEvalPipeline wrapper)."""
     gate_results, c0_blocking, blocking_reason = _evaluate_c0_evidence_gates(fec)
+    verification = _l5_verification(
+        sealed,
+        prompt_artifact=prompt_artifact,
+        fec=fec,
+        allow_test_l5_cert_ref=allow_test_l5_cert_ref,
+    )
     l5_gate, l5_blocking, l5_blocking_reason = _evaluate_l5_certification_gate(
         sealed,
+        prompt_artifact=prompt_artifact,
+        fec=fec,
         allow_test_l5_cert_ref=allow_test_l5_cert_ref,
     )
     gate_results.append(l5_gate)
     if l5_blocking:
         blocking_reason = ", ".join(
-            reason
-            for reason in (blocking_reason, l5_blocking_reason)
-            if reason
+            reason for reason in (blocking_reason, l5_blocking_reason) if reason
         )
+
     owned_fields = _compute_apps_rg_owned_fields(fec, sealed)
-
     outcome_authorized = not c0_blocking and not l5_blocking
-    run_id: str = getattr(sealed, "run_id", "") or ""
-
-    # Build run_metadata candidate (inert)
-    w4_c0_evidence: dict[str, Any] = {
+    run_id = str(getattr(sealed, "run_id", "") or "")
+    metadata_payload = {
+        "run_id": run_id,
+        "target_company": target_company,
+        "target_role": target_role,
+        "outcome_authorized": outcome_authorized,
+        "w4_c0_evidence": {
             "c0_blocking": c0_blocking,
             "l5_blocking": l5_blocking,
             "blocking_reason": blocking_reason,
-        "gate_results": [
-            {"gate_id": g.gate_id, "verdict": g.verdict.value, "reason": g.reason}
-            for g in gate_results
-        ],
-        **owned_fields,
+            "l5_certification_packet_ref": str(
+                getattr(sealed, "l5_certification_packet_ref", "") or ""
+            ),
+            "l5_certification_packet_digest": str(
+                getattr(sealed, "l5_certification_packet_digest", "") or ""
+            ),
+            "l5_certification_status": str(
+                getattr(sealed, "l5_certification_status", "") or ""
+            ),
+            "l5_runtime_binding_digest": str(
+                getattr(sealed, "l5_runtime_binding_digest", "") or ""
+            ),
+            "l5_certification_verified": verification.verified,
+            "l5_certification_verification_digest": verification.verification_digest,
+            "l5_verification_reason_codes": list(verification.reason_codes),
+            "gate_results": [
+                {
+                    "gate_id": gate.gate_id,
+                    "verdict": gate.verdict.value,
+                    "reason": gate.reason,
+                }
+                for gate in gate_results
+            ],
+            **owned_fields,
+        },
     }
-
     run_metadata_candidate = InertArtifactCommitCandidate(
         artifact_type="run_metadata",
         proposed_path=f"virtual/apps_rg/runs/{run_id}/run_metadata.json",
-        content_digest=str(hash(run_id + str(c0_blocking))),
-        serialized_content={
-            "run_id": run_id,
-            "target_company": target_company,
-            "target_role": target_role,
-            "outcome_authorized": outcome_authorized,
-            "w4_c0_evidence": w4_c0_evidence,
-        },
+        content_digest=hashlib.sha256(
+            json.dumps(metadata_payload, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest(),
+        serialized_content=metadata_payload,
     )
 
     disposition = ExitDisposition(
@@ -487,16 +393,14 @@ def _exit_finalize_apps_rg_impl(
         final_output=getattr(sealed, "generated_content", None),
     )
 
-    # Exit CLEARS and PROPOSES the semantic-cache write (UWG commits, L4 stores). The proposal
-    # is inert evidence: it names the per-section C0 intent vector + query output that the
-    # post-Exit UWG -> L4 chain will durably admit. Only emitted when the run is authorized.
     cache_proposals: tuple[SectionCacheWriteProposal, ...] = ()
     if outcome_authorized:
         section_id = _exit_section_id(fec, sealed)
         intent_digest = _exit_c0_intent_digest(fec)
-        content = getattr(sealed, "generated_content", "") or ""
-        content_digest = str(getattr(sealed, "compilation_hash", "") or "") or str(
-            hash(content)
+        content = str(getattr(sealed, "generated_content", "") or "")
+        content_digest = (
+            str(getattr(sealed, "compilation_hash", "") or "")
+            or hashlib.sha256(content.encode("utf-8")).hexdigest()
         )
         cache_proposals = (
             SectionCacheWriteProposal(
@@ -511,6 +415,11 @@ def _exit_finalize_apps_rg_impl(
                 l5_certification_packet_digest=str(
                     getattr(sealed, "l5_certification_packet_digest", "") or ""
                 ),
+                l5_runtime_binding_digest=str(
+                    getattr(sealed, "l5_runtime_binding_digest", "") or ""
+                ),
+                l5_certification_verified=verification.verified,
+                l5_certification_verification_digest=verification.verification_digest,
             ),
         )
 
@@ -521,21 +430,20 @@ def _exit_finalize_apps_rg_impl(
     )
 
 
-def _exit_section_id(fec: Optional[FinalEvidenceContract], sealed: SealedL2Artifact) -> str:
-    """Best-effort section id for the cache proposal (FEC first, then sealed app_id)."""
-    for src in (fec, sealed):
-        sid = getattr(src, "section_id", "") if src is not None else ""
-        if isinstance(sid, str) and sid.strip():
-            return sid.strip()
+def _exit_section_id(
+    fec: Optional[FinalEvidenceContract], sealed: SealedL2Artifact
+) -> str:
+    for source in (fec, sealed):
+        section_id = getattr(source, "section_id", "") if source is not None else ""
+        if isinstance(section_id, str) and section_id.strip():
+            return section_id.strip()
     return ""
 
 
 def _exit_c0_intent_digest(fec: Optional[FinalEvidenceContract]) -> str:
-    """C0 section intent digest if surfaced on the FEC (else empty)."""
     if fec is None:
         return ""
-    val = getattr(fec, "c0_section_intent_digest", "") or ""
-    return str(val).strip()
+    return str(getattr(fec, "c0_section_intent_digest", "") or "").strip()
 
 
 def build_exhaust_bundle_from_exit(
@@ -548,32 +456,26 @@ def build_exhaust_bundle_from_exit(
     gate_mesh_result_ref: str | None = None,
     sealed_result_ref: str | None = None,
 ) -> "RuntimeExhaustBundle":
-    """Map apps_rg ExitBindingResult + sealed L2 artifact to canonical RuntimeExhaustBundle.
-
-    apps_rg owns this mapper; core owns bundle schema and factory
-    (``build_runtime_exhaust_bundle``). Call only after Exit has finalized
-    for the run. ``exit_disposition_ref`` defaults to ``sealed.compilation_hash``
-    when non-empty; otherwise a deterministic digest from the Exit disposition.
-    """
     from agentic_core.runtime.exhaust.runtime_exhaust_bundle import (
         build_runtime_exhaust_bundle,
     )
 
-    exit_ref = (exit_disposition_ref or "").strip()
+    exit_ref = str(exit_disposition_ref or "").strip()
     if not exit_ref:
-        comp = (getattr(sealed, "compilation_hash", "") or "").strip()
-        exit_ref = comp if comp else _synthetic_exit_disposition_digest(exit_result)
+        exit_ref = str(getattr(sealed, "compilation_hash", "") or "").strip()
+        if not exit_ref:
+            exit_ref = _synthetic_exit_disposition_digest(exit_result)
 
     gate_ref = gate_mesh_result_ref
     if gate_ref is None:
         refs = tuple(getattr(sealed, "gate_verdict_refs", ()) or ())
         gate_ref = ",".join(refs) if refs else ""
-
     sealed_ref = sealed_result_ref
     if sealed_ref is None:
-        sealed_ref = (getattr(sealed, "replay_key", "") or "").strip() or (
-            getattr(sealed, "compilation_hash", "") or ""
-        ).strip()
+        sealed_ref = (
+            str(getattr(sealed, "replay_key", "") or "").strip()
+            or str(getattr(sealed, "compilation_hash", "") or "").strip()
+        )
 
     return build_runtime_exhaust_bundle(
         request_id=getattr(sealed, "request_id", "") or "",
@@ -590,21 +492,19 @@ def build_exhaust_bundle_from_exit(
         l5_certification_packet_digest=str(
             getattr(sealed, "l5_certification_packet_digest", "") or ""
         ),
-        l5_certification_status=str(getattr(sealed, "l5_certification_status", "") or ""),
+        l5_certification_status=str(
+            getattr(sealed, "l5_certification_status", "") or ""
+        ),
     )
 
 
 def _synthetic_exit_disposition_digest(exit_result: ExitResult) -> str:
-    """Deterministic ref when no compilation_hash is available (harness/tests)."""
-    import hashlib
-    import json
-
-    d = exit_result.disposition
+    disposition = exit_result.disposition
     payload = {
-        "outcome_authorized": d.outcome_authorized,
-        "c0_blocking": d.c0_blocking,
-        "blocking_reason": d.blocking_reason,
-        "gate_ids": [g.gate_id for g in d.gate_results],
+        "outcome_authorized": disposition.outcome_authorized,
+        "c0_blocking": disposition.c0_blocking,
+        "blocking_reason": disposition.blocking_reason,
+        "gate_ids": [gate.gate_id for gate in disposition.gate_results],
     }
     raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return "sha256::" + hashlib.sha256(raw.encode()).hexdigest()[:40]
@@ -614,8 +514,7 @@ def build_apps_rg_exit_harness(
     sealed: SealedL2Artifact,
     fec: Optional[FinalEvidenceContract] = None,
 ) -> ExitResult:
-    """Convenience harness that reads target from sealed.proposed_state_diff."""
-    state_diff: dict[str, Any] = dict(getattr(sealed, "proposed_state_diff", {}) or {})
+    state_diff = dict(getattr(sealed, "proposed_state_diff", {}) or {})
     return exit_finalize_apps_rg(
         sealed,
         fec=fec,
@@ -624,24 +523,13 @@ def build_apps_rg_exit_harness(
     )
 
 
-# ---------------------------------------------------------------------------
-# Cert reference — apps_rg-owned identifier for the Exit gate certification
-# ---------------------------------------------------------------------------
-
 APPS_RG_EXIT_CERT_REF: str = "exit-apps-rg-resume-generation-w3p5"
-
-# ---------------------------------------------------------------------------
-# Type alias for callers that expect X3Disposition (re-exported from core)
-# ---------------------------------------------------------------------------
 
 try:
     from agentic_core.runtime.contracts.x3_disposition import X3Disposition  # noqa: F401
 except ImportError:
     X3Disposition = None  # type: ignore[assignment,misc]
 
-# ---------------------------------------------------------------------------
-# AppsRgGateResult — thin wrapper for test compatibility
-# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class AppsRgGateResult:
@@ -650,19 +538,12 @@ class AppsRgGateResult:
     reason: str = ""
 
 
-# ---------------------------------------------------------------------------
-# ExitBindingResult — wraps ExitResult for callers that name this type
-# ---------------------------------------------------------------------------
-
 ExitBindingResult = ExitResult
 
 
-# ---------------------------------------------------------------------------
-# Path helpers used by dispatch shims
-# ---------------------------------------------------------------------------
-
 def _resolve_repo_root() -> "Any":
     from pathlib import Path
+
     return Path(__file__).resolve().parents[4]
 
 
@@ -670,13 +551,9 @@ def _safe_run_dirname(run_id: str) -> str:
     return run_id.replace("/", "_").replace("\\", "_")
 
 
-# ---------------------------------------------------------------------------
-# _build_artifact_commit_candidate — public alias for InertArtifactCommitCandidate
-# ---------------------------------------------------------------------------
-
 def _build_artifact_commit_candidate(
     artifact_type: str,
-    proposed_path: str,  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+    proposed_path: str,
     content_digest: str,
     serialized_content: dict,
 ) -> InertArtifactCommitCandidate:
@@ -688,12 +565,7 @@ def _build_artifact_commit_candidate(
     )
 
 
-# ---------------------------------------------------------------------------
-# extract_apps_rg_exit_gate_policy — reads gate policy from profile YAML
-# ---------------------------------------------------------------------------
-
 def extract_apps_rg_exit_gate_policy() -> dict:
-    """Return minimal default gate policy for apps_rg Exit gates."""
     return {
         "required_gates": ["G21", "G22", "G23", "G24", "G26", "G28"],
         "conditional_gates": ["G25", "G27"],
@@ -701,21 +573,12 @@ def extract_apps_rg_exit_gate_policy() -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# produce_structured_resume_from_docx — stub; real impl in resume/ subpackage
-# ---------------------------------------------------------------------------
-
 def produce_structured_resume_from_docx(docx_path: str) -> dict:
-    """Produce a structured resume dict from a .docx file path.
-
-    This is a thin dispatch shim; the real implementation lives in
-    apps_rg.resume and requires python-docx.  Returns an empty skeleton
-    if the file cannot be parsed so callers can fail-soft.
-    """
     try:
         from apps_rg.resume.docx_reader import read_structured_resume_from_docx
+
         return read_structured_resume_from_docx(docx_path)
-    except Exception:  # guardian: allow-broad-exception -- P2 burndown: fail-soft optional boundary
+    except Exception:  # guardian: allow-broad-exception -- optional parse boundary
         return {"source_path": docx_path, "sections": {}, "_parse_error": True}
 
 
@@ -725,6 +588,7 @@ __all__ = [
     "_build_artifact_commit_candidate",
     "_compute_apps_rg_owned_fields",
     "_evaluate_c0_evidence_gates",
+    "_evaluate_l5_certification_gate",
     "_resolve_repo_root",
     "_safe_run_dirname",
     "AppsRgGateResult",

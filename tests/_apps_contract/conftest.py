@@ -39,6 +39,10 @@ def pytest_configure(config: pytest.Config) -> None:
         "markers",
         "contract_harness_live: full python -m apps_rg subprocess with live external_claude provider",
     )
+    config.addinivalue_line(
+        "markers",
+        "apps_test_model(category): classify apps_rg contract tests by model/lane posture",
+    )
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
