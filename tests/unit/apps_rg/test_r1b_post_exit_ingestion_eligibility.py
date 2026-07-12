@@ -22,6 +22,7 @@ from apps_rg.cache.r1b_post_exit_ingest import (
     evaluate_post_exit_ingestion,
     ingest_post_exit_from_run_dir,
 )
+from apps_rg.cache.r1b_store import R1BSemanticCacheStore
 
 
 def _raw_request() -> dict:
@@ -38,7 +39,7 @@ def _raw_request() -> dict:
 def _write_exit_bundle(
     run_dir: Path,
     *,
-    x3_code: str = "X3_ALLOW",
+    x3_code: str = "X3C",
     proof_eligible: bool = True,
     runtime_status: str = "REAL_LLM",
     include_final_resume: bool = True,
@@ -157,10 +158,11 @@ def test_adapter_blocks_pre_exit_store(tmp_path: Path) -> None:
     assert rid is None
 
 
-def test_adapter_allows_post_exit_with_artifact_dir(tmp_path: Path) -> None:
+def test_adapter_allows_post_exit_with_x3c_artifact_dir(tmp_path: Path) -> None:
     run_dir = tmp_path / "artifact"
-    _write_exit_bundle(run_dir)
-    adapter = AppsRgR1BCacheAdapter(runs_dir=str(tmp_path / "store"))
+    _write_exit_bundle(run_dir, x3_code="X3C")
+    store_root = tmp_path / "store"
+    adapter = AppsRgR1BCacheAdapter(runs_dir=str(store_root))
     rid = adapter.store_intent_and_output(
         intent=_raw_request(),
         chunks=[
@@ -177,7 +179,7 @@ def test_adapter_allows_post_exit_with_artifact_dir(tmp_path: Path) -> None:
             "post_exit_ingestion": True,
             "artifact_dir": str(run_dir),
             "record_id": "hir_w8_live",
-            "x3_disposition": "X3_ALLOW",
+            "x3_disposition": "X3C",
             "proof_eligible": True,
             "runtime_generation_status": "REAL_LLM",
             "prompt_profile_hash": "prompt_w8",
@@ -185,20 +187,67 @@ def test_adapter_allows_post_exit_with_artifact_dir(tmp_path: Path) -> None:
         },
     )
     assert rid == "hir_w8_live"
-    assert (tmp_path / "store" / "chunks" / "hir_w8_live").is_dir()
+    assert (
+        store_root
+        / "durable"
+        / "uwg_admitted"
+        / "intents"
+        / "hir_w8_live.json"
+    ).is_file()
+    assert not (store_root / "intents" / "hir_w8_live.json").exists()
 
 
-def test_ingest_post_exit_from_run_dir_after_exit(tmp_path: Path) -> None:
+def test_adapter_rejects_finish_only_disposition_for_durable_write(tmp_path: Path) -> None:
+    run_dir = tmp_path / "artifact_finish_only"
+    _write_exit_bundle(run_dir, x3_code="X3D")
+    store_root = tmp_path / "store"
+    adapter = AppsRgR1BCacheAdapter(runs_dir=str(store_root))
+
+    rid = adapter.store_intent_and_output(
+        intent=_raw_request(),
+        chunks=[{"chunk_type": CHUNK_TYPE_FINAL_RESUME, "chunk_text": "{}"}],
+        run_context={
+            "post_exit_ingestion": True,
+            "artifact_dir": str(run_dir),
+            "record_id": "hir_finish_only",
+            "x3_disposition": "X3D",
+            "proof_eligible": True,
+            "runtime_generation_status": "REAL_LLM",
+            "prompt_profile_hash": "prompt_w8",
+            "gate_profile_hash": "gate_w8",
+        },
+    )
+
+    assert rid is None
+    assert not (store_root / "durable" / "uwg_admitted").exists()
+
+
+def test_ingest_post_exit_from_run_dir_after_x3c(tmp_path: Path) -> None:
     run_dir = tmp_path / "run_ingest"
-    store = tmp_path / "store"
-    _write_exit_bundle(run_dir)
+    store_root = tmp_path / "store"
+    _write_exit_bundle(run_dir, x3_code="X3C")
     rid = ingest_post_exit_from_run_dir(
         run_dir=run_dir,
         raw_request=_raw_request(),
-        store=__import__("apps_rg.cache.r1b_store", fromlist=["R1BSemanticCacheStore"]).R1BSemanticCacheStore(
-            store
-        ),
+        projection_root=store_root,
     )
     assert rid is not None
+    assert (store_root / "durable" / "uwg_admitted" / "intents").is_dir()
     exit_meta = load_post_exit_metadata(run_dir)
     assert exit_meta.exit_metadata_present is True
+
+
+def test_ingest_rejects_x3_allow_without_x3c_authority(tmp_path: Path) -> None:
+    run_dir = tmp_path / "run_finish_only"
+    store_root = tmp_path / "store"
+    _write_exit_bundle(run_dir, x3_code="X3_ALLOW")
+
+    rid = ingest_post_exit_from_run_dir(
+        run_dir=run_dir,
+        raw_request=_raw_request(),
+        projection_root=store_root,
+        store=R1BSemanticCacheStore(store_root / "fixture"),
+    )
+
+    assert rid is None
+    assert not (store_root / "durable" / "uwg_admitted").exists()
