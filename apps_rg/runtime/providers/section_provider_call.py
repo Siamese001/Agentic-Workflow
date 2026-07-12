@@ -145,14 +145,17 @@ def _resolve_anthropic_cache_payload(
         seed.setdefault("cache_enabled", True)
         seed.setdefault("cache_strategy", str(explicit_strategy or "explicit_native_anthropic_payload"))
         return dict(explicit_payload), seed, str(seed.get("cache_strategy") or explicit_strategy or "")
+
     compiled_artifact = provider_payload.get("compiled_prompt_artifact")
-    if compiled_artifact is None:
+    source_messages = provider_payload.get("messages")
+    messages = source_messages if isinstance(source_messages, list) else None
+    if compiled_artifact is None and not messages:
         return None, None, None
     rendered = build_anthropic_section_cache_payload(
         section_id=str(section_id or ""),
         model=str(model or provider_payload.get("model") or ""),
         compiled_prompt_artifact=compiled_artifact,
-        messages=provider_payload.get("messages") if isinstance(provider_payload.get("messages"), list) else None,
+        messages=messages,
         workload_kind=provider_payload.get("anthropic_workload_kind"),
         run_id=run_id or provider_payload.get("run_id"),
         prompt_hash=str(provider_payload.get("prompt_hash") or ""),
@@ -225,14 +228,6 @@ def call_section_model_provider(
         if temperature_override is not None
         else provider_payload.get("temperature", 0.45)
     )
-    # Per-section model pin (SSOT): resolve the section from an explicit arg or the
-    # ``_reasoning_section_lane`` tag the lane stamped on the payload (``tag_reasoning_lane``),
-    # so Claude-backed lanes can use section-specific model overrides (headline/executive_summary
-    # -> Opus) instead of every Claude lane silently using the section-agnostic default. Only
-    # applied for the external Claude profile; an unknown/missing section resolves to the default.
-    # The SSOT resolver is authoritative here: section-specific table entries must win over
-    # ambient environment pins so an end-to-end run cannot accidentally force every lane onto one
-    # model.
     sid = str(section_id or provider_payload.get("_reasoning_section_lane") or "").strip()
     claude_model: str | None = None
     openai_model: str | None = None

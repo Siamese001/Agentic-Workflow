@@ -1,0 +1,105 @@
+name: apps-rg-anthropic-cache-live
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps_rg/runtime/providers/anthropic_prompt_cache.py"
+      - "apps_rg/runtime/providers/anthropic_section_cache_payload.py"
+      - "apps_rg/runtime/providers/anthropic_cache_suite_summary.py"
+      - "apps_rg/runtime/providers/anthropic_cache_live_probe.py"
+      - "apps_rg/runtime/providers/section_provider_call.py"
+      - "ops_scripts/apps_rg/run_anthropic_cache_live_probe.py"
+      - "tests/unit/apps_rg/runtime/providers/test_anthropic_cache_*.py"
+      - ".github/workflows/apps-rg-anthropic-cache-live.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cache-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Run focused prompt-cache contracts
+        id: focused
+        continue-on-error: true
+        shell: bash
+        run: |
+          mkdir -p artifacts/apps_rg/cache_contract_logs
+          status=0
+          run_contract() {
+            name="$1"
+            file="$2"
+            if python -m pytest -o addopts='' -q --tb=short "$file" > "artifacts/apps_rg/cache_contract_logs/${name}.log" 2>&1; then
+              printf '%s PASS\n' "$name"
+            else
+              printf '%s FAIL\n' "$name"
+              status=1
+            fi
+          }
+          run_contract wave0 tests/unit/apps_rg/runtime/providers/test_anthropic_prompt_cache_wave0.py
+          run_contract renderer tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_payload.py
+          run_contract fallback tests/unit/apps_rg/runtime/providers/test_anthropic_section_cache_fallback.py
+          run_contract transport tests/unit/apps_rg/runtime/providers/test_section_provider_anthropic_cache.py
+          run_contract costs tests/unit/apps_rg/runtime/providers/test_anthropic_cache_costs.py
+          run_contract suite tests/unit/apps_rg/runtime/providers/test_anthropic_cache_suite_summary.py
+          run_contract live_probe tests/unit/apps_rg/runtime/providers/test_anthropic_cache_live_probe.py
+          run_contract role_episode tests/unit/apps_rg/runtime/providers/test_anthropic_cache_role_episode_coverage.py
+          exit "$status"
+      - name: Upload focused contract logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-rg-anthropic-cache-contract-logs
+          path: artifacts/apps_rg/cache_contract_logs
+          if-no-files-found: error
+      - name: Enforce focused contract result
+        if: steps.focused.outcome == 'failure'
+        run: exit 1
+
+  live-cache-hit:
+    needs: cache-contracts
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION: ${{ vars.APPS_RG_ANTHROPIC_INPUT_USD_PER_MILLION }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Run live Anthropic cache-hit probe
+        if: env.ANTHROPIC_API_KEY != ''
+        run: >-
+          python ops_scripts/apps_rg/run_anthropic_cache_live_probe.py
+          --output artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json
+      - name: Record unavailable live secret
+        if: env.ANTHROPIC_API_KEY == ''
+        run: |
+          mkdir -p artifacts/apps_rg/cache_promotion
+          cat > artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json <<'JSON'
+          {
+            "schema": "apps_rg_anthropic_cache_live_probe_v1",
+            "status": "SKIPPED_SECRET_UNAVAILABLE",
+            "pass": false,
+            "promotion_reasons": ["ANTHROPIC_API_KEY unavailable to this workflow"]
+          }
+          JSON
+      - name: Upload live cache evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-rg-anthropic-cache-live-evidence
+          path: artifacts/apps_rg/cache_promotion/anthropic_cache_live_probe_receipt.json
+          if-no-files-found: error
