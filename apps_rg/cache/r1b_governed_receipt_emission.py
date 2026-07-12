@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+import os
+import tempfile
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
@@ -14,6 +16,7 @@ from apps_rg.cache.r1b_post_exit_ingest import evaluate_post_exit_ingestion
 from apps_rg.cache.r1b_strict_gateway import get_r1b_strict_gateway
 from apps_rg.cache.r1b_transactional_promotion import promote_r1b_transactionally
 from apps_rg.cache.r1b_uwg_promotion import (
+    R1BCachePromotionCandidate,
     R1BPromotionOutcome,
     build_r1b_promotion_candidate,
 )
@@ -103,6 +106,80 @@ def _raw_request_from_run_dir(artifact_dir: Path) -> dict[str, Any]:
         ),
         "run_id": str(manifest.get("run_id") or artifact_dir.name),
     }
+
+
+def _enrich_l4_namespace_ref_with_c0_payload(
+    artifact_dir: Path,
+    *,
+    candidate: R1BCachePromotionCandidate,
+    outcome: R1BPromotionOutcome,
+) -> None:
+    path = artifact_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT
+    envelope = _read_json(path)
+    payload = envelope.get("payload") if isinstance(envelope, dict) else None
+    if not isinstance(payload, dict):
+        return
+
+    from apps_rg.cache.r1b_bge_embedding import intent_vector_payload
+    from apps_rg.runtime.c0.c02_semantic_cache_payload import (
+        C02_SEMANTIC_CACHE_PAYLOAD_ARTIFACT,
+        read_c02_semantic_cache_payload,
+    )
+
+    payload.setdefault("parent_intent_record", candidate.record.to_dict())
+    payload.setdefault(
+        "child_output_chunks",
+        [chunk.to_dict() for chunk in candidate.chunks],
+    )
+    payload.setdefault(
+        "request_intent_embedding_ref",
+        intent_vector_payload(
+            intent_text=candidate.record.request_intent_text,
+            digest=candidate.record.normalized_intent_digest,
+        ),
+    )
+    if candidate.l5_certification_packet_digest:
+        payload.setdefault(
+            "l5_certification_packet_digest",
+            candidate.l5_certification_packet_digest,
+        )
+    if outcome.governance_receipt:
+        payload.setdefault("governance_receipt", outcome.governance_receipt)
+    c0_payload = read_c02_semantic_cache_payload(artifact_dir)
+    if not c0_payload:
+        c0_payload = _read_json(artifact_dir / C02_SEMANTIC_CACHE_PAYLOAD_ARTIFACT)
+    if c0_payload:
+        payload["c0_section_intent_vector"] = c0_payload.get("intent_vector") or {}
+        payload["c0_section_intent_digest"] = c0_payload.get("intent_digest") or ""
+        payload["c0_query_output"] = c0_payload.get("query_output") or []
+        payload["c0_query_output_count"] = c0_payload.get("query_output_count") or 0
+        payload["c0_dense_search_refs"] = c0_payload.get("dense_search_refs") or []
+    envelope["payload"] = payload
+    _atomic_rewrite_json(path, envelope)
+
+
+def _atomic_rewrite_json(path: Path, payload: Mapping[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    data = (
+        json.dumps(dict(payload), ensure_ascii=False, indent=2, sort_keys=True)
+        + "\n"
+    ).encode("utf-8")
+    fd, tmp = tempfile.mkstemp(
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+        dir=str(path.parent),
+    )
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    finally:
+        try:
+            os.unlink(tmp)
+        except FileNotFoundError:
+            pass
 
 
 @dataclass
@@ -335,6 +412,98 @@ def emit_section_r1b_governed_receipt_chain(
     return chain
 
 
+def _materialize_uwg_receipts(
+    artifact_dir: Path,
+    *,
+    candidate: R1BCachePromotionCandidate,
+    section_id: str,
+    run_id: str,
+    manifest: Mapping[str, Any],
+    gateway: Any | None,
+) -> R1BGovernedReceiptChainOutcome:
+    """Compatibility materializer for older receipt-level tests.
+
+    The public chain entry point remains X3C-gated. This helper accepts an
+    already assembled promotion candidate from tests and routes it through the
+    current transactional promotion path, preserving the legacy L4 namespace
+    artifact payload shape.
+    """
+
+    artifact_dir = Path(artifact_dir).resolve()
+    exit_metadata = {
+        **dict(candidate.post_exit_eligibility.get("exit_metadata") or {}),
+        "x3_disposition": X3C_COMMIT_AUTHORITY,
+    }
+    record = replace(candidate.record, x3_disposition=X3C_COMMIT_AUTHORITY)
+    promoted_candidate = replace(
+        candidate,
+        record=record,
+        post_exit_eligibility={
+            **candidate.post_exit_eligibility,
+            "exit_metadata": exit_metadata,
+        },
+    )
+    effective_gateway = (
+        gateway
+        if gateway is not None and hasattr(gateway, "register_candidate")
+        else get_r1b_strict_gateway()
+    )
+    result = promote_r1b_transactionally(
+        candidate=promoted_candidate,
+        projection_root=artifact_dir,
+        artifact_dir=artifact_dir,
+        section_id=section_id,
+        run_id=run_id or str(manifest.get("run_id") or candidate.source_run_id),
+        raw_request=_raw_request_from_run_dir(artifact_dir),
+        gateway=effective_gateway,
+    )
+    chain = _base_outcome(
+        artifact_dir=artifact_dir,
+        section_id=section_id,
+        run_id=run_id,
+        x3_code=X3C_COMMIT_AUTHORITY,
+    )
+    chain.commit_request_status = "EMITTED"
+    chain.promotion_outcome = result.promotion
+    chain.artifacts_written = _existing_artifacts(artifact_dir)
+    if result.promotion.status != "ADMITTED":
+        chain.uwg_validation_status = "FAIL"
+        chain.uwg_commit_or_block_status = "BLOCKED"
+        chain.semantic_cache_persistence_status = "BLOCKED"
+        chain.reason = ";".join(result.promotion.blocked_reason_codes)
+        _write_json(artifact_dir / GOVERNED_CHAIN_MANIFEST, chain.to_dict())
+        return chain
+
+    _enrich_l4_namespace_ref_with_c0_payload(
+        artifact_dir,
+        candidate=promoted_candidate,
+        outcome=result.promotion,
+    )
+    chain.uwg_validation_status = "PASS"
+    chain.uwg_commit_or_block_status = "ADMITTED"
+    chain.l4_object_ref_status = "PRESENT"
+    chain.semantic_cache_persistence_status = "PROVEN_TRANSACTIONAL_FILESYSTEM_CHAIN"
+    if result.projection is not None:
+        chain.reconciliation = result.projection.reconciliation
+        chain.read_surface_refresh_status = result.projection.status
+        chain.read_surface_refresh_complete = result.projection.status == "COMPLETE"
+        chain.chroma_projection_status = (
+            "COMPLETE"
+            if result.projection.chroma_receipt is not None
+            else "NOT_APPLICABLE"
+        )
+        chain.chroma_projection_complete = (
+            result.projection.chroma_receipt is None
+            or bool(
+                result.projection.chroma_receipt.get("chroma_projection_complete")
+            )
+        )
+        chain.durable_vector_persistence_proven = chain.chroma_projection_complete
+    chain.artifacts_written = _existing_artifacts(artifact_dir)
+    _write_json(artifact_dir / GOVERNED_CHAIN_MANIFEST, chain.to_dict())
+    return chain
+
+
 __all__ = [
     "BLOCKED_WRITE_RECEIPT_ARTIFACT",
     "CHROMA_PROJECTION_DEFERRED_ARTIFACT",
@@ -347,5 +516,6 @@ __all__ = [
     "REASON_X3_NOT_X3C",
     "STATE_DIFF_VALIDATION_ARTIFACT",
     "UWG_COMMIT_RECEIPT_ARTIFACT",
+    "_materialize_uwg_receipts",
     "emit_section_r1b_governed_receipt_chain",
 ]
