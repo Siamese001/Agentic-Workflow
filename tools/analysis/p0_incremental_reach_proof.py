@@ -21,6 +21,7 @@ REACH_INGRESS_FILES = [
     "agentic_core/knowledge/retrieval/__init__.py",
     "agentic_core/knowledge/enrichment/__init__.py",
     "agentic_core/prompt_governance/__init__.py",
+    "agentic_core/prompt_governance/validation/__init__.py",
     "agentic_core/prompt_governance/contracts/__init__.py",
     "agentic_core/prompt_governance/security/__init__.py",
     "agentic_core/prompt_governance/core/__init__.py",

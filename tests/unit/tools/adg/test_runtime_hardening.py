@@ -330,6 +330,63 @@ def test_incremental_reindex_replaces_existing_imports(tmp_path: Path, big_db: P
     assert paths == {"sys.py"}
 
 
+def test_incremental_reindex_adds_module_edge_alongside_symbol_edge(tmp_path: Path) -> None:
+    shadow = tmp_path / "shadow.sqlite"
+    source = tmp_path / "source.sqlite"
+    fake_repo = tmp_path / "repo"
+    fake_repo.mkdir()
+    (fake_repo / "my_mod.py").write_text("from pkg import value\n")
+    with sqlite3.connect(str(source)) as conn:
+        conn.executescript(
+            """
+            CREATE TABLE nodes (
+                id INTEGER PRIMARY KEY,
+                adg_name TEXT NOT NULL,
+                entity_type TEXT NOT NULL,
+                layer TEXT NOT NULL,
+                identity_kind TEXT NOT NULL,
+                confidence TEXT NOT NULL,
+                resolved_path TEXT NOT NULL
+            );
+            CREATE TABLE edges (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                src_id INTEGER NOT NULL,
+                dst_id INTEGER NOT NULL,
+                relation_type TEXT NOT NULL,
+                edge_kind TEXT NOT NULL DEFAULT 'import',
+                source_file TEXT NOT NULL DEFAULT '',
+                line_no INTEGER NOT NULL DEFAULT 0,
+                symbol TEXT NOT NULL DEFAULT ''
+            );
+            """
+        )
+        conn.execute(
+            "INSERT INTO nodes VALUES (1, 'ADG::Module::my_mod.py', 'module', 'L0', 'module', 'HIGH', 'my_mod.py')"
+        )
+        conn.execute(
+            "INSERT INTO nodes VALUES (2, 'ADG::Module::pkg/__init__.py', 'module', 'L_PG', 'module', 'HIGH', 'pkg/__init__.py')"
+        )
+        conn.execute(
+            "INSERT INTO nodes VALUES (3, 'ADG::Symbol::pkg.value', 'symbol', 'L_PG', 'symbol', 'HIGH', 'pkg/__init__.py')"
+        )
+        conn.execute("INSERT INTO edges (src_id, dst_id, relation_type) VALUES (1, 3, 'imports')")
+        conn.commit()
+
+    rx = IncrementalReindexer(source_snapshot=source, shadow_snapshot=shadow, repo_root=fake_repo)
+    rx.initialize_shadow()
+
+    delta = rx.reindex_file("my_mod.py")
+
+    assert "pkg/__init__.py" in delta.imports_added
+    with sqlite3.connect(str(shadow)) as conn:
+        rows = conn.execute(
+            "SELECT n.entity_type FROM edges e JOIN nodes n ON n.id = e.dst_id "
+            "WHERE e.src_id = ? AND e.relation_type = 'imports'",
+            (delta.node_id,),
+        ).fetchall()
+    assert {row[0] for row in rows} == {"module", "symbol"}
+
+
 def test_incremental_reindex_tracks_unresolved_imports(tmp_path: Path, big_db: Path) -> None:
     shadow = tmp_path / "shadow.sqlite"
     fake_repo = tmp_path / "repo"
@@ -365,16 +422,15 @@ def test_extract_import_modules_parses_both_forms() -> None:
         "import os\n"
         "from pathlib import Path\n"
         "import json, sys\n"
-        "from . import relative  # must be ignored (level > 0)\n"
+        "from . import relative\n"
     )
     tree = _ast.parse(code)
-    modules = _extract_import_modules(tree)
+    modules = _extract_import_modules(tree, "agentic_core/prompt_governance/__init__.py")
     assert "os" in modules
     assert "pathlib" in modules
     assert "json" in modules
     assert "sys" in modules
-    # Relative imports are excluded by design.
-    assert "relative" not in modules
+    assert "agentic_core.prompt_governance.relative" in modules
 
 
 def test_extract_import_modules_dedupes() -> None:
@@ -382,7 +438,7 @@ def test_extract_import_modules_dedupes() -> None:
 
     code = "import os\nimport os\nfrom os import path\n"
     tree = _ast.parse(code)
-    modules = _extract_import_modules(tree)
+    modules = _extract_import_modules(tree, "pkg/mod.py")
     assert modules.count("os") == 1
 
 
