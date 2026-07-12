@@ -1,20 +1,13 @@
-"""Append-only L4 audit ledger (00.5 §PHASE 3).
+"""Append-only, hash-chained L4 audit ledger.
 
-Doctrinal requirements (00.5):
-- ledger is append-only (no overwrites, no deletes)
-- monotonically-increasing ``ledger_sequence``
-- correction uses ``append_record`` with ``supersedes_ref``, not mutation
-- ``sequence_check`` detects gaps
-- ledger unavailable -> commit fails closed
-
-This implementation is in-memory (a list + lock) by default. Real
-deployments wire a durable backing store (SQLite/Postgres/cloud) by
-subclassing :class:`AuditLedger` and overriding ``_persist`` /
-``_load_position``.
+Runtime defaults to a restart-safe SQLite implementation backed by the same
+canonical database used by transactional UWG commits. ``AuditLedger`` remains
+an explicit in-memory implementation for hermetic tests.
 """
 
 from __future__ import annotations
 
+import os
 import threading
 import uuid
 from dataclasses import dataclass, replace
@@ -29,26 +22,20 @@ from agentic_core.L4_state.contracts.records import (
 
 
 class AuditLedgerUnavailableError(RuntimeError):
-    """Raised when the ledger cannot be reached for an append.
-
-    Per 00.5 §PHASE 3 "Ledger unavailable means commit fails closed".
-    """
+    """Raised when the ledger cannot accept an append."""
 
 
 class AuditLedgerSequenceGapError(RuntimeError):
-    """Raised when ``sequence_check()`` detects a gap.
-
-    Per 00.5 §PHASE 6 "audit ledger sequence gap is ignored" must fail tests.
-    """
+    """Raised when sequence continuity is broken."""
 
 
 class AuditLedgerChainError(RuntimeError):
-    """Raised when ``chain_check()`` detects broken hash-chain evidence."""
+    """Raised when hash-chain evidence is invalid."""
 
 
 @dataclass(frozen=True)
 class AuditAppendReceipt:
-    """Receipt for a successful audit ledger append."""
+    """Receipt for a successful audit-ledger append."""
 
     audit_append_receipt_id: str
     audit_record_id: str
@@ -61,23 +48,28 @@ class AuditAppendReceipt:
 
 
 class AuditLedger:
-    """In-memory append-only ledger with monotonic sequencing.
+    """Thread-safe in-memory audit ledger.
 
-    Thread-safe. Subclass to back with durable storage.
+    Runtime callers should normally obtain the default ledger through
+    :func:`get_default_ledger`, which uses SQLite unless explicitly configured
+    for in-memory operation.
     """
 
     def __init__(self) -> None:
         self._records: List[AuditLedgerRecord] = []
         self._receipts: Dict[str, AuditAppendReceipt] = {}
-        self._sequence_counter: int = 0
+        self._sequence_counter = 0
         self._lock = threading.RLock()
-        self._available: bool = True
-        self._last_chain_hash: str = compute_deterministic_digest(
+        self._available = True
+        self._last_chain_hash = self.genesis_hash
+
+    @property
+    def genesis_hash(self) -> str:
+        return compute_deterministic_digest(
             {"audit_ledger_genesis": L4_CONTRACT_SCHEMA_VERSION}
         )
 
     def set_available(self, available: bool) -> None:
-        """Toggle ledger availability (test/maintenance hook)."""
         with self._lock:
             self._available = available
 
@@ -86,16 +78,16 @@ class AuditLedger:
             return self._available
 
     def position(self) -> int:
-        """Return the current ledger position (number of records written)."""
         with self._lock:
             return len(self._records)
 
     def next_sequence(self) -> int:
-        """Allocate the next sequence number without writing a record.
+        """Reserve an in-memory sequence number.
 
-        Used by callers that need to compute a record's digest before append.
-        Holds the lock briefly.
+        Transactional commit paths do not use this helper; their durable
+        backend allocates the sequence inside ``BEGIN IMMEDIATE``.
         """
+
         with self._lock:
             self._sequence_counter += 1
             return self._sequence_counter
@@ -121,16 +113,12 @@ class AuditLedger:
         reason_codes: Tuple[str, ...] = (),
         supersedes_ref: Optional[str] = None,
     ) -> Tuple[AuditLedgerRecord, AuditAppendReceipt]:
-        """Append a record to the ledger.
+        """Append one immutable record, persisting before publishing in memory."""
 
-        Raises :class:`AuditLedgerUnavailableError` if the ledger is
-        marked unavailable.
-        """
         with self._lock:
             if not self._available:
                 raise AuditLedgerUnavailableError("audit ledger is marked unavailable")
-            self._sequence_counter += 1
-            seq = self._sequence_counter
+            seq = self._sequence_counter + 1
             record = AuditLedgerRecord(
                 audit_record_id=str(uuid.uuid4()),
                 ledger_sequence=seq,
@@ -143,7 +131,7 @@ class AuditLedger:
                 snapshot_before=snapshot_before,
                 actor_surface=actor_surface,
                 mutation_source=mutation_source,
-                created_at=str(seq),  # ledger-relative (not wall clock — clock policy)
+                created_at=str(seq),
                 snapshot_after=snapshot_after,
                 request_id=request_id,
                 run_id=run_id,
@@ -164,9 +152,13 @@ class AuditLedger:
             record = stamp_digest(
                 replace(record, chain_hash=chain_hash, deterministic_digest="")
             )
+
+            # Persist first. A failed durable write must not advance the visible
+            # in-memory ledger position.
+            self._persist(record)
+            self._sequence_counter = seq
             self._last_chain_hash = chain_hash
             self._records.append(record)
-            self._persist(record)
             receipt = AuditAppendReceipt(
                 audit_append_receipt_id=str(uuid.uuid4()),
                 audit_record_id=record.audit_record_id,
@@ -180,19 +172,21 @@ class AuditLedger:
             return record, receipt
 
     def read(self, *, since_sequence: int = 0) -> List[AuditLedgerRecord]:
-        """Read records with ``ledger_sequence > since_sequence``."""
         with self._lock:
             return [r for r in self._records if r.ledger_sequence > since_sequence]
 
     def get_record(self, audit_record_id: str) -> Optional[AuditLedgerRecord]:
         with self._lock:
-            for record in self._records:
-                if record.audit_record_id == audit_record_id:
-                    return record
-            return None
+            return next(
+                (row for row in self._records if row.audit_record_id == audit_record_id),
+                None,
+            )
+
+    def get_append_receipt(self, receipt_id: str) -> Optional[AuditAppendReceipt]:
+        with self._lock:
+            return self._receipts.get(receipt_id)
 
     def sequence_check(self) -> None:
-        """Verify the ledger has no sequence gaps. Raises on detection."""
         with self._lock:
             for idx, record in enumerate(self._records):
                 expected = idx + 1
@@ -203,19 +197,17 @@ class AuditLedger:
                     )
 
     def chain_check(self) -> None:
-        """Verify every record links to the previous hash and recomputes."""
         with self._lock:
-            prev = compute_deterministic_digest(
-                {"audit_ledger_genesis": L4_CONTRACT_SCHEMA_VERSION}
-            )
+            prev = self.genesis_hash
             for idx, record in enumerate(self._records):
                 if record.prev_chain_hash != prev:
                     raise AuditLedgerChainError(
                         f"chain gap: position {idx + 1} prev_chain_hash "
                         f"{record.prev_chain_hash!r}, expected {prev!r}"
                     )
-                base = replace(record, chain_hash="", deterministic_digest="")
-                base = stamp_digest(base)
+                base = stamp_digest(
+                    replace(record, chain_hash="", deterministic_digest="")
+                )
                 expected = compute_deterministic_digest(
                     {
                         "prev_chain_hash": prev,
@@ -230,47 +222,65 @@ class AuditLedger:
                 prev = record.chain_hash
 
     def is_overwrite_attempted(self, audit_record_id: str) -> bool:
-        """Return True if ``audit_record_id`` already exists.
-
-        UWG callers MUST check before issuing a correction; corrections use
-        ``append_record`` + ``supersedes_ref`` (00.5 §PHASE 3).
-        """
         return self.get_record(audit_record_id) is not None
 
-    # Subclass hooks ------------------------------------------------------
-
     def _persist(self, record: AuditLedgerRecord) -> None:
-        """Override in subclass for durable persistence."""
-        # In-memory implementation: nothing to do; record already in self._records.
+        """Persistence hook for subclasses; in-memory ledger is intentionally no-op."""
+
         del record
 
-
-# Default singleton ----------------------------------------------------------
 
 _DEFAULT_LEDGER: Optional[AuditLedger] = None
 _DEFAULT_LOCK = threading.Lock()
 
 
+def _default_is_memory() -> bool:
+    configured = str(os.environ.get("L4_STORAGE_BACKEND", "")).strip().lower()
+    if configured:
+        return configured == "memory"
+    return bool(os.environ.get("PYTEST_CURRENT_TEST"))
+
+
 def get_default_ledger() -> AuditLedger:
-    """Return the process-wide default ledger (lazy-initialized)."""
+    """Return the process-wide default ledger.
+
+    Runtime default: durable SQLite. Hermetic tests default to memory unless
+    ``L4_STORAGE_BACKEND=sqlite`` is explicitly supplied.
+    """
+
     global _DEFAULT_LEDGER  # noqa: PLW0603
     with _DEFAULT_LOCK:
         if _DEFAULT_LEDGER is None:
-            _DEFAULT_LEDGER = AuditLedger()
+            if _default_is_memory():
+                _DEFAULT_LEDGER = AuditLedger()
+            else:
+                from agentic_core.L4_state.audit.sqlite_audit_ledger import (
+                    SQLiteAuditLedger,
+                )
+                from agentic_core.L4_state.storage.sqlite_backend import (
+                    get_default_backend,
+                )
+
+                backend = get_default_backend()
+                if backend is None:
+                    _DEFAULT_LEDGER = AuditLedger()
+                else:
+                    _DEFAULT_LEDGER = SQLiteAuditLedger(backend)
         return _DEFAULT_LEDGER
 
 
 def reset_default_ledger() -> None:
-    """Reset the default ledger (test hook)."""
+    """Reset the process singleton; durable data is retained by default."""
+
     global _DEFAULT_LEDGER  # noqa: PLW0603
     with _DEFAULT_LOCK:
-        _DEFAULT_LEDGER = AuditLedger()
+        _DEFAULT_LEDGER = None
 
 
 __all__ = [
     "AuditAppendReceipt",
-    "AuditLedgerChainError",
     "AuditLedger",
+    "AuditLedgerChainError",
     "AuditLedgerSequenceGapError",
     "AuditLedgerUnavailableError",
     "get_default_ledger",
