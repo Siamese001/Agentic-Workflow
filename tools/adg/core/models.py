@@ -49,12 +49,27 @@ class ADGResponse(BaseModel):
 
 
 class HealthStatus(BaseModel):
-    """Health check response."""
+    """Certification-aware ADG health response."""
 
-    mode: str  # "sqlite_only" | "full"
-    sqlite: str  # "healthy" | "degraded" | "unavailable"
-    redis: str  # "healthy" | "degraded" | "unavailable"
+    mode: str
+    sqlite: str
+    redis: str
     cache_hit_capable: bool
     schema_version: str
     adg_snapshot_id: str
-    views_materialized_at: str | None = None  # snapshot timestamp when infra P-views exist, else None
+    views_materialized_at: str | None = None
+    overall_status: Literal[
+        "healthy",
+        "degraded",
+        "critical",
+        "unknown",
+    ] = "unknown"
+    reasons: list[str] = Field(default_factory=list)
+    snapshot_selection: str = "unknown"
+    certified: bool = False
+    certification_status: str = "unknown"
+    artifact_status: str = "unknown"
+    pointer_path: str | None = None
+    digest_verified: bool = False
+    materialization_status: str = "UNKNOWN"
+    materialization_counts: dict[str, int] = Field(default_factory=dict)
