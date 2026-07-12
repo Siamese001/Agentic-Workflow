@@ -476,9 +476,13 @@ def _probe_sqlite_read(db_path: Path) -> tuple[bool, str]:
             timeout=sqlite_probe_timeout_ms / 1000.0,
         )
         try:
-            conn.execute("SELECT 1")
+            # Force SQLite to parse the schema from the database pages. A
+            # connection plus SELECT 1 succeeds even when the file contains
+            # arbitrary bytes, so it cannot certify that the snapshot is
+            # readable.
+            conn.execute("SELECT name FROM sqlite_master LIMIT 1").fetchone()
             return True, "read_ok"
-        except sqlite3.OperationalError as exc:
+        except sqlite3.Error as exc:
             return False, f"read_failed: {exc}"
         finally:
             conn.close()
