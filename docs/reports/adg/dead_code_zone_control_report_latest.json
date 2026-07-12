@@ -17,13 +17,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "19 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 1,
           "rank": 1,
-          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+          "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+          "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -39,13 +39,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "12 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "14 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 2,
           "rank": 2,
-          "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-          "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
+          "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+          "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -61,13 +61,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "11 resolved dead-import overlay row(s) point at this file.",
+          "evidence": "13 resolved dead-import overlay row(s) point at this file.",
           "move": "Remove confirmed dead imports",
           "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "priority": 3,
           "rank": 3,
-          "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-          "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
+          "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+          "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
           "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
           "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
           "work": "Remove confirmed dead imports"
@@ -83,13 +83,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+          "evidence": "466 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
           "move": "Triage unresolved imports",
           "next_step": "Trace the top unresolved scope before deleting anything else.",
           "priority": 4,
           "rank": 4,
           "scope": "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
-          "technical_reason": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+          "technical_reason": "466 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
           "why_it_matters": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
           "why_this_rank": "Trace the top unresolved scope before deleting anything else.",
           "work": "Triage unresolved imports"
@@ -105,13 +105,13 @@
           "decision_options": [],
           "diagram": null,
           "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-          "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
+          "evidence": "First-party low-confidence ratio = 1.49% and inferred-symbol ratio = 10.12%.",
           "move": "Reduce low-confidence noise",
           "next_step": "Lower the noise floor, then rerun the scan.",
           "priority": 5,
           "rank": 5,
           "scope": "first-party nodes",
-          "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
+          "technical_reason": "First-party low-confidence ratio = 1.49% and inferred-symbol ratio = 10.12%.",
           "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
           "why_this_rank": "Lower the noise floor, then rerun the scan.",
           "work": "Reduce low-confidence noise"
@@ -147,12 +147,12 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07092026_0618.sqlite (snapshot 07092026_0618)",
-        "Dead code candidates: 913",
-        "Dead imports: 913",
-        "Unresolved imports: 483",
-        "First-party low-confidence ratio: 1.55%",
-        "Inferred-symbol ratio: 10.11%",
+        "ADG source: artifacts/adg/adg_indexed_07112026_1937.sqlite (snapshot 07112026_1937)",
+        "Dead code candidates: 935",
+        "Dead imports: 935",
+        "Unresolved imports: 466",
+        "First-party low-confidence ratio: 1.49%",
+        "Inferred-symbol ratio: 10.12%",
         "Cleanup candidates surfaced: 0"
       ],
       "title": "BCG Deletion Brief",
@@ -176,13 +176,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "13 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "19 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 1,
         "rank": 1,
-        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
-        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
+        "scope": "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        "technical_reason": "19 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -198,13 +198,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "12 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "14 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 2,
         "rank": 2,
-        "scope": "tests/unit/apps_exec/services/test_brief_assembler_service.py",
-        "technical_reason": "12 resolved dead-import overlay row(s) point at this file.",
+        "scope": "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        "technical_reason": "14 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -220,13 +220,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "11 resolved dead-import overlay row(s) point at this file.",
+        "evidence": "13 resolved dead-import overlay row(s) point at this file.",
         "move": "Remove confirmed dead imports",
         "next_step": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "priority": 3,
         "rank": 3,
-        "scope": "tests/apps_eval/test_eval_to_bus_roundtrip_micro.py",
-        "technical_reason": "11 resolved dead-import overlay row(s) point at this file.",
+        "scope": "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
+        "technical_reason": "13 resolved dead-import overlay row(s) point at this file.",
         "why_it_matters": "This is high-confidence cleanup because the completed ADG resolved it as dead import traffic.",
         "why_this_rank": "Remove the imports, then rerun ADG to confirm the dead-import signal clears.",
         "work": "Remove confirmed dead imports"
@@ -242,13 +242,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+        "evidence": "466 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
         "move": "Triage unresolved imports",
         "next_step": "Trace the top unresolved scope before deleting anything else.",
         "priority": 4,
         "rank": 4,
         "scope": "ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py",
-        "technical_reason": "483 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
+        "technical_reason": "466 unresolved imports; lead hotspot ADG::Module::tests/integration/retrieval_layers/test_bge_embedding_e2e.py (9).",
         "why_it_matters": "Unresolved imports are the biggest uncertainty and can hide real cleanup opportunities.",
         "why_this_rank": "Trace the top unresolved scope before deleting anything else.",
         "work": "Triage unresolved imports"
@@ -264,13 +264,13 @@
         "decision_options": [],
         "diagram": null,
         "done_condition": "Rerun ADG and confirm the relevant evidence stays clean.",
-        "evidence": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
+        "evidence": "First-party low-confidence ratio = 1.49% and inferred-symbol ratio = 10.12%.",
         "move": "Reduce low-confidence noise",
         "next_step": "Lower the noise floor, then rerun the scan.",
         "priority": 5,
         "rank": 5,
         "scope": "first-party nodes",
-        "technical_reason": "First-party low-confidence ratio = 1.55% and inferred-symbol ratio = 10.11%.",
+        "technical_reason": "First-party low-confidence ratio = 1.49% and inferred-symbol ratio = 10.12%.",
         "why_it_matters": "Cleaner evidence makes later reviews faster and lowers the risk of deleting the wrong thing.",
         "why_this_rank": "Lower the noise floor, then rerun the scan.",
         "work": "Reduce low-confidence noise"
@@ -301,12 +301,12 @@
     "status": "present",
     "summary": {
       "cleanup_candidate_count": 0,
-      "dead_code_candidates": 913,
-      "dead_imports": 913,
+      "dead_code_candidates": 935,
+      "dead_imports": 935,
       "executive_read": "ADG found confirmed dead-code targets; remove the most certain ones first, then clean up uncertainty and noisy diagnostics.",
-      "first_party_low_confidence_ratio": 1.550462249614792,
-      "inferred_symbol_ratio": 10.111706629055007,
-      "unresolved_imports": 483,
+      "first_party_low_confidence_ratio": 1.4921549791866795,
+      "inferred_symbol_ratio": 10.12303116338809,
+      "unresolved_imports": 466,
       "why_this_order": [
         "Confirmed dead code is the highest-confidence waste and should be removed first.",
         "Unresolved imports are the biggest uncertainty and can hide real cleanup work.",
@@ -317,10 +317,10 @@
   },
   "dead_code_candidates": {
     "dead_code_by_confidence": {
-      "HIGH": 882
+      "HIGH": 868
     },
     "dead_code_by_entity_type": {
-      "module": 882,
+      "module": 868,
       "symbol": 412
     },
     "dead_code_by_layer": {
@@ -336,11 +336,19 @@
       "L_PG": 6,
       "L_RUNTIME": 18,
       "L_SHARED": 34,
-      "L_TEST": 412,
+      "L_TEST": 398,
       "L_TOOLS": 83
     },
     "dead_code_hotspots": [
       [
+        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        19
+      ],
+      [
+        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        14
+      ],
+      [
         "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
         13
       ],
@@ -370,22 +378,22 @@
       ],
       [
         "agentic_core/L3_orchestration/enforcement/mission_runner.py",
-        8
-      ],
-      [
-        "agentic_core/L4_state/utils/memory/case_library.py",
-        8
-      ],
-      [
-        "tests/apps_eval/test_eval_types.py",
         8
       ]
     ],
     "source": "dead_import_overlay",
-    "total_dead_code_candidates": 913
+    "total_dead_code_candidates": 935
   },
   "dead_imports": {
     "dead_import_hotspots": [
+      [
+        "artifacts/apps_rg/bundles/headline_xyz_bundle_20260517/apps_rg/runtime/dispatch/headline_dispatch.py",
+        19
+      ],
+      [
+        "artifacts/apps_rg/competencies_prompt_bundle_20260517/apps_rg/runtime/dispatch/competencies_dispatch.py",
+        14
+      ],
       [
         "tests/unit/ops_scripts/ci/test_guardian_quality_scanner.py",
         13
@@ -416,21 +424,13 @@
       ],
       [
         "agentic_core/L3_orchestration/enforcement/mission_runner.py",
-        8
-      ],
-      [
-        "agentic_core/L4_state/utils/memory/case_library.py",
-        8
-      ],
-      [
-        "tests/apps_eval/test_eval_types.py",
         8
       ]
     ],
     "dead_imports_by_confidence": {},
     "dead_imports_by_domain": {},
     "dead_imports_by_entity_type": {
-      "module": 882,
+      "module": 868,
       "symbol": 412
     },
     "dead_imports_by_layer": {},
@@ -438,34 +438,34 @@
     "overlay_dead_imports_by_severity": {},
     "source_counts": {
       "legacy_dead_import_edges": 0,
-      "overlay_dead_import_resolved": 913
+      "overlay_dead_import_resolved": 935
     },
-    "total_dead_imports": 913
+    "total_dead_imports": 935
   },
   "errors": [],
   "executive_readiness": {
     "executive_metrics": {
-      "dead_code_count": 913,
-      "dead_import_count": 913,
-      "first_party_low_confidence_ratio": 1.550462249614792,
-      "inferred_symbol_ratio": 10.111706629055007,
+      "dead_code_count": 935,
+      "dead_import_count": 935,
+      "first_party_low_confidence_ratio": 1.4921549791866795,
+      "inferred_symbol_ratio": 10.12303116338809,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 483,
-      "unresolved_import_count": 483
+      "low_confidence_count": 466,
+      "unresolved_import_count": 466
     },
     "executive_ready": true,
     "first_party_metrics": {
-      "dead_code_count": 882,
-      "dead_import_count": 882,
+      "dead_code_count": 868,
+      "dead_import_count": 868,
       "l4_unresolved_import_count": 0,
-      "low_confidence_count": 483,
-      "unresolved_import_count": 483
+      "low_confidence_count": 466,
+      "unresolved_import_count": 466
     },
     "readiness_issues": []
   },
   "inferred_symbols": {
     "inferred_by_confidence": {
-      "MEDIUM": 17923
+      "MEDIUM": 17970
     },
     "inferred_by_layer": {
       "L0": 1348,
@@ -475,42 +475,42 @@
       "L4": 607,
       "L5": 1284,
       "L6": 1328,
-      "L_APP": 5489,
+      "L_APP": 5521,
       "L_OPS": 505,
-      "L_PG": 497,
-      "L_RUNTIME": 1068,
+      "L_PG": 506,
+      "L_RUNTIME": 1069,
       "L_SHARED": 602,
-      "L_TEST": 289,
-      "L_TOOLS": 2360,
+      "L_TEST": 290,
+      "L_TOOLS": 2364,
       "L_UNKNOWN": 216
     },
-    "inferred_symbol_ratio": 10.111706629055007,
-    "total_inferred_symbols": 17923,
-    "total_symbols": 177250
+    "inferred_symbol_ratio": 10.12303116338809,
+    "total_inferred_symbols": 17970,
+    "total_symbols": 177516
   },
   "low_confidence_zones": {
-    "first_party_low_confidence_ratio": 1.550462249614792,
+    "first_party_low_confidence_ratio": 1.4921549791866795,
     "governance_low_confidence_ratio": 0.0,
     "low_conf_by_entity_type": {
-      "symbol": 483
+      "symbol": 466
     },
     "low_conf_by_identity_kind": {
-      "unresolved_import": 483
+      "unresolved_import": 466
     },
     "low_conf_by_layer": {
-      "": 483
+      "": 466
     },
     "low_conf_hotspots": [
       [
         "",
-        483
+        466
       ]
     ],
-    "total_low_confidence": 483
+    "total_low_confidence": 466
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07092026_0618.sqlite",
-    "adg_snapshot_ts": "07092026_0618",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07112026_1937.sqlite",
+    "adg_snapshot_ts": "07112026_1937",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -520,25 +520,25 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07092026_0618.sqlite",
-    "adg_snapshot_ts": "07092026_0618",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07112026_1937.sqlite",
+    "adg_snapshot_ts": "07112026_1937",
     "executive_ready": true,
-    "first_party_low_confidence_ratio": 1.550462249614792,
-    "inferred_symbol_ratio": 10.111706629055007,
+    "first_party_low_confidence_ratio": 1.4921549791866795,
+    "inferred_symbol_ratio": 10.12303116338809,
     "l4_unresolved_imports": 0,
-    "total_dead_code_candidates": 913,
-    "total_dead_imports": 913,
-    "total_low_confidence": 483,
-    "total_unresolved_imports": 483
+    "total_dead_code_candidates": 935,
+    "total_dead_imports": 935,
+    "total_low_confidence": 466,
+    "total_unresolved_imports": 466
   },
   "unresolved_imports": {
     "l4_unresolved": 0,
-    "total_unresolved_imports": 483,
+    "total_unresolved_imports": 466,
     "unresolved_by_confidence": {
-      "LOW": 483
+      "LOW": 466
     },
     "unresolved_by_layer": {
-      "": 483
+      "": 466
     },
     "unresolved_hotspots": [
       [
