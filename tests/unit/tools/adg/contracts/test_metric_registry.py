@@ -40,9 +40,13 @@ def test_every_contract_has_evidence_and_remediation() -> None:
 def test_duplicate_metric_id_is_rejected() -> None:
     document = _document()
     duplicate = copy.deepcopy(document["metrics"][0])
+    duplicate_id = duplicate["metric_id"]
     document["metrics"].append(duplicate)
     errors = validate_registry_document(document)
-    assert any("duplicates RH.TREND.D000" in error for error in errors)
+    assert any(
+        f"duplicates {duplicate_id}" in error
+        for error in errors
+    )
 
 
 def test_missing_contract_field_is_rejected() -> None:
