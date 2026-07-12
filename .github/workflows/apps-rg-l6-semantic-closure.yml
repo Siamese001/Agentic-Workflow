@@ -1,0 +1,59 @@
+name: apps-rg-l6-semantic-closure
+
+on:
+  pull_request:
+    paths:
+      - "agentic_core/L6_observability/shadow_eval/**"
+      - "apps_rg/runtime/post_x3_completion.py"
+      - "apps_rg/runtime/spine/l6_shadow_eval_runner.py"
+      - "apps_rg/runtime/observability/**"
+      - "apps_eval/l6_shadow_bridge.py"
+      - "apps_eval/l6_eval_ladder.py"
+      - "scripts/governance/check_apps_rg_l6_semantic_closure.py"
+      - "tests/**/test_*l6*"
+      - ".github/workflows/apps-rg-l6-semantic-closure.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  semantic-closure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install repository and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pytest pytest-timeout
+      - name: Validate semantic authority and proof contract
+        run: python scripts/governance/check_apps_rg_l6_semantic_closure.py --json
+      - name: Compile touched runtime surfaces
+        run: |
+          python -m py_compile \
+            agentic_core/L6_observability/shadow_eval/independent_parity.py \
+            agentic_core/L6_observability/shadow_eval/longitudinal_patterns.py \
+            apps_rg/runtime/post_x3_completion.py \
+            apps_rg/runtime/spine/l6_shadow_eval_runner.py \
+            apps_rg/runtime/observability/trace_trend.py \
+            apps_eval/l6_shadow_bridge.py \
+            apps_eval/l6_eval_ladder.py \
+            scripts/governance/check_apps_rg_l6_semantic_closure.py
+      - name: Run L6 semantic-closure micro and E2E tests
+        run: |
+          python -m pytest \
+            tests/unit/agentic_core/L6_observability/shadow_eval/test_independent_parity.py \
+            tests/unit/agentic_core/L6_observability/shadow_eval/test_longitudinal_patterns.py \
+            tests/unit/apps_rg/runtime/observability/test_trace_trend.py \
+            tests/unit/apps_rg/runtime/observability/test_trace_reconciliation.py \
+            tests/unit/apps_rg/runtime/spine/test_l6_shadow_eval_runner.py \
+            tests/apps_rg/test_l6_v40_shadow_eval_runner.py \
+            tests/unit/apps_rg/test_post_x3_completion.py \
+            tests/apps_eval/test_l6_eval_ladder.py \
+            tests/e2e/test_l6_v40_apps_rg_apps_eval.py \
+            -q --tb=short --timeout=120
