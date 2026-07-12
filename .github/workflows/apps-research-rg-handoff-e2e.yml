@@ -99,20 +99,20 @@ jobs:
             -q --tb=short --no-header -p no:cacheprovider \
             --junitxml=artifacts/apps_research_rg_handoff/canonical-tests.xml
 
-      - name: Upload canonical handoff test evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: apps-research-rg-handoff-test-evidence-${{ github.run_id }}
-          path: artifacts/apps_research_rg_handoff/**
-          retention-days: 14
-
       - name: Run whole-run delegation regressions
         run: |
           python -m pytest \
             tests/unit/apps_rg/test_r3r4_whole_run_reachability.py \
             -q --tb=short --no-header -p no:cacheprovider \
             --junitxml=artifacts/apps_research_rg_handoff/whole-run-tests.xml
+
+      - name: Upload handoff test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-research-rg-handoff-test-evidence-${{ github.run_id }}
+          path: artifacts/apps_research_rg_handoff/**
+          retention-days: 14
 
   certification-summary:
     if: always()
