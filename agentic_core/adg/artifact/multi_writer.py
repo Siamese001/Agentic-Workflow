@@ -831,6 +831,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
 
     conn = sqlite3.connect(str(db_path))
     try:
+        conn.execute("PRAGMA foreign_keys=ON")
         conn.executescript(_DDL)
 
         # Insert nodes in bulk
