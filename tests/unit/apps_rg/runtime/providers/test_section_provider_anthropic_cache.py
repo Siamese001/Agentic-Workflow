@@ -18,6 +18,8 @@ from apps_rg.runtime.providers.external_provider import (
 from apps_rg.runtime.providers.provider_contract import ProviderResult
 from apps_rg.runtime.providers.provider_gateway import ProviderGatewayError, ProviderProfile
 
+_LONG_STABLE = "NO FABRICATION truth oath\n" + ("stable-instruction " * 600)
+
 
 class _CapturingGateway:
     def __init__(self) -> None:
@@ -75,15 +77,18 @@ def _slot(slot_id: str, content: str) -> PromptSlotPayload:
 
 
 def _artifact() -> CompiledPromptArtifact:
+    slots = [
+        ("S0", _LONG_STABLE),
+        ("D0", "origin fence"),
+        ("I0", "instructions"),
+        ("C0", "proof pool"),
+        ("U0", "volatile targeting"),
+    ]
+    system = "\n\n".join(f"<!-- SLOT: {slot_id} -->\n{content}" for slot_id, content in slots)
     return CompiledPromptArtifact(
-        slot_payloads=[
-            _slot("S0", "truth oath"),
-            _slot("D0", "origin fence"),
-            _slot("I0", "instructions"),
-            _slot("C0", "proof pool"),
-            _slot("U0", "volatile targeting"),
-        ],
-        messages=[{"role": "system", "content": "flat prompt"}],
+        slot_payloads=[_slot(slot_id, content) for slot_id, content in slots],
+        messages=[{"role": "system", "content": system}],
+        system_prompt=system,
         prompt_hash="prompt-hash",
     )
 
@@ -99,15 +104,13 @@ def test_cache_enabled_external_claude_threads_native_payload_and_receipt(
         "build_section_provider_gateway",
         lambda claude_model=None, openai_model=None: gateway,
     )
+    artifact = _artifact()
 
     result = section_provider_call.call_section_model_provider(
         ProviderProfile.EXTERNAL_CLAUDE,
         {
-            "messages": [
-                {"role": "system", "content": "flat prompt"},
-                {"role": "user", "content": "path_index=0"},
-            ],
-            "compiled_prompt_artifact": _artifact(),
+            "messages": [*artifact.messages, {"role": "user", "content": "path_index=0"}],
+            "compiled_prompt_artifact": artifact,
             "anthropic_workload_kind": "SELF_CONSISTENCY",
             "_reasoning_section_lane": "competencies",
             "max_tokens": 77,
@@ -124,6 +127,8 @@ def test_cache_enabled_external_claude_threads_native_payload_and_receipt(
     assert result.prompt_cache_receipt["cache_enabled"] is True
     assert result.prompt_cache_receipt["cache_read_input_tokens"] == 80
     assert result.prompt_cache_receipt["cache_hit_ratio"] == pytest.approx(0.666667)
+    assert result.prompt_cache_receipt["effective_cached_prefix_hash"]
+    assert result.prompt_cache_receipt["prompt_semantics_preserved"] is True
     assert (tmp_path / "provider_cache_receipt.json").is_file()
 
 
