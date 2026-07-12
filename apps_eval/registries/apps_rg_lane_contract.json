@@ -1,6 +1,6 @@
 {
-  "schema_version": "apps_eval.apps_rg_lane_contract.v1",
-  "contract_version": "2026-06-27",
+  "schema_version": "apps_eval.apps_rg_lane_contract.v2",
+  "contract_version": "2026-07-12",
   "app_id": "apps_rg",
   "source_system": "apps_rg",
   "generated_lanes": [
@@ -26,7 +26,16 @@
   "required_lane_artifact_roles": {
     "L2": [
       "lane_l2_output",
-      "lane_runtime_payload"
+      "lane_runtime_payload",
+      "l2_execution_packet",
+      "frozen_execution_context",
+      "prep_receipt",
+      "validation_receipt",
+      "attempt_receipt",
+      "seal_receipt",
+      "l2_receipt_bundle",
+      "sealed_l2_artifact",
+      "l2_handoff_receipt"
     ],
     "X2": [
       "lane_x2_gate_outputs"
@@ -41,10 +50,36 @@
       "lane_l6_shadow_eval_package"
     ]
   },
+  "conditional_lane_artifact_roles": {
+    "L2": {
+      "heal_receipt": "required when a repair/retry path is entered"
+    }
+  },
+  "artifact_role_filename_map": {
+    "lane_l2_output": "l2_output.json",
+    "lane_runtime_payload": "runtime_payload.json",
+    "l2_execution_packet": "l2_execution_packet.json",
+    "frozen_execution_context": "frozen_execution_context.json",
+    "prep_receipt": "prep_receipt.json",
+    "validation_receipt": "validation_receipt.json",
+    "attempt_receipt": "attempt_receipt.json",
+    "heal_receipt": "heal_receipt.json",
+    "seal_receipt": "seal_receipt.json",
+    "l2_receipt_bundle": "l2_receipt_bundle.json",
+    "sealed_l2_artifact": "sealed_l2_artifact.json",
+    "l2_handoff_receipt": "l2_handoff_receipt.json",
+    "lane_x2_gate_outputs": "x2_gate_outputs.json",
+    "lane_x1d_llm_judge_outputs": "x1d_llm_judge_outputs.json",
+    "lane_x3_disposition": "x3_disposition.json",
+    "lane_l6_shadow_eval_package": "l6_shadow_eval_package.json"
+  },
   "fail_closed_rules": [
     "Every generated lane must emit rows for L2, X2, X1D, X3, and L6.",
+    "Product-visible L2 requires a signed packet, frozen room, validation gates, attempt, seal, and content-addressed bundle.",
+    "Section compatibility mirrors must reference the canonical L2 receipt bundle and cannot self-certify.",
     "Missing lane artifacts are required ScorecardRow failures, not omissions.",
     "Per-lane X3 is audited as product evidence; apps_eval never overwrites apps_rg X3.",
-    "UNKNOWN and NOT_RUN are never passing verdicts for required lane microsteps."
+    "UNKNOWN and NOT_RUN are never passing verdicts for required lane microsteps.",
+    "Mock, stub, or provider-free output is never product ALLOW evidence."
   ]
 }
