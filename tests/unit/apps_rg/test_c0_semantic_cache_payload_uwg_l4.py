@@ -256,7 +256,7 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     record = HistoricalIntentRecord.from_dict(
         {
             "record_id": "hir_l4_e2e",
-            "normalized_intent_digest": "digest_e2e",
+            "normalized_intent_digest": "2" * 64,
             "request_intent_text": "apps_rg|role_target_run|acme|svp",
             "request_intent_vector_ref": "vectors/hir_l4_e2e.json",
             "target_company": "Acme",
