@@ -99,10 +99,17 @@ jobs:
             -q --tb=short --no-header -p no:cacheprovider \
             --junitxml=artifacts/apps_research_rg_handoff/canonical-tests.xml
 
-      - name: Run whole-run delegation regressions
+      - name: Run research-delegation whole-run regressions
         run: |
           python -m pytest \
-            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_research_enabled_when_brief_missing_and_auto_research_on \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_no_delegation_when_auto_research_disabled_and_brief_present \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_auto_research_static_brief_requires_delegation \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_auto_research_authorized_handoff_skips_delegation \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_whole_run_research_failure_fails_closed_with_manual_brief \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_whole_run_u0_rejection_emits_terminal_closeout \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_research_hop_rejects_ready_result_without_producer_artifact \
+            tests/unit/apps_rg/test_r3r4_whole_run_reachability.py::test_whole_run_route_mismatch_fails_closed_when_apps_research_required \
             -q --tb=short --no-header -p no:cacheprovider \
             --junitxml=artifacts/apps_research_rg_handoff/whole-run-tests.xml
 
