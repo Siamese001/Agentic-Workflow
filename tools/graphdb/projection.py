@@ -64,7 +64,11 @@ class GraphProjector:
 
                 cursor.execute("PRAGMA table_info(nodes)")
                 node_columns = {row[1] for row in cursor.fetchall()}
-                required_node_columns = {"id", "entity_type", "adg_name"}
+                required_node_columns = {
+                    "id", "entity_type", "adg_name", "layer",
+                    "resolved_path", "span_line", "enclosing_symbol",
+                    "identity_kind", "confidence",
+                }
                 missing_node_columns = required_node_columns - node_columns
                 if missing_node_columns:
                     raise ValueError(
@@ -73,7 +77,11 @@ class GraphProjector:
 
                 cursor.execute("PRAGMA table_info(edges)")
                 edge_columns = {row[1] for row in cursor.fetchall()}
-                required_edge_columns = {"id", "src_id", "dst_id", "relation_type"}
+                required_edge_columns = {
+                    "id", "src_id", "dst_id", "relation_type", "edge_kind",
+                    "source_file", "line_no", "symbol", "semantic_type",
+                    "confidence_score",
+                }
                 missing_edge_columns = required_edge_columns - edge_columns
                 if missing_edge_columns:
                     raise ValueError(
@@ -83,13 +91,13 @@ class GraphProjector:
         except sqlite3.Error as e:
             raise RuntimeError(f"Failed to validate ADG SQLite schema: {e}") from e
 
-    def project_graph(self) -> nx.Graph:
+    def project_graph(self) -> nx.MultiDiGraph:
         """Project the entire ADG into a NetworkX graph.
 
         Returns:
             NetworkX graph with all entities and relations
         """
-        graph = nx.Graph()
+        graph = nx.MultiDiGraph()
 
         # Load entities as nodes
         self._add_entities_to_graph(graph)
@@ -99,51 +107,33 @@ class GraphProjector:
 
         return graph
 
-    def _add_entities_to_graph(self, graph: nx.Graph) -> None:
-        """Add ADG nodes as graph nodes.
-
-        Reads from the canonical ``nodes`` table and synthesizes the per-node
-        ``properties`` dict from available columns (layer, resolved_path, span
-        line, enclosing_symbol, etc.) so downstream queries that expect the
-        legacy ``properties`` attribute keep working.
-
-        Nodes whose ``entity_type`` is not in ``NODE_TYPE_MAPPING`` are
-        silently skipped; unknown-type warnings are suppressed because the
-        canonical ADG has a wider entity vocabulary than the GraphDB layer
-        currently models, and printing per-row warnings would flood stderr.
-        """
-        skipped_types: Dict[str, int] = {}
+    def _add_entities_to_graph(self, graph: nx.MultiDiGraph) -> None:
+        """Add every canonical node, preserving unmapped types explicitly."""
+        unmapped_types: Dict[str, int] = {}
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
                     "SELECT id, entity_type, adg_name, layer, resolved_path, "
                     "span_line, enclosing_symbol, identity_kind, confidence "
-                    "FROM nodes",
+                    "FROM nodes ORDER BY id",
                 )
-
                 for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     (
-                        entity_id,
-                        entity_type,
-                        name,
-                        layer,
-                        resolved_path,
-                        span_line,
-                        enclosing_symbol,
-                        identity_kind,
-                        confidence,
+                        entity_id, entity_type, name, layer, resolved_path,
+                        span_line, enclosing_symbol, identity_kind, confidence,
                     ) = row
-
                     try:
                         graph_type = validate_node_type(entity_type or "")
                     except ValueError:
-                        skipped_types[entity_type or "<null>"] = (
-                            skipped_types.get(entity_type or "<null>", 0) + 1
+                        unmapped_types[entity_type or "<null>"] = (
+                            unmapped_types.get(entity_type or "<null>", 0) + 1
                         )
-                        continue
+                        graph_type = "UnmappedNode"
+                        mapping_status = "unmapped"
+                    else:
+                        mapping_status = "mapped"
 
-                    # Synthesize the legacy `properties` dict from canonical columns
                     properties: Dict[str, Any] = {
                         "layer": layer,
                         "file_path": resolved_path,
@@ -152,75 +142,70 @@ class GraphProjector:
                         "identity_kind": identity_kind,
                         "confidence": confidence,
                     }
-                    # Drop None values to keep the payload compact
-                    properties = {k: v for k, v in properties.items() if v is not None}
-
+                    properties = {
+                        key: value for key, value in properties.items()
+                        if value is not None
+                    }
                     node_attrs: Dict[str, Any] = {
                         "adg_id": entity_id,
                         "adg_type": entity_type,
                         "graph_type": graph_type,
                         "name": name,
                         "properties": properties,
+                        "mapping_status": mapping_status,
                     }
-
-                    # Surface the properties expected by the schema at the top level
-                    for prop in get_node_properties(entity_type):
-                        if prop in properties:
-                            node_attrs[prop] = properties[prop]
-
+                    if mapping_status == "mapped":
+                        for prop in get_node_properties(entity_type):
+                            if prop in properties:
+                                node_attrs[prop] = properties[prop]
                     graph.add_node(entity_id, **node_attrs)
+        except sqlite3.Error as exc:
+            raise RuntimeError(
+                f"Failed to load entities from ADG SQLite: {exc}"
+            ) from exc
 
-        except sqlite3.Error as e:
-            raise RuntimeError(f"Failed to load entities from ADG SQLite: {e}") from e
-
-        if skipped_types:
-            top = sorted(skipped_types.items(), key=lambda kv: kv[1], reverse=True)[:5]
+        if unmapped_types:
+            top = sorted(
+                unmapped_types.items(), key=lambda item: item[1], reverse=True
+            )[:5]
             print(
-                f"[GraphDB] Skipped {sum(skipped_types.values())} nodes with "
-                f"unmapped entity_type (top: {top})",
+                f"[GraphDB] Preserved {sum(unmapped_types.values())} nodes with "
+                f"unmapped entity_type as UnmappedNode (top: {top})",
             )
 
-    def _add_relations_to_graph(self, graph: nx.Graph) -> None:
-        """Add ADG edges as graph edges.
-
-        Reads from the canonical ``edges`` table. Edges whose
-        ``relation_type`` is not in ``EDGE_TYPE_MAPPING`` are silently
-        skipped; same rationale as ``_add_entities_to_graph``.
-        """
-        skipped_types: Dict[str, int] = {}
+    def _add_relations_to_graph(self, graph: nx.MultiDiGraph) -> None:
+        """Add every canonical edge, preserving direction and multiplicity."""
+        unmapped_types: Dict[str, int] = {}
         try:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
                     "SELECT id, src_id, dst_id, relation_type, edge_kind, "
-                    "source_file, line_no, symbol, semantic_type, confidence_score "
-                    "FROM edges",
+                    "source_file, line_no, symbol, semantic_type, "
+                    "confidence_score FROM edges ORDER BY id",
                 )
-
                 for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     (
-                        relation_id,
-                        from_id,
-                        to_id,
-                        relation_type,
-                        edge_kind,
-                        source_file,
-                        line_no,
-                        symbol,
-                        semantic_type,
+                        relation_id, from_id, to_id, relation_type, edge_kind,
+                        source_file, line_no, symbol, semantic_type,
                         confidence_score,
                     ) = row
-
                     if from_id not in graph or to_id not in graph:
-                        continue
-
+                        raise RuntimeError(
+                            "Canonical edge references an absent projected node: "
+                            f"edge_id={relation_id!r}, src_id={from_id!r}, "
+                            f"dst_id={to_id!r}"
+                        )
                     try:
                         graph_type = validate_edge_type(relation_type or "")
                     except ValueError:
-                        skipped_types[relation_type or "<null>"] = (
-                            skipped_types.get(relation_type or "<null>", 0) + 1
+                        unmapped_types[relation_type or "<null>"] = (
+                            unmapped_types.get(relation_type or "<null>", 0) + 1
                         )
-                        continue
+                        graph_type = "UNMAPPED_RELATION"
+                        mapping_status = "unmapped"
+                    else:
+                        mapping_status = "mapped"
 
                     properties: Dict[str, Any] = {
                         "edge_kind": edge_kind,
@@ -230,29 +215,36 @@ class GraphProjector:
                         "semantic_type": semantic_type,
                         "confidence_score": confidence_score,
                     }
-                    properties = {k: v for k, v in properties.items() if v is not None}
-
+                    properties = {
+                        key: value for key, value in properties.items()
+                        if value is not None
+                    }
                     edge_attrs: Dict[str, Any] = {
                         "adg_id": relation_id,
                         "adg_type": relation_type,
                         "graph_type": graph_type,
                         "properties": properties,
+                        "mapping_status": mapping_status,
                     }
+                    if mapping_status == "mapped":
+                        for prop in get_edge_properties(relation_type):
+                            if prop in properties:
+                                edge_attrs[prop] = properties[prop]
+                    graph.add_edge(
+                        from_id, to_id, key=relation_id, **edge_attrs
+                    )
+        except sqlite3.Error as exc:
+            raise RuntimeError(
+                f"Failed to load relations from ADG SQLite: {exc}"
+            ) from exc
 
-                    for prop in get_edge_properties(relation_type):
-                        if prop in properties:
-                            edge_attrs[prop] = properties[prop]
-
-                    graph.add_edge(from_id, to_id, **edge_attrs)
-
-        except sqlite3.Error as e:
-            raise RuntimeError(f"Failed to load relations from ADG SQLite: {e}") from e
-
-        if skipped_types:
-            top = sorted(skipped_types.items(), key=lambda kv: kv[1], reverse=True)[:5]
+        if unmapped_types:
+            top = sorted(
+                unmapped_types.items(), key=lambda item: item[1], reverse=True
+            )[:5]
             print(
-                f"[GraphDB] Skipped {sum(skipped_types.values())} edges with "
-                f"unmapped relation_type (top: {top})",
+                f"[GraphDB] Preserved {sum(unmapped_types.values())} edges with "
+                f"unmapped relation_type as UNMAPPED_RELATION (top: {top})",
             )
 
     def project_subgraph(
@@ -260,7 +252,7 @@ class GraphProjector:
         entity_types: List[str] | None = None,
         relation_types: List[str] | None = None,
         layer_filter: str | None = None,
-    ) -> nx.Graph:
+    ) -> nx.MultiDiGraph:
         """Project a filtered subgraph.
 
         Args:
@@ -285,9 +277,9 @@ class GraphProjector:
         # Filter by relation types
         if relation_types is not None:
             edges_to_keep = []
-            for u, v, attrs in graph.edges(data=True):
+            for u, v, edge_key, attrs in graph.edges(keys=True, data=True):
                 if attrs.get("adg_type") in relation_types:
-                    edges_to_keep.append((u, v))
+                    edges_to_keep.append((u, v, edge_key))
             graph = graph.edge_subgraph(edges_to_keep).copy()
 
         # Filter by layer
@@ -331,7 +323,10 @@ class GraphProjector:
             if graph.number_of_nodes() > 10000:
                 avg_clustering = 0.0  # Skip for performance
             else:
-                avg_clustering = nx.average_clustering(graph)
+                # Clustering has no MultiDiGraph definition. Compute the legacy
+                # statistic on an explicit undirected endpoint-presence view.
+                clustering_graph = nx.Graph(graph.to_undirected())
+                avg_clustering = nx.average_clustering(clustering_graph)
         except (nx.NetworkXError, ZeroDivisionError):
             avg_clustering = 0.0
 
@@ -387,12 +382,24 @@ class GraphProjector:
             if missing_attrs:
                 warnings.append(f"Node {node} missing attributes: {missing_attrs}")
 
-        # Check for edges without required attributes
+        # Check for edges without required attributes.
         required_edge_attrs = ["adg_id", "adg_type", "graph_type"]
-        for u, v, attrs in graph.edges(data=True):
-            missing_attrs = [attr for attr in required_edge_attrs if attr not in attrs]
+        if graph.is_multigraph():
+            edge_rows = graph.edges(keys=True, data=True)
+        else:
+            edge_rows = (
+                (u, v, None, attrs)
+                for u, v, attrs in graph.edges(data=True)
+            )
+        for u, v, edge_key, attrs in edge_rows:
+            missing_attrs = [
+                attr for attr in required_edge_attrs if attr not in attrs
+            ]
             if missing_attrs:
-                warnings.append(f"Edge {u}-{v} missing attributes: {missing_attrs}")
+                warnings.append(
+                    f"Edge {u}-{v} key={edge_key!r} missing attributes: "
+                    f"{missing_attrs}"
+                )
 
         # Check for self-loops (may be valid depending on relation type)
         self_loops = list(nx.selfloop_edges(graph))
