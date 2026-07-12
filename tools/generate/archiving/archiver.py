@@ -8,6 +8,7 @@ import shutil
 import sqlite3
 import time
 from collections import defaultdict
+from collections.abc import Collection
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -387,7 +388,13 @@ def _has_primary_sqlite(files: list[Path], ts: str) -> bool:
     return any(path.name == f"adg_indexed_{ts}.sqlite" for path in files)
 
 
-def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -> None:
+def _archive_old_artifacts(
+    adg_dir: Path,
+    current_ts: str,
+    keep_runs: int = 1,
+    *,
+    protected_run_ids: Collection[str] = (),
+) -> None:
     """Archive old ADG runs to keep artifacts directory clean.
 
     Uses run-based retention (keeps last N complete runs) rather than day-based.
@@ -440,6 +447,11 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         ts for ts in sorted_timestamps if _has_primary_sqlite(runs.get(ts, []), ts)
     ]
     protected_timestamps = set(canonical_timestamps[:keep_runs])
+    protected_timestamps.update(
+        str(run_id)
+        for run_id in protected_run_ids
+        if str(run_id)
+    )
     if current_ts:
         protected_timestamps.add(current_ts)
     if not protected_timestamps:
