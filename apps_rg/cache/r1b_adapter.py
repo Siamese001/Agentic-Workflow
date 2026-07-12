@@ -8,6 +8,9 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from apps_rg.cache.r1b_commit_authority import (
+    assess_r1b_commit_authority_from_run_dir,
+)
 from apps_rg.cache.r1b_constants import (
     DEFAULT_CACHE_TTL_SECONDS,
     DEFAULT_SIMILARITY_THRESHOLD,
@@ -22,8 +25,10 @@ from apps_rg.cache.r1b_post_exit_eligibility import (
     assess_post_exit_ingestion_eligibility,
     load_post_exit_metadata,
 )
+from apps_rg.cache.r1b_strict_gateway import get_r1b_strict_gateway
 from apps_rg.cache.r1b_whole_run_preflight import check_r1b_whole_run_preflight
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+
 
 def _clamp01(value: float) -> float:
     if math.isnan(value):
@@ -62,10 +67,17 @@ def _get_cache_ttl_seconds() -> int:
     return _parse_int_positive("SEMANTIC_CACHE_TTL_SECONDS", DEFAULT_CACHE_TTL_SECONDS)
 
 
-def _store_for_runs_dir(runs_dir: str | Path | None) -> R1BSemanticCacheStore:
+def _store_root_for_runs_dir(runs_dir: str | Path | None) -> Path:
     if runs_dir:
-        return R1BSemanticCacheStore(Path(runs_dir))
-    return R1BSemanticCacheStore(default_store_root())
+        return Path(runs_dir).resolve()
+    return default_store_root().resolve()
+
+
+def _fixture_mirror_enabled_for_tests(*, explicit_private_flag: bool) -> bool:
+    env_enabled = os.environ.get(
+        "APPS_RG_R1B_ALLOW_FIXTURE_FALLBACK_FOR_TESTS", ""
+    ).strip().lower() in {"1", "true", "yes", "on"}
+    return bool(explicit_private_flag and env_enabled)
 
 
 def check_r1b_for_apps_rg(
@@ -80,7 +92,6 @@ def check_r1b_for_apps_rg(
     if os.environ.get("APPS_RG_R1B_DISABLED", "").strip().lower() in ("1", "true", "yes"):
         return None
     threshold = float(kwargs.get("similarity_threshold") or _get_similarity_threshold())
-    store = _store_for_runs_dir(runs_dir)
     return check_r1b_whole_run_preflight(
         raw_request=raw_request,
         runs_dir=runs_dir,
@@ -91,7 +102,7 @@ def check_r1b_for_apps_rg(
 
 
 class AppsRgR1BCacheAdapter:
-    """Post-Exit R1B ingest adapter — durable writes via UWG; file store is fixture mirror."""
+    """Post-Exit R1B adapter — X3C-authorized durable writes through strict UWG."""
 
     durable_write_status: str = DURABLE_WRITE_VIA_UWG
 
@@ -109,7 +120,10 @@ class AppsRgR1BCacheAdapter:
             similarity_threshold if similarity_threshold is not None else _get_similarity_threshold()
         )
         self.ttl_seconds = ttl_seconds if ttl_seconds is not None else _get_cache_ttl_seconds()
-        self._store = _store_for_runs_dir(runs_dir)
+        self._store_root = _store_root_for_runs_dir(runs_dir)
+
+    def _fixture_store(self) -> R1BSemanticCacheStore:
+        return R1BSemanticCacheStore(self._store_root)
 
     def store_intent_and_output(
         self,
@@ -119,7 +133,10 @@ class AppsRgR1BCacheAdapter:
         run_context: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> str | None:
-        """Write HistoricalIntentRecord + child chunks only after post-Exit eligibility passes."""
+        """Promote post-Exit output only when the run carries explicit X3C authority."""
+        write_fixture_mirror = _fixture_mirror_enabled_for_tests(
+            explicit_private_flag=bool(kwargs.pop("_write_fixture_mirror_for_tests", False))
+        )
         del kwargs
         ctx = run_context or {}
         if not bool(ctx.get("post_exit_ingestion")):
@@ -170,7 +187,10 @@ class AppsRgR1BCacheAdapter:
             and run_dir_path
             and (run_dir_path / "x3_disposition.json").is_file()
         ):
-            from apps_rg.cache.r1b_uwg_promotion import default_r1b_promotion_gateway
+            authority = assess_r1b_commit_authority_from_run_dir(run_dir_path)
+            if not authority.authorized:
+                return None
+
             from apps_rg.cache.r1b_uwg_promotion import (
                 build_r1b_promotion_candidate,
                 promote_and_project_r1b_cache,
@@ -184,6 +204,8 @@ class AppsRgR1BCacheAdapter:
                     "source_run_id": exit_meta.source_run_id,
                     "x3_disposition": exit_meta.x3_disposition,
                     "proof_eligible": exit_meta.proof_eligible,
+                    "x3_commit_authorized": authority.authorized,
+                    "x3_commit_authority_reason": authority.reason_code,
                 },
             }
             candidate = build_r1b_promotion_candidate(
@@ -192,22 +214,24 @@ class AppsRgR1BCacheAdapter:
                 post_exit_eligibility=assessment,
                 run_dir=run_dir_path,
             )
+            fixture_store = self._fixture_store() if write_fixture_mirror else None
             outcome = promote_and_project_r1b_cache(
                 candidate=candidate,
-                projection_root=self._store.root,
-                fixture_store=self._store,
-                gateway=default_r1b_promotion_gateway(),
-                mirror_fixture_on_blocked=True,
+                projection_root=self._store_root,
+                fixture_store=fixture_store,
+                gateway=get_r1b_strict_gateway(),
+                mirror_fixture_on_blocked=False,
             )
-            if outcome.status == "ADMITTED" or outcome.fixture_mirror_written:
-                return record.record_id
-            return None
+            return record.record_id if outcome.status == "ADMITTED" else None
 
-        self._store.write_intent(record)
+        if not write_fixture_mirror:
+            return None
+        store = self._fixture_store()
+        store.write_intent(record)
         if not record.cache_admissible:
             return None
         for ch in child_chunks:
-            self._store.write_chunk(ch)
+            store.write_chunk(ch)
         return record.record_id
 
 

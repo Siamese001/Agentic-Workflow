@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
+from apps_rg.cache.r1b_commit_authority import (
+    assess_r1b_commit_authority_from_run_dir,
+)
 from apps_rg.cache.r1b_ingest import (
     build_intent_record_from_run,
     chunks_from_output_list,
@@ -19,6 +23,7 @@ from apps_rg.cache.r1b_semantic_chunk_builder import (
     detect_ingest_profile,
 )
 from apps_rg.cache.r1b_store import R1BSemanticCacheStore, default_store_root
+from apps_rg.cache.r1b_strict_gateway import get_r1b_strict_gateway
 
 
 def evaluate_post_exit_ingestion(
@@ -67,6 +72,7 @@ def evaluate_post_exit_ingestion(
         "chunk_count": len(chunks),
         "chunks": [c.to_dict() for c in chunks],
         "exit_metadata": {
+            "source_run_id": exit_meta.source_run_id,
             "x3_disposition": exit_meta.x3_disposition,
             "proof_eligible": exit_meta.proof_eligible,
             "runtime_generation_status": exit_meta.runtime_generation_status,
@@ -80,19 +86,40 @@ def ingest_post_exit_from_run_dir(
     run_dir: Path,
     raw_request: dict[str, Any],
     store: R1BSemanticCacheStore | None = None,
+    projection_root: Path | str | None = None,
     record_id: str | None = None,
     gateway: Any | None = None,
     write_fixture_mirror: bool = False,
 ) -> str | None:
-    """Persist R1B via UWG admission after Exit; fixture mirror optional for tests."""
-    if not (run_dir / "x3_disposition.json").is_file():
+    """Persist R1B only after explicit X3C authority and strict UWG admission."""
+    authority = assess_r1b_commit_authority_from_run_dir(run_dir)
+    if not authority.authorized:
         return None
+
     assessment = evaluate_post_exit_ingestion(
         run_dir=run_dir,
         raw_request=raw_request,
         record_id=record_id,
     )
-    st = store or R1BSemanticCacheStore(default_store_root())
+    exit_metadata = dict(assessment.get("exit_metadata") or {})
+    exit_metadata.update(
+        {
+            "x3_commit_authorized": authority.authorized,
+            "x3_commit_authority_reason": authority.reason_code,
+            "x3_disposition_ref": authority.disposition_ref,
+        }
+    )
+    assessment["exit_metadata"] = exit_metadata
+
+    root = (
+        Path(projection_root).resolve()
+        if projection_root is not None
+        else store.root
+        if store is not None
+        else default_store_root().resolve()
+    )
+    fixture_store = store if store is not None else None
+
     record_dict = assessment["record"]
     from apps_rg.cache.r1b_ingest import _read_json
     from apps_rg.cache.r1b_models import HistoricalIntentRecord, HistoricalOutputChunk
@@ -102,7 +129,8 @@ def ingest_post_exit_from_run_dir(
     chunks = [HistoricalOutputChunk.from_dict(c) for c in assessment.get("chunks") or []]
     if not record.cache_admissible:
         if write_fixture_mirror:
-            st.write_intent(record)
+            fixture_store = fixture_store or R1BSemanticCacheStore(root)
+            fixture_store.write_intent(record)
         return None
 
     manifest = _read_json(run_dir / "run_manifest.json") or {}
@@ -111,16 +139,24 @@ def ingest_post_exit_from_run_dir(
 
     from apps_rg.cache.r1b_governed_receipt_emission import emit_section_r1b_governed_receipt_chain
 
+    effective_gateway = gateway or get_r1b_strict_gateway()
     chain = emit_section_r1b_governed_receipt_chain(
         artifact_dir=run_dir,
         section_id=section_id,
         run_id=run_id,
         raw_request=raw_request,
-        gateway=gateway,
+        gateway=effective_gateway,
     )
     if chain.promotion_outcome and chain.promotion_outcome.status == "ADMITTED":
         from apps_rg.cache.r1b_derived_index import project_durable_to_derived_index
         from apps_rg.cache.r1b_uwg_promotion import write_uwg_admitted_projection
+
+        core_receipt = effective_gateway.get_commit_receipt(
+            chain.promotion_outcome.uwg_commit_receipt_id
+        )
+        if core_receipt is None:
+            return None
+        chain.promotion_outcome.uwg_commit_receipt = asdict(core_receipt)
 
         candidate = build_r1b_promotion_candidate(
             record=record,
@@ -129,19 +165,22 @@ def ingest_post_exit_from_run_dir(
             run_dir=run_dir,
         )
         write_uwg_admitted_projection(
-            projection_root=st.root,
+            projection_root=root,
             candidate=candidate,
             outcome=chain.promotion_outcome,
         )
-        project_durable_to_derived_index(st.root)
+        project_durable_to_derived_index(root)
         if write_fixture_mirror:
-            st.write_intent(record)
+            fixture_store = fixture_store or R1BSemanticCacheStore(root)
+            fixture_store.write_intent(record)
             for ch in chunks:
-                st.write_chunk(ch)
+                fixture_store.write_chunk(ch)
         return record.record_id
+
     if write_fixture_mirror:
-        st.write_intent(record)
-    return record.record_id
+        fixture_store = fixture_store or R1BSemanticCacheStore(root)
+        fixture_store.write_intent(record)
+    return None
 
 
 def ingest_post_exit_after_run(
@@ -152,12 +191,12 @@ def ingest_post_exit_after_run(
     record_id: str | None = None,
     write_fixture_mirror: bool = False,
 ) -> str | None:
-    """Entry point for CLI / pipeline — requires x3_disposition.json in artifact_dir."""
-    store = R1BSemanticCacheStore(Path(runs_dir) if runs_dir else default_store_root())
+    """Entry point for CLI/pipeline; X3C and UWG admission are mandatory."""
+    root = Path(runs_dir) if runs_dir else default_store_root()
     return ingest_post_exit_from_run_dir(
         run_dir=artifact_dir,
         raw_request=raw_request,
-        store=store,
+        projection_root=root,
         record_id=record_id,
         write_fixture_mirror=write_fixture_mirror,
     )

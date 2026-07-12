@@ -162,7 +162,8 @@ class IncrementalReindexer:
             existing_rows = conn.execute(
                 "SELECT e.id AS edge_id, n.resolved_path AS tgt_path "
                 "FROM edges e LEFT JOIN nodes n ON n.id = e.dst_id "
-                "WHERE e.src_id = ? AND e.relation_type = 'imports'",
+                "WHERE e.src_id = ? AND e.relation_type = 'imports' "
+                "AND n.entity_type = 'module'",
                 (node_id,),
             ).fetchall()
             existing_paths = {r["tgt_path"] for r in existing_rows if r["tgt_path"]}
@@ -237,16 +238,20 @@ def _extract_import_modules(tree: ast.AST, source_path: str) -> list[str]:
             if node.level == 0 and node.module:
                 modules.append(node.module)
             elif node.level and node.level > 0:
-                rel = ("." * node.level) + (node.module or "")
-                try:
-                    modules.append(importlib.util.resolve_name(rel, package_name))
-                except (ImportError, ValueError, ModuleNotFoundError):
-                    logger.debug(
-                        "reindex_file(%s) unresolved relative import %r from %s",
-                        source_path,
-                        rel,
-                        package_name,
-                    )
+                imported_names = [node.module] if node.module else [alias.name for alias in node.names]
+                for imported_name in imported_names:
+                    if not imported_name:
+                        continue
+                    rel = ("." * node.level) + imported_name
+                    try:
+                        modules.append(importlib.util.resolve_name(rel, package_name))
+                    except (ImportError, ValueError, ModuleNotFoundError):
+                        logger.debug(
+                            "reindex_file(%s) unresolved relative import %r from %s",
+                            source_path,
+                            rel,
+                            package_name,
+                        )
     # Dedupe while preserving order.
     seen: set[str] = set()
     out: list[str] = []
