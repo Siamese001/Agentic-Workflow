@@ -20,6 +20,9 @@ class SectionCacheWriteProposal:
     proposal_status: str = "PENDING_UWG"
     l5_certification_packet_digest: str = ""
     l5_certification_packet_ref: str = ""
+    l5_runtime_binding_digest: str = ""
+    l5_certification_verified: bool = False
+    l5_certification_verification_digest: str = ""
 
 
 __all__ = ["SectionCacheWriteProposal"]

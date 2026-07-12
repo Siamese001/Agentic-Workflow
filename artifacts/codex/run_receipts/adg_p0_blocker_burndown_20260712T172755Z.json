@@ -1,0 +1,45 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "adg_p0_blocker_burndown_20260712T172755Z",
+  "generated_at": "2026-07-12T17:27:55Z",
+  "repo": {
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown",
+    "branch": "codex/adg-p0-blocker-burndown-20260712T0915Z",
+    "base": "origin/main"
+  },
+  "upstream_handoff": {
+    "run_id": "07122026_0907",
+    "artifact_status": "repair_ready",
+    "artifact_status_source": "direct",
+    "handoff_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_repair_handoff_07122026_0907.json",
+    "handoff_sha256": "6210d0f43a74945a304c925df9fd7d322f06d4931f76fbfd6d0ad65665397a31",
+    "receipt_path": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\adg\\handoffs\\adg_audit_pipeline_receipt_07122026_0907.json",
+    "receipt_sha256": "3789a7480ae4bc2bbc614fa3c48c8b84234c93cb63c271c69a91be61301777e4",
+    "upstream_receipt_rewritten": false
+  },
+  "p0_closeout": {
+    "status": "pass",
+    "P0_FIX": 0,
+    "P0_WAVE": 0,
+    "G_REACH_l0_reachability": 1419,
+    "G_REACH_baseline": 1450,
+    "L2_lpg_drift_ratchet": 0,
+    "infra_wiring": 0,
+    "H1_new_orphans_delta_ratchet": 0,
+    "full_adg_regenerated": false,
+    "shadow_snapshot_path": "artifacts/adg/shadow_reach_proof.sqlite",
+    "shadow_snapshot_sha256": "223f5f72c71d7d11dd643eeeb692c1c8b8a420faf78d70df64335bf99f1349a42",
+    "reachability_proof_path": "artifacts/adg/p0_slices/G_REACH_l0_reachability_shadow_proof.json",
+    "reachability_proof_sha256": "c907a6c6c623391c90de9598973aec65d5d52e5cd2988b6f0b710ee40d1b415d"
+  },
+  "validation": {
+    "handoff_validator_exit_code": 0,
+    "incremental_reach_proof_exit_code": 0,
+    "incremental_gate_slice_exit_code": 0,
+    "focused_tests": "68 passed",
+    "proof_regression_tests": "3 passed",
+    "ruff_f401_exit_code": 0,
+    "git_diff_check_exit_code": 0
+  },
+  "next_action": "Run generate_full_adg from the producer lane to publish a fresh direct receipt over this merged state before P1 starts."
+}

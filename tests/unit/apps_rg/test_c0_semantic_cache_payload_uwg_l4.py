@@ -1,14 +1,9 @@
-"""Tests for C0 semantic-cache payload + UWG->L4 attachment (intent vector + query output).
+"""Tests for C0 semantic-cache payload + UWG->L4 attachment."""
 
-Covers the seam wired so that:
-  - C0 PROPOSES a per-section intent vector + query output (inert artifact).
-  - Exit CLEARS and surfaces a populated SectionCacheWriteProposal when authorized.
-  - The post-Exit UWG -> L4 namespace ref attaches the C0 intent vector + query output.
-"""
 from __future__ import annotations
 
-import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from apps_rg.runtime.c0.c02_semantic_cache_payload import (
     C02_SEMANTIC_CACHE_PAYLOAD_ARTIFACT,
@@ -18,6 +13,7 @@ from apps_rg.runtime.c0.c02_semantic_cache_payload import (
     serialize_query_output,
     write_c02_semantic_cache_payload,
 )
+from tests.unit.apps_rg.l5_uwg_fixture import write_verified_l5_sealed_artifact
 
 
 def _atoms() -> list[dict]:
@@ -42,31 +38,30 @@ def _atoms() -> list[dict]:
 
 
 def test_section_intent_text_is_deterministic_and_section_scoped() -> None:
-    a = section_intent_text(
+    first = section_intent_text(
         section_id="competencies",
         target_company="Brown & Brown",
         target_role="SVP",
         jd_digest="abc123",
         query_terms=["fact_x", "fact_y"],
     )
-    b = section_intent_text(
+    second = section_intent_text(
         section_id="competencies",
         target_company="Brown & Brown",
         target_role="SVP",
         jd_digest="abc123",
         query_terms=["fact_x", "fact_y"],
     )
-    assert a == b
-    assert "competencies" in a
-    # Different section -> different intent text (section-scoped key).
-    c = section_intent_text(
+    assert first == second
+    assert "competencies" in first
+    other = section_intent_text(
         section_id="ibm_bullets",
         target_company="Brown & Brown",
         target_role="SVP",
         jd_digest="abc123",
         query_terms=["fact_x", "fact_y"],
     )
-    assert c != a
+    assert other != first
 
 
 def test_serialize_query_output_is_bounded_and_typed() -> None:
@@ -74,7 +69,7 @@ def test_serialize_query_output_is_bounded_and_typed() -> None:
     assert len(rows) == 2
     assert rows[0]["fact_id"] == "fact_engineering_platform_001"
     assert isinstance(rows[0]["retrieval_score"], float)
-    assert rows[1]["text"]  # claim_text fallback populated
+    assert rows[1]["text"]
 
 
 def test_build_payload_has_intent_vector_and_query_output() -> None:
@@ -119,14 +114,12 @@ def test_write_and_read_roundtrip(tmp_path: Path) -> None:
 def test_write_returns_none_when_artifact_dir_is_a_file(tmp_path: Path) -> None:
     artifact_dir = tmp_path / "not_a_dir"
     artifact_dir.write_text("blocking file", encoding="utf-8")
-
     payload = build_c02_semantic_cache_payload(
         section_id="headline",
         atoms=_atoms(),
         vector_query_receipt={},
         run_id="run_fs_error",
     )
-
     assert write_c02_semantic_cache_payload(artifact_dir, payload) is None
 
 
@@ -134,14 +127,12 @@ def test_write_returns_none_when_artifact_dir_parent_is_a_file(tmp_path: Path) -
     parent_file = tmp_path / "parent_file"
     parent_file.write_text("blocking file", encoding="utf-8")
     artifact_dir = parent_file / "child"
-
     payload = build_c02_semantic_cache_payload(
         section_id="headline",
         atoms=_atoms(),
         vector_query_receipt={},
         run_id="run_fs_error_parent",
     )
-
     assert write_c02_semantic_cache_payload(artifact_dir, payload) is None
 
 
@@ -155,15 +146,17 @@ def test_payload_never_claims_write_authority() -> None:
         atoms=_atoms(),
         vector_query_receipt={},
     )
-    # Spine law: C0 proposes; it must never claim durable write authority.
     assert payload["durable_write_authority"] is False
     assert "C0 proposes" in payload["spine_note"]
 
 
-def test_exit_populates_cache_write_proposal_when_authorized() -> None:
-    """Exit CLEARS and surfaces a populated SectionCacheWriteProposal (was always empty)."""
+def test_exit_populates_cache_write_proposal_when_l5_verified() -> None:
     from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
     from apps_rg.runtime.bindings.exit_binding import _exit_finalize_apps_rg_impl
+    from apps_rg.runtime.l5.packet_builder import (
+        attach_l5_packet_to_sealed,
+        build_l5_certification_packet,
+    )
 
     sealed = SealedL2Artifact(
         request_id="req1",
@@ -172,29 +165,41 @@ def test_exit_populates_cache_write_proposal_when_authorized() -> None:
         trace_id="t1",
         execution_status="completed",
         generated_content="Competencies content body.",
+        compilation_hash="a" * 64,
+        replay_key="replay-exit-1",
         l5_certification_ref="l5:test:run_exit_1",
     )
+    prompt = SimpleNamespace(
+        request_id="req1",
+        run_id="run_exit_1",
+        app_id="apps_rg",
+        trace_id="t1",
+        tenant_id="apps_rg",
+        replay_key="replay-exit-1",
+        l5_certification_ref="l5:test:run_exit_1",
+        compilation_hash="b" * 64,
+        evidence_digest="c" * 64,
+    )
+    packet = build_l5_certification_packet(sealed=sealed, prompt_artifact=prompt)
+    sealed = attach_l5_packet_to_sealed(sealed, packet, prompt_artifact=prompt)
     result = _exit_finalize_apps_rg_impl(
         sealed,
+        prompt_artifact=prompt,
         fec=None,
         target_company="Brown & Brown",
         target_role="SVP",
     )
-    # When authorized (no C0 blocking on fec=None path), a proposal is surfaced.
-    if result.disposition.outcome_authorized:
-        assert len(result.cache_write_proposals) == 1
-        prop = result.cache_write_proposals[0]
-        assert prop.proposal_status == "PENDING_UWG"
-        assert "run_exit_1" in prop.metadata_ref
-        assert prop.cache_key
-    else:
-        # Blocked path must NOT surface a write proposal.
-        assert result.cache_write_proposals == ()
+    assert result.disposition.outcome_authorized is True
+    assert len(result.cache_write_proposals) == 1
+    proposal = result.cache_write_proposals[0]
+    assert proposal.proposal_status == "PENDING_UWG"
+    assert proposal.l5_certification_verified is True
+    assert proposal.l5_certification_verification_digest
+    assert "run_exit_1" in proposal.metadata_ref
+    assert proposal.cache_key
 
 
 def test_l4_namespace_ref_attaches_c0_payload(tmp_path: Path) -> None:
-    """Post-Exit L4 namespace ref carries the C0 intent vector + query output."""
-    # Seed a C0 payload artifact in the run dir.
     payload = build_c02_semantic_cache_payload(
         section_id="competencies",
         atoms=_atoms(),
@@ -203,7 +208,6 @@ def test_l4_namespace_ref_attaches_c0_payload(tmp_path: Path) -> None:
     )
     write_c02_semantic_cache_payload(tmp_path, payload)
     got = read_c02_semantic_cache_payload(tmp_path)
-    # The attachment helper reads exactly these fields into the L4 namespace object.
     assert got["intent_vector"] is not None
     assert got["query_output"]
     assert got["intent_digest"]
@@ -213,7 +217,6 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    """End-to-end: real UWG ADMITTED chain attaches C0 intent vector + query output to L4 ref."""
     import json as _json
 
     from apps_rg.cache.r1b_governed_receipt_emission import (
@@ -224,16 +227,22 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     from apps_rg.cache.r1b_uwg_promotion import build_r1b_promotion_candidate
 
     monkeypatch.delenv("APPS_RG_R1B_SKIP_UWG", raising=False)
-
     run_dir = tmp_path / "run"
     run_dir.mkdir()
     (run_dir / "x3_disposition.json").write_text(
-        _json.dumps({"x3_code": "X3_ALLOW", "proof_eligible": True}), encoding="utf-8"
+        _json.dumps({"x3_code": "X3_ALLOW", "proof_eligible": True}),
+        encoding="utf-8",
     )
     (run_dir / "run_manifest.json").write_text(
-        _json.dumps({"run_id": "run_l4_e2e", "proof_eligible": True}), encoding="utf-8"
+        _json.dumps({"run_id": "run_l4_e2e", "proof_eligible": True}),
+        encoding="utf-8",
     )
-    # Seed the C0 proposal artifact (what C0 writes during the section run).
+    l5_metadata = write_verified_l5_sealed_artifact(
+        run_dir,
+        request_id="hir_l4_e2e",
+        run_id="run_l4_e2e",
+        trace_id="trace:run_l4_e2e",
+    )
     write_c02_semantic_cache_payload(
         run_dir,
         build_c02_semantic_cache_payload(
@@ -247,7 +256,7 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     record = HistoricalIntentRecord.from_dict(
         {
             "record_id": "hir_l4_e2e",
-            "normalized_intent_digest": "digest_e2e",
+            "normalized_intent_digest": "2" * 64,
             "request_intent_text": "apps_rg|role_target_run|acme|svp",
             "request_intent_vector_ref": "vectors/hir_l4_e2e.json",
             "target_company": "Acme",
@@ -296,13 +305,11 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     assessment = {
         "admissible": True,
         "record": record.to_dict(),
-        "chunks": [c.to_dict() for c in chunks],
+        "chunks": [chunk.to_dict() for chunk in chunks],
         "exit_metadata": {
             "source_run_id": "run_l4_e2e",
             "x3_disposition": "X3_ALLOW",
-            "l5_certification_packet_ref": "l5_packet:" + "d" * 64,
-            "l5_certification_packet_digest": "d" * 64,
-            "l5_certification_status": "L5_CERTIFIED",
+            **l5_metadata,
         },
     }
     candidate = build_r1b_promotion_candidate(
@@ -311,7 +318,6 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
         post_exit_eligibility=assessment,
         run_dir=run_dir,
     )
-
     chain = _materialize_uwg_receipts(
         run_dir,
         candidate=candidate,
@@ -322,13 +328,14 @@ def test_uwg_admitted_l4_ref_carries_c0_intent_vector_and_query_output(
     )
     assert chain.uwg_commit_or_block_status == "ADMITTED", chain.to_dict()
 
-    l4_ref = _json.loads((run_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT).read_text(encoding="utf-8"))
-    pl = l4_ref["payload"]
-    # The UWG-committed L4 object carries the per-section C0 intent vector + query output.
-    assert pl["c0_section_intent_digest"]
-    assert pl["c0_section_intent_vector"]
-    assert pl["c0_query_output"]
-    assert pl["c0_query_output_count"] >= 1
-    assert pl["c0_dense_search_refs"] == ["dense:fact_vectors:/x"]
-    assert pl["l5_certification_packet_digest"] == "d" * 64
-    assert pl["governance_receipt"]["l5_certification_packet_digest"] == "d" * 64
+    l4_ref = _json.loads(
+        (run_dir / L4_NAMESPACE_OBJECT_REF_ARTIFACT).read_text(encoding="utf-8")
+    )
+    payload = l4_ref["payload"]
+    assert payload["c0_section_intent_digest"]
+    assert payload["c0_section_intent_vector"]
+    assert payload["c0_query_output"]
+    assert payload["c0_query_output_count"] >= 1
+    assert payload["c0_dense_search_refs"] == ["dense:fact_vectors:/x"]
+    assert payload["l5_certification_packet_digest"] == "d" * 64
+    assert payload["governance_receipt"]["l5_certification_verified"] is True
