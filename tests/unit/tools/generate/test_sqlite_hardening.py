@@ -204,6 +204,8 @@ class TestSQLiteSeal:
             assert report.quick_check == "ok"
             assert report.wal_busy == 0
             assert report.journal_mode == "wal"
+            wal_path = Path(f"{path}-wal")
+            assert not wal_path.exists() or wal_path.stat().st_size == 0
         finally:
             conn.close()
 
