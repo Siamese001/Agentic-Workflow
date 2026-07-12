@@ -36,6 +36,33 @@ class ADGEdge(BaseModel):
         extra = "allow"
 
 
+QueryResultState = Literal[
+    "COMPLETE",
+    "EMPTY",
+    "UNAVAILABLE",
+    "STALE",
+    "TRUNCATED",
+    "UNKNOWN",
+]
+
+
+class QueryMeta(BaseModel):
+    """Provenance and evaluation state for an ADG query result."""
+
+    result_state: QueryResultState = "UNKNOWN"
+    selected_artifact_digest: str | None = None
+    source_artifact_digest: str | None = None
+    schema_version: str = "unknown"
+    metric_id: str | None = None
+    metric_version: str | None = None
+    requested_limit: int | None = None
+    returned_count: int | None = None
+    has_more: bool | None = None
+    truncation_reason: str | None = None
+    reason_code: str | None = None
+    reason: str | None = None
+
+
 class ADGResponse(BaseModel):
     """Unified response shape regardless of backend."""
 
@@ -46,6 +73,7 @@ class ADGResponse(BaseModel):
         description="redis|sqlite|projection",
     )
     cache_meta: dict[str, Any] = Field(default_factory=dict)
+    query_meta: QueryMeta = Field(default_factory=QueryMeta)
 
 
 class HealthStatus(BaseModel):
