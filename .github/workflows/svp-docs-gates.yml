@@ -9,6 +9,7 @@ on:
       - ".codex/automations/on-demand-svp-documentation-refresh/**"
       - ".codex/schemas/svp_docs_*"
       - "scripts/governance/svp_docs_review.py"
+      - "scripts/governance/verify_codex_enforcement_home_portable.py"
       - "scripts/governance/verify_codex_primary.py"
       - "ops_scripts/ci/run_architecture_proof.py"
       - "tests/unit/scripts/governance/test_svp_docs_review.py"
@@ -49,6 +50,7 @@ jobs:
       - name: Compile deterministic gates
         run: |
           python -m py_compile scripts/governance/svp_docs_review.py
+          python -m py_compile scripts/governance/verify_codex_enforcement_home_portable.py
           python -m py_compile scripts/governance/verify_codex_primary.py
           python -m py_compile ops_scripts/ci/run_architecture_proof.py
 
@@ -68,7 +70,7 @@ jobs:
         run: python scripts/governance/verify_codex_primary.py --repo-only
 
       - name: Verify Codex enforcement home
-        run: python scripts/governance/verify_codex_enforcement_home.py --json
+        run: python scripts/governance/verify_codex_enforcement_home_portable.py --json
 
       - name: Run SVP implementation review
         run: >-
