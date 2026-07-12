@@ -3,10 +3,10 @@ name: apps-research-rg-handoff-e2e
 on:
   pull_request:
     paths:
-      - "apps_research/integrations/apps_rg_exit_authorization.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/apps_research_exit_validator.py"
       - "apps_rg/prerequisites/briefing_validator.py"
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
@@ -22,10 +22,10 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps_research/integrations/apps_rg_exit_authorization.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
+      - "apps_rg/prerequisites/apps_research_exit_validator.py"
       - "apps_rg/prerequisites/briefing_validator.py"
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
