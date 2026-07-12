@@ -1,8 +1,10 @@
 """MCP Health Diagnostics — Exposed as adg_health tool."""
 
 import logging
+from pathlib import Path
 from typing import Any
 
+from tools.adg.core.repo_health import read_repo_health
 from tools.adg.core.service import ADGService
 
 logger = logging.getLogger(__name__)
@@ -24,9 +26,25 @@ class HealthDiagnostics:
                 "stale": data.get("stale", False),
                 "projection_path": data.get("projection_path"),
             }
-        except Exception as exc:  # guardian: allow-broad-exception -- projection table absent on older snapshots; health report must never crash
+        except Exception as exc:  # guardian: allow-broad-exception -- additive projection health probe
             logger.warning("Projection status unavailable during health report: %s", exc)
             return {"available": False, "stale": False, "projection_path": None}
+
+    def _safe_repo_health(self) -> dict[str, Any]:
+        """Return Phase G health without breaking legacy snapshots or MCP startup."""
+
+        try:
+            backend = getattr(self._service, "_sqlite", None)
+            if backend is None or not hasattr(backend, "health"):
+                return {"available": False, "reason": "sqlite_backend_unavailable"}
+            _status, metadata = backend.health()
+            sqlite_path = metadata.get("path") if isinstance(metadata, dict) else None
+            if not sqlite_path:
+                return {"available": False, "reason": "sqlite_path_unavailable"}
+            return read_repo_health(Path(str(sqlite_path)))
+        except Exception as exc:  # guardian: allow-broad-exception -- additive repo-health probe
+            logger.warning("Repo-health status unavailable during health report: %s", exc)
+            return {"available": False, "reason": "repo_health_query_failed", "message": str(exc)}
 
     def full_report(self) -> dict[str, Any]:
         """Complete health report."""
@@ -42,6 +60,7 @@ class HealthDiagnostics:
             "adg_snapshot_id": health.adg_snapshot_id,
             "views_materialized_at": health.views_materialized_at,
             "adg": status.data if status.status == "ok" else None,
+            "repo_health": self._safe_repo_health(),
             "graph_projection": self._safe_projection_status(),
         }
 
