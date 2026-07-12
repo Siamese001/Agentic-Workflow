@@ -1,10 +1,10 @@
 # ADG SQLite Repository-Health Hardening Plan
 
 Plan ID: `adg-sqlite-repo-health-hardening-20260711`  
-Status: Plan only  
+Status: Implementation in progress  
 Repository: `Siamese001/Agentic-Workflow`  
 Authoritative branch: `main`  
-Inspected commit: `17172239be24f76f7bc9050ee1053b989be64794`
+Base commit: `6486b1fd838a724ed4d8822d2b63f7c23069021b`
 
 ## Executive Assessment
 
@@ -23,6 +23,23 @@ The latest published audit run, `07112026_1937`, is explicitly `repair_ready`, n
 - Required failing gates include `adg_gate_dispatcher`, `config-ref`, `lifecycle`, and `test-coverage`
 
 No new repository-health metric should become merge-blocking until snapshot consistency, metric definitions, projection semantics, and certification selection are corrected.
+
+## Implementation Status
+
+Implementation began directly at user instruction; no design-approval package is required.
+
+Landed on `agent/adg-sqlite-repo-health-hardening`:
+
+- SQLite foreign-key enforcement and certification-time `foreign_key_check`
+- Lossless canonical graph digests with isolated-node and edge-occurrence identity
+- Directed `MultiDiGraph` projections with conservation accounting and exact SCC/reachability
+- Explicit certified, repair, and candidate snapshot pointers with atomic promotion
+- MCP certified-only selection, digest verification, fail-closed health, and complete materialization checks
+- Exact Phase D membership deltas with `NO_BASELINE` semantics
+- P0 write-sovereignty baseline failure closure
+- Versioned metric registry and CI validation
+
+Remaining waves continue incrementally behind compatibility surfaces and the draft PR.
 
 ## Source-of-Truth and Provenance
 
@@ -312,7 +329,7 @@ Every observation must carry `metric_id`, version, snapshot, numerator, denomina
 
 ## Wave-Based Implementation Plan
 
-## Wave 0: Baseline, inventory and master design package
+## Wave 0: Baseline, inventory and executable contracts
 
 ### Objective
 
@@ -335,8 +352,8 @@ Freeze definitions and measure current behavior before changing authority.
 3. Benchmark full generation, each stage, MV materialization, DB size and the top 20 consumer queries.
 4. Capture `EXPLAIN QUERY PLAN` output.
 5. Establish the named graph projections and relation semantics.
-6. Produce one Master Design Package for Waves 1–9.
-7. Obtain one overall design approval; after approval, Waves 1–9 execute sequentially without further pauses unless scope materially changes.
+6. Record executable contracts and migration boundaries directly in the implementation branch.
+7. Execute Waves 1–9 without a design-approval package gate; pause only for a material scope or authority blocker.
 
 ### Acceptance
 
