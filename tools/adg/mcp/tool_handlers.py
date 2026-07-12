@@ -8,11 +8,23 @@ __adg_consumer_mode__ = "inventory"
 
 from typing import Any, Callable
 
+from tools.adg.core.models import ADGResponse
 from tools.adg.mcp.runtime import LOG, runtime
 from tools.adg.mcp.validators import require_non_empty_str, require_positive_limit
 
 JsonDict = dict[str, Any]
 Operation = Callable[[], JsonDict]
+
+
+def _serialize_response(response: ADGResponse) -> JsonDict:
+    """Preserve query state and provenance across the MCP boundary."""
+    return {
+        "status": response.status,
+        "data": response.data,
+        "backend_used": response.backend_used,
+        "query_meta": response.query_meta.model_dump(mode="json"),
+        "cache_meta": response.cache_meta,
+    }
 
 
 def _run_tool(error_label: str, operation: Operation) -> JsonDict:
@@ -21,7 +33,15 @@ def _run_tool(error_label: str, operation: Operation) -> JsonDict:
         return operation()
     except Exception as exc:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash
         LOG.error("%s failed: %s", error_label, exc)
-        return {"status": "error", "message": str(exc)}
+        return {
+            "status": "error",
+            "message": str(exc),
+            "query_meta": {
+                "result_state": "UNKNOWN",
+                "reason_code": "UNHANDLED_TOOL_ERROR",
+                "reason": str(exc),
+            },
+        }
 
 
 def adg_health() -> JsonDict:
@@ -41,11 +61,7 @@ def adg_status() -> JsonDict:
     def operation() -> JsonDict:
         runtime.reload_latest_snapshot()
         response = runtime.service.get_status()
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Status query", operation)
 
@@ -56,11 +72,7 @@ def adg_node(node_id: str) -> JsonDict:
     def operation() -> JsonDict:
         cleaned_node_id = require_non_empty_str("node_id", node_id)
         response = runtime.service.get_node(cleaned_node_id)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Node query", operation)
 
@@ -72,11 +84,7 @@ def adg_nodes_by_layer(layer: str, limit: int = 100) -> JsonDict:
         cleaned_layer = require_non_empty_str("layer", layer)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_nodes_by_layer(cleaned_layer, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Nodes by layer query", operation)
 
@@ -88,11 +96,7 @@ def adg_nodes_by_file(file_path: str, limit: int = 100) -> JsonDict:
         cleaned_file_path = require_non_empty_str("file_path", file_path)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_nodes_by_file(cleaned_file_path, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Nodes by file query", operation)
 
@@ -104,11 +108,7 @@ def adg_find_node(name: str, limit: int = 10) -> JsonDict:
         cleaned_name = require_non_empty_str("name", name)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.find_node(cleaned_name, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Find node query", operation)
 
@@ -121,11 +121,7 @@ def adg_edge_fanout(src_id: str, relation_type: str, limit: int = 30) -> JsonDic
         cleaned_relation_type = require_non_empty_str("relation_type", relation_type)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_edge_fanout(cleaned_src_id, cleaned_relation_type, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Edge fanout query", operation)
 
@@ -138,11 +134,7 @@ def adg_edge_fanin(tgt_id: str, relation_type: str, limit: int = 30) -> JsonDict
         cleaned_relation_type = require_non_empty_str("relation_type", relation_type)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_edge_fanin(cleaned_tgt_id, cleaned_relation_type, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Edge fanin query", operation)
 
@@ -153,11 +145,7 @@ def adg_violations(limit: int = 100) -> JsonDict:
     def operation() -> JsonDict:
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_violations(cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Violations query", operation)
 
@@ -168,11 +156,7 @@ def adg_p0_wave_plan(limit: int = 100) -> JsonDict:
     def operation() -> JsonDict:
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_p0_remediation_wave_plan(cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("P0 wave plan query", operation)
 
@@ -208,11 +192,7 @@ def adg_mv_hotspot_centrality(limit: int = 50) -> JsonDict:
     def operation() -> JsonDict:
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.get_mv_hotspot_centrality(cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("MV hotspot centrality query", operation)
 
@@ -225,11 +205,7 @@ def adg_blast_radius(node_id: str, hops: int = 2) -> JsonDict:
         # hops is an integer; clamp via require_positive_limit
         cleaned_hops = require_positive_limit(hops)
         response = runtime.service.get_blast_radius(cleaned_node_id, cleaned_hops)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Blast radius query", operation)
 
@@ -244,11 +220,7 @@ def adg_semantic_fanout(src_id: str, relation_type: str, limit: int = 30) -> Jso
         response = runtime.service.get_semantic_fanout(
             cleaned_src_id, cleaned_relation_type, cleaned_limit
         )
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("Semantic fanout query", operation)
 
@@ -260,10 +232,6 @@ def adg_p_view_query(view_name: str, limit: int = 100) -> JsonDict:
         cleaned_view_name = require_non_empty_str("view_name", view_name)
         cleaned_limit = require_positive_limit(limit)
         response = runtime.service.query_p_view(cleaned_view_name, cleaned_limit)
-        return {
-            "status": response.status,
-            "data": response.data,
-            "backend_used": response.backend_used,
-        }
+        return _serialize_response(response)
 
     return _run_tool("P-view query", operation)
