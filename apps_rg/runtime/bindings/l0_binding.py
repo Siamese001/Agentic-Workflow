@@ -184,7 +184,7 @@ def _condition_value(plan: L1PlanContract, key: str) -> Any:
     elif root == "policy_refs":
         value = plan.policy_refs or {}
     elif root == "route_hints":
-        value = plan.route_hints or {}
+        return None
     else:
         value = getattr(plan, root, None)
     for part in parts:
@@ -582,7 +582,7 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
 
     ts = datetime.now(timezone.utc).isoformat()
     policy_path = str(_ROUTE_PROFILE_RELPATH).replace("\\", "/")
-    hitl_posture = str((plan.route_hints or {}).get("hitl_posture") or row.get("hitl_posture") or "none")
+    hitl_posture = str(row.get("hitl_posture") or "none")
     hitl_gate_ref = str(row.get("hitl_required_gate_ref") or "")
     route_gate_status = "BLOCKED" if blocking_gate_ids else "PASS"
     block_reason = ""

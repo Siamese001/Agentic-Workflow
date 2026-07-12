@@ -99,8 +99,10 @@ class HealthDiagnostics:
         health = self._service.health()
         status = self._service.get_status()
         projection = self._safe_projection_status()
-        overall = health.overall_status
-        reasons = list(health.reasons)
+        overall = getattr(health, "overall_status", None) or (
+            "healthy" if getattr(health, "sqlite", None) == "healthy" else "critical"
+        )
+        reasons = list(getattr(health, "reasons", ()) or ())
         if projection["status"] != "PASS":
             overall = "critical"
             reasons.append(
@@ -121,16 +123,20 @@ class HealthDiagnostics:
             "adg_snapshot_id": health.adg_snapshot_id,
             "views_materialized_at": health.views_materialized_at,
             "certification": {
-                "certified": health.certified,
-                "selection": health.snapshot_selection,
-                "certification_status": health.certification_status,
-                "artifact_status": health.artifact_status,
-                "pointer_path": health.pointer_path,
-                "digest_verified": health.digest_verified,
+                "certified": getattr(health, "certified", False),
+                "selection": getattr(health, "snapshot_selection", None),
+                "certification_status": getattr(
+                    health,
+                    "certification_status",
+                    None,
+                ),
+                "artifact_status": getattr(health, "artifact_status", None),
+                "pointer_path": getattr(health, "pointer_path", None),
+                "digest_verified": getattr(health, "digest_verified", False),
             },
             "materialization": {
-                "status": health.materialization_status,
-                "counts": health.materialization_counts,
+                "status": getattr(health, "materialization_status", None),
+                "counts": getattr(health, "materialization_counts", {}),
             },
             "adg": status.data,
             "repo_health": self._safe_repo_health(),
