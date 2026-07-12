@@ -26,63 +26,88 @@ ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 def _is_file_locked(filepath: Path) -> bool:
     """Check if a file can be deleted (Windows only).
 
-    Tests DELETE access rather than GENERIC_WRITE.  SQLite WAL-mode opens the
+    Tests DELETE access rather than GENERIC_WRITE. SQLite WAL-mode opens the
     main database without FILE_SHARE_DELETE, so any opener lacking that flag
-    will block a DELETE-access request — which is exactly what unlink() needs.
-    GENERIC_WRITE + FILE_SHARE_READ|WRITE succeeds even on an open SQLite file
-    because share modes are compatible; DELETE access correctly fails.
-    Returns True if the file cannot be deleted (locked or inaccessible).
+    blocks the DELETE-access request that unlink() needs.
     """
+
     if os.name != "nt":
         return False
     try:
         import ctypes
 
-        DELETE_ACCESS = 0x00010000
-        FILE_SHARE_READ = 0x00000001
-        FILE_SHARE_WRITE = 0x00000002
-        OPEN_EXISTING = 3
+        delete_access = 0x00010000
+        file_share_read = 0x00000001
+        file_share_write = 0x00000002
+        open_existing = 3
         handle = ctypes.windll.kernel32.CreateFileW(
             str(filepath),
-            DELETE_ACCESS,
-            FILE_SHARE_READ | FILE_SHARE_WRITE,
+            delete_access,
+            file_share_read | file_share_write,
             None,
-            OPEN_EXISTING,
+            open_existing,
             0,
             None,
         )
         if handle == ctypes.c_void_p(-1).value:
-            return True  # Delete access denied — another opener lacks FILE_SHARE_DELETE
+            return True
         ctypes.windll.kernel32.CloseHandle(handle)
         return False
     except (
         ImportError,
         AttributeError,
         OSError,
-    ):  # guardian: allow-broad-exception -- Windows API best-effort: file lock check may fail unpredictably, treat failure as locked
+    ):  # guardian: allow-broad-exception -- Windows API best-effort; treat uncertainty as locked
         return True
 
 
-def _perform_wal_checkpoint(adg_dir: Path | None = None) -> None:
-    """Perform best-effort WAL checkpoint on prior SQLite files."""
+def _perform_wal_checkpoint(target: Path | None = None) -> None:
+    """Perform best-effort WAL checkpoints for one SQLite file or a directory.
+
+    Historically this helper accepted a directory but the MV retry path passed
+    the concrete ``adg_indexed_*.sqlite`` file. The old implementation called
+    ``is_dir()`` implicitly via ``glob`` and checkpointed nothing. Supporting
+    both shapes makes lock recovery deterministic.
+    """
+
     print("[ADG] Pre-flight: attempting best-effort SQLite WAL checkpoint...")
     try:
-        adg_dir = adg_dir if adg_dir is not None else ROOT / "artifacts" / "adg"
-        if not adg_dir.exists():
+        target = target if target is not None else ROOT / "artifacts" / "adg"
+        target = target.expanduser().resolve()
+        if target.is_file():
+            sqlite_files = [target] if target.suffix.lower() in {".sqlite", ".db"} else []
+        elif target.is_dir():
+            sqlite_files = sorted(
+                {
+                    *target.glob("adg_indexed_*.sqlite"),
+                    *target.glob("adg_graph_*.sqlite"),
+                }
+            )
+        else:
             return
-        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
 
         for sqlite_file in sqlite_files:
             try:
-                with sqlite3.connect(str(sqlite_file)) as temp_conn:
-                    temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                print(f"[ADG] WAL checkpoint attempted for: {sqlite_file.name}")
-            except sqlite3.Error as exc:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure during lock check
+                with sqlite3.connect(str(sqlite_file), timeout=5.0) as temp_conn:
+                    temp_conn.execute("PRAGMA busy_timeout = 5000")
+                    result = temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+                busy, log_frames, checkpointed_frames = result or (0, 0, 0)
+                if busy:
+                    print(
+                        "[ADG] WAL checkpoint busy for "
+                        f"{sqlite_file.name}: log={log_frames}, checkpointed={checkpointed_frames}"
+                    )
+                else:
+                    print(
+                        "[ADG] WAL checkpoint complete for "
+                        f"{sqlite_file.name}: frames={checkpointed_frames}"
+                    )
+            except sqlite3.Error as exc:  # guardian: allow-broad-exception -- best-effort cleanup before bounded retry
                 print(f"[ADG] WAL checkpoint skipped for {sqlite_file.name}: {exc}")
 
         gc.collect()
         time.sleep(0.5)
-    except OSError as exc:  # guardian: allow-silent-swallow -- best-effort lock check: failure caught by subsequent pre-generation check
+    except OSError as exc:  # guardian: allow-silent-swallow -- subsequent lock check remains authoritative
         print(f"[ADG] Warning: unable to enumerate SQLite artifacts for WAL checkpoint: {exc}")
 
 
@@ -118,6 +143,6 @@ def _check_locked_files(adg_dir: Path | None = None) -> None:
             sys.exit(1)
         else:
             print("[ADG] No locked SQLite files found - proceeding with generation")
-    except Exception as e:  # guardian: allow-broad-exception -- non-critical: locked file check failure should not block ADG generation
-        print(f"[WARNING] Could not check for locked SQLite files: {e}")
+    except Exception as exc:  # guardian: allow-broad-exception -- non-critical lock probe
+        print(f"[WARNING] Could not check for locked SQLite files: {exc}")
         print("[WARNING]   Proceeding with ADG generation...")

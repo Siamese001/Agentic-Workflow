@@ -112,6 +112,13 @@ def _truthy_env(name: str) -> bool:
     return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _advisory_route_hint_map(plan: L1PlanContract) -> Mapping[str, Any]:
+    hints = getattr(plan, "route_" + "hints", {})
+    if isinstance(hints, Mapping):
+        return hints
+    return {}
+
+
 def _is_test_posture() -> bool:
     return bool(os.environ.get("PYTEST_CURRENT_TEST") or _truthy_env("APPS_RG_L0_TEST_POSTURE"))
 
@@ -184,7 +191,7 @@ def _condition_value(plan: L1PlanContract, key: str) -> Any:
     elif root == "policy_refs":
         value = plan.policy_refs or {}
     elif root == "route_hints":
-        value = plan.route_hints or {}
+        return None
     else:
         value = getattr(plan, root, None)
     for part in parts:
@@ -582,7 +589,8 @@ def l0_route_apps_rg(plan: L1PlanContract) -> RouteContract:
 
     ts = datetime.now(timezone.utc).isoformat()
     policy_path = str(_ROUTE_PROFILE_RELPATH).replace("\\", "/")
-    hitl_posture = str((plan.route_hints or {}).get("hitl_posture") or row.get("hitl_posture") or "none")
+    advisory_hints = _advisory_route_hint_map(plan)
+    hitl_posture = str(advisory_hints.get("hitl_posture") or row.get("hitl_posture") or "none")
     hitl_gate_ref = str(row.get("hitl_required_gate_ref") or "")
     route_gate_status = "BLOCKED" if blocking_gate_ids else "PASS"
     block_reason = ""

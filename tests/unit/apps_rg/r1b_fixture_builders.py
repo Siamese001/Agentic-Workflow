@@ -1,4 +1,4 @@
-"""Hermetic R1B test fixtures for current apps_rg cache contracts."""
+"""Hermetic R1B fixtures aligned with X3C and verified-L5 admission."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ def build_admissible_intent_record(
             "prompt_profile_hash": prompt_profile_hash,
             "model_profile_hash": "",
             "gate_profile_hash": gate_profile_hash,
-            "x3_disposition": "X3_ALLOW",
+            "x3_disposition": "X3C",
             "proof_eligible": True,
             "cache_admissible": True,
             "generated_at_utc": GENERATED_AT_UTC,
@@ -76,7 +76,9 @@ def build_admissible_intent_record(
     )
 
 
-def build_admissible_output_chunks(parent_intent_record_id: str) -> list[HistoricalOutputChunk]:
+def build_admissible_output_chunks(
+    parent_intent_record_id: str,
+) -> list[HistoricalOutputChunk]:
     base = {
         "parent_intent_record_id": parent_intent_record_id,
         "chunk_digest": "",
@@ -140,12 +142,14 @@ def seed_admissible_r1b_store(
     return record, chunks
 
 
-def write_post_exit_artifacts(run_dir: Path, record: HistoricalIntentRecord) -> None:
+def write_post_exit_artifacts(
+    run_dir: Path, record: HistoricalIntentRecord
+) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "x3_disposition.json").write_text(
         json.dumps(
             {
-                "x3_code": "X3_ALLOW",
+                "x3_code": "X3C",
                 "proof_eligible": True,
                 "runtime_generation_status": "REAL_LLM",
                 "proceed_to_runtime": True,
@@ -167,6 +171,14 @@ def write_post_exit_artifacts(run_dir: Path, record: HistoricalIntentRecord) -> 
         ),
         encoding="utf-8",
     )
+    from tests.unit.apps_rg.l5_uwg_fixture import write_verified_l5_sealed_artifact
+
+    write_verified_l5_sealed_artifact(
+        run_dir,
+        request_id=record.record_id,
+        run_id=record.source_run_id,
+        trace_id=f"trace:{record.source_run_id}",
+    )
 
 
 def build_post_exit_eligibility(
@@ -181,9 +193,10 @@ def build_post_exit_eligibility(
         "chunks": [chunk.to_dict() for chunk in chunks],
         "exit_metadata": {
             "source_run_id": record.source_run_id,
-            "x3_disposition": "X3_ALLOW",
+            "x3_disposition": "X3C",
             "proof_eligible": True,
             "runtime_generation_status": "REAL_LLM",
             "exit_artifact_present": True,
+            "x3_commit_authorized": True,
         },
     }

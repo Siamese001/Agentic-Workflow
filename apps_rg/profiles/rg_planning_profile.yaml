@@ -3,6 +3,12 @@ schema_version: "apps_rg_l1_planning_profile.v1"
 profile_id: "rg_planning_profile"
 authority_class: "PLANNING_PRIOR_ONLY"
 
+planning_readiness:
+  blocking_status: BLOCKED
+  ready_status: READY
+  blocking_hitl_risk: required
+  non_blocking_hitl_risk: low
+
 generation_modes:
   strategic_tailor:
     deliverable: targeted_resume
@@ -82,10 +88,18 @@ ambiguity_rules:
     field: job_description_text
     severity: high
     blocks_progress: true
+    applicable_modes:
+      - strategic_tailor
+      - tailor_existing
+      - generate_scratch
+      - section_regen
+      - healing_fact_check
   - code: SOURCE_RESUME_EMPTY
     field: source_resume_text
     severity: high
     blocks_progress: true
+    excluded_modes:
+      - generate_scratch
 
 work_unit_profiles:
   executive_summary:

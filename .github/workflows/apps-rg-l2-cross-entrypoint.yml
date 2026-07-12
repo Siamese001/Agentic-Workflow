@@ -1,0 +1,47 @@
+name: apps_rg L2 cross-entrypoint authority
+
+on:
+  pull_request:
+    paths:
+      - "apps_rg/runtime/bindings/l2_authority*.py"
+      - "apps_rg/runtime/bindings/l2_receipt_bundle.py"
+      - "apps_rg/runtime/bindings/l2_binding_adapter.py"
+      - "apps_rg/runtime/spine/governed_l2_exit_compose.py"
+      - "apps_rg/runtime/section_l2_authority.py"
+      - "apps_rg/runtime/section_l2_lane_integration.py"
+      - "apps_eval/adapters/__init__.py"
+      - "apps_eval/registries/apps_rg_lane_contract.json"
+      - "tests/_apps_contract/test_apps_rg_l2_cross_entrypoint_closeout.py"
+      - ".github/workflows/apps-rg-l2-cross-entrypoint.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  l2-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Compile changed L2 authority surfaces
+        run: |
+          python -m py_compile \
+            apps_rg/runtime/bindings/l2_authorized_runtime.py \
+            apps_rg/runtime/bindings/l2_binding_adapter.py \
+            apps_rg/runtime/spine/governed_l2_exit_compose.py \
+            apps_rg/runtime/section_l2_authority.py \
+            apps_rg/runtime/section_l2_lane_integration.py \
+            apps_eval/adapters/__init__.py \
+            tests/_apps_contract/test_apps_rg_l2_cross_entrypoint_closeout.py
+      - name: Cross-entrypoint contract tests
+        run: |
+          python -m pytest \
+            tests/_apps_contract/test_apps_rg_l2_cross_entrypoint_closeout.py \
+            tests/_apps_contract/test_apps_rg_governed_l2_exit_w6.py \
+            -q --tb=short
+      - name: Existing L2 v4 envelope gate
+        run: python ops_scripts/ci/check_apps_rg_l2_v4_envelope.py
