@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "svp_docs_x1d/v1",
+  "title": "SVP documentation X1D judge receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "packet_digest",
+    "decision",
+    "overall_score",
+    "scores",
+    "blocking_findings",
+    "recommended_edits",
+    "judge"
+  ],
+  "properties": {
+    "schema_version": {"const": "svp_docs_x1d/v1"},
+    "run_id": {"type": "string", "minLength": 1},
+    "packet_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "decision": {"enum": ["ALLOW", "WARN", "BLOCK"]},
+    "overall_score": {"type": ["number", "null"], "minimum": 0, "maximum": 5},
+    "scores": {
+      "type": "object",
+      "additionalProperties": {"type": ["number", "null"], "minimum": 0, "maximum": 5}
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/finding"}
+    },
+    "recommended_edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "reason", "priority"],
+        "properties": {
+          "file": {"type": "string"},
+          "reason": {"type": "string"},
+          "priority": {"enum": ["low", "medium", "high"]}
+        }
+      }
+    },
+    "judge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "model", "rubric_version", "prompt_hash", "independent", "transport_status"],
+      "properties": {
+        "provider": {"type": "string"},
+        "model": {"type": "string"},
+        "rubric_version": {"type": "string"},
+        "prompt_hash": {"type": "string"},
+        "independent": {"type": "boolean"},
+        "transport_status": {"enum": ["AVAILABLE", "UNAVAILABLE", "ABSTAINED"]}
+      }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "line", "claim", "finding_type", "severity", "evidence", "required_fix"],
+      "properties": {
+        "file": {"type": "string"},
+        "line": {"type": "integer", "minimum": 1},
+        "claim": {"type": "string", "minLength": 1},
+        "finding_type": {"type": "string", "minLength": 1},
+        "severity": {"enum": ["low", "medium", "high"]},
+        "evidence": {"type": "string", "minLength": 1},
+        "required_fix": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
