@@ -10,7 +10,10 @@ from tqdm import tqdm
 
 
 def _connect_sqlite(path: Path) -> sqlite3.Connection:
-    return sqlite3.connect(str(path), timeout=30)
+    """Open an ADG database with referential-integrity enforcement enabled."""
+    conn = sqlite3.connect(str(path), timeout=30)
+    conn.execute("PRAGMA foreign_keys=ON")
+    return conn
 
 
 def _check_artifact_validity(paths: object) -> None:
@@ -80,6 +83,16 @@ def _check_sqlite_integrity(sqlite_path: Path) -> None:
         integrity_result = cur.execute("PRAGMA integrity_check").fetchone()[0]
         if integrity_result != "ok":
             print(f"\n[ERROR] SQLite integrity check failed: {integrity_result}")
+            conn.close()
+            sys.exit(1)
+
+        foreign_key_violations = cur.execute("PRAGMA foreign_key_check").fetchall()
+        if foreign_key_violations:
+            sample = foreign_key_violations[:10]
+            print(
+                "\n[ERROR] SQLite foreign-key check failed: "
+                f"{len(foreign_key_violations)} violation(s); sample={sample}"
+            )
             conn.close()
             sys.exit(1)
 
