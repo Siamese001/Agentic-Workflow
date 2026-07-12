@@ -1,8 +1,10 @@
 """MCP Health Diagnostics — Exposed as adg_health tool."""
 
 import logging
+from pathlib import Path
 from typing import Any
 
+from tools.adg.core.repo_health import read_repo_health
 from tools.adg.core.service import ADGService
 
 logger = logging.getLogger(__name__)
@@ -64,6 +66,34 @@ class HealthDiagnostics:
                 "reason": f"{type(exc).__name__}: {exc}",
             }
 
+    def _safe_repo_health(self) -> dict[str, Any]:
+        """Return Phase G repository health without breaking MCP startup."""
+        try:
+            backend = getattr(self._service, "_sqlite", None)
+            if backend is None or not hasattr(backend, "health"):
+                return {
+                    "available": False,
+                    "reason": "sqlite_backend_unavailable",
+                }
+            _status, metadata = backend.health()
+            sqlite_path = metadata.get("path") if isinstance(metadata, dict) else None
+            if not sqlite_path:
+                return {
+                    "available": False,
+                    "reason": "sqlite_path_unavailable",
+                }
+            return read_repo_health(Path(str(sqlite_path)))
+        except Exception as exc:  # guardian: allow-broad-exception -- additive repo-health probe
+            logger.warning(
+                "Repo-health status unavailable during health report: %s",
+                exc,
+            )
+            return {
+                "available": False,
+                "reason": "repo_health_query_failed",
+                "message": str(exc),
+            }
+
     def full_report(self) -> dict[str, Any]:
         """Complete certification-aware health report."""
         health = self._service.health()
@@ -103,6 +133,7 @@ class HealthDiagnostics:
                 "counts": health.materialization_counts,
             },
             "adg": status.data,
+            "repo_health": self._safe_repo_health(),
             "graph_projection": projection,
         }
 

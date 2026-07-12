@@ -1,15 +1,17 @@
-"""ADG SQLite Materialized View Layer.
+"""ADG SQLite materialized-view layer.
 
-Produces 42 physical materialized tables across 4 implementation phases (Phase A includes mv_handoff_witness_tiers, mv_cross_cutting_witness_tiers, mv_local_heal_first_breaches, mv_observability_interference_breaches):
-    Phase A — Critical path, authority/sovereignty, lifecycle, topology seeds
-    Phase B — Capability/egress, tool/agent shape, task-contract/action-safety
-    Phase C — Trace/replay/eval, determinism/provenance, exemption/debt
-    Phase D — Snapshot baseline + historical regression diffs
+Physical tables are rebuilt in dependency order:
 
-Entry point: materialize_all_views(sqlite_path) -> dict[str, int]
+- Phase A — critical path, authority/sovereignty, lifecycle, topology seeds
+- Phase B — capability/egress, tool/agent shape, task/action safety
+- Phase C — trace/replay/eval, determinism/provenance, exemption/debt
+- Phase D — snapshot baseline and historical regression deltas
+- Phase E — graph-intelligence approximations inside canonical SQLite
+- Phase F — graph-hotspot × measured-coverage risk
+- Phase G — confidence-aware repository health and remediation hotspots
+
+Entry point: ``materialize_all_views(sqlite_path) -> dict[str, int]``.
 """
-
-from pathlib import Path
 
 from tools.generate.materialized_views.orchestrator import materialize_all_views
 
