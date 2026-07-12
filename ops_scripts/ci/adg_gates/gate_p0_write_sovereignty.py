@@ -211,10 +211,51 @@ class WriteSovereigntyGate(ADGGateBase):
         except sqlite3.Error:
             pass
 
-        # Check 2: New write bypass paths (delta from baseline)
+        # Check 2: New write bypass paths (delta from baseline).
+        # A P0 gate cannot interpret NO_BASELINE or a missing delta table as
+        # evidence of no regression.
         try:
+            comparison_statuses = {
+                str(row[0])
+                for row in self.conn.execute(
+                    "SELECT DISTINCT comparison_status "
+                    "FROM mv_new_write_bypass_paths"
+                ).fetchall()
+            }
+            if "NO_BASELINE" in comparison_statuses:
+                summary["baseline_status"] = "NO_BASELINE"
+                violations.append(
+                    GateViolation(
+                        violation_id="write_delta_baseline_unavailable",
+                        source_view="mv_new_write_bypass_paths",
+                        source_node=None,
+                        source_edge=None,
+                        file=None,
+                        line=None,
+                        layer_src=None,
+                        layer_dst=None,
+                        path_id=None,
+                        first_illegal_hop=None,
+                        path_criticality=5.0,
+                        in_modified_area=False,
+                        message=(
+                            "P0 write-sovereignty delta is UNKNOWN: "
+                            "no certified comparison baseline"
+                        ),
+                        path_criticality_class="write",
+                        structured_action_required=True,
+                        approval_required=True,
+                        extra={"comparison_status": "NO_BASELINE"},
+                    )
+                )
+            else:
+                summary["baseline_status"] = (
+                    next(iter(comparison_statuses), "UNKNOWN")
+                )
+
             cursor = self.conn.execute("""
-                SELECT edge_id, src_file, src_layer, bypass_type, source_file, line_no, is_new
+                SELECT edge_id, src_file, src_layer, bypass_type,
+                       source_file, line_no, is_new
                 FROM mv_new_write_bypass_paths
                 WHERE is_new = 1
             """)
@@ -247,14 +288,46 @@ class WriteSovereigntyGate(ADGGateBase):
                     },
                 )
                 violations.append(violation)
-        except sqlite3.Error:
-            pass
+        except sqlite3.Error as exc:
+            summary["baseline_status"] = "UNAVAILABLE"
+            violations.append(
+                GateViolation(
+                    violation_id="write_delta_evaluation_unavailable",
+                    source_view="mv_new_write_bypass_paths",
+                    source_node=None,
+                    source_edge=None,
+                    file=None,
+                    line=None,
+                    layer_src=None,
+                    layer_dst=None,
+                    path_id=None,
+                    first_illegal_hop=None,
+                    path_criticality=5.0,
+                    in_modified_area=False,
+                    message=(
+                        "P0 write-sovereignty delta evaluation failed: "
+                        f"{exc}"
+                    ),
+                    path_criticality_class="write",
+                    structured_action_required=True,
+                    approval_required=True,
+                    extra={"comparison_status": "UNAVAILABLE"},
+                )
+            )
 
         # Determine status: P0 blocks only on NEW bypass paths or NEW critical writes.
         # Steady-state warning inventory (844+ rows) is tracked but does not halt ADG;
         # cross-snapshot delta is owned by mv_new_write_bypass_paths / phase_d regression.
         summary["total_violations"] = len(violations)
-        has_critical = summary["critical_writes"] > 0 or summary["new_bypass_paths"] > 0
+        has_critical = (
+            summary["critical_writes"] > 0
+            or summary["new_bypass_paths"] > 0
+            or summary.get("baseline_status") in {
+                "NO_BASELINE",
+                "UNKNOWN",
+                "UNAVAILABLE",
+            }
+        )
         status = "blocked" if has_critical else ("warn" if violations else "passed")
 
         return GateResult(
@@ -275,7 +348,7 @@ class WriteSovereigntyGate(ADGGateBase):
             severity=self.severity,
             snapshot_id=self._snapshot_id,
             timestamp=datetime.now(timezone.utc).isoformat(),
-            status="passed",
+            status="blocked",
             violations=[],
             summary={
                 "total_violations": 0,
@@ -284,7 +357,8 @@ class WriteSovereigntyGate(ADGGateBase):
                 "by_layer": {},
                 "in_modified_area": 0,
                 "new_bypass_paths": 0,
-                "note": "Materialized views not available - no violations detected",
+                "baseline_status": "UNAVAILABLE",
+                "note": "Materialized views unavailable; P0 evaluation blocked",
             },
             policy=self.execution_policy,
         )
