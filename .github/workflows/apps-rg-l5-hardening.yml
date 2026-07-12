@@ -60,6 +60,7 @@ jobs:
           python ops_scripts/ci/check_apps_rg_no_direct_durable_writes.py
       - name: Run L5 authenticity and UWG regression tests
         run: |
+          set -o pipefail
           python -m pytest \
             tests/unit/apps_rg/test_l5_packet_authenticity.py \
             tests/unit/apps_rg/test_r1b_l5_uwg_admission.py \
@@ -67,4 +68,12 @@ jobs:
             tests/unit/apps_rg/test_r1b_uwg_receipt_contract_parity_w10b.py \
             tests/unit/apps_rg/test_c0_semantic_cache_payload_uwg_l4.py \
             tests/_apps_contract/test_apps_rg_l5_runtime_wiring.py \
-            -q --no-header -p no:cacheprovider
+            -q --no-header -p no:cacheprovider 2>&1 | tee /tmp/apps-rg-l5-pytest.log
+      - name: Upload L5 pytest log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps-rg-l5-pytest-log
+          path: /tmp/apps-rg-l5-pytest.log
+          if-no-files-found: warn
+          retention-days: 7
