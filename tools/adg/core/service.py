@@ -15,6 +15,7 @@ from tools.adg.mv_reader import MVRedisReader
 from tools.adg.shared_modules.config import resolve_adg_redis_url
 
 logger = logging.getLogger(__name__)
+CANONICAL_CACHE_METRIC_VERSION = "canonical-4.0.0"
 
 
 class ADGService:
@@ -51,8 +52,13 @@ class ADGService:
             verify_pointer_digest=True,
         )
         status = self._sqlite.get_status()
-        self._adg_snapshot_id = str(
-            status.get("timestamp") or "unavailable"
+        cache_identity = (
+            status.get("artifact_digest")
+            or status.get("timestamp")
+            or "unavailable"
+        )
+        self._adg_snapshot_id = (
+            f"{cache_identity}:{CANONICAL_CACHE_METRIC_VERSION}"
         )
 
         # Redis is a projection/accelerator and never snapshot authority.
@@ -392,8 +398,13 @@ class ADGService:
             # Refresh snapshot ID so Redis cache keys reflect the active snapshot.
             # Without this, Redis lookups after a reload use the stale snapshot ID.
             status = self._sqlite.get_status()
-            self._adg_snapshot_id = str(
-                status.get("timestamp") or "unavailable"
+            cache_identity = (
+                status.get("artifact_digest")
+                or status.get("timestamp")
+                or "unavailable"
+            )
+            self._adg_snapshot_id = (
+                f"{cache_identity}:{CANONICAL_CACHE_METRIC_VERSION}"
             )
 
         if self._redis is not None:
