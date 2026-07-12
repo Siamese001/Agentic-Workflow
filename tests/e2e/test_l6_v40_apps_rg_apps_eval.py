@@ -59,7 +59,8 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert eval_bridge["direct_l4_write_attempted"] is False
     assert eval_bridge["durable_write_attempted"] is False
     assert eval_bridge["future_run_only"] is True
-    assert eval_bridge["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
+    assert eval_bridge["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert eval_bridge["projection_consistency_only"] is True
     assert eval_bridge["l6_microstep_artifact_refs"]["l6_apps_eval_alignment"]
     assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_rows"] == eval_record.artifact_paths["diagnostic_rows"]
     assert eval_bridge["diagnostic_artifact_refs"]["diagnostic_summary"] == eval_record.artifact_paths["diagnostic_summary"]
@@ -67,11 +68,13 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
         row for row in eval_record.scorecard.scorecard_rows if row.get("required", True)
     ]
     assert eval_alignment["rows_expected"] == len(required_rows)
-    assert eval_alignment["alignment_source"] == "apps_eval_scorecard_rows"
-    assert eval_alignment["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
-    assert eval_alignment["apps_eval_rows_bound"] is True
-    assert eval_grain_parity["grain_parity_status"] == "PASS"
-    assert eval_grain_parity["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
+    assert eval_alignment["alignment_source"] == "contract_only_pseudo_rows"
+    assert eval_alignment["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert eval_alignment["projection_consistency_only"] is True
+    assert eval_alignment["apps_eval_rows_bound"] is False
+    assert eval_grain_parity["grain_parity_status"] == "WARN"
+    assert eval_grain_parity["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert eval_grain_parity["projection_consistency_only"] is True
     assert eval_alignment["missing_in_l6"] == []
     assert eval_alignment["missing_in_apps_eval"] == []
     assert eval_grain_parity["missing_in_l6"] == []
