@@ -25,7 +25,12 @@ from tqdm import tqdm
 from tools.adg.core.graph_projection_backend import GraphProjectionBackend
 from tools.adg.core.models import ADGEdge, ADGNode
 from tools.adg.core.p0_wave_plan import build_p0_remediation_wave_plan
-from tools.adg.shared_modules.path_resolver import get_adg_dir, latest_sqlite
+from tools.adg.shared_modules.path_resolver import (
+    SnapshotResolution,
+    get_adg_dir,
+    resolve_snapshot,
+)
+from tools.adg.shared_modules.snapshot_registry import SnapshotPointerError
 
 logger = logging.getLogger(__name__)
 
@@ -56,15 +61,57 @@ class SQLiteBackend:
     # Ref: https://ricardoanderegg.com/posts/python-sqlite-thread-safety/
     _lifecycle_lock: threading.RLock
 
-    def __init__(self, use_graph_store: bool = True):
-        # RLock allows the same thread to re-enter (e.g., self-heal recursion
-        # triggered from inside _require_conn while already holding the lock
-        # via reopen()). Must be initialized before _connect().
+    def __init__(
+        self,
+        use_graph_store: bool = True,
+        *,
+        snapshot_selection: str = "latest",
+        allow_unavailable: bool = False,
+        verify_pointer_digest: bool = True,
+    ):
+        """Open an explicitly selected ADG snapshot role.
+
+        Direct callers retain the historical latest default. MCP passes
+        certified and allow_unavailable=True so missing certification becomes
+        structured health instead of a repair-candidate fallback.
+        """
+        if snapshot_selection not in {
+            "latest",
+            "certified",
+            "repair",
+            "candidate",
+        }:
+            raise ValueError(
+                f"unsupported ADG snapshot selection: {snapshot_selection!r}"
+            )
         self._lifecycle_lock = threading.RLock()
+        self._conn = None
+        self._sqlite_path = None
+        self._last_mtime = 0.0
+        self._graph_store = None
+        self._snapshot_selection = snapshot_selection
+        self._allow_unavailable = allow_unavailable
+        self._verify_pointer_digest = verify_pointer_digest
+        self._snapshot_resolution: SnapshotResolution | None = None
+        self._selection_error: str | None = None
         with self._lifecycle_lock:
             self._connect()
-            if use_graph_store:
+            if use_graph_store and self._sqlite_path is not None:
                 self._init_graph_store()
+
+    @property
+    def snapshot_selection(self) -> str:
+        return self._snapshot_selection
+
+    def selected_snapshot_path(self) -> Path | None:
+        """Resolve the configured role without cross-role fallback."""
+        resolved = resolve_snapshot(
+            selection=self._snapshot_selection,
+            require_nodes_table=True,
+            verify_digest=False,
+            strict=False,
+        )
+        return resolved.path if resolved else None
 
     @staticmethod
     def _normalize_limit(limit: int, default: int) -> int:
@@ -104,8 +151,22 @@ class SQLiteBackend:
         schema corruption) and the caller should see it.
         """
         with self._lifecycle_lock:
-            if self._conn is None:
-                raise RuntimeError("SQLiteBackend connection is closed")
+            if self._conn is None or self._sqlite_path is None:
+                raise RuntimeError(
+                    "ADG query unavailable: "
+                    + (
+                        self._selection_error
+                        or f"no {self._snapshot_selection} snapshot"
+                    )
+                )
+            try:
+                current_mtime = self._sqlite_path.stat().st_mtime
+            except OSError as exc:
+                raise RuntimeError("active ADG snapshot disappeared") from exc
+            if current_mtime != self._last_mtime:
+                raise RuntimeError(
+                    "active ADG snapshot changed after selection; reopen required"
+                )
             try:
                 # Cheap liveness probe — costs one function call and no I/O
                 # against the cached sqlite page cache. Detects thread pinning
@@ -149,55 +210,87 @@ class SQLiteBackend:
             self._graph_store = None
 
     def _connect(self) -> None:
-        """Establish read-only connection to latest SQLite file."""
-        sqlite_file = latest_sqlite(require_nodes_table=True)
-        if sqlite_file is None:
-            raise RuntimeError(
-                f"No ADG SQLite file with a nodes table found under {get_adg_dir()}. "
-                "Run: python -m tools.generate.generate_full_adg"
+        """Establish a read-only connection to the configured snapshot role."""
+        try:
+            resolved = resolve_snapshot(
+                selection=self._snapshot_selection,
+                require_nodes_table=True,
+                verify_digest=(
+                    self._verify_pointer_digest
+                    and self._snapshot_selection != "latest"
+                ),
+                strict=self._snapshot_selection != "latest",
             )
+        except SnapshotPointerError as exc:
+            resolved = None
+            self._selection_error = str(exc)
 
-        self._sqlite_path = sqlite_file
-        self._last_mtime = self._sqlite_path.stat().st_mtime
+        if resolved is None:
+            self._conn = None
+            self._sqlite_path = None
+            self._snapshot_resolution = None
+            message = self._selection_error or (
+                f"No {self._snapshot_selection} ADG snapshot under "
+                f"{get_adg_dir()}"
+            )
+            if self._allow_unavailable:
+                return
+            raise RuntimeError(message)
+
+        self._snapshot_resolution = resolved
+        self._selection_error = None
+        self._sqlite_path = resolved.path
+        self._last_mtime = resolved.path.stat().st_mtime
         self._conn = sqlite3.connect(
-            self._readonly_uri(self._sqlite_path),
+            self._readonly_uri(resolved.path),
             timeout=SQLITE_QUERY_TIMEOUT,
             uri=True,
-            # check_same_thread=False is safe here because the connection is
-            # opened mode=ro with PRAGMA query_only=ON (set below). Required
-            # because adg_reopen_connections() currently creates the connection
-            # on a ThreadPoolExecutor worker (runtime.py reopen_connections W1.2
-            # bounded-timeout wrapper) while subsequent query handlers run on
-            # the FastMCP event-loop thread — without this flag, every query
-            # after a reopen() raises "SQLite objects created in a thread can
-            # only be used in that same thread" and the server goes dark until
-            # full restart. See RCA 2026-04-24 (plan
-            # mcp-destructive-gate-preflight-e9a14b deferred-scope item,
-            # Notion ADR + W1-P1 row).
             check_same_thread=False,
         )
         self._conn.row_factory = sqlite3.Row
-        self._conn.execute(f"PRAGMA busy_timeout = {int(SQLITE_QUERY_TIMEOUT * 1000)}")
+        self._conn.execute(
+            f"PRAGMA busy_timeout = {int(SQLITE_QUERY_TIMEOUT * 1000)}"
+        )
         self._conn.execute("PRAGMA query_only = ON")
 
     def health(self) -> tuple[str, dict[str, Any]]:
-        """Return health status and metadata."""
-        if not self._sqlite_path or not self._sqlite_path.exists():
-            return "unavailable", {}
+        """Return selection-aware health and materialization provenance."""
+        if (
+            self._conn is None
+            or self._sqlite_path is None
+            or not self._sqlite_path.exists()
+        ):
+            return "unavailable", {
+                "snapshot_selection": self._snapshot_selection,
+                "selection_error": self._selection_error,
+                "materialization": self.get_materialization_status(),
+            }
 
         current_mtime = self._sqlite_path.stat().st_mtime
         is_fresh = current_mtime == self._last_mtime
-
-        # Check if current snapshot is stale (newer file exists)
-        latest_path = latest_sqlite()
-        is_stale = latest_path is not None and latest_path != self._sqlite_path
-
-        return "healthy", {
+        selected_path = self.selected_snapshot_path()
+        is_stale = selected_path is None or selected_path != self._sqlite_path
+        resolution = self._snapshot_resolution
+        certified = bool(
+            self._snapshot_selection == "certified"
+            and resolution is not None
+            and resolution.certification_status == "clean"
+            and resolution.artifact_status == "certified"
+        )
+        health_status = (
+            "healthy"
+            if is_fresh and not is_stale and certified
+            else "degraded"
+        )
+        return health_status, {
             "path": str(self._sqlite_path),
             "mtime": current_mtime,
             "is_fresh": is_fresh,
             "is_stale": is_stale,
-            "latest_path": str(latest_path) if latest_path else None,
+            "selected_path": str(selected_path) if selected_path else None,
+            "snapshot_selection": self._snapshot_selection,
+            "certified": certified,
+            "materialization": self.get_materialization_status(),
         }
 
     @staticmethod
@@ -312,35 +405,132 @@ class SQLiteBackend:
         )
         return [self._row_to_edge(row) for row in cur.fetchall()]
 
+    def _meta_value(self, key: str) -> str | None:
+        if self._conn is None:
+            return None
+        try:
+            row = self._require_conn().execute(
+                "SELECT value FROM meta WHERE key = ?",
+                (key,),
+            ).fetchone()
+        except (RuntimeError, sqlite3.Error):
+            return None
+        return str(row[0]) if row and row[0] is not None else None
+
     def get_status(self) -> dict[str, Any]:
-        """Get ADG snapshot status."""
+        """Return snapshot status without converting unavailability to zero."""
+        if self._conn is None or self._sqlite_path is None:
+            return {
+                "available": False,
+                "timestamp": None,
+                "node_count": None,
+                "edge_count": None,
+                "sqlite_path": None,
+                "schema_version": "unknown",
+                "artifact_digest": None,
+                "snapshot_selection": self._snapshot_selection,
+                "certification_status": "unknown",
+                "artifact_status": "unknown",
+                "certified": False,
+                "pointer_path": None,
+                "digest_verified": False,
+                "selection_error": self._selection_error,
+            }
+
         conn = self._require_conn()
-        if self._sqlite_path is None:
-            raise RuntimeError("SQLiteBackend path is unavailable")
-
-        nodes = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
-        edges = conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
-
+        resolution = self._snapshot_resolution
+        certification_status = (
+            resolution.certification_status if resolution else "unknown"
+        )
+        artifact_status = (
+            resolution.artifact_status if resolution else "unknown"
+        )
+        certified = bool(
+            self._snapshot_selection == "certified"
+            and certification_status == "clean"
+            and artifact_status == "certified"
+        )
         return {
-            "timestamp": self._sqlite_path.stem.replace("adg_indexed_", ""),
-            "node_count": nodes,
-            "edge_count": edges,
+            "available": True,
+            "timestamp": self._sqlite_path.stem.replace(
+                "adg_indexed_",
+                "",
+            ),
+            "node_count": conn.execute(
+                "SELECT COUNT(*) FROM nodes"
+            ).fetchone()[0],
+            "edge_count": conn.execute(
+                "SELECT COUNT(*) FROM edges"
+            ).fetchone()[0],
             "sqlite_path": str(self._sqlite_path),
+            "schema_version": self._meta_value("schema_version") or "unknown",
+            "artifact_digest": self._meta_value("artifact_digest"),
+            "snapshot_selection": self._snapshot_selection,
+            "certification_status": certification_status,
+            "artifact_status": artifact_status,
+            "certified": certified,
+            "pointer_path": (
+                str(resolution.pointer_path)
+                if resolution and resolution.pointer_path
+                else None
+            ),
+            "digest_verified": bool(
+                resolution and resolution.digest_verified
+            ),
+            "selection_error": None,
+        }
+
+    def get_materialization_status(self) -> dict[str, Any]:
+        """Evaluate the required materialization families fail closed."""
+        thresholds = {"mv": 30, "pview": 3, "infra": 1}
+        try:
+            rows = self._require_conn().execute(
+                "SELECT name FROM sqlite_master "
+                "WHERE type IN ('table','view') "
+                "AND name NOT LIKE 'sqlite_%'"
+            ).fetchall()
+        except (RuntimeError, sqlite3.Error) as exc:
+            return {
+                "status": "UNKNOWN",
+                "counts": {},
+                "thresholds": thresholds,
+                "reasons": [str(exc)],
+            }
+
+        names = [str(row[0]) for row in rows]
+        counts = {
+            "mv": sum(name.startswith("mv_") for name in names),
+            "pview": sum(name.startswith("v_p") for name in names),
+            "infra": sum(
+                (
+                    "infra" in name.lower()
+                    or "wiring" in name.lower()
+                )
+                and not name.startswith("mv_")
+                for name in names
+            ),
+        }
+        reasons = [
+            f"{key} count {counts[key]} < {minimum}"
+            for key, minimum in thresholds.items()
+            if counts[key] < minimum
+        ]
+        return {
+            "status": "FAIL" if reasons else "PASS",
+            "counts": counts,
+            "thresholds": thresholds,
+            "reasons": reasons,
         }
 
     def get_views_materialized_at(self) -> str | None:
-        """Return snapshot timestamp if infra P-views are present, else None."""
-        try:
-            conn = self._require_conn()
-            row = conn.execute(
-                "SELECT COUNT(*) FROM sqlite_master"
-                " WHERE type='view' AND (name LIKE 'mv_%' OR name LIKE 'v_p%')"
-            ).fetchone()
-            if row and row[0] > 0 and self._sqlite_path is not None:
-                return self._sqlite_path.stem.replace("adg_indexed_", "")
-            return None
-        except Exception:  # guardian: allow-broad-exception -- views may not exist on fresh or partial snapshots; health report must not fail closed
-            return None
+        """Return timestamp only when the full materialization contract passes."""
+        materialization = self.get_materialization_status()
+        if (
+            materialization["status"] == "PASS"
+            and self._sqlite_path is not None
+        ):
+            return self._sqlite_path.stem.replace("adg_indexed_", "")
+        return None
 
     # -----------------------------------------------------------------
     # W3 P3.3 — graph-layer primitives (mv_*, P-views) for §22 consumers
@@ -514,7 +704,8 @@ class SQLiteBackend:
         with self._lifecycle_lock:
             self.close()
             self._connect()
-            self._init_graph_store()
+            if self._sqlite_path is not None:
+                self._init_graph_store()
             logger.info("Reopened SQLite connection to %s", self._sqlite_path)
 
     # Graph-native methods that delegate to GraphProjectionBackend when available
