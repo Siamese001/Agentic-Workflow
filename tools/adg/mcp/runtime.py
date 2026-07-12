@@ -99,7 +99,13 @@ class ADGServerRuntime:
         """Return the singleton ADG service, creating it lazily on first use."""
         if self._service is None:
             LOG.info("Initializing ADGService...")
-            self._service = ADGService()
+            snapshot_selection = os.environ.get(
+                "ADG_MCP_SNAPSHOT_SELECTION",
+                "certified",
+            ).strip().lower()
+            self._service = ADGService(
+                snapshot_selection=snapshot_selection
+            )
             self._health = HealthDiagnostics(self._service)
             LOG.info("ADGService ready: %s", self._service.health().mode)
         return self._service
@@ -184,16 +190,22 @@ class ADGServerRuntime:
             sqlite_backend = getattr(self._service, "_sqlite", None)
             if sqlite_backend is not None:
                 try:
-                    from tools.adg.shared_modules.path_resolver import latest_sqlite
-
-                    current_path = getattr(sqlite_backend, "_sqlite_path", None)
-                    current_mtime = getattr(sqlite_backend, "_last_mtime", 0.0)
-                    latest_path = latest_sqlite()
+                    current_path = getattr(
+                        sqlite_backend,
+                        "_sqlite_path",
+                        None,
+                    )
+                    current_mtime = getattr(
+                        sqlite_backend,
+                        "_last_mtime",
+                        0.0,
+                    )
+                    selected_path = sqlite_backend.selected_snapshot_path()
                     if (
-                        latest_path is not None
+                        selected_path is not None
                         and current_path is not None
-                        and Path(current_path) == Path(latest_path)
-                        and current_mtime == latest_path.stat().st_mtime
+                        and Path(current_path) == Path(selected_path)
+                        and current_mtime == selected_path.stat().st_mtime
                     ):
                         LOG.info("reopen_connections noop: snapshot unchanged (%s)", current_path)
                         return {
@@ -337,14 +349,14 @@ class ADGServerRuntime:
 
         is_stale = sqlite_meta.get("is_stale", False)
         current_path = sqlite_meta.get("path")
-        latest_path = sqlite_meta.get("latest_path")
+        selected_path = sqlite_meta.get("selected_path")
 
         if not is_stale:
             return {
                 "status": "ok",
                 "data": {
                     "reloaded": False,
-                    "message": "Already using latest snapshot.",
+                    "message": "Already using selected certified snapshot.",
                     "current_path": current_path,
                     "redis_cleared": False,
                 },
@@ -352,7 +364,11 @@ class ADGServerRuntime:
 
         old_snapshot_id = getattr(service, "_adg_snapshot_id", None)
 
-        LOG.info("Reloading ADG from %s to %s", current_path, latest_path)
+        LOG.info(
+            "Reloading ADG from %s to selected snapshot %s",
+            current_path,
+            selected_path,
+        )
         service.reopen()
 
         new_meta = self.sqlite_health_meta()
