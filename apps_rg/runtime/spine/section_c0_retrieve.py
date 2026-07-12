@@ -1,8 +1,9 @@
-"""Section spine C0 retrieve — ``c0_retrieve_apps_rg`` authority (W4).
+"""Section spine C0 retrieve — verified L1 plan into C0 authority.
 
 Product-visible section lanes must not treat raw proof-pool metadata as C0/FEC
-authority. This module invokes the spine binding and enforces STOP AS EVIDENCE
-GAP when grounding is required and FEC support is weak or retrieval fails.
+authority. This module invokes the planned C0 boundary and enforces STOP AS
+EVIDENCE GAP when grounding is required and FEC support is weak or retrieval
+fails.
 """
 
 from __future__ import annotations
@@ -25,17 +26,22 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
     SUPPORT_STATUS_WEAK,
     SUPPORT_STATUS_WEAK_WITH_CAVEATS,
 )
-
 from apps_rg.runtime.bindings.c0_binding import (
     APPS_RG_C0_CERT_REF,
     C0_GRAPH_LANE_NA_REF,
     C0EvidenceGapError,
-    c0_retrieve_apps_rg,
+)
+from apps_rg.runtime.bindings.c0_planned_binding import (
+    c0_retrieve_apps_rg_planned,
 )
 from apps_rg.runtime.spine.front_contracts import (
     SectionFrontSpineBridge,
     fixture_dev_bypass_active,
 )
+
+# Compatibility seam for tests and older patch points. Product execution resolves
+# to the verified planned boundary by default.
+c0_retrieve_apps_rg = c0_retrieve_apps_rg_planned
 
 STOP_AS_EVIDENCE_GAP = "STOP_AS_EVIDENCE_GAP"
 
@@ -54,7 +60,13 @@ _GROUNDING_FAIL_STATUSES = frozenset(
 class StopAsEvidenceGapError(RuntimeError):
     """C0 preflight blocked or FEC too weak for grounded section work."""
 
-    def __init__(self, message: str, *, support_status: str = "", reason_code: str = "") -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        support_status: str = "",
+        reason_code: str = "",
+    ) -> None:
         super().__init__(message)
         self.support_status = support_status
         self.reason_code = reason_code or STOP_AS_EVIDENCE_GAP
@@ -67,7 +79,8 @@ class SectionSpineC0RetrieveResult:
 
 
 def section_spine_c0_retrieve_required(front_spine: SectionFrontSpineBridge) -> bool:
-    """Whether product section runs must invoke spine ``c0_retrieve_apps_rg``."""
+    """Whether product section runs must invoke spine C0 retrieval."""
+
     if fixture_dev_bypass_active() or bool(front_spine.fixture_dev_only_bypass):
         return False
     if not front_spine.product_visible:
@@ -98,6 +111,7 @@ def assert_no_stop_as_evidence_gap(
     section_id: str = "",
 ) -> None:
     """Raise STOP AS EVIDENCE GAP when grounded work has weak FEC support."""
+
     if not grounding_required:
         return
     status = str(getattr(fec, "support_status", "") or "")
@@ -107,7 +121,11 @@ def assert_no_stop_as_evidence_gap(
             f"but FEC support_status={status!r}",
             support_status=status,
         )
-    if status == STATUS_NOT_APPLICABLE and not getattr(fec, "support_target_met", False):
+    if status == STATUS_NOT_APPLICABLE and not getattr(
+        fec,
+        "support_target_met",
+        False,
+    ):
         reason = str(getattr(fec, "not_applicable_reason", "") or "")
         raise StopAsEvidenceGapError(
             f"{STOP_AS_EVIDENCE_GAP}: section={section_id or '?'} grounding_required "
@@ -118,15 +136,17 @@ def assert_no_stop_as_evidence_gap(
 
 def _fec_evidence_items_payload(fec: FinalEvidenceContract) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    for it in fec.evidence_items or ():
+    for item in fec.evidence_items or ():
         out.append(
             {
-                "evidence_id": getattr(it, "evidence_id", "") or getattr(it, "source", ""),
-                "source": getattr(it, "source", ""),
-                "source_class": getattr(it, "source_type", "") or getattr(it, "source_class", ""),
-                "source_type": getattr(it, "source_type", ""),
-                "content_digest": getattr(it, "content_digest", ""),
-                "allowed_prompt_slot": getattr(it, "allowed_prompt_slot", ""),
+                "evidence_id": getattr(item, "evidence_id", "")
+                or getattr(item, "source", ""),
+                "source": getattr(item, "source", ""),
+                "source_class": getattr(item, "source_type", "")
+                or getattr(item, "source_class", ""),
+                "source_type": getattr(item, "source_type", ""),
+                "content_digest": getattr(item, "content_digest", ""),
+                "allowed_prompt_slot": getattr(item, "allowed_prompt_slot", ""),
             }
         )
     return out
@@ -141,19 +161,27 @@ def _build_spine_retrieve_receipt(
     dense_ran = bool(getattr(fec, "dense_search_refs", None))
     sparse_refs = list(getattr(fec, "sparse_search_refs", None) or ())
     return {
-        "schema_version": "section_spine_c0_retrieve_receipt_v1",
+        "schema_version": "section_spine_c0_retrieve_receipt_v2",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "section_id": section_id,
         "stop_as_evidence_gap_policy": STOP_AS_EVIDENCE_GAP,
-        "spine_binding": "apps_rg.runtime.bindings.c0_binding.c0_retrieve_apps_rg",
-        "cert_ref": getattr(fec, "l5_certification_ref", None) or APPS_RG_C0_CERT_REF,
+        "spine_binding": (
+            "apps_rg.runtime.bindings.c0_planned_binding."
+            "c0_retrieve_apps_rg_planned"
+        ),
+        "cert_ref": getattr(fec, "l5_certification_ref", None)
+        or APPS_RG_C0_CERT_REF,
         "support_status": fec.support_status,
         "not_applicable_reason": getattr(fec, "not_applicable_reason", "") or "",
         "final_evidence_digest": getattr(fec, "final_evidence_digest", "") or "",
+        "retrieval_plan_ref": getattr(fec, "retrieval_plan_ref", "") or "",
+        "audit_refs": list(getattr(fec, "audit_refs", None) or ()),
         "evidence_item_count": len(fec.evidence_items or ()),
         "dense_search_refs": list(getattr(fec, "dense_search_refs", None) or ()),
         "sparse_search_refs": sparse_refs,
-        "graph_expansion_refs": list(getattr(fec, "graph_expansion_refs", None) or ()),
+        "graph_expansion_refs": list(
+            getattr(fec, "graph_expansion_refs", None) or ()
+        ),
         "graph_lane_na_ref": graph_lane_ref,
         "canonical_c0_2_dense_claimed": dense_ran,
         "canonical_c0_3_graph_claimed": graph_lane_ref != C0_GRAPH_LANE_NA_REF,
@@ -169,20 +197,16 @@ def invoke_section_spine_c0_retrieve(
     chromadb_path: str | None = None,
     assert_grounding: bool = True,
 ) -> SectionSpineC0RetrieveResult:
-    """Run spine C0 retrieve for a section front-spine bundle.
+    """Run verified-plan C0 retrieval for a section front-spine bundle."""
 
-    ``assert_grounding`` (default ``True``) controls whether the spine-retrieve FEC's
-    support is grounding-asserted *here*. For ``evidence_room_producer`` (graph-authority)
-    sections the section's OWN evidence-room FEC is the grounding authority and is asserted
-    by the caller AFTER ``apply_spine_c03_overlay_to_bridge_doc`` overlays it onto the
-    bridge; the spine retrieve is non-authoritative enrichment, so its ``WEAK`` support must
-    not prematurely STOP a section whose own FEC rated ``PASS``. Such callers pass
-    ``assert_grounding=False`` and re-assert on the merged/overlaid bridge. Direct callers
-    keep the default so standalone use stays grounding-safe.
-    """
-    if front_spine.route is None or front_spine.validated_request is None:
+    if (
+        front_spine.route is None
+        or front_spine.validated_request is None
+        or front_spine.l1_plan is None
+    ):
         raise StopAsEvidenceGapError(
-            f"{STOP_AS_EVIDENCE_GAP}: missing RouteContract or ValidatedRequest on front spine"
+            f"{STOP_AS_EVIDENCE_GAP}: missing RouteContract, L1PlanContract, "
+            "or ValidatedRequest on front spine"
         )
 
     chroma = chromadb_path
@@ -193,10 +217,14 @@ def invoke_section_spine_c0_retrieve(
         fec = c0_retrieve_apps_rg(
             route=front_spine.route,
             validated_request=front_spine.validated_request,
+            l1_plan=front_spine.l1_plan,
             chromadb_path=chroma,
         )
     except C0EvidenceGapError as exc:
-        raise StopAsEvidenceGapError(str(exc), reason_code=STOP_AS_EVIDENCE_GAP) from exc
+        raise StopAsEvidenceGapError(
+            str(exc),
+            reason_code=STOP_AS_EVIDENCE_GAP,
+        ) from exc
 
     if assert_grounding:
         assert_no_stop_as_evidence_gap(
@@ -222,7 +250,8 @@ def apply_spine_c03_overlay_to_bridge_doc(
     *,
     spine: SectionSpineC0RetrieveResult,
 ) -> dict[str, Any]:
-    """Overlay core C0.3 spine graph authority without replacing evidence-room producer_stage."""
+    """Overlay core C0.3 spine graph authority without replacing evidence-room producer."""
+
     from apps_rg.runtime.spine.spine_c03_authority import (
         overlay_spine_graph_authority_on_bridge,
         spine_graph_refs_live,
@@ -244,7 +273,9 @@ def apply_spine_c03_overlay_to_bridge_doc(
         out["apps_rg_c03_skills_graph_used"] = True
     pa = dict(out.get("pa_proof_authority_metadata") or {})
     pa["core_c03_graph_rag_used"] = core_live
-    pa["spine_c0_retrieve_receipt_ref"] = "section_spine_c0_retrieve_receipt.json"
+    pa["spine_c0_retrieve_receipt_ref"] = (
+        "section_spine_c0_retrieve_receipt.json"
+    )
     out["pa_proof_authority_metadata"] = pa
     snap = dict(out.get("final_evidence_contract_snapshot") or {})
     if spine_exp:
@@ -260,15 +291,16 @@ def merge_spine_fec_into_bridge_doc(
     pool_allowed_fact_ids: list[str],
 ) -> dict[str, Any]:
     """Overlay spine FEC authority fields onto a section FEC bridge document."""
+
     fec = spine.fec
     out = dict(bridge_doc)
     items = _fec_evidence_items_payload(fec)
     if not items and pool_allowed_fact_ids:
-        for fid in pool_allowed_fact_ids:
+        for fact_id in pool_allowed_fact_ids:
             items.append(
                 {
-                    "evidence_id": f"evidence:section:{fid}",
-                    "source_fact_id": fid,
+                    "evidence_id": f"evidence:section:{fact_id}",
+                    "source_fact_id": fact_id,
                     "source_class": out.get("proof_source") or "proof_pool",
                 }
             )
@@ -280,15 +312,21 @@ def merge_spine_fec_into_bridge_doc(
         "run_id": fec.run_id,
         "final_evidence_digest": fec.final_evidence_digest,
         "support_status": support,
+        "retrieval_plan_ref": getattr(fec, "retrieval_plan_ref", "") or "",
+        "audit_refs": list(getattr(fec, "audit_refs", None) or ()),
         "evidence_items": items,
         "dense_search_refs": list(getattr(fec, "dense_search_refs", None) or ()),
         "sparse_search_refs": list(getattr(fec, "sparse_search_refs", None) or ()),
-        "graph_expansion_refs": list(getattr(fec, "graph_expansion_refs", None) or ()),
+        "graph_expansion_refs": list(
+            getattr(fec, "graph_expansion_refs", None) or ()
+        ),
     }
 
     spine_exp = list(getattr(fec, "graph_expansion_refs", None) or ())
     spine_lin: list[str] = []
-    from apps_rg.runtime.spine.spine_c03_authority import overlay_spine_graph_authority_on_bridge
+    from apps_rg.runtime.spine.spine_c03_authority import (
+        overlay_spine_graph_authority_on_bridge,
+    )
 
     out.update(
         {
@@ -298,13 +336,15 @@ def merge_spine_fec_into_bridge_doc(
             "final_evidence_contract_snapshot": snap,
             "spine_c0_retrieve_receipt": spine.receipt,
             "producer_stage": "spine_c0_retrieve_apps_rg",
-            "fec_bridge_mode": out.get("fec_bridge_mode") or "spine_c0_fec_compose",
+            "fec_bridge_mode": out.get("fec_bridge_mode")
+            or "spine_c0_fec_compose",
             "canonical_c0_2_claimed": dense_ran,
             "canonical_c0_3_claimed": bool(
                 spine.receipt.get("canonical_c0_3_graph_claimed")
                 or (
                     spine.fec.graph_expansion_refs
-                    and str(spine.fec.graph_expansion_refs[0]) != C0_GRAPH_LANE_NA_REF
+                    and str(spine.fec.graph_expansion_refs[0])
+                    != C0_GRAPH_LANE_NA_REF
                 )
             ),
             "canonical_c0_5_claimed": True,
@@ -344,8 +384,12 @@ __all__ = [
 ]
 
 
-def write_spine_c0_retrieve_receipt(artifact_dir: Path, receipt: dict[str, Any]) -> Path:
-    """Persist spine C0 retrieve receipt under a section artifact dir."""
+def write_spine_c0_retrieve_receipt(
+    artifact_dir: Path,
+    receipt: dict[str, Any],
+) -> Path:
+    """Persist spine C0 retrieve receipt under a section artifact directory."""
+
     artifact_dir = Path(artifact_dir)
     artifact_dir.mkdir(parents=True, exist_ok=True)
     path = artifact_dir / "section_spine_c0_retrieve_receipt.json"
