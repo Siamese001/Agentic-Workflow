@@ -40,7 +40,7 @@ def build_l6_eval_execution_receipt(
     human_labels_present: bool = False,
     calibration_fresh: bool = False,
 ) -> L6EvalExecutionReceipt:
-    level = EvalLevel(str(eval_level))
+    level = eval_level if isinstance(eval_level, EvalLevel) else EvalLevel(str(eval_level))
     reasons: list[str] = []
     if level is EvalLevel.MICRO:
         if writer_live or graders_live:

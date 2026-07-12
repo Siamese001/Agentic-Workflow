@@ -244,7 +244,7 @@ def emit_l6_apps_eval_binding_closure_receipt(
         == "PASS",
         "independent_parity_pass": parity.get("grain_parity_status") == "PASS",
         "apps_eval_rows_bound": parity.get("apps_eval_rows_bound") is True,
-        "apps_eval_bound_evidence": parity.get("evidence_class") == "APPS_EVAL_BOUND_PROOF",
+        "independent_bound_evidence": parity.get("evidence_class") == "APPS_EVAL_BOUND_PROOF",
         "independent_observations": parity.get("independent_observations") is True,
         "authority_clean": parity.get("authority_mismatch") is False,
     }
