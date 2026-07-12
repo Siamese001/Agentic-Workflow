@@ -14,11 +14,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_DIR = ROOT / "artifacts" / "apps_research_rg_handoff"
+_COMMAND_TIMEOUT_SECONDS = 600
 
 
 def _run(args: list[str]) -> None:
     print("+", " ".join(args), flush=True)
-    subprocess.run(args, cwd=ROOT, check=True, shell=False)
+    subprocess.run(
+        args,
+        cwd=ROOT,
+        check=True,
+        shell=False,
+        timeout=_COMMAND_TIMEOUT_SECONDS,
+    )
 
 
 def _enforce_source_structure() -> None:
