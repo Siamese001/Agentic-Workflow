@@ -1,8 +1,8 @@
 # ADG BCG Gate Adapter
 
-- **Generated:** 2026-07-13T10:39:32+00:00
+- **Generated:** 2026-07-13T11:01:18+00:00
 - **Policy:** `2026-06-28.high_signal_burndown_v1`
-- **Source timestamp:** 2026-07-13T10:36:22.126789+00:00
+- **Source timestamp:** 2026-07-13T10:58:02.552667+00:00
 - **Work sections:** 12 gate(s) / 6,198 row(s)
 - **KPI/watchlist:** 5 gate(s) / 12,154 row(s)
 

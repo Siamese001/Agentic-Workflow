@@ -147,7 +147,7 @@
       "status_label": "Deletion status",
       "table_limit": 6,
       "technical_read": [
-        "ADG source: artifacts/adg/adg_indexed_07132026_0630.sqlite (snapshot 07132026_0630)",
+        "ADG source: artifacts/adg/adg_indexed_07132026_0651.sqlite (snapshot 07132026_0651)",
         "Dead code candidates: 899",
         "Dead imports: 899",
         "Unresolved imports: 466",
@@ -509,8 +509,8 @@
     "total_low_confidence": 466
   },
   "source": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07132026_0630.sqlite",
-    "adg_snapshot_ts": "07132026_0630",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07132026_0651.sqlite",
+    "adg_snapshot_ts": "07132026_0651",
     "dead_code_signal_sources": [
       "overlay_violations.category=dead_import_resolved",
       "mv_dead_import_hotspots_overlay",
@@ -520,8 +520,8 @@
   },
   "status": "PASS",
   "summary": {
-    "adg_snapshot": "artifacts/adg/adg_indexed_07132026_0630.sqlite",
-    "adg_snapshot_ts": "07132026_0630",
+    "adg_snapshot": "artifacts/adg/adg_indexed_07132026_0651.sqlite",
+    "adg_snapshot_ts": "07132026_0651",
     "executive_ready": true,
     "first_party_low_confidence_ratio": 1.4805871512994853,
     "inferred_symbol_ratio": 10.153193442402737,

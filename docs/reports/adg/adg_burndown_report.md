@@ -1,9 +1,9 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-07-13T10:40:10+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260713_103622.json`
-- **Burndown source:** `artifacts\adg\adg_burndown_table_07132026_0630.json`
-- **Snapshot timestamp:** 2026-07-13T10:36:22.126789+00:00
+- **Generated:** 2026-07-13T11:01:56+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260713_105802.json`
+- **Burndown source:** `artifacts\adg\adg_burndown_table_07132026_0651.json`
+- **Snapshot timestamp:** 2026-07-13T10:58:02.552667+00:00
 - **Total gates:** 49
 - **Overall verdict:** **PASS** (run halt — exit code)
 
@@ -13,7 +13,7 @@
 - **Business read:** ADG is PASS with tracked backlog: burn down accepted debt after green.
 - **ADG verdict:** PASS
 - **Technical evidence:**
-  - Snapshot timestamp: 2026-07-13T10:36:22.126789+00:00
+  - Snapshot timestamp: 2026-07-13T10:58:02.552667+00:00
   - Total gates: 49
   - FIX gates: 0
   - Burn-down gates: 12
@@ -204,7 +204,7 @@ _No FIX gates._
 ---
 ## Next action
 
-- **Queue:** `artifacts\adg\adg_action_queue_07132026_0630.json`
+- **Queue:** `artifacts\adg\adg_action_queue_07132026_0651.json`
 - **emit_status:** `ok`
 - **degraded:** `False`
 - **summary:** FIX=0 · TRACK=17 · actions_emitted=9

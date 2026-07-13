@@ -2,8 +2,8 @@
 
 > ⚠ **DIAGNOSTIC ONLY — RUNTIME-THIN (runtime_proof_status=view_present_zero_attested)**. This report was produced without runtime attestation; do NOT treat as certification-clean. Re-run with `--require-runtime-proof` in CI once OTel attestation is wired.
 
-- **Generated**: 2026-07-13T10:40:35.108824+00:00
-- **Snapshot**: `adg_indexed_07132026_0630.sqlite`
+- **Generated**: 2026-07-13T11:02:20.943958+00:00
+- **Snapshot**: `adg_indexed_07132026_0651.sqlite`
 - **Runtime view present**: True
 - **Runtime-attested edges**: 0
 - **Runtime proof status**: `view_present_zero_attested`

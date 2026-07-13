@@ -1,8 +1,8 @@
 schema_version: '1.0'
 artifact_kind: adg_run_review_template
-run_id: '07132026_0630'
-generated_at_utc: '2026-07-13T10:39:32+00:00'
-snapshot_ts: '2026-07-13T10:36:22.126789+00:00'
+run_id: '07132026_0651'
+generated_at_utc: '2026-07-13T11:01:18+00:00'
+snapshot_ts: '2026-07-13T10:58:02.552667+00:00'
 review_template:
   reviewer: ''
   reviewed_at: ''
@@ -238,7 +238,7 @@ executive_decision_brief:
   - Do not run broad cleanup before red gates and ratchet floors are controlled.
 graphdb_mv_analyst_summary:
   title: ADG + GraphDB/MV Analyst Summary
-  snapshot_sqlite: artifacts\adg\adg_indexed_07132026_0630.sqlite
+  snapshot_sqlite: artifacts\adg\adg_indexed_07132026_0651.sqlite
   summary:
     mv_tables: 56
     nonempty_mv_tables: 48
@@ -1847,7 +1847,7 @@ high_signal_review:
     signal: Test hotspot gap from mv_hotspot_coverage_risk; priority=P1_URGENT; risk=CRITICAL;
       coverage=ABSENT (absent); criticality=810.00; fan_in=0
 next_best_action:
-  source: artifacts\adg\adg_action_queue_07132026_0630.json
+  source: artifacts\adg\adg_action_queue_07132026_0651.json
   emit_status: ok
   degraded: false
   actions:
@@ -2050,46 +2050,46 @@ decision_synthesis:
 artifacts:
   gate_results:
     artifact_key: gate_results
-    path: artifacts\adg\adg_gate_results_20260713_103622.json
+    path: artifacts\adg\adg_gate_results_20260713_105802.json
     exists: true
     required: true
-    sha256: 3294b9d5fd8b04e7a6e366086e018d9dcc367e66a5bb336fdad8612ebc9d1d01
+    sha256: 5eed03de6c99f82fd02f445558378f68e435c0f3368f2120c1fdb388e6caa14d
   burndown:
     artifact_key: burndown
     path: artifacts\adg\adg_burndown_table.json
     exists: true
     required: true
-    sha256: 8f3db8af11d90cc023aa1a6fde8da67c816cc82018781da13f3a0429ed60bba3
+    sha256: f4b9434459c554dc00cde89c21d7986fa0ced250e543c791cc770dd679387783
   action_queue:
     artifact_key: action_queue
-    path: artifacts\adg\adg_action_queue_07132026_0630.json
+    path: artifacts\adg\adg_action_queue_07132026_0651.json
     exists: true
     required: false
-    sha256: 4609f4c90b7b625b44a599d4adfd8c7a0e077ad8962d0c31a1d8f9c3e43b696e
+    sha256: 117ae01436a0d5227ad0f9ef6861c223ae8f8a8024449061995cd6d5cd4d0f64
   generation_manifest:
     artifact_key: generation_manifest
-    path: artifacts\adg\adg_generation_manifest_07132026_0630.json
+    path: artifacts\adg\adg_generation_manifest_07132026_0651.json
     exists: true
     required: false
-    sha256: 2f691099f5693b2f192f72041a37bd29c2820129398f6b30927f36cfb3c4b915
+    sha256: be08869239d0725c8e16d76ce450ef9e6f868f6daf4da3b3124494311dbc2358
   enforcement_report:
     artifact_key: enforcement_report
     path: artifacts\adg\adg_enforcement_report_latest.json
     exists: true
     required: false
-    sha256: 64bdceb8451ae40abe374281f931c0d6ffa3d6754db153fc2d883180617f6849
+    sha256: c5450b374b934b5209826a483d76e40a465ca705eed3940f820a25ba88f06b16
   markdown_burndown:
     artifact_key: markdown_burndown
     path: artifacts\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: 81e7b593d959811a9d4e61f3170a5fd8a3fc955cecb516094aaa5f424d320363
+    sha256: 987255343e7e877334c8058ad3fcb9d85069a27c04aaf49cd9a5610f1b885d31
   docs_markdown_burndown:
     artifact_key: docs_markdown_burndown
     path: docs\reports\adg\adg_burndown_report.md
     exists: true
     required: false
-    sha256: 81e7b593d959811a9d4e61f3170a5fd8a3fc955cecb516094aaa5f424d320363
+    sha256: 987255343e7e877334c8058ad3fcb9d85069a27c04aaf49cd9a5610f1b885d31
 raw_rollups:
   gate_results_summary:
     block_pass: 16
@@ -2103,20 +2103,20 @@ raw_rollups:
     p1_no_ratchet: true
     counting_mode: violations_plus_exempted_edge_inference
   generation_manifest:
-    timestamp: '2026-07-13T10:39:31Z'
-    sqlite_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0630.sqlite
-    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0630.sqlite
+    timestamp: '2026-07-13T11:01:17Z'
+    sqlite_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0651.sqlite
+    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0651.sqlite
     commit_sha: null
     repo_state_hash: null
     generation_exit_code: 1
     p0_status: deferred_fail
-    gate_manifest_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_gate_invocation_manifest_07132026_0630.json
+    gate_manifest_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_gate_invocation_manifest_07132026_0651.json
     runtime_proof_status: view_present_zero_attested
     runtime_attested_edge_count: 0
     registry_bucket_edge_count: 0
-    created_at_utc: '2026-07-13T10:39:31Z'
+    created_at_utc: '2026-07-13T11:01:17Z'
     certification_status: failed
-  enforcement_report_status: NOT_CERTIFIED
+  enforcement_report_status: CERTIFIED
 bcg_findings:
   schema_version: '1.0'
   report_kind: adg_run_review_template
@@ -2244,7 +2244,7 @@ bcg_findings:
       count.
     next_step: 'Burn down P0 ratchet `G_REACH` (1,370): Open a burn-down slice for
       this gate, reduce records, rerun ADG, then absorb the lower baseline.'
-    status: '07132026_0630'
+    status: '07132026_0651'
     status_label: Run ID
     secondary_statuses: {}
     table_limit: 4
@@ -2258,7 +2258,7 @@ bcg_findings:
   why_this_order: *id029
   next_step: 'Burn down P0 ratchet `G_REACH` (1,370): Open a burn-down slice for this
     gate, reduce records, rerun ADG, then absorb the lower baseline.'
-  status: '07132026_0630'
+  status: '07132026_0651'
   status_label: Run ID
   north_star: 'Maintain SVP engineer-level repo standards: executive decisions, explicit
     prioritization, and technical evidence a layperson can follow.'

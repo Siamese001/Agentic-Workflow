@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-13T10:39:32+00:00",
+  "generated_at_utc": "2026-07-13T11:01:18+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -2495,9 +2495,9 @@
   "source": {
     "burndown_schema_version": "2.2",
     "overall_exit_code": 0,
-    "snapshot": "adg_indexed_07132026_0630.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0630.sqlite",
-    "timestamp": "2026-07-13T10:36:22.126789+00:00"
+    "snapshot": "adg_indexed_07132026_0651.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0651.sqlite",
+    "timestamp": "2026-07-13T10:58:02.552667+00:00"
   },
   "summary": {
     "burn_down_gates": 12,
