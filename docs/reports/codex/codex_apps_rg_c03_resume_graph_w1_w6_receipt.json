@@ -1,0 +1,152 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "apps-rg-c03-resume-graph-w1-w6-20260713",
+  "generated_at": "2026-07-13T15:50:13Z",
+  "repo": {
+    "root": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+    "worktree": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+    "branch": "local/c03-w4w9",
+    "head": "059b3951e8dee62cc9efae57f5fd8285dce48ae5",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Finish W1 and the remaining apps_rg C0.3 resume graph hardening plan after completed W0.",
+    "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+    "files_changed": [
+      "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+      "apps_rg/l2_recipe/modular_resume_generation.py",
+      "apps_rg/runtime/c0/c0_section_authority.py",
+      "apps_rg/runtime/c0/c03_graph_expansion.py",
+      "apps_rg/runtime/c0/c03_resume_graph_contracts.py",
+      "apps_rg/runtime/c0/c03_role_family.py",
+      "apps_rg/runtime/c0/c03_sqlite_graph_selection.py",
+      "apps_rg/runtime/c0/constants.py",
+      "apps_rg/runtime/c0/resume_graph_allocation.py",
+      "apps_rg/runtime/c0/resume_graph_claim_binding.py",
+      "apps_rg/runtime/c0/resume_graph_proof_pool.py",
+      "apps_rg/runtime/proof_pool_resolver.py",
+      "apps_rg/runtime/sections/graph_role_episode_selector.py",
+      "apps_rg/runtime/spine/c0_fec_compose.py",
+      "apps_rg/runtime/spine/section_x3_finalize.py",
+      "tests/unit/apps_rg/runtime/c0/test_c03_resume_graph_hardening_w1_w3.py",
+      "tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py",
+      "tests/unit/apps_rg/runtime/c0/test_resume_graph_allocation_w4.py",
+      "tests/unit/apps_rg/runtime/c0/test_resume_graph_claim_binding_w5.py",
+      "tests/unit/apps_rg/test_evidence_contract_authority_scopes.py",
+      "tests/unit/apps_rg/test_section_x3_finalize.py",
+      "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md",
+      "docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.md",
+      "docs/reports/apps_rg/c03_resume_graph_w1_w5_closeout.json",
+      "docs/reports/apps_rg/c03_resume_graph_w6_blocker.json",
+      "docs/reports/codex/codex_apps_rg_c03_resume_graph_w1_w6_receipt.json",
+      "memory/MEMORY.md",
+      "memory/codex/apps_rg_c03_resume_graph_w1_w6_block.md"
+    ]
+  },
+  "execution": {
+    "status": "BLOCKED",
+    "commands": [
+      {
+        "command": "pytest W1-W5 focused C0 suites with import-only optional-package stubs",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "pytest tests/unit/apps_rg/test_section_x3_finalize.py",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.validate_c03_graph_hardening",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "python -m py_compile changed implementation modules",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "PASS",
+        "exit_code": 0
+      },
+      {
+        "command": "pytest tests/unit/apps_rg/test_evidence_contract_authority_scopes.py",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "BLOCKED",
+        "exit_code": 1
+      },
+      {
+        "command": "python apps_rg/fact_inventory/run_materialize_augmented_skills_graph_sqlite.py --help",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "BLOCKED",
+        "exit_code": 1
+      },
+      {
+        "command": "git diff --check",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w4w9",
+        "status": "PASS",
+        "exit_code": 0
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "W0 frozen ADG authority map",
+        "reason": "Live ADG MCP transport was unavailable for the structural edit session.",
+        "substitute": "The W0-approved finite impact map and receipt constrained edits to the declared apps_rg surfaces."
+      },
+      {
+        "route": "Import-only temporary package stubs",
+        "reason": "The local primary runtime omitted openai and chromadb packages.",
+        "substitute": "Temporary stubs outside the repository completed unused optional imports; real graph JSON and SQLite data remained under test."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "W1-W5 focused contracts",
+        "status": "PASS",
+        "evidence": "38 passed across authority, SQLite selection, traversal, allocation, and exact claim binding."
+      },
+      {
+        "name": "X3 hard-block integration",
+        "status": "PASS",
+        "evidence": "12 passed, including exact metric drift reaching deterministic X2 failure and X3 block."
+      },
+      {
+        "name": "Whole-resume allocation",
+        "status": "PASS",
+        "evidence": "11 lanes, 30 canonical-visible assignments, 17 derived alternatives, zero strict reuse, reverse-order digest parity."
+      },
+      {
+        "name": "Graph hardening validator",
+        "status": "PASS",
+        "evidence": "Validator returned PASS; existing metric-bucket concentration warning remained visible."
+      },
+      {
+        "name": "agentic_core no-diff boundary",
+        "status": "PASS",
+        "evidence": "Implementation commit contains no agentic_core path."
+      },
+      {
+        "name": "W6 human calibration",
+        "status": "BLOCKED",
+        "evidence": "Configured human-labeled dataset is absent, calibration ref is pending, and scoreless benchmark scaffold cannot establish ECE/Brier thresholds."
+      },
+      {
+        "name": "W7-W9 release and promotion",
+        "status": "SKIPPED",
+        "evidence": "Plan stop condition requires stopping at W6; no release or promotion claim was made."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "The entire W1-W9 plan cannot be truthfully closed or promoted in this run.",
+    "root_cause": "W6 and W9 require external human-labeled calibration data and a blinded human resume-coach review; neither exists in the repository or supplied inputs.",
+    "evidence": "judge_calibration_profile.yaml requires at least 40 human-labeled samples; the configured JSONL path is absent; grader_roster.yaml is pending-human-semantic-v1; the benchmark README says no scores are vendored.",
+    "fix_or_next": "next: supply or authorize the frozen labeled set, holdout execution, and blinded resume-coach review, then resume at W6 without weakening UNKNOWN-as-non-PASS.",
+    "recurrence_guard": "The blocker receipt seals proof_confidence_calibrated as UNKNOWN and leaves W7-W9 NOT_STARTED, preventing synthetic labels or uncalibrated promotion."
+  }
+}
