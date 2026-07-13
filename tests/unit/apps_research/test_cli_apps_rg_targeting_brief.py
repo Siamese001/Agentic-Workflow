@@ -141,33 +141,29 @@ def test_cli_jd_path_writes_fresh_apps_rg_briefing(monkeypatch, tmp_path: Path) 
     company_json = runs_root / "research-run-test" / "company_brief.json"
     assert briefing.read_text(encoding="utf-8").startswith("Anthropic - Manager")
     assert '"company": "Anthropic"' in company_json.read_text(encoding="utf-8")
-    envelope = json.loads(
-        (runs_root / "research-run-test" / "apps_research_briefing_envelope.json").read_text(
+    handoff_v2 = json.loads(
+        (runs_root / "research-run-test" / "apps_research_apps_rg_handoff_v2.json").read_text(
             encoding="utf-8"
         )
     )
-    assert envelope["schema_version"] == "apps_research.apps_rg_briefing_envelope.v1"
-    assert envelope["consumer_app"] == "apps_rg"
-    assert envelope["handoff_eligible"] is True
-    assert envelope["generation_provider"] == "external_openai"
-    assert envelope["generation_model"] == "gpt-5.4-mini-2026-03-17"
-    assert envelope["brief_sha256"] == hashlib.sha256(
-        _VALID_APPS_RG_BRIEF.strip().encode("utf-8")
-    ).hexdigest()
-    assert envelope["jd_sha256"]
-    auth = envelope["apps_research_x1_x3_authorization"]
-    assert auth["schema_version"] == "apps_research.apps_rg_handoff_x1_x3_authorization.v1"
-    assert auth["run_id"] == envelope["run_id"]
-    assert auth["brief_sha256"] == envelope["brief_sha256"]
-    assert auth["jd_sha256"] == envelope["jd_sha256"]
-    assert auth["x1"]["status"] == "PASS"
-    assert auth["x2"]["status"] == "PASS"
-    assert auth["x2"]["model_backed"] is True
-    assert auth["x2"]["judge_provider"] == "gemini_pro"
-    assert auth["x2"]["judge_model"] == "gemini-3.1-pro-preview"
-    assert auth["x2"]["score"] >= auth["x2"]["threshold"]
-    assert auth["x3"]["status"] == "PASS"
-    assert auth["x3"]["disposition"] == "ALLOW"
+    assert handoff_v2["schema_version"] == "apps_research.apps_rg_handoff.v2"
+    assert handoff_v2["identity"]["consumer_app_id"] == "apps_rg"
+    assert handoff_v2["identity"]["brief_sha256"] == (
+        "sha256:" + hashlib.sha256(briefing.read_bytes()).hexdigest()
+    )
+    assert handoff_v2["identity"]["jd_sha256"].startswith("sha256:")
+    assert set(handoff_v2["mandatory_gate_receipts"]) == {
+        "G5",
+        "G6",
+        "G7",
+        "G21",
+        "G24",
+        "G26",
+    }
+    assert handoff_v2["exit_authorization"]["x3_code"] == "X3D_ALLOW_FINISH"
+    assert not (
+        runs_root / "research-run-test" / "apps_research_briefing_envelope.json"
+    ).exists()
 
 
 def test_shared_targeting_writer_persists_producer_owned_bundle(tmp_path: Path) -> None:
@@ -197,8 +193,12 @@ def test_shared_targeting_writer_persists_producer_owned_bundle(tmp_path: Path) 
     assert bundle.briefing_path.is_file()
     assert bundle.company_brief_path.is_file()
     assert bundle.envelope_path.is_file()
-    assert bundle.envelope["briefing_path"] == str(bundle.briefing_path.resolve())
-    assert bundle.envelope["company_brief_path"] == str(
+    artifacts = {
+        row["artifact_id"]: row
+        for row in bundle.envelope["artifact_manifest"]["artifacts"]
+    }
+    assert artifacts["briefing_md"]["artifact_ref"] == str(bundle.briefing_path.resolve())
+    assert artifacts["company_brief_json"]["artifact_ref"] == str(
         bundle.company_brief_path.resolve()
     )
 
@@ -227,7 +227,7 @@ def test_generic_writer_preserves_legacy_metadata(monkeypatch, tmp_path: Path) -
     assert artifact_path.name == "briefing.md"
     assert metadata["run_id"] == "generic-run"
     assert metadata["targeting_format"] == ""
-    assert metadata["apps_research_briefing_envelope_path"] == ""
+    assert metadata["apps_research_apps_rg_handoff_v2_path"] == ""
 
 
 def test_cli_jd_path_fails_closed_without_targeting_markdown(

@@ -1,0 +1,9 @@
+{
+  "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+  "scan": "GOV-3 changed-path forbidden-literal scan",
+  "result": "PASS",
+  "changed_paths_covered": true,
+  "finding_count": 0,
+  "migration_baselines": ["GOV-3-BASELINE-062", "GOV-3-BASELINE-063", "GOV-3-BASELINE-064", "GOV-3-BASELINE-065", "GOV-3-BASELINE-066", "GOV-3-BASELINE-067"],
+  "recorded_at": "2026-07-13T22:30:00Z"
+}

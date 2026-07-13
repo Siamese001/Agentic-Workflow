@@ -21,7 +21,7 @@ from __future__ import annotations
 import threading
 import uuid
 from dataclasses import replace
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Iterable
 
 from agentic_core.L4_state.audit.audit_ledger import (
     AuditLedger,
@@ -46,7 +46,7 @@ from agentic_core.L4_state.otel.spans import emit_uwg_span
 from agentic_core.L4_state.refresh.refresh_coordinator import RefreshCoordinator
 
 # Allowed StateDiff operation types per 00.6 §PHASE 3.
-ALLOWED_OPERATIONS: Tuple[str, ...] = (
+ALLOWED_OPERATIONS: tuple[str, ...] = (
     "append_record",
     "version_insert",
     "alias_swap",
@@ -112,15 +112,15 @@ class _WriteLockManager:
     """Per-target write lock manager with contention detection."""
 
     def __init__(self) -> None:
-        self._locks: Dict[str, threading.RLock] = {}
-        self._holders: Dict[str, str] = {}
+        self._locks: dict[str, threading.RLock] = {}
+        self._holders: dict[str, str] = {}
         self._lock = threading.Lock()
 
     def acquire(
         self, *, target_surfaces: Iterable[str], owner: str, timeout: float = 0.0
-    ) -> Tuple[bool, List[str]]:
+    ) -> tuple[bool, list[str]]:
         """Try to acquire all target surface locks. Return (acquired, contentions)."""
-        contentions: List[str] = []
+        contentions: list[str] = []
         with self._lock:
             for surface in target_surfaces:
                 rl = self._locks.setdefault(surface, threading.RLock())
@@ -162,20 +162,20 @@ class DurableWriteGateway:
     def __init__(
         self,
         *,
-        audit_ledger: Optional[AuditLedger] = None,
-        refresh_coordinator: Optional[RefreshCoordinator] = None,
+        audit_ledger: AuditLedger | None = None,
+        refresh_coordinator: RefreshCoordinator | None = None,
     ) -> None:
         self._audit = audit_ledger or get_default_ledger()
         self._refresh = refresh_coordinator or RefreshCoordinator(audit_ledger=self._audit)
         self._lock_mgr = _WriteLockManager()
         self._snapshot_counter: int = 0
         self._snapshot_lock = threading.Lock()
-        self._validations: Dict[str, UWGValidationReceipt] = {}
-        self._commits: Dict[str, UWGCommitReceipt] = {}
-        self._blocked: Dict[str, UWGBlockedCommitReceipt] = {}
-        self._rollbacks: Dict[str, UWGRollbackReceipt] = {}
+        self._validations: dict[str, UWGValidationReceipt] = {}
+        self._commits: dict[str, UWGCommitReceipt] = {}
+        self._blocked: dict[str, UWGBlockedCommitReceipt] = {}
+        self._rollbacks: dict[str, UWGRollbackReceipt] = {}
         self._last_snapshot_id: str = "snapshot:bootstrap"
-        self._direct_write_blocks: List[UWGBlockedCommitReceipt] = []
+        self._direct_write_blocks: list[UWGBlockedCommitReceipt] = []
 
     # ------------------------------------------------------------------
     @property
@@ -190,16 +190,16 @@ class DurableWriteGateway:
     def last_snapshot_id(self) -> str:
         return self._last_snapshot_id
 
-    def get_commit_receipt(self, commit_receipt_id: str) -> Optional[UWGCommitReceipt]:
+    def get_commit_receipt(self, commit_receipt_id: str) -> UWGCommitReceipt | None:
         return self._commits.get(commit_receipt_id)
 
-    def get_validation_receipt(self, validation_receipt_id: str) -> Optional[UWGValidationReceipt]:
+    def get_validation_receipt(self, validation_receipt_id: str) -> UWGValidationReceipt | None:
         return self._validations.get(validation_receipt_id)
 
-    def get_blocked_receipt(self, blocked_id: str) -> Optional[UWGBlockedCommitReceipt]:
+    def get_blocked_receipt(self, blocked_id: str) -> UWGBlockedCommitReceipt | None:
         return self._blocked.get(blocked_id)
 
-    def list_direct_write_blocks(self) -> List[UWGBlockedCommitReceipt]:
+    def list_direct_write_blocks(self) -> list[UWGBlockedCommitReceipt]:
         return list(self._direct_write_blocks)
 
     # ------------------------------------------------------------------
@@ -209,8 +209,8 @@ class DurableWriteGateway:
         attempting_surface: str,
         target_surface: str,
         reason: str,
-        request_id: Optional[str] = None,
-        run_id: Optional[str] = None,
+        request_id: str | None = None,
+        run_id: str | None = None,
     ) -> UWGBlockedCommitReceipt:
         """Record a direct-write bypass attempt and return the block receipt.
 
@@ -265,10 +265,10 @@ class DurableWriteGateway:
         self,
         *,
         commit_request: CommitRequest,
-        state_diffs: List[StateDiff],
+        state_diffs: list[StateDiff],
         rollback_plan: RollbackPlan,
         refresh_plan: ReadSurfaceRefreshPlan,
-    ) -> Tuple[Optional[UWGCommitReceipt], Optional[UWGBlockedCommitReceipt], List]:
+    ) -> tuple[UWGCommitReceipt | None, UWGBlockedCommitReceipt | None, list]:
         """Run the full UWG pipeline.
 
         Returns ``(commit_receipt, blocked_receipt, refresh_receipts)``.
@@ -484,7 +484,7 @@ class DurableWriteGateway:
         *,
         rollback_plan: RollbackPlan,
         source_commit_receipt: UWGCommitReceipt,
-        reason_codes: Tuple[str, ...] = (),
+        reason_codes: tuple[str, ...] = (),
     ) -> UWGRollbackReceipt:
         """Apply a rollback per 00.6 §PHASE 7."""
         if not source_commit_receipt.snapshot_before:
@@ -537,13 +537,13 @@ class DurableWriteGateway:
     def _validate(
         self,
         commit_request: CommitRequest,
-        state_diffs: List[StateDiff],
+        state_diffs: list[StateDiff],
         rollback_plan: RollbackPlan,
         refresh_plan: ReadSurfaceRefreshPlan,
     ) -> UWGValidationReceipt:
-        checked: List[str] = []
-        failed: List[str] = []
-        reason_codes: List[str] = []
+        checked: list[str] = []
+        failed: list[str] = []
+        reason_codes: list[str] = []
 
         # 00.6 §PHASE 2 step 1
         checked.append("source_is_exit")
@@ -722,7 +722,7 @@ class DurableWriteGateway:
         self,
         *,
         commit_request: CommitRequest,
-        target_surfaces: Tuple[str, ...],
+        target_surfaces: tuple[str, ...],
         owner: str,
         snapshot_before: str,
     ) -> WriteLockReceipt:
@@ -813,16 +813,27 @@ class DurableWriteGateway:
 
 # Default singleton ----------------------------------------------------------
 
-_DEFAULT_GATEWAY: Optional[DurableWriteGateway] = None
+_DEFAULT_GATEWAY: DurableWriteGateway | None = None
 _DEFAULT_LOCK = threading.Lock()
 
 
 def get_default_gateway() -> DurableWriteGateway:
-    """Return the process-wide default gateway (lazy-initialized)."""
+    """Return the process-wide gateway, durable by default outside tests."""
     global _DEFAULT_GATEWAY  # noqa: PLW0603
     with _DEFAULT_LOCK:
         if _DEFAULT_GATEWAY is None:
-            _DEFAULT_GATEWAY = DurableWriteGateway()
+            from agentic_core.L4_state.storage.sqlite_backend import (
+                configured_l4_backend_name,
+            )
+
+            if configured_l4_backend_name() == "memory":
+                _DEFAULT_GATEWAY = DurableWriteGateway()
+            else:
+                from agentic_core.L4_state.uwg.transactional_durable_write_gateway import (
+                    TransactionalDurableWriteGateway,
+                )
+
+                _DEFAULT_GATEWAY = TransactionalDurableWriteGateway()
         return _DEFAULT_GATEWAY
 
 
@@ -830,7 +841,7 @@ def reset_default_gateway() -> None:
     """Reset the default gateway (test hook)."""
     global _DEFAULT_GATEWAY  # noqa: PLW0603
     with _DEFAULT_LOCK:
-        _DEFAULT_GATEWAY = DurableWriteGateway()
+        _DEFAULT_GATEWAY = None
 
 
 # =====================================================================
@@ -865,14 +876,14 @@ def _get_uwg_helper():
 def _record_uwg_decision(
     *,
     commit_request: CommitRequest,
-    state_diffs: List[StateDiff],
+    state_diffs: list[StateDiff],
     validation_status: str,
     block_stage: str,
-    commit_receipt: Optional[UWGCommitReceipt],
-    blocked_receipt: Optional[UWGBlockedCommitReceipt],
-    refresh_receipts: List,
+    commit_receipt: UWGCommitReceipt | None,
+    blocked_receipt: UWGBlockedCommitReceipt | None,
+    refresh_receipts: list,
     latency_ms: int,
-    snapshot_after: Optional[str],
+    snapshot_after: str | None,
 ) -> None:
     """Record commit/blocked verdict + bind outcome in one shot.
 

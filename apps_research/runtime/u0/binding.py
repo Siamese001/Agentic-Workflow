@@ -16,11 +16,19 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Mapping, Tuple
+from typing import Any, Mapping
 from uuid import uuid4
 
+from agentic_core.runtime.contracts.apps_research_runtime_package import (
+    PackageDigestMismatchError,
+    PackageValidationReceipt,
+    RuntimeCustomizationPackage,
+    TaskClass,
+    UnknownPackageFieldError,
+)
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
     RequestEnvelope,
     ValidatedRequest,
@@ -28,18 +36,29 @@ from agentic_core.runtime.contracts.apps_rg_ingress_payload import (
 from agentic_core.runtime.contracts.apps_rg_runtime_authority_policy import (
     AuthorityValidationReceipt,
 )
-from agentic_core.runtime.contracts.apps_research_runtime_package import (
-    RuntimeCustomizationPackage,
-    PackageValidationReceipt,
-    TaskClass,
-    UnknownPackageFieldError,
-    PackageDigestMismatchError,
-)
 from agentic_core.runtime.contracts.posture import POSTURE_READ_ONLY
 
 _LOGGER = logging.getLogger(__name__)
 
 APPS_RESEARCH_TASK_CLASS: str = "company_brief"
+
+_FORBIDDEN_AUTHORITY_FIELDS: frozenset[str] = frozenset(
+    {
+        "route_id",
+        "execution_form",
+        "provider",
+        "workflow_dag",
+        "l3_required",
+        "model_id",
+        "grounding_required",
+        "model_generation_required",
+        "write_authority",
+        "sandbox_required",
+        "egress_policy_ref",
+        "allowed_tools",
+        "allowed_models",
+    }
+)
 
 # Known package fields for unknown field detection
 _KNOWN_PACKAGE_FIELDS: frozenset[str] = frozenset({
@@ -62,7 +81,7 @@ _KNOWN_PACKAGE_FIELDS: frozenset[str] = frozenset({
 
 class AppsResearchU0ValidationError(Exception):
     """Raised when U0 validation fails for apps_research."""
-    
+
     def __init__(self, message: str, field: str = "", receipt: Any = None):
         self.message = message
         self.field = field
@@ -71,9 +90,187 @@ class AppsResearchU0ValidationError(Exception):
 
 
 @dataclass(frozen=True)
+class AppsResearchAuthorityViolation(Exception):
+    """Raised when Apps Research ingress contains runtime authority."""
+
+    field: str
+    value: Any
+    message: str = ""
+
+    def __str__(self) -> str:
+        return (
+            f"AppsResearchAuthorityViolation: field={self.field!r} "
+            f"value={self.value!r} — {self.message}"
+        )
+
+
+@dataclass(frozen=True)
+class AppsResearchU0ReflectionReceipt:
+    """Receipt produced by the app-owned U0 reflection harness."""
+
+    task_class: str
+    schema_version: str
+    forbidden_fields_checked: int
+    authority_fields_present: tuple[str, ...]
+    legacy_authority_scan_passed: bool
+    reflection_timestamp: str
+
+
+def _scan_for_legacy_authority(
+    payload_dict: Mapping[str, Any],
+    *,
+    max_depth: int = 32,
+    max_nodes: int = 10_000,
+) -> list[str]:
+    """Return stable paths to forbidden authority keys anywhere in a payload.
+
+    The walk is bounded and tracks container identities so recursive Python
+    inputs cannot hang U0 or overflow the interpreter. Strings and byte
+    buffers remain scalar values.
+    """
+
+    found: list[str] = []
+    visited: set[int] = set()
+    nodes_seen = 0
+
+    def walk(value: Any, *, path: str, depth: int) -> None:
+        nonlocal nodes_seen
+        nodes_seen += 1
+        if nodes_seen > max_nodes:
+            raise AppsResearchAuthorityViolation(
+                field=path or "$",
+                value="<scan-limit>",
+                message=f"authority scan exceeded max_nodes={max_nodes}",
+            )
+        if depth > max_depth:
+            raise AppsResearchAuthorityViolation(
+                field=path or "$",
+                value="<depth-limit>",
+                message=f"authority scan exceeded max_depth={max_depth}",
+            )
+
+        if isinstance(value, Mapping):
+            identity = id(value)
+            if identity in visited:
+                return
+            visited.add(identity)
+            for raw_key, child in value.items():
+                key = str(raw_key)
+                child_path = f"{path}.{key}" if path else key
+                if key in _FORBIDDEN_AUTHORITY_FIELDS:
+                    found.append(child_path)
+                    continue
+                walk(child, path=child_path, depth=depth + 1)
+            return
+
+        if isinstance(value, Sequence) and not isinstance(
+            value, (str, bytes, bytearray, memoryview)
+        ):
+            identity = id(value)
+            if identity in visited:
+                return
+            visited.add(identity)
+            for index, child in enumerate(value):
+                child_path = f"{path}[{index}]" if path else f"[{index}]"
+                walk(child, path=child_path, depth=depth + 1)
+
+    walk(payload_dict, path="", depth=0)
+    return sorted(set(found))
+
+
+def _make_payload_dict(envelope: RequestEnvelope) -> dict[str, Any]:
+    payload = envelope.payload
+    result: dict[str, Any] = {
+        "app_id": getattr(payload, "app_id", "apps_research"),
+        "task_class": getattr(payload, "task_class", APPS_RESEARCH_TASK_CLASS),
+        "target_company": getattr(payload, "target_company", None),
+        "target_role": getattr(payload, "target_role", None),
+        "target_level": getattr(payload, "target_level", None),
+        "user_constraints": dict(getattr(payload, "user_constraints", {}) or {}),
+        "output_preferences": dict(getattr(payload, "output_preferences", {}) or {}),
+        "manual_brief_path": getattr(payload, "manual_brief_path", None),
+        "auto_research_internal": getattr(payload, "auto_research_internal", False),
+        "auto_research_tavily": getattr(payload, "auto_research_tavily", False),
+        "idempotency_key": getattr(payload, "idempotency_key", None),
+        "payload_digest": getattr(payload, "payload_digest", ""),
+    }
+    constraints = result["user_constraints"]
+    if "topic" in constraints:
+        result["topic"] = constraints["topic"]
+    if "depth" in constraints:
+        result["depth"] = constraints["depth"]
+    return result
+
+
+def _compute_payload_digest(payload_dict: dict[str, Any]) -> str:
+    canonical = json.dumps(payload_dict, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def u0_validate_apps_research(envelope: RequestEnvelope) -> ValidatedRequest:
+    """Validate the app-owned ingress envelope and emit its U0 receipt."""
+
+    if not isinstance(envelope, RequestEnvelope):
+        raise TypeError(
+            f"u0_validate_apps_research: expected RequestEnvelope, got {type(envelope)}"
+        )
+    payload_dict = _make_payload_dict(envelope)
+    forbidden_found = _scan_for_legacy_authority(payload_dict)
+    if forbidden_found:
+        raise AppsResearchAuthorityViolation(
+            field=forbidden_found[0],
+            value=payload_dict.get(forbidden_found[0]),
+            message=(
+                f"apps_research ingress payload contains {len(forbidden_found)} "
+                f"forbidden authority field(s): {forbidden_found!r}. "
+                "apps_research is INGRESS-ONLY — runtime authority belongs to "
+                "agentic_core."
+            ),
+        )
+
+    reflection_timestamp = datetime.now(timezone.utc).isoformat()
+    reflection_receipt = AppsResearchU0ReflectionReceipt(
+        task_class=APPS_RESEARCH_TASK_CLASS,
+        schema_version="AG9.U0.1",
+        forbidden_fields_checked=len(_FORBIDDEN_AUTHORITY_FIELDS),
+        authority_fields_present=(),
+        legacy_authority_scan_passed=True,
+        reflection_timestamp=reflection_timestamp,
+    )
+    payload_digest = _compute_payload_digest(payload_dict)
+    _LOGGER.debug(
+        "U0 apps_research validated: task_class=%s digest=%s",
+        APPS_RESEARCH_TASK_CLASS,
+        payload_digest[:16],
+    )
+    authority_receipt = AuthorityValidationReceipt(
+        allowed=True,
+        passed=True,
+        forbidden_fields_detected=(),
+        timestamp_iso=reflection_timestamp,
+    )
+    return ValidatedRequest(
+        request_id=envelope.request_id or f"research-req-{uuid4().hex[:12]}",
+        run_id=envelope.run_id or f"research-run-{uuid4().hex[:12]}",
+        app_id="apps_research",
+        task_class=APPS_RESEARCH_TASK_CLASS,
+        payload_digest=payload_digest,
+        authority_validation_receipt=authority_receipt,
+        trace_id=envelope.trace_id or f"research-trace-{uuid4().hex[:16]}",
+        tenant_id=envelope.tenant_id or "apps_research",
+        target_level=getattr(envelope.payload, "target_level", "") or "",
+        schema_version="AG9.U0.1",
+        posture=POSTURE_READ_ONLY,
+        l5_certification_ref="u0-apps-research-company-brief-ag9",
+        app_payload=payload_dict,
+        reflection_receipt=reflection_receipt,
+    )
+
+
+@dataclass(frozen=True)
 class AutoInjectionContext:
     """Context stamped when runtime package is auto-injected by U0.
-    
+
     Required for W1 invariant: auto-injection must be auditable and
     only allowed for direct apps_research calls (not delegated).
     """
@@ -92,29 +289,29 @@ def _check_auto_injection_allowed(
 ) -> tuple[bool, str, str]:
     """
     Check if auto-injection is allowed for this request.
-    
+
     W1 Invariant: Auto-injection only allowed when ALL are true:
     1. Request path is direct apps_research, not delegated apps_rg/apps_lic
     2. app_id resolves unambiguously to apps_research
     3. task_class resolves to company_brief or declared default
-    
+
     Returns: (allowed: bool, reason: str, source: str)
     """
     payload = envelope.payload
-    
+
     # Check 1: Detect delegated calls vs direct calls
     # Delegated calls have caller_app_id or delegation context in user_constraints
     user_constraints = getattr(payload, 'user_constraints', {}) or {}
     caller_app_id = user_constraints.get('caller_app_id')
     is_delegated = caller_app_id in ('apps_rg', 'apps_lic')
-    
+
     if is_delegated:
         return (
             False,
             f"Auto-injection blocked: delegated call from {caller_app_id} requires explicit package",
             "delegated_requires_explicit"
         )
-    
+
     # Check 2: app_id must resolve to apps_research
     app_id = getattr(payload, 'app_id', None)
     if app_id != 'apps_research':
@@ -123,7 +320,7 @@ def _check_auto_injection_allowed(
             f"Auto-injection blocked: app_id '{app_id}' != 'apps_research'",
             "ambiguous_app_id"
         )
-    
+
     # Check 3: task_class must be company_brief or compatible
     task_class = getattr(payload, 'task_class', None)
     if task_class and task_class != APPS_RESEARCH_TASK_CLASS:
@@ -132,7 +329,7 @@ def _check_auto_injection_allowed(
             f"Auto-injection blocked: task_class '{task_class}' != '{APPS_RESEARCH_TASK_CLASS}'",
             "incompatible_task_class"
         )
-    
+
     return (
         True,
         "Direct apps_research call with unambiguous resolution - auto-injection approved",
@@ -143,13 +340,13 @@ def _check_auto_injection_allowed(
 def _extract_runtime_package(app_payload: Mapping[str, Any]) -> RuntimeCustomizationPackage:
     """Extract and validate runtime_customization_package from app_payload."""
     pkg_data = app_payload.get("runtime_customization_package") or {}
-    
+
     if not pkg_data:
         raise AppsResearchU0ValidationError(
             message="Missing runtime_customization_package in app_payload",
             field="runtime_customization_package",
         )
-    
+
     # Check for unknown fields
     unknown_fields = set(pkg_data.keys()) - _KNOWN_PACKAGE_FIELDS
     if unknown_fields:
@@ -157,7 +354,7 @@ def _extract_runtime_package(app_payload: Mapping[str, Any]) -> RuntimeCustomiza
             field=list(unknown_fields)[0],
             message=f"Unknown fields in runtime_customization_package: {sorted(unknown_fields)}",
         )
-    
+
     # Build package
     try:
         task_class = TaskClass(pkg_data.get("task_class", "company_brief"))
@@ -166,7 +363,7 @@ def _extract_runtime_package(app_payload: Mapping[str, Any]) -> RuntimeCustomiza
             message=f"Invalid task_class: {e}",
             field="task_class",
         )
-    
+
     package = RuntimeCustomizationPackage(
         package_id=pkg_data.get("package_id", ""),
         package_version=pkg_data.get("package_version", "1.0.0"),
@@ -208,7 +405,7 @@ def _extract_runtime_package(app_payload: Mapping[str, Any]) -> RuntimeCustomiza
         cross_app_reuse_policy=pkg_data.get("cross_app_reuse_policy", "delegated_only"),
         package_digest=pkg_data.get("package_digest", ""),
     )
-    
+
     return package
 
 
@@ -221,15 +418,15 @@ def _validate_package_digest(package: RuntimeCustomizationPackage) -> bool:
 
 def u0_validate_apps_research_v2(
     envelope: RequestEnvelope,
-) -> Tuple[ValidatedRequest, PackageValidationReceipt, AutoInjectionContext]:
+) -> tuple[ValidatedRequest, PackageValidationReceipt, AutoInjectionContext]:
     """
     Validate apps_research ingress with runtime customization package.
-    
+
     W1 Invariant: Auto-injection is controlled and auditable.
-    
+
     Returns:
         Tuple of (ValidatedRequest, PackageValidationReceipt, AutoInjectionContext)
-    
+
     Raises:
         AppsResearchU0ValidationError: If validation fails
         UnknownPackageFieldError: If package contains unknown fields
@@ -237,7 +434,7 @@ def u0_validate_apps_research_v2(
     """
     if not isinstance(envelope, RequestEnvelope):
         raise TypeError(f"Expected RequestEnvelope, got {type(envelope)}")
-    
+
     # Extract payload from user_constraints (where apps_research puts its data)
     payload = envelope.payload
     app_payload = {}
@@ -246,19 +443,19 @@ def u0_validate_apps_research_v2(
     # Also check app_payload field if present
     if hasattr(payload, "app_payload") and payload.app_payload:
         app_payload.update(payload.app_payload)
-    
+
     # Step 0: Determine if package is explicit or needs auto-injection
     auto_injection_context: AutoInjectionContext | None = None
     if "runtime_customization_package" not in app_payload:
         # Check if auto-injection is allowed per W1 invariant
         allowed, reason, source = _check_auto_injection_allowed(envelope, app_payload)
-        
+
         if not allowed:
             raise AppsResearchU0ValidationError(
                 message=f"Runtime customization package missing and auto-injection blocked: {reason}",
                 field="runtime_customization_package",
             )
-        
+
         # Auto-inject default package for approved direct calls
         default_package = RuntimeCustomizationPackage(
             package_id=f"arcp::apps_research::company_brief::auto::{envelope.request_id}",
@@ -273,7 +470,7 @@ def u0_validate_apps_research_v2(
         )
         app_payload = dict(app_payload)
         app_payload["runtime_customization_package"] = default_package.to_dict()
-        
+
         # Stamp auto-injection context
         auto_injection_context = AutoInjectionContext(
             auto_injected_runtime_package=True,
@@ -295,7 +492,7 @@ def u0_validate_apps_research_v2(
             resolved_task_class=getattr(payload, 'task_class', APPS_RESEARCH_TASK_CLASS),
             default_profile_source="",
         )
-    
+
     # Step 1: Extract and validate runtime customization package
     try:
         package = _extract_runtime_package(app_payload)
@@ -306,7 +503,7 @@ def u0_validate_apps_research_v2(
             message=f"Failed to extract runtime package: {e}",
             field="runtime_customization_package",
         )
-    
+
     # Step 2: Verify package digest
     digest_verified = _validate_package_digest(package)
     if not digest_verified:
@@ -314,7 +511,7 @@ def u0_validate_apps_research_v2(
             expected=package.package_digest,
             actual=package._compute_digest(),
         )
-    
+
     # Step 3: Build validation receipt
     timestamp_iso = datetime.now(timezone.utc).isoformat()
     validation_receipt = PackageValidationReceipt(
@@ -326,7 +523,7 @@ def u0_validate_apps_research_v2(
         digest_verified=digest_verified,
         timestamp_iso=timestamp_iso,
     )
-    
+
     # Step 4: Build authority receipt
     authority_receipt = AuthorityValidationReceipt(
         allowed=True,
@@ -334,7 +531,7 @@ def u0_validate_apps_research_v2(
         forbidden_fields_detected=(),
         timestamp_iso=timestamp_iso,
     )
-    
+
     # Step 5: Compute payload digest
     # Include auto_injection_context so L1 can see whether package was explicit or auto-injected
     payload_dict = {
@@ -354,7 +551,7 @@ def u0_validate_apps_research_v2(
     }
     canonical = json.dumps(payload_dict, sort_keys=True, ensure_ascii=False)
     payload_digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    
+
     _LOGGER.debug(
         "U0 apps_research v2 validated: package_id=%s task_class=%s digest=%s auto_injected=%s",
         package.package_id,
@@ -362,7 +559,7 @@ def u0_validate_apps_research_v2(
         payload_digest[:16],
         auto_injection_context.auto_injected_runtime_package,
     )
-    
+
     # Step 6: Build ValidatedRequest
     validated_request = ValidatedRequest(
         request_id=envelope.request_id or f"research-req-{uuid4().hex[:12]}",
@@ -379,14 +576,17 @@ def u0_validate_apps_research_v2(
         l5_certification_ref="u0-apps-research-v2-company-brief-ag9",
         app_payload=payload_dict,
     )
-    
+
     return validated_request, validation_receipt, auto_injection_context
 
 
 # Backward compatibility - keep v1 function
 __all__ = [
     "APPS_RESEARCH_TASK_CLASS",
+    "AppsResearchAuthorityViolation",
+    "AppsResearchU0ReflectionReceipt",
     "AppsResearchU0ValidationError",
+    "u0_validate_apps_research",
     "u0_validate_apps_research_v2",
     "RuntimeCustomizationPackage",
     "PackageValidationReceipt",

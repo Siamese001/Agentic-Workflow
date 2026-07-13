@@ -19,18 +19,17 @@ import json
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Import smoke
 # ---------------------------------------------------------------------------
 
 def test_all_bindings_importable():
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
-    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
-    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L2_execution.apps_research_l2_binding import l2_execute_apps_research
+    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
     from agentic_core.runtime.exit.apps_research_exit_binding import exit_finalize_apps_research
     from apps_research.runtime.profile_builder import (
         build_app_runtime_contract,
@@ -77,8 +76,8 @@ def test_parse_accepts_topic_in_user_constraints():
 # ---------------------------------------------------------------------------
 
 def test_u0_returns_validated_request():
-    from apps_research.runtime.profile_builder import parse_payload
     from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo"})
     vr = u0_validate_apps_research(envelope)
     assert vr.app_id == "apps_research"
@@ -89,11 +88,45 @@ def test_u0_returns_validated_request():
 
 
 def test_u0_rejects_forbidden_authority_field():
-    from apps_research.runtime.profile_builder import parse_payload
     from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo"})
     vr = u0_validate_apps_research(envelope)
     assert vr.authority_validation_receipt.passed is True
+
+
+def test_u0_rejects_deeply_nested_authority_in_sequence():
+    from agentic_core.runtime.entry.u0_apps_research_binding import (
+        AppsResearchAuthorityViolation,
+        u0_validate_apps_research,
+    )
+    from apps_research.runtime.profile_builder import parse_payload
+
+    envelope = parse_payload(
+        {
+            "target_company": "TestCo",
+            "user_constraints": {
+                "filters": [{"safe": True}, {"nested": {"workflow_dag": ["bypass"]}}]
+            },
+        }
+    )
+
+    with pytest.raises(AppsResearchAuthorityViolation, match="workflow_dag"):
+        u0_validate_apps_research(envelope)
+
+
+def test_u0_authority_scan_is_cycle_safe_and_reports_stable_paths():
+    from agentic_core.runtime.entry.u0_apps_research_binding import (
+        _scan_for_legacy_authority,
+    )
+
+    recursive: dict = {"constraints": [{"allowed": True}]}
+    recursive["self"] = recursive
+    recursive["constraints"].append({"nested": {"provider": "forbidden"}})
+
+    assert _scan_for_legacy_authority(recursive) == [
+        "constraints[1].nested.provider"
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -101,9 +134,9 @@ def test_u0_rejects_forbidden_authority_field():
 # ---------------------------------------------------------------------------
 
 def test_l1_emits_plan_contract():
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
     from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo", "target_role": "CTO"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)
@@ -119,10 +152,10 @@ def test_l1_emits_plan_contract():
 # ---------------------------------------------------------------------------
 
 def test_l0_emits_route_r3():
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)
@@ -139,11 +172,11 @@ def test_l0_emits_route_r3():
 # ---------------------------------------------------------------------------
 
 def test_c0_emits_fec_with_evidence():
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo", "depth": "standard"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)
@@ -160,12 +193,12 @@ def test_c0_emits_fec_with_evidence():
 # ---------------------------------------------------------------------------
 
 def test_pa_emits_compiled_prompt():
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
-    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)
@@ -184,13 +217,13 @@ def test_pa_emits_compiled_prompt():
 # ---------------------------------------------------------------------------
 
 def test_l2_without_provider_fails_closed():
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
-    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
-    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L2_execution.apps_research_l2_binding import l2_execute_apps_research
+    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "TestCo"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)
@@ -212,13 +245,13 @@ def test_l2_without_provider_fails_closed():
 
 def test_provenance_chain_links_fec_to_sealed():
     """FEC.compilation_hash → prompt.evidence_digest → sealed.prompt_artifact_digest."""
-    from apps_research.runtime.profile_builder import parse_payload
-    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
-    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L0_routing.apps_research_l0_binding import l0_route_apps_research
-    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
-    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.L1_cognition.apps_research_l1_binding import l1_plan_apps_research
     from agentic_core.L2_execution.apps_research_l2_binding import l2_execute_apps_research
+    from agentic_core.prompt_governance.apps_research_pa_binding import pa_compose_apps_research
+    from agentic_core.runtime.c0.apps_research_c0_binding import c0_retrieve_apps_research
+    from agentic_core.runtime.entry.u0_apps_research_binding import u0_validate_apps_research
+    from apps_research.runtime.profile_builder import parse_payload
     envelope = parse_payload({"target_company": "ProvCo"})
     vr = u0_validate_apps_research(envelope)
     plan = l1_plan_apps_research(vr)

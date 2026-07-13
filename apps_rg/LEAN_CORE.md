@@ -3,7 +3,7 @@
 > **Plan Reference:** `apps_rg_lean_core_binding_a1b2c3`  
 > **Status:** ACTIVE  
 > **Effective Date:** 2026-06-07  
-> **Last Updated:** 2026-06-07
+> **Last Updated:** 2026-07-13
 
 ---
 
@@ -125,16 +125,16 @@ Neutral shared contract package (e.g., `apps_shared/spine_contracts` or `agentic
 
 ---
 
-### 8. Missing briefing fails closed.
+### 8. Missing briefing fails closed unless the governed Apps Research facade succeeds.
 
-- No apps_research delegation from apps_rg critical path
-- No fallback briefing generation
-- Clear product error on missing briefing
-
-**Error Message:**
-```
-apps_rg requires an uploaded briefing artifact or authoritative briefing text; apps_research delegation is disabled.
-```
+- Product delegation is permitted only through
+  `apps_rg.integrations.apps_research_bridge`.
+- The facade must enter Apps Research through its canonical U0 boundary and
+  return an atomically committed handoff-v2 bundle.
+- Apps RG U0 validates the persisted bundle bytes and retains its consumer
+  validation receipt; caller-provided provenance flags cannot weaken this.
+- A missing briefing with delegation disabled, or a failed/legacy-only
+  delegation, is a product error. There is no local fallback brief generator.
 
 **Active Generation Modes (require briefing):**
 - strategic_tailor
@@ -198,7 +198,12 @@ export APPS_RG_ENABLE_R1B_SEMANTIC_CACHE=1
 - Section dispositions map to same Exit model
 - No section-local final authority bypass
 - Full run emits one coherent X3 disposition
-- X3 options: ALLOW, REVIEW, BLOCK
+- Canonical X3 options are `X3A_DENY_REROUTE`,
+  `X3B_ESCALATE_HITL`, `X3C_COMMIT_REQUEST_TO_UWG`,
+  `X3D_ALLOW_FINISH`, and `X3E_SAFE_ABSTAIN`.
+- Only exact `X3D_ALLOW_FINISH` authorizes a product-visible finished resume.
+- Legacy aliases such as `ALLOW`, `X3C`, `X3D`, `EXIT_OK`, and
+  `EXIT_PARTIAL` are not product-v2 success codes.
 - UNKNOWN is never PASS
 
 ---
@@ -286,7 +291,8 @@ export APPS_RG_ENABLE_R1B_SEMANTIC_CACHE=1
 | `apps_rg/*` | `agentic_core.runtime.exit.*` | **FORBIDDEN** |
 | `apps_rg/*` | `agentic_core.runtime.judges.*` | **FORBIDDEN** (except via panel port) |
 | `apps_rg/*` | `agentic_core.runtime.l6.*` | **FORBIDDEN** |
-| `apps_rg/*` | `apps_research.*` | **FORBIDDEN** (quarantined) |
+| `apps_rg/integrations/apps_research_bridge.py` | governed Apps Research facade | **ALLOWED** |
+| all other `apps_rg/*` | `apps_research.*` | **FORBIDDEN** |
 
 ### Test Code Import Rules
 
@@ -407,3 +413,4 @@ To amend this binding law:
 |---------|------|---------|--------|
 | 1.0.0 | 2026-06-07 | Initial binding law for lean-core refactor | Codex |
 | 1.1.0 | 2026-06-07 | Hardening revision: Rules 14-16 added (no aliases, import ratchet, symbol verification) | Codex |
+| 1.2.0 | 2026-07-13 | Align governed Apps Research delegation, handoff v2, and canonical X3 product semantics with ADR-106. | Codex |

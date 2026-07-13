@@ -1,13 +1,11 @@
 """Cross-cutting hardening tests for graph-skills quality enhancement (W0–W10)."""
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
 from apps_rg.fact_inventory.graph_skills_quality_enhancement_closeout import (
-    BROWN_FIXTURE_PINS,
     LANES,
     brown_fixture_digests,
     build_closeout,
@@ -27,7 +25,8 @@ REPO = Path(__file__).resolve().parents[3]
 @pytest.mark.parametrize(
     ("raw", "expected", "live"),
     [
-        ("X3_ALLOW", "ALLOW_FINISH", True),
+        ("X3D_ALLOW_FINISH", "ALLOW_FINISH", True),
+        ("X3_ALLOW", "UNKNOWN", False),
         ("X3_BLOCK", "BLOCK", False),
         ("X3_REVIEW_SOFT_FAIL", "REVIEW", False),
         ("", "UNKNOWN", False),

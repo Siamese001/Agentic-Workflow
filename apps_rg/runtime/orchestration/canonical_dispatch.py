@@ -32,8 +32,9 @@ from apps_rg.runtime.runtime_proof_layout import (
 from apps_rg.runtime.section_cli_defaults import COMPETENCIES_DEFAULT_X1D_JUDGES
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
-# V6 terminal codes short values (integrated R4); legacy strings retained.
-_SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
+# This compatibility helper is non-product.  Product dispatch is routed through
+# ``apps_rg.runtime.product_entry`` and requires exact X3D authority there.
+_COMPATIBILITY_SUCCESS_X3 = frozenset({"X3D_ALLOW_FINISH"})
 # Soft-fail review codes that should NOT cascade-block downstream lanes per Author-Gate
 # decision dec_19e6e344d5db19589 (architecture_choice, 2026-05-28).
 _REVIEW_BUT_NOT_BLOCKING_X3 = frozenset({"X3_REVIEW_JUDGE_SOFT_FAIL", "X3_REVIEW"})
@@ -355,7 +356,7 @@ def run_canonical_full_resume_from_cli_primitives(
     lane_mock_judges: bool = False,
     lane_allow_test_mock_judges: bool = False,
 ) -> dict[str, Any]:
-    """Full résumé integrated R4 spine (no ``--section``)."""
+    """Run the legacy full-scope spine as an explicit non-product compatibility path."""
     raw_request = build_raw_request_for_r4(
         target_company=target_company,
         target_role=target_role,
@@ -453,40 +454,9 @@ def run_canonical_full_resume_from_cli_primitives(
     outcome = (
         result.fault == ""
         and not exec_summary_blocked
-        and (effective_x3 in _SUCCESS_X3 or soft_fail_review)
+        and (effective_x3 in _COMPATIBILITY_SUCCESS_X3 or soft_fail_review)
     )
-    post_x3_completion: dict[str, Any] = {}
     result_fault = result.fault
-    if outcome:
-        from apps_rg.runtime.post_x3_completion import (
-            complete_apps_rg_post_x3,
-            is_full_resume_product_artifact_dir,
-        )
-
-        if is_full_resume_product_artifact_dir(art):
-            post_x3_completion = complete_apps_rg_post_x3(
-                artifact_dir=art,
-                result={
-                    "exit_status": "success",
-                    "execution_status": "completed",
-                    "outcome_authorized": True,
-                    "x3_disposition": effective_x3,
-                    "fault": result.fault,
-                    "artifact_dir": str(art),
-                    "run_id": result.run_id,
-                    "request_id": result.request_id,
-                },
-                raw_request=raw_request,
-            )
-            if not (
-                post_x3_completion.get("completed")
-                and post_x3_completion.get("x3_to_uwg_to_eval_to_l6_completed")
-            ):
-                outcome = False
-                result_fault = str(
-                    post_x3_completion.get("failure_stage")
-                    or "post_x3_completion"
-                )
     # success_with_review keeps exit_status == "success" so phase1_dispatch_hard_failed()
     # does NOT cascade-block downstream lanes; the review packet preserves the soft-fail
     # for human inspection.
@@ -496,6 +466,9 @@ def run_canonical_full_resume_from_cli_primitives(
         "exit_status": exit_status,
         "execution_status": "completed" if outcome else "failed",
         "outcome_authorized": outcome,
+        "product_authorized": False,
+        "pipeline_complete": False,
+        "authority_classification": "NON_PRODUCT_COMPATIBILITY",
         "x3_disposition": effective_x3,
         "fault": result_fault,
         "artifact_dir": str(art),
@@ -504,24 +477,10 @@ def run_canonical_full_resume_from_cli_primitives(
         "l7_how_trace_emitted": l7_ok,
         "terminal_r5": result.terminal_r5,
         "executive_summary_certification_block": exec_summary_block,
-        "post_x3_completion": post_x3_completion,
-        "uwg_commit_receipt_ref": (
-            (post_x3_completion.get("uwg") or {})
-            .get("artifacts", {})
-            .get("uwg_commit_receipt", "")
-            if isinstance(post_x3_completion.get("uwg"), dict)
-            else ""
-        ),
-        "apps_eval_record_ref": (
-            (post_x3_completion.get("apps_eval") or {}).get("eval_record_ref", "")
-            if isinstance(post_x3_completion.get("apps_eval"), dict)
-            else ""
-        ),
-        "l6_shadow_bridge_ref": (
-            (post_x3_completion.get("l6_shadow") or {}).get("l6_shadow_bridge_ref", "")
-            if isinstance(post_x3_completion.get("l6_shadow"), dict)
-            else ""
-        ),
+        "post_x3_completion": {},
+        "uwg_commit_receipt_ref": "",
+        "apps_eval_record_ref": "",
+        "l6_shadow_bridge_ref": "",
     }
 
 
@@ -547,13 +506,29 @@ def run_canonical_apps_rg_from_cli_primitives(
     lane_allow_non_allow_exit_zero: bool = False,
     lane_allow_test_mock_judges: bool = False,
 ) -> dict[str, Any]:
-    """CLI dispatch — delegates to single ``apps_rg_spine_run`` entry (d8f4a2)."""
+    """Dispatch full scope to product entry; section scope is non-product tooling."""
+    sid = str(section).strip()
+    if not sid:
+        from apps_rg.runtime.product_entry import run_product_whole_run_from_primitives
+
+        return run_product_whole_run_from_primitives(
+            target_company=target_company,
+            target_role=target_role,
+            target_level=target_level,
+            jd=jd,
+            job_description_ref=job_description_ref,
+            job_description_text=job_description_text,
+            manual_brief=manual_brief,
+            resume_path=resume_path,
+            source_resume_text=source_resume_text,
+            generation_mode=generation_mode,
+            artifact_dir=artifact_dir,
+        )
+
     from apps_rg.runtime.spine.apps_rg_spine_run import run_apps_rg_spine
 
-    sid = str(section).strip()
-    scope = "section" if sid else "full"
     return run_apps_rg_spine(
-        scope=scope,
+        scope="section",
         section_id=sid,
         target_company=target_company,
         target_role=target_role,

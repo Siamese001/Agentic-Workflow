@@ -33,11 +33,11 @@ from agentic_core.runtime.contracts.sealed_l2_artifact import (
 )
 from agentic_core.runtime.contracts.x3_disposition import X3Disposition
 from agentic_core.runtime.entry.app_ingress_runner import AppRuntimeProfile
-from agentic_core.runtime.entry.u0_apps_research_binding import (
-    u0_validate_apps_research,
-)
 from agentic_core.runtime.exit.apps_research_exit_binding import (
     exit_finalize_apps_research,
+)
+from apps_research.runtime.u0.binding import (
+    u0_validate_apps_research,
 )
 
 APPS_RESEARCH_REQUIRED_FIELDS: tuple[str, ...] = (

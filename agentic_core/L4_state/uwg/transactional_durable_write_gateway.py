@@ -5,7 +5,7 @@ from __future__ import annotations
 import threading
 import time
 from dataclasses import replace
-from typing import Any, Mapping, Optional, Sequence
+from typing import Any, Mapping, Sequence
 
 from agentic_core.L4_state.audit.sqlite_audit_ledger import SQLiteAuditLedger
 from agentic_core.L4_state.contracts.records import (
@@ -120,8 +120,8 @@ class TransactionalDurableWriteGateway(DurableWriteGateway):
         rollback_plan: RollbackPlan,
         refresh_plan: ReadSurfaceRefreshPlan,
     ) -> tuple[
-        Optional[UWGCommitReceipt],
-        Optional[UWGBlockedCommitReceipt],
+        UWGCommitReceipt | None,
+        UWGBlockedCommitReceipt | None,
         list[ReadSurfaceRefreshReceipt],
     ]:
         backend = self._canonical_backend
@@ -341,6 +341,33 @@ class TransactionalDurableWriteGateway(DurableWriteGateway):
         return self._canonical_backend.list_projection_tasks(
             commit_receipt_id=commit_receipt_id, statuses=statuses
         )
+
+    def get_validation_receipt(
+        self,
+        validation_receipt_id: str,
+    ) -> UWGValidationReceipt | None:
+        """Return the original durable validation receipt for replayed commits."""
+
+        existing = super().get_validation_receipt(validation_receipt_id)
+        if existing is not None:
+            return existing
+        backend = self._canonical_backend
+        if backend is None:
+            return None
+        payload = backend.get_validation_receipt_payload(validation_receipt_id)
+        if payload is None:
+            return None
+        receipt = UWGValidationReceipt(
+            **{
+                **payload,
+                "checked_rules": tuple(payload.get("checked_rules") or ()),
+                "failed_rules": tuple(payload.get("failed_rules") or ()),
+                "reason_codes": tuple(payload.get("reason_codes") or ()),
+                "audit_refs": tuple(payload.get("audit_refs") or ()),
+            }
+        )
+        self._validations[receipt.uwg_validation_receipt_id] = receipt
+        return receipt
 
     def transition_state_lifecycle(
         self,

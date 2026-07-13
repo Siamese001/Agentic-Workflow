@@ -10,8 +10,6 @@ Vocabulary split (product):
 
 from __future__ import annotations
 
-import os
-
 from typing import Any, Mapping
 
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
@@ -68,14 +66,6 @@ def _inline_briefing_present(app_payload: Mapping[str, Any]) -> bool:
 
 
 def _apps_research_proof_required(app_payload: Mapping[str, Any]) -> bool:
-    # Existing unit suites use legacy handoff fixtures. This escape is available
-    # only inside the explicit test harness; product and E2E execution remain
-    # fail-closed unless the canonical Exit chain is present.
-    if _truthy(os.environ.get("APPS_RG_TEST_HARNESS")) and not _truthy(
-        os.environ.get("APPS_RG_ENFORCE_CANONICAL_RESEARCH_EXIT_IN_TESTS")
-    ):
-        return False
-
     user_constraints = app_payload.get("user_constraints")
     constraints = (
         user_constraints if isinstance(user_constraints, Mapping) else {}
@@ -85,7 +75,7 @@ def _apps_research_proof_required(app_payload: Mapping[str, Any]) -> bool:
         or constraints.get("research_via")
         or ""
     ).strip().lower()
-    return (
+    declared_delegation = (
         _truthy(
             app_payload.get("auto_research_internal")
             or constraints.get("auto_research_internal")
@@ -93,6 +83,21 @@ def _apps_research_proof_required(app_payload: Mapping[str, Any]) -> bool:
         or research_via == "apps_research"
         or str(constraints.get("caller_app_id") or "").strip() == "apps_research"
     )
+    ref = _briefing_ref(app_payload)
+    if ref:
+        from apps_rg.prerequisites.briefing_validator import (
+            find_apps_research_handoff_v2_for_briefing,
+            find_legacy_apps_research_envelope_for_briefing,
+        )
+
+        # Physical producer provenance is authority even if a caller omits its
+        # advisory research_via flag.  Legacy-only provenance is also observed,
+        # then rejected by the canonical validator below.
+        declared_delegation = declared_delegation or bool(
+            find_apps_research_handoff_v2_for_briefing(ref)
+            or find_legacy_apps_research_envelope_for_briefing(ref)
+        )
+    return declared_delegation
 
 
 def _jd_ref(app_payload: Mapping[str, Any]) -> str:
@@ -133,8 +138,41 @@ def briefing_supplied_at_u0(app_payload: Mapping[str, Any] | None) -> bool:
         require_observed=True,
         require_x1_x3_authorization=True,
         require_canonical_exit=True,
+        expected_target_company=str(app_payload.get("target_company") or ""),
+        expected_target_role=str(app_payload.get("target_role") or ""),
     )
     return bool(validation.valid)
+
+
+def apps_research_handoff_validation_at_u0(
+    app_payload: Mapping[str, Any] | None,
+    *,
+    identity_context: Mapping[str, Any] | None = None,
+) -> Any | None:
+    """Return the canonical producer validation for retention on U0 output."""
+    if not app_payload or not _apps_research_proof_required(app_payload):
+        return None
+    ref = _briefing_ref(app_payload)
+    if not ref:
+        return None
+    from apps_rg.prerequisites.briefing_validator import (
+        validate_apps_research_handoff,
+    )
+
+    context = identity_context or {}
+    return validate_apps_research_handoff(
+        brief_ref=ref,
+        jd_ref=_jd_ref(app_payload),
+        require_observed=True,
+        require_x1_x3_authorization=True,
+        require_canonical_exit=True,
+        expected_target_company=str(app_payload.get("target_company") or ""),
+        expected_target_role=str(app_payload.get("target_role") or ""),
+        expected_parent_run_id=str(context.get("run_id") or ""),
+        expected_request_id=str(context.get("request_id") or ""),
+        expected_trace_root=str(context.get("trace_id") or ""),
+        expected_tenant_id=str(context.get("tenant_id") or ""),
+    )
 
 
 def apps_research_call_required_at_u0(
@@ -203,4 +241,5 @@ __all__ = [
     "briefing_supplied_at_u0",
     "briefing_validate_or_raise",
     "apps_research_call_required_at_u0",
+    "apps_research_handoff_validation_at_u0",
 ]

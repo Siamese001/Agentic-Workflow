@@ -6,6 +6,7 @@ Canonical U0 ingress binding for apps_rg. Import from
 from __future__ import annotations
 
 import hashlib
+import json
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -19,8 +20,11 @@ __all__ = [
 ]
 
 # Re-export terminal rejection for callers/tests.
+from apps_rg.runtime.bindings.briefing_u0_signals import (  # noqa: E402
+    apps_research_handoff_validation_at_u0,
+    briefing_supplied_at_u0,
+)
 from apps_rg.runtime.bindings.u0_rejection import AppsRgU0RejectedError  # noqa: E402,F401
-from apps_rg.runtime.bindings.briefing_u0_signals import briefing_supplied_at_u0  # noqa: E402
 from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH  # noqa: E402
 from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH  # noqa: E402
 
@@ -28,6 +32,17 @@ __all__.append("AppsRgU0RejectedError")
 
 APPS_RG_U0_CERT_REF: str = "u0-apps-rg-resume-generation-w2"
 APPS_RG_TASK_CLASS: str = "resume_generation"
+
+
+def _canonical_payload_digest(payload: Mapping[str, Any]) -> str:
+    raw = json.dumps(
+        payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 
 _REQUIRED_APP_PAYLOAD_KEYS: frozenset[str] = frozenset(
     {
@@ -119,7 +134,6 @@ def u0_validate_apps_rg(
         RequestEnvelope,
         ValidatedRequest,
     )
-
     from apps_rg.runtime.bindings.u0_package_ingest import (
         U0PackageValidationError,
         ingest_apps_rg_runtime_package,
@@ -131,6 +145,7 @@ def u0_validate_apps_rg(
     )
 
     app_payload, meta = _coerce_envelope_to_app_payload(envelope)
+    raw_input_payload_digest = _canonical_payload_digest(app_payload)
 
     request_id_pre = str(meta.get("request_id") or "") or str(uuid.uuid4())
     trace_root_pre = str(meta.get("trace_id") or "") or request_id_pre
@@ -192,7 +207,15 @@ def u0_validate_apps_rg(
     jd_ref: str = str(app_payload.get("job_description_ref") or "").strip()
     jd_data_val: str = str(app_payload.get("jd_data") or "").strip()
     has_run_specific_jd = bool(jd_text.strip() or jd_ref or jd_data_val)
-    has_run_specific_briefing = briefing_supplied_at_u0(app_payload)
+    apps_research_handoff_validation = apps_research_handoff_validation_at_u0(
+        app_payload,
+        identity_context=meta,
+    )
+    has_run_specific_briefing = (
+        bool(apps_research_handoff_validation.valid)
+        if apps_research_handoff_validation is not None
+        else briefing_supplied_at_u0(app_payload)
+    )
     missing_requirements: list[str] = []
     if not has_run_specific_jd:
         missing_requirements.append("job_description")
@@ -406,6 +429,42 @@ def u0_validate_apps_rg(
             or (app_payload.get("user_constraints") or {}).get("allow_test_l5_cert_ref")
         ),
     }
+    if apps_research_handoff_validation is not None:
+        validation_receipt = apps_research_handoff_validation.to_receipt()
+        validation_receipt_path = (
+            Path(apps_research_handoff_validation.envelope_path).parent
+            / "apps_research_handoff_validation_receipt.json"
+        )
+        validated_app_payload["apps_research_handoff_validation_receipt"] = (
+            validation_receipt
+        )
+        validated_app_payload["apps_research_handoff_manifest_ref"] = (
+            apps_research_handoff_validation.envelope_path
+        )
+        validated_app_payload["apps_research_handoff_validation_receipt_ref"] = str(
+            validation_receipt_path
+        )
+        if validation_receipt_path.is_file():
+            validation_receipt_bytes = validation_receipt_path.read_bytes()
+        else:
+            validation_receipt_bytes = json.dumps(
+                validation_receipt,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+        validated_app_payload["apps_research_handoff_validation_receipt_digest"] = (
+            "sha256:"
+            + hashlib.sha256(validation_receipt_bytes).hexdigest()
+        )
+
+    transformed_payload_digest = _canonical_payload_digest(validated_app_payload)
+    validated_app_payload["u0_payload_digests"] = {
+        "schema_version": "apps_rg.u0_payload_digests.v1",
+        "raw_input_sha256": "sha256:" + raw_input_payload_digest,
+        "transformed_output_sha256": "sha256:" + transformed_payload_digest,
+    }
 
     trace_id = str(meta.get("trace_id") or "") or trace_root_pre
     request_id = str(meta.get("request_id") or "") or request_id_pre
@@ -417,7 +476,7 @@ def u0_validate_apps_rg(
         f"tenant:{tenant_id}" if tenant_id.strip() else "user:standard"
     )
 
-    payload_digest = str(app_payload.get("payload_digest") or "")
+    payload_digest = transformed_payload_digest
 
     allow_test_l5_cert_ref = bool(validated_app_payload["allow_test_l5_cert_ref"])
     l5_ref = app_payload.get("l5_certification_ref")
@@ -439,13 +498,6 @@ def u0_validate_apps_rg(
                 ).encode("utf-8")
             ).hexdigest()[:24]
             l5_str = f"l5:apps_rg:u0:{seed}"
-    if not payload_digest and isinstance(envelope, RequestEnvelope):
-        payload_digest = str(envelope.payload.payload_digest or "")
-    if not payload_digest:
-        payload_digest = hashlib.sha256(
-            repr(sorted(validated_app_payload.items())).encode("utf-8")
-        ).hexdigest()
-
     receipt = _AppsRgU0AuthorityReceipt(
         validation_timestamp=datetime.now(timezone.utc).isoformat(),
         validator_version="W6.0",
@@ -465,8 +517,8 @@ def u0_validate_apps_rg(
         contract_version="apps_rg_ingress_payload.v1",
         schema_version="apps_rg_ingress_payload.v1",
         field_map_version="u0_validate_apps_rg.synthetic.v1",
-        input_payload_digest=payload_digest,
-        validated_request_digest=payload_digest,
+        input_payload_digest=raw_input_payload_digest,
+        validated_request_digest=transformed_payload_digest,
         pointers_total=len(app_payload),
         pointers_mapped=len(app_payload),
         pointers_derived=0,
@@ -475,6 +527,14 @@ def u0_validate_apps_rg(
         pass_status=True,
         timestamp_iso=receipt.validation_timestamp,
     )
+
+    audit_refs: tuple[str, ...] = ()
+    if apps_research_handoff_validation is not None:
+        manifest_ref = str(apps_research_handoff_validation.envelope_path or "")
+        receipt_ref = str(
+            Path(manifest_ref).parent / "apps_research_handoff_validation_receipt.json"
+        )
+        audit_refs = tuple(ref for ref in (manifest_ref, receipt_ref) if ref)
 
     return ValidatedRequest(
         request_id=request_id,
@@ -488,6 +548,7 @@ def u0_validate_apps_rg(
         target_level=target_level,
         replay_key=replay_key_final,
         l5_certification_ref=l5_str,
+        audit_refs=audit_refs,
         app_payload=validated_app_payload,
         session_id=session_id,
         trace_root=trace_root,

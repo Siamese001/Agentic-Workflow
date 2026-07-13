@@ -145,9 +145,17 @@ class AppOutputSnapshot:
     component_rows: list[dict[str, Any]] = field(default_factory=list)
     coverage_summary: dict[str, Any] = field(default_factory=dict)
     raw_artifact_refs: list[str] = field(default_factory=list)
+    parent_run_id: str = ""
+    child_run_id: str = ""
+    section_attempt_id: str = ""
+    runtime_exhaust_bundle_id: str = ""
+    microstep_contract_digest: str = ""
+    registry_digest: str = ""
+    snapshot_digest: str = ""
+    source_artifact_manifest: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "AppOutputSnapshot":
+    def from_dict(cls, data: dict[str, Any]) -> AppOutputSnapshot:
         return cls(
             app_id=str(data.get("app_id", "")),
             scenario_id=str(data.get("scenario_id", "")),
@@ -166,6 +174,14 @@ class AppOutputSnapshot:
             component_rows=list(data.get("component_rows") or []),
             coverage_summary=dict(data.get("coverage_summary") or {}),
             raw_artifact_refs=list(data.get("raw_artifact_refs") or []),
+            parent_run_id=str(data.get("parent_run_id") or ""),
+            child_run_id=str(data.get("child_run_id") or ""),
+            section_attempt_id=str(data.get("section_attempt_id") or ""),
+            runtime_exhaust_bundle_id=str(data.get("runtime_exhaust_bundle_id") or ""),
+            microstep_contract_digest=str(data.get("microstep_contract_digest") or ""),
+            registry_digest=str(data.get("registry_digest") or ""),
+            snapshot_digest=str(data.get("snapshot_digest") or ""),
+            source_artifact_manifest=list(data.get("source_artifact_manifest") or []),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -215,6 +231,14 @@ class ScorecardRow:
     decisive_reason: str = ""
     source_system: str = "apps_eval"
     source_artifact_schema: str = ""
+    parent_run_id: str = ""
+    child_run_id: str = ""
+    section_attempt_id: str = ""
+    eval_record_id: str = ""
+    runtime_exhaust_bundle_id: str = ""
+    microstep_contract_digest: str = ""
+    registry_digest: str = ""
+    snapshot_digest: str = ""
     created_at: str = ""
     schema_version: str = CURRENT_SCORECARD_ROW_SCHEMA_VERSION
 
@@ -584,6 +608,14 @@ class CompletedEvalRecord:
     run_metadata: EvalRunMetadata = field(default_factory=EvalRunMetadata)
     fixture_provenance: list[FixtureProvenance] = field(default_factory=list)
     regression_flywheel: RegressionFlywheelSummary = field(default_factory=RegressionFlywheelSummary)
+    parent_run_id: str = ""
+    child_run_id: str = ""
+    section_attempt_id: str = ""
+    eval_record_id: str = ""
+    runtime_exhaust_bundle_id: str = ""
+    microstep_contract_digest: str = ""
+    registry_digest: str = ""
+    snapshot_digest: str = ""
     schema_version: str = CURRENT_EVAL_RECORD_SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:

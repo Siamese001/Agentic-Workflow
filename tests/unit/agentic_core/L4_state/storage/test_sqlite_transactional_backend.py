@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -15,7 +16,11 @@ from agentic_core.L4_state.contracts.records import (
     stamp_digest,
 )
 from agentic_core.L4_state.storage.sqlite_backend import SQLiteL4Backend
-from agentic_core.L4_state.uwg.durable_write_gateway import compute_state_diffs_digest
+from agentic_core.L4_state.uwg.durable_write_gateway import (
+    compute_state_diffs_digest,
+    get_default_gateway,
+    reset_default_gateway,
+)
 from agentic_core.L4_state.uwg.transactional_durable_write_gateway import (
     TransactionalDurableWriteGateway,
 )
@@ -159,6 +164,11 @@ def test_restart_reloads_hash_chain_and_reuses_idempotent_receipt(tmp_path: Path
     assert blocked is None and second is not None
     assert second.commit_receipt_id == first.commit_receipt_id
     assert second.content_hash == first.content_hash
+    restored_validation = restarted_gateway.get_validation_receipt(
+        second.uwg_validation_receipt_ref
+    )
+    assert restored_validation is not None
+    assert restored_validation.validation_status == "PASS"
     events = [row["event_type"] for row in restarted_backend.load_audit_records()]
     assert events.count("atomic_commit_applied") == 1
     assert events.count("commit_request_received") == 2
@@ -181,6 +191,39 @@ def test_same_replay_key_with_different_state_fails_closed(tmp_path: Path) -> No
         state_diffs=second[1],
         rollback_plan=second[2],
         refresh_plan=second[3],
+    )
+    assert receipt is None and blocked is not None
+    assert "replay_key_conflict" in blocked.blocked_reason_codes
+
+
+def test_same_replay_key_with_different_run_identity_fails_closed(
+    tmp_path: Path,
+) -> None:
+    backend = SQLiteL4Backend(tmp_path / "l4.sqlite3")
+    gateway = TransactionalDurableWriteGateway(canonical_backend=backend)
+    first = _packet(suffix="a", replay_key="replay:identity-conflict")
+    receipt, blocked, _ = gateway.commit(
+        commit_request=first[0],
+        state_diffs=first[1],
+        rollback_plan=first[2],
+        refresh_plan=first[3],
+    )
+    assert receipt is not None and blocked is None
+
+    conflicting_request = stamp_digest(
+        replace(
+            first[0],
+            request_id="request:other",
+            run_id="run:other",
+            trace_root="trace:other",
+            deterministic_digest="",
+        )
+    )
+    receipt, blocked, _ = gateway.commit(
+        commit_request=conflicting_request,
+        state_diffs=first[1],
+        rollback_plan=first[2],
+        refresh_plan=first[3],
     )
     assert receipt is None and blocked is not None
     assert "replay_key_conflict" in blocked.blocked_reason_codes
@@ -242,6 +285,43 @@ def test_runtime_default_audit_backend_survives_restart(
     assert isinstance(restarted, SQLiteAuditLedger)
     assert restarted.position() == 1
     restarted.chain_check()
+
+
+def test_runtime_default_gateway_uses_transactional_sqlite(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    from agentic_core.L4_state.storage.sqlite_backend import reset_default_backend
+
+    monkeypatch.setenv("L4_STORAGE_BACKEND", "sqlite")
+    monkeypatch.setenv("L4_SQLITE_PATH", str(tmp_path / "default-gateway.sqlite3"))
+    reset_default_gateway()
+    reset_default_backend(delete_storage=True)
+    try:
+        gateway = get_default_gateway()
+        assert isinstance(gateway, TransactionalDurableWriteGateway)
+        packet = _packet(replay_key="replay:default-runtime")
+        first, blocked, _ = gateway.commit(
+            commit_request=packet[0],
+            state_diffs=packet[1],
+            rollback_plan=packet[2],
+            refresh_plan=packet[3],
+        )
+        assert first is not None and blocked is None
+
+        reset_default_gateway()
+        reset_default_backend()
+        replayed, blocked, _ = get_default_gateway().commit(
+            commit_request=packet[0],
+            state_diffs=packet[1],
+            rollback_plan=packet[2],
+            refresh_plan=packet[3],
+        )
+        assert replayed is not None and blocked is None
+        assert replayed.commit_receipt_id == first.commit_receipt_id
+    finally:
+        reset_default_gateway()
+        reset_default_backend(delete_storage=True)
 
 
 def test_injected_commit_failure_rolls_back_all_canonical_rows(

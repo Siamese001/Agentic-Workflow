@@ -40,7 +40,14 @@ def test_mock_bridge_default_brief_passes_contract_gate() -> None:
     assert not result.is_blocked
     assert result.company_brief_text.strip()
     assert result.apps_research_handoff_envelope is not None
-    assert result.apps_research_handoff_envelope["generation_provider"] == "external_openai"
+    assert (
+        result.apps_research_handoff_envelope["schema_version"]
+        == "apps_research.apps_rg_handoff.v2"
+    )
+    assert (
+        result.apps_research_handoff_envelope["exit_authorization"]["x3_code"]
+        == "X3D_ALLOW_FINISH"
+    )
 
 
 def test_bridge_rejects_missing_brief_text() -> None:
@@ -72,36 +79,13 @@ class _StaticBridge:
 
 
 def _persist_mock_result(tmp_path: Path) -> ResearchResult:
-    result = _fetch(MockAppsResearchBridge(confidence_score=0.9))
-    run_dir = tmp_path / "apps_research" / "research-run-persisted"
-    run_dir.mkdir(parents=True)
-    briefing_path = run_dir / "briefing.md"
-    briefing_path.write_text(result.company_brief_text + "\n", encoding="utf-8")
-    company_brief_path = run_dir / "company_brief.json"
-    company_brief_path.write_text(
-        json.dumps({"company_brief_text": result.company_brief_text}),
-        encoding="utf-8",
-    )
-    envelope_path = run_dir / "apps_research_briefing_envelope.json"
-    envelope = dict(result.apps_research_handoff_envelope or {})
-    envelope["briefing_path"] = str(briefing_path.resolve())
-    envelope["company_brief_path"] = str(company_brief_path.resolve())
-    envelope_path.write_text(json.dumps(envelope), encoding="utf-8")
-    (run_dir / "run_metadata.json").write_text(
-        json.dumps(
-            {
-                "run_id": result.run_id,
-                "briefing_path": str(briefing_path.resolve()),
-                "company_brief_path": str(company_brief_path.resolve()),
-            }
-        ),
-        encoding="utf-8",
-    )
-    return replace(
-        result,
-        research_artifact_dir=str(run_dir.resolve()),
-        briefing_artifact_path=str(briefing_path.resolve()),
-        apps_research_handoff_envelope=envelope,
+    # Exercise the real producer publisher so the positive fixture includes the
+    # atomically committed v2 manifest, marker, U0 receipt, and explicit digests.
+    return _fetch(
+        MockAppsResearchBridge(
+            confidence_score=0.9,
+            artifact_runs_root=tmp_path / "apps_research",
+        )
     )
 
 
@@ -142,9 +126,17 @@ def test_delegation_returns_ready_with_persisted_brief(tmp_path: Path) -> None:
     assert outcome.briefing_text.strip()
     assert Path(outcome.research_briefing_path).is_file()
     assert Path(outcome.research_artifact_dir).is_dir()
-    assert outcome.apps_research_handoff_envelope["apps_research_x1_x3_authorization"]["x2"][
-        "model_backed"
-    ] is True
+    assert outcome.apps_research_handoff_envelope["schema_version"] == (
+        "apps_research.apps_rg_handoff.v2"
+    )
+    assert set(outcome.apps_research_handoff_envelope["mandatory_gate_receipts"]) == {
+        "G5",
+        "G6",
+        "G7",
+        "G21",
+        "G24",
+        "G26",
+    }
 
 
 @pytest.mark.parametrize(
@@ -162,7 +154,7 @@ def test_delegation_rejects_tampered_producer_bundle(
 ) -> None:
     persisted = _persist_mock_result(tmp_path)
     run_dir = Path(persisted.research_artifact_dir)
-    envelope_path = run_dir / "apps_research_briefing_envelope.json"
+    envelope_path = run_dir / "apps_research_apps_rg_handoff_v2.json"
     if tamper == "missing_company_brief":
         (run_dir / "company_brief.json").unlink()
     elif tamper == "changed_briefing_text":
@@ -171,7 +163,9 @@ def test_delegation_rejects_tampered_producer_bundle(
         )
     elif tamper == "escaped_envelope_path":
         envelope = dict(persisted.apps_research_handoff_envelope or {})
-        envelope["briefing_path"] = str((tmp_path / "outside.md").resolve())
+        envelope["artifact_manifest"]["artifacts"][0]["artifact_ref"] = str(
+            (tmp_path / "outside.md").resolve()
+        )
         envelope_path.write_text(json.dumps(envelope), encoding="utf-8")
         persisted = replace(persisted, apps_research_handoff_envelope=envelope)
     else:
@@ -205,7 +199,7 @@ def test_delegation_fails_closed_without_handoff_envelope() -> None:
     outcome = dispatch_resume_research_briefing(req, bridge=bridge)
     assert isinstance(outcome, ResearchDispatchFailure)
     assert outcome.r5_reason_code == "APPS_RESEARCH_BLOCKED"
-    assert "missing_apps_research_handoff_envelope" in outcome.detail
+    assert "missing_apps_research_handoff_v2" in outcome.detail
 
 
 def test_delegation_fails_closed_on_blocked_brief() -> None:

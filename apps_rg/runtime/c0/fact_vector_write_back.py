@@ -1022,7 +1022,7 @@ def promote_staged_fact_vectors(
     resolved_run_id = _norm(run_id)
     resolved_x3_code = _norm(x3_code)
     gate_x3_code = resolved_x3_code
-    if require_x3_allow and resolved_x3_code in {"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"}:
+    if require_x3_allow and resolved_x3_code == "X3D_ALLOW_FINISH":
         gate_x3_code = X3_ALLOW
     selected_ids = tuple(str(v).strip() for v in (ids or []) if _norm(v))
     request = PromotionRequest(

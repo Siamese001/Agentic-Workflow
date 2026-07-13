@@ -62,7 +62,6 @@ from pathlib import Path
 from typing import Any, Callable
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-
 from apps_rg.cache.r1a_adapter import check_r1a_cache, compute_r1a_key, stamp_r1a_cache
 from apps_rg.runtime.cli_section_execution_report import (
     emit_cli_section_execution_summary,
@@ -1038,6 +1037,7 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     args.non_interactive = not args.interactive
     fresh_e2e_receipt: dict[str, Any] | None = None
     fresh_e2e_fact_vector_bootstrap_receipt: dict[str, Any] | None = None
+    fresh_e2e_continuation_ref = ""
 
     if not str(getattr(args, "resume", "") or "").strip():
         dr = _default_resume_path()
@@ -1104,6 +1104,14 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 flush=True,
             )
             return preflight.exit_code
+        from apps_rg.runtime.e2e_preflight import (
+            E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME,
+        )
+
+        fresh_e2e_continuation_ref = str(
+            Path(str(args.artifact_dir))
+            / E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME
+        )
         fresh_e2e_fact_vector_bootstrap_receipt = preflight.bootstrap_receipt or {}
         print(
             "FRESH_E2E_FACT_VECTOR_BOOTSTRAP "
@@ -1183,8 +1191,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if fact_vector_readiness_required and (section_eff in section_lane_ids or not section_eff):
         from apps_rg.runtime.fact_vector_readiness import (
             BLOCKED_PRE_U0_FACT_VECTOR_READINESS,
-            FactVectorReadinessError,
             PRE_U0_GATE_ID,
+            FactVectorReadinessError,
             enforce_fact_vector_readiness,
         )
 
@@ -1346,8 +1354,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
     if fact_vector_readiness_required and (section_eff in section_lane_ids or not section_eff):
         from apps_rg.runtime.fact_vector_readiness import (
             BLOCKED_POST_U0_SECTION_SUFFICIENCY,
-            FactVectorReadinessError,
             POST_U0_GATE_ID,
+            FactVectorReadinessError,
             enforce_fact_vector_readiness,
         )
 
@@ -1623,6 +1631,8 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 resume_path=args.resume,
                 generation_mode=args.generation_mode,
                 artifact_dir=args.artifact_dir,
+                preflight_continuation_ref=fresh_e2e_continuation_ref,
+                require_fresh_preflight=fresh_e2e,
             )
             if pin_cleanup_receipt is not None and isinstance(result, dict):
                 result["section_pin_cleanup_receipt"] = pin_cleanup_receipt
@@ -1653,8 +1663,22 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                 from apps_rg.runtime.full_run_section_status import emit_full_run_section_status
                 from apps_rg.runtime.mandatory_run_outputs import emit_mandatory_run_outputs
                 ad = Path(str(result["artifact_dir"]))
-                if is_integrated_whole_run_artifact_dir(ad) or result.get("full_run_section_status_md"):
+                terminal_sealed = bool(
+                    result.get("terminal_manifest_ref")
+                    and result.get("pipeline_completion_receipt_ref")
+                    and (ad / "apps_rg_e2e_terminal_manifest.json").is_file()
+                    and (ad / "apps_rg_pipeline_completion_receipt.json").is_file()
+                )
+                if not terminal_sealed and (
+                    is_integrated_whole_run_artifact_dir(ad)
+                    or result.get("full_run_section_status_md")
+                ):
                     repo = find_repo_root()
+                    product_authorized = (
+                        result.get("product_authorized") is True
+                        if "product_authorized" in result
+                        else result.get("outcome_authorized") is True
+                    )
                     emit_full_run_section_status(ad, repo_root=repo, print_stdout=True)
                     mandatory_emit = emit_mandatory_run_outputs(
                         ad,
@@ -1667,9 +1691,24 @@ def main(argv: list[str] | None = None) -> int:  # noqa: C901
                         result["mandatory_output_upstream_fault"] = str(result.get("fault") or "")
                         result["exit_status"] = "error"
                         result["execution_status"] = "failed"
-                        result["outcome_authorized"] = False
-                        result["x3_disposition"] = "X3_BLOCK"
-                        result["fault"] = str(mandatory_gate.get("gate_id") or "")
+                        result["product_authorized"] = product_authorized
+                        result["outcome_authorized"] = product_authorized
+                        result["pipeline_complete"] = False
+                        result["observability_repair_required"] = product_authorized
+                        gate_fault = str(mandatory_gate.get("gate_id") or "")
+                        if product_authorized:
+                            existing_faults = result.get("pipeline_reconciliation_faults")
+                            reconciliation_faults = (
+                                list(existing_faults)
+                                if isinstance(existing_faults, list)
+                                else []
+                            )
+                            if gate_fault and gate_fault not in reconciliation_faults:
+                                reconciliation_faults.append(gate_fault)
+                            result["pipeline_reconciliation_faults"] = reconciliation_faults
+                        else:
+                            result["x3_disposition"] = "X3_BLOCK"
+                            result["fault"] = gate_fault
                         result["mandatory_output_hard_stop"] = mandatory_gate
         if section_eff in section_lane_ids:
             res_dict = result if isinstance(result, dict) else {}

@@ -83,6 +83,7 @@ def build_l6_apps_eval_grain_parity(
     apps_eval_rows: Iterable[Mapping[str, Any]],
     l6_observations: Iterable[Mapping[str, Any]],
     alignment_source: str,
+    registry_digest: str = "",
 ) -> dict[str, Any]:
     """Compare required apps_eval rows and L6 observations at shared grain."""
     eval_rows = [dict(row) for row in apps_eval_rows if row.get("required", True)]
@@ -105,7 +106,7 @@ def build_l6_apps_eval_grain_parity(
                 }
             )
 
-    apps_eval_rows_bound = alignment_source == "apps_eval_scorecard_rows"
+    apps_eval_rows_bound = alignment_source == "independent_persisted_observations"
     authority_mismatch = _authority_mismatch(obs_rows)
     unbound_extra_observations = missing_in_apps_eval and apps_eval_rows_bound
     if malformed or missing_in_l6 or unbound_extra_observations or verdict_mismatches or authority_mismatch:
@@ -122,6 +123,7 @@ def build_l6_apps_eval_grain_parity(
         "run_id": run_id,
         "runtime_exhaust_bundle_id": runtime_exhaust_bundle_id,
         "microstep_contract_digest": microstep_contract_digest,
+        "registry_digest": registry_digest,
         "apps_eval_scorecard_ref": apps_eval_scorecard_ref,
         "l6_observation_ref": l6_observation_ref,
         "alignment_source": alignment_source,

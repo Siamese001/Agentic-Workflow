@@ -1,8 +1,8 @@
 """Section lane X3 + spine Exit — aggregate_x3 judge math then ExitEvalPipeline authority."""
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 from pathlib import Path
 from typing import Any, Callable
 
@@ -129,7 +129,7 @@ def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
         return "failure"
     if x3_doc.get("pass") is True or x3_doc.get("pass_") is True:
         return "success"
-    if code.startswith("X3_ALLOW") or code in {"EXIT_OK", "EXIT_PARTIAL", "X3C", "X3D"}:
+    if code == "X3_ALLOW":
         return "success"
     if code in _SOFT_FAIL_REVIEW_X3_CODES:
         return "success_with_review"

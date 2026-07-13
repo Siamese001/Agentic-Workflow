@@ -1,6 +1,6 @@
 # ADR-106: Apps Research to Apps RG E2E Authority Contract
 
-- **Status**: Proposed contract freeze; accepted on merge, with runtime convergence in issue #550 Waves 1-6
+- **Status**: Accepted and implemented through issue #550 Waves 1-6
 - **Date**: 2026-07-13
 - **Baseline**: `main@de511b54dbed9be7fc63648ad175da2ae9edeefe`
 - **Issue**: [#550](https://github.com/Siamese001/Agentic-Workflow/issues/550)
@@ -8,17 +8,13 @@
 
 ## Context
 
-The Apps Research to Apps RG pipeline already has strong individual receipts, but
-its entrypoints do not yet enforce one authority chain. The whole-run orchestrator,
-section pre-dispatch, Apps Eval, and L6 can interpret success, identity, or evidence
-with different rules. The result is a false-success risk: a downstream observer can
-appear to change current-run authorization, a stage can report PASS without resolving
-the authoritative receipt bytes, and a stale cross-run package can satisfy a late
-binding.
+The Apps Research to Apps RG pipeline had strong individual receipts, but its
+entrypoints did not enforce one authority chain. Issue #550 closed that false-success
+risk by making the frozen contract executable across product entry, runtime Exit,
+UWG, Eval, L6, mandatory closeout, and terminal sealing.
 
-Wave 0 freezes the target contract before runtime changes begin. This decision does
-not claim that the current implementation already conforms. Each known divergence is
-linked to issue #550 and must fail closed as its implementation wave lands.
+Wave 0 froze the target contract before runtime changes began. Waves 1-6 then
+implemented it; the contract checker now rejects retained `current_gap_ids`.
 
 The execution checkout did not contain an ADG SQLite snapshot. Entrypoint and module
 inventory for this freeze therefore uses static executable-path inspection at the
@@ -68,10 +64,9 @@ The only canonical codes are:
 
 For this pipeline, only the exact string `X3D_ALLOW_FINISH` may enter product-success
 logic. `X3C` is not product success; it is a request to UWG. Values such as `ALLOW`,
-`X3_ALLOW`, `X3D`, `EXIT_OK`, and `EXIT_PARTIAL` are migration inputs only and are
-forbidden by the v2 product contract. Their runtime removal is sequenced through the
-explicit migration window in issue #550 rather than performed as an unreviewed
-behavior change in this contract-only wave.
+`X3_ALLOW`, `X3D`, `EXIT_OK`, and `EXIT_PARTIAL` are forbidden by the v2 product
+contract. Direct section tooling is explicitly non-product; every product entry
+requires exact `X3D_ALLOW_FINISH`.
 
 ### 4. Split terminal semantics
 
@@ -103,8 +98,8 @@ The frozen schemas are:
 - `apps_rg.e2e_stage_ledger.v2`
 - `apps_rg.e2e_terminal_manifest.v1`
 
-Wave 0 defines and validates their shapes. Waves 1-4 implement producers and
-consumers. Wave 5 proves them end to end. Wave 6 removes the migration readers and
+Wave 0 defined their shapes; Waves 1-4 implemented producers and consumers; Wave 5
+made certification result-backed; and Wave 6 removed the product-path v1 reader and
 legacy aliases.
 
 ## Consequences
@@ -118,9 +113,10 @@ legacy aliases.
 
 ### Trade-offs
 
-- Current runtime artifacts remain v1 until their implementation waves land.
-- Existing shorthand X3 values remain visible during migration but cannot be added to
-  the v2 product-success set.
+- Old v1 handoff fixtures remain historical test data only and are rejected by every
+  executable product reader.
+- Internal lane-local shorthand may remain in explicitly non-product tooling, but it
+  cannot reach product authorization or UWG finality.
 - Static inventory must be refreshed with ADG evidence when a matching snapshot is
   available.
 
@@ -138,11 +134,11 @@ legacy aliases.
 The checker and focused negative controls run in the existing
 `apps-research-rg-handoff-e2e` workflow.
 
-## Follow-up
+## Completion record
 
-- Wave 1 implements handoff v2 and persisted consumer validation.
-- Wave 2 implements stage-ledger v2, terminal-state separation, and UWG binding.
-- Wave 3 makes Apps Eval read-only and evidence-backed.
-- Wave 4 binds L6 identity, bytes, closure, and calibration artifacts.
-- Wave 5 certifies the complete chain with negative controls.
-- Wave 6 ends dual-read migration and removes product-path aliases.
+- Wave 1: handoff v2 and persisted consumer validation.
+- Wave 2: signed preflight, receipt-derived ledger v2, split terminal state, and UWG binding.
+- Wave 3: sealed read-only Apps Eval with independently resolved evidence.
+- Wave 4: exact L6 identity, byte, registry, snapshot, and closure parity.
+- Wave 5: complete dependency triggers, failure injection, and JUnit-backed traceability.
+- Wave 6: one product entry facade, no v1 product reader, exact X3D, and aligned docs.

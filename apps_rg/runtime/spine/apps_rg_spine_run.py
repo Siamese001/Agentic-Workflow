@@ -10,9 +10,7 @@ from typing import Any, Literal
 from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 
 _DEFAULT_X1D_JUDGES = ",".join(REQUIRED_JUDGE_PROVIDER_KEYS)
-_SECTION_SUCCESS_X3: frozenset[str] = frozenset(
-    {"X3C", "X3D", "X3_ALLOW", "EXIT_OK", "EXIT_PARTIAL", "allow"}
-)
+_SECTION_ACCEPT_X3: frozenset[str] = frozenset({"X3_ALLOW"})
 
 
 def _section_cache_preflight_evidence(section_id: str) -> dict[str, Any]:
@@ -203,15 +201,18 @@ def run_apps_rg_spine(
             outcome = (
                 not fault
                 and bool(section_result.get("outcome_authorized"))
-                and x3 in _SECTION_SUCCESS_X3
+                and x3 in _SECTION_ACCEPT_X3
             )
         else:
-            outcome = not fault and wrapper_x3 in _SECTION_SUCCESS_X3
+            outcome = False
         out.update(
             {
                 "exit_status": "success" if outcome else "error",
                 "execution_status": "completed" if outcome else "failed",
                 "outcome_authorized": outcome,
+                "product_authorized": False,
+                "pipeline_complete": False,
+                "authority_classification": "NON_PRODUCT_SECTION_EXECUTION",
                 "x3_disposition": x3,
                 "fault": fault,
                 "section_result_blocked": bool(section_result)
@@ -228,11 +229,9 @@ def run_apps_rg_spine(
         )
         return out
 
-    from apps_rg.runtime.orchestration.canonical_dispatch import (
-        run_canonical_full_resume_from_cli_primitives,
-    )
+    from apps_rg.runtime.product_entry import run_product_whole_run_from_primitives
 
-    return run_canonical_full_resume_from_cli_primitives(
+    return run_product_whole_run_from_primitives(
         target_company=tc,
         target_role=tr,
         target_level=target_level,

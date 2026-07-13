@@ -69,6 +69,11 @@ class L6MicrostepObservation:
     severity: str = "INFO"
     orphan_observation: bool = False
     decisive_reason_seen: str = ""
+    parent_run_id: str = ""
+    child_run_id: str = ""
+    section_attempt_id: str = ""
+    microstep_contract_digest: str = ""
+    registry_digest: str = ""
     schema_version: str = L6_MICROSTEP_OBSERVATION_SCHEMA_VERSION
     deterministic_digest: str = ""
 
@@ -83,7 +88,7 @@ def canonical_digest(payload: Any) -> str:
 
 def evidence_class_for_alignment_source(alignment_source: str) -> str:
     source = str(alignment_source or "").strip()
-    if source == "apps_eval_scorecard_rows":
+    if source == "independent_persisted_observations":
         return EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF
     if source == "failure_terminal_no_apps_eval_rows":
         return EVIDENCE_CLASS_FAILURE_TERMINAL_ADVISORY
@@ -194,6 +199,11 @@ def build_observation_from_eval_row(
         required=bool(row.get("required", True)),
         severity=str(row.get("severity") or "INFO"),
         decisive_reason_seen=str(row.get("decisive_reason") or ""),
+        parent_run_id=str(row.get("parent_run_id") or ""),
+        child_run_id=str(row.get("child_run_id") or ""),
+        section_attempt_id=str(row.get("section_attempt_id") or ""),
+        microstep_contract_digest=str(row.get("microstep_contract_digest") or ""),
+        registry_digest=str(row.get("registry_digest") or ""),
     )
     return stamp_digest(observation)
 
@@ -208,6 +218,11 @@ def build_observation_from_contract_row(
     apps_eval_row_id: str = "",
     observed_status: str | None = None,
     decisive_reason_seen: str = "",
+    parent_run_id: str = "",
+    child_run_id: str = "",
+    section_attempt_id: str = "",
+    microstep_contract_digest: str = "",
+    registry_digest: str = "",
 ) -> L6MicrostepObservation:
     """Create an L6 observation from a contract row and observed artifact ref."""
     status = observed_status or ("OBSERVED" if source_ref else "MISSING")
@@ -233,6 +248,11 @@ def build_observation_from_contract_row(
         required=bool(item.get("required", True)),
         severity=str(item.get("severity") or "INFO"),
         decisive_reason_seen=decisive_reason_seen,
+        parent_run_id=parent_run_id,
+        child_run_id=child_run_id,
+        section_attempt_id=section_attempt_id,
+        microstep_contract_digest=microstep_contract_digest,
+        registry_digest=registry_digest,
     )
     return stamp_digest(observation)
 
@@ -459,6 +479,7 @@ def build_apps_eval_alignment(
     l6_observations: Iterable[L6MicrostepObservation | Mapping[str, Any]],
     alignment_source: str = "apps_eval_scorecard_rows",
     apps_eval_rows_bound: bool | None = None,
+    registry_digest: str = "",
 ) -> dict[str, Any]:
     eval_rows = [dict(row) for row in apps_eval_rows if row.get("required", True)]
     obs_rows = [obs.to_dict() if isinstance(obs, L6MicrostepObservation) else dict(obs) for obs in l6_observations]
@@ -494,7 +515,7 @@ def build_apps_eval_alignment(
         for row in obs_rows
     )
     resolved_rows_bound = (
-        alignment_source == "apps_eval_scorecard_rows"
+        alignment_source == "independent_persisted_observations"
         if apps_eval_rows_bound is None
         else bool(apps_eval_rows_bound)
     )
@@ -503,6 +524,7 @@ def build_apps_eval_alignment(
         "run_id": run_id,
         "runtime_exhaust_bundle_id": runtime_exhaust_bundle_id,
         "microstep_contract_digest": microstep_contract_digest,
+        "registry_digest": registry_digest,
         "apps_eval_scorecard_ref": apps_eval_scorecard_ref,
         "l6_observation_ref": l6_observation_ref,
         "alignment_source": alignment_source,

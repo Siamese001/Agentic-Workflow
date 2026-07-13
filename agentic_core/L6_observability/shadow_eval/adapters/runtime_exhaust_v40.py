@@ -14,12 +14,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
-
 REQUIRED_V40_FIELDS: tuple[str, ...] = (
     "runtime_boundary_crossed",
     "completed_at",
     "request_id",
     "run_id",
+    "parent_run_id",
+    "child_run_id",
+    "section_attempt_id",
     "session_id",
     "tenant_id",
     "trace_root",
@@ -189,7 +191,8 @@ def from_core_runtime_exhaust_bundle(
             {
                 "source_type": source_type,
                 "source_ref": ref,
-                "source_hash": hashlib.sha256(ref.encode("utf-8")).hexdigest(),
+                "source_hash": "sha256:"
+                + hashlib.sha256(ref.encode("utf-8")).hexdigest(),
                 "source_schema_version": "v40",
                 "observed_stage": stage,
                 "expected_stage_order": STAGE_ORDER.get(stage, -1),
@@ -226,7 +229,10 @@ def from_core_runtime_exhaust_bundle(
         art = {
             "generated": sealed,
             "sealed": sealed,
-            "file_hashes": {ref: hashlib.sha256(ref.encode("utf-8")).hexdigest() for ref in sealed},
+            "file_hashes": {
+                ref: "sha256:" + hashlib.sha256(ref.encode("utf-8")).hexdigest()
+                for ref in sealed
+            },
             "artifact_lineage": {ref: [trace_root] for ref in sealed},
             "missing": [],
             "orphans": [],
@@ -243,6 +249,9 @@ def from_core_runtime_exhaust_bundle(
         "completed_at": _first_str(data.get("created_at"), _now_iso()),
         "request_id": request_id,
         "run_id": run_id,
+        "parent_run_id": _first_str(data.get("parent_run_id")),
+        "child_run_id": _first_str(data.get("child_run_id"), run_id),
+        "section_attempt_id": _first_str(data.get("section_attempt_id")),
         "session_id": session_id,
         "tenant_id": tenant_id,
         "trace_root": trace_root,
@@ -298,9 +307,20 @@ def from_section_artifacts(
     l2_doc = docs.get("l2_output.json", {})
 
     exit_disposition, outcome_class = _status_outcome(exit_doc, x3_doc)
-    run_id = _first_str(runtime_doc.get("run_id"), exit_doc.get("run_id"), route_doc.get("run_id"), section_id)
-    request_id = _first_str(runtime_doc.get("request_id"), route_doc.get("request_id"), run_id)
-    trace_root = _first_str(runtime_doc.get("trace_root"), exit_doc.get("trace_root"), f"trace:{run_id}")
+    run_id = _first_str(runtime_doc.get("run_id"), exit_doc.get("run_id"), route_doc.get("run_id"))
+    parent_run_id = _first_str(
+        runtime_doc.get("parent_run_id"),
+        exit_doc.get("parent_run_id"),
+        route_doc.get("parent_run_id"),
+    )
+    child_run_id = _first_str(runtime_doc.get("child_run_id"), run_id)
+    section_attempt_id = _first_str(
+        runtime_doc.get("section_attempt_id"),
+        exit_doc.get("section_attempt_id"),
+        route_doc.get("section_attempt_id"),
+    )
+    request_id = _first_str(runtime_doc.get("request_id"), route_doc.get("request_id"))
+    trace_root = _first_str(runtime_doc.get("trace_root"), exit_doc.get("trace_root"))
     policy_hash = _first_str(runtime_doc.get("policy_hash"), route_doc.get("policy_hash"), exit_doc.get("policy_hash"))
     blueprint_hash = _first_str(
         runtime_doc.get("blueprint_hash"),
@@ -375,6 +395,9 @@ def from_section_artifacts(
         ),
         "request_id": request_id,
         "run_id": run_id,
+        "parent_run_id": parent_run_id,
+        "child_run_id": child_run_id,
+        "section_attempt_id": section_attempt_id,
         "session_id": session_id,
         "tenant_id": tenant_id,
         "trace_root": trace_root,

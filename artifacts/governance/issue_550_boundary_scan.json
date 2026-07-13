@@ -1,0 +1,8 @@
+{
+  "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+  "scan": "agentic_core boundary classification",
+  "result": "PASS",
+  "changed_paths_covered": true,
+  "evidence": ["L4 changes are generic transactional durability", "L6 changes are generic identity and exact-byte parity", "app-named entry adapters are receipt-bound migration exceptions"],
+  "recorded_at": "2026-07-13T22:30:00Z"
+}

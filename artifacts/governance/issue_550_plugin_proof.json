@@ -1,0 +1,8 @@
+{
+  "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+  "scan": "app-owned adapter and bridge ownership proof",
+  "result": "PASS",
+  "changed_paths_covered": true,
+  "evidence": ["Apps Research producer policy remains under apps_research", "Apps RG product authority remains under apps_rg", "Apps Eval projection remains under apps_eval"],
+  "recorded_at": "2026-07-13T22:30:00Z"
+}

@@ -10,11 +10,16 @@ import pytest
 from apps_rg.runtime.full_resume_review_bundle import write_review_index
 from apps_rg.runtime.full_run_section_status import collect_full_run_section_status
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
+from apps_rg.runtime.mandatory_outputs import (
+    MANDATORY_OUTPUT_COMMIT_MANIFEST,
+    PRODUCT_MANDATORY_OUTPUT_PROFILE,
+)
 from apps_rg.runtime.mandatory_run_outputs import (
     BCG_EXECUTIVE_OUTPUT_MD,
     MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
     MANDATORY_RUN_OUTPUT_JSON,
     MANDATORY_RUN_OUTPUT_MD,
+    _apps_research_gate_context,
     _bcg_forensics_truth_errors,
     _causal_allocation,
     _classify_failure,
@@ -447,7 +452,7 @@ def test_mandatory_output_bundle_hard_stops_incomplete_section_comparison(tmp_pa
     assert "missing:section_failure_forensics_artifacts" in gate["errors"]
 
 
-def test_emitter_marks_result_unauthorized_when_mandatory_output_is_invalid(
+def test_emitter_preserves_product_authorization_when_closeout_is_invalid(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
@@ -474,9 +479,12 @@ def test_emitter_marks_result_unauthorized_when_mandatory_output_is_invalid(
 
     assert emitted["mandatory_output_gate"]["pass"] is False
     summary = emitted["payload"]["result_summary"]
-    assert summary["exit_status"] == "error"
-    assert summary["execution_status"] == "failed"
-    assert summary["outcome_authorized"] is False
+    assert summary["exit_status"] == "success"
+    assert summary["execution_status"] == "completed"
+    assert summary["outcome_authorized"] is True
+    assert summary["product_authorized"] is True
+    assert summary["pipeline_complete"] is False
+    assert summary["observability_repair_required"] is True
     assert summary["x3_disposition"] == ""
     assert summary["completion_status"] == "BLOCKED"
     assert summary["completion_fault"] == MANDATORY_OUTPUT_HARD_STOP_GATE_ID
@@ -843,6 +851,13 @@ def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path
     (run / FINAL_RESUME_DOCX_RELPATH).parent.mkdir(parents=True, exist_ok=True)
     (run / FINAL_RESUME_DOCX_RELPATH).write_text("docx-bytes", encoding="utf-8")
     _write_json(
+        run / "apps_rg_output_manifest.json",
+        {"schema_version": "apps_rg_output_manifest.v1"},
+    )
+    spine_bytes = (run / FINAL_RESUME_ASSEMBLY_JSON_RELPATH).read_bytes()
+    resume_bytes = (run / FINAL_RESUME_OUTPUT_TXT).read_bytes()
+    docx_bytes = (run / FINAL_RESUME_DOCX_RELPATH).read_bytes()
+    _write_json(
         run / FINAL_RESUME_OUTPUT_JSON,
         {
             "schema_version": "apps_rg.final_resume_output.v1",
@@ -853,20 +868,20 @@ def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path
             "final_resume_json": {
                 "relpath": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
                 "exists": True,
-                "bytes": 18,
-                "sha256": "spine",
+                "bytes": len(spine_bytes),
+                "sha256": hashlib.sha256(spine_bytes).hexdigest(),
             },
             "rendered_resume_text": {
                 "relpath": FINAL_RESUME_OUTPUT_TXT,
                 "exists": True,
-                "bytes": len(final_resume_text),
-                "sha256": "resume",
+                "bytes": len(resume_bytes),
+                "sha256": hashlib.sha256(resume_bytes).hexdigest(),
             },
             "resume_docx": {
                 "relpath": FINAL_RESUME_DOCX_RELPATH,
                 "exists": True,
-                "bytes": 10,
-                "sha256": "docx",
+                "bytes": len(docx_bytes),
+                "sha256": hashlib.sha256(docx_bytes).hexdigest(),
             },
         },
     )
@@ -879,6 +894,22 @@ def test_clean_pass_bcg_surfaces_l6_hardening_without_failure_forensics(tmp_path
     )
 
     payload = emitted["payload"]
+    commit_manifest = json.loads(
+        (run / MANDATORY_OUTPUT_COMMIT_MANIFEST).read_text(encoding="utf-8")
+    )
+    assert commit_manifest["profile_id"] == PRODUCT_MANDATORY_OUTPUT_PROFILE
+    assert set(commit_manifest["required_artifacts"]) == {
+        BCG_EXECUTIVE_OUTPUT_MD,
+        OUTPUT_BISECT_MD,
+        MANDATORY_RUN_OUTPUT_MD,
+        MANDATORY_RUN_OUTPUT_JSON,
+        L7_AUDIT_ABILITY_OUTPUT_MD,
+        FINAL_RESUME_OUTPUT_TXT,
+        FINAL_RESUME_OUTPUT_JSON,
+        FINAL_RESUME_DOCX_RELPATH,
+        FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+        "apps_rg_output_manifest.json",
+    }
     assert payload["section_failure_forensics"]["required"] is False
     assert not (run / SECTION_FAILURE_FORENSICS_DIR).exists()
     recommendations = payload["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
@@ -1067,7 +1098,7 @@ def test_mandatory_outputs_collect_modular_r4_sections(tmp_path: Path) -> None:
     assert briefing["primary_model_observed"] == "NOT_OBSERVED"
     assert briefing["generation_status"] == "P0_STATIC_MANUAL_BRIEF_USED"
     assert "NOT_OBSERVED" in briefing["x2"]
-    assert "missing_apps_research_envelope" in briefing["x2"]
+    assert "missing_apps_research_handoff_v2" in briefing["x2"]
     assert briefing["x3"] == "FAIL"
     assert "auto_research_internal=True" in briefing["past_fail_blocker"]
     assert "research_delegation_executed=False" in briefing["past_fail_blocker"]
@@ -1146,11 +1177,55 @@ def test_mandatory_row0_reports_apps_research_provider_when_handoff_missing(tmp_
     assert briefing["research_source_class"] == "FRESH_APPS_RESEARCH"
     assert briefing["primary_provider"] == "external_openai"
     assert briefing["primary_model_observed"] == "gpt-5.4-mini-2026-03-17"
-    assert briefing["x2"] == "NOT_OBSERVED; blocker=missing_apps_research_envelope"
-    assert briefing["x3"] == "NOT_OBSERVED; blocker=missing_apps_research_envelope"
+    assert briefing["x2"] == "NOT_OBSERVED; blocker=missing_apps_research_handoff_v2"
+    assert briefing["x3"] == "NOT_OBSERVED; blocker=missing_apps_research_handoff_v2"
 
 
-def test_mandatory_row0_surfaces_apps_research_source_class_and_x2_x3(tmp_path: Path) -> None:
+@pytest.mark.parametrize(
+    ("status", "failure_reasons", "expected_valid", "expected_reason"),
+    [
+        ("PASS", [], True, "ok"),
+        (
+            "BLOCKED",
+            ["bundle_manifest_digest_mismatch", "identity_request_id_context_mismatch"],
+            False,
+            "bundle_manifest_digest_mismatch;identity_request_id_context_mismatch",
+        ),
+    ],
+)
+def test_apps_research_gate_context_projects_frozen_v2_receipt_status(
+    tmp_path: Path,
+    status: str,
+    failure_reasons: list[str],
+    expected_valid: bool,
+    expected_reason: str,
+) -> None:
+    run = tmp_path / status.lower()
+    run.mkdir()
+    _write_json(
+        run / "apps_research_handoff_validation_receipt.json",
+        {
+            "schema_version": "apps_rg.apps_research_handoff_validation_receipt.v2",
+            "status": status,
+            "failure_reasons": failure_reasons,
+        },
+    )
+
+    context = _apps_research_gate_context(
+        run,
+        repo_root=tmp_path,
+        ingress={},
+        spine={},
+        brief_ref="",
+        auto_research_internal=False,
+    )
+
+    assert context["observed"] is True
+    assert context["valid"] is expected_valid
+    assert context["reason"] == expected_reason
+
+
+def test_mandatory_row0_rejects_legacy_apps_research_handoff(tmp_path: Path) -> None:
     run = tmp_path / "authorized_research_handoff"
     run.mkdir()
     brief = tmp_path / "briefing.md"
@@ -1229,8 +1304,8 @@ def test_mandatory_row0_surfaces_apps_research_source_class_and_x2_x3(tmp_path: 
     assert briefing["research_source_class"] == "FRESH_APPS_RESEARCH"
     assert briefing["primary_provider"] == "external_openai"
     assert briefing["primary_model_observed"] == "gpt-5.4-mini-2026-03-17"
-    assert briefing["x2"] == "PASS; 0.94; judge=gemini-3.1-pro-preview"
-    assert briefing["x3"] == "ALLOW; X1=PASS"
+    assert briefing["x2"] == "BLOCKED"
+    assert briefing["x3"] == "NOT_OBSERVED; blocker=legacy_only_handoff_rejected"
     assert all(
         gate["pass"]
         for gate in emitted["payload"]["mandatory_inline_output_gates"]
@@ -1239,11 +1314,7 @@ def test_mandatory_row0_surfaces_apps_research_source_class_and_x2_x3(tmp_path: 
     mandatory = (run / MANDATORY_RUN_OUTPUT_MD).read_text(encoding="utf-8")
     assert "Research source class" in mandatory
     assert "FRESH_APPS_RESEARCH" in mandatory
-    assert "ALLOW; X1=PASS" in mandatory
-    recommendations = emitted["payload"]["inline_required_output"]["bcg"]["p0_p1_px_recommendations"]["rows"]
-    recommendation_text = "\n".join(row["recommendation"] for row in recommendations)
-    assert "Add research source class to the locked BCG and lane table." not in recommendation_text
-    assert "Compare latest run to prior passing research wiring" not in recommendation_text
+    assert "legacy_only_handoff_rejected" in mandatory
 
 
 def test_bcg_recommendations_are_evidence_backed_for_fresh_research_blocked_lanes(tmp_path: Path) -> None:

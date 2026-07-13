@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-ALLOW_RAW = frozenset({"X3_ALLOW", "ALLOW"})
+ALLOW_FINISH = "X3D_ALLOW_FINISH"
 BLOCK_RAW_PREFIXES = ("X3_BLOCK", "X3_DENY", "BLOCK", "DENY")
 REVIEW_MARKERS = ("REVIEW", "SOFT_FAIL")
 
@@ -14,14 +14,12 @@ def normalize_x3_code(x3_code: str | None) -> str:
     if not raw:
         return "UNKNOWN"
     upper = raw.upper()
-    if upper in ALLOW_RAW or (upper.startswith("X3_ALLOW") and "REVIEW" not in upper):
+    if upper == ALLOW_FINISH:
         return "ALLOW_FINISH"
     if any(marker in upper for marker in REVIEW_MARKERS):
         return "REVIEW"
     if any(upper.startswith(prefix) for prefix in BLOCK_RAW_PREFIXES) or upper == "BLOCK":
         return "BLOCK"
-    if "ALLOW" in upper and "REVIEW" not in upper and "SOFT_FAIL" not in upper:
-        return "ALLOW_FINISH"
     return "UNKNOWN"
 
 

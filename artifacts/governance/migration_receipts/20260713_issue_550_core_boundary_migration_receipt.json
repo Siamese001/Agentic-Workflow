@@ -1,0 +1,48 @@
+{
+  "receipt_version": "1.0",
+  "change_id": "issue-550-apps-research-rg-e2e-hardening-20260713",
+  "timestamp": "2026-07-13T14:00:00Z",
+  "binding_file": "agentic_core/runtime/entry/u0_apps_research_binding.py",
+  "classification": "MIGRATION_EXCEPTION",
+  "owner": "platform-team",
+  "created_at": "2026-07-13T14:00:00Z",
+  "migration_target_date": "2026-10-11",
+  "expiry_enforced_by_ci": true,
+  "migration_path": "Move app-specific U0 ownership into apps_research and make L6 parity consume only generic profile-driven identities and digests.",
+  "blocking_migration_reason": "Existing production importers still consume compatibility paths while the issue #550 exact-byte and current-run identity contract is rolled out.",
+  "adapter_only_justification": "Issue #550 changes only validation and observer adapters: bounded authority scanning, identity propagation, exact byte-digest comparison, and fail-closed parity. It adds no app-specific policy decision, threshold, app_id branch, route choice, current-run rescue, or write authority to shared core.",
+  "test_coverage": [
+    "tests/_apps_contract/test_apps_research_ag9_spine.py",
+    "tests/unit/agentic_core/L6_observability/shadow_eval/test_independent_parity.py",
+    "tests/unit/agentic_core/L6_observability/shadow_eval/test_microsteps.py",
+    "tests/l6_observability/test_runtime_exhaust_v40_adapter.py"
+  ],
+  "approver": "issue-550-user-authorized-waves-1-6",
+  "agentic_core_files_changed": [
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
+    "agentic_core/L6_observability/shadow_eval/grain_parity.py",
+    "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+    "agentic_core/L6_observability/shadow_eval/microsteps.py",
+    "agentic_core/runtime/entry/apps_rg_dispatch.py",
+    "agentic_core/runtime/entry/u0_apps_research_binding.py"
+  ],
+  "justification": "Issue #550 hardens exact-byte parity, complete current-run identity, cycle-safe authority scanning, fail-closed proof semantics, and thin product-entry delegation in pre-existing app-named core adapters. The diff adds no app_id or tenant branching and no app-specific policy threshold. The exception prevents those existing adapter names from concealing the generic security hardening while their app projection is migrated out of core.",
+  "migration_target": "Profile-driven generic L6 parity and runtime-exhaust contracts, with Apps Eval projection under apps_eval; Apps Research U0 ownership under apps_research/runtime/u0.",
+  "target_location": "agentic_core/L6_observability/shadow_eval plus apps_eval and apps_research owned adapters",
+  "app_profile_refs": [
+    "apps_eval/registries/apps_rg_stage_microstep_contract.json",
+    "apps_research/runtime/u0"
+  ],
+  "expected_completion": "2026-10-11",
+  "acceptance_criteria": [
+    "Core parity consumes a generic identity-and-digest contract without Apps Eval vocabulary",
+    "Apps-specific scorecard projection is owned by apps_eval",
+    "Apps Research U0 binding is owned by apps_research or uses the generic package-driven U0 binder",
+    "Apps RG product dispatch is registered through a generic app-entry mechanism",
+    "The six GOV-3 baseline entries are removed"
+  ],
+  "app_specific_literals_added": [],
+  "app_specific_branching_added": false,
+  "boundary_audit_passed": true,
+  "issue": "https://github.com/Siamese001/Agentic-Workflow/issues/550"
+}
