@@ -33,6 +33,7 @@ __adg_consumer_mode__ = "inventory"
 
 import sqlite3
 import sys
+from collections import defaultdict, deque
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -73,6 +74,34 @@ def _build_import_digraph(conn: sqlite3.Connection):
     return g
 
 
+def _reachable_with_module_identity(g, seeds: list[int]) -> set[int]:
+    """Traverse imports while collapsing ADG nodes that represent one source file.
+
+    ADG import edges commonly target an exported symbol, while imports made by
+    that file originate from its module node. Importing the symbol executes the
+    owning module, so both node identities must participate in the traversal.
+    """
+    nodes_by_path: dict[str, list[int]] = defaultdict(list)
+    for node_id, data in g.nodes(data=True):
+        if path := data.get("resolved_path"):
+            nodes_by_path[path].append(node_id)
+
+    reachable = set(seeds)
+    frontier = deque(seeds)
+    while frontier:
+        node_id = frontier.popleft()
+        path = g.nodes[node_id].get("resolved_path")
+        candidates = list(g.successors(node_id))
+        if path:
+            candidates.extend(nodes_by_path[path])
+        for candidate in candidates:
+            if candidate in reachable:
+                continue
+            reachable.add(candidate)
+            frontier.append(candidate)
+    return reachable
+
+
 class GraphReachGate(WiringGate):
     gate_id = GATE_ID
     tier = "R"
@@ -97,9 +126,7 @@ class GraphReachGate(WiringGate):
             )
             return []
 
-        reachable: set = set(l0_seeds)
-        for seed in l0_seeds:
-            reachable.update(nx.descendants(g, seed))
+        reachable = _reachable_with_module_identity(g, l0_seeds)
         reachable_paths = {
             g.nodes[node_id].get("resolved_path")
             for node_id in reachable

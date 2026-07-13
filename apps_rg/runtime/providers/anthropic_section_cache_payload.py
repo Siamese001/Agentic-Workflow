@@ -12,7 +12,7 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any, Mapping, Sequence
 
-from agentic_core.knowledge.retrieval.anthropic_cache_control import (
+from agentic_core.knowledge.retrieval import (
     CACHE_TTL_1H,
     CACHE_TTL_5M,
     min_cacheable_chars,

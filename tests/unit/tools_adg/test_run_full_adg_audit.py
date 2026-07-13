@@ -654,7 +654,7 @@ def test_wrapper_runs_retention_from_recent_sqlite_when_manifest_missing(temp_ar
 
     result = wrapper.run_audit(mode="certification")
 
-    retention.assert_called_once_with(stamp)
+    retention.assert_called_once_with(stamp, adg_dir=wrapper.ARTIFACTS_ADG)
     assert result.certification_status == "failed"
     assert "generation manifest missing" in result.reasons[1]
 
@@ -1087,6 +1087,29 @@ def test_repair_handoff_pointer_publishes_to_contract_producer_root(temp_artifac
     assert errors == []
 
 
+def test_run_generator_passes_validated_producer_snapshot_to_phase_d(
+    temp_artifacts,
+    monkeypatch,
+):
+    prior = _make_snapshot(
+        wrapper.ARTIFACTS_ADG / "adg_indexed_06292026_0001.sqlite",
+        with_runtime_view=False,
+        attested=0,
+    )
+    subprocess_run = mock.Mock(return_value=mock.Mock(returncode=0))
+    monkeypatch.setattr(wrapper, "_validated_producer_prior_snapshot", lambda _path: prior)
+    monkeypatch.setattr(wrapper.subprocess, "run", subprocess_run)
+
+    rc = wrapper._run_generator(
+        extra_args=["--continue-on-p0"],
+        timeout_s=30,
+        certification_mode=True,
+    )
+
+    assert rc == 0
+    assert subprocess_run.call_args.kwargs["env"]["ADG_PHASE_D_PRIOR_SNAPSHOT"] == str(prior)
+
+
 def test_run_audit_uses_pre_resolved_producer_root_when_contract_disappears(
     temp_artifacts,
     monkeypatch,
@@ -1122,7 +1145,7 @@ def test_run_audit_uses_pre_resolved_producer_root_when_contract_disappears(
     monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_fake_generator))
     monkeypatch.setattr(wrapper, "_run_certification_plane2", lambda **_: [])
     monkeypatch.setattr(wrapper, "_emit_mandatory_run_outputs", lambda **_: [])
-    monkeypatch.setattr(wrapper, "_run_retention_sweep", lambda adg_run_id: None)
+    monkeypatch.setattr(wrapper, "_run_retention_sweep", lambda adg_run_id, **_: None)
     _patch_report(monkeypatch)
 
     result = wrapper.run_audit(mode="certification")

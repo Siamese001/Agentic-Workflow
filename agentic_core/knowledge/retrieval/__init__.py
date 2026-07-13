@@ -3,6 +3,7 @@
 Pipeline C Phase C5: Hybrid retrieval with reranking and evidence contracts.
 """
 
+from .anthropic_cache_control import CACHE_TTL_1H, CACHE_TTL_5M, min_cacheable_chars
 from .anthropic_cache_telemetry import prefix_fingerprint, record_cache_usage
 from .c0_sparse_exact_seam import (
     SparseLexicalLaneStatus,
@@ -13,6 +14,7 @@ from .c0_sparse_exact_seam import (
     merge_dense_sparse_rrf,
     query_sparse_lexical_lane,
 )
+from .cross_encoder_reranker import CrossEncoderReranker
 from .evidence_contract_builder import (
     Citation,
     ContradictionStatus,
@@ -31,6 +33,7 @@ from .prompt_envelope import (
     PromptEnvelope,
     PromptEnvelopeFactory,
 )
+from .reranker_factory import get_reranker
 from .retrieval_plan import (
     PrefilterResult,
     PrefilterVerdict,
@@ -39,8 +42,6 @@ from .retrieval_plan import (
     RetrievalPrefilter,
 )
 from .senior_librarian_reranker import RerankResult, SeniorLibrarianReranker
-from .cross_encoder_reranker import CrossEncoderReranker
-from .reranker_factory import get_reranker
 
 __all__ = [
     # C0 sparse exact seam (apps_rg binding)
@@ -52,6 +53,9 @@ __all__ = [
     "merge_dense_sparse_rrf",
     "query_sparse_lexical_lane",
     # Anthropic prompt-cache telemetry surface (provider gateway)
+    "CACHE_TTL_1H",
+    "CACHE_TTL_5M",
+    "min_cacheable_chars",
     "prefix_fingerprint",
     "record_cache_usage",
     # Recall stage

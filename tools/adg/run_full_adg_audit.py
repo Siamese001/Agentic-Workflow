@@ -1196,6 +1196,24 @@ def validate_repair_handoff_pointer(
     return receipt, counts, sorted(set(errors))
 
 
+def _validated_producer_prior_snapshot(artifacts_adg: Path) -> Path | None:
+    """Return the latest direct, digest-bound producer snapshot when valid."""
+    pointer = artifacts_adg / "handoffs" / "adg_repair_handoff_latest.json"
+    if not pointer.is_file():
+        return None
+    receipt, _counts, errors = validate_repair_handoff_pointer(pointer)
+    if errors or not isinstance(receipt, dict):
+        return None
+    handoff = receipt.get("repair_handoff")
+    artifacts = handoff.get("artifacts") if isinstance(handoff, dict) else None
+    snapshot_ref = artifacts.get("snapshot") if isinstance(artifacts, dict) else None
+    raw_path = snapshot_ref.get("path") if isinstance(snapshot_ref, dict) else None
+    if not isinstance(raw_path, str) or not raw_path:
+        return None
+    snapshot = _abs(Path(raw_path))
+    return snapshot if snapshot.is_file() else None
+
+
 def _append_manifest_gate_record(
     gate_manifest_path: Path,
     *,
@@ -1279,6 +1297,14 @@ def _run_generator(
     import os as _os
 
     env = _os.environ.copy()
+    prior_snapshot = _validated_producer_prior_snapshot(
+        _handoff_producer_artifacts_adg()
+    )
+    if prior_snapshot is not None:
+        env["ADG_PHASE_D_PRIOR_SNAPSHOT"] = str(prior_snapshot)
+        print(f"[audit] Phase-D prior snapshot: {prior_snapshot}")
+    else:
+        env.pop("ADG_PHASE_D_PRIOR_SNAPSHOT", None)
     if certification_mode:
         env["ADG_CERTIFICATION_MODE"] = "1"
         # Plane-2 manifest runs in GHA / contract gates after Stage-1 (avoid duplicate).
