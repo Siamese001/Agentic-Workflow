@@ -16,6 +16,7 @@ This prevents first-run inventory from being mislabeled as regression evidence.
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from pathlib import Path
 from typing import Any
@@ -52,6 +53,7 @@ _PREVIOUS_STATE_TABLES: tuple[str, ...] = (
 
 _COPY_BATCH_SIZE = 1_000
 _CRITICALITY_THRESHOLD = 5.0
+_PRIOR_SNAPSHOT_ENV = "ADG_PHASE_D_PRIOR_SNAPSHOT"
 
 
 def _snapshot_id_expr() -> str:
@@ -96,15 +98,47 @@ def _read_baseline(conn: sqlite3.Connection) -> dict[str, Any]:
 
 def _prior_snapshot_candidates(current_sqlite: Path) -> list[Path]:
     adg_dir = current_sqlite.parent
-    if not adg_dir.is_dir():
-        return []
     current = current_sqlite.resolve()
-    candidates = (
-        path
-        for path in adg_dir.glob("adg_indexed_*.sqlite")
-        if path.resolve() != current and "smoketest" not in path.name
-    )
-    return sorted(candidates, key=lambda path: path.stat().st_mtime, reverse=True)
+    candidates: list[Path] = []
+
+    # A clean worktree has no local prior snapshots. The full-audit wrapper
+    # supplies the digest-validated producer handoff snapshot through this
+    # environment variable so Phase D can still produce exact temporal diffs.
+    external_raw = os.environ.get(_PRIOR_SNAPSHOT_ENV, "").strip()
+    if external_raw:
+        external = Path(external_raw).expanduser()
+        try:
+            external = external.resolve(strict=True)
+        except OSError:
+            external = Path()
+        if (
+            external.is_file()
+            and external.suffix.lower() == ".sqlite"
+            and external != current
+            and "smoketest" not in external.name
+        ):
+            candidates.append(external)
+
+    if adg_dir.is_dir():
+        local = sorted(
+            (
+                path
+                for path in adg_dir.glob("adg_indexed_*.sqlite")
+                if path.resolve() != current and "smoketest" not in path.name
+            ),
+            key=lambda path: path.stat().st_mtime,
+            reverse=True,
+        )
+        candidates.extend(local)
+
+    unique: list[Path] = []
+    seen: set[Path] = {current}
+    for candidate in candidates:
+        resolved = candidate.resolve()
+        if resolved not in seen:
+            seen.add(resolved)
+            unique.append(resolved)
+    return unique
 
 
 def _open_read_only(sqlite_path: Path) -> sqlite3.Connection:

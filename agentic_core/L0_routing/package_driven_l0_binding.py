@@ -17,8 +17,6 @@ try:
 except ImportError:
     yaml = None
 
-import agentic_core.prompt_governance.mixins as prompt_mixins
-import agentic_core.prompt_governance.validation as prompt_validation
 from agentic_core.knowledge.retrieval import PromptEnvelope
 
 # L0 ingress anchors for C0 + PA + L_PG (ADG G_REACH / J1 canonical pipeline wiring).
@@ -27,7 +25,11 @@ from agentic_core.L0_routing.reasoning.route_gates import check_d2_semantic_cach
 from agentic_core.L1_cognition.package_driven_l1_binding import (  # guardian: allow-layer-violation -- L0 route evaluation consumes L1 PackageDrivenL1Plan from the package-driven pipeline; app-agnostic binding, no app-specific route logic
     PackageDrivenL1Plan,
 )
-from agentic_core.prompt_governance import assemble_prompt
+from agentic_core.prompt_governance import (
+    assemble_prompt,
+    get_bundled_mixin,
+    validate_apply_patch,
+)
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.route_contract import GraphTraversePolicy, RouteContract
 
@@ -37,8 +39,8 @@ _LOGGER = logging.getLogger(__name__)
 L0_C0_RUN_ENTRY = run_c0
 L0_PA_ASSEMBLE_ENTRY = assemble_prompt
 L0_PROMPT_ENVELOPE_TYPE = PromptEnvelope
-L0_PROMPT_MIXIN_LOOKUP = prompt_mixins.get_bundled_mixin
-L0_APPLY_PATCH_VALIDATE_ENTRY = prompt_validation.validate_apply_patch
+L0_PROMPT_MIXIN_LOOKUP = get_bundled_mixin
+L0_APPLY_PATCH_VALIDATE_ENTRY = validate_apply_patch
 
 
 class RouteStatus(Enum):

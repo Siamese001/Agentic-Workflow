@@ -14,7 +14,7 @@ import urllib.request
 from datetime import datetime, timezone
 from typing import Any, Callable, Mapping
 
-from agentic_core.knowledge.retrieval.anthropic_cache_control import min_cacheable_chars
+from agentic_core.knowledge.retrieval import min_cacheable_chars
 from apps_rg.runtime.providers.anthropic_prompt_cache import build_cache_receipt_from_usage
 
 DEFAULT_ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"

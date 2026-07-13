@@ -421,3 +421,36 @@ def test_fresh_database_reads_exact_rows_from_prior_database(tmp_path: Path) -> 
         assert bypass == (0, "EXACT")
     finally:
         conn.close()
+
+
+def test_fresh_worktree_reads_prior_snapshot_from_validated_environment(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    producer_dir = tmp_path / "producer" / "artifacts" / "adg"
+    producer_dir.mkdir(parents=True)
+    prior = _create_db(producer_dir / "adg_indexed_001.sqlite", "snap_001")
+    _seed_common(prior, "snap_001")
+    materialize_phase_d(prior)
+
+    worktree_dir = tmp_path / "worktree" / "artifacts" / "adg"
+    worktree_dir.mkdir(parents=True)
+    current = _create_db(worktree_dir / "adg_indexed_002.sqlite", "snap_002")
+    _seed_common(current, "snap_002")
+    monkeypatch.setenv("ADG_PHASE_D_PRIOR_SNAPSHOT", str(prior))
+
+    materialize_phase_d(current)
+
+    conn = sqlite3.connect(str(current))
+    try:
+        summary = conn.execute(
+            "SELECT prev_snapshot_id, is_first_run, comparison_status "
+            "FROM mv_snapshot_regression_summary"
+        ).fetchone()
+        bypass = conn.execute(
+            "SELECT is_new, comparison_status FROM mv_new_write_bypass_paths"
+        ).fetchone()
+        assert summary == ("snap_001", 0, "EXACT")
+        assert bypass == (0, "EXACT")
+    finally:
+        conn.close()

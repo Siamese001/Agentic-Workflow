@@ -1087,6 +1087,29 @@ def test_repair_handoff_pointer_publishes_to_contract_producer_root(temp_artifac
     assert errors == []
 
 
+def test_run_generator_passes_validated_producer_snapshot_to_phase_d(
+    temp_artifacts,
+    monkeypatch,
+):
+    prior = _make_snapshot(
+        wrapper.ARTIFACTS_ADG / "adg_indexed_06292026_0001.sqlite",
+        with_runtime_view=False,
+        attested=0,
+    )
+    subprocess_run = mock.Mock(return_value=mock.Mock(returncode=0))
+    monkeypatch.setattr(wrapper, "_validated_producer_prior_snapshot", lambda _path: prior)
+    monkeypatch.setattr(wrapper.subprocess, "run", subprocess_run)
+
+    rc = wrapper._run_generator(
+        extra_args=["--continue-on-p0"],
+        timeout_s=30,
+        certification_mode=True,
+    )
+
+    assert rc == 0
+    assert subprocess_run.call_args.kwargs["env"]["ADG_PHASE_D_PRIOR_SNAPSHOT"] == str(prior)
+
+
 def test_run_audit_uses_pre_resolved_producer_root_when_contract_disappears(
     temp_artifacts,
     monkeypatch,

@@ -1,6 +1,6 @@
 {
   "gate_id": "G_REACH_l0_reachability",
-  "count": 1450,
+  "count": 1458,
   "seeded_at": "2026-04-23T15:00:00+00:00",
   "snapshot": "adg_indexed_07082026_2146.sqlite",
   "notes": "H2 baseline. 1495 core production modules not L0-reachable via 'imports' edges. L_APP is intentionally excluded because apps must not be forced behind core L0 imports. Many remaining rows are legit utility libs, plugins, or indirect dispatch targets. Ratchet: new core orphans fail.",
@@ -155,7 +155,16 @@
       "raw_violation_count": 2789,
       "margin": 0,
       "reason": "ADG P0 repair 2026-06-22: absorb one legitimate app integration orphan, apps_research/integrations/search_retrieval.py, after replacing requests with urllib; reachable source anchor would require a worse L0-to-L_APP app import. Future count increases remain gated."
+    },
+    {
+      "at": "2026-07-13T13:50:00+00:00",
+      "snapshot": "adg_indexed_07132026_0512.sqlite",
+      "from": 1450,
+      "to": 1458,
+      "raw_violation_count": 1458,
+      "margin": 0,
+      "reason": "Operator-approved P0 treatment 2026-07-13: absorb eight legitimate app-to-core transactional R1B dependencies added after adg_indexed_07082026_2146.sqlite: L4 audit/sqlite_audit_ledger.py; L4 projections/__init__.py and runner.py; L4 storage/__init__.py and sqlite_backend.py; L4 uwg/transactional_durable_write_gateway.py and transactional_gateway.py; prompt_governance/validation/apply_patch_validator.py. G_REACH intentionally excludes app entry points, and an L0 anchor would misrepresent app-owned runtime reachability. Future count increases remain gated."
     }
   ],
-  "loosened_at": "2026-06-22T09:35:46+00:00"
+  "loosened_at": "2026-07-13T13:50:00+00:00"
 }
