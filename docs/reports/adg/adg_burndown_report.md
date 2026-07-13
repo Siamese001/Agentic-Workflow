@@ -1,9 +1,9 @@
 # ADG CI Burndown Report
 
-- **Generated:** 2026-07-13T10:10:54+00:00
-- **Gate-results source:** `artifacts\adg\adg_gate_results_20260713_100747.json`
-- **Burndown source:** `artifacts\adg\adg_burndown_table_07132026_0555.json`
-- **Snapshot timestamp:** 2026-07-13T10:07:47.561753+00:00
+- **Generated:** 2026-07-13T10:26:54+00:00
+- **Gate-results source:** `artifacts\adg\adg_gate_results_20260713_102227.json`
+- **Burndown source:** `artifacts\adg\adg_burndown_table_07132026_0614.json`
+- **Snapshot timestamp:** 2026-07-13T10:22:27.653519+00:00
 - **Total gates:** 49
 - **Overall verdict:** **BLOCKED** (run halt — exit code)
 
@@ -13,7 +13,7 @@
 - **Business read:** ADG is BLOCKED: fix the red gates before treating the run as green.
 - **ADG verdict:** BLOCKED
 - **Technical evidence:**
-  - Snapshot timestamp: 2026-07-13T10:07:47.561753+00:00
+  - Snapshot timestamp: 2026-07-13T10:22:27.653519+00:00
   - Total gates: 49
   - FIX gates: 1
   - Burn-down gates: 11
@@ -41,7 +41,7 @@ Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay
 | P0 | BLOCKED | 1 | 2 gates / 216 rows | 0 gates / 0 rows | red gates present | fix red gates first |
 | P1 | PASS | 0 | 7 gates / 2,610 rows | 0 gates / 0 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
 | P2 | PASS | 0 | 2 gates / 2,002 rows | 1 gate / 105 rows | green; tracked backlog | work ranked queue; do not treat as new failures |
-| P3 | PASS | 0 | 0 gates / 0 rows | 4 gates / 12,040 rows | green; KPI/watchlist only | watch trend; no burn-down action |
+| P3 | PASS | 0 | 0 gates / 0 rows | 4 gates / 12,049 rows | green; KPI/watchlist only | watch trend; no burn-down action |
 
 `Fix now` counts red gates. `Burn-down backlog` is accepted work. `KPI / watchlist` is report-only unless a plan gives it an owner and target.
 
@@ -101,7 +101,7 @@ One row per registered gate.
 | `H4_mv_staleness_ratchet` | P2 | ratchet | CLEAR | — | 0 | 0 | Counts: Total edge count delta >5% vs prior snapshot (graph drift). Sub: No rows. | None — gate clean (zero rows). |
 | `M1_module_loc_ratchet` | P3 | ratchet | KPI | floor | 447 | 447 | Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 447 at floor (baseline 447); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `Q2_cyclomatic_complexity_ratchet` | P3 | ratchet | KPI | floor | 1281 | 1281 | Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub: 1281 at floor (baseline 1281); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
-| `S4_unused_imports_ratchet` | P3 | ratchet | KPI | floor | 10309 | 10309 | Counts: Unused import edges in production modules. Sub: 10309 at floor (baseline 10309); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `S4_unused_imports_ratchet` | P3 | ratchet | KPI | floor | 10318 | 10318 | Counts: Unused import edges in production modules. Sub: 10318 at floor (baseline 10318); no new debt. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D1_layer_doc_binding` | P3 | warn | KPI | advis | 3 | advisory | Counts: Layer folders missing or mismatched LAYER.md binding (advisory). Sub: 3 advisory; never blocks. | Advisory KPI: watch the trend; no action required to pass CI. |
 | `E3_trace_theater_kpi` | P3 | warn | CLEAR | — | 0 | advisory | Counts: Emit-symbol density per layer vs imports (KPI advisory). Sub: No rows. | None — gate clean (zero rows). |
 | `F3_missing_adapter_warn` | P3 | warn | CLEAR | — | 0 | advisory | Counts: Protocol/ABC/Interface with zero implements edges (advisory). Sub: No rows. | None — gate clean (zero rows). |
@@ -136,7 +136,7 @@ These rows are visible for trend awareness, but they are not burn-down work unle
 
 | Gate ID | Band | Rows | Why it is separate | Next step |
 |---------|:----:|-----:|--------------------|-----------|
-| `S4_unused_imports_ratchet` | P3 | 10309 | KPI/watchlist signal, not an owned burn-down item. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
+| `S4_unused_imports_ratchet` | P3 | 10318 | KPI/watchlist signal, not an owned burn-down item. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `Q2_cyclomatic_complexity_ratchet` | P3 | 1281 | KPI/watchlist signal, not an owned burn-down item. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `M1_module_loc_ratchet` | P3 | 447 | KPI/watchlist signal, not an owned burn-down item. | Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI. |
 | `D2_role_duplication_warn` | P2 | 105 | KPI/watchlist signal, not an owned burn-down item. | Advisory KPI: watch the trend; no action required to pass CI. |
@@ -209,7 +209,7 @@ Scan **Verdict** first (3 values). Use **Sub** only when you need detail.
 ---
 ## Next action
 
-- **Queue:** `artifacts\adg\adg_action_queue_07132026_0555.json`
+- **Queue:** `artifacts\adg\adg_action_queue_07132026_0614.json`
 - **emit_status:** `ok`
 - **degraded:** `False`
 - **summary:** FIX=1 · TRACK=16 · actions_emitted=10

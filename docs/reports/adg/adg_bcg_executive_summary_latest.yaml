@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: '07132026_0555'
-  generated_at_utc: '2026-07-13T10:10:41+00:00'
-  snapshot_ts: '2026-07-13T10:07:47.561753+00:00'
-  commit_sha: c5b8934d3bace3bef06397ade14274b9a8baa818
-  repo_state_hash: 1096bd53551edad3
+  run_id: '07132026_0614'
+  generated_at_utc: '2026-07-13T10:26:44+00:00'
+  snapshot_ts: '2026-07-13T10:22:27.653519+00:00'
+  commit_sha: 59fbaec53b44bef59af7450a2c83eaffec546c19
+  repo_state_hash: 57d472bdf73e0960
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
   degradation_reasons: []
@@ -102,7 +102,7 @@ patient_size:
       file_count: 2044
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: '2026-07-13T10:07:47.561753+00:00'
+  snapshot_ts: '2026-07-13T10:22:27.653519+00:00'
 executive_decision:
   verdict: REPORT_INCONSISTENT
   recommendation: Treat report inconsistency as a decision-quality caveat, not the
@@ -160,7 +160,7 @@ prioritization_model:
   - Every suppressed signal records why it was suppressed.
 bcg_gate_adapter:
   artifact_kind: adg_bcg_gate_adapter
-  generated_at_utc: '2026-07-13T10:10:10+00:00'
+  generated_at_utc: '2026-07-13T10:26:08+00:00'
   policy:
     kpi_watchlist_rule: KPI/watchlist rows are not burn-down work unless a future
       plan gives them an owner, target, and retirement condition.
@@ -642,7 +642,7 @@ bcg_gate_adapter:
     sub: advis
     verdict: TRACK
   - band: P3
-    baseline_count: 10309
+    baseline_count: 10318
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -655,7 +655,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 10309
+      baseline_count: 10318
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -667,13 +667,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 10309
+      violation_count: 10318
     reported_for_priority_queue: false
-    rows: 10309
+    rows: 10318
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10309 at floor
-      (baseline 10309); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10318 at floor
+      (baseline 10318); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -2362,7 +2362,7 @@ bcg_gate_adapter:
         work without an owner and target.
       gate_count: 5
       label: KPI / watchlist
-      row_count: 12145
+      row_count: 12154
       rows:
       - band: P2
         baseline_count: null
@@ -2400,7 +2400,7 @@ bcg_gate_adapter:
         sub: advis
         verdict: TRACK
       - band: P3
-        baseline_count: 10309
+        baseline_count: 10318
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2413,7 +2413,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id015
           band: P3
-          baseline_count: 10309
+          baseline_count: 10318
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2425,13 +2425,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 10309
+          violation_count: 10318
         reported_for_priority_queue: false
-        rows: 10309
+        rows: 10318
         section: kpi_watchlist
         section_label: KPI / watchlist
-        signal: 'Counts: Unused import edges in production modules. Sub: 10309 at
-          floor (baseline 10309); no new debt.'
+        signal: 'Counts: Unused import edges in production modules. Sub: 10318 at
+          floor (baseline 10318); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -2545,9 +2545,9 @@ bcg_gate_adapter:
   source:
     burndown_schema_version: '2.2'
     overall_exit_code: 1
-    snapshot: adg_indexed_07132026_0555.sqlite
-    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0555.sqlite
-    timestamp: '2026-07-13T10:07:47.561753+00:00'
+    snapshot: adg_indexed_07132026_0614.sqlite
+    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0614.sqlite
+    timestamp: '2026-07-13T10:22:27.653519+00:00'
   summary:
     burn_down_gates: 11
     burn_down_rows: 4828
@@ -2555,11 +2555,11 @@ bcg_gate_adapter:
     fix_now_gates: 1
     fix_now_rows: 1460
     kpi_watchlist_gates: 5
-    kpi_watchlist_rows: 12145
+    kpi_watchlist_rows: 12154
     priority_queue_gate_count: 12
     priority_queue_row_count: 6288
     report_only_gate_count: 5
-    report_only_row_count: 12145
+    report_only_row_count: 12154
     total_gates: 49
     work_section_gate_count: 12
     work_section_row_count: 6288
@@ -2665,7 +2665,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 1
     source_artifact: gate_results
-    source_digest: c6ea7f56b5fc7c8e76f12d71e72041af47b2be9829fac84e54941db592f34db3
+    source_digest: 3c1bd51fbd7bc0f3173675269880bf0742de04d8182221828cec513a5f169dad
     source_id: null
     symbol: null
     verdict_cluster: FIX
@@ -2686,7 +2686,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 1de00d8da9b271e63bcdb4381036a1e53218e634f3e6d54fec8ae56fcb34154e
+    source_digest: 42e38fe918e9fb06406c74cf60a184906d64b18f3429e16976973c06d3928ae4
     source_id: agentic_core/L1_cognition/bridges/u0_to_l1_planning.py
     symbol: null
     verdict_cluster: CANDIDATE_BLOCKER_TRIAGE
@@ -2707,7 +2707,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 1de00d8da9b271e63bcdb4381036a1e53218e634f3e6d54fec8ae56fcb34154e
+    source_digest: 42e38fe918e9fb06406c74cf60a184906d64b18f3429e16976973c06d3928ae4
     source_id: agentic_core/L1_cognition/c0_context/__init__.py
     symbol: null
     verdict_cluster: CANDIDATE_BLOCKER_TRIAGE
@@ -2728,7 +2728,7 @@ p0_action_queue_summary:
     sort_band: P0
     sort_bucket: 3
     source_artifact: p0_wave_plan
-    source_digest: 1de00d8da9b271e63bcdb4381036a1e53218e634f3e6d54fec8ae56fcb34154e
+    source_digest: 42e38fe918e9fb06406c74cf60a184906d64b18f3429e16976973c06d3928ae4
     source_id: agentic_core/L1_cognition/c0_context/contract.py
     symbol: null
     verdict_cluster: CANDIDATE_BLOCKER_TRIAGE
@@ -3052,7 +3052,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 10309
+    baseline_count: 10318
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3065,11 +3065,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id015
     reported_for_priority_queue: false
-    rows: 10309
+    rows: 10318
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10309 at floor
-      (baseline 10309); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10318 at floor
+      (baseline 10318); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -4406,10 +4406,10 @@ lens_1_health_gates:
       after_green_action: Burn down after FIX rows clear.
   kpi_watchlist:
     gate_count: 5
-    row_count: 12145
+    row_count: 12154
     top_signals:
     - gate_id: S4_unused_imports_ratchet
-      records: 10309
+      records: 10318
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
@@ -7948,7 +7948,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_chokepoint_bridges
     signal_type: materialized_view
-    row_count: 1111
+    row_count: 1112
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
@@ -8020,7 +8020,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_high_fan_in_out_with_defects
     signal_type: materialized_view
-    row_count: 11109
+    row_count: 11110
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8270,7 +8270,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_snapshot_integrity_anomalies
     signal_type: materialized_view
-    row_count: 411770
+    row_count: 411773
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8400,7 +8400,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: graphdb_projection
     signal_type: graphdb_report
-    row_count: 1237359
+    row_count: 1237394
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Parsed P7 structural context; promoted only when it overlaps a
@@ -8544,7 +8544,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: bridge_score
       rows_used: 25
-      total_rows: 1111
+      total_rows: 1112
     mv_graph_scc_clusters:
       available: true
       queried: true
@@ -8590,9 +8590,9 @@ canonical_next_best_actions:
       on its own terms.
     business_reason: This gate still carries decision-grade risk and should be reviewed
       on its own terms.
-    evidence: 'ADG `07132026_0555`: `G_REACH_l0_reachability` found 1,460 G_REACH_l0_reachability,
+    evidence: 'ADG `07132026_0614`: `G_REACH_l0_reachability` found 1,460 G_REACH_l0_reachability,
       +2 above baseline 1458. Breakout unavailable.'
-    technical_reason: 'ADG `07132026_0555`: `G_REACH_l0_reachability` found 1,460
+    technical_reason: 'ADG `07132026_0614`: `G_REACH_l0_reachability` found 1,460
       G_REACH_l0_reachability, +2 above baseline 1458. Breakout unavailable.'
     next_step: Review the Production-layer modules with no import path from any L0
       node (orphans). evidence. Investigate evidence before changing code; the current
@@ -8831,7 +8831,7 @@ artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: artifacts/adg/adg_gate_results_20260713_100747.json
+    path: artifacts/adg/adg_gate_results_20260713_102227.json
     exists: true
     loaded: true
     stale: false
@@ -8841,7 +8841,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: bcg_adapter
-    path: artifacts/adg/adg_bcg_adapter_07132026_0555.json
+    path: artifacts/adg/adg_bcg_adapter_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8853,7 +8853,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: action_queue
-    path: artifacts/adg/adg_action_queue_07132026_0555.json
+    path: artifacts/adg/adg_action_queue_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8863,7 +8863,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: artifacts/adg/adg_review_template_07132026_0555.json
+    path: artifacts/adg/adg_review_template_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8873,7 +8873,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_table
-    path: artifacts/adg/adg_burndown_table_07132026_0555.json
+    path: artifacts/adg/adg_burndown_table_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8895,7 +8895,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: artifacts/adg/adg_indexed_07132026_0555.sqlite
+    path: artifacts/adg/adg_indexed_07132026_0614.sqlite
     exists: true
     loaded: false
     stale: false
@@ -8906,7 +8906,7 @@ artifact_usage_matrix:
     rationale: Existing non-JSON artifact or SQLite snapshot mapped to a decision
       lens.
   - artifact_key: generation_manifest
-    path: artifacts/adg/adg_generation_manifest_07132026_0555.json
+    path: artifacts/adg/adg_generation_manifest_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8916,7 +8916,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: structural_outputs
-    path: artifacts/adg/adg_structural_outputs_07132026_0555.json
+    path: artifacts/adg/adg_structural_outputs_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8926,7 +8926,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: refactor_accelerator
-    path: artifacts/adg/adg_refactor_accelerator_07132026_0555.json
+    path: artifacts/adg/adg_refactor_accelerator_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8936,7 +8936,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_queries
-    path: artifacts/adg/adg_graphdb_queries_07132026_0555.json
+    path: artifacts/adg/adg_graphdb_queries_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8946,7 +8946,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: runtime_spine
-    path: artifacts/adg/adg_runtime_spine_07132026_0555.json
+    path: artifacts/adg/adg_runtime_spine_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8956,7 +8956,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_projection
-    path: artifacts/adg/adg_graphdb_projection_07132026_0555.json
+    path: artifacts/adg/adg_graphdb_projection_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8968,7 +8968,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_metadata
-    path: artifacts/adg/adg_graphdb_metadata_07132026_0555.json
+    path: artifacts/adg/adg_graphdb_metadata_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8980,7 +8980,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_index
-    path: artifacts/adg/adg_graphdb_index_07132026_0555.json
+    path: artifacts/adg/adg_graphdb_index_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -8992,7 +8992,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: p0_wave_plan
-    path: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0555.json
+    path: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -9002,7 +9002,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: dead_code_report
-    path: artifacts/adg/dead_code_zone_control_report_07132026_0555.json
+    path: artifacts/adg/dead_code_zone_control_report_07132026_0614.json
     exists: true
     loaded: true
     stale: false
@@ -9155,7 +9155,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_graph_chokepoint_bridges
-    row_count: 1111
+    row_count: 1112
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
       scope overlaps a current FIX gate or coverage hotspot, so it drives work now.
@@ -9217,7 +9217,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_high_fan_in_out_with_defects
-    row_count: 11109
+    row_count: 11110
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9437,7 +9437,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_snapshot_integrity_anomalies
-    row_count: 411770
+    row_count: 411773
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9677,7 +9677,7 @@ dead_code_report:
       status_label: Deletion status
       table_limit: 6
       technical_read:
-      - 'ADG source: artifacts/adg/adg_indexed_07132026_0555.sqlite (snapshot 07132026_0555)'
+      - 'ADG source: artifacts/adg/adg_indexed_07132026_0614.sqlite (snapshot 07132026_0614)'
       - 'Dead code candidates: 899'
       - 'Dead imports: 899'
       - 'Unresolved imports: 466'
@@ -9843,8 +9843,8 @@ dead_code_report:
       dead_imports: 899
       executive_read: ADG found confirmed dead-code targets; remove the most certain
         ones first, then clean up uncertainty and noisy diagnostics.
-      first_party_low_confidence_ratio: 1.4810106467503577
-      inferred_symbol_ratio: 10.149008105324436
+      first_party_low_confidence_ratio: 1.4805871512994853
+      inferred_symbol_ratio: 10.15336393148998
       unresolved_imports: 466
       why_this_order:
       - Confirmed dead code is the highest-confidence waste and should be removed
@@ -9936,8 +9936,8 @@ dead_code_report:
     executive_metrics:
       dead_code_count: 899
       dead_import_count: 899
-      first_party_low_confidence_ratio: 1.4810106467503577
-      inferred_symbol_ratio: 10.149008105324436
+      first_party_low_confidence_ratio: 1.4805871512994853
+      inferred_symbol_ratio: 10.15336393148998
       l4_unresolved_import_count: 0
       low_confidence_count: 466
       unresolved_import_count: 466
@@ -9951,7 +9951,7 @@ dead_code_report:
     readiness_issues: []
   inferred_symbols:
     inferred_by_confidence:
-      MEDIUM: 18131
+      MEDIUM: 18140
     inferred_by_layer:
       L0: 1348
       L1: 575
@@ -9962,17 +9962,17 @@ dead_code_report:
       L6: 1334
       L_APP: 5592
       L_OPS: 519
-      L_PG: 507
+      L_PG: 516
       L_RUNTIME: 1069
       L_SHARED: 602
       L_TEST: 292
       L_TOOLS: 2413
       L_UNKNOWN: 216
-    inferred_symbol_ratio: 10.149008105324436
-    total_inferred_symbols: 18131
-    total_symbols: 178648
+    inferred_symbol_ratio: 10.15336393148998
+    total_inferred_symbols: 18140
+    total_symbols: 178660
   low_confidence_zones:
-    first_party_low_confidence_ratio: 1.4810106467503577
+    first_party_low_confidence_ratio: 1.4805871512994853
     governance_low_confidence_ratio: 0.0
     low_conf_by_entity_type:
       symbol: 466
@@ -9986,8 +9986,8 @@ dead_code_report:
       - 466
     total_low_confidence: 466
   source:
-    adg_snapshot: artifacts/adg/adg_indexed_07132026_0555.sqlite
-    adg_snapshot_ts: '07132026_0555'
+    adg_snapshot: artifacts/adg/adg_indexed_07132026_0614.sqlite
+    adg_snapshot_ts: '07132026_0614'
     dead_code_signal_sources:
     - overlay_violations.category=dead_import_resolved
     - mv_dead_import_hotspots_overlay
@@ -9995,11 +9995,11 @@ dead_code_report:
     - edges.relation_type=dead_code_candidate
   status: PASS
   summary:
-    adg_snapshot: artifacts/adg/adg_indexed_07132026_0555.sqlite
-    adg_snapshot_ts: '07132026_0555'
+    adg_snapshot: artifacts/adg/adg_indexed_07132026_0614.sqlite
+    adg_snapshot_ts: '07132026_0614'
     executive_ready: true
-    first_party_low_confidence_ratio: 1.4810106467503577
-    inferred_symbol_ratio: 10.149008105324436
+    first_party_low_confidence_ratio: 1.4805871512994853
+    inferred_symbol_ratio: 10.15336393148998
     l4_unresolved_imports: 0
     total_dead_code_candidates: 899
     total_dead_imports: 899
@@ -10052,8 +10052,8 @@ deprecation_deletion_plan:
     dead_code_candidates: 899
     dead_imports: 899
     unresolved_imports: 466
-    first_party_low_confidence_ratio: 1.4810106467503577
-    inferred_symbol_ratio: 10.149008105324436
+    first_party_low_confidence_ratio: 1.4805871512994853
+    inferred_symbol_ratio: 10.15336393148998
     cleanup_candidate_count: 18
   brief:
     title: BCG Deletion Brief
@@ -10062,7 +10062,7 @@ deprecation_deletion_plan:
     business_read: ADG found confirmed dead-code targets; remove the most certain
       ones first, then clean up uncertainty and noisy diagnostics.
     technical_read:
-    - 'ADG source: artifacts/adg/adg_indexed_07132026_0555.sqlite (snapshot 07132026_0555)'
+    - 'ADG source: artifacts/adg/adg_indexed_07132026_0614.sqlite (snapshot 07132026_0614)'
     - 'Dead code candidates: 899'
     - 'Dead imports: 899'
     - 'Unresolved imports: 466'
@@ -10507,28 +10507,28 @@ audit_notes:
     - mismatch_type: meta_count_mismatch
       ref_id: total_edges
       file: ''
-      detail: meta=1045890 actual=1045998
+      detail: meta=1045913 actual=1046021
       delta: 108
     - mismatch_type: meta_count_mismatch
       ref_id: total_nodes
       file: ''
-      detail: meta=190759 actual=190760
+      detail: meta=190771 actual=190772
       delta: 1
     - mismatch_type: artifact_timestamp_mismatch
       artifact_key: gate_results
-      file: artifacts/adg/adg_gate_results_20260713_100747.json
-      expected_snapshot_minute: '20260713_0555'
-      observed_snapshot_minute: '20260713_1007'
+      file: artifacts/adg/adg_gate_results_20260713_102227.json
+      expected_snapshot_minute: '20260713_0614'
+      observed_snapshot_minute: '20260713_1022'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: action_queue
       field: snapshot_ts
-      expected_snapshot_minute: '20260713_0555'
-      observed_snapshot_minute: '20260713_1007'
+      expected_snapshot_minute: '20260713_0614'
+      observed_snapshot_minute: '20260713_1022'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: review_template
       field: snapshot_ts
-      expected_snapshot_minute: '20260713_0555'
-      observed_snapshot_minute: '20260713_1007'
+      expected_snapshot_minute: '20260713_0614'
+      observed_snapshot_minute: '20260713_1022'
     - mismatch_type: generation_manifest_not_certified
       artifact_key: generation_manifest
       certification_status: failed
@@ -10556,23 +10556,23 @@ honest_bottom_line:
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: artifacts/adg/adg_gate_results_20260713_100747.json
-    bcg_adapter: artifacts/adg/adg_bcg_adapter_07132026_0555.json
-    action_queue: artifacts/adg/adg_action_queue_07132026_0555.json
-    review_template: artifacts/adg/adg_review_template_07132026_0555.json
-    burndown_table: artifacts/adg/adg_burndown_table_07132026_0555.json
+    gate_results: artifacts/adg/adg_gate_results_20260713_102227.json
+    bcg_adapter: artifacts/adg/adg_bcg_adapter_07132026_0614.json
+    action_queue: artifacts/adg/adg_action_queue_07132026_0614.json
+    review_template: artifacts/adg/adg_review_template_07132026_0614.json
+    burndown_table: artifacts/adg/adg_burndown_table_07132026_0614.json
     burndown_report: artifacts/adg/adg_burndown_report.md
-    sqlite_snapshot: artifacts/adg/adg_indexed_07132026_0555.sqlite
-    generation_manifest: artifacts/adg/adg_generation_manifest_07132026_0555.json
-    structural_outputs: artifacts/adg/adg_structural_outputs_07132026_0555.json
-    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07132026_0555.json
-    graphdb_queries: artifacts/adg/adg_graphdb_queries_07132026_0555.json
-    runtime_spine: artifacts/adg/adg_runtime_spine_07132026_0555.json
-    graphdb_projection: artifacts/adg/adg_graphdb_projection_07132026_0555.json
-    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07132026_0555.json
-    graphdb_index: artifacts/adg/adg_graphdb_index_07132026_0555.json
-    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0555.json
-    dead_code_report: artifacts/adg/dead_code_zone_control_report_07132026_0555.json
+    sqlite_snapshot: artifacts/adg/adg_indexed_07132026_0614.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_07132026_0614.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_07132026_0614.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07132026_0614.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_07132026_0614.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_07132026_0614.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_07132026_0614.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07132026_0614.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_07132026_0614.json
+    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0614.json
+    dead_code_report: artifacts/adg/dead_code_zone_control_report_07132026_0614.json
   loaded_status:
     missing: []
     stale: []
@@ -10938,7 +10938,7 @@ bcg_findings:
     engineering move.'
   technical_read:
   - 'First P0 evidence: `Open blocker queue`; rows: 4.'
-  - 'Source: ADG `07132026_0555` emitted this as decision-linked queue evidence.'
+  - 'Source: ADG `07132026_0614` emitted this as decision-linked queue evidence.'
   - 'Report caveat: graph/report consistency is FAIL; only lower-priority ranking
     is provisional.'
   - 'Run context: 1 FIX gate(s); 5 action rows emitted.'
@@ -10987,9 +10987,9 @@ bcg_findings:
       on its own terms.
     business_reason: This gate still carries decision-grade risk and should be reviewed
       on its own terms.
-    evidence: 'ADG `07132026_0555`: `G_REACH_l0_reachability` found 1,460 G_REACH_l0_reachability,
+    evidence: 'ADG `07132026_0614`: `G_REACH_l0_reachability` found 1,460 G_REACH_l0_reachability,
       +2 above baseline 1458. Breakout unavailable.'
-    technical_reason: 'ADG `07132026_0555`: `G_REACH_l0_reachability` found 1,460
+    technical_reason: 'ADG `07132026_0614`: `G_REACH_l0_reachability` found 1,460
       G_REACH_l0_reachability, +2 above baseline 1458. Breakout unavailable.'
     next_step: Review the Production-layer modules with no import path from any L0
       node (orphans). evidence. Investigate evidence before changing code; the current

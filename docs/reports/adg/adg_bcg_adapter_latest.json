@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-13T10:10:10+00:00",
+  "generated_at_utc": "2026-07-13T10:26:08+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -498,7 +498,7 @@
     },
     {
       "band": "P3",
-      "baseline_count": 10309,
+      "baseline_count": 10318,
       "classification": "pass",
       "delta_vs_baseline": 0,
       "enforcement": "ratchet",
@@ -510,7 +510,7 @@
       "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P3",
-        "baseline_count": 10309,
+        "baseline_count": 10318,
         "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
@@ -522,13 +522,13 @@
         "source": "sql",
         "status": "pass",
         "stderr_tail": [],
-        "violation_count": 10309
+        "violation_count": 10318
       },
       "reported_for_priority_queue": false,
-      "rows": 10309,
+      "rows": 10318,
       "section": "kpi_watchlist",
       "section_label": "KPI / watchlist",
-      "signal": "Counts: Unused import edges in production modules. Sub: 10309 at floor (baseline 10309); no new debt.",
+      "signal": "Counts: Unused import edges in production modules. Sub: 10318 at floor (baseline 10318); no new debt.",
       "status": "pass",
       "sub": "floor",
       "verdict": "TRACK"
@@ -2303,7 +2303,7 @@
       "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
       "gate_count": 5,
       "label": "KPI / watchlist",
-      "row_count": 12145,
+      "row_count": 12154,
       "rows": [
         {
           "band": "P2",
@@ -2344,7 +2344,7 @@
         },
         {
           "band": "P3",
-          "baseline_count": 10309,
+          "baseline_count": 10318,
           "classification": "pass",
           "delta_vs_baseline": 0,
           "enforcement": "ratchet",
@@ -2356,7 +2356,7 @@
           "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
           "raw_gate": {
             "band": "P3",
-            "baseline_count": 10309,
+            "baseline_count": 10318,
             "classification": "pass",
             "dispatch": "in-process",
             "enforcement": "ratchet",
@@ -2368,13 +2368,13 @@
             "source": "sql",
             "status": "pass",
             "stderr_tail": [],
-            "violation_count": 10309
+            "violation_count": 10318
           },
           "reported_for_priority_queue": false,
-          "rows": 10309,
+          "rows": 10318,
           "section": "kpi_watchlist",
           "section_label": "KPI / watchlist",
-          "signal": "Counts: Unused import edges in production modules. Sub: 10309 at floor (baseline 10309); no new debt.",
+          "signal": "Counts: Unused import edges in production modules. Sub: 10318 at floor (baseline 10318); no new debt.",
           "status": "pass",
           "sub": "floor",
           "verdict": "TRACK"
@@ -2496,9 +2496,9 @@
   "source": {
     "burndown_schema_version": "2.2",
     "overall_exit_code": 1,
-    "snapshot": "adg_indexed_07132026_0555.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0555.sqlite",
-    "timestamp": "2026-07-13T10:07:47.561753+00:00"
+    "snapshot": "adg_indexed_07132026_0614.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0614.sqlite",
+    "timestamp": "2026-07-13T10:22:27.653519+00:00"
   },
   "summary": {
     "burn_down_gates": 11,
@@ -2507,11 +2507,11 @@
     "fix_now_gates": 1,
     "fix_now_rows": 1460,
     "kpi_watchlist_gates": 5,
-    "kpi_watchlist_rows": 12145,
+    "kpi_watchlist_rows": 12154,
     "priority_queue_gate_count": 12,
     "priority_queue_row_count": 6288,
     "report_only_gate_count": 5,
-    "report_only_row_count": 12145,
+    "report_only_row_count": 12154,
     "total_gates": 49,
     "work_section_gate_count": 12,
     "work_section_row_count": 6288

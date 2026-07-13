@@ -6,7 +6,6 @@ import pytest
 
 from ops_scripts.ci import check_graph_reach
 
-
 pytestmark = pytest.mark.unit
 
 
@@ -83,6 +82,36 @@ def test_graph_reach_accepts_module_when_l0_reaches_symbol_in_same_file(
         "agentic_core.L1_cognition.reachable.ExportedSymbol",
     )
     conn.execute("insert into edges values (?, ?, ?)", (1, 3, "imports"))
+
+    violations = check_graph_reach.GraphReachGate().run(conn)
+
+    assert violations == []
+
+
+def test_graph_reach_follows_module_imports_after_reaching_exported_symbol(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(check_graph_reach, "_source_file_exists", lambda _path: True)
+    conn = _conn()
+    _node(conn, 1, "L0", "agentic_core/L0_routing/entry.py")
+    _node(conn, 2, "L_PG", "agentic_core/prompt_governance/__init__.py")
+    _symbol(
+        conn,
+        3,
+        "L_PG",
+        "agentic_core/prompt_governance/__init__.py",
+        "agentic_core.prompt_governance.get_bundled_mixin",
+    )
+    _node(conn, 4, "L_PG", "agentic_core/prompt_governance/mixins.py")
+    _symbol(
+        conn,
+        5,
+        "L_PG",
+        "agentic_core/prompt_governance/mixins.py",
+        "agentic_core.prompt_governance.mixins.get_bundled_mixin",
+    )
+    conn.execute("insert into edges values (?, ?, ?)", (1, 3, "imports"))
+    conn.execute("insert into edges values (?, ?, ?)", (2, 5, "imports"))
 
     violations = check_graph_reach.GraphReachGate().run(conn)
 
