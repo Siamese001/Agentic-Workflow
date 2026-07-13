@@ -1,0 +1,481 @@
+from __future__ import annotations
+
+import json
+import re
+import subprocess
+from pathlib import Path
+
+ROOT = Path.cwd()
+
+
+def write(rel: str, body: str) -> None:
+    path = ROOT / rel
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(body.rstrip() + "\n", encoding="utf-8")
+
+
+def replace_once(rel: str, old: str, new: str) -> None:
+    path = ROOT / rel
+    text = path.read_text(encoding="utf-8")
+    if old not in text:
+        raise RuntimeError(f"replacement anchor missing in {rel}: {old[:120]!r}")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+
+def regex_replace_once(rel: str, pattern: str, replacement: str) -> None:
+    path = ROOT / rel
+    text = path.read_text(encoding="utf-8")
+    updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+    if count != 1:
+        raise RuntimeError(f"regex replacement count={count} in {rel}: {pattern[:120]!r}")
+    path.write_text(updated, encoding="utf-8")
+
+
+write(
+    "apps_rg/runtime/c0/c03_graph_contract.py",
+    r'''"""Canonical apps_rg C0.3 authority, traversal, and plan contracts.
+
+W1-W3 contract:
+* authority eligibility is resolved before JD/brief targeting signals are scored;
+* every candidate discovered inside the bounded frontier receives one terminal decision;
+* traversal receipts are event-derived rather than reconstructed from selected arrays;
+* plan digests are stable and remain app-local.  No graph row is claim proof without
+  an active fact/bundle binding.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+import hashlib
+import json
+from typing import Any, Mapping, Sequence
+
+CONTRACT_SCHEMA_VERSION = "apps_rg.c03_graph_contract.v1"
+AUTHORITY_RECEIPT_SCHEMA = "apps_rg.c03_authority_receipt.v1"
+TRAVERSAL_MANIFEST_SCHEMA = "apps_rg.c03_traversal_manifest.v1"
+PLAN_SCHEMA_VERSION = "apps_rg.c03_selected_graph_plan.v2"
+CANDIDATE_DECISION_SCHEMA = "graph_candidate_decision_v1"
+
+BLOCKED_ACTIVATION_STATUSES = frozenset(
+    {"DRAFT", "INTERNAL_ONLY", "ACTIVE_INTERNAL_ONLY", "DO_NOT_PROMOTE", "BLOCKED", "USER_CONFIRMED_PENDING_SOURCE"}
+)
+BLOCKED_SUPPORT_LEVELS = frozenset(
+    {"INTERNAL_ONLY", "REPO_EVIDENCE_PORTFOLIO", "TARGETING_ONLY", "STYLE_ONLY", "BLOCKED", "USER_CONFIRMED_PENDING_SOURCE"}
+)
+BLOCKED_EXTERNAL_POLICIES = frozenset(
+    {"internal_only", "internal_only_not_external_claim", "pending_source_internal_only", "weak_snippet_internal_only", "repo_portfolio_not_resume_default", "internal_traversal_only"}
+)
+
+
+class C03AuthorityError(ValueError):
+    """Raised when C0.3 would cross a hard authority boundary."""
+
+
+def _upper(value: Any) -> str:
+    return str(value or "").strip().upper()
+
+
+def _lower(value: Any) -> str:
+    return str(value or "").strip().lower()
+
+
+def _strings(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, str):
+        value = [value]
+    if not isinstance(value, (list, tuple, set, frozenset)):
+        value = [value]
+    out: list[str] = []
+    seen: set[str] = set()
+    for raw in value:
+        text = str(raw or "").strip()
+        if text and text not in seen:
+            seen.add(text)
+            out.append(text)
+    return out
+
+
+def stable_digest(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), default=str).encode("utf-8")
+    ).hexdigest()
+
+
+def _strip_plan_identity(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {
+            str(k): _strip_plan_identity(v)
+            for k, v in value.items()
+            if str(k) not in {"plan_id", "plan_digest"}
+        }
+    if isinstance(value, (list, tuple)):
+        return [_strip_plan_identity(v) for v in value]
+    return value
+
+
+def plan_digest(plan: Mapping[str, Any]) -> str:
+    return stable_digest(_strip_plan_identity(plan))
+
+
+def finalize_section_graph_plan(plan: Mapping[str, Any]) -> dict[str, Any]:
+    out = dict(plan)
+    out["schema_version"] = PLAN_SCHEMA_VERSION
+    out["authority_contract_schema"] = CONTRACT_SCHEMA_VERSION
+    digest = plan_digest(out)
+    section_id = str(out.get("section_id") or "unknown")
+    out["plan_digest"] = digest
+    out["plan_id"] = f"{section_id}:{digest[:16]}"
+    return out
+
+
+def validate_section_graph_plan(plan: Mapping[str, Any]) -> tuple[bool, tuple[str, ...]]:
+    failures: list[str] = []
+    if str(plan.get("schema_version") or "") != PLAN_SCHEMA_VERSION:
+        failures.append("schema_version")
+    if not str(plan.get("section_id") or ""):
+        failures.append("section_id")
+    declared = str(plan.get("plan_digest") or "")
+    if not declared or declared != plan_digest(plan):
+        failures.append("plan_digest")
+    expected_id = f"{plan.get('section_id')}:{declared[:16]}" if declared else ""
+    if str(plan.get("plan_id") or "") != expected_id:
+        failures.append("plan_id")
+    return (not failures, tuple(failures))
+
+
+def evaluate_sqlite_candidate_authority(candidate: Mapping[str, Any], *, section_id: str) -> dict[str, Any]:
+    """Resolve hard authority without consulting target-role or JD text."""
+    checks = {
+        "claim_eligibility": bool(candidate.get("claim_eligibility")),
+        "link_external_eligible": bool(candidate.get("link_external_eligible")),
+        "node_external_eligible": bool(candidate.get("external_eligible")),
+        "section_allowed": bool(candidate.get("section_allowed")) and not bool(candidate.get("section_explicitly_blocked")),
+        "activation_allowed": _upper(candidate.get("activation_status")) not in BLOCKED_ACTIVATION_STATUSES,
+        "support_allowed": (
+            _upper(candidate.get("support_level")) not in BLOCKED_SUPPORT_LEVELS
+            and _upper(candidate.get("link_support_level")) not in BLOCKED_SUPPORT_LEVELS
+        ),
+        "confidence_allowed": _upper(candidate.get("confidence")) != "BLOCKED",
+        "direct_path_present": bool(str(candidate.get("path_signature") or "").strip()),
+        "fact_provenance_present": bool(int(candidate.get("source_fact_count") or 0) > 0),
+    }
+    reasons = [name for name, passed in checks.items() if not passed]
+    return {
+        "schema_version": AUTHORITY_RECEIPT_SCHEMA,
+        "section_id": section_id,
+        "candidate_id": str(candidate.get("skill_id") or ""),
+        "authority_pass": not reasons,
+        "checks": checks,
+        "reason_codes": reasons,
+        "targeting_inputs_consulted": False,
+    }
+
+
+def evaluate_role_root_authority(bundle: Mapping[str, Any], *, section_id: str) -> dict[str, Any]:
+    sections = set(_strings(bundle.get("section_eligibility")))
+    activation = _upper(bundle.get("activation_status"))
+    support = _upper(bundle.get("support_level"))
+    policy = _lower(bundle.get("external_claim_policy"))
+    checks = {
+        "section_allowed": section_id in sections,
+        "activation_allowed": bool(activation) and activation not in BLOCKED_ACTIVATION_STATUSES,
+        "support_allowed": bool(support) and support not in BLOCKED_SUPPORT_LEVELS,
+        "external_policy_allowed": policy not in BLOCKED_EXTERNAL_POLICIES,
+        "source_fact_present": bool(_strings(bundle.get("linked_source_fact_ids"))),
+    }
+    reasons = [name for name, passed in checks.items() if not passed]
+    return {
+        "schema_version": AUTHORITY_RECEIPT_SCHEMA,
+        "section_id": section_id,
+        "candidate_id": str(bundle.get("role_episode_bundle_id") or ""),
+        "authority_pass": not reasons,
+        "checks": checks,
+        "reason_codes": reasons,
+        "targeting_inputs_consulted": False,
+    }
+
+
+def evaluate_role_skill_authority(
+    skill_row: Mapping[str, Any] | None,
+    *,
+    skill_id: str,
+    section_id: str,
+    bundle_fact_ids: Sequence[str],
+    externally_eligible: bool,
+) -> dict[str, Any]:
+    row = skill_row or {}
+    fact_ids = set(_strings(row.get("fact_id_links")))
+    bundle_facts = set(_strings(bundle_fact_ids))
+    activation = _upper(row.get("activation_status"))
+    support = _upper(row.get("support_level"))
+    policy = _lower(row.get("external_claim_policy"))
+    checks = {
+        "canonical_skill_row_present": bool(skill_row),
+        "external_claim_eligible": bool(externally_eligible),
+        "activation_allowed": bool(activation) and activation not in BLOCKED_ACTIVATION_STATUSES,
+        "support_allowed": bool(support) and support not in BLOCKED_SUPPORT_LEVELS,
+        "external_policy_allowed": policy not in BLOCKED_EXTERNAL_POLICIES,
+        "bundle_fact_path_present": bool(fact_ids & bundle_facts),
+    }
+    reasons = [name for name, passed in checks.items() if not passed]
+    return {
+        "schema_version": AUTHORITY_RECEIPT_SCHEMA,
+        "section_id": section_id,
+        "candidate_id": skill_id,
+        "authority_pass": not reasons,
+        "checks": checks,
+        "reason_codes": reasons,
+        "targeting_inputs_consulted": False,
+    }
+
+
+def evaluate_metric_authority(
+    metric_node: Mapping[str, Any] | None,
+    *,
+    metric_id: str,
+    section_id: str,
+    bundle_id: str,
+) -> dict[str, Any]:
+    node = metric_node or {}
+    sections = set(_strings(node.get("section_eligibility")))
+    bindings = set(_strings(node.get("bundle_bindings")))
+    approved = bool(node.get("approved")) or _upper(node.get("approval_status")).startswith("APPROVED") or _lower(node.get("support_level")) == "approved_by_graph_presence"
+    checks = {
+        "metric_node_present": bool(metric_node),
+        "approved": approved,
+        "section_allowed": not sections or section_id in sections,
+        "bundle_binding_present": not bindings or bundle_id in bindings,
+    }
+    reasons = [name for name, passed in checks.items() if not passed]
+    return {
+        "schema_version": AUTHORITY_RECEIPT_SCHEMA,
+        "section_id": section_id,
+        "candidate_id": metric_id,
+        "authority_pass": not reasons,
+        "checks": checks,
+        "reason_codes": reasons,
+        "targeting_inputs_consulted": False,
+    }
+
+
+def score_sqlite_candidate(
+    candidate: Mapping[str, Any],
+    *,
+    role_family_key: str,
+    pillar_hints: set[str],
+) -> dict[str, float]:
+    try:
+        weights = json.loads(str(candidate.get("role_family_weights") or "{}"))
+    except json.JSONDecodeError:
+        weights = {}
+    if not isinstance(weights, dict):
+        weights = {}
+    confidence = {"HIGH": 3.0, "MEDIUM": 2.0, "LOW": 1.0}.get(_upper(candidate.get("confidence")), 0.0)
+    proof_strength = (
+        10.0
+        + 4.0
+        + 2.0
+        + confidence * 1.5
+        + min(int(candidate.get("source_fact_count") or 0), 3) * 0.25
+        + float(candidate.get("path_score") or 0.0)
+        + float(candidate.get("proof_strength_score") or 0.0)
+    )
+    target_alignment = float(weights.get(role_family_key) or 0.0)
+    if str(candidate.get("pillar") or "") in pillar_hints:
+        target_alignment += 2.5
+    return {
+        "proof_strength_raw": round(proof_strength, 6),
+        "target_alignment_score": round(target_alignment, 6),
+        "selection_score_before_penalties": round(proof_strength + target_alignment, 6),
+    }
+
+
+@dataclass(slots=True)
+class TraversalRecorder:
+    section_id: str
+    producer: str
+    events: list[dict[str, Any]] = field(default_factory=list)
+    candidates: dict[str, dict[str, Any]] = field(default_factory=dict)
+    _event_index: int = 0
+
+    def _emit(self, event_type: str, **payload: Any) -> str:
+        self._event_index += 1
+        event_id = f"evt:{self.section_id}:{self._event_index:06d}"
+        self.events.append({"event_id": event_id, "event_type": event_type, **payload})
+        return event_id
+
+    @staticmethod
+    def candidate_key(candidate_type: str, candidate_id: str, parent_id: str = "") -> str:
+        return f"{candidate_type}|{parent_id}|{candidate_id}"
+
+    def visit_node(self, *, node_id: str, node_type: str, hop_depth: int, parent_id: str = "") -> str:
+        return self._emit(
+            "node_visited", node_id=node_id, node_type=node_type, hop_depth=int(hop_depth), parent_id=parent_id
+        )
+
+    def visit_edge(
+        self,
+        *,
+        source: str,
+        target: str,
+        edge_type: str,
+        hop_depth: int,
+        path_signature: str = "",
+    ) -> str:
+        return self._emit(
+            "edge_visited",
+            source=source,
+            target=target,
+            edge_type=edge_type,
+            hop_depth=int(hop_depth),
+            path_signature=path_signature,
+        )
+
+    def discover(
+        self,
+        *,
+        candidate_id: str,
+        candidate_type: str,
+        hop_depth: int,
+        parent_id: str = "",
+        root_id: str = "",
+        metadata: Mapping[str, Any] | None = None,
+    ) -> str:
+        key = self.candidate_key(candidate_type, candidate_id, parent_id)
+        if key in self.candidates:
+            return key
+        event_id = self._emit(
+            "candidate_discovered",
+            candidate_id=candidate_id,
+            candidate_type=candidate_type,
+            hop_depth=int(hop_depth),
+            parent_id=parent_id,
+            root_id=root_id or parent_id or candidate_id,
+        )
+        self.candidates[key] = {
+            "schema_version": CANDIDATE_DECISION_SCHEMA,
+            "section_id": self.section_id,
+            "candidate_id": candidate_id,
+            "candidate_type": candidate_type,
+            "parent_id": parent_id,
+            "root_id": root_id or parent_id or candidate_id,
+            "hop_depth": int(hop_depth),
+            "discovery_event_id": event_id,
+            "decision": "",
+            "reason_codes": [],
+            **dict(metadata or {}),
+        }
+        return key
+
+    def decide(
+        self,
+        key: str,
+        *,
+        decision: str,
+        reason_codes: Sequence[str],
+        score_components: Mapping[str, Any] | None = None,
+        authority: Mapping[str, Any] | None = None,
+    ) -> None:
+        if key not in self.candidates:
+            raise C03AuthorityError(f"terminal decision for undiscovered candidate: {key}")
+        row = self.candidates[key]
+        if row.get("decision"):
+            raise C03AuthorityError(f"candidate received multiple terminal decisions: {key}")
+        if decision not in {"selected", "rejected", "blocked"}:
+            raise C03AuthorityError(f"invalid terminal decision {decision!r}")
+        event_id = self._emit(
+            "candidate_decided",
+            candidate_id=row["candidate_id"],
+            candidate_type=row["candidate_type"],
+            parent_id=row.get("parent_id", ""),
+            decision=decision,
+            reason_codes=list(reason_codes),
+        )
+        row["decision"] = decision
+        row["reason_codes"] = list(reason_codes)
+        row["decision_event_id"] = event_id
+        if score_components:
+            row["score_components"] = dict(score_components)
+            row["selector_score"] = float(score_components.get("selection_score") or score_components.get("selection_score_before_penalties") or 0.0)
+        if authority:
+            row["authority"] = dict(authority)
+
+    def decision_rows(self) -> list[dict[str, Any]]:
+        return sorted(
+            (dict(row) for row in self.candidates.values()),
+            key=lambda row: (
+                int(row.get("hop_depth") or 0),
+                str(row.get("candidate_type") or ""),
+                str(row.get("root_id") or ""),
+                str(row.get("parent_id") or ""),
+                str(row.get("candidate_id") or ""),
+            ),
+        )
+
+    def manifest(self) -> dict[str, Any]:
+        rows = self.decision_rows()
+        unexplained = [row for row in rows if not row.get("decision")]
+        selected = [row for row in rows if row.get("decision") == "selected"]
+        rejected = [row for row in rows if row.get("decision") in {"rejected", "blocked"}]
+        node_events = [event for event in self.events if event.get("event_type") == "node_visited"]
+        edge_events = [event for event in self.events if event.get("event_type") == "edge_visited"]
+        payload = {
+            "schema_version": TRAVERSAL_MANIFEST_SCHEMA,
+            "producer": self.producer,
+            "section_id": self.section_id,
+            "events": list(self.events),
+            "candidate_decisions": rows,
+            "candidate_conservation": {
+                "discovered": len(rows),
+                "selected": len(selected),
+                "rejected_or_blocked": len(rejected),
+                "unexplained": len(unexplained),
+                "pass": not unexplained and len(rows) == len(selected) + len(rejected),
+            },
+            "visited_node_count": len(node_events),
+            "visited_edge_count": len(edge_events),
+        }
+        payload["event_digest"] = stable_digest(payload["events"])
+        return payload
+
+
+def build_authority_receipt(decision_rows: Sequence[Mapping[str, Any]], *, section_id: str) -> dict[str, Any]:
+    selected = [row for row in decision_rows if row.get("decision") == "selected"]
+    selected_violations = [
+        str(row.get("candidate_id") or "")
+        for row in selected
+        if isinstance(row.get("authority"), Mapping) and row["authority"].get("authority_pass") is not True
+    ]
+    authority_evaluated = [row for row in decision_rows if isinstance(row.get("authority"), Mapping)]
+    return {
+        "schema_version": AUTHORITY_RECEIPT_SCHEMA,
+        "section_id": section_id,
+        "authority_evaluated_candidate_count": len(authority_evaluated),
+        "selected_candidate_count": len(selected),
+        "selected_authority_violation_ids": selected_violations,
+        "targeting_inputs_consulted_for_authority": False,
+        "pass": not selected_violations and len(authority_evaluated) == len(decision_rows),
+    }
+
+
+__all__ = [
+    "AUTHORITY_RECEIPT_SCHEMA",
+    "C03AuthorityError",
+    "CONTRACT_SCHEMA_VERSION",
+    "PLAN_SCHEMA_VERSION",
+    "TRAVERSAL_MANIFEST_SCHEMA",
+    "TraversalRecorder",
+    "build_authority_receipt",
+    "evaluate_metric_authority",
+    "evaluate_role_root_authority",
+    "evaluate_role_skill_authority",
+    "evaluate_sqlite_candidate_authority",
+    "finalize_section_graph_plan",
+    "plan_digest",
+    "score_sqlite_candidate",
+    "stable_digest",
+    "validate_section_graph_plan",
+]
+''',
+)
