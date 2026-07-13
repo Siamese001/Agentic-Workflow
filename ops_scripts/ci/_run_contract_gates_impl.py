@@ -1095,6 +1095,28 @@ def main():
         # Advisory by default; JUDGE_SPEARMAN_FAIL_CLOSED=1 activates blocking.
         # Plan: apps-underwriting-ai-d3-rationale-judge-f2c8d5 DS-R5.
         ("DS-R5 Judge Spearman calibration gate (advisory)", "ops_scripts/ci/check_judge_spearman_gate.py"),
+        # apps_rg Spearman L6 calibration spine. Initial posture is advisory
+        # until a human semantic corpus and first UWG-approved baseline exist.
+        (
+            "RG-SPEARMAN-IDENTITY apps_rg judge identity (advisory)",
+            "ops_scripts/ci/check_apps_rg_spearman_identity.py",
+        ),
+        (
+            "RG-SPEARMAN-DATASET apps_rg human holdout (advisory)",
+            "ops_scripts/ci/check_apps_rg_spearman_dataset.py",
+        ),
+        (
+            "RG-SPEARMAN-CALIBRATION apps_rg semantic result (advisory)",
+            "ops_scripts/ci/check_apps_rg_spearman_calibration.py",
+        ),
+        (
+            "RG-SPEARMAN-L6-PLACEMENT apps_rg layer sovereignty (advisory)",
+            "ops_scripts/ci/check_apps_rg_spearman_l6_placement.py",
+        ),
+        (
+            "RG-SPEARMAN-PROMOTION apps_rg approved baseline (advisory)",
+            "ops_scripts/ci/check_apps_rg_spearman_promotion.py",
+        ),
         # AG-WIRE — Author-Gate hook wiring invariant.
         # Enforces AG-WIRE-1..4: pre_user_prompt reminder hook present+visible,
         # and all 3 AG audit hooks in post_agent_response have show_output=true.

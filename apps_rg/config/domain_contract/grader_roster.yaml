@@ -1,0 +1,24 @@
+- grader_roster_id: agr::apps_rg::resume_generation::v1
+  app_id: apps_rg
+  task_class: resume_generation
+  version: "1.0.0"
+  status: active
+  fallback_behavior: use_deterministic_only
+  deterministic_graders: []
+  llm_judge_graders:
+    - "rg::executive_positioning_judge::v1"
+  ensemble_or_consensus_graders: []
+  calibration_refs:
+    - "calibration://apps_rg/executive_positioning/pending-human-semantic-v1"
+  judge_policies:
+    "rg::executive_positioning_judge::v1":
+      judge_implementation_ref: "agentic_core.runtime.judges.resume_judges.executive_positioning:ExecutivePositioningJudge"
+      provider_profile_ref: "local_qwen_generator"
+      rubric_path: "apps_rg/config/domain_contract/judges/executive_positioning_rubric.txt"
+      informational_only: true
+      required_for_exit: false
+      timeout_behavior: abstain
+      missing_behavior: warn
+      is_stub: false
+  source_app_config_ref: "apps_rg/config/domain_contract/grader_roster.yaml"
+  created_at: "2026-07-13"

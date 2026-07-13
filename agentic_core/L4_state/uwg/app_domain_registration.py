@@ -32,7 +32,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import List, Optional, Sequence, Tuple
 
 from agentic_core.L4_state.contracts.app_domain import (
@@ -49,6 +49,7 @@ from agentic_core.L4_state.contracts.app_domain import (
     AppRetrievalProfileRecord,
     AppRouteProfileRecord,
     AppThresholdProfileRecord,
+    ApprovedJudgeCalibrationBaseline,
     app_domain_record_kind,
 )
 from agentic_core.L4_state.contracts.app_domain_lookup import (
@@ -68,6 +69,7 @@ from agentic_core.L4_state.contracts.records import (
 )
 from agentic_core.L4_state.uwg.durable_write_gateway import (
     DurableWriteGateway,
+    compute_state_diffs_digest,
     get_default_gateway,
 )
 
@@ -96,6 +98,9 @@ class AppDomainContractBundle:
     orchestration_profiles: Tuple[AppOrchestrationProfileRecord, ...] = field(default_factory=tuple)
     fixtures: Tuple[AppFixtureRecord, ...] = field(default_factory=tuple)
     negative_controls: Tuple[AppNegativeControlRecord, ...] = field(default_factory=tuple)
+    judge_calibration_baselines: Tuple[
+        ApprovedJudgeCalibrationBaseline, ...
+    ] = field(default_factory=tuple)
 
     def all_records(self) -> List[object]:
         """Iteration helper — every record in canonical order."""
@@ -110,6 +115,7 @@ class AppDomainContractBundle:
         out.extend(self.orchestration_profiles)
         out.extend(self.fixtures)
         out.extend(self.negative_controls)
+        out.extend(self.judge_calibration_baselines)
         return out
 
 
@@ -174,6 +180,7 @@ def _record_id_attr(record_kind: str) -> str:
         "AppOrchestrationProfileRecord": "orchestration_profile_id",
         "AppFixtureRecord": "fixture_id",
         "AppNegativeControlRecord": "negative_control_id",
+        "ApprovedJudgeCalibrationBaseline": "baseline_id",
     }
     if record_kind not in mapping:
         raise KeyError(f"unknown app-domain record kind {record_kind!r}")
@@ -213,6 +220,9 @@ def _stamp_bundle(bundle: AppDomainContractBundle) -> AppDomainContractBundle:
         orchestration_profiles=tuple(stamp_digest(r) for r in bundle.orchestration_profiles),
         fixtures=tuple(stamp_digest(r) for r in bundle.fixtures),
         negative_controls=tuple(stamp_digest(r) for r in bundle.negative_controls),
+        judge_calibration_baselines=tuple(
+            stamp_digest(r) for r in bundle.judge_calibration_baselines
+        ),
     )
 
 
@@ -224,6 +234,9 @@ def register_bundle(
     tenant_id: str = "platform",
     policy_hash: Optional[str] = None,
     blueprint_hash: Optional[str] = None,
+    l5_certification_ref: str = "",
+    clearance_proof_id: str = "",
+    commit_request_signature: str = "",
 ) -> RegistrationReceipt:
     """Register a complete app-domain contract bundle through UWG.
 
@@ -266,6 +279,12 @@ def register_bundle(
         _build_state_diff(record, app_id=stamped.contract.app_id)
         for record in stamped.all_records()
     ]
+    registry_digest_set = tuple(
+        str(getattr(record, "deterministic_digest", ""))
+        for record in stamped.all_records()
+        if str(getattr(record, "deterministic_digest", ""))
+    )
+    staged_diff_hash = compute_state_diffs_digest(state_diffs)
 
     commit_request_id = f"app-domain-register::{stamped.contract.app_id}::{bundle_digest[:12]}"
     rollback_plan_id = f"rollback-plan::{commit_request_id}"
@@ -313,6 +332,14 @@ def register_bundle(
             rollback_plan_ref=rollback_plan_id,
             blast_radius="registry_scoped",
             source_surface="Exit",
+            l5_certification_ref=l5_certification_ref,
+            l5_certification_refs=(
+                (l5_certification_ref,) if l5_certification_ref else ()
+            ),
+            clearance_proof_id=clearance_proof_id,
+            registry_digest_set=registry_digest_set,
+            staged_diff_hash=staged_diff_hash,
+            commit_request_signature=commit_request_signature,
             state_diff_refs=tuple(sd.state_diff_id for sd in state_diffs),
             gate_verdict_refs=(f"gate://app-domain-register::{bundle_digest}",),
             affected_state_surfaces=target_surfaces,
@@ -374,6 +401,8 @@ def _hydrate_store(store: InMemoryAppDomainStore, bundle: AppDomainContractBundl
         store.put_fixture(r)
     for r in bundle.negative_controls:
         store.put_negative_control(r)
+    for r in bundle.judge_calibration_baselines:
+        store.put_judge_calibration_baseline(r)
     # Top-level last so a partial hydrate never exposes a contract whose
     # subcontracts haven't all landed.
     store.put_contract(bundle.contract)
@@ -385,14 +414,68 @@ def register_bundles(
     gateway: Optional[DurableWriteGateway] = None,
     store: Optional[InMemoryAppDomainStore] = None,
     tenant_id: str = "platform",
+    l5_certification_ref: str = "",
+    clearance_proof_id: str = "",
+    commit_request_signature: str = "",
 ) -> List[RegistrationReceipt]:
     """Convenience: register multiple bundles in declaration order."""
     receipts: List[RegistrationReceipt] = []
     for b in bundles:
         receipts.append(
-            register_bundle(b, gateway=gateway, store=store, tenant_id=tenant_id),
+            register_bundle(
+                b,
+                gateway=gateway,
+                store=store,
+                tenant_id=tenant_id,
+                l5_certification_ref=l5_certification_ref,
+                clearance_proof_id=clearance_proof_id,
+                commit_request_signature=commit_request_signature,
+            ),
         )
     return receipts
+
+
+def register_judge_calibration_baseline(
+    bundle: AppDomainContractBundle,
+    baseline: ApprovedJudgeCalibrationBaseline,
+    *,
+    gateway: Optional[DurableWriteGateway] = None,
+    store: Optional[InMemoryAppDomainStore] = None,
+    tenant_id: str = "platform",
+    l5_certification_ref: str,
+    clearance_proof_id: str,
+    commit_request_signature: str,
+) -> RegistrationReceipt:
+    """Register a receipt-bound baseline through the app-domain UWG path."""
+    if baseline.app_id != bundle.contract.app_id:
+        raise ValueError("baseline app_id must match the app-domain bundle")
+    refs = tuple(
+        dict.fromkeys(
+            (*bundle.contract.judge_calibration_baseline_refs, baseline.baseline_id)
+        )
+    )
+    baselines = tuple(
+        item
+        for item in bundle.judge_calibration_baselines
+        if item.baseline_id != baseline.baseline_id
+    ) + (baseline,)
+    candidate = replace(
+        bundle,
+        contract=replace(
+            bundle.contract,
+            judge_calibration_baseline_refs=refs,
+        ),
+        judge_calibration_baselines=baselines,
+    )
+    return register_bundle(
+        candidate,
+        gateway=gateway,
+        store=store,
+        tenant_id=tenant_id,
+        l5_certification_ref=l5_certification_ref,
+        clearance_proof_id=clearance_proof_id,
+        commit_request_signature=commit_request_signature,
+    )
 
 
 __all__ = [
@@ -400,4 +483,5 @@ __all__ = [
     "RegistrationReceipt",
     "register_bundle",
     "register_bundles",
+    "register_judge_calibration_baseline",
 ]

@@ -127,6 +127,36 @@ def ingest_integrated_exhaust_for_l6_shadow(
     )
 
 
+def run_integrated_exhaust_through_l6(
+    exhaust: Any,
+    *,
+    spans: tuple[dict[str, Any], ...],
+    governance_baseline: Any,
+    calibration_context: Any = None,
+    blueprint_hash: str = "",
+) -> Any:
+    """Explicit post-boundary evaluation; never called on the live response path."""
+    assert_integrated_exhaust_may_feed_l6(exhaust)
+    from agentic_core.L6_observability.shadow_eval.post_boundary_runner import (
+        run_l6_shadow_from_sealed_exhaust,
+    )
+    from agentic_core.runtime.exhaust.shadow_raw_exhaust_adapter import (
+        build_l6_shadow_raw_exhaust_from_runtime_bundle,
+    )
+
+    raw_exhaust = build_l6_shadow_raw_exhaust_from_runtime_bundle(
+        exhaust,
+        spans=spans,
+        policy_hash=str(getattr(governance_baseline, "policy_hash", "") or ""),
+        blueprint_hash=blueprint_hash,
+    )
+    return run_l6_shadow_from_sealed_exhaust(
+        raw_exhaust,
+        governance_baseline=governance_baseline,
+        calibration_context=calibration_context,
+    )
+
+
 __all__ = [
     "GOVERNED_L6_SHADOW_MODE_INTEGRATED",
     "GOVERNED_L6_SHADOW_MODE_SECTION",
@@ -136,4 +166,5 @@ __all__ = [
     "build_governed_l6_handoff_envelope",
     "governed_l6_shadow_enabled",
     "ingest_integrated_exhaust_for_l6_shadow",
+    "run_integrated_exhaust_through_l6",
 ]

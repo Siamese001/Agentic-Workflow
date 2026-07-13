@@ -60,7 +60,17 @@ def _build_records(sealed_completed_run, *, replay_drift: bool, calibration_stat
     )
     governance = evaluate_governance_regression(receipt, normalized, baseline)
     calibration = build_calibration_record(
-        rubric_hash="rh", rubric_version="1", grader_version="cv1"
+        rubric_hash="rh",
+        rubric_version="1",
+        grader_version="cv1",
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset",
+        dataset_version="v1",
+        sample_size=1,
+        minimum_sample_size=1,
+        label_source="deterministic_code_reference",
+        result_valid=True,
     )
     if calibration_status is not None:
         calibration = dataclasses.replace(calibration, calibration_status=calibration_status)

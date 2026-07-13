@@ -137,7 +137,11 @@ def main(argv: list[str] | None = None) -> int:
         if status == "PASS":
             print(f"  PASS  {dim}  rho={f.get('spearman_rho', 'N/A')} n={f.get('n', '?')}")
         elif status == "FAIL":
-            print(f"  FAIL  {dim}  rho={f.get('spearman_rho', 'N/A')} < {_SPEARMAN_THRESHOLD}  n={f.get('n', '?')}")
+            threshold = f.get("threshold", _SPEARMAN_THRESHOLD_PER_DIM)
+            print(
+                f"  FAIL  {dim}  rho={f.get('spearman_rho', 'N/A')} "
+                f"< {threshold}  n={f.get('n', '?')}"
+            )
         else:
             print(f"  {status}  {dim}  {f.get('reason', '')}")
 

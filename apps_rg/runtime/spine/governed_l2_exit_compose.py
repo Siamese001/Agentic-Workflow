@@ -174,6 +174,8 @@ def governed_exit_finalize_integrated(
     target_company: str = "",
     target_role: str = "",
     prompt_artifact: Any = None,
+    approved_judge_calibration_baseline_ref: str = "",
+    app_domain_store: Any = None,
 ) -> GovernedIntegratedExitBundle:
     """Integrated Exit — apps_rg gates + ExitEvalPipeline + RuntimeExhaustBundle."""
     from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
@@ -188,6 +190,8 @@ def governed_exit_finalize_integrated(
         fec=fec,
         target_company=target_company,
         target_role=target_role,
+        approved_judge_calibration_baseline_ref=approved_judge_calibration_baseline_ref,
+        app_domain_store=app_domain_store,
     )
     receipts = _build_exit_eval_receipts(
         sealed,

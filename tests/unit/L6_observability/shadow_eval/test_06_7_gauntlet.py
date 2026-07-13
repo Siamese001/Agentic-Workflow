@@ -66,7 +66,19 @@ def proposal_bundle(sealed_completed_run):
         policy_hash="DIFF-POL", rubric_hash="rh", replay_digest=bundle.replay_key,
     )
     governance = evaluate_governance_regression(receipt, normalized, baseline)
-    calibration = build_calibration_record(rubric_hash="rh", rubric_version="1", grader_version="cv1")
+    calibration = build_calibration_record(
+        rubric_hash="rh",
+        rubric_version="1",
+        grader_version="cv1",
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset",
+        dataset_version="v1",
+        sample_size=1,
+        minimum_sample_size=1,
+        label_source="deterministic_code_reference",
+        result_valid=True,
+    )
     completed = build_completed_eval_record(
         runtime_exhaust_bundle_id=bundle.runtime_exhaust_bundle_id,
         eval_readiness_receipt_id=receipt.eval_readiness_receipt_id,

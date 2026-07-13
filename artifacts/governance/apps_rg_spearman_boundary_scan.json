@@ -1,0 +1,33 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "boundary_scan",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "python ops_scripts/ci/check_apps_rg_spearman_identity.py",
+      "exit_code": 0,
+      "result": "RG-SPEARMAN-IDENTITY PASS"
+    },
+    {
+      "command": "python ops_scripts/ci/check_apps_rg_spearman_l6_placement.py",
+      "exit_code": 0,
+      "result": "RG-SPEARMAN-L6-PLACEMENT PASS"
+    },
+    {
+      "command": "python -m pytest tests/unit/apps_rg/test_spearman_l6_calibration_spine.py tests/unit/apps_rg/test_judge_reliability_exit.py -n0 -q",
+      "exit_code": 0,
+      "result": "10 passed as part of the 445-test focused run"
+    }
+  ],
+  "invariants": [
+    "Spearman computation is confined to L6.4",
+    "L6 emits proposals and cannot write L4 directly",
+    "UWG is the sole app-domain baseline write path",
+    "Exit performs read-only future-run baseline consumption",
+    "The completed current run cannot be rescued or mutated"
+  ]
+}

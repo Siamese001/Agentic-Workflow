@@ -57,6 +57,14 @@ def _full_eval_pipeline(sealed_completed_run, calibration_age_days: int = 0):
         grader_version="code-only-v1",
         calibration_freshness_timestamp=_ts(calibration_age_days),
         ttl_days=7,
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset",
+        dataset_version="v1",
+        sample_size=1,
+        minimum_sample_size=1,
+        label_source="deterministic_code_reference",
+        result_valid=True,
     )
     return bundle, receipt, outcome, trajectory, governance, calibration
 
@@ -193,6 +201,14 @@ def test_stale_calibration_restricts_downstream_use_to_rca_only(sealed_completed
         grader_version="code-only-v1",
         calibration_freshness_timestamp=_ts(30),
         ttl_days=7,
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset",
+        dataset_version="v1",
+        sample_size=1,
+        minimum_sample_size=1,
+        label_source="deterministic_code_reference",
+        result_valid=True,
     )
     assert stale.calibration_status == "STALE"
     rec = build_completed_eval_record(

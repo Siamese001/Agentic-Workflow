@@ -33,7 +33,10 @@ from agentic_core.L4_state.contracts.app_domain import (
     AppRetrievalProfileRecord,
     AppRouteProfileRecord,
     AppThresholdProfileRecord,
+    ApprovedJudgeCalibrationBaseline,
 )
+from agentic_core.L4_state.contracts.digests import compute_deterministic_digest
+from agentic_core.L4_state.contracts.records import record_canonical_payload
 
 
 class AppDomainLookupError(RuntimeError):
@@ -79,6 +82,9 @@ class InMemoryAppDomainStore:
         self._orchestration_profiles: Dict[str, AppOrchestrationProfileRecord] = {}
         self._fixtures: Dict[str, AppFixtureRecord] = {}
         self._negative_controls: Dict[str, AppNegativeControlRecord] = {}
+        self._judge_calibration_baselines: Dict[
+            str, ApprovedJudgeCalibrationBaseline
+        ] = {}
 
     # ------------------------------------------------------------------
     # Registration (called only by the UWG-side registration adapter).
@@ -143,6 +149,13 @@ class InMemoryAppDomainStore:
     def put_negative_control(self, record: AppNegativeControlRecord) -> None:
         with self._lock:
             self._negative_controls[record.negative_control_id] = record
+
+    def put_judge_calibration_baseline(
+        self,
+        record: ApprovedJudgeCalibrationBaseline,
+    ) -> None:
+        with self._lock:
+            self._judge_calibration_baselines[record.baseline_id] = record
 
     # ------------------------------------------------------------------
     # Read-only queries
@@ -273,6 +286,29 @@ class InMemoryAppDomainStore:
                 raise UnknownAppContractError(f"no AppNegativeControlRecord {control_id!r}")
             return r
 
+    def get_judge_calibration_baseline(
+        self,
+        baseline_id: str,
+    ) -> ApprovedJudgeCalibrationBaseline:
+        with self._lock:
+            record = self._judge_calibration_baselines.get(baseline_id)
+            if record is None:
+                raise UnknownAppContractError(
+                    f"no ApprovedJudgeCalibrationBaseline {baseline_id!r}"
+                )
+            if record.status == "deprecated":
+                raise DeprecatedAppContractError(
+                    f"ApprovedJudgeCalibrationBaseline({baseline_id}) deprecated"
+                )
+            expected_digest = compute_deterministic_digest(
+                record_canonical_payload(record)
+            )
+            if not record.deterministic_digest or record.deterministic_digest != expected_digest:
+                raise AppDomainLookupError(
+                    f"ApprovedJudgeCalibrationBaseline({baseline_id}) digest invalid"
+                )
+            return record
+
     def list_apps(self) -> List[str]:
         with self._lock:
             return sorted({app_id for (app_id, _) in self._contracts})
@@ -309,6 +345,7 @@ class InMemoryAppDomainStore:
             self._orchestration_profiles.clear()
             self._fixtures.clear()
             self._negative_controls.clear()
+            self._judge_calibration_baselines.clear()
 
 
 # ----------------------------------------------------------------------------

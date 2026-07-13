@@ -117,9 +117,9 @@ def test_grader_types_doctrine_cardinality():
 
 
 def test_span_registry_doctrine_cardinality():
-    """06.8 canonical span surface — 30 entries (28 unconditional + 2 conditional)."""
-    assert len(SPAN_NAMES) == 30
-    assert len(set(SPAN_NAMES)) == 30  # uniqueness
+    """06.8 canonical span surface includes the five calibration spans."""
+    assert len(SPAN_NAMES) == 37
+    assert len(set(SPAN_NAMES)) == 37  # uniqueness
 
 
 def test_kpi_board_cardinality():
@@ -432,6 +432,11 @@ def test_calibration_fresh_at_one_day():
     rec = build_calibration_record(
         rubric_hash="r", rubric_version="1", grader_version="g",
         calibration_freshness_timestamp=_ts_days_ago(1), ttl_days=7,
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset", dataset_version="v1",
+        sample_size=1, minimum_sample_size=1,
+        label_source="deterministic_code_reference", result_valid=True,
     )
     assert rec.calibration_status == "CURRENT"
 
@@ -441,6 +446,11 @@ def test_calibration_fresh_just_under_ttl():
     rec = build_calibration_record(
         rubric_hash="r", rubric_version="1", grader_version="g",
         calibration_freshness_timestamp=_ts_days_ago(6), ttl_days=7,
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset", dataset_version="v1",
+        sample_size=1, minimum_sample_size=1,
+        label_source="deterministic_code_reference", result_valid=True,
     )
     assert rec.calibration_status == "CURRENT"
 
@@ -450,6 +460,11 @@ def test_calibration_stale_just_over_ttl():
     rec = build_calibration_record(
         rubric_hash="r", rubric_version="1", grader_version="g",
         calibration_freshness_timestamp=_ts_days_ago(8), ttl_days=7,
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset", dataset_version="v1",
+        sample_size=1, minimum_sample_size=1,
+        label_source="deterministic_code_reference", result_valid=True,
     )
     assert rec.calibration_status == "STALE"
 

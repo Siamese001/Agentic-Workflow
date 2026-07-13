@@ -12,6 +12,10 @@ from agentic_core.L6_observability.shadow_eval.ingest import (
 )
 from agentic_core.runtime.exhaust.shadow_raw_exhaust_adapter import (
     build_l6_shadow_raw_exhaust,
+    build_l6_shadow_raw_exhaust_from_runtime_bundle,
+)
+from agentic_core.runtime.exhaust.runtime_exhaust_bundle import (
+    build_runtime_exhaust_bundle as build_post_exit_bundle,
 )
 
 _REQUIRED_EVENT_KEYS = {
@@ -126,3 +130,32 @@ def test_l6_ingest_consumes_adapter_output_without_live_otel():
     assert all(r.trace_id == "trace-abc" for r in normalized)
     # the source manifests are marked as sealed runtime exhaust, runtime-span-v1
     assert all(m.trust_status == "SEALED_RUNTIME_EXHAUST" for m in manifests)
+
+
+def test_post_exit_bundle_adapter_binds_existing_sealed_evidence():
+    bundle = build_post_exit_bundle(
+        request_id="req-1",
+        run_id="run-1",
+        trace_root="trace-abc",
+        route_contract_ref="route-contract-1",
+        sealed_result_ref="sealed-result-1",
+        gate_mesh_result_ref="gate-mesh-1",
+        exit_disposition_ref="exit-disp-digest-1",
+        runtime_receipt_refs=("runtime-receipt-1",),
+        l5_certification_packet_ref="l5-cert-ref:test",
+    )
+    raw = build_l6_shadow_raw_exhaust_from_runtime_bundle(
+        bundle,
+        spans=_sample_spans(),
+        policy_hash="policy-1",
+        blueprint_hash="blueprint-1",
+    )
+    assert raw["policy_hash"] == "policy-1"
+    assert raw["blueprint_hash"] == "blueprint-1"
+    assert raw["source_lineage_manifest_ref"] == f"runtime-exhaust:{bundle.bundle_id}"
+    assert set(raw["artifacts"]["sealed"]) == {
+        "sealed-result-1",
+        "gate-mesh-1",
+        "exit-disp-digest-1",
+        "runtime-receipt-1",
+    }

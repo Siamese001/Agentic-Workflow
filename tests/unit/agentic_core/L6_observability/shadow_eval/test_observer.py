@@ -21,7 +21,6 @@ from agentic_core.L6_observability.shadow_eval.observer import (
     FORBIDDEN_WRITE_SURFACES,
     READINESS_HOLD,
     READINESS_NON_EVAL,
-    READINESS_PARTIAL,
     READINESS_READY,
     ObserverViolation,
     build_observer_compliance_receipt,
@@ -116,9 +115,7 @@ class TestSurfaceIsolation:
 
     def test_violation_recorded_when_denied(self) -> None:
         bundle = _bundle()
-        denied = record_denied_write_attempt(
-            bundle, surface="L4", operation="write", reason_code="OBSERVER"
-        )
+        denied = record_denied_write_attempt(bundle, surface="L4", operation="write", reason_code="OBSERVER")
         m = build_surface_isolation_manifest(
             bundle,
             read_surfaces_touched=[],
@@ -171,17 +168,13 @@ class TestEvaluateReadiness:
 
     def test_ready_when_all_present(self) -> None:
         bundle = _bundle()
-        receipt, missing, non_eval = evaluate_readiness(
-            bundle, self._observer(bundle), [_norm()]
-        )
+        receipt, missing, non_eval = evaluate_readiness(bundle, self._observer(bundle), [_norm()])
         assert receipt.readiness_decision == READINESS_READY
         assert missing is None and non_eval is None
 
     def test_non_eval_when_trace_root_missing(self) -> None:
         bundle = _bundle(trace_root="")
-        receipt, _missing, non_eval = evaluate_readiness(
-            bundle, self._observer(bundle), [_norm()]
-        )
+        receipt, _missing, non_eval = evaluate_readiness(bundle, self._observer(bundle), [_norm()])
         assert receipt.readiness_decision == READINESS_NON_EVAL
         assert non_eval is not None
         assert "trace_root" in non_eval.reason_codes
@@ -195,13 +188,13 @@ class TestEvaluateReadiness:
         assert missing is not None and missing.blocking is True
 
     def test_partial_when_non_blocking_field_missing(self) -> None:
-        # policy_hash missing is non-blocking (not trace/exit/replay) -> PARTIAL.
+        # v40 requires policy identity before scoring, so missing policy holds.
         bundle = _bundle(policy_hash=None)
         receipt, missing, _non_eval = evaluate_readiness(
             bundle, self._observer(bundle), [_norm()], replay_dependent=False
         )
-        assert receipt.readiness_decision == READINESS_PARTIAL
-        assert missing is not None and missing.blocking is False
+        assert receipt.readiness_decision == READINESS_HOLD
+        assert missing is not None and missing.blocking is True
 
     def test_replay_key_missing_ok_when_not_dependent(self) -> None:
         bundle = _bundle(replay_key=None)
@@ -212,6 +205,7 @@ class TestEvaluateReadiness:
 
     def test_non_eval_when_no_normalized_records(self) -> None:
         bundle = _bundle()
-        receipt, _missing, non_eval = evaluate_readiness(bundle, self._observer(bundle), [])
-        assert receipt.readiness_decision == READINESS_NON_EVAL
-        assert non_eval is not None
+        receipt, missing, non_eval = evaluate_readiness(bundle, self._observer(bundle), [])
+        assert receipt.readiness_decision == READINESS_HOLD
+        assert missing is not None and missing.blocking is True
+        assert non_eval is None

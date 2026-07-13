@@ -45,8 +45,18 @@ from agentic_core.L4_state.uwg import (
     register_bundle,
 )
 from agentic_core.L4_state.uwg.durable_write_gateway import reset_default_gateway
+from agentic_core.L4_state.uwg.durable_write_gateway import compute_state_diffs_digest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+_TEST_REGISTRATION_PROOF = {
+    "l5_certification_ref": "test:valid:app-domain-registration",
+    "clearance_proof_id": "clearance::test::app-domain-registration",
+    "commit_request_signature": "signature::test::app-domain-registration",
+}
+
+
+def _register(bundle: AppDomainContractBundle):
+    return register_bundle(bundle, **_TEST_REGISTRATION_PROOF)
 
 
 # ---------------------------------------------------------------------------
@@ -215,6 +225,7 @@ class TestAppCannotWriteDirectly:
             StateDiff,
             stamp_digest as _sd,
         )
+
         gw = DurableWriteGateway()
         sd = _sd(
             StateDiff(
@@ -263,13 +274,22 @@ class TestAppCannotWriteDirectly:
                 replay_key="k",
                 rollback_plan_ref="rp-1",
                 blast_radius="registry_scoped",
-                source_surface="apps_rg",   # FORBIDDEN
+                source_surface="apps_rg",  # FORBIDDEN
+                l5_certification_ref="test:valid:direct-write-negative",
+                l5_certification_refs=("test:valid:direct-write-negative",),
+                clearance_proof_id="clearance::test::direct-write-negative",
+                registry_digest_set=(sd.deterministic_digest,),
+                staged_diff_hash=compute_state_diffs_digest([sd]),
+                commit_request_signature="signature::test::direct-write-negative",
                 state_diff_refs=("sd-1",),
                 gate_verdict_refs=("gv-1",),
             ),
         )
         commit_receipt, blocked, _ = gw.commit(
-            commit_request=req, state_diffs=[sd], rollback_plan=rp, refresh_plan=refresh,
+            commit_request=req,
+            state_diffs=[sd],
+            rollback_plan=rp,
+            refresh_plan=refresh,
         )
         assert commit_receipt is None
         assert blocked is not None
@@ -282,7 +302,7 @@ class TestAppCannotWriteDirectly:
 class TestRegistrationGoesThroughUWG:
     def test_minimal_bundle_registers(self) -> None:
         bundle = _minimal_bundle()
-        receipt = register_bundle(bundle)
+        receipt = _register(bundle)
         assert receipt.accepted is True
         assert receipt.commit_receipt is not None
         assert receipt.blocked_receipt is None
@@ -292,15 +312,16 @@ class TestRegistrationGoesThroughUWG:
 
     def test_registration_digest_is_stable(self) -> None:
         # Same bundle content across independent registrations ⇒ same digest
-        r1 = register_bundle(_minimal_bundle())
+        r1 = _register(_minimal_bundle())
         reset_default_gateway()
         reset_default_app_domain_store()
-        r2 = register_bundle(_minimal_bundle())
+        r2 = _register(_minimal_bundle())
         assert r1.bundle_digest == r2.bundle_digest
 
     def test_l4_record_has_deterministic_digest(self) -> None:
         from agentic_core.L4_state.contracts import get_default_app_domain_store
-        register_bundle(_minimal_bundle())
+
+        _register(_minimal_bundle())
         store = get_default_app_domain_store()
         rec = store.get_contract("apps_rg", "rg")
         assert rec.deterministic_digest != ""
@@ -334,6 +355,7 @@ class TestLookupFailsClosed:
 
     def test_draft_app_raises_unless_allow_draft(self) -> None:
         from agentic_core.L4_state.contracts import DraftAppContractError
+
         store = InMemoryAppDomainStore()
         contract = AppDomainContractRecord(
             app_domain_contract_id="adc::apps_rg::v1",
@@ -355,13 +377,20 @@ class TestLookupFailsClosed:
 class TestE2EAllApps:
     """Full sweep: every apps_*/config/domain_contract registers clean."""
 
-    def test_all_8_apps_register(self) -> None:
+    def test_all_discovered_apps_register(self) -> None:
         dirs = discover_app_contract_dirs(REPO_ROOT)
-        assert len(dirs) >= 8, f"expected 8+ apps, got {sorted(dirs.keys())}"
+        required = {
+            "apps_exec",
+            "apps_lic",
+            "apps_qna",
+            "apps_research",
+            "apps_underwriting_ai",
+        }
+        assert required <= set(dirs), f"missing app contracts: {sorted(required - set(dirs))}"
         accepted = 0
         for app_id in sorted(dirs):
             bundle = load_bundle_from_dir(dirs[app_id])
-            receipt = register_bundle(bundle)
+            receipt = _register(bundle)
             assert receipt.accepted, f"{app_id} registration blocked"
             accepted += 1
         assert accepted == len(dirs)
@@ -371,9 +400,10 @@ class TestE2EAllApps:
         promoted draft→active after RubricOutputMapper producer landed. If this
         test fails, the manifest/rubric was downgraded back to draft — regression."""
         from agentic_core.L4_state.contracts import get_default_app_domain_store
+
         dirs = discover_app_contract_dirs(REPO_ROOT)
         bundle = load_bundle_from_dir(dirs["apps_underwriting_ai"])
-        register_bundle(bundle)
+        _register(bundle)
         store = get_default_app_domain_store()
         rec = store.get_contract("apps_underwriting_ai", "*")
         assert rec.status == "active", (

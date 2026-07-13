@@ -10,13 +10,15 @@ the caller hand them to UWG via an injected callback.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Callable, Iterable, Mapping
 
+from agentic_core.L6_observability.shadow_eval._digest import compute_digest
 from agentic_core.L6_observability.shadow_eval.calibration import (
     build_calibration_record,
     build_completed_eval_record,
+    build_judge_reliability_signal,
     seal_eval_record,
 )
 from agentic_core.L6_observability.shadow_eval.contracts import (
@@ -30,8 +32,11 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     FutureRunActivationReceipt,
     GauntletReceipt,
     GovernanceRegressionRecord,
+    JudgeReliabilitySignal,
+    JudgeCalibrationFailurePattern,
     ArtifactInventory,
     L6GateReceipt,
+    L6_GATE_PASS,
     NormalizedEvidenceRecord,
     OutcomeEvalRecord,
     PatternSynthesisRecord,
@@ -39,6 +44,7 @@ from agentic_core.L6_observability.shadow_eval.contracts import (
     ProposalAdmissionReceipt,
     RCAPacket,
     RuntimeExhaustBundle,
+    SpearmanCalibrationResult,
     StageMap,
     TrajectoryEvalRecord,
 )
@@ -84,6 +90,12 @@ from agentic_core.L6_observability.shadow_eval.rca import (
     fuse_signals,
     synthesize_patterns,
 )
+from agentic_core.L6_observability.shadow_eval.spearman_calibration import (
+    CalibrationContext,
+    CalibrationMode,
+    compute_spearman_calibration,
+    score_calibration_samples,
+)
 
 
 def _now_iso() -> str:
@@ -109,6 +121,9 @@ class L6EvalResult:
     calibration: CalibrationRecord
     completed: CompletedEvalRecord
     seal: EvalRecordSealReceipt
+    calibration_result: SpearmanCalibrationResult | None = None
+    judge_reliability: JudgeReliabilitySignal | None = None
+    approved_result_error = ""
 
 
 @dataclass
@@ -116,6 +131,7 @@ class L6RcaResult:
     rca: RCAPacket
     fused_signal_bundle_id: str
     patterns: list[PatternSynthesisRecord] = field(default_factory=list)
+    calibration_failure: JudgeCalibrationFailurePattern | None = None
 
 
 @dataclass
@@ -242,7 +258,9 @@ def run_observer(state: L6PipelineState) -> EvalReadinessReceipt:
         state.ingest.normalized,
         artifact_inventory=state.ingest.artifact_inventory,
     )
-    _emit(state, "l6.g28.audit_completeness", bundle=bundle, status=g28.verdict, reason_codes=g28.reason_codes)
+    _emit(
+        state, "l6.g28.audit_completeness", bundle=bundle, status=g28.verdict, reason_codes=g28.reason_codes
+    )
     g29 = build_g29_learning_firewall_receipt(
         bundle,
         isolation=isolation,
@@ -279,6 +297,7 @@ def run_6b(
     rubric_version: str = "1.0.0",
     grader_version: str = "code-only-v1",
     calibration_freshness_timestamp: str | None = None,
+    calibration_context: CalibrationContext | None = None,
 ) -> L6EvalResult:
     if state.ingest is None:
         raise RuntimeError("6B requires ingest result")
@@ -297,12 +316,129 @@ def run_6b(
     governance = evaluate_governance_regression(readiness, normalized, governance_baseline)
     _emit(state, "l6.eval.governance_regression.record_emit", bundle=bundle)
 
-    calibration = build_calibration_record(
-        rubric_hash=rubric_hash,
-        rubric_version=rubric_version,
-        grader_version=grader_version,
-        calibration_freshness_timestamp=calibration_freshness_timestamp or _now_iso(),
-    )
+    calibration_result: SpearmanCalibrationResult | None = None
+    judge_reliability: JudgeReliabilitySignal | None = None
+    if calibration_context is None:
+        calibration = build_calibration_record(
+            rubric_hash=rubric_hash,
+            rubric_version=rubric_version,
+            grader_version=grader_version,
+            calibration_source_refs=("l6:deterministic-code-evaluator",),
+            calibration_freshness_timestamp=(calibration_freshness_timestamp or _now_iso()),
+            calibration_result_ref="l6:deterministic-code-reference:v1",
+            dataset_id="l6:deterministic-code-reference",
+            dataset_version="v1",
+            sample_size=1,
+            minimum_sample_size=1,
+            label_source="deterministic_code_reference",
+            result_valid=True,
+            calibration_mode=CalibrationMode.NO_CALIBRATION.value,
+        )
+    else:
+        if calibration_context.mode == CalibrationMode.USE_APPROVED_BASELINE:
+            candidate = calibration_context.approved_result
+            if not calibration_context.approved_baseline_ref:
+                approved_result_error = "APPROVED_CALIBRATION_BASELINE_REF_MISSING"
+            elif candidate is None:
+                approved_result_error = "NO_APPROVED_CALIBRATION_BASELINE"
+            elif candidate.deterministic_digest != compute_digest(candidate):
+                approved_result_error = "APPROVED_CALIBRATION_DIGEST_INVALID"
+            else:
+                calibration_result = candidate
+        elif calibration_context.mode in {
+            CalibrationMode.RUN_HUMAN_ALIGNMENT_CALIBRATION,
+            CalibrationMode.RUN_HEURISTIC_SANITY,
+        }:
+            if calibration_context.profile is not None:
+                _emit(state, "l6.calibration.holdout_load", bundle=bundle)
+                scored = score_calibration_samples(
+                    calibration_context.samples,
+                    calibration_context.judge_score_fn,
+                )
+                _emit(state, "l6.calibration.judge_score", bundle=bundle)
+                calibration_result = compute_spearman_calibration(
+                    scored,
+                    calibration_context.profile,
+                    computed_at=calibration_freshness_timestamp or _now_iso(),
+                )
+                _emit(
+                    state,
+                    "l6.calibration.spearman_compute",
+                    bundle=bundle,
+                    status=calibration_result.status,
+                    reason_codes=calibration_result.failure_reason_codes,
+                )
+        if calibration_result is None:
+            calibration = build_calibration_record(
+                rubric_hash=rubric_hash,
+                rubric_version=rubric_version,
+                grader_version=grader_version,
+                calibration_freshness_timestamp=(calibration_freshness_timestamp or _now_iso()),
+                failure_reason_codes=(
+                    approved_result_error
+                    or (
+                        "NO_APPROVED_CALIBRATION_BASELINE"
+                        if calibration_context.mode == CalibrationMode.USE_APPROVED_BASELINE
+                        else "NO_CALIBRATION_EVIDENCE"
+                    ),
+                ),
+                calibration_mode=calibration_context.mode.value,
+                approved_baseline_ref=calibration_context.approved_baseline_ref,
+            )
+        else:
+            valid_result = calibration_result.status in {"PASS", "BELOW_THRESHOLD"}
+            calibration = build_calibration_record(
+                rubric_hash=calibration_result.rubric_hash,
+                rubric_version=calibration_result.rubric_version,
+                grader_version=calibration_result.judge_version,
+                calibration_source_refs=calibration_result.calibration_source_refs,
+                kappa_or_agreement_score=calibration_result.spearman_rho or 0.0,
+                calibration_freshness_timestamp=calibration_result.computed_at,
+                calibration_result_ref=calibration_result.calibration_id,
+                dataset_id=calibration_result.dataset_id,
+                dataset_version=calibration_result.dataset_version,
+                sample_size=calibration_result.n,
+                minimum_sample_size=calibration_result.minimum_sample_size,
+                spearman_p_value=calibration_result.p_value,
+                label_source=calibration_result.label_source,
+                result_valid=valid_result,
+                promotion_eligible=calibration_result.promotion_eligible,
+                calibration_mode=calibration_context.mode.value,
+                approved_baseline_ref=calibration_context.approved_baseline_ref,
+                failure_reason_codes=calibration_result.failure_reason_codes,
+            )
+            if calibration_context.profile is not None:
+                if calibration.calibration_status != "CURRENT":
+                    recommended_use = "REQUIRE_HYBRID"
+                elif not calibration_result.promotion_eligible:
+                    recommended_use = "REQUIRE_HYBRID"
+                elif calibration_context.profile.informational_only:
+                    recommended_use = "ALLOW_ADVISORY_ONLY"
+                else:
+                    recommended_use = "ALLOW_FOR_EVAL"
+                judge_reliability = build_judge_reliability_signal(
+                    grader_id=calibration_result.judge_id,
+                    task_class=calibration_context.profile.task_class,
+                    rubric_hash=calibration_result.rubric_hash,
+                    recent_agreement_score=calibration_result.spearman_rho or 0.0,
+                    disagreement_rate=0.0,
+                    unknown_rate=0.0,
+                    calibration_result_ref=calibration_result.calibration_id,
+                    dataset_id=calibration_result.dataset_id,
+                    dataset_version=calibration_result.dataset_version,
+                    sample_size=calibration_result.n,
+                    p_value=calibration_result.p_value,
+                    calibration_status=calibration.calibration_status,
+                    computed_at=calibration_result.computed_at,
+                    recommended_use_override=recommended_use,
+                    approved_baseline_ref=calibration_context.approved_baseline_ref,
+                )
+                _emit(
+                    state,
+                    "l6.calibration.reliability_emit",
+                    bundle=bundle,
+                    status=judge_reliability.recommended_use,
+                )
     _emit(state, "l6.calibration.record_emit", bundle=bundle)
 
     completed = build_completed_eval_record(
@@ -313,8 +449,16 @@ def run_6b(
         governance=governance,
         calibration=calibration,
         readiness_decision=readiness.readiness_decision,
+        judge_reliability=judge_reliability,
     )
     seal = seal_eval_record(completed, calibration)
+    _emit(
+        state,
+        "l6.calibration.record_seal",
+        bundle=bundle,
+        completed_eval_record_id=completed.completed_eval_record_id,
+        status=seal.seal_status,
+    )
     _emit(
         state,
         "l6.eval_record.seal",
@@ -330,6 +474,8 @@ def run_6b(
         calibration=calibration,
         completed=completed,
         seal=seal,
+        calibration_result=calibration_result,
+        judge_reliability=judge_reliability,
     )
     return state.eval
 
@@ -370,6 +516,38 @@ def run_6c(
         governance=state.eval.governance,
         incident_id=incident_id,
     )
+    calibration_failure: JudgeCalibrationFailurePattern | None = None
+    calibration_result = state.eval.calibration_result
+    if calibration_result is not None and (
+        calibration_result.status != "PASS" or not calibration_result.promotion_eligible
+    ):
+        calibration_failure = JudgeCalibrationFailurePattern(
+            failure_pattern_id=(f"judge-calibration-failure::{calibration_result.deterministic_digest[:20]}"),
+            calibration_result_ref=calibration_result.calibration_id,
+            judge_id=calibration_result.judge_id,
+            failure_reason_codes=list(calibration_result.failure_reason_codes),
+            proposed_rubric_updates=["review rubric discriminative power"],
+            proposed_prompt_updates=["review judge prompt against adjudicated misses"],
+            proposed_provider_changes=["compare approved provider profile candidates"],
+            proposed_threshold_changes=["retain current threshold pending human review"],
+            proposed_fallback_posture="REQUIRE_HYBRID",
+        )
+        from agentic_core.L6_observability.shadow_eval._digest import stamp_digest
+
+        stamp_digest(calibration_failure)
+        rca = replace(
+            rca,
+            root_cause_class="RUBRIC_CALIBRATION_ERROR",
+            evidence_links=[
+                *rca.evidence_links,
+                calibration_result.calibration_id,
+            ],
+            uncertainty_markers=[
+                *rca.uncertainty_markers,
+                *calibration_result.failure_reason_codes,
+            ],
+        )
+        stamp_digest(rca)
     _emit(
         state,
         "l6.rca.packet_emit",
@@ -379,9 +557,7 @@ def run_6c(
     patterns: list[PatternSynthesisRecord] = []
     if rca_history is not None:
         all_rcas = [*list(rca_history), rca]
-        patterns = list(
-            synthesize_patterns(all_rcas, minimum_recurrence=minimum_recurrence)
-        )
+        patterns = list(synthesize_patterns(all_rcas, minimum_recurrence=minimum_recurrence))
         for _pattern in patterns:
             _emit(
                 state,
@@ -394,6 +570,7 @@ def run_6c(
         rca=rca,
         fused_signal_bundle_id=fused.fused_signal_bundle_id,
         patterns=patterns,
+        calibration_failure=calibration_failure,
     )
     return state.rca
 
@@ -422,6 +599,7 @@ def run_proposal(
     diff_summary: str = "diff",
     before_ref: str = "before",
     after_candidate_ref: str = "after",
+    sme_signoff_ref: str = "",
 ) -> L6ProposalResult:
     if state.eval is None or state.rca is None or state.ingest is None:
         raise RuntimeError("proposal requires 6B and 6C results")
@@ -477,6 +655,7 @@ def run_proposal(
         completed_eval_record=state.eval.completed,
         rca_packet=state.rca.rca,
         pattern=None,
+        sme_signoff_ref=sme_signoff_ref,
     )
     _emit(
         state,
@@ -520,11 +699,23 @@ def run_6d(
         raise RuntimeError("6D requires proposal, 6B, 6C and ingest results")
     bundle = state.ingest.bundle
 
+    calibration_blockers: list[str] = []
+    if state.eval.calibration_result is not None:
+        if state.g29 is None or state.g29.verdict != L6_GATE_PASS:
+            calibration_blockers.append("G29_LEARNING_FIREWALL_NOT_PASS")
+        if state.eval.calibration_result.status != "PASS":
+            calibration_blockers.append("CALIBRATION_RESULT_NOT_PASS")
+        if not state.eval.calibration_result.promotion_eligible:
+            calibration_blockers.append("CALIBRATION_NOT_PROMOTION_ELIGIBLE")
+    effective_failing_cases = [*(failing_cases or []), *calibration_blockers]
+    calibration_freshness_ok = calibration_freshness_ok and not calibration_blockers
+
     _emit(state, "l6.gauntlet.run", bundle=bundle, proposal_id=state.proposal.proposal.proposal_id)
     gauntlet = run_gauntlet(
         state.proposal.proposal,
         rollback_rehearsal_ref=rollback_rehearsal_ref,
-        failing_cases=failing_cases or [],
+        failing_cases=effective_failing_cases,
+        sme_signoff_ref=state.proposal.admission.sme_signoff_ref or None,
     )
     _emit(
         state,

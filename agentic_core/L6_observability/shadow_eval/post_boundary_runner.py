@@ -30,6 +30,9 @@ from agentic_core.L6_observability.shadow_eval.pipeline import (
     run_6b,
     run_observer,
 )
+from agentic_core.L6_observability.shadow_eval.spearman_calibration import (
+    CalibrationContext,
+)
 
 __all__ = ["run_l6_shadow_from_sealed_exhaust"]
 
@@ -42,6 +45,7 @@ def run_l6_shadow_from_sealed_exhaust(
     *,
     governance_baseline: GovernanceBaseline | None = None,
     run_eval: bool = True,
+    calibration_context: CalibrationContext | None = None,
 ) -> L6PipelineState:
     """Run 6A ingest + observer (always) and 6B evaluation (when scorable).
 
@@ -59,5 +63,10 @@ def run_l6_shadow_from_sealed_exhaust(
     run_6a(state, raw_exhaust)
     readiness = run_observer(state)
     if run_eval and governance_baseline is not None and readiness.readiness_decision in _SCORABLE_DECISIONS:
-        run_6b(state, readiness, governance_baseline=governance_baseline)
+        run_6b(
+            state,
+            readiness,
+            governance_baseline=governance_baseline,
+            calibration_context=calibration_context,
+        )
     return state

@@ -1,0 +1,18 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "no_app_literal_scan",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "CORE_ADDITION_GATE_ADVISORY=1 python ops_scripts/ci/check_agentic_core_addition.py",
+      "exit_code": 0,
+      "scan_finding_count": 0,
+      "receipt_error_count": 1,
+      "note": "Pre-signature scan was clean; the only advisory error was the intentionally not-yet-created receipt."
+    }
+  ]
+}

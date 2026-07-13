@@ -8,6 +8,21 @@ wave10a_policy:
   external_default_status: claude_default_for_apps_rg_e2e
 
 profiles:
+  local_qwen_generator:
+    profile_id: apps_rg::provider::local_qwen_generator::v1
+    provider_profile: local_qwen_generator
+    provider_class: local_vllm
+    provider_vendor: local_vllm
+    model_id: Qwen/Qwen2.5-32B-Instruct-AWQ
+    endpoint_env_var: VLLM_BASE_URL
+    capabilities:
+      - text_generation
+      - structured_json_generation
+      - judge_grade_only
+    max_tokens: 4096
+    timeout_seconds: 60
+    default: false
+
   local_generator_stub:
     profile_id: apps_rg::provider::local_generator_stub::v1
     provider_profile: local_generator_stub

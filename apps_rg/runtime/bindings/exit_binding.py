@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Optional
 
@@ -24,9 +25,18 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 )
 from agentic_core.runtime.contracts.sealed_l2_artifact import SealedL2Artifact
 
+from apps_rg.runtime.bindings.judge_calibration_baseline import (
+    APPS_RG_EXEC_POSITIONING_CALIBRATION_IDENTITY,
+)
 from apps_rg.runtime.schemas import SectionCacheWriteProposal
 
 if TYPE_CHECKING:
+    from agentic_core.L4_state.contracts.app_domain import (
+        ApprovedJudgeCalibrationBaseline,
+    )
+    from agentic_core.L4_state.contracts.app_domain_lookup import (
+        InMemoryAppDomainStore,
+    )
     from agentic_core.runtime.exhaust.runtime_exhaust_bundle import RuntimeExhaustBundle
 
 _BLOCKING_SUPPORT_STATUSES: frozenset[str] = frozenset(
@@ -37,9 +47,7 @@ _BLOCKING_SUPPORT_STATUSES: frozenset[str] = frozenset(
         SUPPORT_STATUS_CONFLICTED,
     }
 )
-_NON_BLOCKING_STATUSES: frozenset[str] = frozenset(
-    {SUPPORT_STATUS_PASS, SUPPORT_STATUS_WEAK_WITH_CAVEATS}
-)
+_NON_BLOCKING_STATUSES: frozenset[str] = frozenset({SUPPORT_STATUS_PASS, SUPPORT_STATUS_WEAK_WITH_CAVEATS})
 _PLACEHOLDER_TEST_L5_CERT_REF = "test:valid:w6"
 
 
@@ -88,6 +96,98 @@ class ExitResult:
     cache_write_proposals: tuple[SectionCacheWriteProposal, ...] = ()
 
 
+def _evaluate_judge_reliability_gate(
+    baseline: "ApprovedJudgeCalibrationBaseline | None",
+) -> ExitGateResult:
+    """Validate a future-run L4 baseline without computing calibration."""
+    if baseline is None:
+        return ExitGateResult(
+            "G_JUDGE_RELIABILITY",
+            ExitGateVerdict.WARN,
+            "informational judge has no approved future-run baseline",
+        )
+    expected = {
+        **APPS_RG_EXEC_POSITIONING_CALIBRATION_IDENTITY,
+        "created_by_surface": "UWG",
+    }
+    mismatches = [key for key, value in expected.items() if str(getattr(baseline, key, "") or "") != value]
+    if not str(getattr(baseline, "uwg_receipt_ref", "") or ""):
+        mismatches.append("uwg_receipt_ref")
+    if not str(getattr(baseline, "promotion_receipt_ref", "") or ""):
+        mismatches.append("promotion_receipt_ref")
+    if not str(getattr(baseline, "deterministic_digest", "") or ""):
+        mismatches.append("deterministic_digest")
+    try:
+        approved_at = datetime.fromisoformat(str(baseline.approved_at))
+        expires_at = datetime.fromisoformat(str(baseline.expires_at))
+        if approved_at.tzinfo is None or expires_at.tzinfo is None:
+            raise ValueError("baseline timestamps must be timezone-aware")
+        now = datetime.now(timezone.utc)
+        expired = expires_at <= now
+        if approved_at > now:
+            mismatches.append("approved_at")
+    except (TypeError, ValueError):
+        expired = True
+        mismatches.append("expires_at")
+    if mismatches or expired or getattr(baseline, "status", "") != "active":
+        reason = "baseline rejected: " + ",".join(sorted(set(mismatches)))
+        if expired:
+            reason += ",expired"
+        return ExitGateResult(
+            "G_JUDGE_RELIABILITY",
+            ExitGateVerdict.UNKNOWN,
+            reason,
+        )
+    approved_use = str(getattr(baseline, "approved_use", "") or "")
+    if approved_use == "ALLOW_FOR_EVAL":
+        return ExitGateResult(
+            "G_JUDGE_RELIABILITY",
+            ExitGateVerdict.PASS,
+            "approved future-run baseline may inform evaluation; never authorizes alone",
+        )
+    if approved_use == "REQUIRE_HUMAN_REVIEW":
+        return ExitGateResult(
+            "G_JUDGE_RELIABILITY",
+            ExitGateVerdict.UNKNOWN,
+            "approved future-run posture requires human review",
+        )
+    if approved_use == "REQUIRE_HYBRID":
+        reason = "approved future-run posture requires corroborating signal"
+    elif approved_use == "DISABLE_FOR_SURFACE":
+        reason = "approved future-run posture disables judge use for this surface"
+    else:
+        reason = "approved future-run posture is advisory only"
+    return ExitGateResult(
+        "G_JUDGE_RELIABILITY",
+        ExitGateVerdict.WARN,
+        f"{reason}; posture={approved_use}",
+    )
+
+
+def _resolve_judge_reliability_gate(
+    baseline_ref: str,
+    *,
+    store: "InMemoryAppDomainStore | None" = None,
+) -> ExitGateResult:
+    """Resolve an approved baseline through the read-only L4 lookup surface."""
+    if not baseline_ref:
+        return _evaluate_judge_reliability_gate(None)
+    from agentic_core.L4_state.contracts.app_domain_lookup import (
+        AppDomainLookupError,
+        get_default_app_domain_store,
+    )
+
+    try:
+        baseline = (store or get_default_app_domain_store()).get_judge_calibration_baseline(baseline_ref)
+    except (AppDomainLookupError, KeyError, ValueError) as exc:
+        return ExitGateResult(
+            "G_JUDGE_RELIABILITY",
+            ExitGateVerdict.UNKNOWN,
+            f"approved baseline could not be resolved: {type(exc).__name__}",
+        )
+    return _evaluate_judge_reliability_gate(baseline)
+
+
 def _evaluate_c0_evidence_gates(
     fec: Optional[FinalEvidenceContract],
 ) -> tuple[list[ExitGateResult], bool, str]:
@@ -103,20 +203,14 @@ def _evaluate_c0_evidence_gates(
                     ExitGateVerdict.WARN,
                     "fec=None; no C0 evidence for this run",
                 ),
-                ExitGateResult(
-                    "G09", ExitGateVerdict.WARN, "fec=None; no freshness receipts"
-                ),
-                ExitGateResult(
-                    "G13", ExitGateVerdict.WARN, "fec=None; no citation map"
-                ),
+                ExitGateResult("G09", ExitGateVerdict.WARN, "fec=None; no freshness receipts"),
+                ExitGateResult("G13", ExitGateVerdict.WARN, "fec=None; no citation map"),
             ],
             False,
             "",
         )
 
-    support_status = str(
-        getattr(fec, "support_status", STATUS_UNKNOWN) or STATUS_UNKNOWN
-    )
+    support_status = str(getattr(fec, "support_status", STATUS_UNKNOWN) or STATUS_UNKNOWN)
     support_target_met = bool(getattr(fec, "support_target_met", False))
     if support_status in _BLOCKING_SUPPORT_STATUSES:
         results.append(
@@ -150,20 +244,14 @@ def _evaluate_c0_evidence_gates(
         ExitGateResult(
             "G09",
             ExitGateVerdict.PASS if freshness else ExitGateVerdict.WARN,
-            f"{len(freshness)} freshness receipts"
-            if freshness
-            else "no freshness receipts",
+            f"{len(freshness)} freshness receipts" if freshness else "no freshness receipts",
         )
     )
 
     citation_map = tuple(getattr(fec, "citation_map", ()) or ())
     excluded_refs = tuple(getattr(fec, "excluded_evidence_refs", ()) or ())
     if citation_map:
-        results.append(
-            ExitGateResult(
-                "G13", ExitGateVerdict.PASS, f"{len(citation_map)} citation(s)"
-            )
-        )
+        results.append(ExitGateResult("G13", ExitGateVerdict.PASS, f"{len(citation_map)} citation(s)"))
     elif excluded_refs:
         results.append(
             ExitGateResult(
@@ -175,11 +263,7 @@ def _evaluate_c0_evidence_gates(
         is_blocking = True
         blocking_reasons.append("G13")
     else:
-        results.append(
-            ExitGateResult(
-                "G13", ExitGateVerdict.WARN, "citation_map empty; no excluded refs"
-            )
-        )
+        results.append(ExitGateResult("G13", ExitGateVerdict.WARN, "citation_map empty; no excluded refs"))
 
     return results, is_blocking, ", ".join(blocking_reasons)
 
@@ -229,9 +313,7 @@ def _evaluate_l5_certification_gate(
             reason,
         )
     return (
-        ExitGateResult(
-            "G_L5_CERTIFICATION", ExitGateVerdict.PASS, "L5_CERTIFIED_VERIFIED"
-        ),
+        ExitGateResult("G_L5_CERTIFICATION", ExitGateVerdict.PASS, "L5_CERTIFIED_VERIFIED"),
         False,
         "",
     )
@@ -256,14 +338,10 @@ def _compute_apps_rg_owned_fields(
     jd_coverage = jd_count / len(retrieval_sources) if retrieval_sources else 0.0
     citation_map = tuple(getattr(fec, "citation_map", ()) or ())
     evidence_count = len(getattr(fec, "evidence_items", ()) or ())
-    citation_coverage = (
-        min(len(citation_map) / evidence_count, 1.0) if evidence_count else 0.0
-    )
+    citation_coverage = min(len(citation_map) / evidence_count, 1.0) if evidence_count else 0.0
     provenance_valid = bool(
         getattr(sealed, "compilation_hash", "")
-        and _is_valid_l5_packet_digest(
-            str(getattr(sealed, "l5_certification_packet_digest", "") or "")
-        )
+        and _is_valid_l5_packet_digest(str(getattr(sealed, "l5_certification_packet_digest", "") or ""))
         and getattr(sealed, "l5_certification_status", "") == "L5_CERTIFIED"
         and bool(getattr(sealed, "l5_certification_verified", False))
     )
@@ -284,6 +362,8 @@ def exit_finalize_apps_rg(
     fec: Optional[FinalEvidenceContract] = None,
     target_company: str = "",
     target_role: str = "",
+    approved_judge_calibration_baseline_ref: str = "",
+    app_domain_store: "InMemoryAppDomainStore | None" = None,
 ) -> ExitResult:
     from apps_rg.runtime.spine.governed_l2_exit_compose import (
         governed_exit_finalize_integrated,
@@ -297,6 +377,8 @@ def exit_finalize_apps_rg(
             target_company=target_company,
             target_role=target_role,
             prompt_artifact=prompt_artifact,
+            approved_judge_calibration_baseline_ref=approved_judge_calibration_baseline_ref,
+            app_domain_store=app_domain_store,
         )
         result = bundle.exit_result
         object.__setattr__(result, "_governed_integrated_exit_bundle", bundle)
@@ -307,6 +389,8 @@ def exit_finalize_apps_rg(
         fec=fec,
         target_company=target_company,
         target_role=target_role,
+        approved_judge_calibration_baseline_ref=approved_judge_calibration_baseline_ref,
+        app_domain_store=app_domain_store,
     )
 
 
@@ -318,6 +402,8 @@ def _exit_finalize_apps_rg_impl(
     target_company: str = "",
     target_role: str = "",
     allow_test_l5_cert_ref: bool = False,
+    approved_judge_calibration_baseline_ref: str = "",
+    app_domain_store: "InMemoryAppDomainStore | None" = None,
 ) -> ExitResult:
     gate_results, c0_blocking, blocking_reason = _evaluate_c0_evidence_gates(fec)
     verification = _l5_verification(
@@ -333,10 +419,14 @@ def _exit_finalize_apps_rg_impl(
         allow_test_l5_cert_ref=allow_test_l5_cert_ref,
     )
     gate_results.append(l5_gate)
-    if l5_blocking:
-        blocking_reason = ", ".join(
-            reason for reason in (blocking_reason, l5_blocking_reason) if reason
+    gate_results.append(
+        _resolve_judge_reliability_gate(
+            approved_judge_calibration_baseline_ref,
+            store=app_domain_store,
         )
+    )
+    if l5_blocking:
+        blocking_reason = ", ".join(reason for reason in (blocking_reason, l5_blocking_reason) if reason)
 
     owned_fields = _compute_apps_rg_owned_fields(fec, sealed)
     outcome_authorized = not c0_blocking and not l5_blocking
@@ -350,18 +440,12 @@ def _exit_finalize_apps_rg_impl(
             "c0_blocking": c0_blocking,
             "l5_blocking": l5_blocking,
             "blocking_reason": blocking_reason,
-            "l5_certification_packet_ref": str(
-                getattr(sealed, "l5_certification_packet_ref", "") or ""
-            ),
+            "l5_certification_packet_ref": str(getattr(sealed, "l5_certification_packet_ref", "") or ""),
             "l5_certification_packet_digest": str(
                 getattr(sealed, "l5_certification_packet_digest", "") or ""
             ),
-            "l5_certification_status": str(
-                getattr(sealed, "l5_certification_status", "") or ""
-            ),
-            "l5_runtime_binding_digest": str(
-                getattr(sealed, "l5_runtime_binding_digest", "") or ""
-            ),
+            "l5_certification_status": str(getattr(sealed, "l5_certification_status", "") or ""),
+            "l5_runtime_binding_digest": str(getattr(sealed, "l5_runtime_binding_digest", "") or ""),
             "l5_certification_verified": verification.verified,
             "l5_certification_verification_digest": verification.verification_digest,
             "l5_verification_reason_codes": list(verification.reason_codes),
@@ -409,15 +493,11 @@ def _exit_finalize_apps_rg_impl(
                 content_digest=content_digest,
                 metadata_ref=f"virtual/apps_rg/runs/{run_id}/c02_semantic_cache_payload.json",
                 proposal_status="PENDING_UWG",
-                l5_certification_packet_ref=str(
-                    getattr(sealed, "l5_certification_packet_ref", "") or ""
-                ),
+                l5_certification_packet_ref=str(getattr(sealed, "l5_certification_packet_ref", "") or ""),
                 l5_certification_packet_digest=str(
                     getattr(sealed, "l5_certification_packet_digest", "") or ""
                 ),
-                l5_runtime_binding_digest=str(
-                    getattr(sealed, "l5_runtime_binding_digest", "") or ""
-                ),
+                l5_runtime_binding_digest=str(getattr(sealed, "l5_runtime_binding_digest", "") or ""),
                 l5_certification_verified=verification.verified,
                 l5_certification_verification_digest=verification.verification_digest,
             ),
@@ -430,9 +510,7 @@ def _exit_finalize_apps_rg_impl(
     )
 
 
-def _exit_section_id(
-    fec: Optional[FinalEvidenceContract], sealed: SealedL2Artifact
-) -> str:
+def _exit_section_id(fec: Optional[FinalEvidenceContract], sealed: SealedL2Artifact) -> str:
     for source in (fec, sealed):
         section_id = getattr(source, "section_id", "") if source is not None else ""
         if isinstance(section_id, str) and section_id.strip():
@@ -486,15 +564,9 @@ def build_exhaust_bundle_from_exit(
         sealed_result_ref=sealed_ref or "",
         learning_profile_ref=learning_profile_ref,
         meta_feedback_profile_ref=meta_feedback_profile_ref,
-        l5_certification_packet_ref=str(
-            getattr(sealed, "l5_certification_packet_ref", "") or ""
-        ),
-        l5_certification_packet_digest=str(
-            getattr(sealed, "l5_certification_packet_digest", "") or ""
-        ),
-        l5_certification_status=str(
-            getattr(sealed, "l5_certification_status", "") or ""
-        ),
+        l5_certification_packet_ref=str(getattr(sealed, "l5_certification_packet_ref", "") or ""),
+        l5_certification_packet_digest=str(getattr(sealed, "l5_certification_packet_digest", "") or ""),
+        l5_certification_status=str(getattr(sealed, "l5_certification_status", "") or ""),
     )
 
 
@@ -589,6 +661,8 @@ __all__ = [
     "_compute_apps_rg_owned_fields",
     "_evaluate_c0_evidence_gates",
     "_evaluate_l5_certification_gate",
+    "_evaluate_judge_reliability_gate",
+    "_resolve_judge_reliability_gate",
     "_resolve_repo_root",
     "_safe_run_dirname",
     "AppsRgGateResult",

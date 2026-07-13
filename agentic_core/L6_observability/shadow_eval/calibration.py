@@ -63,7 +63,10 @@ def _now() -> datetime:
 def _parse_iso(ts: str) -> datetime | None:
     try:
         return datetime.fromisoformat(ts)
-    except (ValueError, TypeError):  # guardian: allow-return-none-swallow -- ISO timestamp parse helper; None signals unparseable timestamp to caller
+    except (
+        ValueError,
+        TypeError,
+    ):  # guardian: allow-return-none-swallow -- ISO timestamp parse helper; None signals unparseable timestamp to caller
         return None
 
 
@@ -87,11 +90,42 @@ def build_calibration_record(
     unknown_budget_status: str = "WITHIN_BUDGET",
     calibration_freshness_timestamp: str | None = None,
     ttl_days: int = CALIBRATION_TTL_DAYS_DEFAULT,
+    calibration_result_ref: str = "",
+    dataset_id: str = "",
+    dataset_version: str = "",
+    sample_size: int = 0,
+    minimum_sample_size: int = 0,
+    spearman_p_value: float | None = None,
+    label_source: str = "",
+    result_valid: bool = False,
+    promotion_eligible: bool = False,
+    calibration_mode: str = "NO_CALIBRATION",
+    approved_baseline_ref: str = "",
+    reviewer_conflict: bool = False,
+    failure_reason_codes: Iterable[str] = (),
 ) -> CalibrationRecord:
-    """Build a CalibrationRecord; deterministic_digest is stamped on return."""
+    """Build a CalibrationRecord from timestamp *and* calibration evidence."""
     ts = calibration_freshness_timestamp or _now().isoformat()
     parsed = _parse_iso(ts)
-    if parsed is None:
+    refs = list(calibration_source_refs)
+    allowed_label_source = label_source in {
+        "human_semantic_review",
+        "approved_calibration_baseline",
+        "deterministic_code_reference",
+    }
+    evidence_complete = bool(
+        refs
+        and calibration_result_ref
+        and dataset_id
+        and dataset_version
+        and minimum_sample_size > 0
+        and sample_size >= minimum_sample_size
+        and result_valid
+        and allowed_label_source
+    )
+    if reviewer_conflict:
+        status = "CONFLICTED"
+    elif parsed is None or not evidence_complete:
         status = "INSUFFICIENT"
     else:
         delta = _now() - parsed
@@ -103,7 +137,7 @@ def build_calibration_record(
         rubric_hash=rubric_hash,
         rubric_version=rubric_version,
         grader_version=grader_version,
-        calibration_source_refs=list(calibration_source_refs),
+        calibration_source_refs=refs,
         reviewer_refs=list(reviewer_refs),
         golden_set_refs=list(golden_set_refs),
         hitl_decision_refs=list(hitl_decision_refs),
@@ -113,6 +147,17 @@ def build_calibration_record(
         unknown_budget_status=unknown_budget_status,
         calibration_freshness_timestamp=ts,
         calibration_status=status,
+        calibration_result_ref=calibration_result_ref,
+        dataset_id=dataset_id,
+        dataset_version=dataset_version,
+        sample_size=sample_size,
+        minimum_sample_size=minimum_sample_size,
+        spearman_p_value=spearman_p_value,
+        label_source=label_source,
+        promotion_eligible=promotion_eligible,
+        calibration_mode=calibration_mode,
+        approved_baseline_ref=approved_baseline_ref,
+        failure_reason_codes=list(failure_reason_codes),
     )
     return stamp_digest(rec)
 
@@ -127,6 +172,15 @@ def build_judge_reliability_signal(
     unknown_rate: float,
     forced_certainty_flags: Iterable[str] = (),
     bias_or_drift_flags: Iterable[str] = (),
+    calibration_result_ref: str = "",
+    dataset_id: str = "",
+    dataset_version: str = "",
+    sample_size: int = 0,
+    p_value: float | None = None,
+    calibration_status: str = "INSUFFICIENT",
+    computed_at: str = "",
+    recommended_use_override: str | None = None,
+    approved_baseline_ref: str = "",
 ) -> JudgeReliabilitySignal:
     if disagreement_rate > 0.4 or recent_agreement_score < 0.5:
         recommended = "REQUIRE_HYBRID"
@@ -138,7 +192,9 @@ def build_judge_reliability_signal(
         recommended = "DISABLE_FOR_SURFACE"
     else:
         recommended = "ALLOW_FOR_EVAL"
-    return JudgeReliabilitySignal(
+    if recommended_use_override is not None:
+        recommended = recommended_use_override
+    signal = JudgeReliabilitySignal(
         judge_reliability_signal_id=_gen_id("judge"),
         grader_id=grader_id,
         task_class=task_class,
@@ -149,7 +205,16 @@ def build_judge_reliability_signal(
         forced_certainty_flags=list(forced_certainty_flags),
         bias_or_drift_flags=list(bias_or_drift_flags),
         recommended_use=recommended,
+        calibration_result_ref=calibration_result_ref,
+        dataset_id=dataset_id,
+        dataset_version=dataset_version,
+        sample_size=sample_size,
+        p_value=p_value,
+        calibration_status=calibration_status,
+        computed_at=computed_at,
+        approved_baseline_ref=approved_baseline_ref,
     )
+    return stamp_digest(signal)
 
 
 def build_human_agreement_record(
@@ -260,10 +325,7 @@ def _derive_downstream_use(
     # replay-integrity loss. The proposal layer may still surface the record
     # via RCA. Lower-severity governance drift is signal for the admission
     # gate (REQUIRE_SME_REVIEW), not a downstream-use restriction.
-    if (
-        governance.severity == "high"
-        and getattr(governance, "replay_digest_drift_flags", ())
-    ):
+    if governance.severity == "high" and getattr(governance, "replay_digest_drift_flags", ()):
         return "RCA_ONLY"
     return "RCA_AND_PROPOSAL"
 
@@ -281,6 +343,7 @@ def build_completed_eval_record(
     support_rationale_refs: Iterable[str] = (),
     hmac_sig: str | None = None,
     readiness_decision: str = "READY_FOR_6B",
+    judge_reliability: JudgeReliabilitySignal | None = None,
 ) -> CompletedEvalRecord:
     snapshot_hash = _evidence_snapshot_hash(outcome, trajectory, governance)
     score_bundle: dict[str, float] = {
@@ -302,6 +365,9 @@ def build_completed_eval_record(
         trajectory_eval_ref=trajectory.trajectory_eval_id,
         governance_regression_ref=governance.governance_regression_id,
         calibration_record_ref=calibration.calibration_record_id,
+        judge_reliability_signal_ref=(
+            judge_reliability.judge_reliability_signal_id if judge_reliability is not None else ""
+        ),
         rubric_hash=calibration.rubric_hash,
         rubric_version=calibration.rubric_version,
         grader_versions=list(grader_versions) or [calibration.grader_version],
