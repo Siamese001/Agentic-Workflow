@@ -65,8 +65,8 @@ The only canonical codes are:
 For this pipeline, only the exact string `X3D_ALLOW_FINISH` may enter product-success
 logic. `X3C` is not product success; it is a request to UWG. Values such as `ALLOW`,
 `X3_ALLOW`, `X3D`, `EXIT_OK`, and `EXIT_PARTIAL` are forbidden by the v2 product
-contract. Direct section tooling is explicitly non-product; every product entry
-requires exact `X3D_ALLOW_FINISH`.
+contract. Direct section tooling is explicitly non-product; all product entrypoints
+classified in the SSOT require exact `X3D_ALLOW_FINISH`.
 
 ### 4. Split terminal semantics
 
@@ -113,8 +113,8 @@ legacy aliases.
 
 ### Trade-offs
 
-- Old v1 handoff fixtures remain historical test data only and are rejected by every
-  executable product reader.
+- Old v1 handoff fixtures remain historical test data only and are rejected by all
+  executable product readers covered by the contract-freeze checker.
 - Internal lane-local shorthand may remain in explicitly non-product tooling, but it
   cannot reach product authorization or UWG finality.
 - Static inventory must be refreshed with ADG evidence when a matching snapshot is

@@ -72,6 +72,13 @@ def _stable_app_payload_for_hash(payload: Mapping[str, Any]) -> dict[str, Any]:
     receipt = stable.get("package_validation_receipt")
     if isinstance(receipt, dict):
         receipt.pop("timestamp_iso", None)
+    payload_digests = stable.get("u0_payload_digests")
+    if isinstance(payload_digests, dict):
+        # This digest covers the complete transformed U0 payload, including the
+        # validation receipt timestamp removed above.  Keep it on the
+        # ValidatedRequest for exact audit/replay verification, but do not let
+        # that lifecycle timestamp perturb PA's semantic app-payload identity.
+        payload_digests.pop("transformed_output_sha256", None)
     return stable
 
 
