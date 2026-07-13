@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structured Reasoning"
+  short_description: "Decompose complex work into evidence, decision, execution, and proof"
+  default_prompt: "Use structured-reasoning inside the approved plan-first workflow to normalize the objective, retrieve the right evidence, preserve unresolved branches, execute bounded steps, revise invalid assumptions, and close with verification and rollback guidance."

@@ -1,0 +1,17 @@
+{
+  "skill_name": "boundary-enforcement",
+  "evals": [
+    {
+      "id": "layer-move",
+      "prompt": "Move a public symbol from L4 to L2 while preserving consumers.",
+      "expected_output": "Graph-backed source/target analysis, legal import direction, temporary shim plan, focused lint/tests, and removal criteria.",
+      "files": []
+    },
+    {
+      "id": "illegal-import",
+      "prompt": "Review a proposed L1 import from L5.",
+      "expected_output": "A clear gravity violation finding and a lower-layer contract, callback, or dependency-injection alternative.",
+      "files": []
+    }
+  ]
+}

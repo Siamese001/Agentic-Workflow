@@ -1,111 +1,73 @@
 ---
-description: Scaffold a new Claude Code skill (.codex/skills/<slug>/SKILL.md) from the house-style template. Use when authoring a new skill so it inherits the canonical frontmatter, trigger table, hard rules, procedure, forbidden patterns, and references shape.
+description: Scaffold or revise a repository-owned Codex skill. Use when creating a new .codex/skills workflow or materially changing an existing skill's trigger, resources, or evaluations.
 ---
 
-# /skill-creator — Scaffold a New Skill
+# /skill-creator - Create or revise a Codex skill
 
-This workflow stamps a new skill from `.codex/templates/skill-template.md` so every skill in this repo shares the same shape that auto-invocation, `pre_prompt_classifier.py`, and the MCP Registry expect.
+Use this workflow to produce a narrow, testable procedural adapter. Do not encode mandatory
+repository policy only in a skill; place always-on invariants in `AGENTS.md`, `.codex/rules/`,
+hooks, or CI and link to the deterministic control.
 
-## When to use
+## Inputs
 
-- You are about to author a new skill in `.codex/skills/<slug>/SKILL.md`.
-- You want auto-invocation to fire reliably — that requires a specific frontmatter `description` shape.
-- You want the new skill to declare its sibling-skill boundaries up front (prevents overlap drift).
+- Skill slug in lowercase hyphen-case, no more than 64 characters.
+- Concrete user intents that should trigger the skill.
+- Near-miss intents that must not trigger it.
+- The reusable scripts, references, or assets the workflow genuinely needs.
+- The deterministic validation command and owner.
 
-Do NOT use for: editing an existing skill (just edit it directly), or for one-shot prose docs (use `docs/`).
+## Procedure
 
-## Inputs (gather before running)
+1. **Check for overlap.** Search `.codex/skills/*/SKILL.md` descriptions and bodies. Extend or
+   consolidate an existing skill when it owns the same user intent.
+2. **Choose the correct surface.** Use a skill for specialized procedure; use rules/hooks/CI for
+   mandatory enforcement; use `references/` for detailed knowledge; use `assets/` for output inputs.
+3. **Create the folder.** Copy `.codex/templates/skill-template.md` to
+   `.codex/skills/<slug>/SKILL.md`. The frontmatter `name` must equal the folder slug.
+4. **Write the description first.** Use imperative, intent-focused wording such as
+   `Use this skill when ...`; state adjacent-skill boundaries without implementation trivia.
+5. **Add resources only when needed.** Prefer `scripts/` for repeated deterministic operations,
+   `references/` for on-demand context, and `assets/` for templates or files used in outputs.
+6. **Add Codex UI metadata.** Create `agents/openai.yaml` with non-empty `display_name`,
+   `short_description`, and `default_prompt` values that match `SKILL.md`.
+7. **Add evaluations.** Create `evals/trigger_queries.json` with balanced train/validation positive
+   and near-miss negative prompts, plus `evals/evals.json` with at least two realistic output cases.
+8. **Test scripts and links.** Run bundled scripts on a success and failure path. Verify every local
+   Markdown link and command resolves.
+9. **Run the contract gates.** Fix failures rather than adding exceptions by default.
 
-| Field | Example | Notes |
-|---|---|---|
-| `<slug>` | `redis-cache` | kebab-case; must match folder name |
-| Capability sentence | "Redis cache inspection — health, key scanning, TTL, namespace stats — via the in-house redis MCP server." | 1 sentence, leads the description |
-| Invocation triggers | "Invoke when the user asks about Redis cache state, ADG hot-cache status, …" | 1–3 sentences, matched by auto-invoke |
-| Sibling distinctions | "Distinguishes Redis MCP (cache state) from adg_sqlite (canonical truth)." | 1 sentence per sibling |
-| Upstream source (if any) | `https://docs.upstream.com/skills` | Cite if adapting external docs |
-| Underlying tool/MCP | `redis` MCP server | Or "Claude Code tool" |
-
-## Steps
-
-### 1. Confirm the skill is not duplicative
-
-Search existing skills for overlapping capability before authoring:
-
+```bash
+python ops_scripts/ci/run_skill_contract_gates.py
+python -m pytest tests/unit/ops_scripts/ci/test_skill_contract.py -q
 ```
-.codex/skills/  →  list_dir
+
+When `skills-ref` is installed, also run:
+
+```bash
+skills-ref validate .codex/skills/<slug>
 ```
 
-If a skill within ~80% capability already exists, edit it instead of creating a new one. The MCP authority rule (`global_rules.md` §MCP Authority) requires one SSOT per capability.
+## Authoring rules
 
-### 2. Create the skill folder
+- Use only Agent Skills frontmatter fields: `name`, `description`, `license`, `compatibility`,
+  `metadata`, and experimental `allowed-tools`.
+- Store metadata as string-to-string values. Do not add `trigger`, `deprecated`, or `redirect_to`.
+- Keep `SKILL.md` below 500 lines and move variant detail into directly linked references.
+- Do not create redirect stubs in the active skills tree. Update inbound links and archive the old
+  activation surface in the same change.
+- Do not create a per-server MCP skill when `mcp-integration` already owns the routing procedure.
+- Do not hard-code a checkout path; resolve the repository root dynamically.
+- Use third-person, deterministic instructions. Remove all placeholders before validation.
 
-```
+## Expected layout
+
+```text
 .codex/skills/<slug>/
+|-- SKILL.md
+|-- agents/openai.yaml
+|-- evals/trigger_queries.json
+|-- evals/evals.json
+|-- scripts/          # optional
+|-- references/       # optional
+`-- assets/           # optional
 ```
-
-### 3. Stamp SKILL.md from template
-
-Copy `.codex/templates/skill-template.md` to `.codex/skills/<slug>/SKILL.md` and fill in:
-
-- **Frontmatter `name`** — `<slug>` exactly (must match folder).
-- **Frontmatter `description`** — capability sentence + invocation triggers + sibling distinctions + upstream citation. ~3–5 sentences. This is the auto-invocation match surface; be specific.
-- **Frontmatter `metadata`** — pick `enforcement_layer` / `enforcement_timing` / `enforcement_type`.
-- **PREREQUISITE block** — env vars, MCP health, gate scripts. Delete the block if none apply.
-- **When to Invoke table** — 3+ rows mapping user intent → action.
-- **Hard Routing Rules table** — invariants that MUST hold.
-- **Standard Procedure** — keep at 5 numbered steps unless the skill is genuinely more complex.
-- **Forbidden Patterns** — 3+ rows; cite the constitutional rule or sibling skill that gets violated.
-- **References** — fill every row that applies; delete rows that don't.
-
-### 4. Add supporting files only if needed
-
-- A decision tree (`tool_decision_tree.md`) — only if there are >3 tools/branches and the SKILL.md routing table grows past ~6 rows.
-- An examples file — only if the SKILL.md examples would push it past ~200 lines.
-
-Most skills fit cleanly in a single SKILL.md.
-
-### 5. Wire intent detection (optional, T2/T3 invocation only)
-
-If the skill should be SR_MANDATE-injected for tier-2/3 prompts:
-
-- Add `_<SKILL>_SIGNALS = (...)` and `_detect_<skill>_intent(text)` in `.codex/governance/scripts/pre_prompt_classifier.py`.
-- Add a routing trace and SR-hint block following the existing patterns (e.g. `_NOTION_SIGNALS`, `_MEMORY_INTENT_SIGNALS`).
-
-Skip this for skills that should only auto-invoke from the description match.
-
-### 6. Update AGENTS.md MCP Quick Reference (only if skill wraps an MCP)
-
-If the skill wraps an MCP server, run:
-
-```
-python .codex/governance/scripts/sync_mcp_config.py
-```
-
-This rewrites the MCP Quick Reference block with a row pointing at the new skill.
-
-### 7. Verify
-
-```
-python ops_scripts/ci/check_mcp_sync_integrity.py
-python ops_scripts/ci/check_agents_mcp_coverage.py
-```
-
-Both must pass before commit.
-
-## House-Style Invariants (hard rules)
-
-- **Frontmatter `name` MUST match folder slug.** The skill loader keys off this.
-- **`description` MUST be specific.** Generic descriptions ("helps with X") fail auto-invocation. Lead with capability, list triggers, name siblings.
-- **Reference siblings explicitly.** Every skill that overlaps another must declare the boundary in the description and again in the body. Prevents drift.
-- **Cite upstream when adapting.** External skill ports MUST link back; differences from upstream MUST be called out.
-- **No emojis** unless the user explicitly requested them (constitutional convention).
-- **Third-person, deterministic prose.** Skills are read by Claude Code, not authored as a chat reply.
-
-## References
-
-- Skill template: `.codex/templates/skill-template.md`
-- Plan template (sibling pattern): `.codex/templates/execution-plan-template.md`
-- Sync script: `.codex/governance/scripts/sync_mcp_config.py`
-- Coverage gates: `ops_scripts/ci/check_mcp_sync_integrity.py`, `check_agents_mcp_coverage.py`
-- Frontmatter precedent: `.codex/skills/tavily-research/SKILL.md`, `.codex/skills/adg-sqlite/SKILL.md`
-- Constitutional rule §17 (Memory Lifecycle), §25 (MCP serialization), §29 (Closed-Loop Router) — common cite targets in skill bodies

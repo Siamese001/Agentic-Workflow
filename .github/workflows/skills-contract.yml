@@ -1,0 +1,101 @@
+name: skills-contract
+
+on:
+  pull_request:
+    paths:
+      - ".codex/skills/**"
+      - ".codex/templates/skill-template.md"
+      - ".codex/commands/skill-creator.md"
+      - ".codex/governance/scripts/*sync_mcp_config*.py"
+      - "AGENTS.md"
+      - "ops_scripts/ci/*skill*"
+      - "ops_scripts/ci/*contract_gates*.py"
+      - "tests/unit/ops_scripts/ci/test_skill*.py"
+      - ".github/workflows/skills-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".codex/skills/**"
+      - ".codex/templates/skill-template.md"
+      - ".codex/commands/skill-creator.md"
+      - ".codex/governance/scripts/*sync_mcp_config*.py"
+      - "AGENTS.md"
+      - "ops_scripts/ci/*skill*"
+      - "ops_scripts/ci/*contract_gates*.py"
+      - "tests/unit/ops_scripts/ci/test_skill*.py"
+      - ".github/workflows/skills-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: minimal
+
+      - name: Collect active-skill contract reports
+        id: contracts
+        shell: bash
+        run: |
+          set +e
+          mkdir -p artifacts/skills-contract
+          rc=0
+          while IFS='|' read -r name script; do
+            python "$script" --json > "artifacts/skills-contract/${name}.json"
+            gate_rc=$?
+            cat "artifacts/skills-contract/${name}.json"
+            if [[ "$gate_rc" -ne 0 ]]; then
+              rc=1
+            fi
+          done <<'EOF'
+          frontmatter|ops_scripts/ci/check_skill_frontmatter.py
+          descriptions|ops_scripts/ci/check_skill_description_quality.py
+          catalog|ops_scripts/ci/check_skill_catalog_integrity.py
+          eval-coverage|ops_scripts/ci/check_skill_eval_coverage.py
+          EOF
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Run skill-contract unit tests
+        id: tests
+        shell: bash
+        run: |
+          set +e
+          python -m pytest \
+            tests/unit/ops_scripts/ci/test_skill_contract.py \
+            tests/unit/ops_scripts/ci/test_skill_catalog_integration.py \
+            -q \
+            --junitxml=artifacts/skills-contract/junit.xml \
+            2>&1 | tee artifacts/skills-contract/pytest.txt
+          rc=${PIPESTATUS[0]}
+          echo "exit_code=$rc" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload skill-contract diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skills-contract-diagnostics
+          path: artifacts/skills-contract/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce skill-contract result
+        shell: bash
+        run: |
+          if [[ "${{ steps.contracts.outputs.exit_code }}" != "0" ]]; then
+            echo "One or more active-skill contract gates failed."
+            exit 1
+          fi
+          if [[ "${{ steps.tests.outputs.exit_code }}" != "0" ]]; then
+            echo "One or more skill-contract unit tests failed."
+            exit 1
+          fi

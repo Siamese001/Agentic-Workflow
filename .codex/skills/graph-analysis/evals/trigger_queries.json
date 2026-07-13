@@ -1,0 +1,62 @@
+[
+  {
+    "query": "What depends on agentic_core.L3_orchestration and what is the blast radius of changing it?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Find every consumer of this exported symbol, including name-level imports.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Which modules write to this state and what side effects do those calls emit?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Rank the structural chokepoints we should refactor first using the ADG materialized views.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Before I split this module, identify upstream tests, downstream dependencies, and layer crossings.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Check whether a near-duplicate adapter already exists with the same registry and side-effect edges.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Find every TODO containing the literal phrase graph cleanup.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Search this YAML file for the string depends_on.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Explain graph theory centrality at a high level.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Look up the latest NetworkX API documentation.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Run the browser and capture the request waterfall.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Write a short status update for the team.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

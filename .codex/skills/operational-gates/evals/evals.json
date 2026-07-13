@@ -1,0 +1,17 @@
+{
+  "skill_name": "operational-gates",
+  "evals": [
+    {
+      "id": "destructive-batch",
+      "prompt": "Delete generated artifacts across several directories.",
+      "expected_output": "Exact scope, recoverable baseline, bounded phases, validation, and a usable rollback command.",
+      "files": []
+    },
+    {
+      "id": "partial-failure",
+      "prompt": "A state-changing batch failed after some writes succeeded.",
+      "expected_output": "Immediate stop, failure capture, compensation or rollback, restoration proof, and root-cause correction before retry.",
+      "files": []
+    }
+  ]
+}

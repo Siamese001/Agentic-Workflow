@@ -1,0 +1,17 @@
+{
+  "skill_name": "structured-reasoning",
+  "evals": [
+    {
+      "id": "multi-branch-plan",
+      "prompt": "Plan a cross-layer migration with two viable strategies.",
+      "expected_output": "Separate evidence and decision phases, explicit branch conditions, approved execution steps, verification, and rollback.",
+      "files": []
+    },
+    {
+      "id": "plan-revision",
+      "prompt": "The first phase disproved a key assumption.",
+      "expected_output": "A stated revision, updated affected steps, preserved evidence, and no silent continuation with stale assumptions.",
+      "files": []
+    }
+  ]
+}

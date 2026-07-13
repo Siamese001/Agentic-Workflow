@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Delete these 40 generated files and give me a verified rollback point first.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Migrate records across two stores in phases with idempotency and compensating actions.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Invoke this state-changing MCP tool after validating its current argument schema and authority.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "The batch update failed halfway through; stop, preserve evidence, restore, and plan a safe retry.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Refactor six modules on a branch and define the baseline, phase gate, and recovery command.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Rotate this production configuration with a bounded write and explicit failure stop condition.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Read this file and summarize it.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Fix one spelling error in a comment.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "List the open pull requests without changing anything.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Explain how retries work conceptually.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Search for the exact string rollback in documentation.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Run a read-only dependency fan-in query.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

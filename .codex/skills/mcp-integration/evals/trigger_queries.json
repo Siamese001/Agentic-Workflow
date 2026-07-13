@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Which configured MCP should I use for a third-party GitHub architecture question versus package docs?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "The expected MCP tool is missing from this session; diagnose declaration, exposure, and a safe fallback.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Coordinate a workflow that reads a Notion record, verifies a local file, and opens a pull request.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Choose between vector search, ADG, and literal search for this mixed retrieval request.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Before calling this MCP write tool, confirm its schema, authority, timeout, and rollback path.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Map the user intent to the correct live server and tell me whether the server is actually callable.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Which modules import this Python class?",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Run pytest for this exact node ID.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Edit the sentence in README.md.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Explain OAuth 2.0 without using any tools.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Create a local JSON file from the data I supplied.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Summarize this text that is already in the prompt.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

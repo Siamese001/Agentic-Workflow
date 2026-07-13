@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Plan and implement a cross-layer refactor that touches six files and has two viable migration strategies.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "This multi-stage failure has uncertain root causes; separate evidence, decisions, execution, and proof.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Design a safe wave plan for consolidating overlapping skills, then execute the approved branch.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "We need current external research plus local dependency evidence before choosing an architecture.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Decompose this ambiguous migration and state the evidence that would select each branch.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Revise the remaining plan after the first phase invalidates one of our assumptions.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Fix this obvious one-line typo.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "What is 17 multiplied by 4?",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Summarize the paragraph I pasted.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Rename one local variable in the single file I named.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Translate this sentence into Spanish.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "List the fields in this small JSON object.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

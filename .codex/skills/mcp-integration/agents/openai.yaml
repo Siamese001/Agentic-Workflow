@@ -1,0 +1,4 @@
+interface:
+  display_name: "MCP Integration"
+  short_description: "Route work to the correct configured MCP server"
+  default_prompt: "Use mcp-integration to classify the intent, select one primary configured server, verify current tool exposure and schema, make bounded least-privilege calls, and report the actual route or degraded fallback."

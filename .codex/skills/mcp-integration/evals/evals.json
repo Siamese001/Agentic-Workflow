@@ -1,0 +1,17 @@
+{
+  "skill_name": "mcp-integration",
+  "evals": [
+    {
+      "id": "route-choice",
+      "prompt": "Choose tools for package docs, third-party repository design, and local dependencies.",
+      "expected_output": "Distinct Context7, DeepWiki, and ADG routing with availability checks and no redirect-skill dependency.",
+      "files": []
+    },
+    {
+      "id": "missing-tool",
+      "prompt": "An MCP is declared but its tool is absent in the session.",
+      "expected_output": "A diagnosis that separates configuration, exposure, and callability, followed by a bounded supported fallback.",
+      "files": []
+    }
+  ]
+}

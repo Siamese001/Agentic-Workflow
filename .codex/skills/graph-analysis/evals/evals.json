@@ -1,0 +1,17 @@
+{
+  "skill_name": "graph-analysis",
+  "evals": [
+    {
+      "id": "blast-radius",
+      "prompt": "Assess the blast radius of changing an exported orchestration symbol.",
+      "expected_output": "Module and symbol fan-in/fan-out, upstream/downstream/test impact, boundary findings, scope justification, and provenance.",
+      "files": []
+    },
+    {
+      "id": "duplicate-check",
+      "prompt": "Determine whether a proposed adapter duplicates existing behavior.",
+      "expected_output": "Symbol, name, registry, dataflow, and side-effect comparison leading to reuse, extension, or justified creation.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Move this registry from L4 to L2 and update imports without creating a layer inversion.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Can L1 import this helper from L5, or should I inject the dependency?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Review this diff for forbidden imports and non-canonical compatibility shims.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Rename the public module and preserve the old import path during a deprecation window.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Add an import from apps_rg into agentic_core and verify whether the dependency is legal.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "This refactor changed cross-layer imports; check layer gravity and the removal plan for the shim.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Sort the imports in this standalone script.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Find the exact TODO that mentions import cleanup.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Write a unit test for a pure function without changing imports.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Create a report about test execution counts.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Search current package documentation for the new API name.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Open a pull request for the already committed branch.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

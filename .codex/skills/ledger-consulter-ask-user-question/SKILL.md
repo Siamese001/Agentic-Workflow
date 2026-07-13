@@ -1,61 +1,49 @@
 ---
 name: ledger-consulter-ask-user-question
-description: |
-  Use when consulting the ask_user_question intelligence ledger for precedent on enriched choice decisions.
-  Provides recommendation acceptance rates, confidence calibration, and override patterns.
-trigger: model_decision
+description: Use this skill when calibrating a material structured user choice from prior recommendation acceptance, override, and confidence patterns without allowing historical preference to replace current evidence.
+metadata:
+  owner: platform-team
+  version: "2.0"
 ---
 
-# Ledger Consulter — Ask User Question
+# User-choice precedent consultation
 
-## Ledger
+Use the `ask_user_question` ledger only for material choices where historical acceptance and override
+patterns can improve confidence calibration. The ledger is read-only evidence during the decision.
 
-- **Name**: `ask_user_question`
-- **DB**: `artifacts/ledgers/ask_user_question.sqlite`
-- **Purpose**: Track enriched_choice_builder decisions (recommendation vs selection, confidence calibration, UI invariant compliance) for the shadow learning loop.
+## Workflow
 
-## Trigger Features
-
-Consult this ledger when:
-
-- Building an `ask_user_question` payload via `enriched_choice_builder`
-- The telemetry_context matches a context with prior decisions
-- Confidence calibration analysis is needed (did past recommendations at similar confidence levels get accepted?)
-
-## Minimal Query
+1. Normalize the current decision to a stable context key.
+2. Retrieve at most five comparable decisions.
+3. Compare recommendation acceptance, override rate, confidence band, and decision context.
+4. Adjust confidence only when the precedent is strong and current evidence is compatible.
+5. State when no comparable precedent exists.
 
 ```python
 from tools.ledgers.consulter import AskUserQuestionConsulter
 
-consulter = AskUserQuestionConsulter()
-verdict = consulter.lookup(
+verdict = AskUserQuestionConsulter().lookup(
     context="import-cycle",
     limit=5,
 )
-# verdict.strength in {"strong", "suggestive", "none"}
-# verdict.matches includes recommendation vs selection data
-# verdict.acceptance_rate = float (0.0–1.0)
 ```
 
-## Verdict → Action
-
-| `verdict.strength` | Required behavior |
+| Strength | Use |
 |---|---|
-| `strong` | Bias confidence scores toward historical acceptance patterns. Note alignment in telemetry packet. |
-| `suggestive` | Surface acceptance rate in the enriched choice context but do not auto-adjust confidence. |
-| `none` | State explicitly: "Precedent: no prior ask_user_question decisions for this context (novel case)." |
+| `strong` | Use the historical calibration as one input to the confidence value. |
+| `suggestive` | Surface the acceptance pattern without automatically changing confidence. |
+| `none` | State that the current choice is a novel context. |
 
-## Key Signals
+## Guardrails
 
-- **Acceptance rate**: `selected_index == recommended_index` ratio — measures recommendation quality
-- **Override rate**: Inverse of acceptance — signals confidence miscalibration
-- **Confidence calibration**: Binned confidence vs acceptance rate — detects systematic over/under-confidence
-- **Per-context patterns**: Some decision types may have structurally different acceptance rates
+- Do not infer user preference from unrelated contexts.
+- Do not ask a question solely because a ledger exists.
+- Explicit current user direction overrides historical acceptance patterns.
+- Safety and blast-radius evidence override popularity.
 
 ## References
 
+- Reader: `tools/ledgers/consulter.py`
 - Writer: `tools/ledgers/ask_user_question_ledger.py`
-- Builder: `tools/decisions/enriched_choice_builder.py`
+- Calibration helper: `tools/ledgers/ask_user_question_calibration.py`
 - Dashboard: `tools/ledgers/telemetry_dashboard.py`
-- Weekly report: `ops_scripts/calibration/ask_user_question_weekly_report.py`
-- Parent skill: `.codex/skills/ledger-consulter/SKILL.md`
