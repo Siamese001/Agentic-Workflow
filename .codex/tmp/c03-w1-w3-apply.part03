@@ -1,0 +1,722 @@
+
+write(
+    "apps_rg/runtime/sections/graph_role_episode_hardened_selector.py",
+    r'''"""W1-W3 bounded role-episode graph traversal for resume sections."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any, Mapping
+
+from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
+from apps_rg.fact_inventory.master_skills_arsenal_ledger import skill_row_eligible_for_external_claim
+from apps_rg.runtime.c0.c03_graph_contract import (
+    TraversalRecorder,
+    build_authority_receipt,
+    evaluate_metric_authority,
+    evaluate_role_root_authority,
+    evaluate_role_skill_authority,
+    finalize_section_graph_plan,
+)
+from apps_rg.runtime.graph.graph_skill_concentration_policy import build_graph_skill_concentration_policy
+from apps_rg.runtime.sections.graph_evidence_contract import (
+    build_allowed_fact_ids_for_plan_facts,
+    build_graph_evidence_depth_comparison_report,
+    build_graph_evidence_depth_report,
+    selection_method_for_section,
+)
+
+
+def _skill_index(repo_root: Path) -> dict[str, dict[str, Any]]:
+    graph = load_augmented_skills_graph(repo_root=repo_root)
+    return {
+        str(row.get("skill_id") or ""): dict(row)
+        for row in (graph.get("skill_rows") or [])
+        if isinstance(row, dict) and str(row.get("skill_id") or "")
+    }
+
+
+def _target_blob(*, target_role: str, jd_text: str, briefing_text: str) -> str:
+    return " ".join(f"{target_role}\n{jd_text}\n{briefing_text}".casefold().split())
+
+
+def _tokenize(value: Any) -> set[str]:
+    text = "".join(character if character.isalnum() else " " for character in str(value or "").casefold())
+    return {token for token in text.split() if len(token) >= 3}
+
+
+def _skill_score(row: Mapping[str, Any], *, target_blob: str, role_family_key: str) -> dict[str, float]:
+    confidence = {"HIGH": 3.0, "MEDIUM": 2.0, "LOW": 1.0}.get(str(row.get("confidence") or "").upper(), 0.0)
+    support = str(row.get("support_level") or "").upper()
+    support_score = {
+        "DIRECT_FROM_RESUME_ARCHIVE": 4.0,
+        "USER_CONFIRMED_DIRECT": 4.0,
+        "ACTIVE_CONFIRMED": 3.5,
+        "BUNDLE_SUPPORTED": 3.0,
+        "DERIVED_SUPPORTED": 2.5,
+        "FACT_SUBSTRATE": 2.0,
+    }.get(support, 1.0)
+    fact_count = len({str(x) for x in (row.get("fact_id_links") or []) if str(x)})
+    metric_count = len({str(x) for x in (row.get("linked_metric_outcome_ids") or []) if str(x)})
+    proof = support_score + confidence + min(fact_count, 4) * 0.5 + min(metric_count, 3) * 0.25
+
+    row_blob = " ".join(
+        [
+            str(row.get("skill_id") or ""),
+            str(row.get("label") or ""),
+            str(row.get("description") or ""),
+            str(row.get("pillar") or ""),
+            str(row.get("subpillar") or ""),
+            " ".join(str(x) for x in (row.get("allowed_phrases") or [])),
+        ]
+    )
+    target_tokens = _tokenize(target_blob)
+    overlap = len(target_tokens & _tokenize(row_blob))
+    weights = row.get("role_family_weights") if isinstance(row.get("role_family_weights"), dict) else {}
+    role_weight = float(weights.get(role_family_key) or weights.get(role_family_key.upper()) or 0.0)
+    target = min(overlap, 8) * 0.5 + role_weight
+    return {
+        "proof_strength_raw": round(proof, 6),
+        "target_alignment_score": round(target, 6),
+        "selection_score_before_penalties": round(proof + target, 6),
+        "selection_score": round(proof + target, 6),
+    }
+
+
+def _metric_score(node: Mapping[str, Any], *, target_blob: str) -> dict[str, float]:
+    proof = 3.0
+    if node.get("approved") or str(node.get("approval_status") or "").upper().startswith("APPROVED"):
+        proof += 2.0
+    if node.get("source_fact_ids") or node.get("linked_source_fact_ids"):
+        proof += 1.0
+    node_blob = " ".join(
+        [
+            str(node.get("metric") or ""),
+            str(node.get("claim_text") or ""),
+            str(node.get("metric_family") or ""),
+        ]
+    )
+    target = min(len(_tokenize(target_blob) & _tokenize(node_blob)), 6) * 0.4
+    return {
+        "proof_strength_raw": round(proof, 6),
+        "target_alignment_score": round(target, 6),
+        "selection_score_before_penalties": round(proof + target, 6),
+        "selection_score": round(proof + target, 6),
+    }
+
+
+def _rank_skill_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Order-invariant ranking used by traversal and permutation tests."""
+    return sorted(
+        rows,
+        key=lambda row: (
+            0 if (row.get("authority") or {}).get("authority_pass") is True else 1,
+            -float((row.get("score_components") or {}).get("proof_strength_raw") or 0.0),
+            -float((row.get("score_components") or {}).get("target_alignment_score") or 0.0),
+            str(row.get("candidate_id") or ""),
+        ),
+    )
+
+
+def _rank_metric_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        rows,
+        key=lambda row: (
+            0 if (row.get("authority") or {}).get("authority_pass") is True else 1,
+            -float((row.get("score_components") or {}).get("proof_strength_raw") or 0.0),
+            -float((row.get("score_components") or {}).get("target_alignment_score") or 0.0),
+            str(row.get("candidate_id") or ""),
+        ),
+    )
+
+
+def build_hardened_selected_graph_evidence_plan_for_section(
+    *,
+    repo_root: Path,
+    section_id: str,
+    target_role: str = "",
+    jd_text: str = "",
+    briefing_text: str = "",
+    limit: int | None = None,
+) -> tuple[dict[str, Any], list[str], set[str]]:
+    # Lazy import is intentional: the public module owns constants and legacy
+    # helper compatibility, while this module owns the hardened implementation.
+    from apps_rg.runtime.sections import graph_role_episode_selector as legacy
+
+    recorder = TraversalRecorder(
+        section_id=section_id,
+        producer=(
+            "apps_rg.runtime.sections.graph_role_episode_hardened_selector."
+            "build_hardened_selected_graph_evidence_plan_for_section"
+        ),
+    )
+    skill_index = _skill_index(repo_root)
+    target_blob = _target_blob(
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    briefing_signal_packet = legacy.extract_briefing_signal_packet(briefing_text)
+    target_role_profile = legacy._infer_target_role_profile(
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+    )
+    briefing_signal_packet = {**briefing_signal_packet, "role_family_key": target_role_profile}
+    employer_weights = dict(legacy._ROLE_EMPLOYER_WEIGHTS[target_role_profile])
+
+    all_roots: list[dict[str, Any]] = []
+    raw_skill_counts_by_employer: dict[str, int] = {}
+    raw_metric_counts_by_employer: dict[str, int] = {}
+    for employer_lane, filename in legacy._BUNDLE_FILES:
+        doc = legacy._load_bundle_doc(repo_root, filename)
+        metric_nodes = legacy._bundle_metric_nodes(doc)
+        approved_metric_ids = {
+            str(value)
+            for value in (doc.get("approved_metric_outcome_ids") or [])
+            if str(value)
+        }
+        for metric_id in approved_metric_ids:
+            if metric_id in metric_nodes:
+                metric_nodes[metric_id] = {**metric_nodes[metric_id], "approved": True}
+        for bundle in doc.get("bundles") or []:
+            if not isinstance(bundle, dict):
+                continue
+            bundle_id = str(bundle.get("role_episode_bundle_id") or "").strip()
+            if not bundle_id or not legacy._eligible_bundle(bundle, section_id=section_id):
+                continue
+            recorder.visit_node(node_id=bundle_id, node_type="role_episode_root", hop_depth=0)
+            key = recorder.discover(
+                candidate_id=bundle_id,
+                candidate_type="role_episode_root",
+                hop_depth=0,
+                metadata={
+                    "employer_lane": employer_lane,
+                    "graph_skill_node_ids": [str(x) for x in (bundle.get("graph_skill_node_ids") or [])],
+                    "metric_outcome_ids": [str(x) for x in (bundle.get("linked_metric_outcome_ids") or [])],
+                },
+            )
+            authority = evaluate_role_root_authority(bundle, section_id=section_id)
+            score = legacy._token_score(
+                bundle,
+                target_role=target_role,
+                jd_text=jd_text,
+                briefing_text=briefing_text,
+                briefing_signal_packet=briefing_signal_packet,
+            )
+            all_roots.append(
+                {
+                    "candidate_key": key,
+                    "score": float(score),
+                    "employer_lane": employer_lane,
+                    "bundle": bundle,
+                    "metric_nodes": metric_nodes,
+                    "authority": authority,
+                }
+            )
+            raw_skill_counts_by_employer[employer_lane] = raw_skill_counts_by_employer.get(employer_lane, 0) + len(bundle.get("graph_skill_node_ids") or [])
+            raw_metric_counts_by_employer[employer_lane] = raw_metric_counts_by_employer.get(employer_lane, 0) + len(bundle.get("linked_metric_outcome_ids") or [])
+
+    eligible_roots = [row for row in all_roots if row["authority"]["authority_pass"] is True]
+    if not eligible_roots:
+        raise ValueError(f"selected graph evidence plan produced no authority-eligible roots for {section_id!r}")
+
+    candidates_by_employer: dict[str, list[tuple[float, str, dict[str, Any], dict[str, dict[str, Any]]]]] = {}
+    root_row_by_id: dict[str, dict[str, Any]] = {}
+    for row in eligible_roots:
+        bundle = row["bundle"]
+        bundle_id = str(bundle.get("role_episode_bundle_id") or "")
+        root_row_by_id[bundle_id] = row
+        candidates_by_employer.setdefault(row["employer_lane"], []).append(
+            (row["score"], row["employer_lane"], bundle, row["metric_nodes"])
+        )
+    for rows in candidates_by_employer.values():
+        rows.sort(key=lambda item: (-item[0], str(item[2].get("role_episode_bundle_id") or "")))
+
+    max_items = int(limit or legacy._EMPLOYER_SECTION_LIMITS.get(section_id) or legacy._SHARED_SECTION_LIMITS.get(section_id) or 8)
+    if section_id in legacy._SHARED_SECTION_LIMITS:
+        budgets = legacy._allocate_employer_root_budgets(
+            candidates_by_employer=candidates_by_employer,
+            employer_weights=employer_weights,
+            max_items=max_items,
+        )
+        selected_tuples: list[tuple[float, str, dict[str, Any], dict[str, dict[str, Any]]]] = []
+        for employer_lane in sorted(budgets, key=lambda lane: (-employer_weights.get(lane, 0.0), lane)):
+            selected_tuples.extend(candidates_by_employer.get(employer_lane, [])[: budgets[employer_lane]])
+        selected_tuples.sort(
+            key=lambda item: (
+                -employer_weights.get(item[1], 0.0),
+                -item[0],
+                item[1],
+                str(item[2].get("role_episode_bundle_id") or ""),
+            )
+        )
+    else:
+        budgets = {}
+        selected_tuples = sorted(
+            [
+                (row["score"], row["employer_lane"], row["bundle"], row["metric_nodes"])
+                for row in eligible_roots
+            ],
+            key=lambda item: (-item[0], item[1], str(item[2].get("role_episode_bundle_id") or "")),
+        )[:max_items]
+
+    selected_root_ids = {
+        str(bundle.get("role_episode_bundle_id") or "")
+        for _, _, bundle, _ in selected_tuples
+    }
+    for row in all_roots:
+        bundle_id = str(row["bundle"].get("role_episode_bundle_id") or "")
+        if row["authority"]["authority_pass"] is not True:
+            recorder.decide(
+                row["candidate_key"],
+                decision="blocked",
+                reason_codes=list(row["authority"].get("reason_codes") or ["authority_blocked"]),
+                score_components={
+                    "proof_strength_raw": 0.0,
+                    "target_alignment_score": row["score"],
+                    "selection_score": row["score"],
+                },
+                authority=row["authority"],
+            )
+        elif bundle_id in selected_root_ids:
+            recorder.decide(
+                row["candidate_key"],
+                decision="selected",
+                reason_codes=["selected_by_role_weighted_root_budget"],
+                score_components={
+                    "proof_strength_raw": 1.0,
+                    "target_alignment_score": row["score"],
+                    "selection_score": 1.0 + row["score"],
+                },
+                authority=row["authority"],
+            )
+        else:
+            recorder.decide(
+                row["candidate_key"],
+                decision="rejected",
+                reason_codes=["root_budget_not_selected"],
+                score_components={
+                    "proof_strength_raw": 1.0,
+                    "target_alignment_score": row["score"],
+                    "selection_score": 1.0 + row["score"],
+                },
+                authority=row["authority"],
+            )
+
+    facts: list[dict[str, Any]] = []
+    pre_facts: list[dict[str, Any]] = []
+    selected_skills: list[dict[str, Any]] = []
+    selected_metrics_detail: list[dict[str, Any]] = []
+    selected_metric_ids_seen: set[str] = set()
+    selected_skill_counts_by_employer: dict[str, int] = {}
+    selected_metric_counts_by_employer: dict[str, int] = {}
+    selected_metric_counts_by_employer_before_floor: dict[str, int] = {}
+    skill_caps_by_root: dict[str, int] = {}
+    metric_caps_by_root: dict[str, int] = {}
+    metric_caps_by_root_before_floor: dict[str, int] = {}
+    root_weight_bands: dict[str, str] = {}
+    employer_root_weights: dict[str, float] = {}
+    excluded_due_to_root_cap: list[dict[str, Any]] = []
+    excluded_due_to_metric_cap: list[dict[str, Any]] = []
+    selected_edges: list[dict[str, Any]] = []
+
+    for root_score, employer_lane, bundle, metric_nodes in selected_tuples:
+        del root_score
+        bundle_id = str(bundle.get("role_episode_bundle_id") or "")
+        weight = employer_weights.get(employer_lane, 0.0)
+        skill_cap, metric_cap, band = legacy._caps_for(section_id=section_id, weight=weight)
+        metric_floor = legacy._metric_floor_for_section(section_id)
+        raw_skill_ids = list(dict.fromkeys(str(x).strip() for x in (bundle.get("graph_skill_node_ids") or []) if str(x).strip()))
+        raw_metric_ids = list(dict.fromkeys(str(x).strip() for x in (bundle.get("linked_metric_outcome_ids") or []) if str(x).strip()))
+        bundle_fact_ids = [str(x) for x in (bundle.get("linked_source_fact_ids") or []) if str(x)]
+
+        skill_candidates: list[dict[str, Any]] = []
+        for skill_id in raw_skill_ids:
+            row = skill_index.get(skill_id)
+            external_eligible = bool(row and skill_row_eligible_for_external_claim(row))
+            authority = evaluate_role_skill_authority(
+                row,
+                skill_id=skill_id,
+                section_id=section_id,
+                bundle_fact_ids=bundle_fact_ids,
+                externally_eligible=external_eligible,
+            )
+            score_components = _skill_score(row or {"skill_id": skill_id}, target_blob=target_blob, role_family_key=target_role_profile)
+            recorder.visit_node(node_id=skill_id, node_type="skill", hop_depth=1, parent_id=bundle_id)
+            recorder.visit_edge(source=bundle_id, target=skill_id, edge_type="role_episode_contains_skill", hop_depth=1)
+            key = recorder.discover(
+                candidate_id=skill_id,
+                candidate_type="leaf_skill",
+                parent_id=bundle_id,
+                root_id=bundle_id,
+                hop_depth=1,
+                metadata={"employer_lane": employer_lane},
+            )
+            skill_candidates.append(
+                {
+                    "candidate_key": key,
+                    "candidate_id": skill_id,
+                    "authority": authority,
+                    "score_components": score_components,
+                    "row": row or {},
+                }
+            )
+        ranked_skills = _rank_skill_rows(skill_candidates)
+        eligible_skills = [candidate for candidate in ranked_skills if candidate["authority"]["authority_pass"] is True]
+        selected_skill_rows = eligible_skills[: max(0, skill_cap)]
+        selected_skill_ids = [str(candidate["candidate_id"]) for candidate in selected_skill_rows]
+        selected_skill_id_set = set(selected_skill_ids)
+        if skill_cap > 0 and not selected_skill_ids:
+            raise ValueError(f"{section_id}: selected root {bundle_id} has no authority-eligible skills")
+        for candidate in ranked_skills:
+            skill_id = str(candidate["candidate_id"])
+            if candidate["authority"]["authority_pass"] is not True:
+                decision = "blocked"
+                reasons = list(candidate["authority"].get("reason_codes") or ["authority_blocked"])
+            elif skill_id in selected_skill_id_set:
+                decision = "selected"
+                reasons = ["selected_by_proof_then_target_score"]
+            else:
+                decision = "rejected"
+                reasons = ["skill_root_cap"]
+                excluded_due_to_root_cap.append(
+                    {
+                        "graph_evidence_id": skill_id,
+                        "role_episode_bundle_id": bundle_id,
+                        "employer_lane": employer_lane,
+                        "cap": skill_cap,
+                        "reason": "skill_root_cap",
+                    }
+                )
+            recorder.decide(
+                candidate["candidate_key"],
+                decision=decision,
+                reason_codes=reasons,
+                score_components=candidate["score_components"],
+                authority=candidate["authority"],
+            )
+        for candidate in selected_skill_rows:
+            skill_id = str(candidate["candidate_id"])
+            selected_skills.append(
+                {
+                    "skill_id": skill_id,
+                    "role_episode_bundle_id": bundle_id,
+                    "employer_lane": employer_lane,
+                    "root_weight": weight,
+                    "root_weight_band": band,
+                    "score_components": dict(candidate["score_components"]),
+                }
+            )
+            selected_edges.append({"edge_type": "role_episode_contains_skill", "source": bundle_id, "target": skill_id})
+
+        metric_candidates: list[dict[str, Any]] = []
+        for metric_id in raw_metric_ids:
+            node = metric_nodes.get(metric_id)
+            authority = evaluate_metric_authority(node, metric_id=metric_id, section_id=section_id, bundle_id=bundle_id)
+            score_components = _metric_score(node or {"metric": metric_id}, target_blob=target_blob)
+            recorder.visit_node(node_id=metric_id, node_type="metric_outcome", hop_depth=2, parent_id=bundle_id)
+            recorder.visit_edge(source=bundle_id, target=metric_id, edge_type="role_episode_has_metric_outcome", hop_depth=2)
+            key = recorder.discover(
+                candidate_id=metric_id,
+                candidate_type="metric_outcome",
+                parent_id=bundle_id,
+                root_id=bundle_id,
+                hop_depth=2,
+                metadata={"employer_lane": employer_lane},
+            )
+            metric_candidates.append(
+                {
+                    "candidate_key": key,
+                    "candidate_id": metric_id,
+                    "authority": authority,
+                    "score_components": score_components,
+                    "node": node or {},
+                }
+            )
+        ranked_metrics = _rank_metric_rows(metric_candidates)
+        novel_metrics = [
+            candidate
+            for candidate in ranked_metrics
+            if candidate["authority"]["authority_pass"] is True
+            and str(candidate["candidate_id"]) not in selected_metric_ids_seen
+        ]
+        effective_metric_cap = min(len(novel_metrics), max(metric_cap, metric_floor)) if novel_metrics else 0
+        selected_metric_rows_before_floor = novel_metrics[: max(0, metric_cap)]
+        selected_metric_rows = novel_metrics[:effective_metric_cap]
+        selected_metric_ids_before_floor = [str(candidate["candidate_id"]) for candidate in selected_metric_rows_before_floor]
+        selected_metric_ids = [str(candidate["candidate_id"]) for candidate in selected_metric_rows]
+        selected_metric_id_set = set(selected_metric_ids)
+        if metric_floor and len(selected_metric_ids) < metric_floor:
+            raise ValueError(
+                f"{section_id}: selected root {bundle_id} cannot satisfy metric floor "
+                f"{metric_floor}; eligible_novel={len(novel_metrics)}"
+            )
+        for candidate in ranked_metrics:
+            metric_id = str(candidate["candidate_id"])
+            if candidate["authority"]["authority_pass"] is not True:
+                decision = "blocked"
+                reasons = list(candidate["authority"].get("reason_codes") or ["authority_blocked"])
+            elif metric_id in selected_metric_id_set:
+                decision = "selected"
+                reasons = ["selected_by_proof_then_target_score"]
+            elif metric_id in selected_metric_ids_seen:
+                decision = "rejected"
+                reasons = ["metric_already_selected_in_section"]
+            else:
+                decision = "rejected"
+                reasons = ["metric_root_cap"]
+            if decision != "selected" and candidate["authority"]["authority_pass"] is True:
+                excluded_due_to_metric_cap.append(
+                    {
+                        "graph_evidence_id": metric_id,
+                        "role_episode_bundle_id": bundle_id,
+                        "employer_lane": employer_lane,
+                        "cap": effective_metric_cap,
+                        "reason": reasons[0],
+                    }
+                )
+            recorder.decide(
+                candidate["candidate_key"],
+                decision=decision,
+                reason_codes=reasons,
+                score_components=candidate["score_components"],
+                authority=candidate["authority"],
+            )
+        for candidate in selected_metric_rows:
+            metric_id = str(candidate["candidate_id"])
+            selected_metric_ids_seen.add(metric_id)
+            node = candidate["node"]
+            selected_metrics_detail.append(
+                {
+                    "metric_outcome_id": metric_id,
+                    "role_episode_bundle_id": bundle_id,
+                    "employer_lane": employer_lane,
+                    "root_weight": weight,
+                    "root_weight_band": band,
+                    "metric": str(node.get("metric") or node.get("claim_text") or metric_id),
+                    "score_components": dict(candidate["score_components"]),
+                }
+            )
+            selected_edges.append({"edge_type": "role_episode_has_metric_outcome", "source": bundle_id, "target": metric_id})
+
+        skill_caps_by_root[bundle_id] = skill_cap
+        metric_caps_by_root_before_floor[bundle_id] = metric_cap
+        metric_caps_by_root[bundle_id] = effective_metric_cap
+        root_weight_bands[bundle_id] = band
+        employer_root_weights[bundle_id] = weight
+        selected_skill_counts_by_employer[employer_lane] = selected_skill_counts_by_employer.get(employer_lane, 0) + len(selected_skill_ids)
+        selected_metric_counts_by_employer_before_floor[employer_lane] = selected_metric_counts_by_employer_before_floor.get(employer_lane, 0) + len(selected_metric_ids_before_floor)
+        selected_metric_counts_by_employer[employer_lane] = selected_metric_counts_by_employer.get(employer_lane, 0) + len(selected_metric_ids)
+        pre_facts.append(
+            legacy._bundle_to_fact(
+                bundle,
+                employer_lane=employer_lane,
+                metric_nodes=metric_nodes,
+                selected_skill_ids=selected_skill_ids,
+                selected_metric_ids=selected_metric_ids_before_floor,
+            )
+        )
+        facts.append(
+            legacy._bundle_to_fact(
+                bundle,
+                employer_lane=employer_lane,
+                metric_nodes=metric_nodes,
+                selected_skill_ids=selected_skill_ids,
+                selected_metric_ids=selected_metric_ids,
+            )
+        )
+
+    if not facts:
+        raise ValueError(f"selected graph evidence plan produced empty fact set for {section_id!r}")
+
+    ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
+    selected_nodes = [str(fact["role_episode_bundle_id"]) for fact in facts]
+    selected_metrics: list[str] = []
+    selected_employers: list[str] = []
+    selected_employer_roots: dict[str, list[str]] = {}
+    for fact in facts:
+        for metric_id in fact.get("metric_outcome_ids") or []:
+            if metric_id not in selected_metrics:
+                selected_metrics.append(metric_id)
+        employer_lane = str(fact.get("employer_lane") or "")
+        selected_employer_roots.setdefault(employer_lane, []).append(str(fact["role_episode_bundle_id"]))
+        employer = str(fact.get("employer") or "")
+        if employer and employer not in selected_employers:
+            selected_employers.append(employer)
+    selected_skill_ids_all = [str(row["skill_id"]) for row in selected_skills]
+
+    concentration_policy = build_graph_skill_concentration_policy(
+        counts=selected_skill_counts_by_employer,
+        distribution_kind="employer_lane",
+        bucket_ids=tuple(employer_weights.keys()),
+        context={
+            "section_id": section_id,
+            "target_role_profile": target_role_profile,
+            "target_role": target_role,
+        },
+    )
+    pre_depth_report = build_graph_evidence_depth_report({"facts": pre_facts}, section_id=section_id)
+    post_depth_report = build_graph_evidence_depth_report({"facts": facts}, section_id=section_id)
+    depth_comparison_report = build_graph_evidence_depth_comparison_report(
+        section_id=section_id,
+        pre_report=pre_depth_report,
+        post_report=post_depth_report,
+        fix_label="competencies_metric_floor_v2" if section_id == "competencies" else "strict_novel_metric_selection_v2",
+    )
+    raw_max_emp = max(raw_skill_counts_by_employer, key=raw_skill_counts_by_employer.get)
+    selected_max_emp = max(selected_skill_counts_by_employer, key=selected_skill_counts_by_employer.get) if selected_skill_counts_by_employer else ""
+
+    manifest = recorder.manifest()
+    decision_ledger = manifest["candidate_decisions"]
+    authority_receipt = build_authority_receipt(decision_ledger, section_id=section_id)
+    if not manifest["candidate_conservation"]["pass"] or not authority_receipt["pass"]:
+        raise ValueError(f"{section_id}: C0.3 traversal or authority conservation failed")
+    root_rows = [row for row in decision_ledger if row.get("candidate_type") == "role_episode_root"]
+    graph_traversal_receipt = {
+        "schema_version": "graph_traversal_receipt_v1",
+        "traversal_manifest_schema": manifest["schema_version"],
+        "producer": manifest["producer"],
+        "section_id": section_id,
+        "target_role_profile": target_role_profile,
+        "candidate_conservation": {
+            "role_episode_roots_total": len(root_rows),
+            "role_episode_roots_selected": sum(1 for row in root_rows if row.get("decision") == "selected"),
+            "role_episode_roots_rejected": sum(1 for row in root_rows if row.get("decision") in {"rejected", "blocked"}),
+            "role_episode_roots_unexplained": sum(1 for row in root_rows if not row.get("decision")),
+            "pass": not any(not row.get("decision") for row in root_rows),
+            "all_candidates": dict(manifest["candidate_conservation"]),
+        },
+        "frontier_size_by_hop_depth": {
+            "0_role_episode_roots": len(root_rows),
+            "1_leaf_skill_candidates": sum(1 for row in decision_ledger if row.get("candidate_type") == "leaf_skill"),
+            "2_metric_outcome_candidates": sum(1 for row in decision_ledger if row.get("candidate_type") == "metric_outcome"),
+        },
+        "visited_nodes_count": manifest["visited_node_count"],
+        "visited_edges_count": manifest["visited_edge_count"],
+        "event_digest": manifest["event_digest"],
+        "selected_root_ids": selected_nodes,
+        "rejected_root_ids": [str(row.get("candidate_id") or "") for row in root_rows if row.get("decision") in {"rejected", "blocked"}],
+    }
+
+    plan = {
+        "section_id": section_id,
+        "selection_method": selection_method_for_section(section_id),
+        "target_role_profile": target_role_profile,
+        "role_family_key": target_role_profile,
+        "graph_weight_profile": {
+            "profile": target_role_profile,
+            "employer_weights": employer_weights,
+            "selection_model": "pretarget_authority_then_role_weighted_bounded_traversal_v2",
+        },
+        "selected_employer_roots": selected_employer_roots,
+        "employer_root_weights": employer_root_weights,
+        "root_weight_bands": root_weight_bands,
+        "skill_caps_by_root": skill_caps_by_root,
+        "metric_caps_by_root": metric_caps_by_root,
+        "selected_nodes": selected_nodes,
+        "selected_edges": selected_edges,
+        "selected_skills": selected_skills,
+        "selected_skill_ids": selected_skill_ids_all,
+        "selected_metrics": selected_metrics,
+        "selected_metrics_detail": selected_metrics_detail,
+        "selected_employer_lanes": selected_employers,
+        "selected_employer_lane_ids": [str(fact.get("employer_lane") or "") for fact in facts],
+        "selected_headline_positioning_families": list(legacy._HEADLINE_FAMILIES_BY_PROFILE.get(target_role_profile, ())),
+        "selected_competency_families": list(legacy._COMPETENCY_FAMILIES_BY_PROFILE.get(target_role_profile, ())),
+        "briefing_signal_packet": briefing_signal_packet,
+        "concentration_policy": concentration_policy,
+        "excluded_due_to_root_cap": excluded_due_to_root_cap,
+        "excluded_due_to_metric_cap": excluded_due_to_metric_cap,
+        "allowed_graph_evidence_ids": ordered,
+        "selection_rationale": (
+            "Hard authority gates were resolved without JD/brief targeting. The bounded graph frontier was then "
+            "traversed and every root, skill, and metric candidate received a terminal decision. Target inputs "
+            "only rank authority-eligible alternatives and never create evidence."
+        ),
+        "skew_diagnostics": {
+            "raw_skill_counts_by_employer": raw_skill_counts_by_employer,
+            "raw_metric_counts_by_employer": raw_metric_counts_by_employer,
+            "selected_skill_counts_by_employer": selected_skill_counts_by_employer,
+            "selected_metric_counts_by_employer_before_floor": selected_metric_counts_by_employer_before_floor,
+            "selected_metric_counts_by_employer": selected_metric_counts_by_employer,
+            "employer_root_budgets": budgets,
+            "max_raw_skill_count_employer": raw_max_emp,
+            "max_selected_skill_count_employer": selected_max_emp,
+            "selection_normalized_by_employer_root_cap": section_id in legacy._SHARED_SECTION_LIMITS,
+            "metric_caps_by_root_before_floor": metric_caps_by_root_before_floor,
+            "metric_caps_by_root_after_floor": metric_caps_by_root,
+            "thin_item_ids_before_floor": pre_depth_report.get("thin_item_ids") or [],
+            "thin_item_ids_after_floor": post_depth_report.get("thin_item_ids") or [],
+            "raw_density_dominance_detected": bool((pre_depth_report.get("detail_reuse_ratio") or 0.0) > 0.35),
+        },
+        "facts": facts,
+        "required_fact_ids": [str(fact["fact_id"]) for fact in facts],
+        "graph_candidate_decision_ledger": decision_ledger,
+        "graph_candidate_receipt": {
+            "schema_version": "graph_candidate_receipt_v1",
+            "producer": manifest["producer"],
+            "section_id": section_id,
+            "candidate_decision_count": len(decision_ledger),
+            "selected_candidate_count": sum(1 for row in decision_ledger if row.get("decision") == "selected"),
+            "rejected_candidate_count": sum(1 for row in decision_ledger if row.get("decision") in {"rejected", "blocked"}),
+            "candidate_conservation_pass": bool(manifest["candidate_conservation"]["pass"]),
+        },
+        "graph_traversal_receipt": graph_traversal_receipt,
+        "traversal_manifest": manifest,
+        "authority_receipt": authority_receipt,
+        "graph_evidence_depth_pre_report": pre_depth_report,
+        "graph_evidence_depth_report": post_depth_report,
+        "graph_evidence_depth_post_report": post_depth_report,
+        "graph_evidence_depth_comparison_report": depth_comparison_report,
+        "graph_evidence_depth_status": post_depth_report.get("status"),
+        "graph_evidence_semantic_coverage_pct": post_depth_report.get("semantic_coverage_pct"),
+    }
+    plan = finalize_section_graph_plan(plan)
+    for row in plan["graph_candidate_decision_ledger"]:
+        row["plan_digest"] = plan["plan_digest"]
+        row["plan_id"] = plan["plan_id"]
+    for receipt_key in ("graph_candidate_receipt", "graph_traversal_receipt", "traversal_manifest", "authority_receipt"):
+        plan[receipt_key]["plan_digest"] = plan["plan_digest"]
+        plan[receipt_key]["plan_id"] = plan["plan_id"]
+    return plan, ordered, allowed
+
+
+__all__ = [
+    "_rank_metric_rows",
+    "_rank_skill_rows",
+    "build_hardened_selected_graph_evidence_plan_for_section",
+]
+''',
+)
+
+regex_replace_once(
+    "apps_rg/runtime/sections/graph_role_episode_selector.py",
+    r'''def build_selected_graph_evidence_plan_for_section\(.*?\n\n__all__ = \[''',
+    r'''def build_selected_graph_evidence_plan_for_section(
+    *,
+    repo_root: Path,
+    section_id: str,
+    target_role: str = "",
+    jd_text: str = "",
+    briefing_text: str = "",
+    limit: int | None = None,
+) -> tuple[dict[str, Any], list[str], set[str]]:
+    """Delegate to the W1-W3 authority-gated bounded traversal implementation."""
+    from apps_rg.runtime.sections.graph_role_episode_hardened_selector import (
+        build_hardened_selected_graph_evidence_plan_for_section,
+    )
+
+    return build_hardened_selected_graph_evidence_plan_for_section(
+        repo_root=repo_root,
+        section_id=section_id,
+        target_role=target_role,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        limit=limit,
+    )
+
+
+__all__ = [''',
+)
