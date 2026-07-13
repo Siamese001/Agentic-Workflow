@@ -1,0 +1,368 @@
+
+write(
+    "tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py",
+    r'''"""apps-test-model: W1-W3 C0.3 graph authority and traversal contracts."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from apps_rg.runtime.c0.c03_graph_contract import (
+    PLAN_SCHEMA_VERSION,
+    TRAVERSAL_MANIFEST_SCHEMA,
+    TraversalRecorder,
+    build_authority_receipt,
+    evaluate_sqlite_candidate_authority,
+    finalize_section_graph_plan,
+    validate_section_graph_plan,
+)
+from apps_rg.runtime.c0.c03_graph_expansion import (
+    BINDING_MODE_FACT_LINKS_FIRST,
+    C03GraphBindingError,
+    _bind_atom,
+    expand_c03_graph_bindings,
+)
+from apps_rg.runtime.c0.c03_sqlite_graph_selection import select_c03_sqlite_graph_candidates
+from apps_rg.runtime.sections.graph_role_episode_hardened_selector import _rank_skill_rows
+from apps_rg.runtime.sections.graph_role_episode_selector import build_selected_graph_evidence_plan_for_section
+
+REPO = Path(__file__).resolve().parents[5]
+
+
+def _eligible_candidate() -> dict:
+    return {
+        "fact_id": "fact_test",
+        "skill_id": "skill_test",
+        "claim_eligibility": True,
+        "link_external_eligible": True,
+        "external_eligible": True,
+        "section_allowed": True,
+        "section_explicitly_blocked": False,
+        "activation_status": "ACTIVE_CONFIRMED",
+        "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "link_support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+        "confidence": "HIGH",
+        "path_signature": "skill_test->fact_test",
+        "source_fact_count": 1,
+    }
+
+
+def test_w2_authority_is_resolved_without_targeting_inputs() -> None:
+    candidate = _eligible_candidate()
+    receipt = evaluate_sqlite_candidate_authority(candidate, section_id="executive_summary")
+    assert receipt["authority_pass"] is True
+    assert receipt["targeting_inputs_consulted"] is False
+
+    blocked = {**candidate, "external_eligible": False}
+    blocked_receipt = evaluate_sqlite_candidate_authority(blocked, section_id="executive_summary")
+    assert blocked_receipt["authority_pass"] is False
+    assert "node_external_eligible" in blocked_receipt["reason_codes"]
+    assert blocked_receipt["targeting_inputs_consulted"] is False
+
+
+def test_w3_traversal_recorder_requires_one_terminal_decision_per_candidate() -> None:
+    recorder = TraversalRecorder(section_id="competencies", producer="test")
+    recorder.visit_node(node_id="fact_1", node_type="fact", hop_depth=0)
+    recorder.visit_edge(
+        source="skill_1",
+        target="fact_1",
+        edge_type="skill_supported_by_fact",
+        hop_depth=1,
+        path_signature="skill_1->fact_1",
+    )
+    key = recorder.discover(
+        candidate_id="skill_1",
+        candidate_type="leaf_skill",
+        parent_id="fact_1",
+        root_id="fact_1",
+        hop_depth=1,
+    )
+    recorder.decide(
+        key,
+        decision="selected",
+        reason_codes=["test_selected"],
+        score_components={"proof_strength_raw": 1.0, "target_alignment_score": 0.0, "selection_score": 1.0},
+        authority={"authority_pass": True},
+    )
+    manifest = recorder.manifest()
+    assert manifest["schema_version"] == TRAVERSAL_MANIFEST_SCHEMA
+    assert manifest["candidate_conservation"] == {
+        "discovered": 1,
+        "selected": 1,
+        "rejected_or_blocked": 0,
+        "unexplained": 0,
+        "pass": True,
+    }
+    assert manifest["visited_node_count"] == 1
+    assert manifest["visited_edge_count"] == 1
+    authority = build_authority_receipt(manifest["candidate_decisions"], section_id="competencies")
+    assert authority["pass"] is True
+
+
+def test_w1_plan_digest_is_immutable_and_self_validating() -> None:
+    plan = finalize_section_graph_plan(
+        {
+            "section_id": "headline",
+            "selection_method": "test",
+            "facts": [{"fact_id": "fact_1"}],
+            "required_fact_ids": ["fact_1"],
+        }
+    )
+    assert plan["schema_version"] == PLAN_SCHEMA_VERSION
+    assert validate_section_graph_plan(plan) == (True, ())
+    mutated = {**plan, "required_fact_ids": ["fact_2"]}
+    ok, failures = validate_section_graph_plan(mutated)
+    assert ok is False
+    assert "plan_digest" in failures
+
+
+def test_w2_bind_atom_never_promotes_tag_label_fallback_to_proof() -> None:
+    binding = _bind_atom(
+        atom={
+            "fact_id": "fact_1",
+            "graph_query_fact_id": "fact_1",
+            "proof_status": "proof_eligible",
+            "skill_tags": ["governed ai"],
+        },
+        section_id="executive_summary",
+        inner={"pillars": []},
+        skill_by_id={},
+        skill_by_label={"governed ai": {"node_id": "skill_tag"}},
+        links_by_fact={"fact_1": [{"skill_id": "skill_broad", "claim_eligibility": True}]},
+        binding_mode=BINDING_MODE_FACT_LINKS_FIRST,
+        canonical_skill_ids={"skill_tag", "skill_broad"},
+        sqlite_selection_by_fact={},
+        sqlite_rejected_by_fact={},
+    )
+    assert binding["graph_node_refs"] == []
+    assert binding["binding_source"] == "adjacency_only"
+    assert binding["claim_support_allowed"] is False
+
+
+def test_w1_canonical_plan_binding_is_consumed_without_reselection() -> None:
+    binding = _bind_atom(
+        atom={
+            "fact_id": "bundle_1",
+            "graph_query_fact_id": "fact_1",
+            "proof_status": "proof_eligible",
+            "graph_binding_source": "selected_graph_evidence_plan",
+            "graph_plan_id": "competencies:abc",
+            "graph_plan_digest": "a" * 64,
+            "graph_node_refs": ["skill_1", "skill_2"],
+            "metric_refs": ["metric_1"],
+        },
+        section_id="competencies",
+        inner={"pillars": []},
+        skill_by_id={},
+        skill_by_label={},
+        links_by_fact={},
+        binding_mode=BINDING_MODE_FACT_LINKS_FIRST,
+        canonical_skill_ids={"skill_1", "skill_2"},
+        sqlite_selection_by_fact={},
+        sqlite_rejected_by_fact={},
+    )
+    assert binding["binding_source"] == "selected_graph_evidence_plan"
+    assert binding["binding_query_source"] == "canonical_selected_graph_plan"
+    assert binding["graph_node_refs"] == ["skill_1", "skill_2"]
+    assert binding["metric_binding_refs"] == ["metric_1"]
+    assert binding["claim_support_allowed"] is True
+
+
+def test_w2_expand_fails_closed_when_proof_atom_has_no_ranked_or_plan_binding(monkeypatch: pytest.MonkeyPatch) -> None:
+    import apps_rg.runtime.c0.c03_graph_expansion as expansion
+    import apps_rg.runtime.c0.c03_graph_ref_policy as ref_policy
+    import apps_rg.runtime.c0.c03_sqlite_graph_selection as selection
+
+    monkeypatch.setattr(ref_policy, "resolve_role_family_projection", lambda *_args, **_kwargs: {"pillar_hint_ids": []})
+    monkeypatch.setattr(expansion, "resolve_c0_pillar_hints", lambda *_args, **_kwargs: ())
+    monkeypatch.setattr(expansion, "_load_skill_pillar_index", lambda *_args, **_kwargs: {})
+    monkeypatch.setattr(
+        expansion,
+        "assemble_c03_graph_sqlite_context",
+        lambda **_kwargs: {
+            "context": {"skills": [], "pillars": [], "fact_links": [], "selected_fact_links": []},
+            "sqlite_db_path": "unused.sqlite",
+        },
+    )
+    monkeypatch.setattr(
+        selection,
+        "select_c03_sqlite_graph_candidates",
+        lambda **_kwargs: {
+            "selection_status": "BLOCKED",
+            "selected_by_fact": {},
+            "rejected_by_fact": {},
+            "candidate_conservation_pass": True,
+            "traversal_manifest": {},
+            "authority_receipt": {},
+        },
+    )
+    with pytest.raises(C03GraphBindingError, match="fail-closed binding missing"):
+        expand_c03_graph_bindings(
+            section_id="executive_summary",
+            atoms=[
+                {
+                    "fact_id": "fact_missing",
+                    "graph_query_fact_id": "fact_missing",
+                    "proof_status": "proof_eligible",
+                    "skill_tags": ["missing"],
+                }
+            ],
+            role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+            repo_root=REPO,
+        )
+
+
+def test_w3_sqlite_selection_emits_event_derived_conservation() -> None:
+    result = select_c03_sqlite_graph_candidates(
+        section_id="executive_summary",
+        selected_fact_ids=["fact_engineering_platform_001"],
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        pillar_hints=["pillar_agentic_runtime_governance"],
+        repo_root=REPO,
+        max_skills_per_fact=3,
+    )
+    assert result["selection_status"] == "PASS"
+    assert result["selected_candidates"]
+    assert result["candidate_conservation_pass"] is True
+    manifest = result["traversal_manifest"]
+    assert manifest["schema_version"] == TRAVERSAL_MANIFEST_SCHEMA
+    assert manifest["candidate_conservation"]["discovered"] == result["candidate_count"]
+    assert manifest["candidate_conservation"]["pass"] is True
+    assert manifest["visited_edge_count"] == result["candidate_count"]
+    assert result["authority_receipt"]["pass"] is True
+    assert all(candidate["authority"]["authority_pass"] is True for candidate in result["selected_candidates"])
+    assert all("proof_strength_raw" in candidate["score_components"] for candidate in result["selected_candidates"])
+    assert all("target_alignment_score" in candidate["score_components"] for candidate in result["selected_candidates"])
+
+
+def test_w3_role_episode_plan_has_actual_events_and_exhaustive_decisions() -> None:
+    plan, ordered, allowed = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO,
+        section_id="competencies",
+        target_role="SVP Agentic Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform governance control plane",
+    )
+    assert ordered
+    assert allowed
+    assert plan["schema_version"] == PLAN_SCHEMA_VERSION
+    assert validate_section_graph_plan(plan) == (True, ())
+    assert plan["authority_receipt"]["pass"] is True
+    manifest = plan["traversal_manifest"]
+    assert manifest["schema_version"] == TRAVERSAL_MANIFEST_SCHEMA
+    assert manifest["candidate_conservation"]["pass"] is True
+    assert manifest["candidate_conservation"]["discovered"] == len(plan["graph_candidate_decision_ledger"])
+    assert {event["event_type"] for event in manifest["events"]} >= {
+        "node_visited",
+        "edge_visited",
+        "candidate_discovered",
+        "candidate_decided",
+    }
+    assert all(row["decision"] in {"selected", "rejected", "blocked"} for row in plan["graph_candidate_decision_ledger"])
+    assert len(plan["selected_metrics"]) == len(set(plan["selected_metrics"]))
+
+    replay, _, _ = build_selected_graph_evidence_plan_for_section(
+        repo_root=REPO,
+        section_id="competencies",
+        target_role="SVP Agentic Engineering",
+        jd_text="agentic multi-agent GraphRAG runtime platform governance control plane",
+    )
+    assert replay["plan_digest"] == plan["plan_digest"]
+    assert replay["traversal_manifest"]["event_digest"] == manifest["event_digest"]
+
+
+def test_w3_skill_ranking_is_input_order_invariant() -> None:
+    rows = [
+        {
+            "candidate_id": "skill_b",
+            "authority": {"authority_pass": True},
+            "score_components": {"proof_strength_raw": 3.0, "target_alignment_score": 1.0},
+        },
+        {
+            "candidate_id": "skill_a",
+            "authority": {"authority_pass": True},
+            "score_components": {"proof_strength_raw": 3.0, "target_alignment_score": 2.0},
+        },
+        {
+            "candidate_id": "skill_blocked",
+            "authority": {"authority_pass": False},
+            "score_components": {"proof_strength_raw": 99.0, "target_alignment_score": 99.0},
+        },
+    ]
+    forward = [row["candidate_id"] for row in _rank_skill_rows(rows)]
+    reverse = [row["candidate_id"] for row in _rank_skill_rows(list(reversed(rows)))]
+    assert forward == reverse == ["skill_a", "skill_b", "skill_blocked"]
+''',
+)
+
+plan_path = ROOT / "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md"
+if not plan_path.is_file():
+    raise RuntimeError("W0 plan was not restored before W1-W3 apply")
+plan_text = plan_path.read_text(encoding="utf-8")
+plan_text = re.sub(r"- \*\*Branch:\*\*.*", "- **Branch:** `agent/apps-rg-c03-resume-graph-w0`", plan_text, count=1)
+plan_text = re.sub(r"- \*\*Pinned origin/main:\*\*.*", "- **Pinned origin/main:** `de511b54dbed9be7fc63648ad175da2ae9edeefe`", plan_text, count=1)
+plan_text = re.sub(r"- \*\*Pinned main message:\*\*.*", "- **Pinned main message:** `Merge PR #553: governed apps_rg Spearman calibration spine`", plan_text, count=1)
+if "## W1-W3 implementation closeout" not in plan_text:
+    plan_text += r'''
+
+## W1-W3 implementation closeout
+
+### Wave disposition
+
+| Wave | Status | Implemented contract |
+|---|---|---|
+| W1 | `IMPLEMENTED_PENDING_VERIFIED_COMMIT` | One canonical immutable graph-plan digest is propagated from proof selection through C0.2 into C0.3; proof-strength and target-alignment fields are separate. |
+| W2 | `IMPLEMENTED_PENDING_VERIFIED_COMMIT` | Claim eligibility, node/link external eligibility, section permission, activation, support, confidence, provenance, and direct path are hard pre-target gates. Broad fact-link and tag-label proof fallbacks are removed. |
+| W3 | `IMPLEMENTED_PENDING_VERIFIED_COMMIT` | Bounded roots, skills, metrics, nodes, and edges emit actual traversal events. Every discovered candidate receives exactly one selected, rejected, or blocked terminal decision with conservation receipts. |
+
+### Authority and aggregation boundary
+
+C0.3 executes only before section generation. Final aggregation reads the frozen plan,
+C0.3 receipts, and claim bindings; it must not retrieve, traverse, rerank, or reassign
+evidence. Whole-resume allocation and hard cross-section non-reuse remain W4 scope.
+
+### W0 blocker disposition
+
+- The branch was rebased to `de511b54dbed9be7fc63648ad175da2ae9edeefe`; the prior L0 reachability repair is present on main.
+- The remaining `agentic_core` literal/boundary baseline is tested as an advisory compatibility check and is not widened by W1-W3.
+- W1-W3 make no `agentic_core` edits and introduce no durable graph writes.
+- The temporary Actions application harness is removed before the verified commit.
+
+### Implementation surfaces
+
+- `apps_rg/runtime/c0/c03_graph_contract.py`
+- `apps_rg/runtime/c0/c03_sqlite_graph_selection.py`
+- `apps_rg/runtime/c0/c03_graph_expansion.py`
+- `apps_rg/runtime/c0/c02_evidence_fetch.py`
+- `apps_rg/runtime/sections/graph_role_episode_selector.py`
+- `apps_rg/runtime/sections/graph_role_episode_hardened_selector.py`
+- `tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py`
+- `docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json`
+
+### Required verification
+
+The self-cleaning branch workflow must pass all required checks before it creates the
+final commit. Exact command outcomes and the pinned base are recorded in
+`docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json`.
+'''
+plan_path.write_text(plan_text.rstrip() + "\n", encoding="utf-8")
+
+write(
+    "docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json",
+    json.dumps(
+        {
+            "schema_version": "apps_rg.c03_resume_graph_w1_w3_receipt.v1",
+            "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+            "branch": "agent/apps-rg-c03-resume-graph-w0",
+            "base_sha": "de511b54dbed9be7fc63648ad175da2ae9edeefe",
+            "waves": {"W1": "PENDING_VERIFICATION", "W2": "PENDING_VERIFICATION", "W3": "PENDING_VERIFICATION"},
+            "production_code_changed": True,
+            "agentic_core_changed": False,
+            "checks": [],
+            "status": "PENDING_VERIFICATION",
+        },
+        indent=2,
+        sort_keys=True,
+    ),
+)
