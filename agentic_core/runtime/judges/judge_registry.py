@@ -168,13 +168,24 @@ class JudgeRegistry:
         # Handle both string grader_ref and dict grader config
         if isinstance(grader_config, str):
             grader_ref = grader_config
-            # Default metadata for string-style grader refs (backward compatible)
-            informational_only = False
-            required_for_exit = True
-            timeout_behavior = "fail"
-            missing_behavior = "fail"
-            provider_profile_ref = "local_qwen_generator"
-            is_stub = False
+            policy_map = roster_entry.get("judge_policies") or {}
+            policy = (
+                policy_map.get(grader_ref, {})
+                if isinstance(policy_map, Mapping)
+                else {}
+            )
+            if not isinstance(policy, Mapping):
+                policy = {}
+            informational_only = bool(policy.get("informational_only", False))
+            required_for_exit = bool(policy.get("required_for_exit", True))
+            timeout_behavior = str(policy.get("timeout_behavior", "fail"))
+            missing_behavior = str(policy.get("missing_behavior", "fail"))
+            provider_profile_ref = str(
+                policy.get("provider_profile_ref", "local_qwen_generator")
+            )
+            is_stub = bool(policy.get("is_stub", False))
+            implementation_ref = policy.get("judge_implementation_ref")
+            rubric_path = policy.get("rubric_path")
         elif isinstance(grader_config, dict):
             grader_ref = grader_config.get("grader_ref", "")
             # Config-driven metadata (RB16: source of truth from app config)
@@ -184,6 +195,8 @@ class JudgeRegistry:
             missing_behavior = grader_config.get("missing_behavior", "fail")
             provider_profile_ref = grader_config.get("provider_profile_ref", "local_qwen_generator")
             is_stub = grader_config.get("is_stub", False)
+            implementation_ref = grader_config.get("judge_implementation_ref")
+            rubric_path = grader_config.get("rubric_path")
         else:
             raise ValueError(f"Invalid grader config type: {type(grader_config)}")
         
@@ -205,6 +218,10 @@ class JudgeRegistry:
             dimensions=dimensions,
             grader_id=grader_ref,
             is_stub=is_stub,
+            judge_implementation_ref=(
+                str(implementation_ref) if implementation_ref else None
+            ),
+            rubric_path=str(rubric_path) if rubric_path else None,
             informational_only=informational_only,
             required_for_exit=required_for_exit,
         )

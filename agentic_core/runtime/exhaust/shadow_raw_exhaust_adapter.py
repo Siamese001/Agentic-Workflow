@@ -34,7 +34,12 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Mapping, Sequence
 
-__all__ = ["build_l6_shadow_raw_exhaust", "layer_to_stage", "stage_order"]
+__all__ = [
+    "build_l6_shadow_raw_exhaust",
+    "build_l6_shadow_raw_exhaust_from_runtime_bundle",
+    "layer_to_stage",
+    "stage_order",
+]
 
 # Canonical pipeline stages, mirroring
 # ``L6_observability.shadow_eval.ingest.EXPECTED_STAGES``. Duplicated here as a
@@ -237,3 +242,58 @@ def build_l6_shadow_raw_exhaust(
         "l5_certification_ref": l5_certification_ref or "",
         "outcome_class": outcome_class or "unresolved_unknown",
     }
+
+
+def build_l6_shadow_raw_exhaust_from_runtime_bundle(
+    bundle: Any,
+    *,
+    spans: Sequence[Mapping[str, Any]],
+    session_id: str = "",
+    tenant_id: str = "",
+    policy_hash: str = "",
+    blueprint_hash: str = "",
+) -> dict[str, Any]:
+    """Adapt the existing post-Exit runtime bundle to the sealed L6 shape."""
+    if not bool(getattr(bundle, "created_after_exit", False)):
+        raise ValueError("runtime exhaust must be created after Exit")
+    if not bool(getattr(bundle, "current_run_closed", False)):
+        raise ValueError("runtime exhaust current run must be closed")
+    exit_ref = str(getattr(bundle, "exit_disposition_ref", "") or "")
+    if not exit_ref:
+        raise ValueError("runtime exhaust requires exit_disposition_ref")
+    sealed_refs = [
+        str(ref)
+        for ref in (
+            getattr(bundle, "sealed_result_ref", ""),
+            getattr(bundle, "gate_mesh_result_ref", ""),
+            exit_ref,
+            *(getattr(bundle, "runtime_receipt_refs", ()) or ()),
+        )
+        if str(ref)
+    ]
+    return build_l6_shadow_raw_exhaust(
+        request_id=str(getattr(bundle, "request_id", "") or ""),
+        run_id=str(getattr(bundle, "run_id", "") or ""),
+        trace_root=str(getattr(bundle, "trace_root", "") or ""),
+        completed_at=str(getattr(bundle, "created_at", "") or ""),
+        runtime_boundary_crossed=True,
+        exit_disposition_ref=exit_ref,
+        spans=spans,
+        session_id=session_id,
+        tenant_id=tenant_id,
+        route_contract_ref=str(getattr(bundle, "route_contract_ref", "") or ""),
+        l2_artifact_refs=sealed_refs,
+        policy_hash=policy_hash,
+        blueprint_hash=blueprint_hash,
+        replay_key=str(getattr(bundle, "deterministic_digest", "") or ""),
+        source_lineage_manifest_ref=(
+            f"runtime-exhaust:{getattr(bundle, 'bundle_id', '')}"
+        ),
+        artifacts={
+            "generated": sealed_refs,
+            "sealed": sealed_refs,
+        },
+        l5_certification_ref=str(
+            getattr(bundle, "l5_certification_packet_ref", "") or ""
+        ),
+    )

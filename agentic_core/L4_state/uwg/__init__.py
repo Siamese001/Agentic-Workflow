@@ -24,6 +24,7 @@ from agentic_core.L4_state.uwg.app_domain_registration import (
     RegistrationReceipt,
     register_bundle,
     register_bundles,
+    register_judge_calibration_baseline,
 )
 from agentic_core.L4_state.uwg.app_domain_loader import (
     DOMAIN_CONTRACT_FILES,
@@ -52,6 +53,7 @@ __all__ = [
     "RegistrationReceipt",
     "register_bundle",
     "register_bundles",
+    "register_judge_calibration_baseline",
     "DOMAIN_CONTRACT_FILES",
     "discover_app_contract_dirs",
     "load_bundle_from_dir",

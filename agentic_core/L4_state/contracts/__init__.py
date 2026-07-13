@@ -83,6 +83,7 @@ from agentic_core.L4_state.contracts.lookup import (
 from agentic_core.L4_state.contracts.proof import L4UWGProofPacket
 from agentic_core.L4_state.contracts.app_domain import (
     APP_DOMAIN_RECORD_TYPES,
+    APPROVED_JUDGE_USE_VOCAB,
     AppCapabilityProfileRecord,
     AppDomainContractError,
     AppDomainContractRecord,
@@ -97,6 +98,7 @@ from agentic_core.L4_state.contracts.app_domain import (
     AppRetrievalProfileRecord,
     AppRouteProfileRecord,
     AppThresholdProfileRecord,
+    ApprovedJudgeCalibrationBaseline,
     CONTRACT_STATUS_VOCAB,
     FIXTURE_TYPE_VOCAB,
     FRESHNESS_CLASS_VOCAB,
@@ -199,6 +201,7 @@ __all__ = [
     "SIDE_EFFECT_CLASS_VOCAB",
     "FIXTURE_TYPE_VOCAB",
     "TASK_CLASS_KIND_VOCAB",
+    "APPROVED_JUDGE_USE_VOCAB",
     "ScoreDimension",
     "TaskClassEntry",
     "AppInputContractRecord",
@@ -213,6 +216,7 @@ __all__ = [
     "AppOrchestrationProfileRecord",
     "AppFixtureRecord",
     "AppNegativeControlRecord",
+    "ApprovedJudgeCalibrationBaseline",
     "AppDomainContractRecord",
     "APP_DOMAIN_RECORD_TYPES",
     "app_domain_record_kind",

@@ -370,21 +370,14 @@ def _norm(**overrides):
 
 
 def test_readiness_each_individual_field_missing_path():
-    """`observer.py:231,233,237,239,241` — every single missing-field branch fires.
-
-    The key insight: trace_root and exit_disposition trigger NON_EVALUABLE,
-    while policy_hash/route_contract on their own (with replay present)
-    trigger PARTIAL_BUT_SCORABLE — that flow exercises the missing_field_refs
-    appends without short-circuiting earlier.
-    """
-    # Missing policy_hash + route_contract + artifacts collectively still
-    # produces a usable readiness receipt.
+    """Missing v40 policy and route evidence is blocking until repaired."""
     b = _bare_bundle(policy_hash=None, route_contract_ref=None)
     receipt, missing, non_eval = evaluate_readiness(b, _ready_observer_for(b), [_norm()])
-    # Missing fields are surfaced.
     assert "policy_hash" in receipt.reason_codes
     assert "route_contract" in receipt.reason_codes
-    assert receipt.readiness_decision == READINESS_PARTIAL
+    assert receipt.readiness_decision == READINESS_HOLD
+    assert missing is not None and missing.blocking is True
+    assert non_eval is None
 
 
 def test_readiness_observer_violation_routes_to_non_evaluable_branch():
@@ -403,29 +396,25 @@ def test_readiness_observer_violation_routes_to_non_evaluable_branch():
     assert "OBSERVER_LAW_VIOLATION" in non_eval.reason_codes
 
 
-def test_readiness_partial_branch_preserves_normalized_records():
-    """`observer.py:274-281` — PARTIAL path returns a non-blocking missing map."""
+def test_readiness_policy_gap_holds_even_with_normalized_records():
+    """Normalized evidence cannot compensate for missing policy identity."""
     b = _bare_bundle(policy_hash=None)
     receipt, missing, _ = evaluate_readiness(b, _ready_observer_for(b), [_norm()])
-    assert receipt.readiness_decision == READINESS_PARTIAL
+    assert receipt.readiness_decision == READINESS_HOLD
     assert missing is not None
-    assert missing.blocking is False
+    assert missing.blocking is True
 
 
-def test_readiness_no_normalized_records_yields_non_evaluable():
-    """`observer.py:282-284` — empty normalized list with otherwise-clean bundle
-    falls through to the final NON_EVAL else-arm.
-    """
-    # Missing artifacts because normalized=[] AND replay-dependent missing
-    # but not trace/exit — falls through to the NO_NORMALIZED_RECORDS arm.
+def test_readiness_no_normalized_records_holds_for_missing_audit_evidence():
+    """Empty normalized input is a repairable v40 audit-evidence hold."""
     b = _bare_bundle(replay_key=None)
-    # Force replay_key missing AND empty normalized AND replay_dependent=False
-    # so the "replay_key" missing-field is suppressed: artifacts is the only
-    # missing field, which falls into the else-arm.
-    receipt, _missing, non_eval = evaluate_readiness(b, _ready_observer_for(b), [], replay_dependent=False)
-    assert receipt.readiness_decision == READINESS_NON_EVAL
-    assert non_eval is not None
-    assert "NO_NORMALIZED_RECORDS" in non_eval.reason_codes or "artifacts" in non_eval.reason_codes
+    receipt, missing, non_eval = evaluate_readiness(
+        b, _ready_observer_for(b), [], replay_dependent=False
+    )
+    assert receipt.readiness_decision == READINESS_HOLD
+    assert missing is not None and missing.blocking is True
+    assert "artifacts" in missing.missing_field_refs
+    assert non_eval is None
 
 
 def test_readiness_missing_trace_root_routes_to_non_evaluable():
@@ -616,7 +605,19 @@ def test_judge_reliability_signal_allows_for_eval_on_clean_inputs():
 
 def test_rubric_calibration_receipt_fresh_status():
     """`calibration.py:177` — CURRENT calibration => FRESH receipt."""
-    rec = build_calibration_record(rubric_hash="r", rubric_version="1", grader_version="g")
+    rec = build_calibration_record(
+        rubric_hash="r",
+        rubric_version="1",
+        grader_version="g",
+        calibration_source_refs=("test:calibration-source",),
+        calibration_result_ref="test:calibration-result",
+        dataset_id="test-dataset",
+        dataset_version="v1",
+        sample_size=1,
+        minimum_sample_size=1,
+        label_source="deterministic_code_reference",
+        result_valid=True,
+    )
     receipt = build_rubric_calibration_receipt(rec)
     assert receipt.receipt_status == "FRESH"
 

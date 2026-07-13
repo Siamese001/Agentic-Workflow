@@ -1,0 +1,22 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "contract_schema_scan",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "python -m pytest tests/governance/test_core_addition_receipt_schema.py tests/governance/test_core_addition_negative_controls.py -n0 -q",
+      "exit_code": 0,
+      "result": "43 passed"
+    },
+    {
+      "command": "python -m pytest tests/_apps_contract/test_app_domain_uwg_registration.py -k 'not test_all_discovered_apps_register' -n0 -q",
+      "exit_code": 0,
+      "result": "8 passed, 1 deselected"
+    }
+  ],
+  "known_external_fixture_debt": "The excluded discovery-wide test fails on the unchanged apps_lic holdout schema, which uses corpus_ref and lacks generic input_ref and expected_disposition fields."
+}

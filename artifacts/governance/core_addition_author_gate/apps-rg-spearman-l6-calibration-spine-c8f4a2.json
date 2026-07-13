@@ -1,0 +1,124 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L4_state/contracts/__init__.py",
+    "agentic_core/L4_state/contracts/app_domain.py",
+    "agentic_core/L4_state/contracts/app_domain_lookup.py",
+    "agentic_core/L4_state/uwg/__init__.py",
+    "agentic_core/L4_state/uwg/app_domain_registration.py",
+    "agentic_core/L6_observability/shadow_eval/calibration.py",
+    "agentic_core/L6_observability/shadow_eval/contracts.py",
+    "agentic_core/L6_observability/shadow_eval/otel_spans.py",
+    "agentic_core/L6_observability/shadow_eval/pipeline.py",
+    "agentic_core/L6_observability/shadow_eval/post_boundary_runner.py",
+    "agentic_core/L6_observability/shadow_eval/proposal.py",
+    "agentic_core/L6_observability/shadow_eval/spearman_calibration.py",
+    "agentic_core/runtime/exhaust/shadow_raw_exhaust_adapter.py",
+    "agentic_core/runtime/judges/judge_registry.py",
+    "agentic_core/runtime/judges/llm_judge_gateway.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "The change adds generic evidence-bound L6 calibration and app-domain approved-baseline contracts. App-owned identity, semantic thresholds, rubric, provider, dataset, and Exit policy remain outside agentic_core. The completed run stays immutable, L6 cannot write L4, and UWG remains the only durable baseline path.",
+    "decided_at": "2026-07-13T12:02:41Z"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "Generic L6 Spearman profiles, samples, results, reliability signals, and post-boundary adapters are declarative and app-neutral."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "The core engine accepts caller-supplied identity, dataset, thresholds, rubric, and provider metadata without branching on an app identifier."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "All resume-specific calibration meaning and approved-use interpretation are supplied by apps_rg configuration and runtime bindings."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "GOV-3 pre-signature scan reported 0 forbidden-literal findings across changed core paths."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "Focused L6, runtime-judge, exhaust-adapter, app binding, and CI tests passed: 445 passed."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "Core author-gate schema/negative controls passed 43 tests; dataset, calibration, and promotion gates each exited 1 in explicit fail-closed mode."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "The user explicitly supplied and requested execution of plan apps-rg-spearman-l6-calibration-spine-c8f4a2, including its core and governance changes."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "Identity and L6-placement gates passed; tests prove post-Exit execution, no current-run rescue, no direct L4 write, and UWG-only registration."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Focused compatibility suite passed 445 tests and the targeted app-domain UWG suite passed 8 tests with 1 unrelated discovery-wide fixture test deselected."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "End-to-end tests prove Exit to sealed exhaust to L6.4 to RCA/promotion to UWG to L4 to next-run Exit, without mutating the completed run."
+    }
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_no_app_literal_scan.json",
+      "digest": "sha256:d3dca811d0bde3f468dd3e2f41e430028a173e79625b30e8cfb604e30bd8c653",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    },
+    "strict_scan_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_strict_scan.json",
+      "digest": "sha256:98a3406d61cb1ddbc6e9e776a4c216525140ff4d007a33c5a9009d1af5c81ff8",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    },
+    "negative_control_results_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_negative_controls.json",
+      "digest": "sha256:aa2734a80a42228da902159b302493c454f11110097ced7c412a1c986b7adceb",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    },
+    "plugin_proof_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_plugin_proof.json",
+      "digest": "sha256:2471b13e05db7b2243b74886b527d1f7a216e3852ead00211ed845de8ae7eda3",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    },
+    "boundary_scan_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_boundary_scan.json",
+      "digest": "sha256:4c5c9c20597a54c30a8aa7a5ece4556ddc9802e44df964751736bb45c335db48",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    },
+    "contract_schema_scan_ref": {
+      "path": "artifacts/governance/apps_rg_spearman_contract_schema_scan.json",
+      "digest": "sha256:f910810bd8ac6a94f958a7b1e6e4aa21263be79ceee198ff8fce84a460e84f88",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+      "freshness_ts": "2026-07-13T12:02:41Z",
+      "changed_paths_covered": true
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:f5bd2776a7ae6130ca8d74bc3be1369c9c161d94b9c44e2569edcae8458cf74a",
+    "signed_by": "codex",
+    "signed_at": "2026-07-13T12:02:41Z"
+  }
+}

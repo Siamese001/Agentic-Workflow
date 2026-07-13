@@ -33,7 +33,9 @@ Logger = logging.getLogger(__name__)
 # Canonical (app_id, dim_name) -> dotted module path for the judge.
 # Matches the `check_app_domain_harness_parity` gate expectations.
 JUDGE_IMPORT_PATHS: Dict[Tuple[str, str], str] = {
-    ("apps_rg", "executive_positioning"): "apps_rg.engines.judges.executive_positioning_judge",
+    ("apps_rg", "executive_positioning"): (
+        "agentic_core.runtime.judges.resume_judges.executive_positioning"
+    ),
     ("apps_lic", "response_likelihood"): "apps_lic.engines.judges.response_likelihood_judge",
     ("apps_lic", "brand_voice"): "apps_lic.engines.judges.brand_voice_judge",
 }

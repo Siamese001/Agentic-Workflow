@@ -263,6 +263,7 @@ def admit_proposal(
     pattern: PatternSynthesisRecord | None,
     eval_freshness_ok: bool = True,
     calibration_freshness_ok: bool = True,
+    sme_signoff_ref: str = "",
 ) -> ProposalAdmissionReceipt:
     open_blockers: list[str] = []
     reasons: list[str] = []
@@ -311,7 +312,7 @@ def admit_proposal(
         proposal.proposal_type in _HIGH_IMPACT_TYPES
         or any(s in _HIGH_IMPACT_SURFACES for s in proposal.blast_radius.affected_surfaces)
         or proposal.blast_radius.rollout_risk_score >= 0.7
-    ):
+    ) and not sme_signoff_ref:
         decision = REQUIRE_SME_REVIEW
     else:
         decision = ADMIT_TO_GAUNTLET
@@ -328,6 +329,7 @@ def admit_proposal(
         test_plan_present=test_present,
         owner_signer_present=owner_present,
         freshness_check_status="OK" if eval_freshness_ok and calibration_freshness_ok else "STALE",
+        sme_signoff_ref=sme_signoff_ref,
         open_blockers=open_blockers,
         decision=decision,
         reason_codes=reasons,

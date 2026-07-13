@@ -32,6 +32,7 @@ plan.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Mapping, Tuple
 
 from agentic_core.L4_state.contracts.records import (
@@ -86,6 +87,15 @@ FIXTURE_TYPE_VOCAB: frozenset[str] = frozenset(
 )
 TASK_CLASS_KIND_VOCAB: frozenset[str] = frozenset(
     {"generation", "classification", "extraction", "decisioning", "ranking", "selection"},
+)
+APPROVED_JUDGE_USE_VOCAB: frozenset[str] = frozenset(
+    {
+        "ALLOW_FOR_EVAL",
+        "ALLOW_ADVISORY_ONLY",
+        "REQUIRE_HYBRID",
+        "REQUIRE_HUMAN_REVIEW",
+        "DISABLE_FOR_SURFACE",
+    }
 )
 
 
@@ -162,8 +172,8 @@ class ScoreDimension:
 class TaskClassEntry:
     """Per-task-class declaration inside the manifest.
 
-    A single app may declare multiple task_classes (e.g. apps_rg has
-    ``resume_generation`` and ``cover_letter_generation``). Each task_class
+    A single app may declare multiple task classes, such as generation and
+    classification surfaces. Each task class
     binds to its own rubric / threshold / grader / capability profile.
     """
 
@@ -503,8 +513,8 @@ class AppRouteProfileRecord:
 class AppOrchestrationProfileRecord:
     """Per-(app, task_class) orchestration profile — DAG / HOP shape (optional).
 
-    Only HOP / DAG-based apps (apps_rg, apps_lic, apps_underwriting_ai) populate
-    this. Linear apps may omit the contract reference and rely solely on
+    Only HOP / DAG-based app domains populate this. Linear apps may omit the
+    contract reference and rely solely on
     AppRouteProfileRecord.
     """
 
@@ -595,6 +605,97 @@ class AppNegativeControlRecord:
             )
 
 
+@dataclass(frozen=True)
+class ApprovedJudgeCalibrationBaseline:
+    """UWG-created reliability baseline that may affect future runs only."""
+
+    baseline_id: str
+    app_id: str
+    task_class: str
+    status: str
+    judge_id: str
+    judge_version: str
+    rubric_hash: str
+    rubric_version: str
+    provider_profile_ref: str
+    dataset_id: str
+    dataset_version: str
+    n: int
+    spearman_rho: float
+    p_value: float
+    threshold: float
+    approved_use: str
+    approved_at: str
+    expires_at: str
+    promotion_receipt_ref: str
+    uwg_receipt_ref: str
+    schema_version: str = L4_CONTRACT_SCHEMA_VERSION
+    deterministic_digest: str = ""
+    source_app_config_ref: str = ""
+    created_by_surface: str = "UWG"
+    audit_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    lineage_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+
+    def __post_init__(self) -> None:
+        _validate_status(self.status, "ApprovedJudgeCalibrationBaseline")
+        _validate_app_task(
+            self.app_id,
+            self.task_class,
+            "ApprovedJudgeCalibrationBaseline",
+        )
+        if self.approved_use not in APPROVED_JUDGE_USE_VOCAB:
+            raise AppDomainContractError(
+                f"approved_use {self.approved_use!r} not in "
+                f"{sorted(APPROVED_JUDGE_USE_VOCAB)}"
+            )
+        if self.n <= 0:
+            raise AppDomainContractError("calibration baseline requires n > 0")
+        required_identity = {
+            "baseline_id": self.baseline_id,
+            "judge_id": self.judge_id,
+            "judge_version": self.judge_version,
+            "rubric_hash": self.rubric_hash,
+            "rubric_version": self.rubric_version,
+            "provider_profile_ref": self.provider_profile_ref,
+            "dataset_id": self.dataset_id,
+            "dataset_version": self.dataset_version,
+        }
+        missing_identity = sorted(
+            key for key, value in required_identity.items() if not str(value).strip()
+        )
+        if missing_identity:
+            raise AppDomainContractError(
+                "calibration baseline missing identity: " + ",".join(missing_identity)
+            )
+        if not -1.0 <= self.spearman_rho <= 1.0:
+            raise AppDomainContractError("spearman_rho must be in [-1,1]")
+        if not -1.0 <= self.threshold <= 1.0:
+            raise AppDomainContractError("threshold must be in [-1,1]")
+        if self.spearman_rho < self.threshold:
+            raise AppDomainContractError("approved baseline must meet its rho threshold")
+        if not 0.0 <= self.p_value <= 1.0:
+            raise AppDomainContractError("p_value must be in [0,1]")
+        if not self.promotion_receipt_ref or not self.uwg_receipt_ref:
+            raise AppDomainContractError(
+                "promotion_receipt_ref and uwg_receipt_ref are required"
+            )
+        if self.created_by_surface != "UWG":
+            raise AppDomainContractError("calibration baseline must be UWG-created")
+        try:
+            approved_at = datetime.fromisoformat(self.approved_at)
+            expires_at = datetime.fromisoformat(self.expires_at)
+        except ValueError as exc:
+            raise AppDomainContractError(
+                "approved_at and expires_at must be ISO-8601 timestamps"
+            ) from exc
+        if approved_at.tzinfo is None or expires_at.tzinfo is None:
+            raise AppDomainContractError(
+                "approved_at and expires_at must include timezone offsets"
+            )
+        if expires_at <= approved_at:
+            raise AppDomainContractError("expires_at must be after approved_at")
+
+
 # ----------------------------------------------------------------------------
 # Top-level manifest
 # ----------------------------------------------------------------------------
@@ -641,6 +742,7 @@ class AppDomainContractRecord:
     # Optional: apps may omit during initial rollout; L6 promotion gate falls back
     # to global defaults when absent.
     learning_profile_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
+    judge_calibration_baseline_refs: Tuple[str, ...] = field(default_factory=_empty_tuple)
     policy_hash: str = ""
     blueprint_hash: str = ""
     registry_digest_set: Tuple[str, ...] = field(default_factory=_empty_tuple)
@@ -721,6 +823,7 @@ APP_DOMAIN_RECORD_TYPES: Tuple[type, ...] = (
     AppOrchestrationProfileRecord,
     AppFixtureRecord,
     AppNegativeControlRecord,
+    ApprovedJudgeCalibrationBaseline,
 )
 
 
@@ -736,6 +839,7 @@ __all__ = [
     "SIDE_EFFECT_CLASS_VOCAB",
     "FIXTURE_TYPE_VOCAB",
     "TASK_CLASS_KIND_VOCAB",
+    "APPROVED_JUDGE_USE_VOCAB",
     # Building blocks
     "ScoreDimension",
     "TaskClassEntry",
@@ -752,6 +856,7 @@ __all__ = [
     "AppOrchestrationProfileRecord",
     "AppFixtureRecord",
     "AppNegativeControlRecord",
+    "ApprovedJudgeCalibrationBaseline",
     # Top-level
     "AppDomainContractRecord",
     # Helpers

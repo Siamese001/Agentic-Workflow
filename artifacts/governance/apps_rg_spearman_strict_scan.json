@@ -1,0 +1,22 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "strict_scan",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "python -m ruff check <all newly added Python files>",
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    {
+      "command": "python -m compileall -q <changed runtime, calibration, CI, and test surfaces>",
+      "exit_code": 0,
+      "result": "All changed Python surfaces compiled"
+    }
+  ],
+  "baseline_note": "A changed-file-wide Ruff inventory found 306 existing style findings in legacy files; newly added files are clean and behavioral compatibility is covered separately."
+}

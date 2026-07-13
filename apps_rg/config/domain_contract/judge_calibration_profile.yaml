@@ -1,0 +1,30 @@
+schema_version: "1.0"
+app_id: "apps_rg"
+task_class: "resume_generation"
+judge_id: "rg::executive_positioning_judge::v1"
+judge_version: "v1"
+judge_implementation_ref: "agentic_core.runtime.judges.resume_judges.executive_positioning:ExecutivePositioningJudge"
+provider_profile_ref: "local_qwen_generator"
+dataset_id: "apps_rg_executive_positioning"
+dataset_version: "v1"
+informational_only: true
+required_for_exit: false
+rubric_version: "1.0.0"
+rubric_hash: "e3cec96dfac21b61056f4f5d1d150fa769e3242a5e4b93c4c907afe8b731fdb1"
+rubric_files:
+  - "apps_rg/config/domain_contract/judges/executive_positioning_system_prompt.txt"
+  - "apps_rg/config/domain_contract/judges/executive_positioning_rubric.txt"
+dataset_path: "apps_eval/fixtures/holdout/apps_rg_executive_positioning.v1.jsonl"
+
+semantic_alignment:
+  minimum_samples: 40
+  minimum_spearman_rho: 0.80
+  maximum_p_value: 0.05
+  promotion_requires_human_labels: true
+  promotion_requires_uwg: true
+
+heuristic_sanity:
+  minimum_samples: 20
+  minimum_spearman_rho: 0.60
+  maximum_p_value: 1.0
+  promotion_eligible: false

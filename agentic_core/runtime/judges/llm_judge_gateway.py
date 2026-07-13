@@ -3,19 +3,20 @@
 RB13: apps-rg-zip-based-full-spine-runtime-restoration-v1
 
 Enforces:
-- Judge profile loading from apps_rg grader_roster
+- Judge profile loading from an app-owned grader roster
 - Judge invocation through provider gateway
 - JudgeResult normalization
 - Abstain support
 - Timeout handling
 - Fail-closed for required dimensions
 - Warn-only for informational dimensions
-- No import from apps_rg/engines/judges/
+- No import from an app-owned judge implementation directory
 """
 
 from __future__ import annotations
 
 import hashlib
+import importlib
 import logging
 import time
 import uuid
@@ -274,7 +275,7 @@ class LLMJudgeGateway:
                 )
             
             # Parse judge response
-            score = self._parse_judge_response(provider_resp.text)
+            score = self._parse_judge_response(provider_resp.text, profile)
             
             judge_result = JudgeResult(
                 judge_id=profile.profile_id,
@@ -316,8 +317,14 @@ class LLMJudgeGateway:
         profile: JudgeProfile,
     ) -> str:
         """Build the judge prompt."""
-        # Simple judge prompt for RB13
-        # In production, this would load from rubric YAML
+        implementation = self._load_judge_implementation(profile)
+        if implementation is not None and hasattr(implementation, "build_prompt"):
+            prompt = implementation.build_prompt(
+                candidate_text=request.candidate_text,
+                context_metadata=dict(request.context_metadata),
+            )
+            return f"{prompt.system_prompt}\n\n{prompt.user_prompt}"
+
         dimensions_text = "\n".join([
             f"- {d.dimension_id}: weight={d.weight}"
             for d in profile.dimensions
@@ -331,9 +338,21 @@ class LLMJudgeGateway:
             f"Return ONLY a JSON object with scores (0.0-1.0) for each dimension."
         )
     
-    def _parse_judge_response(self, response_text: str) -> float:
+    def _parse_judge_response(
+        self,
+        response_text: str,
+        profile: JudgeProfile | None = None,
+    ) -> float:
         """Parse the judge response to extract a score."""
         import json
+
+        implementation = self._load_judge_implementation(profile) if profile else None
+        if implementation is not None and hasattr(implementation, "parse_response"):
+            parsed = implementation.parse_response(response_text)
+            parse_error = str(getattr(parsed, "parse_error", "") or "")
+            if parse_error:
+                raise ValueError(f"judge response parse failed: {parse_error}")
+            return float(getattr(parsed, "score"))
         
         # Try to parse as JSON
         try:
@@ -372,6 +391,20 @@ class LLMJudgeGateway:
         
         # Fallback: return neutral score
         return 0.75
+
+    @staticmethod
+    def _load_judge_implementation(profile: JudgeProfile) -> Any | None:
+        ref = str(profile.judge_implementation_ref or "").strip()
+        if not ref:
+            return None
+        module_name, separator, class_name = ref.partition(":")
+        if not separator or not module_name or not class_name:
+            raise ValueError(
+                f"judge_implementation_ref must be '<module>:<class>', got {ref!r}"
+            )
+        module = importlib.import_module(module_name)
+        implementation_type = getattr(module, class_name)
+        return implementation_type()
     
     def _build_error_response(
         self,

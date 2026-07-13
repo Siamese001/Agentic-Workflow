@@ -1,0 +1,31 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "negative_controls",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "python -m pytest tests/governance/test_core_addition_receipt_schema.py tests/governance/test_core_addition_negative_controls.py -n0 -q",
+      "exit_code": 0,
+      "result": "43 passed"
+    },
+    {
+      "command": "APPS_RG_SPEARMAN_DATASET_FAIL_CLOSED=1 python ops_scripts/ci/check_apps_rg_spearman_dataset.py",
+      "exit_code": 1,
+      "result": "Missing human semantic holdout blocked"
+    },
+    {
+      "command": "APPS_RG_SPEARMAN_CALIBRATION_FAIL_CLOSED=1 python ops_scripts/ci/check_apps_rg_spearman_calibration.py",
+      "exit_code": 1,
+      "result": "Insufficient semantic calibration blocked"
+    },
+    {
+      "command": "APPS_RG_SPEARMAN_PROMOTION_FAIL_CLOSED=1 python ops_scripts/ci/check_apps_rg_spearman_promotion.py",
+      "exit_code": 1,
+      "result": "Missing approved UWG baseline blocked"
+    }
+  ]
+}

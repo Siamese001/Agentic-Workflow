@@ -26,19 +26,37 @@ from agentic_core.runtime.exhaust.shadow_raw_exhaust_adapter import (
 def _spans():
     return [
         {
-            "name": "runtime.trace_root", "layer": "L0_routing", "kind": "trace_root",
-            "trace_id": "trace-abc", "span_id": "root", "parent_span_id": "",
-            "status": "ok", "duration_ms": 0.0, "attributes": {"prompt_hash": "ph-1"},
+            "name": "runtime.trace_root",
+            "layer": "L0_routing",
+            "kind": "trace_root",
+            "trace_id": "trace-abc",
+            "span_id": "root",
+            "parent_span_id": "",
+            "status": "ok",
+            "duration_ms": 0.0,
+            "attributes": {"prompt_hash": "ph-1"},
         },
         {
-            "name": "L2.step.seal", "layer": "L2_execution", "kind": "seal",
-            "trace_id": "trace-abc", "span_id": "l2", "parent_span_id": "root",
-            "status": "ok", "duration_ms": 1.0, "attributes": {},
+            "name": "L2.step.seal",
+            "layer": "L2_execution",
+            "kind": "seal",
+            "trace_id": "trace-abc",
+            "span_id": "l2",
+            "parent_span_id": "root",
+            "status": "ok",
+            "duration_ms": 1.0,
+            "attributes": {},
         },
         {
-            "name": "exit.disposition", "layer": "L5_safety", "kind": "exit",
-            "trace_id": "trace-abc", "span_id": "exit", "parent_span_id": "l2",
-            "status": "ok", "duration_ms": 0.0, "attributes": {},
+            "name": "exit.disposition",
+            "layer": "L5_safety",
+            "kind": "exit",
+            "trace_id": "trace-abc",
+            "span_id": "exit",
+            "parent_span_id": "l2",
+            "status": "ok",
+            "duration_ms": 0.0,
+            "attributes": {},
         },
     ]
 
@@ -55,6 +73,11 @@ def _raw_exhaust(spans):
         policy_hash="policy-1",
         replay_key="replay-1",
         route_contract_ref="route-contract-1",
+        artifacts={
+            "generated": ["sealed-result-1"],
+            "sealed": ["sealed-result-1"],
+        },
+        l5_certification_ref="l5-certification-1",
     )
 
 

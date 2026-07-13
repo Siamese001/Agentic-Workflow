@@ -225,6 +225,7 @@ class RuntimeExhaustBundle:
 
     def __post_init__(self) -> None:
         from agentic_core.L5_safety.contracts.verify import verify_certification_ref
+
         if not verify_certification_ref(self.l5_certification_ref):
             raise ValueError(
                 f"RuntimeExhaustBundle: missing or invalid l5_certification_ref={self.l5_certification_ref!r} "
@@ -508,6 +509,37 @@ class GovernanceRegressionRecord:
 
 
 @dataclass(slots=True)
+class SpearmanCalibrationResult:
+    calibration_id: str
+    dataset_id: str
+    dataset_version: str
+    judge_id: str
+    judge_version: str
+    rubric_hash: str
+    rubric_version: str
+    provider_profile_ref: str
+    n: int
+    spearman_rho: float | None
+    p_value: float | None
+    confidence_interval: tuple[float, float] | None
+    minimum_rho_threshold: float
+    maximum_p_value: float
+    minimum_sample_size: int
+    sample_size_met: bool
+    threshold_met: bool
+    label_source: str
+    promotion_eligible: bool
+    fallback_only: bool
+    human_score_digest: str
+    judge_score_digest: str
+    calibration_source_refs: list[str] = field(default_factory=list)
+    computed_at: str = ""
+    status: str = "INSUFFICIENT"
+    deterministic_digest: str = ""
+    failure_reason_codes: list[str] = field(default_factory=list)
+
+
+@dataclass(slots=True)
 class CalibrationRecord:
     calibration_record_id: str
     rubric_hash: str
@@ -526,6 +558,17 @@ class CalibrationRecord:
     escalation_threshold_updates_proposed: list[str] = field(default_factory=list)
     calibration_freshness_timestamp: str = ""
     calibration_status: str = "CURRENT"  # CURRENT | STALE | INSUFFICIENT | CONFLICTED
+    calibration_result_ref: str = ""
+    dataset_id: str = ""
+    dataset_version: str = ""
+    sample_size: int = 0
+    minimum_sample_size: int = 0
+    spearman_p_value: float | None = None
+    label_source: str = ""
+    promotion_eligible: bool = False
+    calibration_mode: str = "NO_CALIBRATION"
+    approved_baseline_ref: str = ""
+    failure_reason_codes: list[str] = field(default_factory=list)
     deterministic_digest: str = ""
 
 
@@ -541,6 +584,15 @@ class JudgeReliabilitySignal:
     forced_certainty_flags: list[str] = field(default_factory=list)
     bias_or_drift_flags: list[str] = field(default_factory=list)
     recommended_use: str = "ALLOW_FOR_EVAL"
+    calibration_result_ref: str = ""
+    dataset_id: str = ""
+    dataset_version: str = ""
+    sample_size: int = 0
+    p_value: float | None = None
+    calibration_status: str = "INSUFFICIENT"
+    computed_at: str = ""
+    approved_baseline_ref: str = ""
+    deterministic_digest: str = ""
 
 
 @dataclass(slots=True)
@@ -576,6 +628,7 @@ class CompletedEvalRecord:
     grader_versions: list[str]
     evidence_snapshot_hash: str
     immutable_score_bundle: dict[str, float]
+    judge_reliability_signal_ref: str = ""
     uncertainty_markers: list[str] = field(default_factory=list)
     support_rationale_refs: list[str] = field(default_factory=list)
     reviewer_override_refs: list[str] = field(default_factory=list)
@@ -696,6 +749,20 @@ class PatternSynthesisRecord:
     deterministic_digest: str = ""
 
 
+@dataclass(slots=True)
+class JudgeCalibrationFailurePattern:
+    failure_pattern_id: str
+    calibration_result_ref: str
+    judge_id: str
+    failure_reason_codes: list[str] = field(default_factory=list)
+    proposed_rubric_updates: list[str] = field(default_factory=list)
+    proposed_prompt_updates: list[str] = field(default_factory=list)
+    proposed_provider_changes: list[str] = field(default_factory=list)
+    proposed_threshold_changes: list[str] = field(default_factory=list)
+    proposed_fallback_posture: str = "REQUIRE_HYBRID"
+    deterministic_digest: str = ""
+
+
 # ---------------------------------------------------------------------------
 # 06.6 — Proposal contracts
 # ---------------------------------------------------------------------------
@@ -793,6 +860,7 @@ class ProposalAdmissionReceipt:
     test_plan_present: bool
     owner_signer_present: bool
     freshness_check_status: str
+    sme_signoff_ref: str = ""
     open_blockers: list[str] = field(default_factory=list)
     decision: str = HOLD_FOR_MORE_EVIDENCE  # ADMIT_TO_GAUNTLET | HOLD | REJECT | REQUIRE_SME_REVIEW
     reason_codes: list[str] = field(default_factory=list)
@@ -959,6 +1027,7 @@ __all__ = [
     "TrajectoryEvalRecord",
     "GovernanceRegressionRecord",
     # 06.4
+    "SpearmanCalibrationResult",
     "CalibrationRecord",
     "JudgeReliabilitySignal",
     "HumanAgreementRecord",
@@ -973,6 +1042,7 @@ __all__ = [
     "DriftClusterMap",
     "AffectedSurfaceCandidateMap",
     "PatternSynthesisRecord",
+    "JudgeCalibrationFailurePattern",
     # 06.6
     "ProposedDiffManifest",
     "ProposalEvidenceMap",

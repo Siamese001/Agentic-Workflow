@@ -1,0 +1,17 @@
+{
+  "schema_version": "core-addition-evidence/v1",
+  "plan_id": "apps-rg-spearman-l6-calibration-spine-c8f4a2",
+  "evidence_type": "plugin_proof",
+  "verdict": "PASS",
+  "generated_at": "2026-07-13T12:02:41Z",
+  "baseline_commit": "e9c3afb63de1e5f8b53d53b13d1021b2e8729e24",
+  "changed_paths_covered": true,
+  "checks": [
+    {
+      "command": "python -m pytest tests/unit/L6_observability/shadow_eval tests/unit/agentic_core/L6_observability/shadow_eval tests/unit/agentic_core/runtime/judges tests/unit/apps_rg/test_judge_reliability_exit.py tests/unit/apps_rg/test_spearman_l6_calibration_spine.py tests/governance/test_apps_rg_spearman_ci_gates.py tests/unit/agentic_core/runtime/exhaust/test_shadow_raw_exhaust_adapter.py -n0 -q",
+      "exit_code": 0,
+      "result": "445 passed"
+    }
+  ],
+  "architecture": "The core Spearman engine accepts a generic declarative profile and sample contract. App identity, thresholds, provider, rubric, dataset, and approved-use meaning remain in app-owned configuration and bindings."
+}
