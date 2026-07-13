@@ -1,0 +1,4 @@
+interface:
+  display_name: "Artifact Management"
+  short_description: "Create durable repository artifacts in canonical locations"
+  default_prompt: "Use the artifact-management workflow to classify the artifact, choose its canonical repository path, capture evidence with explicit provenance, bound long-running operations, and run the applicable structure and contract checks."

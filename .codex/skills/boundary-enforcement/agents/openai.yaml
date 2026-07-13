@@ -1,0 +1,4 @@
+interface:
+  display_name: "Boundary Enforcement"
+  short_description: "Review imports, layers, and compatibility shims"
+  default_prompt: "Use boundary-enforcement to inspect the graph-backed dependency, verify layer gravity and canonical imports, apply temporary shim discipline when needed, and run focused lint plus repository boundary gates."

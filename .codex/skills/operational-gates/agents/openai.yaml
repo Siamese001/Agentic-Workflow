@@ -1,0 +1,4 @@
+interface:
+  display_name: "Operational Gates"
+  short_description: "Gate destructive and rollback-sensitive operations"
+  default_prompt: "Use operational-gates to define the mutation scope, establish a recoverable baseline, validate tool schemas and authority, execute one bounded phase at a time, and preserve failure and recovery evidence."

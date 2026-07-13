@@ -1,84 +1,50 @@
 ---
 name: scope-containment
-description: Use when managing scope boundaries, retrieval discipline, cross-turn topic transitions, or applying scope-containment procedures.
-trigger: model_decision
+description: Use this skill when a task risks silent scope expansion, crosses topics or modules, requires bounded retrieval, or needs a clear distinction between files that may be read and files that may be changed.
+metadata:
+  owner: platform-team
+  version: "2.0"
 ---
 
-# Scope Containment Skill
+# Scope containment
 
-Procedural execution guide for the `scope-containment` always-on rule. Use this skill when:
-- Determining in-scope vs out-of-scope boundaries
-- Managing cross-turn topic transitions
-- Applying retrieval discipline caps
-- Deciding whether to emit `NEXT_STEP:` or `SCOPE_RESET:` markers
+Use this procedure to keep investigation broad enough to establish evidence while keeping edits limited
+to the approved outcome. The always-on scope rule remains authoritative.
 
-## When to Use
+## Workflow
 
-- **In scope**: files user named; files in plan `Files In Scope`; files required for compile/type-check/pass tests
-- **Out of scope**: files only discovered via `grep_search`/`code_search` (read-only, never edit); unrelated anti-pattern/formatting touches; doc updates unless requested
+1. Restate the requested outcome and the exact change surface already approved.
+2. Separate files into:
+   - **edit scope**: explicitly named, approved by the plan, or required for build/test correctness;
+   - **read-only evidence**: consulted to understand dependencies or behavior;
+   - **deferred**: relevant improvements that are not required for the requested outcome.
+3. Use exact reads and structural queries before broad retrieval.
+4. State any transitive file that must enter edit scope and why before changing it.
+5. After each edit batch, compare the diff with the declared scope.
+6. Report deferred work once without turning it into an unrequested implementation wave.
 
-## Retrieval Discipline
+## Retrieval discipline
 
-| Cap | Limit | Audit Hook | Bypass |
-|-----|-------|------------|--------|
-| `grep_search` + `code_search` | 3/response | `post_agent_grep_budget_audit.py` | `GREP_BUDGET_BYPASS=1` |
-| File reads (native + MCP) | 10/response | `post_agent_read_budget_audit.py` | `READ_BUDGET_BYPASS=1` |
+- Use ADG for dependencies, consumers, layers, and blast radius.
+- Use literal search for comments, TODOs, and exact strings.
+- Retain paths and evidence summaries; discard large retrieval chunks after extracting what is needed.
+- Stop broadening retrieval when results converge or the decision is supported.
 
-**Rule**: Read named files; don't grep "to be sure". Plan names files → read directly.  
-**ADG > grep**: Never grep "who imports X / what depends on Y". Use `adg_edge_fanin` / `adg_edge_fanout`.
+## Topic changes
 
-## Scope-Reset Marker (Cross-Turn Topic Transitions)
+When the user changes the objective, explicitly drop stale assumptions and establish the new scope in
+plain language. Do not rely on custom marker syntax as the only indication of a scope reset.
 
-When user shifts to different module/layer/concern, emit before any tool call:
+## Validation
 
-```
-SCOPE_RESET: from=<prior-scope> to=<new-scope> dropped=<files-or-topics>
-```
-
-**Triggers**: different top-level dir; different layer (L0→L4) or app (apps_qna→apps_rg); different task type (refactor→debug→plan); explicit "new task" / "switch to".
-
-**Do NOT emit for**: natural continuations ("now W2", "verify that", "fix the typo").
-
-## Summarize-Before-Return
-
-After `code_search` or multi-file `grep_search`, state retained paths and discard chunks:
-
-```
-[After code_search] Retained: <path1>, <path2>. Discarded: chunk contents (will read targeted files if needed).
+```bash
+git diff --name-only
 ```
 
-Chunks served their purpose (locating files); paths are the durable artifact.
-
-## Escape Hatches
-
-| Situation | Action |
-|-----------|--------|
-| User approved expansion | Proceed ("yes, also fix Y") |
-| Transitive requirement | State requirement inline before editing |
-| Emergency rollback | Constitutional §7 auto-closure |
-| Scripted batch | `SCOPE_CONTAINMENT_BYPASS=1` — logs bypass row |
-
-## Markers Reference
-
-| Marker | Use When | Captured By |
-|--------|----------|-------------|
-| `NEXT_STEP:` | Optional follow-up ideas, out-of-scope improvements | native `spawn_task` (§24 / ADR-096; capture hook retired W7) |
-| `SCOPE_RESET:` | Cross-turn topic transitions | This rule |
-| `DEFERRED_SCOPE:` | Wave/phase descoping decisions | native `spawn_task` (§24 / ADR-096; capture hook retired W7) |
-
-## Enforcement Layer Mapping
-
-| Layer | Component |
-|-------|-----------|
-| Composition | `scope-containment.md` rule (always_on, advisory) |
-| Text-search cap | `post_agent_grep_budget_audit.py` → `artifacts/governance/grep_budget_violations.jsonl` |
-| File-read cap | `post_agent_read_budget_audit.py` → `artifacts/governance/read_budget_violations.jsonl` |
-| Token telemetry | `post_agent_token_telemetry.py` → `artifacts/governance/turn_budget.jsonl` |
-| Out-of-scope ideas | out-of-scope work → native `spawn_task` (constitutional §24) |
-| Topic transitions | `SCOPE_RESET:` marker |
+Every changed file must have a direct outcome, build, test, or graph-backed reason for being in scope.
 
 ## References
 
-- Rule: `.codex/rules/scope-containment.md` (invariants)
-- Sibling: constitutional §24 (native `spawn_task`)
-- Constitutional: §18 (no hidden scope expansion), §28 (ADG over grep), §31 (SSOT folder routing)
+- Always-on rule: `.codex/rules/scope-containment.md`
+- Structural scope: `.codex/skills/graph-analysis/SKILL.md`
+- Destructive phases: `.codex/skills/operational-gates/SKILL.md`

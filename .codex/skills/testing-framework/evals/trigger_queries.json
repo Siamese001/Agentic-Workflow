@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Add a regression test for this bug and run the graph-selected pytest node IDs first.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Why did collected tests drop from 520 to 503, and were any silently deselected?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Review this proposed xfail and confirm it is strict, owned, and time-bounded.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Select the tests required by this cross-module change using imports, fixtures, and entrypoint reachability.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "The test passes only with a broad mock; redesign it to prove validation and side effects.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Update the contract tests for the intentional behavior change without weakening failure assertions.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Explain what pytest is.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Open a pull request for the existing changes.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Find every file containing the word test.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Write a project status report.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Look up the current Playwright browser API.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Change an import path without touching tests.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

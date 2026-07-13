@@ -1,0 +1,17 @@
+{
+  "skill_name": "testing-framework",
+  "evals": [
+    {
+      "id": "regression",
+      "prompt": "Add tests for a replay bug in a multi-module workflow.",
+      "expected_output": "A minimal reproducer, adjacent near miss, deterministic inputs, side-effect and recovery assertions, and graph-backed test selection.",
+      "files": []
+    },
+    {
+      "id": "count-drift",
+      "prompt": "Investigate lower pytest collection and execution counts.",
+      "expected_output": "Exact collected/selected/executed/deselected/skip/xfail counts, root cause, and no baseline update without justification.",
+      "files": []
+    }
+  ]
+}

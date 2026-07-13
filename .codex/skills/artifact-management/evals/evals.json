@@ -1,0 +1,17 @@
+{
+  "skill_name": "artifact-management",
+  "evals": [
+    {
+      "id": "canonical-report",
+      "prompt": "Create a governance report for a failed phase and choose its canonical path.",
+      "expected_output": "A repository-relative destination, observed/derived/unresolved evidence separation, bounded commands, and explicit validation.",
+      "files": []
+    },
+    {
+      "id": "large-batch",
+      "prompt": "Produce evidence from a directory scan that may contain thousands of files.",
+      "expected_output": "A bounded batch plan with limits, progress kept out of persisted evidence, early termination, and a clear artifact contract.",
+      "files": []
+    }
+  ]
+}

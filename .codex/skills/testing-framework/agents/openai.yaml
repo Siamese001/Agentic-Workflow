@@ -1,0 +1,4 @@
+interface:
+  display_name: "Testing Framework"
+  short_description: "Design and run rigorous graph-backed tests"
+  default_prompt: "Use testing-framework to identify graph-backed test scope, add deterministic regression coverage, run exact node IDs first, audit collection and execution counts, and reject weakened assertions, broad mocks, or undocumented skips."

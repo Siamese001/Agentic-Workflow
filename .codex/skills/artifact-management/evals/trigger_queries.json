@@ -1,0 +1,62 @@
+[
+  {
+    "query": "Create an RCA report for this failure and put it in the canonical repository location with command evidence.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "I need a JSON verification receipt for this phase; choose the right SSOT path and make the scan bounded.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Write a new execution plan under the correct active-plan directory and validate the path before saving it.",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "Package the test logs and derived findings into one evidence bundle without mixing progress output into the report.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "We are processing 8,000 files for a governance report; define limits, early termination, and persisted evidence.",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Where should this architecture decision and its machine-readable proof artifact live in the repo?",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Fix the typo in this existing markdown paragraph.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Which functions import PaymentRouter?",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Run the one failing unit test and tell me why it failed.",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "Create a new Python dataclass in the file I named.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Use the browser to verify the login button works.",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "Explain the difference between a git merge and a rebase.",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

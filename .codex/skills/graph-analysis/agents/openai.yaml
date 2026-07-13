@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graph Analysis"
+  short_description: "Analyze dependencies, blast radius, layers, and dataflow"
+  default_prompt: "Use graph-analysis to route structural questions to ADG evidence, expand module queries to relevant symbols, determine upstream and downstream impact, declare graph-backed scope, and report backend provenance and limitations."
