@@ -2,12 +2,12 @@
 
 > ⚠ **DIAGNOSTIC ONLY — RUNTIME-THIN (runtime_proof_status=view_present_zero_attested)**. This report was produced without runtime attestation; do NOT treat as certification-clean. Re-run with `--require-runtime-proof` in CI once OTel attestation is wired.
 
-- **Generated**: 2026-07-12T13:18:20.010711+00:00
-- **Snapshot**: `adg_indexed_07122026_0907.sqlite`
+- **Generated**: 2026-07-13T10:11:22.765355+00:00
+- **Snapshot**: `adg_indexed_07132026_0555.sqlite`
 - **Runtime view present**: True
 - **Runtime-attested edges**: 0
 - **Runtime proof status**: `view_present_zero_attested`
-- **Total edges classified**: 512,216
+- **Total edges classified**: 515,212
 - **Health score** (triplet-attested fraction): **0.0%**
 
 > **Caveat**: `v_runtime_proof` exists but contains zero attested edges. The runtime bucket is empty — populate the OTel `runtime_adg_store` (e.g., run pytest with OTel exporters) and regenerate the snapshot to surface `TRIPLET_ATTESTED`, `SHADOW_CHANNEL`, and `DYNAMIC_DISPATCH` rows.
@@ -19,8 +19,8 @@
 |---|---|---:|---:|---|
 | — | **TRIPLET_ATTESTED** | 0 | 0.0% | Edge present in all three graphs — fully proven. NOT a defect. |
 | P2 | **REGISTRY_DRIFT** | 0 | 0.0% | Used in code AND observed at runtime, but not declared in any registry. Undocumented coupling / accidental API. |
-| P3 | **DEAD_PATH** | 255 | 0.05% | Wired in code AND declared in registry, but never traced at runtime. Untested code path or vestigial policy. |
-| P3 | **UNOBSERVED_CODE** | 511,939 | 99.95% | Static-only — orphan import, dead code, or never-traced path. |
+| P3 | **DEAD_PATH** | 266 | 0.05% | Wired in code AND declared in registry, but never traced at runtime. Untested code path or vestigial policy. |
+| P3 | **UNOBSERVED_CODE** | 514,924 | 99.94% | Static-only — orphan import, dead code, or never-traced path. |
 | P5 | **DYNAMIC_DISPATCH** | 0 | 0.0% | No static link, but declared + verified at runtime. Plugin / DI / lazy import — usually fine. |
 | P1 | **SHADOW_CHANNEL** | 0 | 0.0% | Runtime-only undeclared edge — monkey-patch, side-effect coupling, hidden import. SECURITY-CRITICAL. |
 | P4 | **CONFIG_BLOAT** | 22 | 0.0% | Declared in registry but never used in code or runtime. Dead policy / config drift. |
@@ -37,44 +37,44 @@
 
 | src | dst | relation |
 |---|---|---|
-| `<id=27>` | `<id=189800>` | `references_mcp_server` |
-| `<id=27>` | `<id=189801>` | `references_mcp_server` |
-| `<id=27>` | `<id=189804>` | `references_mcp_server` |
-| `<id=27>` | `<id=189805>` | `references_mcp_server` |
-| `<id=28>` | `<id=189801>` | `references_mcp_server` |
-| `<id=31>` | `<id=189800>` | `references_mcp_server` |
-| `<id=31>` | `<id=189801>` | `references_mcp_server` |
-| `<id=31>` | `<id=189804>` | `references_mcp_server` |
-| `<id=31>` | `<id=189805>` | `references_mcp_server` |
-| `<id=32>` | `<id=189801>` | `references_mcp_server` |
+| `<id=18>` | `<id=190761>` | `references_mcp_server` |
+| `<id=18>` | `<id=190762>` | `references_mcp_server` |
+| `<id=18>` | `<id=190763>` | `references_mcp_server` |
+| `<id=18>` | `<id=190764>` | `references_mcp_server` |
+| `<id=18>` | `<id=190765>` | `references_mcp_server` |
+| `<id=18>` | `<id=190766>` | `references_mcp_server` |
+| `<id=18>` | `<id=190767>` | `references_mcp_server` |
+| `<id=18>` | `<id=190768>` | `references_mcp_server` |
+| `<id=18>` | `<id=190769>` | `references_mcp_server` |
+| `<id=28>` | `<id=190761>` | `references_mcp_server` |
 
 ### UNOBSERVED_CODE  (severity P3)
 
 | src | dst | relation |
 |---|---|---|
-| `<id=7>` | `<id=15188>` | `implements` |
-| `<id=7>` | `<id=18652>` | `reads_from` |
-| `<id=7>` | `<id=20999>` | `reads_from` |
-| `<id=7>` | `<id=28380>` | `exports` |
-| `<id=7>` | `<id=28380>` | `reads_from` |
-| `<id=7>` | `<id=28391>` | `exports` |
-| `<id=7>` | `<id=28391>` | `reads_from` |
-| `<id=7>` | `<id=28820>` | `covers` |
-| `<id=7>` | `<id=28821>` | `imports` |
-| `<id=7>` | `<id=56006>` | `unused_import` |
+| `<id=7>` | `<id=15266>` | `implements` |
+| `<id=7>` | `<id=18745>` | `reads_from` |
+| `<id=7>` | `<id=21110>` | `reads_from` |
+| `<id=7>` | `<id=28501>` | `exports` |
+| `<id=7>` | `<id=28501>` | `reads_from` |
+| `<id=7>` | `<id=28512>` | `exports` |
+| `<id=7>` | `<id=28512>` | `reads_from` |
+| `<id=7>` | `<id=28945>` | `covers` |
+| `<id=7>` | `<id=28946>` | `imports` |
+| `<id=7>` | `<id=56231>` | `unused_import` |
 
 ### CONFIG_BLOAT  (severity P4)
 
 | src | dst | relation |
 |---|---|---|
-| `<id=189799>` | `<id=189800>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189801>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189802>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189803>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189804>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189805>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189806>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189807>` | `MCP_SERVER_DECLARED` |
-| `<id=189799>` | `<id=189808>` | `MCP_SERVER_DECLARED` |
-| `<id=189809>` | `<id=189810>` | `AGENT_SPEC_DECLARED` |
+| `<id=190760>` | `<id=190761>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190762>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190763>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190764>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190765>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190766>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190767>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190768>` | `MCP_SERVER_DECLARED` |
+| `<id=190760>` | `<id=190769>` | `MCP_SERVER_DECLARED` |
+| `<id=190770>` | `<id=190771>` | `AGENT_SPEC_DECLARED` |
 

@@ -3,6 +3,15 @@
 Provides centralized prompt loading and caching for agentic components.
 """
 
+from agentic_core.prompt_governance.mixins import (
+    BUNDLED_MIXIN_IDS,
+    MixinNotFoundError,
+    bundled_mixin_content_hash,
+    get_bundled_mixin,
+    is_bundled_mixin,
+)
+from agentic_core.prompt_governance.validation import ApplyPatchReport, validate_apply_patch
+
 from .contracts import CompiledPromptArtifact, PromptBOM, TemplateManifest
 from .core.evaluation_loader import EvalLoadError, EvalSchemaError, EvaluationLoader
 from .core.prompt_entry_types import (
@@ -14,20 +23,9 @@ from .core.prompt_entry_types import (
 )
 from .core.prompt_loader import PromptLoader, PromptLoadError, PromptSchemaError
 from .managed_workflow_pa_resolver import ManagedWorkflowPAResolver
-from . import mixins as _mixins
 from .orchestrator import CompiledPromptEnvelope, assemble_prompt
 from .pa_package_driven_binding import pa_assemble_prompt_package_driven
 from .scripts.validate_assembly import validate_slot_order
-from . import validation as _validation
-
-BUNDLED_MIXIN_IDS = _mixins.BUNDLED_MIXIN_IDS
-MixinNotFoundError = _mixins.MixinNotFoundError
-bundled_mixin_content_hash = _mixins.bundled_mixin_content_hash
-get_bundled_mixin = _mixins.get_bundled_mixin
-is_bundled_mixin = _mixins.is_bundled_mixin
-
-ApplyPatchReport = _validation.ApplyPatchReport
-validate_apply_patch = _validation.validate_apply_patch
 
 __all__ = [
     "EvalLoadError",

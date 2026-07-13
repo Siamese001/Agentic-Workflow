@@ -1,6 +1,6 @@
 {
   "gate_id": "AUDIT_2_observability_on_high_fanin",
   "count": 17,
-  "seeded_at": "2026-07-12T13:13:17.523333+00:00",
-  "snapshot": "adg_indexed_07122026_0907.sqlite"
+  "seeded_at": "2026-07-13T10:07:12.497816+00:00",
+  "snapshot": "adg_indexed_07132026_0555.sqlite"
 }
