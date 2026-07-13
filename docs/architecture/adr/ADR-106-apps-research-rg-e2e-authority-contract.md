@@ -31,7 +31,7 @@ pinned baseline; this ADR makes no ADG-backed reachability claim.
 `apps_research_rg_e2e_authority_contract.v1` is the only reviewed source of truth for:
 
 - the ordered producer, consumer, receipt, schema, and transition matrix;
-- the canonical run identity carried across every stage;
+- the canonical run identity required by each stage declared in the SSOT;
 - product, test, replay, and migration entrypoint classification;
 - the exact X3 taxonomy;
 - `product_authorized`, `pipeline_complete`, and
@@ -44,7 +44,7 @@ supersession record to move together.
 
 ### 2. Canonical identity
 
-Every product stage binds the same identity profile:
+The target v2 contract requires each declared product stage to bind this identity profile:
 
 `producer_app_id`, `consumer_app_id`, `parent_run_id`, `child_run_id`,
 `request_id`, `trace_root`, `tenant_id`, `target_company`, `target_role`,
