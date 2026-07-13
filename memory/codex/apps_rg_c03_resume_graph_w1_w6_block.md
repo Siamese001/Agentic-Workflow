@@ -9,14 +9,14 @@ Implementation commit: `059b3951e8dee62cc9efae57f5fd8285dce48ae5`
 ## Durable decisions
 
 - Canonical graph JSON remains authoritative; generated SQLite is a runtime/query projection only.
-- C0.3 applies authority gates before targeting, records terminal decisions for every bounded candidate,
+- C0.3 applies authority gates before targeting, records terminal decisions for each bounded candidate,
   and traverses the full bounded sibling frontier before applying caps.
 - One deterministic whole-resume allocation is frozen before generation for all 11 claim-bearing lanes.
   Its sample digest is `47a0bbaf8828a532e5577f0d871915e50cb3fbc2981419436bde47dc655cddd3`.
 - The current-run allocation contains 30 canonical-visible and 17 derived narrative assignments. It
   enforces zero skill-ID, metric-outcome-ID, and normalized metric-signature reuse and does not write
   durable graph state.
-- Before X3, every final visible claim must bind to its allocated skill, fact, path, edges, citation, and
+- Before X3, each final visible claim must bind to its allocated skill, fact, path, edges, citation, and
   exact metric value/unit. Orphans, causal cross-root merges, metric drift, and signed digest drift fail
   closed; the post-generation gate never repairs signed upstream artifacts.
 

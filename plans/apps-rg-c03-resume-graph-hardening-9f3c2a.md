@@ -47,15 +47,15 @@ The truthfulness of skill and metric values in the canonical graph is an input a
 ### 2.1 Evidence authority
 
 - A skill node is routing and semantic context, not standalone claim proof.
-- Every externally visible claim must cite an externally eligible canonical fact.
-- Every externally visible metric must bind to one canonical `metric_outcome_id`, its source fact, and a valid graph path.
+- Each externally visible claim must cite an externally eligible canonical fact.
+- Each externally visible metric must bind to one canonical `metric_outcome_id`, its source fact, and a valid graph path.
 - JD, target-company, target-title, and briefing content are targeting inputs only. They never become claim evidence.
 - No C0.3 component may mint, infer, merge, interpolate, or recombine metrics.
 
 ### 2.2 Retrieval behavior
 
 - Authority filters run **before** target-role/JD relevance scoring.
-- The selector must enumerate and decision every eligible candidate within the bounded traversal plan before allocation.
+- The selector must enumerate and decision each eligible candidate within the bounded traversal plan before allocation.
 - No child skill or metric may be selected by source-list slicing, first-match logic, insertion order, or early top-N truncation.
 - Budget limits apply after deterministic eligibility and candidate enumeration, not as a shortcut that hides alternatives.
 - Missing or weak context gets one bounded C0.6 refinement. If it remains weak, the section blocks or abstains.
@@ -82,7 +82,7 @@ An optional future `anchor_skill_exception` may permit one explicitly named anch
 
 ## 3. Resume-coaching product correction
 
-“Every section uses graph skills and metrics” must be implemented as **machine-verifiable graph evidence for every claim-bearing generated lane**, not as forcing visible numbers into every section.
+“Each section uses graph skills and metrics” must be implemented as **machine-verifiable graph evidence for each claim-bearing generated lane**, not as forcing visible numbers into each section.
 
 - Headline: show unique leaf skills; normally no visible numeric metric.
 - Executive summary: show a small number of unique skills and one or two high-value outcomes.
@@ -91,7 +91,7 @@ An optional future `anchor_skill_exception` may permit one explicitly named anch
 - Narrative and bullet lanes for the same employer are alternative renderings of the same role, not two independent final-resume sections. The final resume must materialize one representation or explicitly share one `claim_unit_id` and count it once.
 - Locked identity, education, and certification sections get integrity/lineage receipts; they are not forced to consume a skill or metric merely to satisfy a count.
 
-This prevents keyword stuffing and unnatural resumes while still proving that C0.3 shaped every generated claim-bearing section.
+This prevents keyword stuffing and unnatural resumes while still proving that C0.3 shaped each generated claim-bearing section.
 
 ## 4. Current-state verdict at pinned `origin/main`
 
@@ -112,7 +112,7 @@ It does **not** yet satisfy the strict product target in this plan. The highest-
 |---|---:|---|---|---|
 | G01 | P0 | Multiple selection/contract surfaces | Role-episode selection, SQLite ranking/context, and native C0.3 expose overlapping but non-identical authority and receipts. | One authoritative `ResumeGraphAllocationPlan` and one adapter boundary. |
 | G02 | P0 | Lazy child skill loading | Role-episode selector slices `raw_skill_ids[:cap]`; alternatives are not scored before selection. | Enumerate, gate, score, and decision all bounded child candidates before allocation. |
-| G03 | P0 | Synthetic traversal receipt | Some receipts reconstruct visited/frontier data from selected arrays rather than recording attempted nodes/edges. | Event-sourced bounded traversal with terminal disposition for every attempted candidate. |
+| G03 | P0 | Synthetic traversal receipt | Some receipts reconstruct visited/frontier data from selected arrays rather than recording attempted nodes/edges. | Event-sourced bounded traversal with terminal disposition for each attempted candidate. |
 | G04 | P0 | No whole-resume allocator | Sections select independently, so order and local choices can exhaust the best evidence or repeat it. | Gather all section candidate sets, then solve one deterministic constrained allocation. |
 | G05 | P0 | No hard skill reuse ledger | There is no current-run `skill_id` reservation/usage authority. | Run-local skill/metric/fact usage ledger with atomic reservations. |
 | G06 | P0 | Metric reuse is soft and permissive | Local penalties permit repeats; assembly fails only when the same metric/fact appears in at least three sections. | Hard zero-reuse at allocation and final assembly. |
@@ -124,7 +124,7 @@ It does **not** yet satisfy the strict product target in this plan. The highest-
 | G12 | P0 | Rank score mislabeled as confidence risk | Categorical confidence is converted to an uncalibrated score contribution; no empirical calibration. | Separate categorical authority, raw rank, proof confidence, target alignment, and calibrated probability. |
 | G13 | P0 | Proof strictness uneven across lanes | Only selected lanes receive the strictest C0.4 proof posture; cross-section graph warnings can remain non-blocking. | All claim-bearing generated lanes require exact graph/fact support and blocking failures. |
 | G14 | P0 | Claim binding is too shallow | ID intersections and phrase/citation checks do not prove exact claim→skill→fact→metric paths. | Canonical `GraphClaimBinding` per visible claim with path and edge IDs. |
-| G15 | P0 | Downstream digest chain incomplete | Selection plan equality is proven locally, but PA/L2/claim ledger/X2/X1D/X3/final parity is not globally bound. | Carry and verify allocation-plan digest at every stage. |
+| G15 | P0 | Downstream digest chain incomplete | Selection plan equality is proven locally, but PA/L2/claim ledger/X2/X1D/X3/final parity is not globally bound. | Carry and verify allocation-plan digest at each stage. |
 | G16 | P1 | Alternative receipts incomplete/truncated | Siblings are fetched only around selected skills, capped per skill; expansion summaries truncate rejection rows. | Full authoritative candidate-decision artifact plus compact display summary. |
 | G17 | P1 | Greedy fact/section order bias | Facts and sections are processed sequentially; same inputs in a different order can change allocations. | Global optimization and permutation-invariance tests. |
 | G18 | P1 | Narrative and bullet duplication semantics | Final assembly includes both narrative and bullet lanes for each employer. | Choose one final representation or bind both to one counted claim unit. |
@@ -146,7 +146,7 @@ It does **not** yet satisfy the strict product target in this plan. The highest-
 ```text
 L1/L0 section intents
     -> C0.3 authority prefilter
-    -> bounded graph traversal for every final claim-bearing section
+    -> bounded graph traversal for each final claim-bearing section
     -> exhaustive eligible candidate sets + terminal rejection ledger
     -> whole-resume constrained allocation
     -> immutable ResumeGraphAllocationPlan + UsageLedger
@@ -262,7 +262,7 @@ The output must be invariant to candidate input order, fact order, and section d
 | Headline | required | 2–4 unique leaf skills | 0 normally | No forced numeric outcome; prove all surfaced capability phrases. |
 | Executive summary | required | 3–5 unique skills | 1–2 unique outcomes | Use only high-confidence, high-level outcomes not allocated elsewhere. |
 | Competencies | required | 8–12 unique leaf skills | 0 normally | Metric-linked facts may support confidence but numbers stay out unless explicitly requested. |
-| Employer bullets | required | 1–2 unique skills per bullet | 0–1 per bullet; at least one per role when strong evidence exists | Every bullet is a claim unit with employer-local facts. |
+| Employer bullets | required | 1–2 unique skills per bullet | 0–1 per bullet; at least one per role when strong evidence exists | Each bullet is a claim unit with employer-local facts. |
 | Employer narrative | required as an alternate rendering | derived from allocated role claim units | no new metric allocation | Cannot coexist as a separately counted final section with bullets. |
 | Early career | locked/lineage receipt | no forced skill | no forced metric | Preserve canonical copy. |
 | Education | locked/lineage receipt | no forced skill | no forced metric | No artificial graph stuffing. |
@@ -365,7 +365,7 @@ Track separately:
 
 - no production edits;
 - baseline and matrix validate;
-- every gap maps to at least one contract row and one later wave;
+- each gap maps to at least one contract row and one later wave;
 - plan is updated with any base drift and submitted for explicit implementation approval.
 
 ## W1 — Contract and authority consolidation
@@ -441,8 +441,8 @@ Track separately:
 ### Tasks
 
 1. Traverse bounded graph paths from section/role/employer roots through skill, fact, and metric nodes.
-2. Record every attempted node and edge as `C03TraversalEventV1`.
-3. Assign one terminal decision to every candidate path:
+2. Record each attempted node and edge as `C03TraversalEventV1`.
+3. Assign one terminal decision to each candidate path:
    - selected candidate pool;
    - rejected authority;
    - rejected path;
@@ -469,7 +469,7 @@ Track separately:
 
 ### Tasks
 
-1. Gather candidate sets for every final claim-bearing lane.
+1. Gather candidate sets for each final claim-bearing lane.
 2. Resolve narrative/bullet final representation policy.
 3. Run one deterministic global allocator.
 4. Emit `ResumeGraphAllocationPlanV1` and `ResumeGraphUsageLedgerV1`.
@@ -494,8 +494,8 @@ Track separately:
 ### Tasks
 
 1. Add `GraphClaimBindingV1` to all generated lane output schemas.
-2. Require exact path and edge IDs for every visible claim.
-3. Require exact metric node/fact/value/unit binding for every rendered metric.
+2. Require exact path and edge IDs for each visible claim.
+3. Require exact metric node/fact/value/unit binding for each rendered metric.
 4. Prevent causal merging of unrelated facts/metrics.
 5. Enforce section budgets from §7.
 6. Make narrative lanes derived renderings that cannot allocate new evidence.
@@ -635,7 +635,7 @@ Add mutation-style negative controls that deliberately remove each gate or alter
 3. Conduct blinded resume-coach review with a fixed rubric.
 4. Run complete modular whole-resume generation and final assembly.
 5. Emit closeout receipt and rollback instructions.
-6. Promote only when every release gate passes. Rollback may change code version, never weaken evidence gates.
+6. Promote only when all release gates pass. Rollback may change code version, never weaken evidence gates.
 
 ### Exit gate
 
@@ -710,7 +710,7 @@ All subprocesses invoked by code or scripts must remain bounded by the repositor
 
 ## 12. Wave execution protocol for Codex
 
-For every wave:
+For each wave:
 
 1. Re-read this plan and current governing `AGENTS.md` files.
 2. Confirm base and worktree state.
@@ -753,7 +753,7 @@ The correct product outcome in these cases is a sealed block, weak-with-caveats 
 This plan is complete only when all of the following are demonstrated on a clean branch based on current main:
 
 - one authoritative C0.3 selection/allocation path;
-- complete bounded traversal receipts for every claim-bearing generated section;
+- complete bounded traversal receipts for each claim-bearing generated section;
 - 100% candidate terminal-decision coverage;
 - no lazy/first-available child selection;
 - one frozen whole-resume allocation plan before generation;
@@ -764,7 +764,7 @@ This plan is complete only when all of the following are demonstrated on a clean
 - one bounded weak-support refinement, then fail-closed;
 - calibrated confidence reported separately from target alignment;
 - all PA/L2/X2/X1D/X3/final digests bound to the same plan;
-- final assembly reconciles every rendered claim and prohibits alternative-lane double counting;
+- final assembly reconciles each rendered claim and prohibits alternative-lane double counting;
 - retrieval, calibration, order-invariance, mutation, and whole-run tests pass;
 - graph-skills CI ratchet runs automatically on relevant PRs/pushes;
 - no direct durable graph-state writes during selection;
@@ -783,13 +783,13 @@ Use the following prompt in Codex after the user approves this plan:
 - **W0 baseline disposition:** the apps-local circular import is closed by moving the C0.3 SQLite context import behind the public selection function. The pre-existing `agentic_core/L0_routing/__init__.py` app-authority literal remains outside this app-only plan and is neither hidden nor widened. GitHub-hosted readiness failures caused by unavailable local MCP transports remain environment evidence, not a product-code waiver.
 - **W1:** added canonical pre-target authority, terminal candidate-decision, traversal-event, traversal-receipt, and canonical section-plan contracts with stable digests.
 - **W2:** hard authority gates now precede target scoring; direct claim support is limited to a frozen selected graph plan or SQLite-ranked direct skill/fact paths. Broad fact-link loading and label/tag proof fallback are removed. Historical usage is ignored unless an explicit current `run_id` is supplied.
-- **W3:** role-episode traversal is event-sourced; every bounded root, skill, metric, and source-fact path receives an authority evaluation and terminal decision. Skills and metrics are ranked across the full bounded sibling frontier before caps.
+- **W3:** role-episode traversal is event-sourced; each bounded root, skill, metric, and source-fact path receives an authority evaluation and terminal decision. Skills and metrics are ranked across the full bounded sibling frontier before caps.
 - **W1-W3 verification:** focused authority, SQLite, traversal, and fail-closed tests pass; see `docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.md`.
 
 ## W4-W6 execution record (2026-07-13)
 
 - **W4:** one immutable whole-resume allocator now traverses all eleven claim-bearing lanes before generation; emits a current-run-only allocation plan and usage ledger; allocates 30 canonical-visible claim units plus 17 non-counting derived narrative units; enforces zero skill-ID, metric-ID, and normalized-metric-signature reuse; and is invariant to section dispatch order.
-- **W5:** a shared pre-X3 gate binds every final visible claim to the frozen allocation's exact skill, fact, graph-path, edge, citation, and metric value/unit. It appends a deterministic X2 gate, blocks X3 on any orphan or drift, and carries the allocation digest through FEC, compiled prompt, L2, canonical ledger, X2, X1D, and X3 without rewriting signed upstream artifacts.
+- **W5:** a shared pre-X3 gate binds each final visible claim to the frozen allocation's exact skill, fact, graph-path, edge, citation, and metric value/unit. It appends a deterministic X2 gate, blocks X3 on any orphan or drift, and carries the allocation digest through FEC, compiled prompt, L2, canonical ledger, X2, X1D, and X3 without rewriting signed upstream artifacts.
 - **Verification:** 38 focused W1-W5 tests, 12 section-X3 integration tests, compilation, graph hardening validation, and diff checks pass in the available runtime. The optional-package import boundary used import-only local stubs for unavailable `openai` and `chromadb`; official branch CI remains required.
 - **W6:** separate raw score fields exist and no calibrated probability is emitted. The configured semantic calibration requires at least 40 human-labeled samples, but `apps_eval/fixtures/holdout/apps_rg_executive_positioning.v1.jsonl` is absent and the grader roster remains `pending-human-semantic-v1`. The benchmark is explicitly a scoreless scaffold.
 - **Disposition:** `BLOCKED_AT_W6_HUMAN_CALIBRATION`. Per §13, W7-W9 were not started and promotion was not claimed. See `docs/reports/apps_rg/c03_resume_graph_w6_blocker.json`.
