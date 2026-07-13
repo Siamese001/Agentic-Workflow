@@ -3,7 +3,9 @@ id = "weekly-adg-audit-and-burndown"
 kind = "cron"
 name = "Generate Full ADG"
 prompt = """
-Run the Agentic-Workflow full ADG audit from a clean main-branch state. Use the repo governance adapter and do not edit source files.
+Run the Agentic-Workflow full ADG audit against the committed files at the fetched `origin/main` branch tip. Use the repo governance adapter and do not edit source files.
+
+The primary checkout does not need to be clean. If the primary `main` checkout has unrelated dirty files or is behind `origin/main`, ignore that uncommitted workspace state and run from a clean detached/worktree view of the fetched `origin/main` tip. Do not include uncommitted files, and do not stop only because the primary checkout is dirty.
 
 If this automation ever requires edits, create and use the dedicated worktree at C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-audit-and-burndown on a codex-adg-audit-and-burndown branch before editing. Never edit the primary checkout on main.
 
