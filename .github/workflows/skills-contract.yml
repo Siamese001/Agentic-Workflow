@@ -1,0 +1,42 @@
+name: skills-contract
+
+on:
+  pull_request:
+    paths:
+      - ".codex/skills/**"
+      - ".codex/templates/skill-template.md"
+      - ".codex/commands/skill-creator.md"
+      - "ops_scripts/ci/*skill*"
+      - "tests/unit/ops_scripts/ci/test_skill_contract.py"
+      - ".github/workflows/skills-contract.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".codex/skills/**"
+      - ".codex/templates/skill-template.md"
+      - ".codex/commands/skill-creator.md"
+      - "ops_scripts/ci/*skill*"
+      - "tests/unit/ops_scripts/ci/test_skill_contract.py"
+      - ".github/workflows/skills-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: dev
+
+      - name: Validate active skill contracts
+        run: python ops_scripts/ci/run_skill_contract_gates.py
+
+      - name: Run skill-contract unit tests
+        run: python -m pytest tests/unit/ops_scripts/ci/test_skill_contract.py -q
