@@ -23,9 +23,10 @@ import hashlib
 import json
 from collections import defaultdict, deque
 from datetime import datetime, timezone
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
-from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
+if TYPE_CHECKING:
+    from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
 GRAPH_INDEX_SCHEMA_VERSION = "apps_rg.graph_sqlite_path_index.v1"
 
@@ -214,7 +215,14 @@ def _digest(value: str) -> str:
 def table_columns(conn: sqlite3.Connection, table_name: str) -> set[str]:
     try:
         rows = conn.execute(f"PRAGMA table_info({table_name})").fetchall()
-    except sqlite3.DatabaseError:
+    except Exception as exc:
+        # Import the governed adapter only on the exceptional path. A module-
+        # level import causes agentic_core reachability to load this apps module
+        # again before its public functions exist.
+        from agentic_core.L4_state.adapters import sqlite3_adapter
+
+        if not isinstance(exc, sqlite3_adapter.DatabaseError):
+            raise
         return set()
     return {str(r[1]) for r in rows}
 

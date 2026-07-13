@@ -58,10 +58,26 @@ FORBIDDEN_PROOF_SOURCE_TYPES = frozenset(
     }
 )
 
-from apps_rg.runtime.fact_vector_readiness import GENERATED_LANES
-
-# All generated lanes: phases 1–3 (headline, bullets, narratives) + competencies/executive_summary.
-C0_SECTIONS_ENABLED: frozenset[str] = frozenset(GENERATED_LANES)
+# Import-light C0 authority modules must not import ``fact_vector_readiness``:
+# that runtime surface owns agentic-core adapters and creates a C0 discovery
+# cycle when graph expansion is imported during core reachability checks.
+# Keep this immutable authority set explicit and parity-tested against the
+# orchestration lane registry.
+C0_SECTIONS_ENABLED: frozenset[str] = frozenset(
+    {
+        "competencies",
+        "unify_bullets",
+        "ibm_bullets",
+        "insurtech_bullets",
+        "ey_bullets",
+        "unify_narrative",
+        "ibm_narrative",
+        "insurtech_narrative",
+        "ey_narrative",
+        "executive_summary",
+        "headline",
+    }
+)
 
 C0_AUTHORITY_LEDGER_GRAPH_PRIMARY = "ledger_graph_primary"
 
