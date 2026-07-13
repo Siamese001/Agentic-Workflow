@@ -49,9 +49,18 @@ Constitutional alignment:
 
 from __future__ import annotations
 
+import dataclasses
+import hashlib
+import json
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
+
+from agentic_core.L0_routing.c0_retrieval.final_contract import (
+    FinalEvidenceContract,
+)
+from agentic_core.L0_routing.c0_retrieval.plan import RetrievalPlan
+from agentic_core.L0_routing.c0_retrieval.route_contract import RouteContract
 
 # ---------------------------------------------------------------------------
 # R3 contract chain -- direct imports from agentic_core.
@@ -61,16 +70,11 @@ from typing import TYPE_CHECKING, Any, Mapping
 # ---------------------------------------------------------------------------
 from agentic_core.L0_routing.intake.validated_request import ValidatedRequest
 from agentic_core.L1_cognition.types.plan_contract_types import L1PlanContract
-from agentic_core.L0_routing.c0_retrieval.route_contract import RouteContract
-from agentic_core.L0_routing.c0_retrieval.plan import RetrievalPlan
-from agentic_core.L0_routing.c0_retrieval.final_contract import (
-    FinalEvidenceContract,
-)
 from agentic_core.L2_execution.reasoning.compiled_artifact import (
     CompiledPromptArtifact,
 )
-from agentic_core.L5_safety.eval_spine.exit_eval import SealedArtifact
 from agentic_core.L3_orchestration.exit_eval.v6.types import ExitReviewPacket
+from agentic_core.L5_safety.eval_spine.exit_eval import SealedArtifact
 
 if TYPE_CHECKING:  # pragma: no cover -- type-only imports
     from apps_research.integrations.governed_research_run import (
@@ -143,7 +147,7 @@ class R3HandoffMetadata:
 
 
 def build_research_r3_handoff_metadata(
-    request: "ResearchRequest",
+    request: ResearchRequest,
 ) -> R3HandoffMetadata:
     """Build inspection-only metadata for a research request.
 
@@ -164,22 +168,21 @@ def build_research_r3_handoff_metadata(
 
 
 # ---------------------------------------------------------------------------
-# Thin delegate -- behavior unchanged
+# Governed U0 -> spine delegate
 # ---------------------------------------------------------------------------
 
 
 def run_research_via_spine(
-    request: "ResearchRequest",
+    request: ResearchRequest,
     *,
-    runner: "GovernedResearchRun | None" = None,
+    runner: GovernedResearchRun | None = None,
     inject_chunks: list[Any] | None = None,
-) -> "GovernedE2ERunRecord":
-    """Delegate unchanged to GovernedResearchRun.run_governed_e2e().
+) -> GovernedE2ERunRecord:
+    """Validate at the shared Apps Research U0 seam, then run the spine.
 
-    This is a name-only seam that records the handoff without altering
-    behavior. apps_research's pipeline today already routes every
-    request through GovernedAppRunner -> L1 -> L0 -> C0 -> L2 ->
-    L5+L6; this wrapper does not change that.
+    Both delegated and direct callers use this function.  The serialized U0
+    receipt is attached to the frozen run record so handoff publication can
+    persist, digest-bind, and later prove the ingress decision.
 
     Args:
         request: typed ResearchRequest (topic + depth + optional trace_id).
@@ -193,10 +196,9 @@ def run_research_via_spine(
         GovernedResearchRun.run_governed_e2e().
 
     Side effects:
-        Logs an INFO line tagging the handoff with the request's
-        trace_id + topic. NO ledger emission. NO contract construction.
-        NO ValidatedRequest envelope is built (that is the apps_qna
-        build_time_compiler shape, which does NOT apply here).
+        Logs an INFO line tagging the handoff with the request's trace_id and
+        topic.  U0 constructs the canonical RequestEnvelope/ValidatedRequest;
+        the underlying runner remains responsible for the later stages.
 
     Notes:
         Constitutional invariants are upheld by the underlying
@@ -215,6 +217,76 @@ def run_research_via_spine(
     if runner is None:
         runner = GovernedResearchRun(collection="process_docs")
 
+    # Keep imports local so static contract-surface inspection remains cheap.
+    from apps_research.runtime.profile_builder_adapter import parse_payload
+    from apps_research.runtime.u0.binding import (
+        u0_validate_apps_research,
+    )
+
+    jd_context = getattr(request, "jd_context", None) or {}
+    request_payload = {
+        "target_company": getattr(request, "topic", "") or "",
+        "target_role": jd_context.get("job_title") or jd_context.get("role") or "",
+        "topic": getattr(request, "topic", "") or "",
+        "depth": getattr(request, "depth_profile", "") or "standard",
+        "request_id": jd_context.get("request_id") or "",
+        "run_id": jd_context.get("run_id") or getattr(request, "trace_id", "") or "",
+        "trace_id": jd_context.get("trace_root") or getattr(request, "trace_id", "") or "",
+        "tenant_id": jd_context.get("tenant_id") or "apps_research",
+        "user_constraints": {
+            "topic": getattr(request, "topic", "") or "",
+            "depth": getattr(request, "depth_profile", "") or "standard",
+            "jd_context": dict(jd_context),
+        },
+    }
+    envelope = parse_payload(request_payload)
+    if envelope is None:
+        raise ValueError("apps_research U0 could not construct a RequestEnvelope")
+    validated_request = u0_validate_apps_research(envelope)
+
+    raw_request = (
+        request.model_dump(mode="json")
+        if callable(getattr(request, "model_dump", None))
+        else request_payload
+    )
+    raw_bytes = json.dumps(
+        raw_request,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    normalized_bytes = json.dumps(
+        validated_request.app_payload,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+
+    authority = getattr(validated_request, "authority_validation_receipt", None)
+    reflection = getattr(validated_request, "reflection_receipt", None)
+    authority_payload = (
+        dataclasses.asdict(authority) if dataclasses.is_dataclass(authority) else {}
+    )
+    reflection_payload = (
+        dataclasses.asdict(reflection) if dataclasses.is_dataclass(reflection) else {}
+    )
+    u0_receipt = {
+        "schema_version": "apps_research.u0_receipt.v1",
+        "authority_contract_id": "apps_research_rg_e2e_authority",
+        "request_id": validated_request.request_id,
+        "parent_run_id": str(jd_context.get("run_id") or validated_request.run_id),
+        "child_run_id": "PENDING",
+        "trace_root": str(jd_context.get("trace_root") or validated_request.trace_id),
+        "tenant_id": validated_request.tenant_id,
+        "raw_input_sha256": "sha256:" + hashlib.sha256(raw_bytes).hexdigest(),
+        "normalized_input_sha256": "sha256:" + hashlib.sha256(normalized_bytes).hexdigest(),
+        "authority_validation_receipt": authority_payload,
+        "reflection_receipt": reflection_payload,
+        "status": "PASS",
+    }
+
     trace_id = getattr(request, "trace_id", "") or ""
     topic = getattr(request, "topic", "") or ""
     _log.info(
@@ -223,7 +295,22 @@ def run_research_via_spine(
         trace_id,
         topic,
     )
-    return runner.run_governed_e2e(request, inject_chunks=inject_chunks)
+    record = runner.run_governed_e2e(request, inject_chunks=inject_chunks)
+    u0_receipt["child_run_id"] = str(getattr(record, "run_id", "") or "")
+    receipt_bytes = json.dumps(
+        u0_receipt,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return dataclasses.replace(
+        record,
+        apps_research_u0_receipt=u0_receipt,
+        apps_research_u0_receipt_digest=(
+            "sha256:" + hashlib.sha256(receipt_bytes).hexdigest()
+        ),
+    )
 
 
 __all__ = [

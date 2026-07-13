@@ -120,7 +120,8 @@
         "promotion_terminal_status_present",
         "mandatory_outputs_digest_bound",
         "stage_ledger_v2_complete_and_sealed",
-        "terminal_manifest_v1_sealed_last"
+        "terminal_manifest_v1_sealed_after_stage_ledger",
+        "pipeline_completion_receipt_binds_terminal_manifest_bytes"
       ],
       "post_boundary_failure_value": false
     },
@@ -133,7 +134,9 @@
   "schema_registry": {
     "apps_research.apps_rg_handoff.v2": "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json",
     "apps_rg.e2e_stage_ledger.v2": "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json",
-    "apps_rg.e2e_terminal_manifest.v1": "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+    "apps_rg.e2e_stage_ledger_seal.v1": "config/certification/schemas/apps_rg_e2e_stage_ledger_seal.v1.schema.json",
+    "apps_rg.e2e_terminal_manifest.v1": "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json",
+    "apps_rg.pipeline_completion_receipt.v1": "config/certification/schemas/apps_rg_pipeline_completion_receipt.v1.schema.json"
   },
   "stages": [
     {
@@ -141,11 +144,11 @@
       "authority_plane": "current_run",
       "producer": "apps_rg/runtime/e2e_preflight.py:run_fresh_e2e_preflight",
       "consumer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
-      "authoritative_receipt": "e2e_preflight_continuation_receipt.json",
-      "schema_ref": "apps_rg/runtime/e2e_preflight.py#apps_rg.e2e_preflight.v1",
+      "authoritative_receipt": "e2e_preflight_product_entry_receipt.json",
+      "schema_ref": "apps_rg/runtime/e2e_preflight.py#apps_rg.e2e_preflight_product_entry.v1",
       "identity_profile": "apps_research_rg_run_identity.v1",
       "allowed_next": ["APPS_RESEARCH_U0", "APPS_RG_U0"],
-      "pass_derivation": "receipt_status_and_signature_valid"
+      "pass_derivation": "signed_continuation_and_consume_once_bytes_revalidated_then_bound_to_committed_producer_identity"
     },
     {
       "stage_id": "APPS_RESEARCH_U0",
@@ -381,19 +384,19 @@
     {
       "stage_id": "STAGE_LEDGER_SEAL",
       "authority_plane": "post_boundary",
-      "implementation_status": "planned_wave_2",
+      "implementation_status": "implemented_wave_2",
       "producer": "apps_rg/runtime/e2e_stage_ledger.py",
       "consumer": "apps_rg/runtime/terminal_manifest.py",
-      "authoritative_receipt": "e2e_stage_ledger.json",
-      "schema_ref": "apps_rg.e2e_stage_ledger.v2",
+      "authoritative_receipt": "e2e_stage_ledger_seal_receipt.json",
+      "schema_ref": "apps_rg.e2e_stage_ledger_seal.v1",
       "identity_profile": "apps_research_rg_run_identity.v1",
       "allowed_next": ["TERMINAL_MANIFEST_SEAL"],
-      "pass_derivation": "all_entries_receipt_derived_byte_bound_and_complete"
+      "pass_derivation": "seal_receipt_binds_exact_closed_ledger_bytes"
     },
     {
       "stage_id": "TERMINAL_MANIFEST_SEAL",
       "authority_plane": "post_boundary",
-      "implementation_status": "planned_wave_2",
+      "implementation_status": "implemented_wave_2",
       "producer": "apps_rg/runtime/terminal_manifest.py",
       "consumer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
       "authoritative_receipt": "apps_rg_e2e_terminal_manifest.json",
@@ -407,11 +410,11 @@
       "authority_plane": "post_boundary",
       "producer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
       "consumer": "CALLER",
-      "authoritative_receipt": "apps_rg_e2e_terminal_manifest.json",
-      "schema_ref": "apps_rg.e2e_terminal_manifest.v1",
+      "authoritative_receipt": "apps_rg_pipeline_completion_receipt.json",
+      "schema_ref": "apps_rg.pipeline_completion_receipt.v1",
       "identity_profile": "apps_research_rg_run_identity.v1",
       "allowed_next": [],
-      "pass_derivation": "terminal_semantics_pipeline_complete_true"
+      "pass_derivation": "completion_receipt_binds_exact_terminal_manifest_bytes"
     },
     {
       "stage_id": "TERMINAL_NON_PRODUCT",
@@ -484,19 +487,19 @@
       "product_authority": true,
       "required_start_stage": "FRESH_PREFLIGHT",
       "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
-      "current_gap_ids": ["P0-10"]
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "apps_rg_section_cli",
       "surface": "python -m apps_rg --section <lane>",
       "implementation": "apps_rg/__main__.py:main",
-      "classification": "product",
-      "authority_plane": "current_run",
+      "classification": "test",
+      "authority_plane": "none",
       "authority_contract_id": "apps_research_rg_e2e_authority",
-      "product_authority": true,
-      "required_start_stage": "FRESH_PREFLIGHT",
-      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
-      "current_gap_ids": ["P0-09", "P0-10"]
+      "product_authority": false,
+      "required_start_stage": "APPS_RG_U0",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "apps_rg_patch_run",
@@ -508,7 +511,7 @@
       "product_authority": false,
       "required_start_stage": "FRESH_PREFLIGHT",
       "required_x3_success_codes": [],
-      "current_gap_ids": ["P0-09", "P0-10"]
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "apps_rg_assemble_from_pinned",
@@ -532,18 +535,30 @@
       "product_authority": true,
       "required_start_stage": "FRESH_PREFLIGHT",
       "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
-      "current_gap_ids": ["P0-10", "P0-11", "P0-13"]
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "agentic_core_apps_rg_dispatch",
+      "surface": "dispatch_apps_rg_run",
+      "implementation": "agentic_core/runtime/entry/apps_rg_dispatch.py:dispatch_apps_rg_run",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "agentic_core_single_action_spine",
       "surface": "run_integrated_single_action_spine",
       "implementation": "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py:run_integrated_single_action_spine",
-      "classification": "product",
-      "authority_plane": "current_run",
+      "classification": "test",
+      "authority_plane": "none",
       "authority_contract_id": "apps_research_rg_e2e_authority",
-      "product_authority": true,
+      "product_authority": false,
       "required_start_stage": "APPS_RG_U0",
-      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "required_x3_success_codes": [],
       "current_gap_ids": []
     },
     {
@@ -556,7 +571,7 @@
       "product_authority": true,
       "required_start_stage": "PRODUCT_ELIGIBILITY",
       "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
-      "current_gap_ids": ["P0-13", "P0-14", "P0-15"]
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "apps_eval_live_adapter",
@@ -568,7 +583,7 @@
       "product_authority": false,
       "required_start_stage": "APPS_EVAL",
       "required_x3_success_codes": [],
-      "current_gap_ids": ["P1-03", "P1-04", "P1-05", "P1-06"]
+      "current_gap_ids": []
     },
     {
       "entrypoint_id": "apps_eval_snapshot",
@@ -616,11 +631,12 @@
       "product_authority": false,
       "required_start_stage": "L6_SHADOW",
       "required_x3_success_codes": [],
-      "current_gap_ids": ["P0-16", "P0-17", "P1-07", "P1-08", "P1-09"]
+      "current_gap_ids": []
     }
   ],
   "migration_policy": {
-    "handoff_v1_read_allowed_until_wave": 6,
+    "handoff_v1_read_allowed_until_wave": 5,
+    "handoff_v1_reader_status": "removed_from_executable_product_paths_in_wave_6",
     "handoff_v2_write_only_after_wave": 1,
     "stage_ledger_v2_write_only_after_wave": 2,
     "terminal_manifest_v1_write_only_after_wave": 2,

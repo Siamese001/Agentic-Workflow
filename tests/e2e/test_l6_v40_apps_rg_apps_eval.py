@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
 from apps_eval.contracts import EvalRequest
+from apps_eval.coverage import apps_rg_contract_digest
 from apps_eval.runner.core import run_eval
 from apps_rg.runtime.spine.l6_shadow_eval_runner import run_l6_v40_shadow_eval_for_section
 from tests.l6_observability.test_runtime_exhaust_v40_adapter import _seed_artifacts
@@ -13,6 +15,20 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     apps_rg_dir = tmp_path / "apps_rg"
     apps_rg_dir.mkdir()
     _seed_artifacts(apps_rg_dir)
+    l5 = {
+        "schema_version": "apps_rg.l5_certification_receipt.v1",
+        "certification_status": "PASS",
+        "scope": "apps_rg.l6_shadow_eval",
+        "run_id": "run-v40",
+        "tenant_id": "tenant-l6-v40-e2e",
+        "expires_at_utc": "2099-01-01T00:00:00Z",
+    }
+    l5["receipt_digest"] = "sha256:" + hashlib.sha256(
+        json.dumps(l5, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    (apps_rg_dir / "l5_certification_receipt.json").write_text(
+        json.dumps(l5, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     rg_outputs = run_l6_v40_shadow_eval_for_section(
         apps_rg_dir,
@@ -59,6 +75,10 @@ def test_l6_v40_apps_rg_and_apps_eval_bridge_e2e(tmp_path: Path) -> None:
     assert rg_package["future_run_only_assertion"] is True
     assert rg_package["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
     assert rg_package["eval_binding_status"] == "PENDING"
+    assert rg_package["registry_digest"] == rg_package["microstep_contract_digest"]
+    assert rg_package["registry_digest"].removeprefix(
+        "sha256:"
+    ) == apps_rg_contract_digest().removeprefix("sha256:")
     assert rg_closure["observability_closure_status"] == "PASS"
     assert rg_closure["eval_binding_status"] == "PENDING"
 

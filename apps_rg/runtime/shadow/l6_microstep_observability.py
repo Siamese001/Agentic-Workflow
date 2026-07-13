@@ -8,10 +8,14 @@ write authority.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.L6_observability.shadow_eval.microsteps import (
     L6MicrostepObservation,
     build_apps_eval_alignment,
@@ -20,12 +24,8 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     build_microstep_patterns,
     build_microstep_rca,
     build_observation_from_contract_row,
-    build_observations_from_eval_rows,
     canonical_digest,
     expand_microstep_contract,
-)
-from agentic_core.L6_observability.shadow_eval.grain_parity import (
-    build_l6_apps_eval_grain_parity,
 )
 
 L6_MICROSTEP_OBSERVATIONS_ARTIFACT = "l6_microstep_observations.jsonl"
@@ -38,6 +38,7 @@ L6_APPS_EVAL_GRAIN_PARITY_ARTIFACT = "l6_apps_eval_grain_parity.json"
 
 _REGISTRY_FILES = {
     "artifact_contract": "apps_rg_artifact_contract.json",
+    "component_taxonomy": "apps_rg_component_taxonomy.json",
     "lane_contract": "apps_rg_lane_contract.json",
     "microstep_contract": "apps_rg_stage_microstep_contract.json",
 }
@@ -79,7 +80,7 @@ def _repo_rel(repo_root: Path, path: Path) -> str:
 
 def _path_digest(path: Path) -> str:
     try:
-        return canonical_digest(path.read_text(encoding="utf-8"))
+        return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
     except OSError:
         return ""
 
@@ -168,6 +169,9 @@ def build_apps_rg_l6_microstep_observations(
     repo_root: Path,
     runtime_exhaust_bundle_id: str,
     section_id: str = "",
+    parent_run_id: str = "",
+    child_run_id: str = "",
+    section_attempt_id: str = "",
     apps_eval_scorecard_rows: Iterable[Mapping[str, Any]] | None = None,
 ) -> tuple[list[L6MicrostepObservation], list[dict[str, Any]], str]:
     """Build observations and expected alignment rows for an apps_rg run."""
@@ -176,19 +180,11 @@ def build_apps_rg_l6_microstep_observations(
         contracts["microstep_contract"],
         contracts["lane_contract"],
     )
-    contract_digest = canonical_digest(
-        {
-            "microstep_contract": contracts["microstep_contract"],
-            "lane_contract": contracts["lane_contract"],
-        }
-    )
+    # This exact four-registry payload is shared with
+    # apps_eval.coverage.apps_rg.apps_rg_contract_digest.  L6 uses the
+    # canonical ``sha256:`` presentation while accepting no reduced subset.
+    contract_digest = canonical_digest(contracts)
     eval_rows = [dict(row) for row in apps_eval_scorecard_rows or []]
-    if eval_rows:
-        return (
-            build_observations_from_eval_rows(eval_rows, runtime_exhaust_bundle_id=runtime_exhaust_bundle_id),
-            eval_rows,
-            contract_digest,
-        )
 
     observations: list[L6MicrostepObservation] = []
     pseudo_eval_rows: list[dict[str, Any]] = []
@@ -211,6 +207,11 @@ def build_apps_rg_l6_microstep_observations(
                 eval_verdict_seen="NOT_RUN",
                 observed_status=status,
                 decisive_reason_seen=reason,
+                parent_run_id=parent_run_id,
+                child_run_id=child_run_id,
+                section_attempt_id=section_attempt_id,
+                microstep_contract_digest=contract_digest,
+                registry_digest=contract_digest,
             )
         )
         pseudo_eval_rows.append(
@@ -221,9 +222,18 @@ def build_apps_rg_l6_microstep_observations(
                 "artifact_ref": source_ref,
                 "evidence_digest": digest,
                 "decisive_reason": reason,
+                "parent_run_id": parent_run_id,
+                "child_run_id": child_run_id,
+                "section_attempt_id": section_attempt_id,
+                "runtime_exhaust_bundle_id": runtime_exhaust_bundle_id,
+                "microstep_contract_digest": contract_digest,
+                "registry_digest": contract_digest,
             }
         )
-    return observations, pseudo_eval_rows, contract_digest
+    # apps_eval rows may be compared with these observations, but they may
+    # never manufacture the authoritative L6 observation set.  This preserves
+    # independent provenance and keeps projection-only rows advisory.
+    return observations, (eval_rows or pseudo_eval_rows), contract_digest
 
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> Path:
@@ -252,19 +262,25 @@ def emit_apps_rg_l6_microstep_artifacts(
     run_id: str,
     runtime_exhaust_bundle_id: str,
     section_id: str = "",
+    parent_run_id: str = "",
+    child_run_id: str = "",
+    section_attempt_id: str = "",
     apps_eval_scorecard_rows: Iterable[Mapping[str, Any]] | None = None,
     apps_eval_scorecard_ref: str = "",
 ) -> dict[str, Path]:
     """Emit L6 microstep artifacts and the apps_eval/L6 alignment file."""
     output_dir.mkdir(parents=True, exist_ok=True)
     scorecard_rows = [dict(row) for row in apps_eval_scorecard_rows or []]
-    alignment_source = "apps_eval_scorecard_rows" if scorecard_rows else "contract_only_pseudo_rows"
-    apps_eval_rows_bound = bool(scorecard_rows)
+    alignment_source = "apps_eval_projection_rows" if scorecard_rows else "contract_only_pseudo_rows"
+    apps_eval_rows_bound = False
     observations, eval_rows, contract_digest = build_apps_rg_l6_microstep_observations(
         artifact_dir=artifact_dir,
         repo_root=repo_root,
         runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
         section_id=section_id,
+        parent_run_id=parent_run_id,
+        child_run_id=child_run_id,
+        section_attempt_id=section_attempt_id,
         apps_eval_scorecard_rows=scorecard_rows,
     )
     observation_dicts = [obs.to_dict() for obs in observations]
@@ -283,11 +299,12 @@ def emit_apps_rg_l6_microstep_artifacts(
             runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
             microstep_contract_digest=contract_digest,
             apps_eval_scorecard_ref=apps_eval_scorecard_ref,
-            l6_observation_ref=observation_path.as_posix(),
+            l6_observation_ref=_repo_rel(repo_root, observation_path),
             apps_eval_rows=eval_rows,
             l6_observations=observation_dicts,
             alignment_source=alignment_source,
             apps_eval_rows_bound=apps_eval_rows_bound,
+            registry_digest=contract_digest,
         ),
     )
     parity_path = _write_json(
@@ -297,10 +314,11 @@ def emit_apps_rg_l6_microstep_artifacts(
             runtime_exhaust_bundle_id=runtime_exhaust_bundle_id,
             microstep_contract_digest=contract_digest,
             apps_eval_scorecard_ref=apps_eval_scorecard_ref,
-            l6_observation_ref=observation_path.as_posix(),
+            l6_observation_ref=_repo_rel(repo_root, observation_path),
             apps_eval_rows=eval_rows,
             l6_observations=observation_dicts,
             alignment_source=alignment_source,
+            registry_digest=contract_digest,
         ),
     )
     return {

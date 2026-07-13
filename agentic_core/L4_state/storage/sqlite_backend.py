@@ -170,6 +170,9 @@ def logical_commit_hash(
     return compute_deterministic_digest(
         {
             "tenant_id": commit_request.tenant_id,
+            "request_id": commit_request.request_id,
+            "run_id": commit_request.run_id,
+            "trace_root": commit_request.trace_root,
             "policy_hash": commit_request.policy_hash,
             "blueprint_hash": commit_request.blueprint_hash,
             "registry_digest_set": sorted(commit_request.registry_digest_set),
@@ -991,6 +994,20 @@ class SQLiteL4Backend:
             row = conn.execute(
                 "SELECT receipt_json FROM l4_commit_receipts WHERE commit_receipt_id=?",
                 (commit_receipt_id,),
+            ).fetchone()
+        return None if row is None else dict(_json_loads(str(row["receipt_json"])))
+
+    def get_validation_receipt_payload(
+        self,
+        validation_receipt_id: str,
+    ) -> dict[str, Any] | None:
+        """Reload an immutable UWG validation receipt after process restart."""
+
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT receipt_json FROM l4_validation_receipts "
+                "WHERE validation_receipt_id=?",
+                (validation_receipt_id,),
             ).fetchone()
         return None if row is None else dict(_json_loads(str(row["receipt_json"])))
 

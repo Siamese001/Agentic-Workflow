@@ -60,5 +60,5 @@ python -m pytest <exact-nodeids> -q
 python ops_scripts/ci/check_test_integrity.py
 ```
 
-For application-owned tests, read [apps_testing_model.md](apps_testing_model.md). Finish with the
+For application-owned tests, read [apps_testing_model.md](./apps_testing_model.md). Finish with the
 broader command specified by [post_code_validation.md](post_code_validation.md).

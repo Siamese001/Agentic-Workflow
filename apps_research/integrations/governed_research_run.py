@@ -23,21 +23,21 @@ GovernedAppRunRecord into the app-specific GovernedE2ERunRecord.
 
 from __future__ import annotations
 
+import dataclasses
+import uuid
+from dataclasses import dataclass
+from typing import Any
+
+from apps_shared.integrations.governed_app_runner import (
+    GovernedAppRunner,
+    GovernedAppRunRecord,
+    build_app_record,
+)
+
 from agentic_core.runtime.contracts.runtime_telemetry_decorators import (
     traces_execute,
 )
-
-import dataclasses
-import uuid
-from dataclasses import dataclass, field
-from typing import Any
-
 from apps_research.types.research_types import ResearchRequest
-from apps_shared.integrations.governed_app_runner import (
-    GovernedAppRunRecord,
-    GovernedAppRunner,
-    build_app_record,
-)
 
 _COMPANY_BRIEF_TEXT_KEYS = (
     "company_brief_text",
@@ -194,6 +194,10 @@ class GovernedE2ERunRecord:
     evidence_items: tuple[Any, ...] = ()
     confidence_score: float = 0.0
     company_brief_text: str = ""
+    # U0 ingress authority proof.  The shared spine handoff attaches the exact
+    # receipt before returning this otherwise-frozen producer record.
+    apps_research_u0_receipt: dict[str, Any] = dataclasses.field(default_factory=dict)
+    apps_research_u0_receipt_digest: str = ""
 
 
 # ---------------------------------------------------------------------------

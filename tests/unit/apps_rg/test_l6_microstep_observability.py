@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from apps_eval.coverage import apps_rg_contract_digest
 from apps_rg.runtime.shadow.l6_microstep_observability import (
     build_apps_rg_l6_microstep_observations,
     emit_apps_rg_l6_microstep_artifacts,
@@ -37,11 +38,16 @@ def test_apps_rg_l6_microsteps_expand_contract_and_observe_section_lane(tmp_path
     assert len(rows) == 136
     assert len(eval_rows) == 136
     assert contract_digest.startswith("sha256:")
+    assert contract_digest.removeprefix("sha256:") == apps_rg_contract_digest().removeprefix(
+        "sha256:"
+    )
     assert len(headline_rows) == 10
     assert all(row["observed_status"] == "OBSERVED" for row in headline_rows)
     assert all(row["current_run_mutation_assertion"] is False for row in rows)
     assert all(row["l4_write_assertion"] is False for row in rows)
     assert all(row["future_run_only"] is True for row in rows)
+    assert all(row["microstep_contract_digest"] == contract_digest for row in rows)
+    assert all(row["registry_digest"] == contract_digest for row in rows)
 
 
 def test_apps_rg_l6_microstep_artifacts_include_alignment(tmp_path: Path) -> None:
@@ -60,6 +66,7 @@ def test_apps_rg_l6_microstep_artifacts_include_alignment(tmp_path: Path) -> Non
     assert alignment["rows_expected"] == 134
     assert alignment["missing_in_l6"] == []
     assert alignment["authority_mismatch"] is False
+    assert alignment["registry_digest"] == alignment["microstep_contract_digest"]
     assert coverage["required_rows_seen"] == 134
     assert coverage["coverage_complete"] is False
     assert coverage["missing_required"] == 134

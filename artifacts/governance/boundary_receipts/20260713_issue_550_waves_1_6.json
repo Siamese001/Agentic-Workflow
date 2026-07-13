@@ -1,0 +1,44 @@
+{
+  "receipt_version": "1.0",
+  "audit_id": "issue-550-waves-1-6",
+  "timestamp": "2026-07-13T14:00:00Z",
+  "changed_files": [
+    "agentic_core/L4_state/storage/sqlite_backend.py",
+    "agentic_core/L4_state/uwg/durable_write_gateway.py",
+    "agentic_core/L4_state/uwg/transactional_durable_write_gateway.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
+    "agentic_core/L6_observability/shadow_eval/grain_parity.py",
+    "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+    "agentic_core/L6_observability/shadow_eval/microsteps.py",
+    "agentic_core/runtime/entry/apps_rg_dispatch.py",
+    "agentic_core/runtime/entry/u0_apps_research_binding.py"
+  ],
+  "classifications": {
+    "agentic_core/L4_state/storage/sqlite_backend.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L4_state/uwg/durable_write_gateway.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L4_state/uwg/transactional_durable_write_gateway.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py": "MIGRATION_EXCEPTION",
+    "agentic_core/L6_observability/shadow_eval/grain_parity.py": "MIGRATION_EXCEPTION",
+    "agentic_core/L6_observability/shadow_eval/independent_parity.py": "MIGRATION_EXCEPTION",
+    "agentic_core/L6_observability/shadow_eval/microsteps.py": "MIGRATION_EXCEPTION",
+    "agentic_core/runtime/entry/apps_rg_dispatch.py": "TEMPORARY_THIN_ADAPTER",
+    "agentic_core/runtime/entry/u0_apps_research_binding.py": "TEMPORARY_THIN_ADAPTER"
+  },
+  "forbidden_literals_found": [
+    "Pre-existing Apps Eval vocabulary remains in four L6 adapter modules",
+    "Pre-existing Apps Research vocabulary remains in the U0 adapter",
+    "Pre-existing Apps RG vocabulary remains in the thin dispatch adapter"
+  ],
+  "new_app_id_or_tenant_branching": false,
+  "receipts_verified": [
+    "artifacts/governance/migration_receipts/20260713_issue_550_core_boundary_migration_receipt.json"
+  ],
+  "outcome": "ALLOW_WITH_GENERIC_REFACTOR",
+  "action_taken": "Classified the three L4 changes as generic durability infrastructure and bound all six pre-existing app-named adapter exceptions to issue #550, a dated migration receipt, and expiring GOV-3 entries. The implementation adds generic identity, digest, containment, replay, and scan-bound enforcement only.",
+  "next_steps": [
+    "Move Apps Eval projection vocabulary out of core before 2026-10-11",
+    "Replace the Apps Research U0 adapter with app-owned or generic package-driven binding",
+    "Replace the Apps RG dispatch adapter with a generic app-entry registry",
+    "Remove GOV-3 baseline entries 062 through 067 when migration completes"
+  ]
+}

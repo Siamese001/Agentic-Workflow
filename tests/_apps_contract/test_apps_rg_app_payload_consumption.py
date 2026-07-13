@@ -532,30 +532,24 @@ def test_dispatch_passes_validated_request_to_c0_and_pa() -> None:
 
 
 def test_full_dispatch_succeeds_with_ag2_wiring() -> None:
-    """End-to-end proof: dispatch returns success; R4 spine mocked for CI determinism."""
+    """End-to-end proof: full dispatch uses the signed product-entry facade."""
 
-    from pathlib import Path
     from unittest.mock import patch
 
-    from agentic_core.runtime.entrypoints.integrated_single_action_spine_run import (
-        SingleActionSpineRunResult,
-    )
-
-    fake_result = SingleActionSpineRunResult(
-        run_id="smoke-run",
-        request_id="smoke-req",
-        route_id="R4_SINGLE_ACTION",
-        x3_disposition="EXIT_OK",
-        terminal_r5=False,
-        terminal_r5_reason="",
-        artifact_dir=Path("/tmp/apps_rg_dispatch_smoke"),
-        fault="",
-    )
+    fake_result = {
+        "exit_status": "success",
+        "execution_status": "completed",
+        "outcome_authorized": True,
+        "product_authorized": True,
+        "pipeline_complete": True,
+        "x3_disposition": "X3D_ALLOW_FINISH",
+        "fault": "",
+    }
 
     envelope = apps_rg_parse(_thin_payload())
     assert envelope is not None
     with patch(
-        "apps_rg.runtime.orchestration.canonical_dispatch.run_integrated_single_action_spine",
+        "apps_rg.runtime.product_entry.run_product_whole_run_from_primitives",
         return_value=fake_result,
     ) as mock_run:
         result = apps_rg_dispatch(envelope)

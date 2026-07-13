@@ -23,7 +23,7 @@ def _adg_bootstrap() -> None:
     """Run optional ADG bootstrap without making package import fragile."""
     try:
         module = importlib.import_module("agentic_core.adg.applications.execute_ssot_integration")
-        build_pre_run_report = getattr(module, "build_pre_run_report")
+        build_pre_run_report = module.build_pre_run_report
     except (ImportError, AttributeError):
         return
 
@@ -296,7 +296,7 @@ def _write_generic_research_artifacts(record, request) -> Path:
                 "targeting_format": "",
                 "company_brief_path": str(company_brief_path),
                 "briefing_path": str(run_dir / "briefing.md") if briefing_text else "",
-                "apps_research_briefing_envelope_path": "",
+                "apps_research_apps_rg_handoff_v2_path": "",
             },
             ensure_ascii=False,
             indent=2,
@@ -397,9 +397,10 @@ def _run_live_cert(argv: list[str]) -> int:
     ``artifacts/apps_research/runs/<ts>/``. Plan:
     apps-e2e-spine-cert-wireup-e1c4d7 W4.
     """
-    from apps_shared.spine_emission import governed_run
-    import apps_research.cert  # noqa: F401, PLC0415
     from apps_shared.cert.fec_producer import resolve_fec  # noqa: PLC0415
+    from apps_shared.spine_emission import governed_run
+
+    import apps_research.cert  # noqa: F401, PLC0415
 
     cfg = _build_emission_config()
 

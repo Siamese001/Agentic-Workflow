@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -13,12 +14,10 @@ from apps_research.integrations.apps_rg_handoff import (
 )
 from apps_rg.prerequisites.briefing_validator import (
     validate_apps_research_handoff,
-    validate_canonical_apps_research_exit,
 )
 from apps_rg.runtime.bindings.briefing_u0_signals import (
     briefing_supplied_at_u0,
 )
-
 
 _VALID_BRIEF = (
     "Anthropic - Manager Applied AI Architecture Partnerships targeting brief\n"
@@ -135,23 +134,30 @@ def test_publisher_writes_brief_only_after_canonical_x3d(tmp_path: Path) -> None
     assert bundle.exit_review_path and bundle.exit_review_path.is_file()
     assert bundle.exit_disposition_path and bundle.exit_disposition_path.is_file()
     assert bundle.runtime_exhaust_path and bundle.runtime_exhaust_path.is_file()
+    assert bundle.handoff_v2_path and bundle.handoff_v2_path.is_file()
+    assert bundle.commit_manifest_path and bundle.commit_manifest_path.is_file()
+    assert bundle.u0_receipt_path and bundle.u0_receipt_path.is_file()
+    assert bundle.brief_sha256.startswith("sha256:")
+    assert bundle.result_metadata_digest.startswith("sha256:")
+    assert bundle.bundle_manifest_digest.startswith("sha256:")
 
-    envelope = bundle.envelope
-    assert envelope["canonical_exit_authorized"] is True
-    assert envelope["x3_code"] == "X3D_ALLOW_FINISH"
-    receipt = envelope["apps_research_exit_disposition_receipt"]
-    assert receipt["required_gates_passed"] is True
-    assert receipt["hard_fail_count"] == 0
-    assert receipt["unknown_count"] == 0
-    assert receipt["missing_gate_count"] == 0
-    assert receipt["output_artifact_digest"] == envelope["brief_sha256"]
-    assert (
-        envelope["apps_research_runtime_exhaust_bundle"]["exit_disposition_ref"]
-        == envelope["exit_disposition_receipt_digest"]
+    handoff = bundle.envelope
+    assert handoff["schema_version"] == "apps_research.apps_rg_handoff.v2"
+    assert handoff["exit_authorization"]["x3_code"] == "X3D_ALLOW_FINISH"
+    assert handoff["identity"]["brief_sha256"] == bundle.brief_sha256
+    assert set(handoff["mandatory_gate_receipts"]) == {
+        "G5",
+        "G6",
+        "G7",
+        "G21",
+        "G24",
+        "G26",
+    }
+    assert all(
+        row["status"] == "PASS"
+        for row in handoff["mandatory_gate_receipts"].values()
     )
-
-    valid, failures = validate_canonical_apps_research_exit(envelope)
-    assert valid, failures
+    assert not (bundle.run_dir / "apps_research_briefing_envelope.json").exists()
     consumer_validation = validate_apps_research_handoff(
         brief_ref=str(bundle.briefing_path),
         jd_ref=jd,
@@ -160,6 +166,33 @@ def test_publisher_writes_brief_only_after_canonical_x3d(tmp_path: Path) -> None
         require_canonical_exit=True,
     )
     assert consumer_validation.valid, consumer_validation.reason
+    persisted_consumer_receipt = (
+        bundle.run_dir / "apps_research_handoff_validation_receipt.json"
+    )
+    assert persisted_consumer_receipt.is_file()
+    assert json.loads(persisted_consumer_receipt.read_text())["status"] == "PASS"
+
+
+def test_consumer_treats_long_inline_json_jd_as_text(tmp_path: Path) -> None:
+    jd = json.dumps({"description": "architecture " * 450}, sort_keys=True)
+    assert len(jd) > 4096
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("long-inline-jd"),
+        target_company="Anthropic",
+        target_role="Manager Applied AI Architecture Partnerships",
+        jd_text=jd,
+        runs_root=tmp_path / "runs",
+    )
+
+    validation = validate_apps_research_handoff(
+        brief_ref=str(bundle.briefing_path),
+        jd_ref=jd,
+        require_observed=True,
+        require_x1_x3_authorization=True,
+        require_canonical_exit=True,
+    )
+
+    assert validation.valid, validation.reason
 
 
 def test_unknown_x2_never_publishes_briefing(tmp_path: Path) -> None:
@@ -177,42 +210,31 @@ def test_unknown_x2_never_publishes_briefing(tmp_path: Path) -> None:
     assert not (runs_root / "canonical-unknown" / "briefing.md").exists()
 
 
-def test_consumer_rejects_tampered_exit_receipt() -> None:
-    record = _record("tamper")
-    sidecar = record.fec_run_context["company_brief"][
-        "apps_rg_targeting_brief_sidecar"
-    ]
-    from apps_research.integrations.apps_rg_handoff import (
-        build_apps_rg_handoff_envelope,
-        run_apps_rg_handoff_exit_authorization,
-    )
-
-    # The producer writer canonicalizes artifact text with strip() before GateMesh
-    # evaluation and persistence. Mirror that boundary in this direct-helper test.
-    canonical_brief = record.company_brief_text.strip()
-    authorization = run_apps_rg_handoff_exit_authorization(
-        run_id=record.run_id,
-        trace_root=record.trace_id,
-        briefing_text=canonical_brief,
-        jd_text="JD",
-        sidecar=sidecar,
-    )
-    envelope = build_apps_rg_handoff_envelope(
-        sidecar=sidecar,
-        run_id=record.run_id,
+def test_consumer_rejects_tampered_exit_receipt(tmp_path: Path) -> None:
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("tamper"),
         target_company="Anthropic",
         target_role="Manager",
-        briefing_text=canonical_brief,
         jd_text="JD",
-        generated_at_utc="2026-07-12T12:00:00+00:00",
-        exit_authorization=authorization,
+        runs_root=tmp_path / "runs",
     )
-    envelope["apps_research_exit_disposition_receipt"]["unknown_count"] = 1
+    receipt = json.loads(bundle.exit_disposition_path.read_text(encoding="utf-8"))
+    receipt["unknown_count"] = 1
+    bundle.exit_disposition_path.write_text(
+        json.dumps(receipt, sort_keys=True),
+        encoding="utf-8",
+    )
 
-    valid, failures = validate_canonical_apps_research_exit(envelope)
-    assert not valid
-    assert "canonical_unknown_count_nonzero" in failures
-    assert "exit_disposition_receipt_digest_mismatch" in failures
+    validation = validate_apps_research_handoff(
+        brief_ref=str(bundle.briefing_path),
+        jd_ref="JD",
+        require_observed=True,
+        require_x1_x3_authorization=True,
+        require_canonical_exit=True,
+    )
+    assert not validation.valid
+    assert "exit_authorization_receipt_sha256_mismatch" in validation.reason
+    assert "persisted_exit_unknown_count_nonzero" in validation.reason
 
 
 def test_u0_signal_requires_canonical_exit_for_auto_research(tmp_path: Path) -> None:
@@ -256,3 +278,124 @@ def test_u0_binding_reaches_authorized_briefing_signal() -> None:
         encoding="utf-8"
     )
     assert "briefing_supplied_at_u0(app_payload)" in source
+
+
+def test_v2_consumer_rejects_tampered_committed_brief_bytes(tmp_path: Path) -> None:
+    jd = "Lead partner solution architecture for Claude."
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("v2-byte-tamper"),
+        target_company="Anthropic",
+        target_role="Manager Applied AI Architecture Partnerships",
+        jd_text=jd,
+        runs_root=tmp_path / "runs",
+    )
+    bundle.briefing_path.write_bytes(bundle.briefing_path.read_bytes() + b"tamper")
+
+    validation = validate_apps_research_handoff(
+        brief_ref=str(bundle.briefing_path),
+        jd_ref=jd,
+        require_observed=True,
+        require_canonical_exit=True,
+    )
+
+    assert not validation.valid
+    assert "artifact_byte_length_mismatch:briefing.md" in validation.reason
+    assert "brief_sha256_mismatch" in validation.reason
+
+
+def test_v2_consumer_rejects_missing_commit_marker(tmp_path: Path) -> None:
+    jd = "Lead partner solution architecture for Claude."
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("v2-marker-missing"),
+        target_company="Anthropic",
+        target_role="Manager Applied AI Architecture Partnerships",
+        jd_text=jd,
+        runs_root=tmp_path / "runs",
+    )
+    assert bundle.commit_manifest_path is not None
+    bundle.commit_manifest_path.unlink()
+
+    validation = validate_apps_research_handoff(
+        brief_ref=str(bundle.briefing_path),
+        jd_ref=jd,
+        require_observed=True,
+        require_canonical_exit=True,
+    )
+
+    assert not validation.valid
+    assert "missing_commit_marker" in validation.reason
+
+
+def test_v2_consumer_rejects_target_identity_mismatch(tmp_path: Path) -> None:
+    jd = "Lead partner solution architecture for Claude."
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("v2-target-mismatch"),
+        target_company="Anthropic",
+        target_role="Manager Applied AI Architecture Partnerships",
+        jd_text=jd,
+        runs_root=tmp_path / "runs",
+    )
+
+    validation = validate_apps_research_handoff(
+        brief_ref=str(bundle.briefing_path),
+        jd_ref=jd,
+        require_observed=True,
+        require_canonical_exit=True,
+        expected_target_company="Different Company",
+        expected_target_role="Manager Applied AI Architecture Partnerships",
+    )
+
+    assert not validation.valid
+    assert "identity_target_company_context_mismatch" in validation.reason
+
+
+def test_consumer_rejects_legacy_only_product_handoff(tmp_path: Path) -> None:
+    brief = tmp_path / "briefing.md"
+    brief.write_text(_VALID_BRIEF, encoding="utf-8")
+    (tmp_path / "apps_research_briefing_envelope.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
+                "producer_app": "apps_research",
+                "consumer_app": "apps_rg",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    validation = validate_apps_research_handoff(
+        brief_ref=str(brief),
+        require_observed=True,
+        require_canonical_exit=True,
+    )
+
+    assert not validation.valid
+    assert validation.reason == "legacy_only_handoff_rejected"
+
+
+def test_atomic_publisher_never_exposes_final_directory_before_marker(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import apps_research.integrations.apps_rg_handoff as handoff
+
+    original = handoff._write_fsync
+
+    def fail_on_marker(path: Path, payload: bytes) -> None:
+        if path.name == "bundle_commit_manifest.json":
+            raise OSError("simulated marker write failure")
+        original(path, payload)
+
+    monkeypatch.setattr(handoff, "_write_fsync", fail_on_marker)
+    runs_root = tmp_path / "runs"
+    with pytest.raises(OSError, match="simulated marker write failure"):
+        persist_apps_rg_targeting_brief_artifacts(
+            record=_record("atomic-marker-failure"),
+            target_company="Anthropic",
+            target_role="Manager Applied AI Architecture Partnerships",
+            jd_text="Lead partner solution architecture for Claude.",
+            runs_root=runs_root,
+        )
+
+    assert not (runs_root / "atomic-marker-failure").exists()
+    assert not list(runs_root.glob(".atomic-marker-failure.staging-*"))

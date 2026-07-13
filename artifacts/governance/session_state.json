@@ -1,0 +1,9 @@
+{
+  "active_plan": {
+    "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+    "plan_type": "platform_core_change",
+    "touches_agentic_core": true,
+    "core_addition_author_gate_required": true,
+    "author_gate_receipt_ref": "artifacts/governance/issue_550_core_addition_author_gate_receipt.json"
+  }
+}

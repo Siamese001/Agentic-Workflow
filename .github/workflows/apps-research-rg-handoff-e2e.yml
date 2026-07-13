@@ -3,6 +3,7 @@ name: apps-research-rg-handoff-e2e
 on:
   pull_request:
     paths:
+      - "apps_research/__main__.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
@@ -11,11 +12,64 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "apps_research/integrations/**"
+      - "apps_research/runtime/u0/**"
+      - "apps_rg/__main__.py"
+      - "apps_rg/integrations/**"
+      - "apps_rg/prerequisites/**"
+      - "apps_rg/runtime/bindings/**"
+      - "apps_rg/runtime/e2e_preflight.py"
+      - "apps_rg/runtime/pre_dispatch_preflight.py"
+      - "apps_rg/runtime/e2e_stage_ledger.py"
+      - "apps_rg/runtime/terminal_manifest.py"
+      - "apps_rg/runtime/post_x3_completion.py"
+      - "apps_rg/runtime/mandatory_run_outputs.py"
+      - "apps_rg/runtime/mandatory_outputs/**"
+      - "apps_rg/runtime/package/apps_rg_full_resume_x3_eligibility.py"
+      - "apps_rg/runtime/spine/l6_shadow_eval_runner.py"
+      - "apps_rg/runtime/shadow/l6_microstep_observability.py"
+      - "apps_rg/runtime/orchestration/**"
+      - "apps_rg/config/domain_contract/e2e_stage_graph.resume_generation.v1.yaml"
+      - "apps_rg/config/domain_contract/grader_roster.yaml"
+      - "apps_rg/config/domain_contract/judge_calibration_profile.yaml"
+      - "apps_rg/config/provider_profiles.yaml"
+      - "apps_eval/adapters/apps_rg.py"
+      - "apps_eval/__main__.py"
+      - "apps_eval/artifacts/apps_rg_resolver.py"
+      - "apps_eval/coverage/apps_rg.py"
+      - "apps_eval/contracts/models.py"
+      - "apps_eval/runner/core.py"
+      - "apps_eval/registries/**"
+      - "agentic_core/L4_state/uwg/**"
+      - "agentic_core/L4_state/storage/**"
+      - "agentic_core/L6_observability/shadow_eval/**"
+      - "agentic_core/L6_system_learning/promotion/**"
+      - "agentic_core/runtime/exhaust/shadow_raw_exhaust_adapter.py"
+      - "agentic_core/runtime/exit/**"
+      - "agentic_core/runtime/judges/**"
+      - "agentic_core/runtime/entry/**"
+      - "agentic_core/runtime/entrypoints/**"
+      - "apps_shared/judge_registry.py"
+      - "config/certification/apps_research_rg_e2e_*.json"
+      - "config/certification/schemas/apps_rg_e2e_*.schema.json"
+      - "ops_scripts/ci/check_apps_research_rg_*.py"
+      - "ops_scripts/calibration/**"
+      - "ops_scripts/ci/*spearman*.py"
+      - "tests/e2e/apps_rg/**"
+      - "tests/unit/apps_research/**"
+      - "tests/unit/apps_rg/**"
+      - "tests/unit/agentic_core/L6_observability/shadow_eval/**"
+      - "tests/unit/L6_observability/shadow_eval/**"
+      - "tests/unit/agentic_core/runtime/exhaust/**"
+      - "tests/unit/agentic_core/runtime/judges/**"
+      - "tests/governance/test_apps_rg_spearman_ci_gates.py"
       - "docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md"
       - "config/certification/apps_research_rg_e2e_authority_contract.v1.json"
       - "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json"
       - "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_stage_ledger_seal.v1.schema.json"
       - "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+      - "config/certification/schemas/apps_rg_pipeline_completion_receipt.v1.schema.json"
       - "ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py"
       - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
       - "tests/unit/ops_scripts/ci/test_apps_research_rg_e2e_contract_freeze.py"
@@ -29,6 +83,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "apps_research/__main__.py"
       - "apps_research/integrations/apps_rg_handoff.py"
       - "apps_rg/integrations/apps_research_bridge.py"
       - "apps_rg/integrations/managed_research_delegation.py"
@@ -37,11 +92,64 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "apps_research/integrations/**"
+      - "apps_research/runtime/u0/**"
+      - "apps_rg/__main__.py"
+      - "apps_rg/integrations/**"
+      - "apps_rg/prerequisites/**"
+      - "apps_rg/runtime/bindings/**"
+      - "apps_rg/runtime/e2e_preflight.py"
+      - "apps_rg/runtime/pre_dispatch_preflight.py"
+      - "apps_rg/runtime/e2e_stage_ledger.py"
+      - "apps_rg/runtime/terminal_manifest.py"
+      - "apps_rg/runtime/post_x3_completion.py"
+      - "apps_rg/runtime/mandatory_run_outputs.py"
+      - "apps_rg/runtime/mandatory_outputs/**"
+      - "apps_rg/runtime/package/apps_rg_full_resume_x3_eligibility.py"
+      - "apps_rg/runtime/spine/l6_shadow_eval_runner.py"
+      - "apps_rg/runtime/shadow/l6_microstep_observability.py"
+      - "apps_rg/runtime/orchestration/**"
+      - "apps_rg/config/domain_contract/e2e_stage_graph.resume_generation.v1.yaml"
+      - "apps_rg/config/domain_contract/grader_roster.yaml"
+      - "apps_rg/config/domain_contract/judge_calibration_profile.yaml"
+      - "apps_rg/config/provider_profiles.yaml"
+      - "apps_eval/adapters/apps_rg.py"
+      - "apps_eval/__main__.py"
+      - "apps_eval/artifacts/apps_rg_resolver.py"
+      - "apps_eval/coverage/apps_rg.py"
+      - "apps_eval/contracts/models.py"
+      - "apps_eval/runner/core.py"
+      - "apps_eval/registries/**"
+      - "agentic_core/L4_state/uwg/**"
+      - "agentic_core/L4_state/storage/**"
+      - "agentic_core/L6_observability/shadow_eval/**"
+      - "agentic_core/L6_system_learning/promotion/**"
+      - "agentic_core/runtime/exhaust/shadow_raw_exhaust_adapter.py"
+      - "agentic_core/runtime/exit/**"
+      - "agentic_core/runtime/judges/**"
+      - "agentic_core/runtime/entry/**"
+      - "agentic_core/runtime/entrypoints/**"
+      - "apps_shared/judge_registry.py"
+      - "config/certification/apps_research_rg_e2e_*.json"
+      - "config/certification/schemas/apps_rg_e2e_*.schema.json"
+      - "ops_scripts/ci/check_apps_research_rg_*.py"
+      - "ops_scripts/calibration/**"
+      - "ops_scripts/ci/*spearman*.py"
+      - "tests/e2e/apps_rg/**"
+      - "tests/unit/apps_research/**"
+      - "tests/unit/apps_rg/**"
+      - "tests/unit/agentic_core/L6_observability/shadow_eval/**"
+      - "tests/unit/L6_observability/shadow_eval/**"
+      - "tests/unit/agentic_core/runtime/exhaust/**"
+      - "tests/unit/agentic_core/runtime/judges/**"
+      - "tests/governance/test_apps_rg_spearman_ci_gates.py"
       - "docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md"
       - "config/certification/apps_research_rg_e2e_authority_contract.v1.json"
       - "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json"
       - "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_stage_ledger_seal.v1.schema.json"
       - "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+      - "config/certification/schemas/apps_rg_pipeline_completion_receipt.v1.schema.json"
       - "ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py"
       - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
       - "tests/unit/ops_scripts/ci/test_apps_research_rg_e2e_contract_freeze.py"
@@ -78,12 +186,23 @@ jobs:
       - name: Run canonical producer-consumer handoff certification
         run: python ops_scripts/ci/check_apps_research_rg_handoff_e2e.py
 
+      - name: Validate full-chain dependency structure
+        run: python ops_scripts/ci/check_apps_research_rg_e2e_traceability.py --mode structural
+
+      - name: Run full-chain certification groups and failure matrix
+        run: python ops_scripts/ci/check_apps_research_rg_full_chain_e2e.py
+
+      - name: Validate JUnit-backed requirement certification
+        run: python ops_scripts/ci/check_apps_research_rg_e2e_traceability.py --mode evidence
+
       - name: Upload handoff test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: apps-research-rg-handoff-test-evidence-${{ github.run_id }}
-          path: artifacts/apps_research_rg_handoff/**
+          path: |
+            artifacts/apps_research_rg_handoff/**
+            artifacts/apps_research_rg_e2e/**
           retention-days: 14
 
   certification-summary:

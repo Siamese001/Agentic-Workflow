@@ -39,7 +39,14 @@ def _paths(root: Path) -> tuple[dict[str, Path], dict[str, Path], dict[str, Path
 def _package() -> dict[str, object]:
     return {
         "section_id": "headline",
+        "parent_run_id": "parent-1",
+        "child_run_id": "child-1",
+        "section_attempt_id": "attempt-1",
         "runtime_exhaust_bundle_id": "reb-1",
+        "runtime_exhaust_bundle_digest": "sha256:" + "b" * 64,
+        "microstep_contract_digest": "sha256:" + "c" * 64,
+        "registry_digest": "sha256:" + "c" * 64,
+        "l5_certification_valid": True,
         "valid_v40_shadow_exhaust": True,
         "readiness_decision": "READY_FOR_6B",
         "g28_audit_completeness": {"verdict": "PASS"},
@@ -71,6 +78,8 @@ def test_contract_only_section_can_close_observability(tmp_path: Path) -> None:
     assert payload["eval_binding_status"] == "PENDING"
     assert payload["failed_checks"] == []
     assert payload["artifact_digests"]
+    assert payload["registry_digest"] == payload["microstep_contract_digest"]
+    assert payload["runtime_exhaust_bundle_digest"].startswith("sha256:")
 
 
 def test_observability_closure_fails_on_gate_or_artifact_gap(tmp_path: Path) -> None:

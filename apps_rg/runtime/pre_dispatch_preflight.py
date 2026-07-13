@@ -19,7 +19,8 @@ from apps_rg.prerequisites.briefing_validator import (
 )
 from apps_rg.runtime.briefing_resolution import _looks_like_filesystem_ref as _briefing_looks_like_path
 from apps_rg.runtime.briefing_ssot import DEFAULT_TARGETING_BRIEFING_PATH
-from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH, _looks_like_filesystem_ref as _jd_looks_like_path
+from apps_rg.runtime.jd_resolution import DEFAULT_JD_TARGETING_PATH
+from apps_rg.runtime.jd_resolution import _looks_like_filesystem_ref as _jd_looks_like_path
 from apps_rg.runtime.runtime_proof_layout import find_repo_root
 from apps_rg.runtime.targeting_input_freshness import (
     is_stale_default_targeting_briefing,
@@ -168,7 +169,7 @@ class PreDispatchPreflightResult:
     dispatch_started: bool
     decisive_reason: str
     apps_research_handoff_validation: dict[str, Any] | None = None
-    apps_research_briefing_envelope: dict[str, Any] | None = None
+    apps_research_handoff_v2: dict[str, Any] | None = None
 
     @property
     def allowed(self) -> bool:
@@ -193,7 +194,7 @@ class PreDispatchPreflightResult:
             "dispatch_started": self.dispatch_started,
             "decisive_reason": self.decisive_reason,
             "apps_research_handoff_validation": self.apps_research_handoff_validation,
-            "apps_research_briefing_envelope": self.apps_research_briefing_envelope,
+            "apps_research_handoff_v2": self.apps_research_handoff_v2,
         }
 
 
@@ -394,7 +395,7 @@ def run_pre_dispatch_preflight(
             if handoff_validation.observed or not handoff_validation.valid
             else None
         ),
-        apps_research_briefing_envelope=handoff_validation.envelope,
+        apps_research_handoff_v2=handoff_validation.envelope,
     )
 
 
@@ -422,11 +423,6 @@ def write_pre_dispatch_preflight_receipt(
     if result.apps_research_handoff_validation:
         (path.parent / "apps_research_handoff_validation_receipt.json").write_text(
             json.dumps(result.apps_research_handoff_validation, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
-    if result.apps_research_briefing_envelope:
-        (path.parent / "apps_research_briefing_envelope.json").write_text(
-            json.dumps(result.apps_research_briefing_envelope, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
     return path

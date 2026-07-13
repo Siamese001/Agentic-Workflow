@@ -12,6 +12,7 @@ produce useful output.
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import os
@@ -32,6 +33,15 @@ from apps_rg.runtime.full_run_section_status import (
     collect_full_run_section_status,
 )
 from apps_rg.runtime.l7_audit_output import emit_l7_audit_ability_output
+from apps_rg.runtime.mandatory_outputs import (
+    CLOSEOUT_MANDATORY_OUTPUT_PROFILE,
+    MANDATORY_OUTPUT_COMMIT_MANIFEST,
+    PRODUCT_MANDATORY_OUTPUT_PROFILE,
+    apply_mandatory_closeout_state,
+    begin_mandatory_output_transaction,
+    seal_mandatory_output_bundle,
+    validate_mandatory_output_seal,
+)
 from apps_rg.runtime.output_bisect import render_output_bisect
 from apps_rg.runtime.run_output_contract import (
     APPS_RG_MANDATORY_RUN_OUTPUT_JSON,
@@ -121,6 +131,15 @@ SECTION_LANE_TABLE_KEYS = ("title", "columns", "rows")
 RESUME_DOCX_INLINE_KEYS = ("title", "source", "text")
 APPS_RESEARCH_PRIMARY_GENERATION_PROVIDER = "external_openai"
 APPS_RESEARCH_PRIMARY_GENERATION_MODEL = "gpt-5.4-mini-2026-03-17"
+APPS_RG_OUTPUT_MANIFEST = "apps_rg_output_manifest.json"
+
+_PRODUCT_OUTPUT_ARTIFACTS = (
+    FINAL_RESUME_OUTPUT_TXT,
+    FINAL_RESUME_OUTPUT_JSON,
+    FINAL_RESUME_DOCX_RELPATH,
+    FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+    APPS_RG_OUTPUT_MANIFEST,
+)
 
 
 def _utc_now() -> str:
@@ -643,9 +662,20 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
     completion_status = str(result.get("completion_status") or "").upper()
     if not completion_status:
         completion_status = "PASS" if result_pass else "BLOCKED" if fault else "UNKNOWN"
+    exit_status = result.get("exit_status") or (
+        "success" if result_pass else "error" if terminal_fault else "unknown"
+    )
+    execution_completed = str(exit_status).strip().lower() == "success"
     return {
-        "exit_status": result.get("exit_status") or ("success" if result_pass else "error" if terminal_fault else "unknown"),
-        "execution_status": result.get("execution_status") or ("completed" if result_pass else "failed" if terminal_fault else "unknown"),
+        "exit_status": exit_status,
+        "execution_status": result.get("execution_status")
+        or (
+            "completed"
+            if result_pass or execution_completed
+            else "failed"
+            if terminal_fault
+            else "unknown"
+        ),
         "outcome_authorized": bool(result.get("outcome_authorized") or result_pass),
         "decisive_status": result.get("decisive_status") or "",
         "all_lanes_authorized": result.get("all_lanes_authorized"),
@@ -667,7 +697,7 @@ def _result_summary(result: dict[str, Any] | None, run_root: Path) -> dict[str, 
         "research_artifact_dir": result.get("research_artifact_dir") or "",
         "research_briefing_path": result.get("research_briefing_path") or "",
         "research_company_brief_path": result.get("research_company_brief_path") or "",
-        "research_envelope_path": result.get("research_envelope_path") or "",
+        "research_handoff_v2_path": result.get("research_handoff_v2_path") or "",
         "apps_eval_record_ref": result.get("apps_eval_record_ref") or "",
         "l6_shadow_bridge_ref": result.get("l6_shadow_bridge_ref") or "",
         "l7_audit_status": result.get("l7_audit_status") or "",
@@ -799,20 +829,25 @@ def _research_artifact_dirs(run_root: Path) -> list[Path]:
     return dirs
 
 
-def _research_envelope(run_root: Path, *, repo_root: Path, brief_ref: str) -> dict[str, Any]:
-    candidates: list[Path] = [run_root / "apps_research_briefing_envelope.json"]
+def _research_handoff_v2(
+    run_root: Path,
+    *,
+    repo_root: Path,
+    brief_ref: str,
+) -> dict[str, Any]:
+    candidates: list[Path] = [
+        run_root / "apps_research_apps_rg_handoff_v2.json"
+    ]
     resolved_brief = _resolve_input_ref(brief_ref, run_root=run_root, repo_root=repo_root)
     if resolved_brief and not resolved_brief.startswith(("http://", "https://")):
         brief_path = Path(resolved_brief)
         candidates.extend(
             [
-                brief_path.parent / "apps_research_briefing_envelope.json",
-                brief_path.with_suffix(brief_path.suffix + ".apps_research_envelope.json"),
-                brief_path.with_suffix(".envelope.json"),
+                brief_path.parent / "apps_research_apps_rg_handoff_v2.json",
             ]
         )
     for artifact_dir in _research_artifact_dirs(run_root):
-        candidates.append(artifact_dir / "apps_research_briefing_envelope.json")
+        candidates.append(artifact_dir / "apps_research_apps_rg_handoff_v2.json")
     _path, data = _first_existing_json(candidates)
     return data
 
@@ -855,41 +890,88 @@ def _apps_research_gate_context(
     envelope = (
         validation_envelope
         if isinstance(validation_envelope, dict)
-        else _research_envelope(run_root, repo_root=repo_root, brief_ref=resolved_brief)
+        else _research_handoff_v2(
+            run_root,
+            repo_root=repo_root,
+            brief_ref=resolved_brief,
+        )
     )
-    auth = (
-        envelope.get("apps_research_x1_x3_authorization")
-        if isinstance(envelope.get("apps_research_x1_x3_authorization"), dict)
+    identity = (
+        envelope.get("identity")
+        if isinstance(envelope.get("identity"), dict)
         else {}
     )
-    x1 = auth.get("x1") if isinstance(auth.get("x1"), dict) else {}
-    x2 = auth.get("x2") if isinstance(auth.get("x2"), dict) else {}
-    x3 = auth.get("x3") if isinstance(auth.get("x3"), dict) else {}
-    route_decision = spine.get("route_decision") if isinstance(spine.get("route_decision"), dict) else {}
-    observed = receipt.get("observed")
-    valid = receipt.get("valid")
-    reason = str(receipt.get("reason") or "NOT_OBSERVED")
-    x1_status = str(x1.get("status") or "NOT_OBSERVED")
-    x2_status = str(x2.get("status") or "NOT_OBSERVED")
-    x3_status = str(x3.get("status") or "NOT_OBSERVED")
-    x3_disposition = str(x3.get("disposition") or "NOT_OBSERVED")
-    x2_score = _score_text(x2.get("score")) if x2.get("score") is not None else "NOT_OBSERVED"
-    x2_judge_model = str(x2.get("judge_model") or "NOT_OBSERVED")
-    generation_provider = str(envelope.get("generation_provider") or "NOT_OBSERVED")
-    generation_model = str(envelope.get("generation_model") or "NOT_OBSERVED")
-    handoff_eligible = (
-        envelope.get("handoff_eligible") if isinstance(envelope, dict) else "NOT_OBSERVED"
+    gate_receipts = (
+        envelope.get("mandatory_gate_receipts")
+        if isinstance(envelope.get("mandatory_gate_receipts"), dict)
+        else {}
     )
+    exit_authorization = (
+        envelope.get("exit_authorization")
+        if isinstance(envelope.get("exit_authorization"), dict)
+        else {}
+    )
+    route_decision = spine.get("route_decision") if isinstance(spine.get("route_decision"), dict) else {}
+    if "status" in receipt:
+        # The frozen v2 consumer receipt deliberately has no legacy
+        # ``observed``/``valid``/``reason`` projection.  Its authoritative
+        # status and failure-reason vector must drive the gate row directly.
+        receipt_status = str(receipt.get("status") or "UNKNOWN").upper()
+        receipt_failures = receipt.get("failure_reasons")
+        failure_reasons = (
+            [str(item) for item in receipt_failures if str(item).strip()]
+            if isinstance(receipt_failures, list)
+            else []
+        )
+        observed = True
+        valid = receipt_status == "PASS"
+        reason = "ok" if valid else ";".join(failure_reasons) or receipt_status
+    else:
+        observed = receipt.get("observed")
+        valid = receipt.get("valid")
+        reason = str(receipt.get("reason") or "NOT_OBSERVED")
+    exact_gates_pass = set(gate_receipts) == {
+        "G5",
+        "G6",
+        "G7",
+        "G21",
+        "G24",
+        "G26",
+    } and all(
+        isinstance(gate, dict) and gate.get("status") == "PASS"
+        for gate in gate_receipts.values()
+    )
+    if observed:
+        x1_status = "PASS" if valid else "BLOCKED"
+        x2_status = "PASS" if valid and exact_gates_pass else "BLOCKED"
+        x3_disposition = str(
+            exit_authorization.get("x3_code") or "NOT_OBSERVED"
+        )
+        x3_status = (
+            "PASS"
+            if valid and x3_disposition == "X3D_ALLOW_FINISH"
+            else "BLOCKED"
+        )
+    else:
+        x1_status = "NOT_OBSERVED"
+        x2_status = "NOT_OBSERVED"
+        x3_status = "NOT_OBSERVED"
+        x3_disposition = "NOT_OBSERVED"
+    x2_score = "NOT_OBSERVED"
+    x2_judge_model = "NOT_OBSERVED"
+    generation_provider = "NOT_OBSERVED"
+    generation_model = "NOT_OBSERVED"
+    handoff_eligible = valid
     summary = (
         f"handoff_observed={observed}; handoff_valid={valid}; reason={reason}; "
-        f"run_id={str(envelope.get('run_id') or route_decision.get('research_run_id') or 'NOT_OBSERVED')}; "
-        f"eligible={handoff_eligible}; stale={envelope.get('is_stale', 'NOT_OBSERVED')}; "
+        f"run_id={str(identity.get('child_run_id') or route_decision.get('research_run_id') or 'NOT_OBSERVED')}; "
+        f"eligible={handoff_eligible}; "
         f"X1={x1_status}; X2={x2_status}"
         f"{' score=' + x2_score if x2_score != 'NOT_OBSERVED' else ''}"
         f"{' judge_model=' + x2_judge_model if x2_judge_model != 'NOT_OBSERVED' else ''}; "
         f"X3={x3_status}/{x3_disposition}; "
-        f"brief_sha={_short_digest(envelope.get('brief_sha256') or receipt.get('envelope_brief_sha256'))}; "
-        f"jd_sha={_short_digest(envelope.get('jd_sha256') or receipt.get('envelope_jd_sha256'))}"
+        f"brief_sha={_short_digest(identity.get('brief_sha256'))}; "
+        f"jd_sha={_short_digest(identity.get('jd_sha256'))}"
     )
     return {
         "summary": summary,
@@ -4064,6 +4146,56 @@ def validate_mandatory_output_bundle(
     elif not _load_json(json_path):
         errors.append(f"malformed_json:{MANDATORY_RUN_OUTPUT_JSON}")
 
+    result_summary = doc.get("result_summary")
+    result_summary = result_summary if isinstance(result_summary, dict) else {}
+    product_completion_claimed = bool(
+        result_summary.get("product_authorized")
+        or result_summary.get("outcome_authorized")
+    )
+    final_output = doc.get("final_resume_output")
+    final_output = final_output if isinstance(final_output, dict) else {}
+    if final_output.get("required") and product_completion_claimed:
+        if final_output.get("status") != "PASS":
+            errors.append(
+                f"final_resume_output_status:{final_output.get('status') or 'MISSING'}"
+            )
+        product_contract_paths = {
+            "final_resume_json": FINAL_RESUME_ASSEMBLY_JSON_RELPATH,
+            "rendered_resume_text": FINAL_RESUME_OUTPUT_TXT,
+            "resume_docx": FINAL_RESUME_DOCX_RELPATH,
+        }
+        for artifact_id, relative in product_contract_paths.items():
+            artifact = final_output.get(artifact_id)
+            artifact = artifact if isinstance(artifact, dict) else {}
+            if (
+                artifact.get("exists") is not True
+                or not isinstance(artifact.get("bytes"), int)
+                or artifact.get("bytes", 0) <= 0
+                or not str(artifact.get("sha256") or "").strip()
+            ):
+                errors.append(f"final_resume_artifact_incomplete:{artifact_id}")
+                continue
+            if str(artifact.get("relpath") or "") != relative:
+                errors.append(f"final_resume_artifact_relpath_mismatch:{artifact_id}")
+                continue
+            data = (root / relative).read_bytes() if (root / relative).is_file() else b""
+            actual_digest = hashlib.sha256(data).hexdigest()
+            claimed_digest = str(artifact.get("sha256") or "")
+            if claimed_digest not in {actual_digest, f"sha256:{actual_digest}"}:
+                errors.append(f"final_resume_artifact_digest_mismatch:{artifact_id}")
+            if artifact.get("bytes") != len(data):
+                errors.append(f"final_resume_artifact_length_mismatch:{artifact_id}")
+        for relative in _PRODUCT_OUTPUT_ARTIFACTS:
+            path = root / relative
+            if not path.is_file() or path.stat().st_size <= 0:
+                errors.append(f"missing_or_empty:{relative}")
+        if not _load_json(root / FINAL_RESUME_OUTPUT_JSON):
+            errors.append(f"malformed_json:{FINAL_RESUME_OUTPUT_JSON}")
+        if not _load_json(root / FINAL_RESUME_ASSEMBLY_JSON_RELPATH):
+            errors.append(f"malformed_json:{FINAL_RESUME_ASSEMBLY_JSON_RELPATH}")
+        if not _load_json(root / APPS_RG_OUTPUT_MANIFEST):
+            errors.append(f"malformed_json:{APPS_RG_OUTPUT_MANIFEST}")
+
     forensics = doc.get("section_failure_forensics")
     forensics = forensics if isinstance(forensics, dict) else {}
     if forensics.get("required"):
@@ -4085,11 +4217,22 @@ def validate_mandatory_output_bundle(
         artifacts = artifacts if isinstance(artifacts, list) else []
         if not artifacts:
             errors.append("missing:section_failure_forensics_artifacts")
+        expected_forensic_files = {
+            f"{SECTION_FAILURE_FORENSICS_DIR}/index.json",
+            f"{SECTION_FAILURE_FORENSICS_DIR}/index.md",
+        }
         for row in artifacts:
             if not isinstance(row, dict):
                 errors.append("malformed:section_failure_forensics_row")
                 continue
             section_id = str(row.get("section_id") or "unknown")
+            safe_id = section_id.replace("/", "_").replace("\\", "_")
+            expected_forensic_files.update(
+                {
+                    f"{SECTION_FAILURE_FORENSICS_DIR}/{safe_id}.json",
+                    f"{SECTION_FAILURE_FORENSICS_DIR}/{safe_id}.md",
+                }
+            )
             json_ref = str(row.get("json_path") or "")
             json_artifact = Path(json_ref)
             if not json_artifact.is_absolute():
@@ -4100,6 +4243,17 @@ def validate_mandatory_output_bundle(
                 continue
             for error in validate_section_failure_rca(rca):
                 errors.append(f"comparison:{section_id}:{error}")
+        actual_forensic_files = {
+            path.relative_to(root).as_posix()
+            for path in (root / SECTION_FAILURE_FORENSICS_DIR).glob("*")
+            if path.is_file()
+        }
+        if actual_forensic_files != expected_forensic_files:
+            errors.append(
+                "section_failure_forensics_artifact_set_mismatch:"
+                f"missing={sorted(expected_forensic_files - actual_forensic_files)},"
+                f"extra={sorted(actual_forensic_files - expected_forensic_files)}"
+            )
 
     operational = doc.get("operational_failure_forensics")
     operational = operational if isinstance(operational, dict) else {}
@@ -4133,11 +4287,58 @@ def validate_mandatory_output_bundle(
             MANDATORY_RUN_OUTPUT_MD,
             L7_AUDIT_ABILITY_OUTPUT_MD,
             MANDATORY_RUN_OUTPUT_JSON,
+            *(
+                _PRODUCT_OUTPUT_ARTIFACTS
+                if final_output.get("required") and product_completion_claimed
+                else ()
+            ),
         ],
+        "product_artifacts_required": bool(
+            final_output.get("required") and product_completion_claimed
+        ),
         "failed_section_comparison_required": bool(forensics.get("required")),
         "operational_failure_comparison_required": bool(operational.get("required")),
         "failure_reason": "" if not errors else MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
     }
+
+
+def _sealed_additional_artifacts(
+    root: Path,
+    doc: dict[str, Any],
+    *,
+    l7_path: Path,
+) -> dict[str, Path]:
+    """Return every existing artifact consumed by mandatory closeout authority."""
+
+    additional: dict[str, Path] = {L7_AUDIT_ABILITY_OUTPUT_MD: l7_path}
+    for relative in _PRODUCT_OUTPUT_ARTIFACTS:
+        path = root / relative
+        if path.is_file():
+            additional[relative] = path
+
+    forensics = doc.get("section_failure_forensics")
+    forensics = forensics if isinstance(forensics, dict) else {}
+    if forensics.get("required"):
+        relatives = {
+            f"{SECTION_FAILURE_FORENSICS_DIR}/index.json",
+            f"{SECTION_FAILURE_FORENSICS_DIR}/index.md",
+        }
+        for row in forensics.get("artifacts") or []:
+            if not isinstance(row, dict):
+                continue
+            section_id = str(row.get("section_id") or "unknown")
+            safe_id = section_id.replace("/", "_").replace("\\", "_")
+            relatives.update(
+                {
+                    f"{SECTION_FAILURE_FORENSICS_DIR}/{safe_id}.json",
+                    f"{SECTION_FAILURE_FORENSICS_DIR}/{safe_id}.md",
+                }
+            )
+        for relative in sorted(relatives):
+            path = root / relative
+            if path.is_file():
+                additional[relative] = path
+    return additional
 
 
 def emit_mandatory_run_outputs(
@@ -4153,6 +4354,7 @@ def emit_mandatory_run_outputs(
     root = Path(run_root).resolve()
     repo = (repo_root or find_repo_root(root)).resolve()
     root.mkdir(parents=True, exist_ok=True)
+    begin_mandatory_output_transaction(root)
     pre_summary = _result_summary(result, root)
     final_required = _final_resume_output_required(root, pre_summary)
     if emit_final_outputs:
@@ -4181,32 +4383,60 @@ def emit_mandatory_run_outputs(
     l7_path = emit_l7_audit_ability_output(root)
     json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     hard_stop_gate = validate_mandatory_output_bundle(root, doc)
-    doc["mandatory_output_hard_stop"] = hard_stop_gate
-    _write_text(md_path, _render_mandatory_markdown(doc))
-    _write_text(bcg_path, _render_bcg_markdown_locked(doc))
-    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
-    final_gate = validate_mandatory_output_bundle(root, doc)
-    hard_stop_gate = final_gate
-    doc["mandatory_output_hard_stop"] = hard_stop_gate
-    if not hard_stop_gate["pass"]:
-        summary = doc.get("result_summary")
-        summary = summary if isinstance(summary, dict) else {}
-        upstream_fault = str(summary.get("fault") or "")
-        upstream_completion_fault = str(summary.get("completion_fault") or "")
-        summary["exit_status"] = "error"
-        summary["execution_status"] = "failed"
-        summary["outcome_authorized"] = False
-        summary["completion_status"] = "BLOCKED"
-        summary["completion_fault"] = MANDATORY_OUTPUT_HARD_STOP_GATE_ID
-        summary["mandatory_output_upstream_fault"] = upstream_fault
-        summary["mandatory_output_upstream_completion_fault"] = upstream_completion_fault
-        doc["result_summary"] = summary
+    doc = apply_mandatory_closeout_state(
+        doc,
+        hard_stop_gate,
+        failure_code=MANDATORY_OUTPUT_HARD_STOP_GATE_ID,
+    )
     doc["inline_required_output"] = _build_inline_required_output(doc)
     doc["mandatory_inline_output_gates"] = _inline_output_gates(doc)
     doc["mandatory_inline_output_gates"].append(hard_stop_gate)
-    _write_text(md_path, _render_mandatory_markdown(doc))
-    _write_text(bcg_path, _render_bcg_markdown_locked(doc))
-    json_path.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
+    final_text = {
+        MANDATORY_RUN_OUTPUT_MD: (_render_mandatory_markdown(doc).rstrip() + "\n").encode(
+            "utf-8"
+        ),
+        BCG_EXECUTIVE_OUTPUT_MD: (_render_bcg_markdown_locked(doc).rstrip() + "\n").encode(
+            "utf-8"
+        ),
+        OUTPUT_BISECT_MD: (render_output_bisect(bisect_sections).rstrip() + "\n").encode(
+            "utf-8"
+        ),
+        MANDATORY_RUN_OUTPUT_JSON: (json.dumps(doc, indent=2) + "\n").encode("utf-8"),
+    }
+    additional_files = _sealed_additional_artifacts(root, doc, l7_path=l7_path)
+    required_artifacts = tuple(
+        sorted(
+            {
+                *final_text,
+                *(path.resolve().relative_to(root).as_posix() for path in additional_files.values()),
+            }
+        )
+    )
+    result_summary = doc.get("result_summary")
+    result_summary = result_summary if isinstance(result_summary, dict) else {}
+    product_completion_claimed = bool(
+        result_summary.get("product_authorized")
+        or result_summary.get("outcome_authorized")
+    )
+    profile_id = (
+        PRODUCT_MANDATORY_OUTPUT_PROFILE
+        if hard_stop_gate.get("pass") is True and product_completion_claimed
+        else CLOSEOUT_MANDATORY_OUTPUT_PROFILE
+    )
+    seal = seal_mandatory_output_bundle(
+        root,
+        final_text,
+        additional_files=additional_files,
+        profile_id=profile_id,
+        required_artifacts=required_artifacts,
+    )
+    seal_valid, seal_errors = validate_mandatory_output_seal(
+        root,
+        expected_profile_id=profile_id,
+        expected_artifacts=required_artifacts,
+    )
+    if not seal_valid:
+        raise RuntimeError(f"mandatory output seal validation failed: {seal_errors}")
     if print_stdout:
         print((bcg_path).read_text(encoding="utf-8"), flush=True)
         print((md_path).read_text(encoding="utf-8"), flush=True)
@@ -4218,6 +4448,8 @@ def emit_mandatory_run_outputs(
         "output_bisect_path": bisect_path,
         "l7_audit_ability_path": l7_path,
         "mandatory_output_gate": hard_stop_gate,
+        "mandatory_output_commit_manifest_path": root / MANDATORY_OUTPUT_COMMIT_MANIFEST,
+        "mandatory_output_bundle_digest": str(seal.get("bundle_digest") or ""),
         "payload": doc,
     }
 

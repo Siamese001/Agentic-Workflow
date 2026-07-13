@@ -12,7 +12,6 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_PATH = Path(
     "config/certification/apps_research_rg_e2e_authority_contract.v1.json"
@@ -94,6 +93,7 @@ EXPECTED_ENTRYPOINT_IDS = (
     "apps_rg_patch_run",
     "apps_rg_assemble_from_pinned",
     "apps_rg_whole_run_orchestrator",
+    "agentic_core_apps_rg_dispatch",
     "agentic_core_single_action_spine",
     "apps_rg_post_x3_finalize",
     "apps_eval_live_adapter",
@@ -119,7 +119,8 @@ EXPECTED_PIPELINE_REQUIREMENTS = (
     "promotion_terminal_status_present",
     "mandatory_outputs_digest_bound",
     "stage_ledger_v2_complete_and_sealed",
-    "terminal_manifest_v1_sealed_last",
+    "terminal_manifest_v1_sealed_after_stage_ledger",
+    "pipeline_completion_receipt_binds_terminal_manifest_bytes",
 )
 POST_BOUNDARY_STAGE_IDS = frozenset(
     {
@@ -141,8 +142,14 @@ EXPECTED_SCHEMA_REGISTRY = {
     "apps_rg.e2e_stage_ledger.v2": (
         "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json"
     ),
+    "apps_rg.e2e_stage_ledger_seal.v1": (
+        "config/certification/schemas/apps_rg_e2e_stage_ledger_seal.v1.schema.json"
+    ),
     "apps_rg.e2e_terminal_manifest.v1": (
         "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+    ),
+    "apps_rg.pipeline_completion_receipt.v1": (
+        "config/certification/schemas/apps_rg_pipeline_completion_receipt.v1.schema.json"
     ),
 }
 REQUIRED_WORKFLOW_PATHS = (
@@ -314,7 +321,7 @@ def _validate_schema_registry(
 ) -> None:
     registry = document.get("schema_registry")
     if registry != EXPECTED_SCHEMA_REGISTRY:
-        errors.append("schema_registry must exactly match the three frozen schema paths")
+        errors.append("schema_registry must exactly match the five frozen schema paths")
         return
 
     for schema_id, relative_path in EXPECTED_SCHEMA_REGISTRY.items():
@@ -337,14 +344,19 @@ def _validate_schema_registry(
         )
         if version_const != schema_id:
             errors.append(f"{relative_path}: schema_version const must be {schema_id}")
-        identity = schema.get("$defs", {}).get("RunIdentity", {})
-        if tuple(identity.get("required", ())) != EXPECTED_IDENTITY_FIELDS:
-            errors.append(f"{relative_path}: RunIdentity.required drifted")
-        identity_const = (
-            identity.get("properties", {}).get("schema_version", {}).get("const")
-        )
-        if identity_const != EXPECTED_IDENTITY_PROFILE:
-            errors.append(f"{relative_path}: identity schema_version drifted")
+        if schema_id in {
+            "apps_research.apps_rg_handoff.v2",
+            "apps_rg.e2e_stage_ledger.v2",
+            "apps_rg.e2e_terminal_manifest.v1",
+        }:
+            identity = schema.get("$defs", {}).get("RunIdentity", {})
+            if tuple(identity.get("required", ())) != EXPECTED_IDENTITY_FIELDS:
+                errors.append(f"{relative_path}: RunIdentity.required drifted")
+            identity_const = (
+                identity.get("properties", {}).get("schema_version", {}).get("const")
+            )
+            if identity_const != EXPECTED_IDENTITY_PROFILE:
+                errors.append(f"{relative_path}: identity schema_version drifted")
 
     handoff_path = repo_root / EXPECTED_SCHEMA_REGISTRY[
         "apps_research.apps_rg_handoff.v2"
@@ -444,6 +456,30 @@ def _validate_schema_registry(
         )
         if sealed_last is not True:
             errors.append("terminal manifest must seal after the stage ledger")
+
+    ledger_seal_path = repo_root / EXPECTED_SCHEMA_REGISTRY[
+        "apps_rg.e2e_stage_ledger_seal.v1"
+    ]
+    if ledger_seal_path.is_file():
+        ledger_seal = _load_json(ledger_seal_path)
+        required = set(ledger_seal.get("required", ()))
+        if not {"ledger_sha256", "ledger_byte_length", "identity_sha256"} <= required:
+            errors.append("ledger seal receipt must bind exact ledger bytes and identity")
+
+    pipeline_close_path = repo_root / EXPECTED_SCHEMA_REGISTRY[
+        "apps_rg.pipeline_completion_receipt.v1"
+    ]
+    if pipeline_close_path.is_file():
+        pipeline_close = _load_json(pipeline_close_path)
+        required = set(pipeline_close.get("required", ()))
+        if not {
+            "terminal_manifest_sha256",
+            "terminal_manifest_byte_length",
+            "identity_sha256",
+        } <= required:
+            errors.append(
+                "pipeline completion receipt must bind exact terminal-manifest bytes and identity"
+            )
 
 
 def validate_contract_document(
@@ -622,6 +658,11 @@ def validate_contract_document(
             errors.append(f"{entrypoint_id}: must bind the canonical authority contract")
         if row.get("required_start_stage") not in EXPECTED_STAGE_IDS:
             errors.append(f"{entrypoint_id}: unknown required_start_stage")
+        gap_ids = row.get("current_gap_ids")
+        if gap_ids != []:
+            errors.append(
+                f"{entrypoint_id}: completed authority contract cannot retain current_gap_ids"
+            )
         success_codes = row.get("required_x3_success_codes")
         product_authority = row.get("product_authority")
         if classification == "product" and plane == "current_run":

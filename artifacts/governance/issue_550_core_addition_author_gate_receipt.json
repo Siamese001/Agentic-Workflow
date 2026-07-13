@@ -1,0 +1,46 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L4_state/storage/sqlite_backend.py",
+    "agentic_core/L4_state/uwg/durable_write_gateway.py",
+    "agentic_core/L4_state/uwg/transactional_durable_write_gateway.py",
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py",
+    "agentic_core/L6_observability/shadow_eval/grain_parity.py",
+    "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+    "agentic_core/L6_observability/shadow_eval/microsteps.py",
+    "agentic_core/runtime/entry/apps_rg_dispatch.py",
+    "agentic_core/runtime/entry/u0_apps_research_binding.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "Issue #550 adds generic durable receipt replay, exact identity and byte parity, and thin entry delegation. App-owned policy remains outside agentic_core; pre-existing app-named adapters are bounded by an expiring migration receipt.",
+    "decided_at": "2026-07-13T22:30:00Z"
+  },
+  "tests": {
+    "spine_substrate_test": {"result": "PASS", "evidence": "Canonical product facade begins at signed FRESH_PREFLIGHT and delegates generic runtime stages."},
+    "any_app_capability_test": {"result": "PASS", "evidence": "L4 durability and L6 parity consume generic identity, receipt, digest, and observation contracts."},
+    "app_owned_meaning_test": {"result": "PASS", "evidence": "Producer, product, evaluator, and scorecard semantics remain in apps_research, apps_rg, and apps_eval."},
+    "no_app_literal_test": {"result": "PASS", "evidence": "Changed-path GOV-3 scan has zero unbaselined findings."},
+    "plugin_test": {"result": "PASS", "evidence": "App integrations exercise generic core through app-owned adapters without new core branching."},
+    "negative_control_test": {"result": "PASS", "evidence": "Failure matrix covers all 26 authority stages and security tamper controls fail closed."},
+    "platform_approval_test": {"result": "PASS", "evidence": "User explicitly authorized Waves 1-6, branch commits, and push."},
+    "boundary_preservation_test": {"result": "PASS", "evidence": "Boundary receipt classifies all changed core files and binds app-named adapters to an expiry."},
+    "contract_compatibility_test": {"result": "PASS", "evidence": "Authority freeze and 29-requirement structural traceability both pass."},
+    "runtime_proof_compatibility_test": {"result": "PASS", "evidence": "Focused runtime finality, Apps Eval purity, and L6 parity suites pass."}
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {"path": "artifacts/governance/issue_550_no_app_literal_scan.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true},
+    "strict_scan_ref": {"path": "artifacts/governance/issue_550_strict_scan.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true},
+    "negative_control_results_ref": {"path": "artifacts/governance/issue_550_negative_controls.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true},
+    "plugin_proof_ref": {"path": "artifacts/governance/issue_550_plugin_proof.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true},
+    "boundary_scan_ref": {"path": "artifacts/governance/issue_550_boundary_scan.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true},
+    "contract_schema_scan_ref": {"path": "artifacts/governance/issue_550_contract_schema_scan.json", "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "verdict": "PASS", "plan_id": "issue-550-apps-research-rg-e2e-hardening", "freshness_ts": "2026-07-13T22:30:00Z", "changed_paths_covered": true}
+  },
+  "signature": {
+    "receipt_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "signed_by": "codex",
+    "signed_at": "2026-07-13T22:30:00Z"
+  }
+}

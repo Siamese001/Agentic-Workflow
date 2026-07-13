@@ -100,14 +100,12 @@
     "PipelineCompletion": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["complete", "status", "observability_repair_required", "decisive_stage_id", "receipt_ref", "receipt_sha256"],
+      "required": ["complete", "status", "observability_repair_required", "decisive_stage_id"],
       "properties": {
         "complete": {"type": "boolean"},
         "status": {"enum": ["COMPLETE", "INCOMPLETE", "FAILED"]},
         "observability_repair_required": {"type": "boolean"},
-        "decisive_stage_id": {"type": "string", "minLength": 1},
-        "receipt_ref": {"type": "string", "minLength": 1},
-        "receipt_sha256": {"$ref": "#/$defs/Sha256"}
+        "decisive_stage_id": {"type": "string", "minLength": 1}
       },
       "allOf": [
         {
@@ -141,11 +139,17 @@
     "StageLedgerBinding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema_version", "ledger_ref", "ledger_sha256", "sealed_at_utc"],
+      "required": [
+        "schema_version", "ledger_ref", "ledger_sha256", "ledger_byte_length",
+        "seal_receipt_ref", "seal_receipt_sha256", "sealed_at_utc"
+      ],
       "properties": {
         "schema_version": {"const": "apps_rg.e2e_stage_ledger.v2"},
         "ledger_ref": {"type": "string", "minLength": 1},
         "ledger_sha256": {"$ref": "#/$defs/Sha256"},
+        "ledger_byte_length": {"type": "integer", "minimum": 1},
+        "seal_receipt_ref": {"type": "string", "minLength": 1},
+        "seal_receipt_sha256": {"$ref": "#/$defs/Sha256"},
         "sealed_at_utc": {"type": "string", "format": "date-time"}
       }
     },

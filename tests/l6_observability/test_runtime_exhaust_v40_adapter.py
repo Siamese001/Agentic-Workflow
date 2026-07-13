@@ -16,6 +16,9 @@ def _write(path: Path, payload: dict) -> None:
 def _seed_artifacts(root: Path) -> None:
     common = {
         "run_id": "run-v40",
+        "parent_run_id": "parent-v40",
+        "child_run_id": "run-v40",
+        "section_attempt_id": "summary-attempt-v40",
         "request_id": "req-v40",
         "trace_root": "trace-v40",
         "policy_hash": "policy-v40",
@@ -57,3 +60,11 @@ def test_v40_adapter_builds_valid_exhaust_when_required_refs_exist(tmp_path: Pat
     assert gaps == []
     assert raw["runtime_boundary_crossed"] is True
     assert raw["l5_certification_ref"] == "l5-cert-ref:v40"
+    assert all(
+        str(digest).startswith("sha256:")
+        for digest in raw["artifacts"]["file_hashes"].values()
+    )
+    assert all(
+        str(row["source_hash"]).startswith("sha256:")
+        for row in raw["source_exhaust"]
+    )

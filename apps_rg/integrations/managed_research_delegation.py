@@ -34,6 +34,7 @@ class RequestForResumeBriefing:
     company_name: str
     job_title: str
     research_authorized: bool
+    tenant_id: str = "default"
     research_capability_ref: str = "apps_research.v1"
     freshness_ttl_days: int = 7
     min_confidence_threshold: float = 0.60
@@ -56,6 +57,9 @@ class ResumeBriefingReady:
     apps_research_handoff_envelope: dict[str, Any]
     dispatch_duration_ms: float
     research_briefing_path: str = ""
+    brief_sha256: str = ""
+    result_metadata_digest: str = ""
+    bundle_manifest_digest: str = ""
 
 
 @dataclass(frozen=True)
@@ -94,13 +98,17 @@ def _validate_persisted_research_artifacts(
         return False, "missing briefing_artifact_path", {}
     briefing_path = Path(raw_brief)
     company_brief_path = run_dir / "company_brief.json"
-    envelope_path = run_dir / "apps_research_briefing_envelope.json"
     metadata_path = run_dir / "run_metadata.json"
+    handoff_v2_path = run_dir / "apps_research_apps_rg_handoff_v2.json"
+    commit_manifest_path = run_dir / "bundle_commit_manifest.json"
+    u0_receipt_path = run_dir / "apps_research_u0_receipt.json"
     required = (
         briefing_path,
         company_brief_path,
-        envelope_path,
         metadata_path,
+        handoff_v2_path,
+        commit_manifest_path,
+        u0_receipt_path,
     )
     for path in required:
         if not _is_within(path, run_dir):
@@ -109,28 +117,39 @@ def _validate_persisted_research_artifacts(
             return False, f"missing persisted apps_research artifact: {path}", {}
     try:
         persisted_text = briefing_path.read_text(encoding="utf-8").strip()
-        persisted_envelope = json.loads(envelope_path.read_text(encoding="utf-8"))
+        persisted_handoff = json.loads(handoff_v2_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         return False, f"unreadable persisted apps_research artifact: {type(exc).__name__}", {}
     if persisted_text != str(result.company_brief_text or "").strip():
         return False, "persisted briefing text does not match bridge result", {}
-    if not isinstance(persisted_envelope, dict):
-        return False, "persisted apps_research envelope is not an object", {}
-    expected_sha = hashlib.sha256(persisted_text.encode("utf-8")).hexdigest()
-    if str(persisted_envelope.get("brief_sha256") or "") != expected_sha:
+    if not isinstance(persisted_handoff, dict):
+        return False, "persisted apps_research handoff v2 is not an object", {}
+    if persisted_handoff.get("schema_version") != "apps_research.apps_rg_handoff.v2":
+        return False, "persisted apps_research handoff is not v2", {}
+    if persisted_handoff != (result.apps_research_handoff_envelope or {}):
+        return False, "bridge handoff differs from persisted producer manifest", {}
+    exact_brief_sha = "sha256:" + hashlib.sha256(briefing_path.read_bytes()).hexdigest()
+    identity = persisted_handoff.get("identity")
+    identity = identity if isinstance(identity, dict) else {}
+    if identity.get("brief_sha256") != exact_brief_sha:
         return False, "persisted apps_research briefing digest mismatch", {}
-    if Path(str(persisted_envelope.get("briefing_path") or "")).resolve() != briefing_path.resolve():
-        return False, "persisted envelope briefing_path mismatch", {}
-    if Path(str(persisted_envelope.get("company_brief_path") or "")).resolve() != company_brief_path.resolve():
-        return False, "persisted envelope company_brief_path mismatch", {}
-    if persisted_envelope != (result.apps_research_handoff_envelope or {}):
-        return False, "bridge envelope differs from persisted producer envelope", {}
+    metadata_sha = "sha256:" + hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+    manifest_sha = "sha256:" + hashlib.sha256(handoff_v2_path.read_bytes()).hexdigest()
+    if result.brief_sha256 != exact_brief_sha:
+        return False, "bridge brief_sha256 differs from committed bytes", {}
+    if result.result_metadata_digest != metadata_sha:
+        return False, "bridge result_metadata_digest differs from committed bytes", {}
+    if result.bundle_manifest_digest != manifest_sha:
+        return False, "bridge bundle_manifest_digest differs from committed bytes", {}
     return True, "ok", {
         "run_dir": str(run_dir.resolve()),
         "briefing_path": str(briefing_path.resolve()),
         "company_brief_path": str(company_brief_path.resolve()),
-        "envelope_path": str(envelope_path.resolve()),
+        "envelope_path": str(handoff_v2_path.resolve()),
         "metadata_path": str(metadata_path.resolve()),
+        "handoff_v2_path": str(handoff_v2_path.resolve()),
+        "commit_manifest_path": str(commit_manifest_path.resolve()),
+        "u0_receipt_path": str(u0_receipt_path.resolve()),
     }
 
 
@@ -147,6 +166,7 @@ def dispatch_resume_research_briefing(
             request_id=request.request_id,
             run_id=request.run_id,
             trace_id=request.trace_id,
+            tenant_id=request.tenant_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
             detail="research_authorized=False",
             dispatch_duration_ms=_utc_ms() - t_start,
@@ -263,35 +283,42 @@ def dispatch_resume_research_briefing(
             detail="missing company_brief_text (no valid delegated briefing)",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
-    handoff_envelope = research_result.apps_research_handoff_envelope
-    if not isinstance(handoff_envelope, dict) or not handoff_envelope:
+    handoff_v2 = research_result.apps_research_handoff_envelope
+    if not isinstance(handoff_v2, dict) or not handoff_v2:
         return ResearchDispatchFailure(
             request_id=request.request_id,
             run_id=request.run_id,
             trace_id=request.trace_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
-            detail="missing_apps_research_handoff_envelope",
+            detail="missing_apps_research_handoff_v2",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
-    auth = handoff_envelope.get("apps_research_x1_x3_authorization")
-    x2 = auth.get("x2") if isinstance(auth, dict) and isinstance(auth.get("x2"), dict) else {}
-    x3 = auth.get("x3") if isinstance(auth, dict) and isinstance(auth.get("x3"), dict) else {}
-    if x2.get("status") != "PASS" or x2.get("model_backed") is not True:
+    gate_receipts = handoff_v2.get("mandatory_gate_receipts")
+    gate_receipts = gate_receipts if isinstance(gate_receipts, dict) else {}
+    expected_gates = {"G5", "G6", "G7", "G21", "G24", "G26"}
+    if set(gate_receipts) != expected_gates or any(
+        not isinstance(receipt, dict) or receipt.get("status") != "PASS"
+        for receipt in gate_receipts.values()
+    ):
         return ResearchDispatchFailure(
             request_id=request.request_id,
             run_id=request.run_id,
             trace_id=request.trace_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
-            detail="apps_research_x2_judge_not_model_backed_pass",
+            detail="apps_research_mandatory_gate_receipts_not_pass",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
-    if x3.get("status") != "PASS" or x3.get("disposition") != "ALLOW":
+    exit_authorization = handoff_v2.get("exit_authorization")
+    exit_authorization = (
+        exit_authorization if isinstance(exit_authorization, dict) else {}
+    )
+    if exit_authorization.get("x3_code") != "X3D_ALLOW_FINISH":
         return ResearchDispatchFailure(
             request_id=request.request_id,
             run_id=request.run_id,
             trace_id=request.trace_id,
             r5_reason_code=ResearchFailureReason.APPS_RESEARCH_BLOCKED.value,
-            detail="apps_research_x3_not_allow",
+            detail="apps_research_x3_not_exact_X3D_ALLOW_FINISH",
             dispatch_duration_ms=_utc_ms() - t_start,
         )
 
@@ -317,9 +344,12 @@ def dispatch_resume_research_briefing(
         research_artifact_dir=str(research_result.research_artifact_dir or ""),
         result_hash=research_result.result_hash,
         evidence_lineage=lineage,
-        apps_research_handoff_envelope=handoff_envelope,
+        apps_research_handoff_envelope=handoff_v2,
         dispatch_duration_ms=_utc_ms() - t_start,
         research_briefing_path=artifact_refs["briefing_path"],
+        brief_sha256=research_result.brief_sha256,
+        result_metadata_digest=research_result.result_metadata_digest,
+        bundle_manifest_digest=research_result.bundle_manifest_digest,
     )
 
 

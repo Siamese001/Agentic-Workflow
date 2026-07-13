@@ -4,13 +4,22 @@ R3R4 whole-run reachability with apps_research delegation enabled.
 """
 from __future__ import annotations
 
-import hashlib
 import json
-from datetime import datetime, timedelta, timezone
+import uuid as uuid_module
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+
+
+def test_product_x3_taxonomy_rejects_legacy_success_aliases() -> None:
+    from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
+        _product_x3_authorizes,
+    )
+
+    assert _product_x3_authorizes("X3D_ALLOW_FINISH") is True
+    for legacy_alias in ("X3D", "X3C", "EXIT_OK", "EXIT_PARTIAL", "ALLOW"):
+        assert _product_x3_authorizes(legacy_alias) is False
 
 from apps_rg.runtime.dispatch.spine_stage_receipts import (
     FILENAME_DELEGATED_BRIEFING,
@@ -28,6 +37,29 @@ from apps_rg.runtime.orchestration.r3r4_whole_run_orchestration import (
 )
 from apps_rg.runtime.section_failure_forensics import E2E_SECTION_FORENSICS_GATE_ID
 
+_REQUEST_UUID = uuid_module.UUID("11111111-1111-1111-1111-111111111111")
+_RUN_UUID = uuid_module.UUID("22222222-2222-2222-2222-222222222222")
+_TRACE_UUID = uuid_module.UUID("33333333-3333-3333-3333-333333333333")
+_JD_TEXT = "Target JD text for route-decision pytest."
+
+
+@pytest.fixture(autouse=True)
+def _stable_cli_run_identity(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the fixture's v2 parent identity equal to the current CLI run."""
+    from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+
+    class _UuidProxy:
+        def __init__(self) -> None:
+            self._values = iter((_REQUEST_UUID, _RUN_UUID, _TRACE_UUID))
+
+        def uuid4(self) -> uuid_module.UUID:
+            try:
+                return next(self._values)
+            except StopIteration:
+                return uuid_module.uuid4()
+
+    monkeypatch.setattr(orch, "uuid", _UuidProxy())
+
 
 def test_research_enabled_when_brief_missing_and_auto_research_on() -> None:
     assert research_delegation_enabled(auto_research_internal=True, research_via=None)
@@ -39,60 +71,33 @@ def test_research_enabled_when_brief_missing_and_auto_research_on() -> None:
     )
 
 
-def _write_authorized_apps_research_handoff(tmp_path: Path) -> tuple[Path, Path]:
-    brief_text = "Fresh apps_research handoff briefing for route-decision pytest."
-    jd_text = "Target JD text for route-decision pytest."
-    brief = tmp_path / "briefing.md"
-    brief.write_text(brief_text, encoding="utf-8")
+def _write_authorized_apps_research_handoff(
+    tmp_path: Path,
+    *,
+    target_company: str = "Anthropic",
+    target_role: str = "Manager of Applied AI Architecture, Partnerships",
+) -> tuple[Path, Path]:
+    from apps_rg.integrations.apps_research_bridge import MockAppsResearchBridge
+
+    jd_text = _JD_TEXT
     jd = tmp_path / "jd.txt"
     jd.write_text(jd_text, encoding="utf-8")
-    brief_sha = hashlib.sha256(brief_text.encode("utf-8")).hexdigest()
-    jd_sha = hashlib.sha256(jd_text.encode("utf-8")).hexdigest()
-    now = datetime.now(timezone.utc)
-    envelope = {
-        "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
-        "producer_app": "apps_research",
-        "consumer_app": "apps_rg",
-        "run_id": "research-run-route-pytest",
-        "target_company": "Anthropic",
-        "target_role": "Manager Applied AI Architecture Partnerships",
-        "generated_at_utc": now.isoformat(),
-        "expires_at_utc": (now + timedelta(days=7)).isoformat(),
-        "dry_run": False,
-        "stub_detected": False,
-        "is_stale": False,
-        "handoff_eligible": True,
-        "brief_sha256": brief_sha,
-        "jd_sha256": jd_sha,
-        "apps_research_x1_x3_authorization": {
-            "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
-            "run_id": "research-run-route-pytest",
-            "brief_sha256": brief_sha,
-            "jd_sha256": jd_sha,
-            "x1": {"gate_id": "X1_TARGETING_BRIEF_CONTRACT", "status": "PASS"},
-            "x2": {
-                "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
-                "status": "PASS",
-                "score": 0.91,
-                "threshold": 0.75,
-                "judge_name": "gemini_pro",
-                "judge_provider": "gemini_pro",
-                "judge_model": "gemini-3.1-pro-preview",
-                "model_backed": True,
-                "provider_status": "MODEL_BACKED_PASS",
-            },
-            "x3": {
-                "gate_id": "X3_HANDOFF_AUTHORIZATION",
-                "status": "PASS",
-                "disposition": "ALLOW",
-            },
-        },
-    }
-    (tmp_path / "apps_research_briefing_envelope.json").write_text(
-        json.dumps(envelope, indent=2),
-        encoding="utf-8",
+    bridge = MockAppsResearchBridge(
+        confidence_score=0.9,
+        artifact_runs_root=tmp_path / "authorized_handoff_runs",
     )
-    return brief, jd
+    result = bridge.fetch(
+        company_name=target_company,
+        job_title=target_role,
+        capability_ref="apps_research.v2",
+        request_id=f"req-{_REQUEST_UUID.hex}",
+        run_id=str(_RUN_UUID),
+        trace_id=str(_TRACE_UUID),
+        tenant_id="default",
+        job_description_text=jd_text,
+    )
+    assert not result.is_blocked, result.block_reason
+    return Path(result.briefing_artifact_path), jd
 
 
 def test_no_delegation_when_auto_research_disabled_and_brief_present(tmp_path: Path) -> None:
@@ -195,18 +200,23 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd_json),
+        job_description_text=jd_json.read_text(encoding="utf-8"),
         manual_brief=str(brief_json),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "static_json_run"),
+        require_fresh_preflight=False,
     )
 
     raw_request = captured["raw_request"]
     assert isinstance(raw_request, dict)
     assert result["route_decision"]["research_delegation_executed"] is True
-    assert raw_request["manual_brief"].endswith("research\\delegated_briefing.txt") or raw_request[
-        "manual_brief"
-    ].endswith("research/delegated_briefing.txt")
+    producer_brief = Path(raw_request["manual_brief"])
+    assert producer_brief.is_file()
+    assert (
+        producer_brief.parent / "apps_research_apps_rg_handoff_v2.json"
+    ).is_file()
     assert raw_request["manual_brief"] != str(brief_json)
     assert raw_request["briefing_artifact_ref"] == raw_request["manual_brief"]
     front_continuation = captured["front_continuation"]
@@ -224,8 +234,9 @@ def test_whole_run_static_json_is_replaced_by_delegated_brief(
     research_ref = json.loads(research_ref_path.read_text(encoding="utf-8"))
     assert Path(research_ref["research_artifact_dir"]).is_dir()
     assert Path(research_ref["research_briefing_path"]).is_file()
+    assert Path(research_ref["research_briefing_path"]) == producer_brief
     assert Path(research_ref["research_company_brief_path"]).is_file()
-    assert Path(research_ref["research_envelope_path"]).is_file()
+    assert Path(research_ref["research_handoff_v2_path"]).is_file()
 
 
 def test_whole_run_research_failure_fails_closed_with_manual_brief(
@@ -292,6 +303,7 @@ def test_whole_run_research_failure_fails_closed_with_manual_brief(
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "fallback_run"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
@@ -323,6 +335,7 @@ def test_whole_run_u0_rejection_emits_terminal_closeout(
         manual_brief="",
         auto_research_internal=False,
         artifact_dir=str(run_dir),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
@@ -408,13 +421,12 @@ def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
     monkeypatch.setenv("APPS_RG_L1_ALLOW_EMPTY_PROFILE_DIGEST", "1")
 
     from apps_rg.runtime.orchestration import r3r4_whole_run_orchestration as orch
+    delegated, jd = _write_authorized_apps_research_handoff(tmp_path)
 
     def _fake_spine(**kwargs: object) -> object:
         pytest.fail("draft spine must not run when apps_research-required routing mismatches")
 
     def _fake_research_hop(**kwargs: object) -> tuple[bool, str, str]:
-        delegated = tmp_path / "route_mismatch_delegated_briefing.md"
-        delegated.write_text("Producer-owned delegated briefing.", encoding="utf-8")
         return True, "ResumeBriefingReady", str(delegated)
 
     def _simple_route(plan: object) -> SimpleNamespace:
@@ -447,8 +459,6 @@ def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
 
     brief = tmp_path / "manual_brief.md"
     brief.write_text("Static manual briefing that was not produced by apps_research.", encoding="utf-8")
-    jd = tmp_path / "jd.txt"
-    jd.write_text("Run-specific JD for applied AI architecture partnerships.", encoding="utf-8")
     result = orch.run_whole_run_with_route_governance(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
@@ -457,6 +467,7 @@ def test_whole_run_route_mismatch_fails_closed_when_apps_research_required(
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "route_mismatch_run"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
@@ -527,16 +538,23 @@ def test_whole_run_r3r4_reachable_without_research_delegation(monkeypatch: pytes
         lambda explicit: tmp_path / "full_resume_test01",
     )
 
-    brief, jd = _write_authorized_apps_research_handoff(tmp_path)
+    brief, jd = _write_authorized_apps_research_handoff(
+        tmp_path,
+        target_company="Brown & Brown",
+        target_role="SVP IT Strategy",
+    )
 
     result = orch.run_whole_run_with_route_governance(
         target_company="Brown & Brown",
         target_role="SVP IT Strategy",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_test01"),
+        require_fresh_preflight=False,
     )
 
     assert result["route_family"] == ROUTE_FAMILY_R3R4
@@ -642,10 +660,13 @@ def test_whole_run_custom_artifact_dir_emits_output_gates(monkeypatch: pytest.Mo
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "anthropic_custom_run"),
+        require_fresh_preflight=False,
     )
 
     art = Path(result["artifact_dir"])
@@ -745,10 +766,13 @@ def test_whole_run_hard_fails_without_complete_section_forensics(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_missing_forensics"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
@@ -847,10 +871,13 @@ def test_whole_run_fails_when_exec_summary_judge_not_certified(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_test02"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
@@ -873,7 +900,7 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
     class _FakeResult:
         run_id = "draft-run-success"
         request_id = "req-success"
-        x3_disposition = "X3D"
+        x3_disposition = "X3D_ALLOW_FINISH"
         fault = ""
         terminal_r5 = False
 
@@ -897,6 +924,20 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         output_contract_calls.append(root)
         (root / "outputs").mkdir(parents=True, exist_ok=True)
         (root / "outputs" / "resume.docx").write_bytes(b"fake-docx")
+        (root / "FINAL_RESUME_OUTPUT.txt").write_text(
+            "Applied AI architecture leader\n",
+            encoding="utf-8",
+        )
+        (root / "FINAL_RESUME_OUTPUT.json").write_text(
+            json.dumps({"resume": "Applied AI architecture leader"}),
+            encoding="utf-8",
+        )
+        assembly = root / "modular_r4" / "final_resume_assembly" / "final_resume.json"
+        assembly.parent.mkdir(parents=True, exist_ok=True)
+        assembly.write_text(
+            json.dumps({"resume": "Applied AI architecture leader"}),
+            encoding="utf-8",
+        )
         (root / "apps_rg_output_manifest.json").write_text(
             json.dumps(
                 {
@@ -921,6 +962,8 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         post_x3_calls.append(art)
         return {
             "completed": True,
+            "product_authorized": True,
+            "pipeline_complete": True,
             "x3_to_uwg_to_eval_to_l6_completed": True,
             "durable_promotion_committed": True,
             "uwg": {"artifacts": {"uwg_commit_receipt": "uwg/uwg_commit_receipt.json"}},
@@ -988,14 +1031,20 @@ def test_whole_run_success_requires_post_x3_uwg_eval_l6(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_success01"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "success"
     assert result["outcome_authorized"] is True
+    assert result["product_authorized"] is True
+    assert result["pipeline_complete"] is True
+    assert result["observability_repair_required"] is False
     assert output_contract_calls == [tmp_path / "full_resume_success01"]
     assert post_x3_calls == [tmp_path / "full_resume_success01"]
     assert result["uwg_commit_receipt_ref"] == "uwg/uwg_commit_receipt.json"
@@ -1017,7 +1066,7 @@ def test_whole_run_blocks_when_post_x3_l6_bridge_missing(
     class _FakeResult:
         run_id = "draft-run-no-l6"
         request_id = "req-no-l6"
-        x3_disposition = "X3D"
+        x3_disposition = "X3D_ALLOW_FINISH"
         fault = ""
         terminal_r5 = False
 
@@ -1065,6 +1114,9 @@ def test_whole_run_blocks_when_post_x3_l6_bridge_missing(
         "apps_rg.runtime.post_x3_completion.complete_apps_rg_post_x3",
         lambda **kwargs: {
             "completed": True,
+            "product_authorized": True,
+            "pipeline_complete": False,
+            "observability_repair_required": True,
             "x3_to_uwg_to_eval_to_l6_completed": False,
             "failure_stage": "l6_shadow_bridge",
         },
@@ -1081,12 +1133,18 @@ def test_whole_run_blocks_when_post_x3_l6_bridge_missing(
         target_company="Anthropic",
         target_role="Manager of Applied AI Architecture, Partnerships",
         jd=str(jd),
+        job_description_text=_JD_TEXT,
         manual_brief=str(brief),
+        source_resume_text="Experienced applied AI architecture and partnerships leader.",
         generation_mode="strategic_tailor",
         auto_research_internal=True,
         artifact_dir=str(tmp_path / "full_resume_no_l6"),
+        require_fresh_preflight=False,
     )
 
     assert result["exit_status"] == "error"
-    assert result["outcome_authorized"] is False
+    assert result["outcome_authorized"] is True
+    assert result["product_authorized"] is True
+    assert result["pipeline_complete"] is False
+    assert result["observability_repair_required"] is True
     assert result["fault"] == "l6_shadow_bridge"

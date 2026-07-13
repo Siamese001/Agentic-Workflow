@@ -5,7 +5,6 @@ Unit tests for centralized pre-dispatch preflight.
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -13,9 +12,11 @@ from pathlib import Path
 
 import pytest
 
+from apps_research.integrations.apps_rg_handoff import (
+    persist_apps_rg_targeting_brief_artifacts,
+)
 from apps_rg.runtime.pre_dispatch_preflight import (
     evaluate_jd_cli_input,
-    evaluate_manual_brief_cli_input,
     run_pre_dispatch_preflight,
     targeting_override_allowed,
     write_pre_dispatch_preflight_receipt,
@@ -24,6 +25,7 @@ from apps_rg.runtime.section_cli_defaults import (
     CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_CLAUDE,
     CLI_PROVIDER_RESOLUTION_DEV_DEFAULT_EXTERNAL_OPENAI,
 )
+from tests.unit.apps_research.test_apps_rg_handoff_canonical_exit import _record
 from tests.unit.apps_rg.section_rigor.unify_ibm_lane_fixtures import unify_bullets_parsed_from_mock
 
 REPO = Path(__file__).resolve().parents[3]
@@ -75,76 +77,21 @@ def test_provider_readiness_not_applicable_after_local_provider_removal() -> Non
     assert result.provider_model_ready_status == "NOT_APPLICABLE"
 
 
-def _write_apps_research_envelope(
-    tmp_path: Path,
-    *,
-    brief_text: str = "Fresh apps_research handoff briefing for pytest.",
-    jd_text: str | None = None,
-    include_x1_x3_authorization: bool = True,
-    **overrides,
-) -> tuple[Path, Path]:
-    brief = tmp_path / "briefing.md"
-    brief.write_text(brief_text, encoding="utf-8")
-    jd = tmp_path / "jd.txt"
-    jd.write_text(jd_text if jd_text is not None else _FRESH_JD.read_text(encoding="utf-8"), encoding="utf-8")
-    now = datetime.now(timezone.utc)
-    brief_sha = hashlib.sha256(brief_text.encode("utf-8")).hexdigest()
-    jd_sha = hashlib.sha256(jd.read_text(encoding="utf-8").strip().encode("utf-8")).hexdigest()
-    envelope = {
-        "schema_version": "apps_research.apps_rg_briefing_envelope.v1",
-        "producer_app": "apps_research",
-        "consumer_app": "apps_rg",
-        "run_id": "research-run-pytest",
-        "target_company": "Anthropic",
-        "target_role": "Manager Applied AI Architecture Partnerships",
-        "generated_at_utc": now.isoformat(),
-        "expires_at_utc": (now + timedelta(days=7)).isoformat(),
-        "dry_run": False,
-        "stub_detected": False,
-        "is_stale": False,
-        "handoff_eligible": True,
-        "brief_sha256": brief_sha,
-        "jd_sha256": jd_sha,
-        "semantic_assessment": {"score": 0.91},
-    }
-    if include_x1_x3_authorization:
-        envelope["apps_research_x1_x3_authorization"] = {
-            "schema_version": "apps_research.apps_rg_handoff_x1_x3_authorization.v1",
-            "run_id": "research-run-pytest",
-            "brief_sha256": brief_sha,
-            "jd_sha256": jd_sha,
-            "x1": {"gate_id": "X1_TARGETING_BRIEF_CONTRACT", "status": "PASS"},
-            "x2": {
-                "gate_id": "X2_RESEARCH_SEMANTIC_GATE",
-                "status": "PASS",
-                "score": 0.91,
-                "threshold": 0.75,
-                "judge_name": "gemini_pro",
-                "judge_provider": "gemini_pro",
-                "judge_model": "gemini-3.1-pro-preview",
-                "model_backed": True,
-                "provider_status": "MODEL_BACKED_PASS",
-            },
-            "x3": {
-                "gate_id": "X3_HANDOFF_AUTHORIZATION",
-                "status": "PASS",
-                "disposition": "ALLOW",
-            },
-        }
-    envelope.update(overrides)
-    (tmp_path / "apps_research_briefing_envelope.json").write_text(
-        json.dumps(envelope, indent=2),
-        encoding="utf-8",
+def _write_apps_research_handoff_v2(tmp_path: Path) -> tuple[Path, Path]:
+    bundle = persist_apps_rg_targeting_brief_artifacts(
+        record=_record("research-run-preflight"),
+        target_company="Anthropic",
+        target_role="Manager Applied AI Architecture Partnerships",
+        jd_text=_FRESH_JD.read_text(encoding="utf-8"),
+        runs_root=tmp_path / "runs",
     )
-    return brief, jd
+    assert bundle.normalized_input_path is not None
+    return bundle.briefing_path, bundle.normalized_input_path
 
 
 def test_apps_research_handoff_gate_blocks_digest_mismatch(tmp_path: Path) -> None:
-    brief, jd = _write_apps_research_envelope(
-        tmp_path,
-        brief_text="Fresh apps_research handoff briefing for pytest.",
-        brief_sha256="0" * 64,
-    )
+    brief, jd = _write_apps_research_handoff_v2(tmp_path)
+    brief.write_text(brief.read_text(encoding="utf-8") + "tampered", encoding="utf-8")
 
     result = run_pre_dispatch_preflight(
         section="competencies",
@@ -156,13 +103,13 @@ def test_apps_research_handoff_gate_blocks_digest_mismatch(tmp_path: Path) -> No
 
     assert result.dispatch_started is False
     assert "apps_research handoff gate blocked" in result.decisive_reason
-    assert "brief_sha256_mismatch" in result.decisive_reason
+    assert "artifact_" in result.decisive_reason
     assert result.apps_research_handoff_validation is not None
-    assert result.apps_research_handoff_validation["valid"] is False
+    assert result.apps_research_handoff_validation["status"] == "BLOCKED"
 
 
 def test_apps_research_handoff_receipts_written(tmp_path: Path) -> None:
-    brief, jd = _write_apps_research_envelope(tmp_path)
+    brief, jd = _write_apps_research_handoff_v2(tmp_path)
     result = run_pre_dispatch_preflight(
         section="competencies",
         jd=str(jd),
@@ -180,11 +127,9 @@ def test_apps_research_handoff_receipts_written(tmp_path: Path) -> None:
             encoding="utf-8"
         )
     )
-    copied_envelope = json.loads(
-        (tmp_path / "apps_research_briefing_envelope.json").read_text(encoding="utf-8")
-    )
-    assert validation["valid"] is True
-    assert validation["brief_sha256"] == copied_envelope["brief_sha256"]
+    assert validation["status"] == "PASS"
+    assert validation["identity"]["brief_sha256"].startswith("sha256:")
+    assert not (tmp_path / "apps_research_briefing_envelope.json").exists()
 
 
 def test_strict_apps_research_handoff_blocks_static_json() -> None:
@@ -203,15 +148,19 @@ def test_strict_apps_research_handoff_blocks_static_json() -> None:
 
     assert result.dispatch_started is False
     assert "apps_research handoff gate blocked" in result.decisive_reason
-    assert "missing_apps_research_envelope" in result.decisive_reason
+    assert "missing_apps_research_handoff_v2" in result.decisive_reason
     assert result.apps_research_handoff_validation is not None
     assert result.apps_research_handoff_validation["valid"] is False
 
 
-def test_strict_apps_research_handoff_blocks_missing_x1_x3(tmp_path: Path) -> None:
-    brief, jd = _write_apps_research_envelope(
-        tmp_path,
-        include_x1_x3_authorization=False,
+def test_strict_apps_research_handoff_blocks_legacy_v1(tmp_path: Path) -> None:
+    brief = tmp_path / "briefing.md"
+    jd = tmp_path / "jd.txt"
+    brief.write_text("retired legacy handoff", encoding="utf-8")
+    jd.write_text(_FRESH_JD.read_text(encoding="utf-8"), encoding="utf-8")
+    (tmp_path / "apps_research_briefing_envelope.json").write_text(
+        json.dumps({"schema_version": "apps_research.apps_rg_briefing_envelope.v1"}),
+        encoding="utf-8",
     )
 
     result = run_pre_dispatch_preflight(
@@ -225,16 +174,16 @@ def test_strict_apps_research_handoff_blocks_missing_x1_x3(tmp_path: Path) -> No
     )
 
     assert result.dispatch_started is False
-    assert "missing_apps_research_x1_x3_authorization" in result.decisive_reason
+    assert "legacy_only_handoff_rejected" in result.decisive_reason
 
 
-def test_strict_apps_research_handoff_blocks_expired_envelope(tmp_path: Path) -> None:
+def test_strict_apps_research_handoff_blocks_stale_v2(tmp_path: Path) -> None:
     past = datetime.now(timezone.utc) - timedelta(days=10)
-    brief, jd = _write_apps_research_envelope(
-        tmp_path,
-        generated_at_utc=past.isoformat(),
-        expires_at_utc=(past + timedelta(days=1)).isoformat(),
-    )
+    brief, jd = _write_apps_research_handoff_v2(tmp_path)
+    manifest_path = brief.parent / "apps_research_apps_rg_handoff_v2.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["created_at_utc"] = past.isoformat()
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
 
     result = run_pre_dispatch_preflight(
         section="competencies",
@@ -247,11 +196,11 @@ def test_strict_apps_research_handoff_blocks_expired_envelope(tmp_path: Path) ->
     )
 
     assert result.dispatch_started is False
-    assert "expired_envelope" in result.decisive_reason
+    assert "stale_handoff" in result.decisive_reason
 
 
-def test_strict_apps_research_handoff_allows_x1_x3_authorized_envelope(tmp_path: Path) -> None:
-    brief, jd = _write_apps_research_envelope(tmp_path)
+def test_strict_apps_research_handoff_allows_committed_v2(tmp_path: Path) -> None:
+    brief, jd = _write_apps_research_handoff_v2(tmp_path)
 
     result = run_pre_dispatch_preflight(
         section="competencies",
@@ -265,8 +214,7 @@ def test_strict_apps_research_handoff_allows_x1_x3_authorized_envelope(tmp_path:
 
     assert result.dispatch_started is True
     assert result.apps_research_handoff_validation is not None
-    assert result.apps_research_handoff_validation["valid"] is True
-    assert result.apps_research_handoff_validation["x1_x3_authorization_observed"] is True
+    assert result.apps_research_handoff_validation["status"] == "PASS"
 
 
 def test_narrative_preflight_blocked_without_upstream_bullets(
