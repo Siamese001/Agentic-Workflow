@@ -11,7 +11,14 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md"
+      - "config/certification/apps_research_rg_e2e_authority_contract.v1.json"
+      - "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+      - "ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py"
       - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
+      - "tests/unit/ops_scripts/ci/test_apps_research_rg_e2e_contract_freeze.py"
       - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
       - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
       - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
@@ -30,7 +37,14 @@ on:
       - "apps_rg/runtime/bindings/briefing_u0_signals.py"
       - "apps_rg/runtime/bindings/u0_binding.py"
       - "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py"
+      - "docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md"
+      - "config/certification/apps_research_rg_e2e_authority_contract.v1.json"
+      - "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json"
+      - "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json"
+      - "ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py"
       - "ops_scripts/ci/check_apps_research_rg_handoff_e2e.py"
+      - "tests/unit/ops_scripts/ci/test_apps_research_rg_e2e_contract_freeze.py"
       - "tests/unit/apps_research/test_apps_rg_handoff_canonical_exit.py"
       - "tests/e2e/apps_rg/test_apps_research_handoff_runtime_gates.py"
       - "tests/unit/apps_research/test_cli_apps_rg_targeting_brief.py"
@@ -54,6 +68,12 @@ jobs:
         with:
           python-version: "3.12"
           install-mode: dev
+
+      - name: Validate Wave 0 authority contract freeze
+        run: python ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py
+
+      - name: Run Wave 0 authority negative controls
+        run: python -m unittest tests.unit.ops_scripts.ci.test_apps_research_rg_e2e_contract_freeze -v
 
       - name: Run canonical producer-consumer handoff certification
         run: python ops_scripts/ci/check_apps_research_rg_handoff_e2e.py
