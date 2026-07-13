@@ -1,0 +1,256 @@
+name: C0.3 Resume Graph W1-W3 Apply
+
+on:
+  push:
+    branches:
+      - agent/apps-rg-c03-resume-graph-w0
+    paths:
+      - .github/workflows/c03-w1-w3-apply.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: c03-resume-graph-w1-w3-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-test-squash:
+    name: Apply, test, and squash W1-W3
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      BASE_SHA: de511b54dbed9be7fc63648ad175da2ae9edeefe
+      BRANCH: agent/apps-rg-c03-resume-graph-w0
+      W0_PLAN_COMMIT: 202011558d14ddfd5d978d6d5fef2e1d629771e6
+      PLAN_PATH: plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md
+    steps:
+      - name: Checkout staged branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+
+      - name: Verify pinned base and restore W0 plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor "${BASE_SHA}" HEAD
+          mkdir -p "$(dirname "${PLAN_PATH}")"
+          if ! git show "${W0_PLAN_COMMIT}:${PLAN_PATH}" > "${PLAN_PATH}" 2>/dev/null; then
+            git fetch origin "${W0_PLAN_COMMIT}" --depth=1
+            git show "${W0_PLAN_COMMIT}:${PLAN_PATH}" > "${PLAN_PATH}"
+          fi
+          test -s "${PLAN_PATH}"
+
+      - name: Apply W1-W3 payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .codex/tmp/c03-w1-w3-apply.part* > /tmp/apply_c03_w1_w3.py
+          python /tmp/apply_c03_w1_w3.py
+          git diff --check
+
+      - name: Compile changed Python surfaces
+        id: compile
+        shell: bash
+        run: |
+          set +e
+          python -m py_compile \
+            apps_rg/runtime/c0/c03_graph_contract.py \
+            apps_rg/runtime/c0/c03_sqlite_graph_selection.py \
+            apps_rg/runtime/c0/c03_graph_expansion.py \
+            apps_rg/runtime/c0/c02_evidence_fetch.py \
+            apps_rg/runtime/sections/graph_role_episode_selector.py \
+            apps_rg/runtime/sections/graph_role_episode_hardened_selector.py \
+            tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py \
+            > /tmp/c03_compile.log 2>&1
+          rc=$?
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          cat /tmp/c03_compile.log
+          exit 0
+
+      - name: Run required W1-W3 tests
+        id: required_tests
+        shell: bash
+        run: |
+          set +e
+          python -m pytest \
+            tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py \
+            tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py \
+            tests/unit/apps_rg/test_shared_lane_skew_elimination.py \
+            tests/unit/apps_rg/test_c03_graph_skills_mvp.py \
+            tests/unit/apps_rg/test_c0_evidence_room.py \
+            -q -o addopts= \
+            > /tmp/c03_required_tests.log 2>&1
+          rc=$?
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          cat /tmp/c03_required_tests.log
+          exit 0
+
+      - name: Run graph hardening validator
+        id: graph_validator
+        shell: bash
+        run: |
+          set +e
+          python apps_rg/fact_inventory/validate_c03_graph_hardening.py \
+            > /tmp/c03_graph_validator.log 2>&1
+          rc=$?
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          cat /tmp/c03_graph_validator.log
+          exit 0
+
+      - name: Run app/core ownership baseline
+        id: ownership_baseline
+        shell: bash
+        run: |
+          set +e
+          python -m pytest \
+            tests/_apps_contract/test_apps_rg_c0_ownership_split.py \
+            -q -o addopts= \
+            > /tmp/c03_ownership_baseline.log 2>&1
+          rc=$?
+          echo "exit_code=${rc}" >> "$GITHUB_OUTPUT"
+          cat /tmp/c03_ownership_baseline.log
+          exit 0
+
+      - name: Finalize receipt and plan
+        shell: bash
+        env:
+          COMPILE_RC: ${{ steps.compile.outputs.exit_code }}
+          REQUIRED_RC: ${{ steps.required_tests.outputs.exit_code }}
+          VALIDATOR_RC: ${{ steps.graph_validator.outputs.exit_code }}
+          OWNERSHIP_RC: ${{ steps.ownership_baseline.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import datetime as dt
+          import json
+          import os
+          import re
+
+          def status(code: str) -> str:
+              return "PASS" if str(code) == "0" else "FAIL"
+
+          def tail(path: str, n: int = 40) -> str:
+              p = Path(path)
+              if not p.is_file():
+                  return "missing log"
+              return "\n".join(p.read_text(encoding="utf-8", errors="replace").splitlines()[-n:])
+
+          compile_rc = os.environ["COMPILE_RC"]
+          required_rc = os.environ["REQUIRED_RC"]
+          validator_rc = os.environ["VALIDATOR_RC"]
+          ownership_rc = os.environ["OWNERSHIP_RC"]
+          required_pass = all(code == "0" for code in (compile_rc, required_rc, validator_rc))
+          receipt_path = Path("docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json")
+          receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+          receipt.update(
+              {
+                  "generated_at_utc": dt.datetime.now(dt.timezone.utc).isoformat(),
+                  "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+                  "staged_head_sha": os.environ.get("GITHUB_SHA", ""),
+                  "waves": {
+                      "W1": "PASS" if required_pass else "FAIL",
+                      "W2": "PASS" if required_pass else "FAIL",
+                      "W3": "PASS" if required_pass else "FAIL",
+                  },
+                  "checks": [
+                      {
+                          "name": "py_compile_changed_surfaces",
+                          "status": status(compile_rc),
+                          "exit_code": int(compile_rc),
+                          "evidence": tail("/tmp/c03_compile.log"),
+                      },
+                      {
+                          "name": "required_w1_w3_pytest",
+                          "status": status(required_rc),
+                          "exit_code": int(required_rc),
+                          "evidence": tail("/tmp/c03_required_tests.log"),
+                      },
+                      {
+                          "name": "existing_c03_graph_hardening_validator",
+                          "status": status(validator_rc),
+                          "exit_code": int(validator_rc),
+                          "evidence": tail("/tmp/c03_graph_validator.log"),
+                      },
+                      {
+                          "name": "apps_rg_c0_ownership_baseline_advisory",
+                          "status": status(ownership_rc),
+                          "exit_code": int(ownership_rc),
+                          "decisive": False,
+                          "evidence": tail("/tmp/c03_ownership_baseline.log"),
+                      },
+                  ],
+                  "status": "PASS" if required_pass else "FAIL",
+                  "candidate_conservation_required": True,
+                  "pretarget_authority_required": True,
+                  "broad_proof_fallback_allowed": False,
+              }
+          )
+          receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+          plan_path = Path(os.environ["PLAN_PATH"])
+          plan = plan_path.read_text(encoding="utf-8")
+          replacement = "IMPLEMENTED_AND_VERIFIED" if required_pass else "IMPLEMENTED_VERIFICATION_FAILED"
+          plan = plan.replace("IMPLEMENTED_PENDING_VERIFIED_COMMIT", replacement)
+          marker = "### Verification result"
+          block = f'''\n\n### Verification result\n\n- Required W1-W3 verification: `{receipt['status']}`\n- Compile exit: `{compile_rc}`\n- Required pytest exit: `{required_rc}`\n- Graph validator exit: `{validator_rc}`\n- App/core ownership advisory exit: `{ownership_rc}`\n- Receipt: `docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json`\n'''
+          if marker in plan:
+              plan = re.sub(r"\n### Verification result\n.*?(?=\n## |\Z)", block.rstrip(), plan, count=1, flags=re.S)
+          else:
+              plan += block
+          plan_path.write_text(plan.rstrip() + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c03-resume-graph-w1-w3-evidence
+          path: |
+            /tmp/c03_compile.log
+            /tmp/c03_required_tests.log
+            /tmp/c03_graph_validator.log
+            /tmp/c03_ownership_baseline.log
+            docs/reports/apps_rg/c03_resume_graph_w1_w3_receipt.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Enforce required verification
+        shell: bash
+        env:
+          COMPILE_RC: ${{ steps.compile.outputs.exit_code }}
+          REQUIRED_RC: ${{ steps.required_tests.outputs.exit_code }}
+          VALIDATOR_RC: ${{ steps.graph_validator.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          test "${COMPILE_RC}" = "0"
+          test "${REQUIRED_RC}" = "0"
+          test "${VALIDATOR_RC}" = "0"
+
+      - name: Remove temporary harness and commit all W1-W3 files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .codex/tmp
+          rm -f .github/workflows/c03-w1-w3-apply.yml
+          test ! -e .codex/tmp
+          test ! -e .github/workflows/c03-w1-w3-apply.yml
+          git add -A
+          git diff --cached --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git reset --soft "${BASE_SHA}"
+          git add -A
+          git commit -m "Harden C0.3 graph retrieval W1-W3"
+          git push \
+            --force-with-lease="refs/heads/${BRANCH}:${GITHUB_SHA}" \
+            origin "HEAD:refs/heads/${BRANCH}"
