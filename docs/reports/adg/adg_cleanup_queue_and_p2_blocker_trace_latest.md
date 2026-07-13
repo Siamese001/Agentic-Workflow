@@ -1,11 +1,11 @@
 # ADG Cleanup Queue and P2 Ratchet Trace
 
-- **Generated:** 2026-07-13T10:26:09+00:00
-- **Report status:** present
+- **Generated:** 2026-07-13T10:39:32+00:00
+- **Report status:** degraded
 - **Dead-code source:** `artifacts/adg/dead_code_zone_control_report_latest.json`
-- **Published sqlite:** `artifacts/adg/adg_indexed_07132026_0614.sqlite`
-- **P2 ratchet:** `artifacts/adg/p2_ratchet.json`
-- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07132026_0614.json`
+- **Published sqlite:** `artifacts/adg/adg_indexed_07132026_0630.sqlite`
+- **P2 ratchet:** `missing`
+- **Failed-run manifest:** `artifacts/adg/adg_gate_invocation_manifest_07132026_0630.json`
 
 ### BCG Cleanup Brief
 
@@ -14,7 +14,7 @@
 - **Deletion status:** DELETION_CANDIDATES
 - **Source report status:** PASS
 - **Technical evidence:**
-  - ADG source: artifacts/adg/adg_indexed_07132026_0614.sqlite (snapshot 07132026_0614)
+  - ADG source: artifacts/adg/adg_indexed_07132026_0630.sqlite (snapshot 07132026_0630)
   - Dead code candidates: 899
   - Dead imports: 899
   - Unresolved imports: 466
@@ -67,15 +67,15 @@ This section explains the current MEDIUM hygiene count, the ceiling in `p2_ratch
 ### BCG P2 Ratchet Brief
 
 - **North star:** Maintain SVP engineer-level repo standards: executive decisions, explicit prioritization, and technical evidence a layperson can follow.
-- **Business read:** The published snapshot is at or below the P2 ceiling, so this blocker is cleared.
-- **P2 ratchet status:** WITHIN_CEILING
+- **Business read:** The published snapshot is still 42 over the P2 ceiling, so the ratchet remains blocked.
+- **P2 ratchet status:** OVER_CEILING
 - **Technical evidence:**
-  - Published sqlite snapshot: artifacts/adg/adg_indexed_07132026_0614.sqlite
-  - P2 ceiling: 42
+  - Published sqlite snapshot: artifacts/adg/adg_indexed_07132026_0630.sqlite
+  - P2 ceiling: 0
   - Current MEDIUM hygiene count: 42
-  - Delta vs ceiling: +0
-  - Baseline snapshot: adg_indexed_07132026_0614.sqlite
-  - Latest failed run: 2026-07-13T10:26:07Z (failed)
+  - Delta vs ceiling: +42
+  - Baseline snapshot: missing
+  - Latest failed run: 2026-07-13T10:39:31Z (failed)
 - **Priority rule:** Fix the largest live runtime hygiene hotspots first, then remove star imports, then re-baseline only if the debt is intentional.
 
 Fix now:
@@ -86,18 +86,18 @@ Fix now:
 | 2 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 3 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 3 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
 | 4 | Reduce MEDIUM hygiene debt | This is a live surface where removing hygiene debt improves trust in the next run. | 2 MEDIUM hygiene record(s) in the published snapshot. | Burn down the highest-count files, then rerun ADG. |
-| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=42; ceiling=42; delta=0. | Re-baseline only after the evidence changes are intentional and approved. |
+| 5 | Re-run ADG and keep the ceiling honest | Do not change the ceiling until the underlying hygiene debt is actually reduced or explicitly accepted. | Current count=42; ceiling=0; delta=42. | Re-baseline only after the evidence changes are intentional and approved. |
 
 Next step: Burn down the top runtime hotspots, then rerun ADG and confirm the count stays under the ceiling.
 
 ### Trace Summary
 
 - **Current MEDIUM hygiene count:** 42
-- **Ceiling:** 42
-- **Delta:** +0
-- **Baseline snapshot:** adg_indexed_07132026_0614.sqlite
-- **Published snapshot:** artifacts/adg/adg_indexed_07132026_0614.sqlite
-- **Latest failed run:** 2026-07-13T10:26:07Z (failed)
+- **Ceiling:** 0
+- **Delta:** +42
+- **Baseline snapshot:** missing
+- **Published snapshot:** artifacts/adg/adg_indexed_07132026_0630.sqlite
+- **Latest failed run:** 2026-07-13T10:39:31Z (failed)
 
 ### Evidence Buckets
 

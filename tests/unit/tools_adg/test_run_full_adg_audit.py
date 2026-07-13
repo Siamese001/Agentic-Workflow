@@ -654,7 +654,7 @@ def test_wrapper_runs_retention_from_recent_sqlite_when_manifest_missing(temp_ar
 
     result = wrapper.run_audit(mode="certification")
 
-    retention.assert_called_once_with(stamp)
+    retention.assert_called_once_with(stamp, adg_dir=wrapper.ARTIFACTS_ADG)
     assert result.certification_status == "failed"
     assert "generation manifest missing" in result.reasons[1]
 
@@ -1145,7 +1145,7 @@ def test_run_audit_uses_pre_resolved_producer_root_when_contract_disappears(
     monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_fake_generator))
     monkeypatch.setattr(wrapper, "_run_certification_plane2", lambda **_: [])
     monkeypatch.setattr(wrapper, "_emit_mandatory_run_outputs", lambda **_: [])
-    monkeypatch.setattr(wrapper, "_run_retention_sweep", lambda adg_run_id: None)
+    monkeypatch.setattr(wrapper, "_run_retention_sweep", lambda adg_run_id, **_: None)
     _patch_report(monkeypatch)
 
     result = wrapper.run_audit(mode="certification")

@@ -1,6 +1,6 @@
 {
   "artifact_kind": "adg_bcg_gate_adapter",
-  "generated_at_utc": "2026-07-13T10:26:08+00:00",
+  "generated_at_utc": "2026-07-13T10:39:32+00:00",
   "policy": {
     "kpi_watchlist_rule": "KPI/watchlist rows are not burn-down work unless a future plan gives them an owner, target, and retirement condition.",
     "priority_rule": "FIX first; burn down accepted debt only when it is owned; keep KPI/watchlist rows in a separate report-only section.",
@@ -15,40 +15,40 @@
   "priority_rows": [
     {
       "band": "P0",
-      "baseline_count": 1458,
-      "classification": "regressed",
-      "delta_vs_baseline": 2,
+      "baseline_count": 1370,
+      "classification": "pass",
+      "delta_vs_baseline": 0,
       "enforcement": "ratchet",
       "gate_class": "GraphReachGate",
       "gate_id": "G_REACH_l0_reachability",
       "is_burndown_work": true,
       "is_kpi_or_watchlist": false,
       "materiality": "architecture_backlog",
-      "next_step": "Regression +2 over baseline 1458 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
+      "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
       "raw_gate": {
         "band": "P0",
-        "baseline_count": 1458,
-        "classification": "regressed",
+        "baseline_count": 1370,
+        "classification": "pass",
         "dispatch": "in-process",
         "enforcement": "ratchet",
-        "exit_code": 1,
+        "exit_code": 0,
         "gate_class": "GraphReachGate",
         "gate_id": "G_REACH_l0_reachability",
         "handler": "ops_scripts/ci/check_graph_reach.py",
         "owner": "wiring_ci",
         "source": "graph",
-        "status": "fail",
+        "status": "pass",
         "stderr_tail": [],
-        "violation_count": 1460
+        "violation_count": 1370
       },
       "reported_for_priority_queue": true,
-      "rows": 1460,
-      "section": "fix_now",
-      "section_label": "Fix now",
-      "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +2 vs baseline 1458.",
-      "status": "fail",
-      "sub": "regr",
-      "verdict": "FIX"
+      "rows": 1370,
+      "section": "burn_down",
+      "section_label": "Burn down / owned backlog",
+      "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: 1370 at floor (baseline 1370); no new debt.",
+      "status": "pass",
+      "sub": "floor",
+      "verdict": "TRACK"
     },
     {
       "band": "P0",
@@ -649,10 +649,47 @@
   "sections": {
     "burn_down": {
       "description": "Accepted debt that is still plausible burn-down work after FIX rows clear.",
-      "gate_count": 11,
+      "gate_count": 12,
       "label": "Burn down / owned backlog",
-      "row_count": 4828,
+      "row_count": 6198,
       "rows": [
+        {
+          "band": "P0",
+          "baseline_count": 1370,
+          "classification": "pass",
+          "delta_vs_baseline": 0,
+          "enforcement": "ratchet",
+          "gate_class": "GraphReachGate",
+          "gate_id": "G_REACH_l0_reachability",
+          "is_burndown_work": true,
+          "is_kpi_or_watchlist": false,
+          "materiality": "architecture_backlog",
+          "next_step": "Backlog (within ratchet ceiling): shrink over time, defer to a plan wave. No action needed to pass CI.",
+          "raw_gate": {
+            "band": "P0",
+            "baseline_count": 1370,
+            "classification": "pass",
+            "dispatch": "in-process",
+            "enforcement": "ratchet",
+            "exit_code": 0,
+            "gate_class": "GraphReachGate",
+            "gate_id": "G_REACH_l0_reachability",
+            "handler": "ops_scripts/ci/check_graph_reach.py",
+            "owner": "wiring_ci",
+            "source": "graph",
+            "status": "pass",
+            "stderr_tail": [],
+            "violation_count": 1370
+          },
+          "reported_for_priority_queue": true,
+          "rows": 1370,
+          "section": "burn_down",
+          "section_label": "Burn down / owned backlog",
+          "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: 1370 at floor (baseline 1370); no new debt.",
+          "status": "pass",
+          "sub": "floor",
+          "verdict": "TRACK"
+        },
         {
           "band": "P0",
           "baseline_count": null,
@@ -2256,48 +2293,10 @@
     },
     "fix_now": {
       "description": "Current blockers, regressions, or missing seeds. These are the only rows that should stop green ADG.",
-      "gate_count": 1,
+      "gate_count": 0,
       "label": "Fix now",
-      "row_count": 1460,
-      "rows": [
-        {
-          "band": "P0",
-          "baseline_count": 1458,
-          "classification": "regressed",
-          "delta_vs_baseline": 2,
-          "enforcement": "ratchet",
-          "gate_class": "GraphReachGate",
-          "gate_id": "G_REACH_l0_reachability",
-          "is_burndown_work": true,
-          "is_kpi_or_watchlist": false,
-          "materiality": "architecture_backlog",
-          "next_step": "Regression +2 over baseline 1458 (P0): investigate each NEW path; fix the regression \u2014 re-baseline only with explicit sign-off.",
-          "raw_gate": {
-            "band": "P0",
-            "baseline_count": 1458,
-            "classification": "regressed",
-            "dispatch": "in-process",
-            "enforcement": "ratchet",
-            "exit_code": 1,
-            "gate_class": "GraphReachGate",
-            "gate_id": "G_REACH_l0_reachability",
-            "handler": "ops_scripts/ci/check_graph_reach.py",
-            "owner": "wiring_ci",
-            "source": "graph",
-            "status": "fail",
-            "stderr_tail": [],
-            "violation_count": 1460
-          },
-          "reported_for_priority_queue": true,
-          "rows": 1460,
-          "section": "fix_now",
-          "section_label": "Fix now",
-          "signal": "Counts: Production-layer modules with no import path from any L0 node (orphans). Sub: +2 vs baseline 1458.",
-          "status": "fail",
-          "sub": "regr",
-          "verdict": "FIX"
-        }
-      ]
+      "row_count": 0,
+      "rows": []
     },
     "kpi_watchlist": {
       "description": "Trend and hygiene signals. Report separately; do not treat as burn-down work without an owner and target.",
@@ -2495,25 +2494,25 @@
   },
   "source": {
     "burndown_schema_version": "2.2",
-    "overall_exit_code": 1,
-    "snapshot": "adg_indexed_07132026_0614.sqlite",
-    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0614.sqlite",
-    "timestamp": "2026-07-13T10:22:27.653519+00:00"
+    "overall_exit_code": 0,
+    "snapshot": "adg_indexed_07132026_0630.sqlite",
+    "snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0630.sqlite",
+    "timestamp": "2026-07-13T10:36:22.126789+00:00"
   },
   "summary": {
-    "burn_down_gates": 11,
-    "burn_down_rows": 4828,
+    "burn_down_gates": 12,
+    "burn_down_rows": 6198,
     "clear_gates": 32,
-    "fix_now_gates": 1,
-    "fix_now_rows": 1460,
+    "fix_now_gates": 0,
+    "fix_now_rows": 0,
     "kpi_watchlist_gates": 5,
     "kpi_watchlist_rows": 12154,
     "priority_queue_gate_count": 12,
-    "priority_queue_row_count": 6288,
+    "priority_queue_row_count": 6198,
     "report_only_gate_count": 5,
     "report_only_row_count": 12154,
     "total_gates": 49,
     "work_section_gate_count": 12,
-    "work_section_row_count": 6288
+    "work_section_row_count": 6198
   }
 }
