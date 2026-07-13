@@ -18,19 +18,19 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 | Server ID | Use For | Example Tools | Notes | Skill |
 |---|---|---|---|---|
-| `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. | [`gitkraken`](.codex/skills/gitkraken/SKILL.md) |
+| `GitKraken` | Git operations, GitLens, pull requests, issues | `git_status, git_add_or_commit, git_log_or_diff, pull_request_create` | Use as the git/PR authority. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
 | `adg_sqlite` | Dependency graph, blast radius, layer analysis, refactoring hotspots, graph-layer primitives (mv_*, v_p*, semantic edges) | `adg_health, adg_edge_fanout, adg_edge_fanin, adg_nodes_by_file, adg_nodes_by_layer, adg_violations, adg_p0_wave_plan` | Structural deps + T2/T3 plans; §22 graph layer (mv_*, P-views, semantic edges). | [`adg-sqlite`](.codex/skills/adg-sqlite/SKILL.md) |
-| `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`deepwiki`](.codex/skills/deepwiki/SKILL.md) |
-| `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`filesystem-mcp`](.codex/skills/filesystem-mcp/SKILL.md) |
-| `memory` | Persistent cross-session knowledge graph | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Read at session start; write back major decisions. | [`memory-mcp`](.codex/skills/memory-mcp/SKILL.md) |
-| `vector_db` | Semantic search and embeddings | `semantic_search, query_collection, vector_stats, list_collections` | Not for structural dependency analysis. | [`vector-db`](.codex/skills/vector-db/SKILL.md) |
-| `playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Live UI/E2E; output in artifacts/mcp/playwright/ (gitignored). Close tabs after use. | [`playwright`](.codex/skills/playwright/SKILL.md) |
+| `deepwiki` | External GitHub repository docs and wiki Q&A | `read_wiki_structure, read_wiki_contents, ask_question` | Do not use for this repo's own code. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
+| `filesystem` | Filesystem MCP operations and directory traversal | `read_text_file, read_multiple_files, directory_tree, write_file` | Prefer native reads for ordinary file reads when available. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
+| `memory` | Persistent cross-session knowledge graph | `mem_recall_session_start, create_entities, add_observations, search_nodes` | Read at session start; write back major decisions. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
+| `vector_db` | Semantic search and embeddings | `semantic_search, query_collection, vector_stats, list_collections` | Not for structural dependency analysis. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
+| `playwright` | Browser automation, accessibility snapshots, end-to-end UI verification | `browser_navigate, browser_snapshot, browser_click, browser_fill_form, browser_evaluate, browser_take_screenshot` | Live UI/E2E; output in artifacts/mcp/playwright/ (gitignored). Close tabs after use. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
 | `notion` | Notion pages and project-management databases | `API-query-data-source, API-retrieve-a-page, API-patch-page` | Manual page/DB read+write only; no plan-status enforcement (Notion plan/wave/status governance removed). | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
-| `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | External package docs; not this repo. CONTEXT7_API_KEY optional. | [`context7`](.codex/skills/context7/SKILL.md) |
+| `context7` | Up-to-date, versioned official documentation for external libraries | `resolve-library-id, get-library-docs` | External package docs; not this repo. CONTEXT7_API_KEY optional. | [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) |
 
 <!-- MCP-QUICK-REFERENCE:END -->
 
-Per-server `SKILL.md` files under `.codex/skills/<name>/` are **redirect stubs**; procedural SSOT is [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) sections §1–§13.
+Server-specific MCP procedures are indexed by [`mcp-integration`](.codex/skills/mcp-integration/SKILL.md) sections §1–§13. `adg-sqlite` remains the dedicated structural-analysis skill.
 
 ## Notion Workspace Map
 
@@ -42,9 +42,9 @@ Bot: **Agentic-Workflow** | Workspace: **Amit Ayer's Space**
 |----------|-----------------------|----------------------|--------------|----------------------------|
 | Backlog Items | `fc7f6bf4-6a73-43cd-a4e8-1ef23267dbe7` | `aa8d2507-101e-4384-81d9-60ea3fe33876` | "plan status", "phase progress", "wave status", "what's blocked" — **but prefer the Backlog Snapshot page for top-N/dashboard queries (see below)** | On wave/phase completion or status change. The DEFERRED_SCOPE/NEXT_STEP auto-post hooks were retired (enforcement-surface-consolidation-d8b3f6 W7); out-of-scope work now surfaces via native spawn_task (constitutional §24 / ADR-096). The deferred_scope_scorer P-Band engine is retained for batch backlog scoring. |
 | Plans | `ac53d31b-3068-4039-9ebe-856c12caab32` | `6aba34d9-4d0b-4f4c-b956-b2bdea541ca9` | "which plans exist", "plan status", "is this plan on disk" — relation target from Backlog Items.Plan | On new plan creation under `plans/<slug>-<6hex>.md` (repo-root SSOT). `.codex/plans/` is archive-only. Create Plans row with Status=Not Started, Exists On Disk=true, Plan File Path set. |
-| SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
-| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: `.codex/rules/*.md`. No Notion write. |
-| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | \u274c **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated compatibility copies are non-authoritative. |
+| SC/AP Violation Backlog | ~~`803834e1-0af8-4c3c-b45a-f513f80a7fef`~~ | ~~`0a3b8072-eabd-4516-9473-3c321bb011ff`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `artifacts/adg/*.sqlite` + violation JSON. No Notion write. |
+| Constitutional Rules Registry | ~~`9bd2523e-7a6e-434d-89a7-ce4166457069`~~ | ~~`1c1379bc-32ca-4216-898a-3672f0316f69`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.codex/rules/*.md`. No Notion write. |
+| MCP Registry | ~~`e7b149b4-0496-4e98-a5dd-074dbe31881b`~~ | ~~`59693bbc-71b1-4c63-bc9f-b31eb8b08a0e`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: root `.mcp.json` only. Deprecated compatibility copies are non-authoritative. |
 | Anti-Pattern Burndown | ~~`4599fe37-8c24-4d89-96af-438b99a967c4`~~ | ~~`80b30bc9-6622-4288-aa4c-6fc526b6a5c5`~~ | ❌ **ARCHIVED 2026-05-11** (404 confirmed — DB not accessible to integration) | Filesystem SSOT: `artifacts/adg/` ratchet files are canonical. No Notion write. (See .codex/rules/notion-archived-databases.md.) |
 | ADR Registry | ~~`e59d7640-dc09-48f9-8bdc-b0c94bf98c2a`~~ | ~~`6ed25e12-bd92-4352-ac7a-3a971311f024`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `docs/architecture/adr/ADR-NNN-*.md`. No Notion write. |
 | Author-Gate Decision Ledger | ~~`5b60fdde-7259-491e-9f2d-e088f1f741ef`~~ | ~~`18bb9145-1320-4191-8b14-6c309776bcf5`~~ | ❌ **ARCHIVED 2026-05-02** | Filesystem SSOT: `.codex/state/refactor_decisions/refactor_decision_ledger.sqlite`. No Notion write. |

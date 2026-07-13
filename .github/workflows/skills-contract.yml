@@ -6,8 +6,11 @@ on:
       - ".codex/skills/**"
       - ".codex/templates/skill-template.md"
       - ".codex/commands/skill-creator.md"
+      - ".codex/governance/scripts/*sync_mcp_config*.py"
+      - "AGENTS.md"
       - "ops_scripts/ci/*skill*"
-      - "tests/unit/ops_scripts/ci/test_skill_contract.py"
+      - "ops_scripts/ci/*contract_gates*.py"
+      - "tests/unit/ops_scripts/ci/test_skill*.py"
       - ".github/workflows/skills-contract.yml"
   push:
     branches: [main]
@@ -15,8 +18,11 @@ on:
       - ".codex/skills/**"
       - ".codex/templates/skill-template.md"
       - ".codex/commands/skill-creator.md"
+      - ".codex/governance/scripts/*sync_mcp_config*.py"
+      - "AGENTS.md"
       - "ops_scripts/ci/*skill*"
-      - "tests/unit/ops_scripts/ci/test_skill_contract.py"
+      - "ops_scripts/ci/*contract_gates*.py"
+      - "tests/unit/ops_scripts/ci/test_skill*.py"
       - ".github/workflows/skills-contract.yml"
   workflow_dispatch:
 
@@ -39,4 +45,4 @@ jobs:
         run: python ops_scripts/ci/run_skill_contract_gates.py
 
       - name: Run skill-contract unit tests
-        run: python -m pytest tests/unit/ops_scripts/ci/test_skill_contract.py -q
+        run: python -m pytest tests/unit/ops_scripts/ci/test_skill_contract.py tests/unit/ops_scripts/ci/test_skill_catalog_integration.py -q
