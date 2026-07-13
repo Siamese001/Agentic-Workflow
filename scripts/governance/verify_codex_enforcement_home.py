@@ -150,7 +150,8 @@ PUBLICATION_RUNTIME_OPTIMIZATION_CONTRACT = {
 }
 
 ADG_REQUIRED_PROMPT_SNIPPETS = (
-    "clean main-branch state",
+    "committed files at the fetched `origin/main` branch tip",
+    "The primary checkout does not need to be clean",
     "python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0",
     "artifact_status",
     "repair_ready",
