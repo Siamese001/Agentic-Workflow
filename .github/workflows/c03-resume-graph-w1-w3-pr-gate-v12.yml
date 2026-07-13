@@ -1,0 +1,96 @@
+name: C0.3 Resume Graph W1-W3 Publication Gate
+
+on:
+  push:
+    branches:
+      - agent/apps-rg-c03-resume-graph-w0
+    paths:
+      - .github/workflows/c03-resume-graph-w1-w3-pr-gate-v12.yml
+  workflow_dispatch:
+
+concurrency:
+  group: c03-resume-graph-w1-w3-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  publication-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/apps-rg-c03-resume-graph-w0
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: dev
+      - name: Require final implementation and clean branch shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git rebase origin/main
+          test -f apps_rg/runtime/c0/c03_authority_contract.py
+          test -f apps_rg/runtime/sections/hardened_graph_role_episode_selector.py
+          test -f apps_rg/runtime/c0/c03_sqlite_graph_selection.py
+          test -f apps_rg/runtime/c0/c03_graph_expansion.py
+          test -f tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py
+          test -f docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.json
+          test ! -e docs/reports/apps_rg/.w1_w3_branch_probe
+          test ! -e docs/reports/apps_rg/.w1_w3_postrun_probe
+          test ! -e docs/reports/apps_rg/.never_again_probe
+          test ! -e tools/_oneoff/apply_c03_resume_graph_w1_w3_9f3c2a_v2.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          doc = json.loads(Path('docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.json').read_text(encoding='utf-8'))
+          assert doc['status'] == 'PASS'
+          assert doc['waves'] == {'W1': 'PASS', 'W2': 'PASS', 'W3': 'PASS'}
+          assert doc['whole_resume_allocation_deferred_to'] == 'W4'
+          PY
+      - name: Re-run W1-W3 proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest \
+            tests/unit/apps_rg/runtime/c0/test_c03_w1_w3_hardening.py \
+            tests/unit/apps_rg/runtime/c0/test_c03_sqlite_graph_selection.py \
+            tests/unit/apps_rg/test_shared_lane_skew_elimination.py \
+            -q 2>&1 | tee /tmp/w1_w3_publication_pytest.log
+          python apps_rg/fact_inventory/validate_c03_graph_hardening.py \
+            2>&1 | tee /tmp/w1_w3_publication_validator.log
+      - name: Remove publication gate and commit receipt confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.json')
+          doc = json.loads(path.read_text(encoding='utf-8'))
+          doc['publication_gate_passed'] = True
+          doc['publication_gate_test_summary'] = Path('/tmp/w1_w3_publication_pytest.log').read_text(encoding='utf-8').splitlines()[-1]
+          path.write_text(json.dumps(doc, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+          git rm -f .github/workflows/c03-resume-graph-w1-w3-pr-gate-v12.yml
+          git add docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.json
+          git diff --cached --check
+          git commit -m "W1-W3: confirm C0.3 publication gate"
+          git push --force-with-lease origin HEAD:agent/apps-rg-c03-resume-graph-w0
+      - name: Upload publication proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c03-resume-graph-w1-w3-publication-gate
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            /tmp/w1_w3_publication_pytest.log
+            /tmp/w1_w3_publication_validator.log
