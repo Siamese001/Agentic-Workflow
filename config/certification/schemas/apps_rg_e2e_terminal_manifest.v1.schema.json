@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.e2e_terminal_manifest.v1",
+  "title": "Apps Research to Apps RG E2E terminal manifest v1",
+  "description": "Final manifest sealed after the stage ledger. Product authorization closes at UWG and is immutable; post-boundary failures only affect pipeline completion and repair state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "authority_contract_id", "identity", "x3_disposition",
+    "product_authorization", "pipeline_completion", "promotion_terminal",
+    "mandatory_outputs", "stage_ledger", "manifest_seal"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.e2e_terminal_manifest.v1"},
+    "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+    "identity": {"$ref": "#/$defs/RunIdentity"},
+    "x3_disposition": {"$ref": "#/$defs/X3Disposition"},
+    "product_authorization": {"$ref": "#/$defs/ProductAuthorization"},
+    "pipeline_completion": {"$ref": "#/$defs/PipelineCompletion"},
+    "promotion_terminal": {"$ref": "#/$defs/PromotionTerminal"},
+    "mandatory_outputs": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/ArtifactBinding"}},
+    "stage_ledger": {"$ref": "#/$defs/StageLedgerBinding"},
+    "manifest_seal": {"$ref": "#/$defs/ManifestSeal"}
+  },
+  "$defs": {
+    "Sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "RunIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_app_id", "consumer_app_id", "parent_run_id", "child_run_id",
+        "request_id", "trace_root", "tenant_id", "target_company", "target_role",
+        "jd_sha256", "brief_sha256", "policy_hash", "blueprint_hash", "schema_version"
+      ],
+      "properties": {
+        "producer_app_id": {"type": "string", "minLength": 1},
+        "consumer_app_id": {"type": "string", "minLength": 1},
+        "parent_run_id": {"type": "string", "minLength": 1},
+        "child_run_id": {"type": "string", "minLength": 1},
+        "request_id": {"type": "string", "minLength": 1},
+        "trace_root": {"type": "string", "minLength": 1},
+        "tenant_id": {"type": "string", "minLength": 1},
+        "target_company": {"type": "string", "minLength": 1},
+        "target_role": {"type": "string", "minLength": 1},
+        "jd_sha256": {"$ref": "#/$defs/Sha256"},
+        "brief_sha256": {"$ref": "#/$defs/Sha256"},
+        "policy_hash": {"$ref": "#/$defs/Sha256"},
+        "blueprint_hash": {"$ref": "#/$defs/Sha256"},
+        "schema_version": {"const": "apps_research_rg_run_identity.v1"}
+      }
+    },
+    "X3Disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "receipt_ref", "receipt_sha256"],
+      "properties": {
+        "code": {"enum": ["X3A_DENY_REROUTE", "X3B_ESCALATE_HITL", "X3C_COMMIT_REQUEST_TO_UWG", "X3D_ALLOW_FINISH", "X3E_SAFE_ABSTAIN"]},
+        "receipt_ref": {"type": "string", "minLength": 1},
+        "receipt_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "ProductAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authorized", "status", "boundary", "immutable", "decision_receipt_ref",
+        "decision_receipt_sha256", "output_artifact_sha256", "closed_at_utc"
+      ],
+      "properties": {
+        "authorized": {"type": "boolean"},
+        "status": {"enum": ["AUTHORIZED", "BLOCKED", "NON_PRODUCT"]},
+        "boundary": {"enum": ["UWG_COMMIT_CLOSED", "NOT_CLOSED"]},
+        "immutable": {"const": true},
+        "decision_receipt_ref": {"type": "string", "minLength": 1},
+        "decision_receipt_sha256": {"$ref": "#/$defs/Sha256"},
+        "output_artifact_sha256": {
+          "oneOf": [{"$ref": "#/$defs/Sha256"}, {"type": "null"}]
+        },
+        "closed_at_utc": {"type": "string", "format": "date-time"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"authorized": {"const": true}}, "required": ["authorized"]},
+          "then": {
+            "properties": {
+              "status": {"const": "AUTHORIZED"},
+              "boundary": {"const": "UWG_COMMIT_CLOSED"},
+              "output_artifact_sha256": {"$ref": "#/$defs/Sha256"}
+            }
+          },
+          "else": {
+            "properties": {
+              "status": {"enum": ["BLOCKED", "NON_PRODUCT"]},
+              "boundary": {"const": "NOT_CLOSED"}
+            }
+          }
+        }
+      ]
+    },
+    "PipelineCompletion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complete", "status", "observability_repair_required", "decisive_stage_id", "receipt_ref", "receipt_sha256"],
+      "properties": {
+        "complete": {"type": "boolean"},
+        "status": {"enum": ["COMPLETE", "INCOMPLETE", "FAILED"]},
+        "observability_repair_required": {"type": "boolean"},
+        "decisive_stage_id": {"type": "string", "minLength": 1},
+        "receipt_ref": {"type": "string", "minLength": 1},
+        "receipt_sha256": {"$ref": "#/$defs/Sha256"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"complete": {"const": true}}, "required": ["complete"]},
+          "then": {"properties": {"status": {"const": "COMPLETE"}, "observability_repair_required": {"const": false}}}
+        }
+      ]
+    },
+    "PromotionTerminal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "authority_plane", "receipt_ref", "receipt_sha256"],
+      "properties": {
+        "status": {"enum": ["PROMOTED", "REJECTED", "NO_CHANGE", "DEFERRED", "NOT_RUN"]},
+        "authority_plane": {"const": "future_run_only"},
+        "receipt_ref": {"type": "string", "minLength": 1},
+        "receipt_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "ArtifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_ref", "sha256", "byte_length"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 0}
+      }
+    },
+    "StageLedgerBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "ledger_ref", "ledger_sha256", "sealed_at_utc"],
+      "properties": {
+        "schema_version": {"const": "apps_rg.e2e_stage_ledger.v2"},
+        "ledger_ref": {"type": "string", "minLength": 1},
+        "ledger_sha256": {"$ref": "#/$defs/Sha256"},
+        "sealed_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "ManifestSeal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "manifest_sha256", "sealed_at_utc", "sealed_after_stage_ledger"],
+      "properties": {
+        "canonicalization": {"const": "rfc8785_without_manifest_seal.manifest_sha256"},
+        "manifest_sha256": {"$ref": "#/$defs/Sha256"},
+        "sealed_at_utc": {"type": "string", "format": "date-time"},
+        "sealed_after_stage_ledger": {"const": true}
+      }
+    }
+  }
+}
