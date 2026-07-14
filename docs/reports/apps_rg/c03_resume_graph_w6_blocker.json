@@ -1,14 +1,20 @@
 {
-  "schema_version": "apps_rg.c03_resume_graph_w6_blocker.v1",
+  "schema_version": "apps_rg.c03_resume_graph_w6_blocker.v2",
   "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
-  "generated_at_utc": "2026-07-13T15:50:13Z",
-  "implementation_head_sha": "07cb833099126cec5e3b043ca94dee9c18b761f7",
+  "generated_at_utc": "2026-07-14T05:43:24Z",
+  "implementation_head_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
   "wave": "W6",
-  "status": "BLOCKED",
-  "stop_condition": "confidence thresholds cannot be calibrated from adequate labeled data",
+  "status": "BLOCKED_HUMAN_EVIDENCE_PENDING",
+  "engineering_complete": true,
+  "w6_exit_gate_pass": false,
+  "stop_condition": "authorized human labels, adjudication, and held-out threshold evidence are not yet present",
   "proof_confidence_calibrated_status": "UNKNOWN",
   "unknown_is_pass": false,
   "uncalibrated_probability_emitted": false,
+  "current_run_mutated": false,
+  "future_run_only": true,
+  "promotion_eligible": false,
+  "active_threshold": null,
   "separate_raw_fields_present": [
     "authority_pass",
     "proof_strength_raw",
@@ -19,39 +25,116 @@
     "source_independence_score",
     "selection_margin"
   ],
+  "implemented_metrics": [
+    "Recall@1/3/5/10",
+    "pooled Recall@K over the complete bounded finite universe",
+    "nDCG@1/3/5/10",
+    "MRR",
+    "authority eligibility accuracy",
+    "exact path accuracy",
+    "claim entailment accuracy/precision/recall",
+    "metric binding accuracy/precision/recall",
+    "selection margin",
+    "ECE",
+    "Brier score",
+    "candidate threshold precision/support"
+  ],
+  "bounded_refinement": {
+    "implemented": true,
+    "maximum_attempts": 1,
+    "reentry_target": "C0.3",
+    "route_or_acl_widening_allowed": false,
+    "unresolved_result": "BLOCKED",
+    "c07_handoff_receipt_required": true
+  },
+  "controlled_prelabel_freeze": {
+    "source_commit_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+    "packet_id": "c03-human-eval::3e810e9ec6958bfe901ea6f5",
+    "source_freeze_receipt_digest": "87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5",
+    "packet_manifest_sha256": "37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08",
+    "packet_manifest_digest": "37a80b297dcdd36edf592c0cc0ede4a3ec261c12675f07e2b527ecacd67cfdc7",
+    "prelabel_receipt_digest": "047ea87471be22e79598f99bc452151196aa76c0535c24e2bec7345b4f7435a1",
+    "proof_split_policy_id": "c03-proof-binding-group-stratified-sha256-v2",
+    "case_count": 6,
+    "target_profile_count": 3,
+    "claim_item_count": 282,
+    "retrieval_query_count": 84,
+    "proof_split_group_count": 57,
+    "proof_calibration_group_count": 29,
+    "proof_holdout_group_count": 28,
+    "retrieval_calibration_query_count": 42,
+    "retrieval_holdout_query_count": 42,
+    "w9_pair_count": 0,
+    "official_prelabel_validation": "PASS"
+  },
+  "reviewer_distribution_artifacts": {
+    "repository_committed": false,
+    "proof_archive": {
+      "name": "w6_proof_reviewer_packet.tar.gz",
+      "sha256": "f34a21b323e7b029a2cd154bad419d8f6e3e3a88bbd4f777f9d98f974701f85a",
+      "cohort_manifest_digest": "80f0e71a59dfd35e5aaefaa2ff448cbbe52d5838be203aede15316aafd19fa6d"
+    },
+    "retrieval_archive": {
+      "name": "w6_retrieval_reviewer_packet.tar.gz",
+      "sha256": "bd93a0398ad46608fc67f5efdc5c57cf6274c8e2600d30dd9cbd2119e16e484a",
+      "cohort_manifest_digest": "d4d93a88cf95d7f7b9188f16e6f41f8f666d891e5a5762c6769b7935042c9be5"
+    },
+    "controller_receipts_archive": {
+      "name": "w6_controller_receipts.tar.gz",
+      "sha256": "0f34f384a35de82e78810ec305cc6d6f83589663fcaab9b38be5ab94b85839ad",
+      "contains_secret_nonce": false,
+      "contains_sealed_identity_mappings": false
+    }
+  },
+  "unknown_evaluation": {
+    "status": "UNKNOWN",
+    "sanitized_ci_receipt_sha256": "9b0b0c9a9049e0db73c076d0e4c96494d005cfeaff11aad55d6a18bbb38401ef",
+    "evaluation_gate_pass": false,
+    "promotion_eligible": false,
+    "advisory_exit_code": 0,
+    "fail_closed_exit_code": 1
+  },
+  "verification": {
+    "w6_evaluator_runtime": "141 passed",
+    "w1_w5_regression": "57 passed",
+    "broader_integration": "46 passed, 12 skipped, 1 known W0 baseline failure",
+    "graph_validator": "PASS",
+    "python_compilation": "PASS",
+    "git_diff_check": "PASS",
+    "agentic_core_diff": "NONE",
+    "independent_p0_p1_findings_remaining": 0
+  },
+  "known_baseline_defects": [
+    "agentic_core/L0_routing/__init__.py contains augmented_skills_graph"
+  ],
   "evidence": [
     {
-      "ref": "apps_rg/config/domain_contract/judge_calibration_profile.yaml",
-      "observation": "semantic calibration requires at least 40 samples and human labels"
-    },
-    {
-      "ref": "apps_eval/fixtures/holdout/apps_rg_executive_positioning.v1.jsonl",
-      "observation": "configured dataset path is absent"
-    },
-    {
-      "ref": "apps_rg/config/domain_contract/grader_roster.yaml",
-      "observation": "calibration ref is pending-human-semantic-v1; judge is informational-only"
-    },
-    {
-      "ref": "apps_rg/evals/section_quality_benchmark/README.md",
-      "observation": "benchmark is a scoreless scaffold and human label fields are empty"
+      "ref": "implementation commit c56c75bf9e28455e5c206588f6c53003c8684497",
+      "observation": "W6 evaluator, calibration, bounded retry, packet, export, privacy, and CI engineering are published"
     },
     {
       "ref": "user-supplied agentic_process_mapping_v40.md",
-      "observation": "L6.4 requires post-run human calibration; L6 cannot rescue or mutate the current run"
+      "sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
+      "observation": "L6 is post-run only, UNKNOWN is non-PASS, and calibration cannot mutate the current run"
+    },
+    {
+      "ref": "private W6 prelabel controller pins",
+      "observation": "source, packet, split, cohort, and archive digests are frozen outside the repository"
     }
   ],
   "required_to_resume": [
-    "A frozen, authorized, versioned, leak-checked human-labeled evaluation set covering all target profiles and claim-bearing section types",
-    "At least 40 semantic calibration rows, each with two independent reviewer references and an adjudication receipt, or an approved statistically justified plan revision",
-    "Held-out relevance labels for Recall@K, nDCG@K, MRR, path accuracy, entailment, and metric binding",
-    "A blinded resume-coach review using the fixed W9 rubric across all three target profiles",
-    "Permission to execute the release-only holdout and record ECE, Brier, thresholds, and promotion evidence"
+    "Preserve and owner-approve the frozen prelabel manifest SHA-256 in an out-of-band channel before labeling",
+    "Issue a trusted human-review authority receipt before labeling that binds the packet, cohort manifests, verified human roster, assignments, qualifications, issuer, and approval reference",
+    "Collect two independent human proof reviews for every claim item and two independent human retrieval reviews for every query, using disjoint proof and retrieval cohorts",
+    "Collect one valid adjudication record per item/query without fabricating or altering labels to force class balance",
+    "Pass completed-packet validation and export the sealed adjudicated dataset with the trusted source, prelabel, and human-authority pins",
+    "Run the official held-out evaluator and pass every frozen W6 release target with no active current-run threshold"
   ],
   "downstream_disposition": {
     "W7": "NOT_STARTED_DUE_TO_W6_STOP",
     "W8": "NOT_STARTED_DUE_TO_W6_STOP",
     "W9": "NOT_STARTED_DUE_TO_W6_STOP",
+    "w9_resume_coach_review_is_w6_prerequisite": false,
     "promotion_claimed": false
   },
   "policy_preserved": true

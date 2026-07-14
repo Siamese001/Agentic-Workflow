@@ -23,10 +23,10 @@ base_sha: 3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7
 - `LAST_COMPLETED_WAVE: W5`
 - `LAST_UPDATED: 2026-07-13`
 - `IMPLEMENTATION_AUTHORIZED: W1-W9`
-- `STOP_CONDITION: confidence thresholds cannot be calibrated from adequate labeled data`
+- `STOP_CONDITION: frozen human labels, adjudication, and held-out threshold evidence are not yet present`
 - `DOWNSTREAM_WAVES: W7-W9_NOT_STARTED_BY_PLAN_STOP`
 
-> **Implementation authority:** the user explicitly authorized completion of W1 and the entire remaining plan on 2026-07-13. W1-W5 are implemented on current main. Execution stopped at the mandatory W6 calibration boundary because the required human-labeled holdout and blinded resume-coach review do not exist; W7-W9 may not be claimed or promoted until those external inputs are supplied and pass.
+> **Implementation authority:** the user explicitly authorized completion of W1 and the entire remaining plan on 2026-07-13. W1-W5 are implemented on current main. W6 engineering and the frozen, blinded W6-only prelabel packets are complete at `c56c75bf9e28455e5c206588f6c53003c8684497`; the W6 exit gate remains open because no authorized human labels, adjudications, or held-out calibration results exist. W7-W9 may not be started, claimed, or promoted until those external W6 inputs are supplied and pass. The separately rostered resume-coach review belongs to W9 and is not a W6 prerequisite.
 
 ## 1. Objective
 
@@ -531,6 +531,14 @@ Track separately:
 - release thresholds pass on held-out fixtures;
 - refinement is bounded, receipted, and fail-closed.
 
+### W6 engineering disposition (2026-07-13)
+
+- **Engineering complete:** separate raw score fields, deterministic isotonic calibration, ECE/Brier reporting, Recall@K/nDCG@K/MRR/path/authority/entailment/metric/margin evaluation, future-run-only threshold candidacy, one bounded C0.6 retry, and the C0.7 receipt binding are implemented.
+- **Frozen source complete:** six real allocator cases were frozen from clean source commit `c56c75bf9e28455e5c206588f6c53003c8684497`, producing 282 proof items, 84 full bounded-universe retrieval queries, 57 binding-only proof split groups, and zero W9 pairs.
+- **Blind review materials complete:** proof and retrieval distributions are isolated, secret-HMAC blinded, source/manifest/checksum pinned, owner-only, outside the repository, and accompanied by a private human-authority receipt template. No labels or reviewer identities were fabricated.
+- **Exit gate still open:** W6 remains `UNKNOWN` until rostered humans provide two independent proof reviews and two independent retrieval reviews per item/query, disjoint cohorts, adjudication, completed-packet validation, sealed export, and held-out metrics that satisfy the frozen release targets.
+- **Stop preserved:** W7-W9 remain not started. W9 materials were not emitted by the W6 build.
+
 ## W7 — End-to-end digest binding and whole-resume release gate
 
 **Purpose:** prove that the selected plan is the plan that reaches the user.
@@ -792,5 +800,8 @@ Use the following prompt in Codex after the user approves this plan:
 - **W5:** a shared pre-X3 gate binds each final visible claim to the frozen allocation's exact skill, fact, graph-path, edge, citation, and metric value/unit. It appends a deterministic X2 gate, blocks X3 on any orphan or drift, and carries the allocation digest through FEC, compiled prompt, L2, canonical ledger, X2, X1D, and X3 without rewriting signed upstream artifacts.
 - **Verification:** 38 focused W1-W5 tests, 12 section-X3 integration tests, compilation, graph hardening validation, and diff checks pass in the available runtime. The optional-package import boundary used import-only local stubs for unavailable `openai` and `chromadb`; official branch CI remains required.
 - **Current-main refresh:** the three prior branch commits replayed conflict-free and patch-equivalent onto `3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7`. On that refreshed base, all 50 focused W1-W5/X3 tests and all 6 evidence-authority boundary tests pass with real temporary-environment dependencies; graph validation, Python compilation, whitespace checks, and the no-`agentic_core` diff boundary also pass. The published implementation commit is `07cb833099126cec5e3b043ca94dee9c18b761f7`; refreshed branch CI remains required.
-- **W6:** separate raw score fields exist and no calibrated probability is emitted. The configured semantic calibration requires at least 40 human-labeled samples, but `apps_eval/fixtures/holdout/apps_rg_executive_positioning.v1.jsonl` is absent and the grader roster remains `pending-human-semantic-v1`. The benchmark is explicitly a scoreless scaffold.
-- **Disposition:** `BLOCKED_AT_W6_HUMAN_CALIBRATION`. Per §13, W7-W9 were not started and promotion was not claimed. See `docs/reports/apps_rg/c03_resume_graph_w6_blocker.json`.
+- **W6 engineering:** commit `c56c75bf9e28455e5c206588f6c53003c8684497` implements deterministic offline evaluation/calibration, a bounded authority-preserving C0.6 retry, exact C0.7 handoff binding, private source freezing, blind cohort packet construction, prelabel sealing, human-authority validation, adjudicated export, sanitized CI receipts, and fail-closed controlled-evidence containment.
+- **W6 controlled freeze:** packet `c03-human-eval::3e810e9ec6958bfe901ea6f5` binds source-freeze receipt digest `87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5`, prelabel manifest SHA-256 `37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08`, and prelabel receipt digest `047ea87471be22e79598f99bc452151196aa76c0535c24e2bec7345b4f7435a1`. Proof and retrieval archives are separately sealed; W9 item count is zero.
+- **W6 verification:** the final evaluator/runtime suite is 141 passed; the refreshed W1-W5 regression is 57 passed; the broader integration snapshot is 46 passed, 12 skipped, and one known W0 `agentic_core/L0_routing/__init__.py contains augmented_skills_graph` baseline failure. The graph validator, compilation, stress path, whitespace check, and no-`agentic_core` diff boundary pass. Independent packet, evaluator, and final adversarial reviews report no remaining P0/P1 findings.
+- **W6 evidence state:** the sanitized receipt is truthfully `UNKNOWN` with null/unmeasured metrics, no active threshold, `promotion_eligible=false`, advisory exit 0, and fail-closed exit 1. No human-review authority receipt, human labels, or adjudications exist yet.
+- **Disposition:** `BLOCKED_AT_W6_HUMAN_EVIDENCE`. Per §13, W7-W9 were not started and promotion was not claimed. See `docs/reports/apps_rg/c03_resume_graph_w6_blocker.json` and `docs/reports/apps_rg/c03_resume_graph_w6_engineering_receipt.json`.
