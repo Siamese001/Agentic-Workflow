@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.runtime.c0.evidence_metrics_extractor import SupportTarget
-
 from apps_rg.runtime.c0.constants import C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
 
 C0_AUTHORITY_MODE = C0_AUTHORITY_LEDGER_GRAPH_PRIMARY
@@ -53,6 +51,8 @@ def c03_skills_graph_receipt_flags(*, core_graph_rag_ran: bool = False) -> dict[
 
 def proof_support_target() -> SupportTarget:
     """Proof-supporting retrieval sources for c0_metrics (not JD/resume/briefing)."""
+    from agentic_core.runtime.c0.evidence_metrics_extractor import SupportTarget
+
     return SupportTarget.from_prefix_list(
         list(PROOF_RETRIEVAL_SOURCE_PREFIXES),
         label="apps_rg_proof_authority",

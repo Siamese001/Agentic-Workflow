@@ -12,6 +12,10 @@ import pytest
 from apps_rg.runtime.sections.section_final_materialized_binding import (
     augment_x2_payload_with_final_materialized_binding,
 )
+from apps_rg.runtime.c0.resume_graph_claim_binding import (
+    GRAPH_CLAIM_BINDINGS_ARTIFACT,
+    GRAPH_CLAIM_BINDING_GATE_ID,
+)
 from apps_rg.runtime.spine.section_x3_finalize import (
     FINAL_MATERIALIZED_BLOCK_X3_CODE,
     FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,
@@ -462,3 +466,117 @@ def test_refresh_section_exit_after_x3_change(
     )
     mock_pipeline_cls.return_value.run.assert_called_once()
     mock_exit_hooks.assert_called_once()
+
+
+def test_finalize_section_lane_x3_hard_blocks_exact_metric_binding_drift(
+    tmp_path: Path,
+) -> None:
+    x3 = SimpleNamespace(x3_code="X3_ALLOW", pass_=True)
+    x3.to_dict = lambda: {"x3_code": "X3_ALLOW", "pass": True}  # type: ignore[method-assign]
+    claim_text = "Improved joint revenue growth by 21%."
+    assignment = {
+        "section_id": "executive_summary",
+        "claim_unit_id": "executive_summary:claim:01",
+        "skill_id": "skill_joint_revenue_growth",
+        "skill_label": "joint revenue growth",
+        "fact_id": "fact_revenue_growth",
+        "root_id": "root_revenue_growth",
+        "metric_outcome_id": "metric_joint_revenue_growth_20pct",
+        "metric_text": "20% joint revenue growth",
+        "metric_value": "20",
+        "metric_unit": "PERCENT",
+        "normalized_metric_signature": "20 pct joint revenue growth",
+        "graph_path_ids": [
+            "root:root_revenue_growth",
+            "root:root_revenue_growth/skill:skill_joint_revenue_growth",
+            "root:root_revenue_growth/metric:metric_joint_revenue_growth_20pct",
+        ],
+        "edge_ids": ["edge_skill", "edge_metric"],
+        "citation_refs": ["fact_revenue_growth"],
+        "proof_strength_raw": 1.0,
+        "target_alignment_score": 0.8,
+        "claim_entailment_score": 1.0,
+        "metric_binding_score": 1.0,
+        "path_confidence_raw": 1.0,
+        "source_independence_score": 1.0,
+        "selection_margin": 0.4,
+        "counts_toward_global_uniqueness": True,
+    }
+    plan = {
+        "section_id": "executive_summary",
+        "allocation_scope": "WHOLE_RESUME",
+        "allocation_plan_digest": "a" * 64,
+        "allocation_assignments": [assignment],
+        "facts": [
+            {
+                "fact_id": "root_revenue_growth",
+                "role_episode_bundle_id": "root_revenue_growth",
+                "allowed_graph_evidence_ids": [
+                    "fact_revenue_growth",
+                    "skill_joint_revenue_growth",
+                    "metric_joint_revenue_growth_20pct",
+                ],
+            }
+        ],
+    }
+    ledger = [
+        {"claim_text": claim_text, "source_fact_ids": ["fact_revenue_growth"]}
+    ]
+    (tmp_path / "command_output.txt").write_text(claim_text + "\n", encoding="utf-8")
+    (tmp_path / "claim_ledger.json").write_text(json.dumps(ledger), encoding="utf-8")
+    (tmp_path / "selected_fact_plan.json").write_text(
+        json.dumps(plan), encoding="utf-8"
+    )
+    (tmp_path / "l2_output.json").write_text(
+        json.dumps(
+            {
+                "section_id": "executive_summary",
+                "resume_display_text": claim_text,
+                "claim_ledger": ledger,
+                "selected_fact_plan": plan,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (tmp_path / "canonical_claim_ledger_v2.json").write_text(
+        json.dumps({"schema": "canonical_claim_ledger_v2", "claims": ledger}),
+        encoding="utf-8",
+    )
+    _write_bound_x2_payload(tmp_path, section_id="executive_summary")
+    (tmp_path / "x1d_llm_judge_outputs.json").write_text(
+        json.dumps(
+            {
+                "judges": [
+                    {
+                        "provider_key": "openai_chatgpt",
+                        "evaluator_mode": "MODEL_BACKED",
+                        "provider_status": "MODEL_BACKED_PASS",
+                        "pass": True,
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    finalize_section_lane_x3(
+        artifact_dir=tmp_path,
+        section_id="executive_summary",
+        runtime_payload={"run_id": "metric-drift"},
+        x3_result=x3,
+    )
+
+    binding = json.loads(
+        (tmp_path / GRAPH_CLAIM_BINDINGS_ARTIFACT).read_text(encoding="utf-8")
+    )
+    x2 = json.loads((tmp_path / "x2_gate_outputs.json").read_text(encoding="utf-8"))
+    final_contract = json.loads(
+        (tmp_path / FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT).read_text(encoding="utf-8")
+    )
+    x3_doc = json.loads((tmp_path / "x3_disposition.json").read_text(encoding="utf-8"))
+    assert binding["pass"] is False
+    assert GRAPH_CLAIM_BINDING_GATE_ID in x2["failed_gates"]
+    assert final_contract["resume_graph_claim_binding_active"] is True
+    assert final_contract["pass"] is False
+    assert x3_doc["x3_code"] == FINAL_MATERIALIZED_BLOCK_X3_CODE
+    assert lane_outcome_authorized_from_x3(x3_doc) is False

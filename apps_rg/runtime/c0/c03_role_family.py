@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from apps_rg.fact_inventory.candidate_fact_ledger import (
     load_master_role_family_taxonomy,
@@ -11,8 +11,9 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
     TAXONOMY_TO_PROJECTION_ROLE,
     infer_projection_role_family_key,
 )
-from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
+if TYPE_CHECKING:
+    from apps_rg.runtime.proof_pool_resolver import SectionProofPool
+    from apps_rg.runtime.spine.front_contracts import SectionFrontSpineBridge
 
 REPO_DEFAULT_ROLE = "SVP_ENGINEERING_AI_PLATFORM"
 

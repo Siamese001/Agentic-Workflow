@@ -70,6 +70,13 @@ _PA_AUTHORITY_KEYS: tuple[str, ...] = (
     "route_contract_ref",
     "proof_pool_ref",
     "proof_pool_digest",
+    "resume_graph_allocation_scope",
+    "resume_graph_allocation_plan_id",
+    "resume_graph_allocation_plan_digest",
+    "resume_graph_global_uniqueness_claimed",
+    "final_graph_evidence_contract",
+    "final_graph_evidence_contract_digest",
+    "durable_graph_state_mutated",
 )
 
 # Graph bundle consumption flags + packet refs (attach_*_to_proof_pool_metadata).
@@ -292,6 +299,24 @@ def build_spine_c0_fec_artifact(
         "final_evidence_contract": fec_snap,
         "proof_pool_type": pp_meta.get("proof_pool_type"),
         "proof_source": pool.proof_source,
+        "resume_graph_allocation_scope": pp_meta.get(
+            "resume_graph_allocation_scope"
+        ),
+        "resume_graph_allocation_plan_id": pp_meta.get(
+            "resume_graph_allocation_plan_id"
+        ),
+        "resume_graph_allocation_plan_digest": pp_meta.get(
+            "resume_graph_allocation_plan_digest"
+        ),
+        "resume_graph_global_uniqueness_claimed": pp_meta.get(
+            "resume_graph_global_uniqueness_claimed"
+        ),
+        "final_graph_evidence_contract_digest": pp_meta.get(
+            "final_graph_evidence_contract_digest"
+        ),
+        "durable_graph_state_mutated": bool(
+            pp_meta.get("durable_graph_state_mutated", False)
+        ),
         "pa_proof_authority_metadata": pa_meta,
         "raw_proof_pool_direct_to_pa": False,
         "product_certification": "NOT_CLAIMED",
@@ -676,6 +701,20 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
     """Fields merged into compiled_prompt_artifact.json."""
     bridge = runtime_payload.get("section_fec_bridge")
     via_fec = isinstance(bridge, dict) and bool(bridge)
+    proof_pool_metadata = runtime_payload.get("proof_pool_metadata")
+    pp = proof_pool_metadata if isinstance(proof_pool_metadata, dict) else {}
+
+    def allocation_field(key: str) -> Any:
+        if key in pp:
+            return pp.get(key)
+        if isinstance(bridge, dict):
+            if key in bridge:
+                return bridge.get(key)
+            pa = bridge.get("pa_proof_authority_metadata")
+            if isinstance(pa, dict):
+                return pa.get(key)
+        return None
+
     return {
         "fec_bridge_ref": runtime_payload.get("fec_bridge_ref") or FEC_BRIDGE_ARTIFACT,
         "final_evidence_contract_ref": runtime_payload.get("final_evidence_contract_ref")
@@ -724,6 +763,24 @@ def pa_consumption_receipt_fields(runtime_payload: dict[str, Any]) -> dict[str, 
             bool((bridge.get("c0_evidence_room") or {}).get("c07", {}).get("handoff_safe"))
             if isinstance(bridge, dict)
             else None
+        ),
+        "resume_graph_allocation_scope": allocation_field(
+            "resume_graph_allocation_scope"
+        ),
+        "resume_graph_allocation_plan_id": allocation_field(
+            "resume_graph_allocation_plan_id"
+        ),
+        "resume_graph_allocation_plan_digest": allocation_field(
+            "resume_graph_allocation_plan_digest"
+        ),
+        "resume_graph_global_uniqueness_claimed": allocation_field(
+            "resume_graph_global_uniqueness_claimed"
+        ),
+        "final_graph_evidence_contract_digest": allocation_field(
+            "final_graph_evidence_contract_digest"
+        ),
+        "durable_graph_state_mutated": bool(
+            allocation_field("durable_graph_state_mutated")
         ),
     }
 
