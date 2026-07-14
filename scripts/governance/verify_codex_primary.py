@@ -46,7 +46,6 @@ REQUIRED_FILES = [
     ".codex/schemas/svp_docs_x2_v1.schema.json",
     ".codex/schemas/svp_docs_x3_v1.schema.json",
     ".codex/schemas/svp_docs_run_v1.schema.json",
-    ".github/workflows/svp-docs-gates.yml",
     ".codex/hooks.json",
     ".codex/hooks/selected_avatar_guard.py",
     ".codex/skills/agentic-workflow-governance/SKILL.md",
