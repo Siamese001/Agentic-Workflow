@@ -36,7 +36,43 @@ from apps_rg.runtime.runtime_proof_layout import (
 
 ROUTE_FAMILY_R3R4 = "R3R4_MANAGED_WORKFLOW"
 DRAFT_LEG_ROUTE_FAMILY = "R4_SINGLE_ACTION"
-_SUCCESS_X3 = frozenset({"X3C", "X3D", "EXIT_OK", "EXIT_PARTIAL"})
+_PRODUCT_SUCCESS_X3 = "X3D_ALLOW_FINISH"
+
+
+class ProductE2EAuthorityError(RuntimeError):
+    """Raised when the frozen product authority chain cannot be constructed."""
+
+
+def _product_x3_authorizes(value: Any) -> bool:
+    """Return true only for the frozen canonical product-success code."""
+
+    return str(value or "").strip() == _PRODUCT_SUCCESS_X3
+
+
+def _authority_source_refs(receipt_path: Path) -> tuple[str, ...]:
+    """Return exact source refs embedded by a receipt-derived adapter."""
+
+    try:
+        receipt = json.loads(Path(receipt_path).read_bytes())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProductE2EAuthorityError(
+            f"stage authority receipt is unreadable: {type(exc).__name__}"
+        ) from exc
+    rows = receipt.get("source_bindings") if isinstance(receipt, dict) else None
+    if not isinstance(rows, list) or not rows:
+        raise ProductE2EAuthorityError(
+            "stage authority receipt has no exact source bindings"
+        )
+    refs = tuple(
+        str(row.get("artifact_ref") or "")
+        for row in rows
+        if isinstance(row, dict) and str(row.get("artifact_ref") or "")
+    )
+    if len(refs) != len(rows):
+        raise ProductE2EAuthorityError(
+            "stage authority receipt contains an invalid source binding"
+        )
+    return refs
 
 
 def _aggregate_x3_for_outcome(raw_x3: str | None, *, outcome: bool) -> str:
@@ -108,16 +144,10 @@ def _research_bridge() -> Any:
         "true",
         "yes",
     ):
-        MockAppsResearchBridge = getattr(
-            importlib.import_module("apps_rg.integrations.apps_research_bridge"),
-            "MockAppsResearchBridge",
-        )
+        MockAppsResearchBridge = importlib.import_module("apps_rg.integrations.apps_research_bridge").MockAppsResearchBridge
         return MockAppsResearchBridge(confidence_score=0.88)
 
-    AppsResearchBridge = getattr(
-        importlib.import_module("apps_rg.integrations.apps_research_bridge"),
-        "AppsResearchBridge",
-    )
+    AppsResearchBridge = importlib.import_module("apps_rg.integrations.apps_research_bridge").AppsResearchBridge
     return AppsResearchBridge(capability_ref="apps_research.v1")
 
 
@@ -252,6 +282,7 @@ def _run_r3r4_research_hop(
         company_name=target_company,
         job_title=target_role,
         research_authorized=True,
+        tenant_id=str(getattr(validated_request, "tenant_id", "") or "default"),
         job_description_ref=job_description_ref,
         job_description_text=job_description_text,
     )
@@ -297,20 +328,13 @@ def _run_r3r4_research_hop(
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "research_artifact_dir": outcome.research_artifact_dir,
                 "research_briefing_path": outcome.research_briefing_path,
-                "apps_research_handoff_envelope": outcome.apps_research_handoff_envelope,
+                "apps_research_handoff_v2": outcome.apps_research_handoff_envelope,
             },
         )
         brief_path = artifact_dir / sr.FILENAME_DELEGATED_BRIEFING
         brief_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(producer_briefing, brief_path)
-        handoff_envelope = dict(outcome.apps_research_handoff_envelope)
-        handoff_envelope["consumer_delegated_briefing_path"] = str(
-            brief_path.resolve()
-        )
-        sr.write_stage_receipt(
-            brief_path.parent / "apps_research_briefing_envelope.json",
-            handoff_envelope,
-        )
+        handoff_v2 = dict(outcome.apps_research_handoff_envelope)
         fec_path = artifact_dir / sr.FILENAME_RESEARCH_EVIDENCE_CONTRACT
         sr.write_stage_receipt(
             fec_path,
@@ -320,7 +344,7 @@ def _run_r3r4_research_hop(
                 "result_hash": outcome.result_hash,
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "confidence_score": outcome.confidence_score,
-                "apps_research_handoff_envelope": handoff_envelope,
+                "apps_research_handoff_v2": handoff_v2,
                 "proof_note": "FEC-shaped contract for external review; full FEC lives under apps_research run when present.",
             },
         )
@@ -330,16 +354,21 @@ def _run_r3r4_research_hop(
                 "research_run_id": outcome.research_run_id,
                 "research_artifact_dir": str(producer_run_dir.resolve()),
                 "research_briefing_path": str(producer_briefing.resolve()),
-                "research_company_brief_path": handoff_envelope.get(
-                    "company_brief_path", ""
+                "research_company_brief_path": str(
+                    (producer_run_dir / "company_brief.json").resolve()
                 ),
-                "research_envelope_path": str(
-                    (producer_run_dir / "apps_research_briefing_envelope.json").resolve()
+                "research_handoff_v2_path": str(
+                    (
+                        producer_run_dir
+                        / "apps_research_apps_rg_handoff_v2.json"
+                    ).resolve()
                 ),
                 "consumer_delegated_briefing_path": str(brief_path.resolve()),
             },
         )
-        return True, "ResumeBriefingReady", str(brief_path)
+        # Product validation must consume the producer-owned brief adjacent to
+        # its committed v2 manifest. The consumer copy is diagnostics only.
+        return True, "ResumeBriefingReady", str(producer_briefing.resolve())
 
     if isinstance(outcome, ResearchDispatchFailure):
         sr.write_stage_receipt(
@@ -512,6 +541,268 @@ def _emit_terminal_mandatory_closeout(
     return payload
 
 
+def _activate_product_stage_ledger(
+    *,
+    artifact_dir: Path,
+    legacy_ledger: Any,
+    identity: dict[str, Any],
+    preflight_validation: Any,
+    continuation_path: Path,
+    manual_brief: str,
+    research_ran: bool,
+) -> Any:
+    """Replace pre-identity compatibility evidence with the product-v2 ledger.
+
+    Fresh preflight necessarily runs before apps_research creates its child-run
+    identity.  The early ledger therefore remains explicitly non-product.  Once
+    the committed producer bundle supplies the frozen identity, this function
+    binds the already-consumed continuation to that identity and starts the
+    canonical receipt-derived ledger from exact artifact bytes.
+    """
+
+    from apps_rg.prerequisites.briefing_validator import (
+        find_apps_research_handoff_v2_for_briefing,
+    )
+    from apps_rg.runtime.e2e_preflight import (
+        E2E_PREFLIGHT_CONTINUATION_CONSUMPTION_FILENAME,
+        bind_preflight_to_product_identity,
+    )
+    from apps_rg.runtime.e2e_stage_ledger import ReceiptDerivedE2EStageLedger
+    from apps_rg.runtime.product_stage_authority import (
+        mirror_external_authority_artifact,
+    )
+
+    root = Path(artifact_dir).resolve()
+    if preflight_validation is None or not preflight_validation.valid:
+        raise ProductE2EAuthorityError("fresh preflight validation is unavailable")
+    manifest_path = find_apps_research_handoff_v2_for_briefing(manual_brief)
+    if manifest_path is None:
+        raise ProductE2EAuthorityError(
+            "product execution requires a committed apps_research handoff v2"
+        )
+    try:
+        manifest = json.loads(manifest_path.read_bytes())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProductE2EAuthorityError(
+            f"committed handoff manifest is unreadable: {type(exc).__name__}"
+        ) from exc
+    if not isinstance(manifest, dict) or manifest.get("identity") != identity:
+        raise ProductE2EAuthorityError(
+            "committed handoff identity differs from consumer-validated identity"
+        )
+
+    product_entry_path = bind_preflight_to_product_identity(
+        validation=preflight_validation,
+        receipt_path=continuation_path,
+        secret=str(os.environ.get("APPS_RG_ROUTE_HMAC_SECRET") or ""),
+        identity=identity,
+        consumer_id="apps_rg.whole_run.primary",
+    )
+
+    preidentity_path = root / "e2e_stage_ledger_preidentity_non_product.json"
+    if preidentity_path.exists():
+        raise ProductE2EAuthorityError("pre-identity compatibility ledger already exists")
+    legacy_path = Path(legacy_ledger.path)
+    legacy_path.replace(preidentity_path)
+    # Continue any compatibility-only failure reporting away from the canonical
+    # product ledger path.  Product-v2 never invokes caller-asserted record().
+    legacy_ledger.path = preidentity_path
+
+    ledger = ReceiptDerivedE2EStageLedger.create(
+        artifact_dir=root,
+        identity=identity,
+    )
+    ledger.record_from_receipt(
+        stage_id="FRESH_PREFLIGHT",
+        receipt_ref=product_entry_path,
+        artifact_refs=(
+            continuation_path,
+            root / E2E_PREFLIGHT_CONTINUATION_CONSUMPTION_FILENAME,
+        ),
+        next_stage_id="APPS_RESEARCH_U0" if research_ran else "APPS_RG_U0",
+    )
+
+    producer_root = manifest_path.parent.resolve()
+
+    def _mirror(name: str) -> Path:
+        return mirror_external_authority_artifact(
+            artifact_dir=root,
+            source=producer_root / name,
+            relative_ref=f"apps_research/{name}",
+        )
+
+    if research_ran:
+        producer_u0 = _mirror("apps_research_u0_receipt.json")
+        producer_runtime = _mirror("runtime_exhaust_bundle.json")
+        producer_exit = _mirror("exit_disposition_receipt.json")
+        producer_manifest = _mirror("apps_research_apps_rg_handoff_v2.json")
+        producer_marker = _mirror("bundle_commit_manifest.json")
+        ledger.record_from_receipt(
+            stage_id="APPS_RESEARCH_U0",
+            receipt_ref=producer_u0,
+        )
+        ledger.record_from_receipt(
+            stage_id="APPS_RESEARCH_RUNTIME",
+            receipt_ref=producer_runtime,
+        )
+        ledger.record_from_receipt(
+            stage_id="APPS_RESEARCH_EXIT",
+            receipt_ref=producer_exit,
+        )
+        ledger.record_from_receipt(
+            stage_id="HANDOFF_BUNDLE_COMMIT",
+            receipt_ref=producer_manifest,
+            artifact_refs=(producer_marker,),
+        )
+
+    consumer_validation = _mirror("apps_research_handoff_validation_receipt.json")
+    ledger.record_from_receipt(
+        stage_id="APPS_RG_U0",
+        receipt_ref=consumer_validation,
+    )
+    ledger.record_from_receipt(
+        stage_id="APPS_RG_L1",
+        receipt_ref=root / sr.FILENAME_L1_PLAN,
+    )
+    ledger.record_from_receipt(
+        stage_id="APPS_RG_L0",
+        receipt_ref=root / sr.FILENAME_ROUTE_CONTRACT,
+    )
+    return ledger
+
+
+def _seal_product_terminal_authority(
+    *,
+    artifact_dir: Path,
+    product_ledger: Any,
+    identity: dict[str, Any],
+    product_authorization_ref: str,
+) -> dict[str, str]:
+    """Close mandatory output, ledger, manifest, and completion in that order."""
+
+    from apps_rg.runtime.product_stage_authority import (
+        emit_mandatory_outputs_authority_receipt,
+    )
+    from apps_rg.runtime.terminal_manifest import (
+        seal_terminal_manifest,
+        verify_terminal_manifest,
+    )
+    from apps_rg.runtime.terminal_state import TerminalStateMachine
+
+    root = Path(artifact_dir).resolve()
+    mandatory_authority = emit_mandatory_outputs_authority_receipt(
+        artifact_dir=root,
+        identity=identity,
+    )
+    mandatory_entry = product_ledger.record_from_receipt(
+        stage_id="MANDATORY_OUTPUTS",
+        receipt_ref=mandatory_authority,
+        artifact_refs=_authority_source_refs(mandatory_authority),
+    )
+    if mandatory_entry["status"] != "PASS":
+        raise ProductE2EAuthorityError("mandatory output authority receipt blocked")
+
+    authorization_path = root / product_authorization_ref
+    try:
+        authorization = json.loads(authorization_path.read_bytes())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProductE2EAuthorityError(
+            f"product authorization receipt is unreadable: {type(exc).__name__}"
+        ) from exc
+    if not isinstance(authorization, dict):
+        raise ProductE2EAuthorityError("product authorization receipt is not an object")
+    decision = authorization.get("decision_receipt")
+    output = authorization.get("output_artifact")
+    if not isinstance(decision, dict) or not isinstance(output, dict):
+        raise ProductE2EAuthorityError(
+            "product authorization receipt lacks exact decision/output bindings"
+        )
+    terminal_state = TerminalStateMachine()
+    terminal_state.close_product_authorization(
+        authorized=True,
+        decision_receipt_ref=str(decision.get("artifact_ref") or ""),
+        decision_receipt_sha256=str(decision.get("sha256") or ""),
+        output_artifact_sha256=str(output.get("sha256") or ""),
+        closed_at_utc=str(authorization.get("closed_at_utc") or ""),
+    )
+    terminal_state.record_pipeline_completion(
+        complete=True,
+        decisive_stage_id="PIPELINE_COMPLETION_CLOSE",
+    )
+    product_ledger.seal(terminal_state=terminal_state.snapshot())
+
+    promotion_ref = (
+        root
+        / "e2e_authority_receipts"
+        / "promotion_terminal_authority_receipt.json"
+    )
+    try:
+        promotion = json.loads(promotion_ref.read_bytes())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProductE2EAuthorityError(
+            f"promotion terminal receipt is unreadable: {type(exc).__name__}"
+        ) from exc
+    promotion_status = str(
+        (promotion if isinstance(promotion, dict) else {}).get(
+            "promotion_terminal_status"
+        )
+        or ""
+    )
+    mandatory_marker_path = root / "apps_rg_mandatory_output_commit_manifest.json"
+    try:
+        mandatory_marker = json.loads(mandatory_marker_path.read_bytes())
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ProductE2EAuthorityError(
+            f"mandatory output commit marker is unreadable: {type(exc).__name__}"
+        ) from exc
+    declared_outputs = (
+        mandatory_marker.get("required_artifacts")
+        if isinstance(mandatory_marker, dict)
+        else None
+    )
+    if not isinstance(declared_outputs, list) or not declared_outputs:
+        raise ProductE2EAuthorityError(
+            "mandatory output commit marker has no required artifact set"
+        )
+    mandatory_refs: dict[str, str | Path] = {
+        **{
+            f"mandatory:{relative}": str(relative)
+            for relative in declared_outputs
+        },
+        "mandatory_commit_marker": mandatory_marker_path,
+        "product_authorization": product_authorization_ref,
+        "authorized_output": str(output.get("artifact_ref") or ""),
+    }
+    manifest_path, completion_path = seal_terminal_manifest(
+        artifact_dir=root,
+        identity=identity,
+        x3_code=_PRODUCT_SUCCESS_X3,
+        x3_receipt_ref="x3_disposition_receipt.json",
+        terminal_state=terminal_state,
+        promotion_status=promotion_status,
+        promotion_receipt_ref=promotion_ref,
+        mandatory_output_refs=mandatory_refs,
+    )
+    verification = verify_terminal_manifest(manifest_path)
+    if not verification.valid:
+        raise ProductE2EAuthorityError(
+            "terminal manifest verification failed: "
+            + ";".join(verification.errors)
+        )
+    completion = verification.pipeline_completion_receipt
+    if completion.get("pipeline_complete") is not True:
+        raise ProductE2EAuthorityError(
+            "pipeline completion receipt did not close the product pipeline"
+        )
+    return {
+        "terminal_manifest_ref": str(manifest_path),
+        "pipeline_completion_receipt_ref": str(completion_path),
+        "stage_ledger_seal_ref": str(
+            root / "e2e_stage_ledger_seal_receipt.json"
+        ),
+    }
+
+
 def run_whole_run_with_route_governance(
     *,
     target_company: str,
@@ -527,6 +818,8 @@ def run_whole_run_with_route_governance(
     artifact_dir: str = "",
     auto_research_internal: bool = True,
     research_via: str | None = None,
+    preflight_continuation_ref: str = "",
+    require_fresh_preflight: bool = True,
 ) -> dict[str, Any]:
     """Canonical whole-run path: L0 route + optional R3R4 research + R4 draft leg."""
     art = _default_artifact_dir(artifact_dir)
@@ -556,8 +849,92 @@ def run_whole_run_with_route_governance(
         auto_research_internal=auto_research_internal,
         research_via=research_via,
     )
+    from apps_rg.runtime.e2e_preflight import (
+        E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME,
+        validate_preflight_continuation,
+    )
     from apps_rg.runtime.e2e_stage_ledger import E2E_STAGE_LEDGER_FILENAME, E2EStageLedger
 
+    continuation_path = (
+        Path(preflight_continuation_ref).resolve()
+        if str(preflight_continuation_ref or "").strip()
+        else art / E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME
+    )
+    preflight_errors: tuple[str, ...] = ()
+    preflight_validation = None
+    if require_fresh_preflight:
+        preflight_validation = validate_preflight_continuation(
+            receipt_path=continuation_path,
+            secret=str(os.environ.get("APPS_RG_ROUTE_HMAC_SECRET") or ""),
+            expected_e2e_run_id=art.name,
+            expected_key_id=str(os.environ.get("APPS_RG_ROUTE_HMAC_KEY_ID") or ""),
+            consumer_id="apps_rg.whole_run.primary",
+            consume=True,
+            # The canonical producer identity is emitted only after delegated
+            # research closes.  This seam validates signature/freshness/replay
+            # now and refuses to invent the not-yet-known child identity.
+            require_product_identity=False,
+        )
+        preflight_errors = preflight_validation.errors
+    if require_fresh_preflight and (
+        preflight_validation is None or not preflight_validation.valid
+    ):
+        stage_ledger = E2EStageLedger.create(
+            artifact_dir=art,
+            e2e_run_id=str(envelope.run_id),
+        )
+        rejection_path = art / "e2e_preflight_entry_rejection_receipt.json"
+        sr.write_stage_receipt(
+            rejection_path,
+            {
+                "schema_version": "apps_rg.e2e_preflight_entry_rejection.v1",
+                "status": "BLOCKED",
+                "failure_code": "FRESH_PREFLIGHT_CONTINUATION_INVALID",
+                "failure_reasons": list(preflight_errors or ("continuation_missing",)),
+            },
+        )
+        stage_ledger.record_from_receipt(
+            stage_id="PREFLIGHT",
+            receipt_ref=rejection_path,
+            reason_code="FRESH_PREFLIGHT_CONTINUATION_INVALID",
+        )
+        rejection_route = _pre_u0_research_route(envelope)
+        failed = _failure_payload(
+            artifact_dir=art,
+            route=rejection_route,
+            reason="FRESH_PREFLIGHT_CONTINUATION_INVALID",
+            route_decision={
+                "preflight_continuation_ref": str(continuation_path),
+                "preflight_continuation_errors": list(preflight_errors),
+            },
+        )
+        failed.update(
+            {
+                "completion_status": "BLOCKED",
+                "product_authorized": False,
+                "pipeline_complete": False,
+                "observability_repair_required": False,
+            }
+        )
+        _emit_terminal_mandatory_closeout(
+            artifact_dir=art,
+            repo_root=repo,
+            payload=failed,
+        )
+        stage_ledger.record(
+            stage_id="CLOSEOUT",
+            status="PASS",
+            reason_code="FAILED_RUN_REPORTED",
+            output_refs={
+                "mandatory_run_output_json": str(
+                    failed.get("mandatory_run_output_json") or ""
+                )
+            },
+        )
+        failed["e2e_stage_ledger"] = str(stage_ledger.path)
+        return failed
+
+    product_stage_ledger: Any | None = None
     if (art / E2E_STAGE_LEDGER_FILENAME).is_file():
         stage_ledger = E2EStageLedger.open(artifact_dir=art)
     else:
@@ -565,11 +942,28 @@ def run_whole_run_with_route_governance(
             artifact_dir=art,
             e2e_run_id=str(envelope.run_id),
         )
-        stage_ledger.record(
-            stage_id="PREFLIGHT",
-            status="PASS",
-            reason_code="NON_FRESH_ORCHESTRATOR_ENTRY_ACCEPTED",
-        )
+        if require_fresh_preflight:
+            stage_ledger.record_from_receipt(
+                stage_id="PREFLIGHT",
+                receipt_ref=continuation_path,
+                reason_code="SIGNED_FRESH_PREFLIGHT_CONTINUATION_ACCEPTED",
+            )
+        else:
+            compatibility_path = art / "e2e_preflight_non_product_compatibility_receipt.json"
+            sr.write_stage_receipt(
+                compatibility_path,
+                {
+                    "schema_version": "apps_rg.e2e_preflight_non_product_compatibility.v1",
+                    "status": "PASS",
+                    "classification": "NON_PRODUCT_ONLY",
+                    "reason": "EXPLICIT_TEST_OR_LEGACY_CALLER_COMPATIBILITY",
+                },
+            )
+            stage_ledger.record_from_receipt(
+                stage_id="PREFLIGHT",
+                receipt_ref=compatibility_path,
+                reason_code="NON_PRODUCT_COMPATIBILITY_ONLY",
+            )
     handoff_jd_ref = (
         str(job_description_ref or "").strip()
         or str(jd or "").strip()
@@ -759,6 +1153,8 @@ def run_whole_run_with_route_governance(
         require_observed=research_enabled and briefing_input_present(manual_brief_eff),
         require_x1_x3_authorization=research_enabled and briefing_input_present(manual_brief_eff),
     )
+    handoff_receipt = handoff_validation.to_receipt()
+    handoff_identity = handoff_receipt.get("identity")
     route_decision = {
         "route_profile_ref": route.route_profile_ref,
         "route_family": route.route_family,
@@ -819,22 +1215,38 @@ def run_whole_run_with_route_governance(
     sr.write_stage_receipt(
         art / sr.FILENAME_U0_RECEIPT,
         {
+            "schema_version": "apps_rg.u0_receipt.v1",
+            "status": "PASS",
             "request_id": validated_request.request_id,
             "run_id": validated_request.run_id,
             "trace_id": validated_request.trace_id,
             "payload_digest": validated_request.payload_digest,
+            "identity": dict(handoff_identity) if isinstance(handoff_identity, dict) else {},
         },
     )
     sr.write_stage_receipt(
         art / sr.FILENAME_L1_PLAN,
         {
+            "schema_version": "apps_rg.l1_plan_contract.v1",
+            "status": "PASS",
             "request_id": l1_plan.request_id,
             "merge_required_hint": l1_plan.merge_required_hint,
             "grounding_required": l1_plan.grounding_required,
             "work_shape": l1_plan.work_shape,
+            "identity": dict(handoff_identity) if isinstance(handoff_identity, dict) else {},
         },
     )
-    sr.write_stage_receipt(art / sr.FILENAME_ROUTE_CONTRACT, _route_contract_payload(route))
+    route_contract_receipt = _route_contract_payload(route)
+    route_contract_receipt.update(
+        {
+            "schema_version": "apps_rg.route_contract.v1",
+            "status": "PASS",
+            "identity": (
+                dict(handoff_identity) if isinstance(handoff_identity, dict) else {}
+            ),
+        }
+    )
+    sr.write_stage_receipt(art / sr.FILENAME_ROUTE_CONTRACT, route_contract_receipt)
 
     spine_pre_draft = {
         "schema_version": "apps_rg.spine_run_manifest.v1",
@@ -872,6 +1284,70 @@ def run_whole_run_with_route_governance(
     )
     raw_request["research_via"] = "apps_research" if research_ran else research_via
     raw_request["route_decision_ref"] = sr.FILENAME_SPINE_MANIFEST
+    if handoff_validation.valid and isinstance(handoff_identity, dict):
+        # Preserve the producer/consumer validated identity verbatim.  Missing
+        # identity is left missing and becomes a terminal reconciliation gap;
+        # this layer must never synthesize producer authority.
+        raw_request["canonical_run_identity"] = dict(handoff_identity)
+
+    if require_fresh_preflight:
+        if not handoff_validation.valid or not isinstance(handoff_identity, dict):
+            failed = _failure_payload(
+                artifact_dir=art,
+                route=route,
+                reason="PRODUCT_RUN_IDENTITY_UNAVAILABLE",
+                route_decision=route_decision,
+            )
+            failed.update(
+                {
+                    "completion_status": "BLOCKED",
+                    "product_authorized": False,
+                    "pipeline_complete": False,
+                    "observability_repair_required": False,
+                }
+            )
+            _emit_terminal_mandatory_closeout(
+                artifact_dir=art,
+                repo_root=repo,
+                payload=failed,
+            )
+            failed["e2e_stage_ledger"] = str(stage_ledger.path)
+            return failed
+        try:
+            product_stage_ledger = _activate_product_stage_ledger(
+                artifact_dir=art,
+                legacy_ledger=stage_ledger,
+                identity=dict(handoff_identity),
+                preflight_validation=preflight_validation,
+                continuation_path=continuation_path,
+                manual_brief=manual_brief_eff,
+                research_ran=research_ran,
+            )
+        except Exception as exc:  # guardian: product activation is a fail-closed boundary
+            failed = _failure_payload(
+                artifact_dir=art,
+                route=route,
+                reason="PRODUCT_E2E_AUTHORITY_ACTIVATION_FAILED",
+                route_decision=route_decision,
+            )
+            failed.update(
+                {
+                    "completion_status": "BLOCKED",
+                    "product_authorized": False,
+                    "pipeline_complete": False,
+                    "observability_repair_required": False,
+                    "e2e_authority_error": f"{type(exc).__name__}:{exc}",
+                }
+            )
+            _emit_terminal_mandatory_closeout(
+                artifact_dir=art,
+                repo_root=repo,
+                payload=failed,
+            )
+            failed["e2e_stage_ledger"] = str(
+                (product_stage_ledger or stage_ledger).path
+            )
+            return failed
 
     from apps_rg.cache.cache_preflight_evidence import (
         build_cache_preflight_evidence,
@@ -1027,7 +1503,6 @@ def run_whole_run_with_route_governance(
 
     rid = str(getattr(result, "run_id", "") or "").strip()
     emit_integrated_run_bundle_index(repo, art, run_id=rid or None, correlation_id=rid or None)
-    maybe_ingest_r1b_post_exit(raw_request=raw_request, artifact_dir=art, runs_dir=art.parent)
     final_resume_outputs_pre_emitted = False
     if result.fault == "":
         from apps_rg.runtime.final_resume_outputs import emit_final_resume_product_outputs
@@ -1057,14 +1532,73 @@ def run_whole_run_with_route_governance(
         if exec_summary_blocked
         else result.x3_disposition
     )
-    outcome = (
+    pre_uwg_eligible = (
         result.fault == ""
         and not exec_summary_blocked
-        and effective_x3 in _SUCCESS_X3
+        and _product_x3_authorizes(effective_x3)
     )
+    product_authorized = False
+    pipeline_complete = False
+    post_boundary_candidate = False
+    product_close_candidate = False
+    observability_repair_required = False
     post_x3_completion: dict[str, Any] = {}
     result_fault = result.fault
-    if outcome:
+    product_authority_error = ""
+    if product_stage_ledger is not None and pre_uwg_eligible:
+        from apps_rg.runtime.product_stage_authority import (
+            emit_product_eligibility_authority_receipt,
+            emit_runtime_stage_authority_receipts,
+        )
+
+        try:
+            identity = dict(raw_request["canonical_run_identity"])
+            runtime_authority = emit_runtime_stage_authority_receipts(
+                artifact_dir=art,
+                identity=identity,
+            )
+            for stage_id in (
+                "APPS_RG_C0",
+                "APPS_RG_PA",
+                "APPS_RG_L2",
+                "X1_REVIEW",
+                "X2_AGGREGATION",
+                "X3_DISPOSITION",
+            ):
+                entry = product_stage_ledger.record_from_receipt(
+                    stage_id=stage_id,
+                    receipt_ref=runtime_authority[stage_id],
+                    artifact_refs=_authority_source_refs(
+                        runtime_authority[stage_id]
+                    ),
+                    next_stage_id=(
+                        "PRODUCT_ELIGIBILITY"
+                        if stage_id == "X3_DISPOSITION"
+                        else None
+                    ),
+                )
+                if entry["status"] != "PASS":
+                    raise ProductE2EAuthorityError(
+                        f"receipt-derived product stage blocked: {stage_id}"
+                    )
+            eligibility_authority = emit_product_eligibility_authority_receipt(
+                artifact_dir=art,
+                identity=identity,
+            )
+            eligibility_entry = product_stage_ledger.record_from_receipt(
+                stage_id="PRODUCT_ELIGIBILITY",
+                receipt_ref=eligibility_authority,
+                artifact_refs=_authority_source_refs(eligibility_authority),
+            )
+            if eligibility_entry["status"] != "PASS":
+                raise ProductE2EAuthorityError(
+                    "receipt-derived product eligibility blocked"
+                )
+        except Exception as exc:  # guardian: product authority fails closed before UWG
+            pre_uwg_eligible = False
+            product_authority_error = f"{type(exc).__name__}:{exc}"
+            result_fault = "PRODUCT_E2E_RECEIPT_AUTHORITY_FAILED"
+    if pre_uwg_eligible:
         from apps_rg.runtime.post_x3_completion import complete_apps_rg_post_x3
 
         post_x3_completion = complete_apps_rg_post_x3(
@@ -1082,15 +1616,119 @@ def run_whole_run_with_route_governance(
             },
             raw_request=raw_request,
         )
-        if not (
-            post_x3_completion.get("completed")
-            and post_x3_completion.get("x3_to_uwg_to_eval_to_l6_completed")
-        ):
-            outcome = False
-            result_fault = str(
-                post_x3_completion.get("failure_stage")
-                or "post_x3_completion"
+        product_authorized = (
+            post_x3_completion.get("product_authorized") is True
+            if "product_authorized" in post_x3_completion
+            else bool(
+                post_x3_completion.get("x3_to_uwg_completed") is True
+                and post_x3_completion.get("durable_promotion_committed") is True
             )
+        )
+        post_boundary_candidate = (
+            post_x3_completion.get("pipeline_complete") is True
+            if "pipeline_complete" in post_x3_completion
+            else post_x3_completion.get("x3_to_uwg_to_eval_to_l6_completed") is True
+        )
+        pipeline_complete = (
+            False
+            if product_stage_ledger is not None
+            else post_boundary_candidate
+        )
+        if product_stage_ledger is not None and product_authorized:
+            from apps_rg.runtime.product_stage_authority import (
+                emit_post_boundary_authority_receipts,
+            )
+
+            try:
+                uwg_ref = str(
+                    ((post_x3_completion.get("uwg") or {}).get("artifacts") or {}).get(
+                        "uwg_commit_receipt"
+                    )
+                    or ""
+                )
+                product_authorization_ref = str(
+                    post_x3_completion.get("product_authorization_receipt_ref") or ""
+                )
+                if not uwg_ref or not product_authorization_ref:
+                    raise ProductE2EAuthorityError(
+                        "UWG/product authorization close receipts are missing"
+                    )
+                for stage_id, receipt_ref in (
+                    ("UWG_COMMIT", uwg_ref),
+                    ("PRODUCT_AUTHORIZATION_CLOSE", product_authorization_ref),
+                ):
+                    entry = product_stage_ledger.record_from_receipt(
+                        stage_id=stage_id,
+                        receipt_ref=receipt_ref,
+                    )
+                    if entry["status"] != "PASS":
+                        raise ProductE2EAuthorityError(
+                            f"receipt-derived product close blocked: {stage_id}"
+                        )
+                if not post_boundary_candidate:
+                    raise ProductE2EAuthorityError(
+                        "post-boundary completion is not a terminal-close candidate"
+                    )
+                post_boundary_authority = emit_post_boundary_authority_receipts(
+                    artifact_dir=art,
+                    identity=dict(raw_request["canonical_run_identity"]),
+                    post_x3_completion=post_x3_completion,
+                )
+                for stage_id in (
+                    "APPS_EVAL",
+                    "L6_SHADOW",
+                    "INDEPENDENT_PARITY",
+                    "PROMOTION_TERMINAL",
+                ):
+                    entry = product_stage_ledger.record_from_receipt(
+                        stage_id=stage_id,
+                        receipt_ref=post_boundary_authority[stage_id],
+                        artifact_refs=_authority_source_refs(
+                            post_boundary_authority[stage_id]
+                        ),
+                    )
+                    if entry["status"] != "PASS":
+                        raise ProductE2EAuthorityError(
+                            f"receipt-derived post-boundary stage blocked: {stage_id}"
+                        )
+                product_close_candidate = True
+            except Exception as exc:  # guardian: UWG authority remains immutable
+                product_authority_error = f"{type(exc).__name__}:{exc}"
+                product_close_candidate = False
+        observability_repair_required = bool(
+            product_authorized
+            and not (
+                product_close_candidate
+                if product_stage_ledger is not None
+                else pipeline_complete
+            )
+        )
+        if product_authorized and pipeline_complete:
+            # Cache learning is future-run authority and cannot precede UWG.
+            maybe_ingest_r1b_post_exit(
+                raw_request=raw_request,
+                artifact_dir=art,
+                runs_dir=art.parent,
+            )
+        if not (
+            product_close_candidate
+            if product_stage_ledger is not None
+            else pipeline_complete
+        ):
+            result_fault = (
+                "PRODUCT_E2E_RECEIPT_AUTHORITY_FAILED"
+                if product_authority_error
+                else str(
+                    post_x3_completion.get("failure_stage")
+                    or "post_x3_completion"
+                )
+            )
+    elif not result_fault:
+        result_fault = (
+            "PRODUCT_X3D_ALLOW_FINISH_REQUIRED"
+            if not _product_x3_authorizes(effective_x3)
+            else "PRODUCT_NOT_ELIGIBLE_FOR_UWG"
+        )
     if final_resume_outputs_pre_emitted:
         apps_eval_completion = (
             post_x3_completion.get("apps_eval")
@@ -1176,12 +1814,17 @@ def run_whole_run_with_route_governance(
                     },
                 )
     payload: dict[str, Any] = {
-        "exit_status": "success" if outcome else "error",
-        "execution_status": "completed" if outcome else "failed",
-        "outcome_authorized": outcome,
+        "exit_status": "success" if pipeline_complete else "error",
+        "execution_status": "completed" if pipeline_complete else "failed",
+        # Legacy field remains a compatibility alias for immutable current-run
+        # product authority, never for post-boundary pipeline completion.
+        "outcome_authorized": product_authorized,
+        "product_authorized": product_authorized,
+        "pipeline_complete": pipeline_complete,
+        "observability_repair_required": observability_repair_required,
         "x3_disposition": result.x3_disposition,
         "completion_disposition": effective_x3,
-        "completion_status": "PASS" if outcome else "BLOCKED",
+        "completion_status": "PASS" if pipeline_complete else "BLOCKED",
         "fault": result_fault,
         "artifact_dir": str(art),
         "run_id": result.run_id,
@@ -1216,12 +1859,25 @@ def run_whole_run_with_route_governance(
     if research_ran:
         payload["delegated_briefing"] = str(art / sr.FILENAME_DELEGATED_BRIEFING)
         payload["research_bridge_response"] = str(art / sr.FILENAME_RESEARCH_BRIDGE_RESPONSE)
+    immutable_product_authorized = product_authorized
     _emit_terminal_mandatory_closeout(
         artifact_dir=art,
         repo_root=repo,
         payload=payload,
         final_resume_outputs_pre_emitted=final_resume_outputs_pre_emitted,
     )
+    if immutable_product_authorized:
+        # Mandatory closeout is post-boundary.  It may make the pipeline
+        # incomplete, but it cannot revoke a UWG-closed current-run product.
+        payload["outcome_authorized"] = True
+        payload["product_authorized"] = True
+        mandatory_gate = payload.get("mandatory_output_hard_stop")
+        if isinstance(mandatory_gate, dict) and mandatory_gate.get("pass") is False:
+            payload["exit_status"] = "error"
+            payload["execution_status"] = "failed"
+            payload["pipeline_complete"] = False
+            payload["observability_repair_required"] = True
+            payload["completion_status"] = "BLOCKED"
     review_zip = None
     if is_integrated_whole_run_artifact_dir(art):
         try:
@@ -1233,12 +1889,66 @@ def run_whole_run_with_route_governance(
         payload["review_bundle_relpath"] = REVIEW_BUNDLE_FILENAME
     if section_status_md is not None:
         payload["full_run_section_status_md"] = section_status_md
+    if product_stage_ledger is not None:
+        payload["pipeline_complete"] = False
+        payload["completion_status"] = "BLOCKED"
+        if immutable_product_authorized and product_close_candidate:
+            try:
+                terminal_refs = _seal_product_terminal_authority(
+                    artifact_dir=art,
+                    product_ledger=product_stage_ledger,
+                    identity=dict(raw_request["canonical_run_identity"]),
+                    product_authorization_ref=str(
+                        post_x3_completion.get(
+                            "product_authorization_receipt_ref"
+                        )
+                        or ""
+                    ),
+                )
+                payload.update(terminal_refs)
+                payload.update(
+                    {
+                        "exit_status": "success",
+                        "execution_status": "completed",
+                        "outcome_authorized": True,
+                        "product_authorized": True,
+                        "pipeline_complete": True,
+                        "observability_repair_required": False,
+                        "completion_status": "PASS",
+                        "fault": "",
+                    }
+                )
+                # Cache learning is future-run authority and may follow only the
+                # externally bound terminal completion receipt.
+                maybe_ingest_r1b_post_exit(
+                    raw_request=raw_request,
+                    artifact_dir=art,
+                    runs_dir=art.parent,
+                )
+            except Exception as exc:  # guardian: preserve immutable UWG product state
+                product_authority_error = f"{type(exc).__name__}:{exc}"
+                payload.update(
+                    {
+                        "exit_status": "error",
+                        "execution_status": "failed",
+                        "outcome_authorized": bool(immutable_product_authorized),
+                        "product_authorized": bool(immutable_product_authorized),
+                        "pipeline_complete": False,
+                        "observability_repair_required": bool(
+                            immutable_product_authorized
+                        ),
+                        "completion_status": "BLOCKED",
+                        "fault": "PRODUCT_E2E_TERMINAL_SEAL_FAILED",
+                    }
+                )
+        if product_authority_error:
+            payload["product_e2e_authority_error"] = product_authority_error
     stage_ledger.record(
         stage_id="CLOSEOUT",
-        status="PASS" if payload.get("outcome_authorized") is True else "FAIL",
+        status="PASS" if payload.get("pipeline_complete") is True else "FAIL",
         reason_code=(
             "MANDATORY_CLOSEOUT_COMPLETE"
-            if payload.get("outcome_authorized") is True
+            if payload.get("pipeline_complete") is True
             else str(payload.get("fault") or "RUN_NOT_AUTHORIZED")
         ),
         output_refs={
@@ -1252,16 +1962,25 @@ def run_whole_run_with_route_governance(
     )
     from apps_rg.runtime.e2e_stage_ledger import verify_e2e_stage_ledger
 
-    ledger_report = verify_e2e_stage_ledger(stage_ledger.path)
-    payload["e2e_stage_ledger"] = str(stage_ledger.path)
+    active_ledger = product_stage_ledger or stage_ledger
+    ledger_report = verify_e2e_stage_ledger(active_ledger.path)
+    payload["e2e_stage_ledger"] = str(active_ledger.path)
     payload["e2e_stage_ledger_valid"] = ledger_report.valid
     payload["e2e_stage_ledger_complete"] = ledger_report.complete
-    if payload.get("outcome_authorized") is True and not ledger_report.complete:
+    if payload.get("product_authorized") is True and not ledger_report.complete:
         payload["exit_status"] = "error"
         payload["execution_status"] = "failed"
-        payload["outcome_authorized"] = False
+        payload["outcome_authorized"] = True
+        payload["product_authorized"] = True
+        payload["pipeline_complete"] = False
+        payload["observability_repair_required"] = True
         payload["completion_status"] = "BLOCKED"
-        payload["fault"] = "E2E_STAGE_LEDGER_INCOMPLETE"
+        if not str(payload.get("fault") or "").strip():
+            payload["fault"] = "E2E_STAGE_LEDGER_INCOMPLETE"
+        else:
+            payload.setdefault("pipeline_reconciliation_faults", []).append(
+                "E2E_STAGE_LEDGER_INCOMPLETE"
+            )
         payload["e2e_stage_ledger_errors"] = list(ledger_report.errors)
     return payload
 

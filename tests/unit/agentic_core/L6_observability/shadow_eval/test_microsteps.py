@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from agentic_core.L6_observability.shadow_eval.grain_parity import (
+    build_l6_apps_eval_grain_parity,
+)
 from agentic_core.L6_observability.shadow_eval.microsteps import (
-    EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF,
     EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY,
     build_apps_eval_alignment,
     build_future_run_proposals,
@@ -10,9 +12,6 @@ from agentic_core.L6_observability.shadow_eval.microsteps import (
     build_microstep_rca,
     build_observations_from_eval_rows,
     build_orphan_observation,
-)
-from agentic_core.L6_observability.shadow_eval.grain_parity import (
-    build_l6_apps_eval_grain_parity,
 )
 
 
@@ -50,7 +49,8 @@ def test_l6_observations_join_apps_eval_rows_without_authority() -> None:
     )
 
     assert alignment["rows_expected"] == 2
-    assert alignment["evidence_class"] == EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF
+    assert alignment["evidence_class"] == EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY
+    assert alignment["apps_eval_rows_bound"] is False
     assert alignment["missing_in_l6"] == []
     assert alignment["missing_in_apps_eval"] == []
     assert alignment["verdict_mismatches"] == []
@@ -87,7 +87,7 @@ def test_orphan_observation_is_reported_as_missing_in_apps_eval() -> None:
     assert coverage["orphan_observations"] == 1
 
 
-def _parity(rows: list[dict[str, object]], observations: list[dict[str, object]], alignment_source: str = "apps_eval_scorecard_rows") -> dict[str, object]:
+def _parity(rows: list[dict[str, object]], observations: list[dict[str, object]], alignment_source: str = "apps_eval_projection_rows") -> dict[str, object]:
     return build_l6_apps_eval_grain_parity(
         run_id="run-1",
         runtime_exhaust_bundle_id="reb-1",
@@ -100,16 +100,16 @@ def _parity(rows: list[dict[str, object]], observations: list[dict[str, object]]
     )
 
 
-def test_grain_parity_passes_with_real_apps_eval_rows() -> None:
+def test_eval_projected_grain_parity_remains_advisory() -> None:
     rows = [_row("headline.X2.gates.pass")]
     observations = [observation.to_dict() for observation in build_observations_from_eval_rows(rows, runtime_exhaust_bundle_id="reb-1")]
 
     parity = _parity(rows, observations)
 
-    assert parity["alignment_source"] == "apps_eval_scorecard_rows"
-    assert parity["evidence_class"] == EVIDENCE_CLASS_APPS_EVAL_BOUND_PROOF
-    assert parity["apps_eval_rows_bound"] is True
-    assert parity["grain_parity_status"] == "PASS"
+    assert parity["alignment_source"] == "apps_eval_projection_rows"
+    assert parity["evidence_class"] == EVIDENCE_CLASS_CONTRACT_ONLY_ADVISORY
+    assert parity["apps_eval_rows_bound"] is False
+    assert parity["grain_parity_status"] == "FAIL"
     assert parity["missing_in_l6"] == []
     assert parity["missing_in_apps_eval"] == []
 

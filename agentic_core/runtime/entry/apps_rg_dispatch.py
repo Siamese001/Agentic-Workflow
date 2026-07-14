@@ -1,4 +1,4 @@
-"""apps_rg runtime entry — canonical product dispatch and AG-2 C0/PA wiring.
+"""apps_rg runtime entry — signed-preflight product dispatch and AG-2 C0/PA wiring.
 
 ``dispatch_apps_rg_run`` is the canonical product entrypoint. The AG-2 helper
 threads the verified L1 plan into C0 before prompt assembly.
@@ -48,7 +48,7 @@ def dispatch_apps_rg_run(
     generation_mode: str = "strategic_tailor",
     artifact_dir: str = "",
 ) -> dict[str, Any]:
-    """Canonical apps_rg product entry — delegate to governed R4 spine + L7."""
+    """Canonical product entry — delegate to the app-owned fresh-E2E facade."""
 
     if not str(target_company).strip() or not str(target_role).strip():
         return {

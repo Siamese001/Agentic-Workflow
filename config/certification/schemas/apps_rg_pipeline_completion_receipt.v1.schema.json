@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.pipeline_completion_receipt.v1",
+  "title": "Apps RG pipeline completion receipt v1",
+  "description": "Final non-self-referential receipt that binds the exact terminal-manifest bytes returned to the caller.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "authority_contract_id", "identity_sha256", "terminal_manifest_ref",
+    "terminal_manifest_sha256", "terminal_manifest_byte_length", "product_authorized",
+    "pipeline_complete", "observability_repair_required", "closed_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.pipeline_completion_receipt.v1"},
+    "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+    "identity_sha256": {"$ref": "#/$defs/Sha256"},
+    "terminal_manifest_ref": {"const": "apps_rg_e2e_terminal_manifest.json"},
+    "terminal_manifest_sha256": {"$ref": "#/$defs/Sha256"},
+    "terminal_manifest_byte_length": {"type": "integer", "minimum": 1},
+    "product_authorized": {"type": "boolean"},
+    "pipeline_complete": {"type": "boolean"},
+    "observability_repair_required": {"type": "boolean"},
+    "closed_at_utc": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "Sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

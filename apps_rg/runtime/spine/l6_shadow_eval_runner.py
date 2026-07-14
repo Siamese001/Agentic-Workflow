@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from dataclasses import asdict, is_dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -37,12 +38,15 @@ from apps_rg.runtime.shadow.l6_microstep_observability import (
 APPS_RG_L6_V40_SHADOW_EVAL_ENV = "APPS_RG_L6_V40_SHADOW_EVAL"
 APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV = "APPS_RG_L6_V40_SHADOW_EVAL_SKIP"
 APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV = "APPS_RG_L6_V40_L5_CERTIFICATION_REF"
+APPS_RG_EXECUTION_PROFILE_ENV = "APPS_RG_EXECUTION_PROFILE"
 
 L6_V40_SHADOW_EVAL_PACKAGE_ARTIFACT = "l6_v40_shadow_eval_package.json"
 L6_V40_SHADOW_EVAL_SPANS_ARTIFACT = "l6_v40_shadow_eval_spans.json"
 L6_V40_SHADOW_EVAL_SPANS_JSONL_ARTIFACT = "l6_v40_shadow_eval_spans.jsonl"
 L6_OBSERVABILITY_CLOSURE_RECEIPT_ARTIFACT = "l6_observability_closure_receipt.json"
 L6_APPS_EVAL_BINDING_CLOSURE_RECEIPT_ARTIFACT = "l6_apps_eval_binding_closure_receipt.json"
+L5_CERTIFICATION_RECEIPT_ARTIFACT = "l5_certification_receipt.json"
+L5_CERTIFICATION_RECEIPT_SCHEMA = "apps_rg.l5_certification_receipt.v1"
 
 APPS_RG_V40_STAGE_BY_FILE: dict[str, str] = {
     "runtime_exhaust_bundle.json": "EXIT",
@@ -69,7 +73,9 @@ def _truthy(value: str | None) -> bool:
 def l6_v40_shadow_eval_enabled(env: Mapping[str, str] | None = None) -> bool:
     source = env if env is not None else os.environ
     if _truthy(source.get(APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV)):
-        return False
+        profile = str(source.get(APPS_RG_EXECUTION_PROFILE_ENV) or "product").strip().lower()
+        if profile in {"test", "migration", "replay", "non_product"}:
+            return False
     configured = source.get(APPS_RG_L6_V40_SHADOW_EVAL_ENV)
     if configured is None or not str(configured).strip():
         return True
@@ -121,6 +127,77 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
             digest.update(chunk)
     return "sha256:" + digest.hexdigest()
+
+
+def _normal_sha256(value: Any) -> str:
+    text = str(value or "").strip().lower()
+    raw = text.removeprefix("sha256:")
+    if len(raw) != 64:
+        return ""
+    try:
+        int(raw, 16)
+    except ValueError:
+        return ""
+    return f"sha256:{raw}"
+
+
+def _canonical_digest(payload: Mapping[str, Any]) -> str:
+    raw = json.dumps(dict(payload), sort_keys=True, separators=(",", ":"), default=str)
+    return "sha256:" + hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _contained(path: Path, roots: tuple[Path, ...]) -> bool:
+    resolved = path.resolve()
+    return any(resolved == root.resolve() or root.resolve() in resolved.parents for root in roots)
+
+
+def _validate_l5_certification_receipt(
+    *,
+    artifact_dir: Path,
+    repo_root: Path,
+    ref: str,
+    raw_exhaust: Mapping[str, Any],
+) -> tuple[bool, list[str], str, str]:
+    """Validate persisted L5 provenance for the current product run."""
+
+    candidates: list[Path] = []
+    text = str(ref or "").strip()
+    if text:
+        raw = Path(text)
+        if raw.is_absolute():
+            candidates.append(raw)
+        else:
+            candidates.extend((artifact_dir / raw, repo_root / raw))
+    candidates.append(artifact_dir / L5_CERTIFICATION_RECEIPT_ARTIFACT)
+    path = next((item.resolve() for item in candidates if item.is_file()), None)
+    if path is None:
+        return False, ["L5_CERTIFICATION_RECEIPT_MISSING"], "", ""
+    if not _contained(path, (artifact_dir, repo_root)):
+        return False, ["L5_CERTIFICATION_RECEIPT_OUTSIDE_APPROVED_ROOT"], "", ""
+    payload = _load_json(path)
+    seed = dict(payload)
+    claimed_digest = str(seed.pop("receipt_digest", "") or "")
+    computed_digest = _canonical_digest(seed)
+    checks = {
+        "schema": payload.get("schema_version") == L5_CERTIFICATION_RECEIPT_SCHEMA,
+        "status": str(payload.get("certification_status") or "").upper() == "PASS",
+        "scope": str(payload.get("scope") or "") == "apps_rg.l6_shadow_eval",
+        "run_id": str(payload.get("run_id") or "") == str(raw_exhaust.get("run_id") or ""),
+        "tenant_id": str(payload.get("tenant_id") or "")
+        == str(raw_exhaust.get("tenant_id") or ""),
+        "digest": bool(claimed_digest) and claimed_digest == computed_digest,
+    }
+    expires = str(payload.get("expires_at_utc") or "").strip()
+    if expires:
+        try:
+            expiry = datetime.fromisoformat(expires.replace("Z", "+00:00"))
+            if expiry.tzinfo is None:
+                expiry = expiry.replace(tzinfo=timezone.utc)
+            checks["unexpired"] = expiry > datetime.now(timezone.utc)
+        except ValueError:
+            checks["unexpired"] = False
+    failed = [f"L5_CERTIFICATION_{name.upper()}_INVALID" for name, ok in checks.items() if not ok]
+    return not failed, sorted(failed), _repo_rel(repo_root, path), computed_digest
 
 
 def _gate_pass(value: Any) -> bool:
@@ -183,6 +260,26 @@ def _emit_l6_observability_closure_receipt(
         "no_direct_l4_write_assertion": package.get("direct_l4_write_assertion") is False,
         "no_durable_write_assertion": package.get("durable_write_assertion") is False,
         "future_run_only_assertion": package.get("future_run_only_assertion") is True,
+        "l5_certification_valid": package.get("l5_certification_valid") is True,
+        "parent_run_id_present": bool(str(package.get("parent_run_id") or "").strip()),
+        "child_run_id_present": bool(str(package.get("child_run_id") or "").strip()),
+        "section_attempt_id_present": bool(
+            str(package.get("section_attempt_id") or "").strip()
+        ),
+        "microstep_contract_digest_present": str(
+            package.get("microstep_contract_digest") or ""
+        ).startswith("sha256:"),
+        "registry_digest_present": str(package.get("registry_digest") or "").startswith(
+            "sha256:"
+        ),
+        "contract_registry_digest_equal": bool(
+            _normal_sha256(package.get("microstep_contract_digest"))
+        )
+        and _normal_sha256(package.get("microstep_contract_digest"))
+        == _normal_sha256(package.get("registry_digest")),
+        "runtime_exhaust_bundle_digest_present": bool(
+            _normal_sha256(package.get("runtime_exhaust_bundle_digest"))
+        ),
     }
     failed_checks = sorted(name for name, passed in checks.items() if not passed)
     digest_map = {
@@ -192,6 +289,14 @@ def _emit_l6_observability_closure_receipt(
     }
     closure_seed = {
         "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
+        "runtime_exhaust_bundle_digest": _normal_sha256(
+            package.get("runtime_exhaust_bundle_digest")
+        ),
+        "parent_run_id": str(package.get("parent_run_id") or ""),
+        "child_run_id": str(package.get("child_run_id") or ""),
+        "section_attempt_id": str(package.get("section_attempt_id") or ""),
+        "microstep_contract_digest": str(package.get("microstep_contract_digest") or ""),
+        "registry_digest": _normal_sha256(package.get("registry_digest")),
         "checks": checks,
         "artifact_digests": digest_map,
     }
@@ -199,6 +304,14 @@ def _emit_l6_observability_closure_receipt(
         "schema_version": "apps_rg.l6_observability_closure_receipt.v2",
         "section_id": str(package.get("section_id") or ""),
         "runtime_exhaust_bundle_id": str(package.get("runtime_exhaust_bundle_id") or ""),
+        "runtime_exhaust_bundle_digest": _normal_sha256(
+            package.get("runtime_exhaust_bundle_digest")
+        ),
+        "parent_run_id": str(package.get("parent_run_id") or ""),
+        "child_run_id": str(package.get("child_run_id") or ""),
+        "section_attempt_id": str(package.get("section_attempt_id") or ""),
+        "microstep_contract_digest": str(package.get("microstep_contract_digest") or ""),
+        "registry_digest": _normal_sha256(package.get("registry_digest")),
         "observability_closure_status": "PASS" if not failed_checks else "FAIL",
         "closure_status": "PASS" if not failed_checks else "FAIL",
         "eval_binding_status": "PENDING",
@@ -306,6 +419,17 @@ def run_l6_v40_shadow_eval_for_section(
         l5_certification_ref=l5_ref,
     )
     valid_v40, v40_gaps = validate_v40_shadow_exhaust(raw_exhaust)
+    l5_valid, l5_gaps, l5_receipt_ref, l5_receipt_digest = (
+        _validate_l5_certification_receipt(
+            artifact_dir=artifact_dir,
+            repo_root=repo_root,
+            ref=l5_ref,
+            raw_exhaust=raw_exhaust,
+        )
+    )
+    if not l5_valid:
+        valid_v40 = False
+        v40_gaps = sorted({*v40_gaps, *l5_gaps})
 
     state = L6PipelineState()
     ingest = run_6a(state, raw_exhaust)
@@ -327,14 +451,29 @@ def run_l6_v40_shadow_eval_for_section(
         run_id=ingest.bundle.run_id,
         runtime_exhaust_bundle_id=ingest.bundle.runtime_exhaust_bundle_id,
         section_id=section_id,
+        parent_run_id=str(raw_exhaust.get("parent_run_id") or ""),
+        child_run_id=str(raw_exhaust.get("child_run_id") or ""),
+        section_attempt_id=str(raw_exhaust.get("section_attempt_id") or ""),
     )
     parity_payload = _load_json(microstep_paths["l6_apps_eval_grain_parity"])
     package: dict[str, Any] = {
         "schema_version": "apps_rg.l6_v40_shadow_eval.v2",
         "section_id": section_id,
+        "parent_run_id": str(raw_exhaust.get("parent_run_id") or ""),
+        "child_run_id": str(raw_exhaust.get("child_run_id") or ""),
+        "section_attempt_id": str(raw_exhaust.get("section_attempt_id") or ""),
         "runtime_exhaust_bundle_id": ingest.bundle.runtime_exhaust_bundle_id,
-        "runtime_exhaust_bundle_digest": ingest.bundle.deterministic_digest,
+        "runtime_exhaust_bundle_digest": _normal_sha256(
+            ingest.bundle.deterministic_digest
+        ),
+        "microstep_contract_digest": str(
+            parity_payload.get("microstep_contract_digest") or ""
+        ),
+        "registry_digest": str(parity_payload.get("registry_digest") or ""),
         "valid_v40_shadow_exhaust": valid_v40,
+        "l5_certification_valid": l5_valid,
+        "l5_certification_receipt_ref": l5_receipt_ref,
+        "l5_certification_receipt_digest": l5_receipt_digest,
         "v40_gap_codes": v40_gaps,
         "readiness_decision": readiness.readiness_decision,
         "readiness_receipt": _jsonable(readiness),
@@ -435,6 +574,7 @@ def maybe_run_l6_v40_shadow_eval_for_section(
 
 __all__ = [
     "APPS_RG_L6_V40_L5_CERTIFICATION_REF_ENV",
+    "APPS_RG_EXECUTION_PROFILE_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_ENV",
     "APPS_RG_L6_V40_SHADOW_EVAL_SKIP_ENV",
     "L6_APPS_EVAL_BINDING_CLOSURE_RECEIPT_ARTIFACT",

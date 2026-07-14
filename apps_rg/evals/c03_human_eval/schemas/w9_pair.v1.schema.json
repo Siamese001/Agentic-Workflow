@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.w9_pair.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "pair_id", "target_profile_id", "target_context",
+    "resume_a", "resume_b", "rubric_id", "content_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.w9_pair.v1"},
+    "pair_id": {"type": "string"},
+    "target_profile_id": {"type": "string"},
+    "target_context": {"type": "object"},
+    "resume_a": {"type": "string", "minLength": 1},
+    "resume_b": {"type": "string", "minLength": 1},
+    "rubric_id": {"const": "c03_w9_blind_resume_coach_v1"},
+    "content_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

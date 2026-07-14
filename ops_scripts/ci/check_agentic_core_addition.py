@@ -553,6 +553,75 @@ _GOV3_BASELINE: dict[str, dict] = {
         ),
         "issue": "GOV-3-BASELINE-061",
     },
+    # Issue #550 hardens pre-existing app-named adapters without introducing
+    # new app branching.  The migration receipt bounds this exception while
+    # the app projection moves behind a generic, profile-driven L6 contract.
+    "agentic_core/L6_observability/shadow_eval/adapters/runtime_exhaust_v40.py": {
+        "expiry": "2026-10-11",
+        "classification": "MIGRATION_EXCEPTION",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "agentic_core.L6_observability.shadow_eval.runtime_exhaust",
+        "issue": "GOV-3-BASELINE-062",
+    },
+    "agentic_core/L6_observability/shadow_eval/grain_parity.py": {
+        "expiry": "2026-10-11",
+        "classification": "MIGRATION_EXCEPTION",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "agentic_core.L6_observability.shadow_eval.parity",
+        "issue": "GOV-3-BASELINE-063",
+    },
+    "agentic_core/L6_observability/shadow_eval/independent_parity.py": {
+        "expiry": "2026-10-11",
+        "classification": "MIGRATION_EXCEPTION",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "agentic_core.L6_observability.shadow_eval.parity",
+        "issue": "GOV-3-BASELINE-064",
+    },
+    "agentic_core/L6_observability/shadow_eval/microsteps.py": {
+        "expiry": "2026-10-11",
+        "classification": "MIGRATION_EXCEPTION",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "agentic_core.L6_observability.shadow_eval.microsteps",
+        "issue": "GOV-3-BASELINE-065",
+    },
+    "agentic_core/runtime/entry/u0_apps_research_binding.py": {
+        "expiry": "2026-10-11",
+        "classification": "TEMPORARY_THIN_ADAPTER",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "apps_research.runtime.u0",
+        "issue": "GOV-3-BASELINE-066",
+    },
+    "agentic_core/runtime/entry/apps_rg_dispatch.py": {
+        "expiry": "2026-10-11",
+        "classification": "TEMPORARY_THIN_ADAPTER",
+        "migration_plan": "issue-550-apps-research-rg-e2e-hardening",
+        "migration_receipt": (
+            "artifacts/governance/migration_receipts/"
+            "20260713_issue_550_core_boundary_migration_receipt.json"
+        ),
+        "target_module": "apps_rg.runtime.product_entry",
+        "issue": "GOV-3-BASELINE-067",
+    },
 }
 
 # Canonical GENERIC route enums — must NOT trigger false positives.
@@ -749,7 +818,7 @@ def _scan_file(filepath: Path) -> list[dict[str, Any]]:
     try:
         content = filepath.read_text(encoding="utf-8", errors="ignore")
         lines = content.splitlines()
-    except (OSError, IOError):
+    except OSError:
         return findings
 
     def _add(line_num: int, line: str, category: str, description: str, severity: str = "HIGH") -> None:
@@ -846,7 +915,7 @@ def _check_bypass_evidence() -> list[str]:
     if not VIOLATIONS_LOG.exists():
         return errors
     try:
-        with open(VIOLATIONS_LOG, "r", encoding="utf-8") as f:
+        with open(VIOLATIONS_LOG, encoding="utf-8") as f:
             for line_no, raw in enumerate(f, 1):
                 raw = raw.strip()
                 if not raw:
@@ -862,7 +931,7 @@ def _check_bypass_evidence() -> list[str]:
                             f"plan={event.get('plan_id','?')} file={event.get('file_path','?')} "
                             "— set emergency_approval_receipt_ref or remove the bypass event."
                         )
-    except (OSError, IOError):
+    except OSError:
         pass
     return errors
 

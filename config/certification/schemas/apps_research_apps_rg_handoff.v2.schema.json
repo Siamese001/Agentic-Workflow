@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_research.apps_rg_handoff.v2",
+  "title": "Apps Research to Apps RG governed handoff v2",
+  "description": "Producer-owned, atomically committed handoff bundle. Apps RG must validate the committed bytes and emit the named consumer receipt before U0 may pass.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handoff_id",
+    "authority_contract_id",
+    "identity",
+    "producer",
+    "raw_input",
+    "normalized_input",
+    "mandatory_gate_receipts",
+    "exit_authorization",
+    "artifact_manifest",
+    "commit_protocol",
+    "created_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_research.apps_rg_handoff.v2"},
+    "handoff_id": {"type": "string", "minLength": 1},
+    "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+    "identity": {"$ref": "#/$defs/RunIdentity"},
+    "producer": {"$ref": "#/$defs/ProducerAttestation"},
+    "raw_input": {"$ref": "#/$defs/InputDigest"},
+    "normalized_input": {"$ref": "#/$defs/NormalizedInputDigest"},
+    "mandatory_gate_receipts": {"$ref": "#/$defs/MandatoryGateReceipts"},
+    "exit_authorization": {"$ref": "#/$defs/ExitAuthorization"},
+    "artifact_manifest": {"$ref": "#/$defs/ArtifactManifest"},
+    "commit_protocol": {"$ref": "#/$defs/CommitProtocol"},
+    "created_at_utc": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "Sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "RunIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_app_id",
+        "consumer_app_id",
+        "parent_run_id",
+        "child_run_id",
+        "request_id",
+        "trace_root",
+        "tenant_id",
+        "target_company",
+        "target_role",
+        "jd_sha256",
+        "brief_sha256",
+        "policy_hash",
+        "blueprint_hash",
+        "schema_version"
+      ],
+      "properties": {
+        "producer_app_id": {"const": "apps_research"},
+        "consumer_app_id": {"const": "apps_rg"},
+        "parent_run_id": {"type": "string", "minLength": 1},
+        "child_run_id": {"type": "string", "minLength": 1},
+        "request_id": {"type": "string", "minLength": 1},
+        "trace_root": {"type": "string", "minLength": 1},
+        "tenant_id": {"type": "string", "minLength": 1},
+        "target_company": {"type": "string", "minLength": 1},
+        "target_role": {"type": "string", "minLength": 1},
+        "jd_sha256": {"$ref": "#/$defs/Sha256"},
+        "brief_sha256": {"$ref": "#/$defs/Sha256"},
+        "policy_hash": {"$ref": "#/$defs/Sha256"},
+        "blueprint_hash": {"$ref": "#/$defs/Sha256"},
+        "schema_version": {"const": "apps_research_rg_run_identity.v1"}
+      }
+    },
+    "InputDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_ref", "sha256", "byte_length"],
+      "properties": {
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 1}
+      }
+    },
+    "NormalizedInputDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_ref", "sha256", "byte_length", "normalization_profile_hash",
+        "raw_input_sha256"
+      ],
+      "properties": {
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 1},
+        "normalization_profile_hash": {"$ref": "#/$defs/Sha256"},
+        "raw_input_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "GateReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "status", "receipt_ref", "receipt_sha256", "schema_version"],
+      "properties": {
+        "gate_id": {"enum": ["G5", "G6", "G7", "G21", "G24", "G26"]},
+        "status": {"const": "PASS"},
+        "receipt_ref": {"type": "string", "minLength": 1},
+        "receipt_sha256": {"$ref": "#/$defs/Sha256"},
+        "schema_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "MandatoryGateReceipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["G5", "G6", "G7", "G21", "G24", "G26"],
+      "properties": {
+        "G5": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G5"}}}]},
+        "G6": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G6"}}}]},
+        "G7": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G7"}}}]},
+        "G21": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G21"}}}]},
+        "G24": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G24"}}}]},
+        "G26": {"allOf": [{"$ref": "#/$defs/GateReceipt"}, {"properties": {"gate_id": {"const": "G26"}}}]}
+      }
+    },
+    "ExitAuthorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x3_code", "receipt_ref", "receipt_sha256", "output_artifact_sha256"],
+      "properties": {
+        "x3_code": {"const": "X3D_ALLOW_FINISH"},
+        "receipt_ref": {"type": "string", "minLength": 1},
+        "receipt_sha256": {"$ref": "#/$defs/Sha256"},
+        "output_artifact_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "Artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "artifact_ref", "sha256", "byte_length", "media_type", "required"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1},
+        "required": {"type": "boolean"}
+      }
+    },
+    "ArtifactManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifacts", "artifact_count", "manifest_sha256"],
+      "properties": {
+        "artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/Artifact"}},
+        "artifact_count": {"type": "integer", "minimum": 1},
+        "manifest_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "ProducerAttestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer_app_id", "producer_run_id", "attestation_sha256"],
+      "properties": {
+        "producer_app_id": {"const": "apps_research"},
+        "producer_run_id": {"type": "string", "minLength": 1},
+        "attestation_sha256": {"$ref": "#/$defs/Sha256"}
+      }
+    },
+    "ConsumerArtifactValidation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_ref", "expected_sha256", "actual_sha256", "byte_length", "status"
+      ],
+      "properties": {
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "expected_sha256": {"$ref": "#/$defs/Sha256"},
+        "actual_sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 0},
+        "status": {"enum": ["PASS", "BLOCKED"]}
+      }
+    },
+    "ConsumerValidationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "authority_contract_id", "identity", "identity_sha256",
+        "raw_input_sha256", "normalized_input_sha256", "bundle_manifest_sha256",
+        "commit_marker_sha256", "artifact_validations", "status", "failure_reasons",
+        "validated_at_utc"
+      ],
+      "properties": {
+        "schema_version": {"const": "apps_rg.apps_research_handoff_validation_receipt.v2"},
+        "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+        "identity": {"$ref": "#/$defs/RunIdentity"},
+        "identity_sha256": {"$ref": "#/$defs/Sha256"},
+        "raw_input_sha256": {"$ref": "#/$defs/Sha256"},
+        "normalized_input_sha256": {"$ref": "#/$defs/Sha256"},
+        "bundle_manifest_sha256": {"$ref": "#/$defs/Sha256"},
+        "commit_marker_sha256": {"$ref": "#/$defs/Sha256"},
+        "artifact_validations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/ConsumerArtifactValidation"}
+        },
+        "status": {"enum": ["PASS", "BLOCKED"]},
+        "failure_reasons": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "validated_at_utc": {"type": "string", "format": "date-time"}
+      }
+    },
+    "CommitProtocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol",
+        "temporary_bundle_ref",
+        "committed_bundle_ref",
+        "commit_marker_ref",
+        "commit_marker_sha256",
+        "consumer_validation_receipt_name"
+      ],
+      "properties": {
+        "protocol": {"const": "write_fsync_atomic_rename_marker.v1"},
+        "temporary_bundle_ref": {"type": "string", "minLength": 1},
+        "committed_bundle_ref": {"type": "string", "minLength": 1},
+        "commit_marker_ref": {"type": "string", "minLength": 1},
+        "commit_marker_sha256": {"$ref": "#/$defs/Sha256"},
+        "consumer_validation_receipt_name": {"const": "apps_research_handoff_validation_receipt.json"}
+      }
+    }
+  }
+}

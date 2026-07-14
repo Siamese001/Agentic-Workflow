@@ -1,14 +1,18 @@
 """Section lane X3 + spine Exit — aggregate_x3 judge math then ExitEvalPipeline authority."""
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 from pathlib import Path
 from typing import Any, Callable
 
 from agentic_core.L3_orchestration.exit_eval.v6.pipeline import ExitEvalPipeline
 from apps_rg.runtime.executive_summary_certification import (
     executive_summary_x3_requires_failure,
+)
+from apps_rg.runtime.c0.resume_graph_claim_binding import (
+    GRAPH_CLAIM_BINDINGS_ARTIFACT,
+    bind_final_claims_to_resume_graph_allocation,
 )
 from apps_rg.runtime.sections import (
     section_final_materialized_binding as final_materialized_binding,
@@ -129,7 +133,7 @@ def _terminal_class_from_x3(x3: Any, x3_doc: dict[str, Any]) -> str:
         return "failure"
     if x3_doc.get("pass") is True or x3_doc.get("pass_") is True:
         return "success"
-    if code.startswith("X3_ALLOW") or code in {"EXIT_OK", "EXIT_PARTIAL", "X3C", "X3D"}:
+    if code == "X3_ALLOW":
         return "success"
     if code in _SOFT_FAIL_REVIEW_X3_CODES:
         return "success_with_review"
@@ -292,6 +296,10 @@ def build_final_materialized_acceptance_contract(
         len(final_x1d_pass_keys) == len(final_x1d_model_backed_judges)
     )
     repair_ledger = _load_json(artifact_dir / "section_repair_ledger.json")
+    graph_claim_binding = _load_json(
+        artifact_dir / GRAPH_CLAIM_BINDINGS_ARTIFACT
+    )
+    graph_claim_binding_active = graph_claim_binding.get("active") is True
     declared_contracts = _declared_final_materialized_contracts(l2_output)
     declared_contract_failures = [
         str(c.get("contract_id") or "")
@@ -319,6 +327,8 @@ def build_final_materialized_acceptance_contract(
             failure_reasons.append("x1d_model_backed_judges_missing_or_failed")
         if not declared_contracts_all_pass:
             failure_reasons.append("declared_final_materialized_contract_failed")
+        if graph_claim_binding_active and graph_claim_binding.get("pass") is not True:
+            failure_reasons.append("resume_graph_claim_binding_failed")
     acceptance_ok = (not x3_authorizes) or not failure_reasons
     contract = {
         "schema_version": "apps_rg.final_materialized_acceptance_contract.v1",
@@ -361,6 +371,21 @@ def build_final_materialized_acceptance_contract(
         "declared_final_materialized_contracts": declared_contracts,
         "declared_final_materialized_contracts_all_pass": declared_contracts_all_pass,
         "declared_final_materialized_contract_failures": declared_contract_failures,
+        "resume_graph_claim_binding_active": graph_claim_binding_active,
+        "resume_graph_claim_binding_pass": (
+            graph_claim_binding.get("pass") is True
+            if graph_claim_binding_active
+            else None
+        ),
+        "resume_graph_allocation_plan_digest": str(
+            graph_claim_binding.get("allocation_plan_digest") or ""
+        ),
+        "graph_claim_binding_contract_digest": str(
+            graph_claim_binding.get("contract_digest") or ""
+        ),
+        "graph_claim_bindings_ref": (
+            GRAPH_CLAIM_BINDINGS_ARTIFACT if graph_claim_binding_active else ""
+        ),
         "acceptance_inputs": [
             "final_materialized_output",
             "claim_ledger",
@@ -369,6 +394,7 @@ def build_final_materialized_acceptance_contract(
             "x1d_judge_outputs",
             "section_repair_ledger",
             "declared_final_materialized_contracts",
+            *(["graph_claim_bindings"] if graph_claim_binding_active else []),
         ],
         "enforcement": (
             "X3_ALLOW or review-authorized section outcomes must be backed by final "
@@ -529,6 +555,10 @@ def finalize_section_lane_x3(
     else:
         raise ValueError("finalize_section_lane_x3 requires aggregate_x3_fn or x3_result")
 
+    graph_claim_binding = bind_final_claims_to_resume_graph_allocation(
+        artifact_dir,
+        section_id=section_id,
+    )
     base_x3_doc = _x3_to_doc(x3)
     final_contract = build_final_materialized_acceptance_contract(
         artifact_dir,
@@ -537,6 +567,21 @@ def finalize_section_lane_x3(
         x3_doc=base_x3_doc,
     )
     merged_extra = dict(x3_doc_extra or {})
+    if graph_claim_binding.get("active") is True:
+        merged_extra.update(
+            {
+                "resume_graph_allocation_plan_digest": str(
+                    graph_claim_binding.get("allocation_plan_digest") or ""
+                ),
+                "graph_claim_binding_contract_digest": str(
+                    graph_claim_binding.get("contract_digest") or ""
+                ),
+                "graph_claim_bindings_ref": GRAPH_CLAIM_BINDINGS_ARTIFACT,
+                "resume_graph_claim_binding_pass": (
+                    graph_claim_binding.get("pass") is True
+                ),
+            }
+        )
     merged_extra.setdefault(
         "final_materialized_acceptance_contract_ref",
         FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT,

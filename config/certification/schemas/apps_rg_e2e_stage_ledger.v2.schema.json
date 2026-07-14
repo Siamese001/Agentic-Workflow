@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.e2e_stage_ledger.v2",
+  "title": "Apps RG receipt-derived E2E stage ledger v2",
+  "description": "Append-only ledger whose stage results are derived from authoritative receipt bytes, never caller-authored PASS labels.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "authority_contract_id",
+    "identity",
+    "stage_graph",
+    "entries",
+    "terminal_state",
+    "closed_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.e2e_stage_ledger.v2"},
+    "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+    "identity": {"$ref": "#/$defs/RunIdentity"},
+    "stage_graph": {"$ref": "#/$defs/StageGraph"},
+    "entries": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/StageEntry"}},
+    "terminal_state": {"$ref": "#/$defs/TerminalState"},
+    "closed_at_utc": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "Sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "RunIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producer_app_id", "consumer_app_id", "parent_run_id", "child_run_id",
+        "request_id", "trace_root", "tenant_id", "target_company", "target_role",
+        "jd_sha256", "brief_sha256", "policy_hash", "blueprint_hash", "schema_version"
+      ],
+      "properties": {
+        "producer_app_id": {"type": "string", "minLength": 1},
+        "consumer_app_id": {"type": "string", "minLength": 1},
+        "parent_run_id": {"type": "string", "minLength": 1},
+        "child_run_id": {"type": "string", "minLength": 1},
+        "request_id": {"type": "string", "minLength": 1},
+        "trace_root": {"type": "string", "minLength": 1},
+        "tenant_id": {"type": "string", "minLength": 1},
+        "target_company": {"type": "string", "minLength": 1},
+        "target_role": {"type": "string", "minLength": 1},
+        "jd_sha256": {"$ref": "#/$defs/Sha256"},
+        "brief_sha256": {"$ref": "#/$defs/Sha256"},
+        "policy_hash": {"$ref": "#/$defs/Sha256"},
+        "blueprint_hash": {"$ref": "#/$defs/Sha256"},
+        "schema_version": {"const": "apps_research_rg_run_identity.v1"}
+      }
+    },
+    "StageGraph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_ref", "contract_sha256", "stage_ids"],
+      "properties": {
+        "contract_ref": {"const": "config/certification/apps_research_rg_e2e_authority_contract.v1.json"},
+        "contract_sha256": {"$ref": "#/$defs/Sha256"},
+        "stage_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"$ref": "#/$defs/StageId"}
+        }
+      }
+    },
+    "StageId": {
+      "enum": [
+        "FRESH_PREFLIGHT", "APPS_RESEARCH_U0", "APPS_RESEARCH_RUNTIME",
+        "APPS_RESEARCH_EXIT", "HANDOFF_BUNDLE_COMMIT", "APPS_RG_U0",
+        "APPS_RG_L1", "APPS_RG_L0", "APPS_RG_C0", "APPS_RG_PA", "APPS_RG_L2",
+        "X1_REVIEW", "X2_AGGREGATION", "X3_DISPOSITION", "PRODUCT_ELIGIBILITY",
+        "UWG_COMMIT", "PRODUCT_AUTHORIZATION_CLOSE", "APPS_EVAL", "L6_SHADOW",
+        "INDEPENDENT_PARITY", "PROMOTION_TERMINAL", "MANDATORY_OUTPUTS",
+        "STAGE_LEDGER_SEAL", "TERMINAL_MANIFEST_SEAL", "PIPELINE_COMPLETION_CLOSE",
+        "TERMINAL_NON_PRODUCT"
+      ]
+    },
+    "ArtifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_ref", "sha256", "byte_length"],
+      "properties": {
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/Sha256"},
+        "byte_length": {"type": "integer", "minimum": 0}
+      }
+    },
+    "StageEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sequence", "stage_id", "authority_plane", "status", "status_derivation",
+        "authoritative_receipt_ref", "authoritative_receipt_sha256",
+        "authoritative_receipt_schema_version", "identity_sha256", "artifact_bindings",
+        "started_at_utc", "completed_at_utc", "next_stage_id"
+      ],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 0},
+        "stage_id": {"$ref": "#/$defs/LedgerStageId"},
+        "authority_plane": {"enum": ["current_run", "post_boundary", "terminal"]},
+        "status": {"enum": ["PASS", "FAIL", "BLOCKED", "SKIPPED_NON_PRODUCT"]},
+        "status_derivation": {"const": "AUTHORITATIVE_RECEIPT_BYTES"},
+        "authoritative_receipt_ref": {"type": "string", "minLength": 1},
+        "authoritative_receipt_sha256": {"$ref": "#/$defs/Sha256"},
+        "authoritative_receipt_schema_version": {"type": "string", "minLength": 1},
+        "identity_sha256": {"$ref": "#/$defs/Sha256"},
+        "artifact_bindings": {"type": "array", "items": {"$ref": "#/$defs/ArtifactBinding"}},
+        "started_at_utc": {"type": "string", "format": "date-time"},
+        "completed_at_utc": {"type": "string", "format": "date-time"},
+        "next_stage_id": {"oneOf": [{"$ref": "#/$defs/StageId"}, {"type": "null"}]}
+      }
+    },
+    "LedgerStageId": {
+      "enum": [
+        "FRESH_PREFLIGHT", "APPS_RESEARCH_U0", "APPS_RESEARCH_RUNTIME",
+        "APPS_RESEARCH_EXIT", "HANDOFF_BUNDLE_COMMIT", "APPS_RG_U0",
+        "APPS_RG_L1", "APPS_RG_L0", "APPS_RG_C0", "APPS_RG_PA", "APPS_RG_L2",
+        "X1_REVIEW", "X2_AGGREGATION", "X3_DISPOSITION", "PRODUCT_ELIGIBILITY",
+        "UWG_COMMIT", "PRODUCT_AUTHORIZATION_CLOSE", "APPS_EVAL", "L6_SHADOW",
+        "INDEPENDENT_PARITY", "PROMOTION_TERMINAL", "MANDATORY_OUTPUTS",
+        "TERMINAL_NON_PRODUCT"
+      ]
+    },
+    "TerminalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_authorized", "pipeline_complete", "observability_repair_required"],
+      "properties": {
+        "product_authorized": {"type": "boolean"},
+        "pipeline_complete": {"type": "boolean"},
+        "observability_repair_required": {"type": "boolean"}
+      }
+    }
+  }
+}

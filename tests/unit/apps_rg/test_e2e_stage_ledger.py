@@ -5,6 +5,7 @@ Deterministic contract tests for the apps_rg E2E stage ledger.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -241,7 +242,7 @@ def test_cached_e2e_completion_requires_post_x3_l6_mandatory_and_complete_ledger
     producer_paths = {
         "research_briefing_path": producer / "briefing.md",
         "research_company_brief_path": producer / "company_brief.json",
-        "research_envelope_path": producer / "apps_research_briefing_envelope.json",
+        "research_handoff_v2_path": producer / "apps_research_apps_rg_handoff_v2.json",
     }
     for path in producer_paths.values():
         path.write_text("complete", encoding="utf-8")
@@ -298,3 +299,90 @@ def test_fresh_completion_requires_executed_research_with_producer_evidence(tmp_
     assert report.valid is False
     assert "research_stage_not_executed" in report.errors
     assert "research_stage_evidence_missing" in report.errors
+
+
+def test_receipt_derived_entry_binds_exact_authority_bytes(tmp_path: Path) -> None:
+    from apps_rg.runtime.e2e_stage_ledger import (
+        E2EStageLedger,
+        verify_e2e_stage_ledger,
+    )
+
+    receipt_path = tmp_path / "preflight.json"
+    receipt_path.write_text(
+        json.dumps({"schema_version": "test.receipt.v1", "status": "PASS"}) + "\n",
+        encoding="utf-8",
+    )
+    ledger = E2EStageLedger.create(
+        artifact_dir=tmp_path,
+        e2e_run_id="receipt-derived",
+    )
+    entry = ledger.record_from_receipt(
+        stage_id="PREFLIGHT",
+        receipt_ref=receipt_path,
+        expected_schema_version="test.receipt.v1",
+    )
+    expected = "sha256:" + hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+
+    assert entry.status == "PASS"
+    assert entry.status_derivation == "AUTHORITATIVE_RECEIPT_BYTES"
+    assert entry.authoritative_receipt_sha256 == expected
+    assert verify_e2e_stage_ledger(ledger.path).valid is True
+
+    receipt_path.write_text(
+        json.dumps({"schema_version": "test.receipt.v1", "status": "FAIL"}) + "\n",
+        encoding="utf-8",
+    )
+    report = verify_e2e_stage_ledger(ledger.path)
+    assert report.valid is False
+    assert "authoritative_receipt_digest_mismatch:PREFLIGHT:1" in report.errors
+    assert "authoritative_receipt_status_mismatch:PREFLIGHT:1" in report.errors
+
+
+def test_external_ledger_seal_has_no_self_reference_and_detects_later_mutation(
+    tmp_path: Path,
+) -> None:
+    from apps_rg.runtime.e2e_stage_ledger import (
+        E2EStageLedger,
+        verify_e2e_stage_ledger,
+    )
+
+    ledger = E2EStageLedger.create(artifact_dir=tmp_path, e2e_run_id="sealed-ledger")
+    for stage_id in (
+        "PREFLIGHT",
+        "RESEARCH",
+        "U0",
+        "L1",
+        "L0",
+        "C0",
+        "L2",
+        "X1",
+        "X2",
+        "X3",
+        "CANDIDATE",
+        "APPS_EVAL",
+        "L6_SHADOW",
+        "STATE_PROMOTION",
+        "CLOSEOUT",
+    ):
+        ledger.record(stage_id=stage_id, status="PASS")
+    seal_path = ledger.seal(
+        terminal_state={
+            "product_authorized": False,
+            "pipeline_complete": False,
+            "observability_repair_required": False,
+        }
+    )
+    ledger_bytes = ledger.path.read_bytes()
+    seal = json.loads(seal_path.read_text(encoding="utf-8"))
+
+    assert seal["ledger_sha256"] == (
+        "sha256:" + hashlib.sha256(ledger_bytes).hexdigest()
+    )
+    assert seal["compatibility_classification"] == "NON_PRODUCT_ONLY"
+    assert "seal" not in json.loads(ledger_bytes)
+    assert verify_e2e_stage_ledger(ledger.path).sealed is True
+
+    ledger.path.write_bytes(ledger_bytes + b" ")
+    report = verify_e2e_stage_ledger(ledger.path)
+    assert report.valid is False
+    assert "ledger_seal_digest_mismatch" in report.errors

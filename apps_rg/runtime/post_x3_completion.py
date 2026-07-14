@@ -186,55 +186,81 @@ def is_full_resume_product_artifact_dir(artifact_dir: Path | str) -> bool:
     )
 
 
-def _identity(artifact_dir: Path, result: Mapping[str, Any]) -> dict[str, str]:
-    runtime_identity = _payload(_read_json(artifact_dir / "runtime_identity_envelope.json"))
-    route_contract = _payload(_read_json(artifact_dir / "route_contract.json"))
-    manifest = _read_json(artifact_dir / "r4_run_manifest.json")
-    run_id = str(
-        result.get("run_id")
-        or manifest.get("run_id")
-        or route_contract.get("route_contract_id")
-        or runtime_identity.get("run_id")
-        or artifact_dir.name
+def _identity(
+    artifact_dir: Path,
+    result: Mapping[str, Any],
+    *,
+    raw_request: Mapping[str, Any] | None = None,
+) -> dict[str, str]:
+    identity_candidate = (
+        (raw_request or {}).get("canonical_run_identity")
+        or result.get("canonical_run_identity")
+        or {}
     )
-    request_id = str(
-        result.get("request_id")
-        or manifest.get("request_id")
-        or route_contract.get("request_id")
-        or runtime_identity.get("request_id")
-        or f"req:{run_id}"
+    identity = (
+        dict(identity_candidate)
+        if isinstance(identity_candidate, Mapping)
+        else {}
     )
+    required = {
+        "producer_app_id",
+        "consumer_app_id",
+        "parent_run_id",
+        "child_run_id",
+        "request_id",
+        "trace_root",
+        "tenant_id",
+        "target_company",
+        "target_role",
+        "jd_sha256",
+        "brief_sha256",
+        "policy_hash",
+        "blueprint_hash",
+        "schema_version",
+    }
+    missing = sorted(
+        field for field in required if not str(identity.get(field) or "").strip()
+    )
+    if missing:
+        raise ValueError(
+            "canonical run identity is required before UWG: " + ", ".join(missing)
+        )
+    if identity.get("schema_version") != "apps_research_rg_run_identity.v1":
+        raise ValueError("canonical run identity schema_version is invalid")
+    for field in ("jd_sha256", "brief_sha256", "policy_hash", "blueprint_hash"):
+        digest = str(identity.get(field) or "")
+        if (
+            len(digest) != 71
+            or not digest.startswith("sha256:")
+            or any(char not in "0123456789abcdef" for char in digest[7:])
+        ):
+            raise ValueError(f"canonical run identity {field} is not sha256-bound")
+    route_contract_path = artifact_dir / "route_contract.json"
+    if not route_contract_path.is_file():
+        raise FileNotFoundError("route_contract.json is required before UWG")
+    route_contract_sha256 = _sha256_file(route_contract_path)
+    identity_sha256 = hashlib.sha256(
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     return {
-        "run_id": run_id,
-        "request_id": request_id,
-        "trace_root": str(
-            route_contract.get("trace_root")
-            or runtime_identity.get("trace_root")
-            or f"trace:{run_id}"
-        ),
-        "tenant_id": "apps_rg",
-        "policy_hash": str(
-            route_contract.get("policy_hash")
-            or runtime_identity.get("policy_hash")
-            or "ph:apps-rg-post-x3"
-        ),
-        "blueprint_hash": str(
-            route_contract.get("blueprint_hash")
-            or runtime_identity.get("blueprint_hash")
-            or "bh:apps-rg-post-x3"
-        ),
-        "replay_key": str(
-            route_contract.get("replay_key")
-            or runtime_identity.get("replay_key")
-            or manifest.get("replay_key")
-            or f"apps-rg-post-x3:{run_id}"
-        ),
-        "route_contract_ref": str(
-            route_contract.get("route_contract_id")
-            or route_contract.get("route_id")
-            or "route:apps_rg:resume_generation_v1"
+        "run_id": str(identity["parent_run_id"]),
+        "request_id": str(identity["request_id"]),
+        "trace_root": str(identity["trace_root"]),
+        "tenant_id": str(identity["tenant_id"]),
+        "policy_hash": str(identity["policy_hash"]),
+        "blueprint_hash": str(identity["blueprint_hash"]),
+        "replay_key": f"identity:sha256:{identity_sha256}",
+        "route_contract_ref": (
+            f"route_contract.json#sha256:{route_contract_sha256}"
         ),
     }
+
+
+def _digest_bound_ref(artifact_dir: Path, ref: str) -> str:
+    path = artifact_dir / ref
+    if not path.is_file():
+        raise FileNotFoundError(f"required UWG authority artifact is missing: {ref}")
+    return f"{ref}#sha256:{_sha256_file(path)}"
 
 
 def _build_commit_packet(
@@ -246,6 +272,18 @@ def _build_commit_packet(
 ) -> tuple[CommitRequest, list[StateDiff], RollbackPlan, ReadSurfaceRefreshPlan]:
     run_id = ids["run_id"]
     target_surface = "apps_rg_resume_package"
+    clearance_proof_id = _digest_bound_ref(
+        artifact_dir,
+        "exit_review_packet.json",
+    )
+    x3_receipt_ref = _digest_bound_ref(
+        artifact_dir,
+        "x3_disposition_receipt.json",
+    )
+    output_manifest_ref = _digest_bound_ref(
+        artifact_dir,
+        "apps_rg_output_manifest.json",
+    )
     rollback = stamp_digest(
         RollbackPlan(
             rollback_plan_id=f"rp:apps-rg-post-x3:{run_id}",
@@ -283,14 +321,13 @@ def _build_commit_packet(
             created_at=_utc_now_iso(),
             replay_refs=(ids["replay_key"],),
             audit_refs=(
-                "x3_disposition_receipt.json",
-                "exit_review_packet.json",
+                x3_receipt_ref,
+                clearance_proof_id,
                 _repo_rel(generated_resume, artifact_dir),
             ),
         )
     )
     commit_request_id = f"cr:apps-rg-post-x3:{run_id}"
-    clearance_proof_id = "exit_review_packet.json"
     state_diff_hash = _state_diffs_digest([state_diff])
     commit_request = stamp_digest(
         CommitRequest(
@@ -307,14 +344,14 @@ def _build_commit_packet(
             rollback_plan_ref=rollback.rollback_plan_id,
             blast_radius="single_surface",
             state_diff_refs=(state_diff.state_diff_id,),
-            gate_verdict_refs=("x3_disposition_receipt.json", "apps_rg_output_manifest.json"),
+            gate_verdict_refs=(x3_receipt_ref, output_manifest_ref),
             l5_certification_ref=f"l5:apps-rg-post-x3:{run_id}",
             affected_state_surfaces=(target_surface,),
             expected_read_surface_refreshes=("apps_rg_resume_package_projection",),
             audit_refs=(
                 "runtime_certification_binding.json",
-                "x3_disposition_receipt.json",
-                "apps_rg_output_manifest.json",
+                x3_receipt_ref,
+                output_manifest_ref,
             ),
             registry_digest_set=(
                 f"registry:policy:{ids['policy_hash']}",
@@ -572,23 +609,6 @@ def _lane_ids_from_rows(rows: list[Mapping[str, Any]]) -> list[str]:
     return lane_ids
 
 
-def _resolve_pointer_ref(ref: str, artifact_dir: Path) -> Path:
-    path = Path(ref)
-    if path.is_absolute():
-        return path
-    candidates = [artifact_dir / path, REPO_ROOT / path]
-    return next((candidate.resolve() for candidate in candidates if candidate.exists()), candidates[0].resolve())
-
-
-def _section_pointer_payload(artifact_dir: Path, lane_id: str) -> dict[str, Any]:
-    lane_dir = artifact_dir / "modular_r4" / "sections" / lane_id
-    for name in ("latest_successful_real_run.json", "latest_real_run.json"):
-        payload = _read_json(lane_dir / name)
-        if payload:
-            return payload
-    return {}
-
-
 def _section_package_candidates(artifact_dir: Path, lane_id: str, *, legacy: bool) -> list[Path]:
     name = "l6_shadow_eval_package.json" if legacy else "l6_v40_shadow_eval_package.json"
     candidates = [
@@ -596,18 +616,9 @@ def _section_package_candidates(artifact_dir: Path, lane_id: str, *, legacy: boo
         artifact_dir / "modular_r4" / "sections" / lane_id / name,
         artifact_dir / lane_id / name,
     ]
-    pointer = _section_pointer_payload(artifact_dir, lane_id)
-    links: dict[str, Any] = {}
-    for key in ("artifact_links", "artifact_links_compact"):
-        raw = pointer.get(key)
-        if isinstance(raw, Mapping):
-            links.update(raw)
-    linked = str(links.get(name) or "").strip()
-    if linked:
-        candidates.insert(0, _resolve_pointer_ref(linked, artifact_dir))
-    run_dir = str(pointer.get("run_dir_repo_relative") or pointer.get("run_dir") or "").strip()
-    if run_dir:
-        candidates.insert(0, _resolve_pointer_ref(run_dir, artifact_dir) / name)
+    # Mutable ``latest_*`` pointers are discovery conveniences, never
+    # certification evidence.  Binding considers only current-run local
+    # candidates under the sealed artifact root.
     return candidates
 
 
@@ -624,14 +635,94 @@ def _resolve_package_artifact_ref(
 ) -> Path:
     text = str(ref or "").strip()
     candidates: list[Path] = []
+    root = artifact_dir.resolve()
     if text:
         raw = Path(text)
         if raw.is_absolute():
-            candidates.append(raw)
+            candidates.append(raw.resolve())
         else:
-            candidates.extend([REPO_ROOT / raw, artifact_dir / raw, package_dir / raw.name])
+            candidates.extend(
+                [(REPO_ROOT / raw).resolve(), (artifact_dir / raw).resolve(), (package_dir / raw).resolve()]
+            )
     candidates.append(package_dir / fallback_name)
-    return next((path.resolve() for path in candidates if path.is_file()), candidates[-1].resolve())
+    contained = [
+        path.resolve()
+        for path in candidates
+        if path.resolve() == root or root in path.resolve().parents
+    ]
+    return next((path for path in contained if path.is_file()), (package_dir / fallback_name).resolve())
+
+
+def _revalidate_observability_closure(
+    *,
+    closure: Mapping[str, Any],
+    package: Mapping[str, Any],
+    artifact_dir: Path,
+) -> list[str]:
+    """Reopen every closure artifact and recompute the closure root."""
+
+    gaps: list[str] = []
+    refs = closure.get("refs")
+    digests = closure.get("artifact_digests")
+    if not isinstance(refs, Mapping) or not isinstance(digests, Mapping):
+        return ["observability_closure_artifact_map_missing"]
+    recomputed: dict[str, str] = {}
+    root = artifact_dir.resolve()
+    for name, ref in sorted(refs.items()):
+        raw = Path(str(ref or ""))
+        candidates = [raw] if raw.is_absolute() else [REPO_ROOT / raw, artifact_dir / raw]
+        path = next(
+            (
+                candidate.resolve()
+                for candidate in candidates
+                if candidate.is_file()
+                and (candidate.resolve() == root or root in candidate.resolve().parents)
+            ),
+            None,
+        )
+        if path is None:
+            gaps.append(f"closure_artifact_missing_or_uncontained:{name}")
+            continue
+        actual = f"sha256:{_sha256_file(path)}"
+        recomputed[str(name)] = actual
+        if str(digests.get(name) or "").lower() != actual.lower():
+            gaps.append(f"closure_artifact_digest_mismatch:{name}")
+
+    if {str(key) for key in digests} != set(recomputed):
+        gaps.append("closure_artifact_set_mismatch")
+    identity_fields = (
+        "runtime_exhaust_bundle_id",
+        "runtime_exhaust_bundle_digest",
+        "parent_run_id",
+        "child_run_id",
+        "section_attempt_id",
+        "microstep_contract_digest",
+        "registry_digest",
+    )
+    for field in identity_fields:
+        if not str(closure.get(field) or "") or str(closure.get(field) or "") != str(
+            package.get(field) or ""
+        ):
+            gaps.append(f"closure_identity_mismatch:{field}")
+    seed = {
+        "runtime_exhaust_bundle_id": str(closure.get("runtime_exhaust_bundle_id") or ""),
+        "runtime_exhaust_bundle_digest": str(
+            closure.get("runtime_exhaust_bundle_digest") or ""
+        ),
+        "parent_run_id": str(closure.get("parent_run_id") or ""),
+        "child_run_id": str(closure.get("child_run_id") or ""),
+        "section_attempt_id": str(closure.get("section_attempt_id") or ""),
+        "microstep_contract_digest": str(closure.get("microstep_contract_digest") or ""),
+        "registry_digest": str(closure.get("registry_digest") or ""),
+        "checks": dict(closure.get("checks") or {}),
+        "artifact_digests": recomputed,
+    }
+    expected = "sha256:" + hashlib.sha256(
+        json.dumps(seed, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if str(closure.get("closure_digest") or "").lower() != expected.lower():
+        gaps.append("observability_closure_digest_mismatch")
+    return sorted(set(gaps))
 
 
 def _emit_l6_section_apps_eval_bindings(
@@ -695,6 +786,13 @@ def _emit_l6_section_apps_eval_bindings(
             proof_gaps.append("missing_persisted_l6_observations")
         if str(closure.get("observability_closure_status") or closure.get("closure_status") or "") != "PASS":
             proof_gaps.append("observability_closure_not_pass")
+        proof_gaps.extend(
+            _revalidate_observability_closure(
+                closure=closure,
+                package=package,
+                artifact_dir=artifact_dir,
+            )
+        )
         if not lane_rows:
             proof_gaps.append("missing_apps_eval_scorecard_rows")
 
@@ -716,6 +814,25 @@ def _emit_l6_section_apps_eval_bindings(
                 l6_observations=observations,
                 observation_origin=SEALED_APPS_RG_OBSERVATION_ORIGIN,
                 expected_observation_bundle_id=str(package.get("runtime_exhaust_bundle_id") or ""),
+                parent_run_id=str(package.get("parent_run_id") or ""),
+                child_run_id=str(package.get("child_run_id") or ""),
+                section_attempt_id=str(package.get("section_attempt_id") or ""),
+                eval_record_id=str(getattr(eval_record, "record_id", "") or ""),
+                snapshot_digest=str(
+                    getattr(eval_record, "snapshot_digest", "")
+                    or getattr(eval_record, "source_snapshot_digest", "")
+                    or (lane_rows[0].get("snapshot_digest") if lane_rows else "")
+                    or ""
+                ),
+                registry_digest=str(
+                    getattr(eval_record, "registry_digest", "")
+                    or (lane_rows[0].get("registry_digest") if lane_rows else "")
+                    or package.get("registry_digest")
+                    or ""
+                ),
+                source_run_root=artifact_dir.as_posix(),
+                repository_root=REPO_ROOT.as_posix(),
+                compare_artifact_digests=True,
             )
             write_independent_parity(parity_path, parity)
             if parity.get("grain_parity_status") != "PASS":
@@ -936,7 +1053,7 @@ def _authority_order_receipt(
     return payload
 
 
-def complete_apps_rg_post_x3(
+def _complete_apps_rg_post_x3(
     *,
     artifact_dir: Path | str,
     result: Mapping[str, Any],
@@ -965,6 +1082,9 @@ def complete_apps_rg_post_x3(
             "generated_resume_path": _repo_rel(generated, art) if generated else "",
             "eligibility_reasons": reasons,
             "durable_promotion_attempted": False,
+            "product_authorized": False,
+            "pipeline_complete": False,
+            "observability_repair_required": False,
         }
         payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
             artifact_dir=art,
@@ -976,7 +1096,7 @@ def complete_apps_rg_post_x3(
         return payload
 
     output_hash = _sha256_file(generated)
-    ids = _identity(art, result)
+    ids = _identity(art, result, raw_request=raw_request)
     commit_request, state_diffs, rollback_plan, refresh_plan = _build_commit_packet(
         artifact_dir=art,
         generated_resume=generated,
@@ -1004,6 +1124,9 @@ def complete_apps_rg_post_x3(
             "durable_promotion_attempted": True,
             "durable_promotion_committed": False,
             "blocked_receipt": _json_ready(blocked_receipt) if blocked_receipt else {},
+            "product_authorized": False,
+            "pipeline_complete": False,
+            "observability_repair_required": False,
         }
         payload["l6_shadow"] = _emit_post_x3_failure_l6_shadow_bridge(
             artifact_dir=art,
@@ -1027,6 +1150,11 @@ def complete_apps_rg_post_x3(
             "durable_promotion_attempted": True,
             "durable_promotion_committed": True,
             "uwg_validation_receipt_ref": commit_receipt.uwg_validation_receipt_ref,
+            # UWG already committed.  Missing local validation evidence is a
+            # reconciliation failure and cannot retroactively revoke it.
+            "product_authorized": True,
+            "pipeline_complete": False,
+            "observability_repair_required": True,
         }
         _write_json(receipt_path, payload)
         return payload
@@ -1049,6 +1177,69 @@ def complete_apps_rg_post_x3(
         ids=ids,
         commit_receipt=commit_receipt,
     )
+
+    from apps_rg.runtime.terminal_state import (
+        TerminalStateError,
+        TerminalStateMachine,
+        persist_product_authorization_receipt,
+    )
+
+    terminal_state = TerminalStateMachine()
+    uwg_decision_ref = str(uwg_paths.get("uwg_commit_receipt") or "")
+    uwg_decision_path = art / uwg_decision_ref
+    terminal_state.close_product_authorization(
+        authorized=True,
+        decision_receipt_ref=uwg_decision_ref,
+        decision_receipt_sha256=f"sha256:{_sha256_file(uwg_decision_path)}",
+        output_artifact_sha256=f"sha256:{output_hash}",
+        closed_at_utc=_utc_now_iso(),
+    )
+    identity_candidate = (
+        (raw_request or {}).get("canonical_run_identity")
+        or result.get("canonical_run_identity")
+        or {}
+    )
+    canonical_identity = (
+        dict(identity_candidate) if isinstance(identity_candidate, Mapping) else {}
+    )
+    required_identity_fields = {
+        "producer_app_id",
+        "consumer_app_id",
+        "parent_run_id",
+        "child_run_id",
+        "request_id",
+        "trace_root",
+        "tenant_id",
+        "target_company",
+        "target_role",
+        "jd_sha256",
+        "brief_sha256",
+        "policy_hash",
+        "blueprint_hash",
+        "schema_version",
+    }
+    product_authorization_receipt_ref = ""
+    terminal_identity_gap = ""
+    if required_identity_fields.issubset(canonical_identity) and all(
+        str(canonical_identity.get(field) or "").strip()
+        for field in required_identity_fields
+    ):
+        try:
+            product_authorization_path = persist_product_authorization_receipt(
+                artifact_dir=art,
+                identity=canonical_identity,
+                state=terminal_state.product_authorization,
+                decision_receipt_ref=uwg_decision_ref,
+                output_artifact_ref=generated,
+            )
+            product_authorization_receipt_ref = _repo_rel(
+                product_authorization_path,
+                art,
+            )
+        except TerminalStateError as exc:
+            terminal_identity_gap = f"product_authorization_receipt:{exc}"
+    else:
+        terminal_identity_gap = "canonical_run_identity_missing_after_uwg"
 
     # Post-boundary observation begins only after UWG has closed.
     eval_record = _run_current_eval(
@@ -1081,6 +1272,20 @@ def complete_apps_rg_post_x3(
     )
     _write_json(art / "fact_vector_writeback_completion_receipt.json", fact_vector_writeback)
     post_boundary_pass = eval_pass and l6_pass and fact_vector_writeback.get("status") != "FAIL"
+    pipeline_complete = bool(
+        post_boundary_pass and product_authorization_receipt_ref
+    )
+    terminal_state.record_pipeline_completion(
+        complete=pipeline_complete,
+        failed=not pipeline_complete,
+        decisive_stage_id=(
+            "PIPELINE_COMPLETION_CLOSE"
+            if pipeline_complete
+            else "PRODUCT_AUTHORIZATION_CLOSE"
+            if terminal_identity_gap
+            else "APPS_EVAL_OR_L6"
+        ),
+    )
     post_boundary_stage = ""
     if not eval_pass:
         post_boundary_stage = "apps_eval_post_boundary"
@@ -1088,6 +1293,8 @@ def complete_apps_rg_post_x3(
         post_boundary_stage = "l6_binding_post_boundary"
     elif fact_vector_writeback.get("status") == "FAIL":
         post_boundary_stage = "fact_vector_writeback_post_boundary"
+    elif terminal_identity_gap:
+        post_boundary_stage = "terminal_identity_reconciliation"
 
     apps_eval_payload = {
         "record_id": eval_record.record_id,
@@ -1111,10 +1318,15 @@ def complete_apps_rg_post_x3(
     payload = {
         "schema_version": "apps_rg.post_x3_completion.v2",
         "generated_at_utc": _utc_now_iso(),
-        "status": "PASS" if post_boundary_pass else "PASS_WITH_POST_BOUNDARY_GAPS",
+        "status": "PASS" if pipeline_complete else "PASS_WITH_POST_BOUNDARY_GAPS",
         "completed": True,
         "x3_to_uwg_completed": True,
         "x3_to_uwg_to_eval_to_l6_completed": bool(post_boundary_pass),
+        "product_authorized": True,
+        "pipeline_complete": pipeline_complete,
+        "observability_repair_required": terminal_state.observability_repair_required,
+        "product_authorization_receipt_ref": product_authorization_receipt_ref,
+        "terminal_identity_gap": terminal_identity_gap,
         "failure_stage": post_boundary_stage,
         "post_boundary_observability_status": "PASS" if post_boundary_pass else "FAIL",
         "durable_promotion_attempted": True,
@@ -1152,6 +1364,67 @@ def complete_apps_rg_post_x3(
             l6_shadow_refs=l6_binding,
         )
     return payload
+
+
+def complete_apps_rg_post_x3(
+    *,
+    artifact_dir: Path | str,
+    result: Mapping[str, Any],
+    raw_request: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Close post-X3 while preserving any already-committed UWG authority."""
+
+    art = Path(artifact_dir)
+    commit_candidates = (
+        art / UWG_COMMIT_RECEIPT,
+        art / UWG_DIR / UWG_COMMIT_RECEIPT,
+    )
+    prior_commit_digests = {
+        candidate: _sha256_file(candidate)
+        for candidate in commit_candidates
+        if candidate.is_file()
+    }
+    try:
+        return _complete_apps_rg_post_x3(
+            artifact_dir=art,
+            result=result,
+            raw_request=raw_request,
+        )
+    except Exception as exc:  # noqa: BLE001  # guardian: allow-broad-exception -- persist post-UWG reconciliation
+        commit_path = next(
+            (
+                candidate
+                for candidate in commit_candidates
+                if candidate.is_file()
+                and prior_commit_digests.get(candidate) != _sha256_file(candidate)
+            ),
+            None,
+        )
+        if commit_path is None:
+            raise
+        payload = {
+            "schema_version": "apps_rg.post_x3_completion.v2",
+            "generated_at_utc": _utc_now_iso(),
+            "status": "PASS_WITH_POST_BOUNDARY_GAPS",
+            "completed": True,
+            "x3_to_uwg_completed": True,
+            "x3_to_uwg_to_eval_to_l6_completed": False,
+            "product_authorized": True,
+            "pipeline_complete": False,
+            "observability_repair_required": True,
+            "failure_stage": "post_boundary_reconciliation",
+            "reconciliation_error_type": type(exc).__name__,
+            "durable_promotion_attempted": True,
+            "durable_promotion_committed": True,
+            "uwg": {
+                "commit_status": "COMMITTED",
+                "artifacts": {
+                    "uwg_commit_receipt": _repo_rel(commit_path, art)
+                },
+            },
+        }
+        _write_json(art / POST_X3_COMPLETION_RECEIPT, payload)
+        return payload
 
 
 __all__ = [

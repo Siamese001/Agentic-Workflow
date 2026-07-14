@@ -40,6 +40,11 @@
   SQLite only as runtime/query projection; detail: `memory/codex/apps_rg_graph_skills_sqlite_runtime_invariant.md`.
 - **apps_rg SQLite graph index** preserves edge rationale and materializes generated path/neighborhood/sibling
   runtime views/tables for C0.3; detail: `memory/codex/apps_rg_graph_sqlite_path_index_runtime.md`.
+- **apps_rg C0.3 whole-resume allocation and claim binding (2026-07-13):** freeze one deterministic
+  current-run allocation before generation, prohibit skill/metric/signature reuse, and bind each visible
+  claim to its exact graph proof before X3. W6 remains non-PASS until authorized human calibration and
+  blinded resume-coach evidence exist; W7-W9 cannot promote across that boundary. Detail:
+  `memory/codex/apps_rg_c03_resume_graph_w1_w6_block.md`.
 - **Native features supersede ported emulation** (`claude-native-supersession-9d3f7a`): `AskUserQuestion`
   ← Author-Gate packet/marker/ledger; plan mode ← `SR_*` markers; `spawn_task` ← deferred/next-step
   capture; native file memory ← memory-MCP ritual; native parallel MCP ← serialization rule.

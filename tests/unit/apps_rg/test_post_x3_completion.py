@@ -1,10 +1,35 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
 
 from apps_rg.runtime import post_x3_completion as subject
+
+_X2_DIGEST = "sha256:" + hashlib.sha256(b"X2").hexdigest()
+_CONTRACT_DIGEST = "sha256:" + "c" * 64
+_SNAPSHOT_DIGEST = "sha256:" + "d" * 64
+_RUNTIME_EXHAUST_DIGEST = "sha256:" + "e" * 64
+
+
+def _canonical_identity() -> dict[str, str]:
+    return {
+        "producer_app_id": "apps_research",
+        "consumer_app_id": "apps_rg",
+        "parent_run_id": "run-1",
+        "child_run_id": "research-run-1",
+        "request_id": "req-1",
+        "trace_root": "trace-1",
+        "tenant_id": "tenant-1",
+        "target_company": "Anthropic",
+        "target_role": "Applied AI Manager",
+        "jd_sha256": "sha256:" + "1" * 64,
+        "brief_sha256": "sha256:" + "2" * 64,
+        "policy_hash": "sha256:" + "3" * 64,
+        "blueprint_hash": "sha256:" + "4" * 64,
+        "schema_version": "apps_research_rg_run_identity.v1",
+    }
 
 
 def _write_json(path: Path, payload: dict[str, object]) -> None:
@@ -14,6 +39,8 @@ def _write_json(path: Path, payload: dict[str, object]) -> None:
 
 def _row() -> dict[str, object]:
     return {
+        "run_id": "eval-1",
+        "runtime_exhaust_bundle_id": "reb-headline",
         "row_id": "row-headline-x2",
         "microstep_id": "headline.X2.gates.pass",
         "stage_id": "X2",
@@ -24,7 +51,14 @@ def _row() -> dict[str, object]:
         "artifact_role": "lane_x2_gate_outputs",
         "artifact_ref": "lanes/headline/x2_gate_outputs.json",
         "evidence_ref": "lanes/headline/x2_gate_outputs.json",
-        "evidence_digest": "sha256:x2",
+        "evidence_digest": _X2_DIGEST,
+        "parent_run_id": "run-1",
+        "child_run_id": "lane-run-headline",
+        "section_attempt_id": "headline-attempt-1",
+        "eval_record_id": "eval-1",
+        "snapshot_digest": _SNAPSHOT_DIGEST,
+        "microstep_contract_digest": _CONTRACT_DIGEST,
+        "registry_digest": _CONTRACT_DIGEST,
         "verdict": "PASS",
         "required": True,
         "severity": "BLOCK",
@@ -76,14 +110,15 @@ def _seed_product(tmp_path: Path) -> None:
 
 
 def _seed_section_l6(tmp_path: Path) -> None:
-    lane_run = tmp_path / "runtime_proofs" / "headline"
+    lane_run = tmp_path / "lanes" / "headline"
+    source_path = lane_run / "x2_gate_outputs.json"
     observation = {
         **_row(),
         "record_type": "L6MicrostepObservation",
         "apps_eval_row_id": "",
         "runtime_exhaust_bundle_id": "reb-headline",
         "source_ref": "lanes/headline/x2_gate_outputs.json",
-        "artifact_digest": "sha256:x2",
+        "artifact_digest": _X2_DIGEST,
         "observed_status": "OBSERVED",
         "eval_verdict_seen": "NOT_RUN",
         "shadow_classification": "NORMAL",
@@ -95,24 +130,24 @@ def _seed_section_l6(tmp_path: Path) -> None:
         "orphan_observation": False,
     }
     lane_run.mkdir(parents=True, exist_ok=True)
+    source_path.write_bytes(b"X2")
     (lane_run / "l6_microstep_observations.jsonl").write_text(
         json.dumps(observation, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+    package_path = lane_run / "l6_v40_shadow_eval_package.json"
     _write_json(
-        lane_run / "l6_observability_closure_receipt.json",
-        {
-            "schema_version": "apps_rg.l6_observability_closure_receipt.v2",
-            "observability_closure_status": "PASS",
-            "closure_status": "PASS",
-        },
-    )
-    _write_json(
-        lane_run / "l6_v40_shadow_eval_package.json",
+        package_path,
         {
             "schema_version": "apps_rg.l6_v40_shadow_eval.v2",
             "section_id": "headline",
+            "parent_run_id": "run-1",
+            "child_run_id": "lane-run-headline",
+            "section_attempt_id": "headline-attempt-1",
             "runtime_exhaust_bundle_id": "reb-headline",
+            "runtime_exhaust_bundle_digest": _RUNTIME_EXHAUST_DIGEST,
+            "microstep_contract_digest": _CONTRACT_DIGEST,
+            "registry_digest": _CONTRACT_DIGEST,
             "l6_microstep_observations_ref": "l6_microstep_observations.jsonl",
             "l6_observability_closure_receipt_ref": "l6_observability_closure_receipt.json",
             "current_run_mutation_assertion": False,
@@ -120,9 +155,49 @@ def _seed_section_l6(tmp_path: Path) -> None:
             "future_run_only_assertion": True,
         },
     )
+    refs = {
+        "l6_microstep_observations": "lanes/headline/l6_microstep_observations.jsonl",
+        "l6_v40_shadow_eval_package": "lanes/headline/l6_v40_shadow_eval_package.json",
+    }
+    digests = {
+        "l6_microstep_observations": "sha256:"
+        + hashlib.sha256((lane_run / "l6_microstep_observations.jsonl").read_bytes()).hexdigest(),
+        "l6_v40_shadow_eval_package": "sha256:"
+        + hashlib.sha256(package_path.read_bytes()).hexdigest(),
+    }
+    checks = {"sealed_artifacts_present": True}
+    closure_seed = {
+        "runtime_exhaust_bundle_id": "reb-headline",
+        "runtime_exhaust_bundle_digest": _RUNTIME_EXHAUST_DIGEST,
+        "parent_run_id": "run-1",
+        "child_run_id": "lane-run-headline",
+        "section_attempt_id": "headline-attempt-1",
+        "microstep_contract_digest": _CONTRACT_DIGEST,
+        "registry_digest": _CONTRACT_DIGEST,
+        "checks": checks,
+        "artifact_digests": digests,
+    }
+    closure_digest = "sha256:" + hashlib.sha256(
+        json.dumps(closure_seed, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     _write_json(
-        tmp_path / "modular_r4" / "sections" / "headline" / "latest_successful_real_run.json",
-        {"section_id": "headline", "run_dir": lane_run.as_posix()},
+        lane_run / "l6_observability_closure_receipt.json",
+        {
+            "schema_version": "apps_rg.l6_observability_closure_receipt.v2",
+            "runtime_exhaust_bundle_id": "reb-headline",
+            "runtime_exhaust_bundle_digest": _RUNTIME_EXHAUST_DIGEST,
+            "parent_run_id": "run-1",
+            "child_run_id": "lane-run-headline",
+            "section_attempt_id": "headline-attempt-1",
+            "microstep_contract_digest": _CONTRACT_DIGEST,
+            "registry_digest": _CONTRACT_DIGEST,
+            "observability_closure_status": "PASS",
+            "closure_status": "PASS",
+            "checks": checks,
+            "refs": refs,
+            "artifact_digests": digests,
+            "closure_digest": closure_digest,
+        },
     )
 
 
@@ -145,6 +220,8 @@ def _eval_record(tmp_path: Path, *, coverage_complete: bool = True) -> SimpleNam
     scorecard_rows.write_text(json.dumps(_row(), sort_keys=True) + "\n", encoding="utf-8")
     return SimpleNamespace(
         record_id="eval-1",
+        snapshot_digest=_SNAPSHOT_DIGEST,
+        registry_digest=_CONTRACT_DIGEST,
         artifact_paths={
             "eval_record": eval_record.as_posix(),
             "l6_shadow_bridge": bridge.as_posix(),
@@ -229,11 +306,19 @@ def test_uwg_closes_before_apps_eval_and_l6(tmp_path: Path, monkeypatch) -> None
 
     result = subject.complete_apps_rg_post_x3(
         artifact_dir=tmp_path,
-        result={"x3_disposition": "X3D", "run_id": "run-1", "request_id": "req-1"},
+        result={
+            "x3_disposition": "X3D",
+            "run_id": "run-1",
+            "request_id": "req-1",
+            "canonical_run_identity": _canonical_identity(),
+        },
     )
 
     assert events == ["uwg", "eval"]
     assert result["status"] == "PASS"
+    assert result["product_authorized"] is True
+    assert result["pipeline_complete"] is True
+    assert result["observability_repair_required"] is False
     assert result["durable_promotion_committed"] is True
     assert result["authority_order"]["uwg_closed_before_l6"] is True
     assert result["authority_order"]["l6_influenced_current_uwg_decision"] is False
@@ -256,36 +341,69 @@ def test_post_boundary_eval_failure_does_not_veto_current_uwg(
 
     result = subject.complete_apps_rg_post_x3(
         artifact_dir=tmp_path,
-        result={"x3_disposition": "X3D", "run_id": "run-1", "request_id": "req-1"},
+        result={
+            "x3_disposition": "X3D",
+            "run_id": "run-1",
+            "request_id": "req-1",
+            "canonical_run_identity": _canonical_identity(),
+        },
     )
 
     assert events == ["uwg", "eval"]
     assert result["completed"] is True
     assert result["status"] == "PASS_WITH_POST_BOUNDARY_GAPS"
+    assert result["product_authorized"] is True
+    assert result["pipeline_complete"] is False
+    assert result["observability_repair_required"] is True
     assert result["failure_stage"] == "apps_eval_post_boundary"
     assert result["durable_promotion_committed"] is True
     assert result["authority_order"]["apps_eval_influenced_current_uwg_decision"] is False
     assert result["l6_shadow"]["current_run_mutated"] is False
 
 
+def test_post_boundary_exception_is_durable_reconciliation_not_revocation(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _seed_product(tmp_path)
+    _seed_section_l6(tmp_path)
+    events: list[str] = []
+    _install_fakes(tmp_path, monkeypatch, events, coverage_complete=True)
+
+    def _raise_after_uwg(**kwargs):
+        events.append("eval_exception")
+        raise RuntimeError("post-boundary evaluator unavailable")
+
+    monkeypatch.setattr(subject, "_run_current_eval", _raise_after_uwg)
+    result = subject.complete_apps_rg_post_x3(
+        artifact_dir=tmp_path,
+        result={
+            "x3_disposition": "X3D",
+            "run_id": "run-1",
+            "request_id": "req-1",
+            "canonical_run_identity": _canonical_identity(),
+        },
+    )
+
+    assert events == ["uwg", "eval_exception"]
+    assert result["product_authorized"] is True
+    assert result["pipeline_complete"] is False
+    assert result["observability_repair_required"] is True
+    assert result["failure_stage"] == "post_boundary_reconciliation"
+    persisted = json.loads(
+        (tmp_path / subject.POST_X3_COMPLETION_RECEIPT).read_text(encoding="utf-8")
+    )
+    assert persisted["product_authorized"] is True
+    assert persisted["observability_repair_required"] is True
+
+
 def test_legacy_package_is_advisory_not_bound_proof(tmp_path: Path) -> None:
-    lane_run = tmp_path / "runtime_proofs" / "headline"
+    lane_run = tmp_path / "lanes" / "headline"
     _write_json(
         lane_run / "l6_shadow_eval_package.json",
         {
             "schema_version": "apps_rg.l6_shadow_eval_package.v1",
             "current_run_mutated": False,
-        },
-    )
-    _write_json(
-        tmp_path / "modular_r4" / "sections" / "headline" / "latest_successful_real_run.json",
-        {
-            "section_id": "headline",
-            "artifact_links": {
-                "l6_shadow_eval_package.json": (
-                    lane_run / "l6_shadow_eval_package.json"
-                ).as_posix()
-            },
         },
     )
     eval_record = _eval_record(tmp_path)
@@ -300,3 +418,41 @@ def test_legacy_package_is_advisory_not_bound_proof(tmp_path: Path) -> None:
     assert headline["binding_status"] == "LEGACY_PACKAGE_ADVISORY"
     assert headline["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
     assert payload["summary"]["apps_eval_rows_bound"] is False
+
+
+def test_latest_pointer_cannot_supply_certification_package(tmp_path: Path) -> None:
+    stale = tmp_path / "stale" / "headline"
+    _write_json(
+        stale / "l6_v40_shadow_eval_package.json",
+        {"schema_version": "apps_rg.l6_v40_shadow_eval.v2"},
+    )
+    _write_json(
+        tmp_path / "modular_r4" / "sections" / "headline" / "latest_successful_real_run.json",
+        {"run_dir": stale.as_posix()},
+    )
+    result = subject._emit_l6_section_apps_eval_bindings(
+        artifact_dir=tmp_path,
+        eval_record=_eval_record(tmp_path),
+    )
+    payload = json.loads(
+        (tmp_path / result["l6_section_apps_eval_bindings_ref"]).read_text(encoding="utf-8")
+    )
+    assert payload["bindings"][0]["binding_status"] == "MISSING_PACKAGE"
+    assert payload["summary"]["apps_eval_rows_bound"] is False
+
+
+def test_closure_byte_tamper_fails_binding(tmp_path: Path) -> None:
+    _seed_section_l6(tmp_path)
+    (tmp_path / "lanes" / "headline" / "l6_microstep_observations.jsonl").write_text(
+        "{}\n", encoding="utf-8"
+    )
+    result = subject._emit_l6_section_apps_eval_bindings(
+        artifact_dir=tmp_path,
+        eval_record=_eval_record(tmp_path),
+    )
+    payload = json.loads(
+        (tmp_path / result["l6_section_apps_eval_bindings_ref"]).read_text(encoding="utf-8")
+    )
+    binding = payload["bindings"][0]
+    assert binding["binding_status"] == "PARITY_FAIL"
+    assert any("closure_artifact_digest_mismatch" in gap for gap in binding["proof_gaps"])

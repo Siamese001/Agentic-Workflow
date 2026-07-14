@@ -1,0 +1,646 @@
+{
+  "schema_version": "apps_research_rg_e2e_authority_contract.v1",
+  "contract_id": "apps_research_rg_e2e_authority",
+  "baseline_commit": "de511b54dbed9be7fc63648ad175da2ae9edeefe",
+  "adr_ref": "docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md",
+  "issue_ref": "https://github.com/Siamese001/Agentic-Workflow/issues/550",
+  "authority_model": {
+    "current_run_boundary": "UWG_COMMIT_CLOSED",
+    "post_boundary_starts_at": "APPS_EVAL",
+    "current_run_authorities": [
+      "FRESH_PREFLIGHT",
+      "APPS_RESEARCH_EXIT",
+      "APPS_RG_U0",
+      "APPS_RG_EXIT",
+      "PRODUCT_ELIGIBILITY",
+      "UWG"
+    ],
+    "post_boundary_observers": [
+      "APPS_EVAL",
+      "L6_SHADOW",
+      "FUTURE_RUN_PROMOTION"
+    ],
+    "post_boundary_may_change_product_authorization": false,
+    "unknown_is_pass": false,
+    "missing_identity_may_be_synthesized": false
+  },
+  "canonical_identity_profile": {
+    "profile_id": "apps_research_rg_run_identity.v1",
+    "required_fields": [
+      "producer_app_id",
+      "consumer_app_id",
+      "parent_run_id",
+      "child_run_id",
+      "request_id",
+      "trace_root",
+      "tenant_id",
+      "target_company",
+      "target_role",
+      "jd_sha256",
+      "brief_sha256",
+      "policy_hash",
+      "blueprint_hash",
+      "schema_version"
+    ],
+    "digest_format": "sha256:<64-lowercase-hex>",
+    "missing_field_disposition": "BLOCKED"
+  },
+  "x3_taxonomy": {
+    "schema_owner": "agentic_core/runtime/exit/exit_disposition.py",
+    "codes": [
+      {
+        "code": "X3A_DENY_REROUTE",
+        "meaning": "deny_or_separately_authorized_reroute",
+        "product_authorizing": false,
+        "uwg_request_authorizing": false
+      },
+      {
+        "code": "X3B_ESCALATE_HITL",
+        "meaning": "freeze_and_require_human_review",
+        "product_authorizing": false,
+        "uwg_request_authorizing": false
+      },
+      {
+        "code": "X3C_COMMIT_REQUEST_TO_UWG",
+        "meaning": "request_governed_durable_write",
+        "product_authorizing": false,
+        "uwg_request_authorizing": true
+      },
+      {
+        "code": "X3D_ALLOW_FINISH",
+        "meaning": "clear_exact_output_for_product_finalization",
+        "product_authorizing": true,
+        "uwg_request_authorizing": false
+      },
+      {
+        "code": "X3E_SAFE_ABSTAIN",
+        "meaning": "bounded_safe_abstention",
+        "product_authorizing": false,
+        "uwg_request_authorizing": false
+      }
+    ],
+    "product_success_codes": [
+      "X3D_ALLOW_FINISH"
+    ],
+    "legacy_aliases": [
+      "ALLOW",
+      "ALLOW_FINISH",
+      "X3_ALLOW",
+      "X3C",
+      "X3D",
+      "EXIT_OK",
+      "EXIT_PARTIAL"
+    ],
+    "legacy_aliases_allowed_on_product_v2": false,
+    "migration_removal_wave": 6
+  },
+  "terminal_semantics": {
+    "product_authorized": {
+      "initial_value": false,
+      "true_requires": [
+        "fresh_preflight_continuation_valid",
+        "producer_chain_valid_when_delegated",
+        "apps_rg_u0_through_l2_complete",
+        "x1_x2_authoritative_receipts_pass",
+        "x3_code_exactly_X3D_ALLOW_FINISH",
+        "product_eligibility_pass",
+        "uwg_commit_receipt_bound_to_output_bytes"
+      ],
+      "immutable_after": "UWG_COMMIT_CLOSED",
+      "post_boundary_can_rescue": false,
+      "post_boundary_can_veto": false
+    },
+    "pipeline_complete": {
+      "initial_value": false,
+      "true_requires": [
+        "product_authorized_true",
+        "apps_eval_sealed_read_only_snapshot_complete",
+        "l6_closure_complete",
+        "apps_eval_l6_identity_and_byte_parity_pass",
+        "promotion_terminal_status_present",
+        "mandatory_outputs_digest_bound",
+        "stage_ledger_v2_complete_and_sealed",
+        "terminal_manifest_v1_sealed_after_stage_ledger",
+        "pipeline_completion_receipt_binds_terminal_manifest_bytes"
+      ],
+      "post_boundary_failure_value": false
+    },
+    "observability_repair_required": {
+      "initial_value": false,
+      "true_when": "product_authorized_true_and_post_boundary_incomplete_or_failed",
+      "may_change_product_authorized": false
+    }
+  },
+  "schema_registry": {
+    "apps_research.apps_rg_handoff.v2": "config/certification/schemas/apps_research_apps_rg_handoff.v2.schema.json",
+    "apps_rg.e2e_stage_ledger.v2": "config/certification/schemas/apps_rg_e2e_stage_ledger.v2.schema.json",
+    "apps_rg.e2e_stage_ledger_seal.v1": "config/certification/schemas/apps_rg_e2e_stage_ledger_seal.v1.schema.json",
+    "apps_rg.e2e_terminal_manifest.v1": "config/certification/schemas/apps_rg_e2e_terminal_manifest.v1.schema.json",
+    "apps_rg.pipeline_completion_receipt.v1": "config/certification/schemas/apps_rg_pipeline_completion_receipt.v1.schema.json"
+  },
+  "stages": [
+    {
+      "stage_id": "FRESH_PREFLIGHT",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/e2e_preflight.py:run_fresh_e2e_preflight",
+      "consumer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
+      "authoritative_receipt": "e2e_preflight_product_entry_receipt.json",
+      "schema_ref": "apps_rg/runtime/e2e_preflight.py#apps_rg.e2e_preflight_product_entry.v1",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RESEARCH_U0", "APPS_RG_U0"],
+      "pass_derivation": "signed_continuation_and_consume_once_bytes_revalidated_then_bound_to_committed_producer_identity"
+    },
+    {
+      "stage_id": "APPS_RESEARCH_U0",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/runtime/entry/app_ingress_runner.py:AppIngressRunner",
+      "consumer": "apps_research/integrations/governed_research_run.py:GovernedResearchRun",
+      "authoritative_receipt": "apps_research_u0_receipt.json",
+      "schema_ref": "apps_research/config/domain_contract/runtime_customization_package.company_brief.v1.json",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RESEARCH_RUNTIME"],
+      "pass_derivation": "u0_authority_and_package_receipt_pass"
+    },
+    {
+      "stage_id": "APPS_RESEARCH_RUNTIME",
+      "authority_plane": "current_run",
+      "producer": "apps_research/integrations/governed_research_run.py:GovernedResearchRun",
+      "consumer": "apps_research/integrations/apps_rg_handoff.py:run_apps_rg_handoff_exit_authorization",
+      "authoritative_receipt": "runtime_exhaust_bundle.json",
+      "schema_ref": "apps_research/config/domain_contract/output_schema.company_brief.v1.json",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RESEARCH_EXIT"],
+      "pass_derivation": "required_runtime_receipts_complete"
+    },
+    {
+      "stage_id": "APPS_RESEARCH_EXIT",
+      "authority_plane": "current_run",
+      "producer": "apps_research/integrations/apps_rg_handoff.py:run_apps_rg_handoff_exit_authorization",
+      "consumer": "apps_research/integrations/apps_rg_handoff.py:persist_apps_rg_targeting_brief_artifacts",
+      "authoritative_receipt": "exit_disposition_receipt.json",
+      "schema_ref": "agentic_core/runtime/exit/exit_disposition.py#W8.a3f7e2",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["HANDOFF_BUNDLE_COMMIT"],
+      "pass_derivation": "x3_code_exactly_X3D_ALLOW_FINISH"
+    },
+    {
+      "stage_id": "HANDOFF_BUNDLE_COMMIT",
+      "authority_plane": "current_run",
+      "producer": "apps_research/integrations/apps_rg_handoff.py:persist_apps_rg_targeting_brief_artifacts",
+      "consumer": "apps_rg/prerequisites/briefing_validator.py:validate_apps_research_handoff",
+      "authoritative_receipt": "apps_research_apps_rg_handoff_v2.json",
+      "schema_ref": "apps_research.apps_rg_handoff.v2",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_U0"],
+      "pass_derivation": "atomic_bundle_manifest_and_all_artifact_bytes_match"
+    },
+    {
+      "stage_id": "APPS_RG_U0",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/u0_binding.py:u0_validate_apps_rg",
+      "consumer": "apps_rg/runtime/bindings/l1_binding.py",
+      "authoritative_receipt": "apps_research_handoff_validation_receipt.json",
+      "schema_ref": "apps_research.apps_rg_handoff.v2#/$defs/ConsumerValidationReceipt",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_L1"],
+      "pass_derivation": "consumer_validation_receipt_pass"
+    },
+    {
+      "stage_id": "APPS_RG_L1",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/l1_binding.py",
+      "consumer": "apps_rg/runtime/bindings/l0_binding.py",
+      "authoritative_receipt": "l1_plan_contract.json",
+      "schema_ref": "agentic_core/runtime/contracts/l1_plan_contract.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_L0"],
+      "pass_derivation": "authoritative_receipt_status_pass"
+    },
+    {
+      "stage_id": "APPS_RG_L0",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/l0_binding.py",
+      "consumer": "apps_rg/runtime/bindings/c0_binding.py",
+      "authoritative_receipt": "route_contract.json",
+      "schema_ref": "agentic_core/runtime/contracts/route_contract.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_C0"],
+      "pass_derivation": "authoritative_receipt_status_pass"
+    },
+    {
+      "stage_id": "APPS_RG_C0",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/c0_binding.py",
+      "consumer": "apps_rg/runtime/bindings/pa_binding.py",
+      "authoritative_receipt": "final_evidence_contract.json",
+      "schema_ref": "agentic_core/runtime/contracts/final_evidence_contract.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_PA"],
+      "pass_derivation": "support_and_provenance_receipts_pass"
+    },
+    {
+      "stage_id": "APPS_RG_PA",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/pa_binding.py",
+      "consumer": "apps_rg/runtime/bindings/l2_binding.py",
+      "authoritative_receipt": "compiled_prompt_artifact.json",
+      "schema_ref": "agentic_core/runtime/contracts/compiled_prompt_artifact.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_RG_L2"],
+      "pass_derivation": "compiled_prompt_digest_and_policy_pass"
+    },
+    {
+      "stage_id": "APPS_RG_L2",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/bindings/l2_binding.py",
+      "consumer": "agentic_core/runtime/exit/x1_checkout_runner.py",
+      "authoritative_receipt": "sealed_l2_artifact.json",
+      "schema_ref": "agentic_core/runtime/contracts/sealed_l2_artifact.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["X1_REVIEW"],
+      "pass_derivation": "sealed_artifact_and_l5_binding_valid"
+    },
+    {
+      "stage_id": "X1_REVIEW",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/runtime/exit/x1_checkout_runner.py",
+      "consumer": "agentic_core/runtime/exit/x2_aggregator.py",
+      "authoritative_receipt": "exit_review_packet.json",
+      "schema_ref": "agentic_core/runtime/exit/exit_disposition.py#ExitReviewPacket",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["X2_AGGREGATION"],
+      "pass_derivation": "x1_overall_pass_from_checks"
+    },
+    {
+      "stage_id": "X2_AGGREGATION",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/runtime/exit/x2_aggregator.py",
+      "consumer": "agentic_core/runtime/exit/exit_package_driven_binding.py",
+      "authoritative_receipt": "x2_aggregation_result.json",
+      "schema_ref": "agentic_core/runtime/exit/exit_disposition.py#X2AggregationResult",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["X3_DISPOSITION"],
+      "pass_derivation": "all_required_gate_and_judge_receipts_pass"
+    },
+    {
+      "stage_id": "X3_DISPOSITION",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/runtime/exit/exit_package_driven_binding.py",
+      "consumer": "apps_rg/runtime/package/apps_rg_full_resume_x3_eligibility.py",
+      "authoritative_receipt": "x3_disposition_receipt.json",
+      "schema_ref": "agentic_core/runtime/exit/exit_disposition.py#ExitDispositionReceipt",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["PRODUCT_ELIGIBILITY", "TERMINAL_NON_PRODUCT"],
+      "pass_derivation": "exact_canonical_x3_code"
+    },
+    {
+      "stage_id": "PRODUCT_ELIGIBILITY",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/package/apps_rg_full_resume_x3_eligibility.py",
+      "consumer": "apps_rg/runtime/post_x3_completion.py:complete_apps_rg_post_x3",
+      "authoritative_receipt": "apps_rg_product_eligibility_receipt.json",
+      "schema_ref": "apps_rg/runtime/package/apps_rg_full_resume_x3_eligibility.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["UWG_COMMIT"],
+      "pass_derivation": "eligibility_receipt_pass_and_x3d"
+    },
+    {
+      "stage_id": "UWG_COMMIT",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/L4_state/uwg/durable_write_gateway.py",
+      "consumer": "apps_rg/runtime/post_x3_completion.py:complete_apps_rg_post_x3",
+      "authoritative_receipt": "uwg_commit_receipt.json",
+      "schema_ref": "agentic_core/L4_state/contracts/records.py#CommitReceipt",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["PRODUCT_AUTHORIZATION_CLOSE"],
+      "pass_derivation": "commit_receipt_and_exact_output_digest_match"
+    },
+    {
+      "stage_id": "PRODUCT_AUTHORIZATION_CLOSE",
+      "authority_plane": "current_run",
+      "producer": "apps_rg/runtime/post_x3_completion.py:complete_apps_rg_post_x3",
+      "consumer": "apps_eval/runner/core.py:run_eval",
+      "authoritative_receipt": "apps_rg_product_authorization_receipt.json",
+      "schema_ref": "apps_rg.e2e_terminal_manifest.v1",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["APPS_EVAL"],
+      "pass_derivation": "terminal_semantics_product_authorized_true"
+    },
+    {
+      "stage_id": "APPS_EVAL",
+      "authority_plane": "post_boundary",
+      "producer": "apps_eval/runner/core.py:run_eval",
+      "consumer": "apps_rg/runtime/spine/l6_shadow_eval_runner.py:run_l6_v40_shadow_eval_for_section",
+      "authoritative_receipt": "apps_eval_record.json",
+      "schema_ref": "apps_eval/contracts/models.py#CompletedEvalRecord",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["L6_SHADOW"],
+      "pass_derivation": "sealed_read_only_snapshot_coverage_complete"
+    },
+    {
+      "stage_id": "L6_SHADOW",
+      "authority_plane": "post_boundary",
+      "producer": "apps_rg/runtime/spine/l6_shadow_eval_runner.py:run_l6_v40_shadow_eval_for_section",
+      "consumer": "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+      "authoritative_receipt": "observability_closure_receipt.json",
+      "schema_ref": "agentic_core/L6_observability/shadow_eval/contracts.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["INDEPENDENT_PARITY"],
+      "pass_derivation": "closure_recomputed_and_valid"
+    },
+    {
+      "stage_id": "INDEPENDENT_PARITY",
+      "authority_plane": "post_boundary",
+      "producer": "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+      "consumer": "agentic_core/L6_system_learning/promotion/generic_l6_profile_consumer.py",
+      "authoritative_receipt": "l6_apps_eval_binding_closure_receipt.json",
+      "schema_ref": "agentic_core/L6_observability/shadow_eval/independent_parity.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["PROMOTION_TERMINAL"],
+      "pass_derivation": "identity_and_exact_source_byte_digests_equal"
+    },
+    {
+      "stage_id": "PROMOTION_TERMINAL",
+      "authority_plane": "post_boundary",
+      "producer": "agentic_core/L6_system_learning/promotion/generic_l6_profile_consumer.py",
+      "consumer": "apps_rg/runtime/mandatory_run_outputs.py",
+      "authoritative_receipt": "future_run_promotion_terminal_receipt.json",
+      "schema_ref": "agentic_core/runtime/contracts/future_run_promotion.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["MANDATORY_OUTPUTS"],
+      "pass_derivation": "explicit_terminal_status_present"
+    },
+    {
+      "stage_id": "MANDATORY_OUTPUTS",
+      "authority_plane": "post_boundary",
+      "producer": "apps_rg/runtime/mandatory_run_outputs.py",
+      "consumer": "apps_rg/runtime/e2e_stage_ledger.py",
+      "authoritative_receipt": "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+      "schema_ref": "apps_rg/runtime/run_output_contract.py",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["STAGE_LEDGER_SEAL"],
+      "pass_derivation": "all_required_outputs_exist_schema_validate_and_digest_match"
+    },
+    {
+      "stage_id": "STAGE_LEDGER_SEAL",
+      "authority_plane": "post_boundary",
+      "implementation_status": "implemented_wave_2",
+      "producer": "apps_rg/runtime/e2e_stage_ledger.py",
+      "consumer": "apps_rg/runtime/terminal_manifest.py",
+      "authoritative_receipt": "e2e_stage_ledger_seal_receipt.json",
+      "schema_ref": "apps_rg.e2e_stage_ledger_seal.v1",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["TERMINAL_MANIFEST_SEAL"],
+      "pass_derivation": "seal_receipt_binds_exact_closed_ledger_bytes"
+    },
+    {
+      "stage_id": "TERMINAL_MANIFEST_SEAL",
+      "authority_plane": "post_boundary",
+      "implementation_status": "implemented_wave_2",
+      "producer": "apps_rg/runtime/terminal_manifest.py",
+      "consumer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
+      "authoritative_receipt": "apps_rg_e2e_terminal_manifest.json",
+      "schema_ref": "apps_rg.e2e_terminal_manifest.v1",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": ["PIPELINE_COMPLETION_CLOSE"],
+      "pass_derivation": "manifest_sealed_after_last_mutation"
+    },
+    {
+      "stage_id": "PIPELINE_COMPLETION_CLOSE",
+      "authority_plane": "post_boundary",
+      "producer": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
+      "consumer": "CALLER",
+      "authoritative_receipt": "apps_rg_pipeline_completion_receipt.json",
+      "schema_ref": "apps_rg.pipeline_completion_receipt.v1",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": [],
+      "pass_derivation": "completion_receipt_binds_exact_terminal_manifest_bytes"
+    },
+    {
+      "stage_id": "TERMINAL_NON_PRODUCT",
+      "authority_plane": "current_run",
+      "producer": "agentic_core/runtime/exit/exit_package_driven_binding.py",
+      "consumer": "CALLER",
+      "authoritative_receipt": "x3_disposition_receipt.json",
+      "schema_ref": "agentic_core/runtime/exit/exit_disposition.py#ExitDispositionReceipt",
+      "identity_profile": "apps_research_rg_run_identity.v1",
+      "allowed_next": [],
+      "pass_derivation": "canonical_non_product_x3_terminal"
+    }
+  ],
+  "entrypoints": [
+    {
+      "entrypoint_id": "apps_research_product_cli",
+      "surface": "python -m apps_research",
+      "implementation": "apps_research/__main__.py:main",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "APPS_RESEARCH_U0",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_research_e2e_live_certification",
+      "surface": "python -m apps_research --apps-e2e-live",
+      "implementation": "apps_research/__main__.py:main",
+      "classification": "test",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_RESEARCH_U0",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_research_dry_run",
+      "surface": "python -m apps_research --dry-run",
+      "implementation": "apps_research/__main__.py:main",
+      "classification": "test",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_RESEARCH_U0",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_fresh_e2e_product_cli",
+      "surface": "python -m apps_rg --fresh-e2e",
+      "implementation": "apps_rg/__main__.py:main",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_default_whole_run_cli",
+      "surface": "python -m apps_rg",
+      "implementation": "apps_rg/__main__.py:main",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_section_cli",
+      "surface": "python -m apps_rg --section <lane>",
+      "implementation": "apps_rg/__main__.py:main",
+      "classification": "test",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_RG_U0",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_patch_run",
+      "surface": "python -m apps_rg --patch-run <run-dir>",
+      "implementation": "apps_rg/__main__.py:main",
+      "classification": "replay",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_assemble_from_pinned",
+      "surface": "python -m apps_rg --assemble-from-pinned",
+      "implementation": "apps_rg/__main__.py:main",
+      "classification": "migration",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "MANDATORY_OUTPUTS",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_whole_run_orchestrator",
+      "surface": "run_whole_run_with_route_governance",
+      "implementation": "apps_rg/runtime/orchestration/r3r4_whole_run_orchestration.py:run_whole_run_with_route_governance",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "agentic_core_apps_rg_dispatch",
+      "surface": "dispatch_apps_rg_run",
+      "implementation": "agentic_core/runtime/entry/apps_rg_dispatch.py:dispatch_apps_rg_run",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "FRESH_PREFLIGHT",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "agentic_core_single_action_spine",
+      "surface": "run_integrated_single_action_spine",
+      "implementation": "agentic_core/runtime/entrypoints/integrated_single_action_spine_run.py:run_integrated_single_action_spine",
+      "classification": "test",
+      "authority_plane": "none",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_RG_U0",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_post_x3_finalize",
+      "surface": "complete_apps_rg_post_x3",
+      "implementation": "apps_rg/runtime/post_x3_completion.py:complete_apps_rg_post_x3",
+      "classification": "product",
+      "authority_plane": "current_run",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": true,
+      "required_start_stage": "PRODUCT_ELIGIBILITY",
+      "required_x3_success_codes": ["X3D_ALLOW_FINISH"],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_eval_live_adapter",
+      "surface": "python -m apps_eval run --mode live_adapter",
+      "implementation": "apps_eval/__main__.py:main",
+      "classification": "product",
+      "authority_plane": "post_boundary",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_EVAL",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_eval_snapshot",
+      "surface": "python -m apps_eval run --mode snapshot",
+      "implementation": "apps_eval/__main__.py:main",
+      "classification": "test",
+      "authority_plane": "post_boundary",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_EVAL",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_eval_matrix",
+      "surface": "python -m apps_eval run-matrix",
+      "implementation": "apps_eval/__main__.py:main",
+      "classification": "test",
+      "authority_plane": "post_boundary",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "APPS_EVAL",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_eval_baseline_promotion",
+      "surface": "python -m apps_eval promote-baseline",
+      "implementation": "apps_eval/__main__.py:main",
+      "classification": "migration",
+      "authority_plane": "post_boundary",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "PROMOTION_TERMINAL",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    },
+    {
+      "entrypoint_id": "apps_rg_l6_shadow_runner",
+      "surface": "run_l6_v40_shadow_eval_for_section",
+      "implementation": "apps_rg/runtime/spine/l6_shadow_eval_runner.py:run_l6_v40_shadow_eval_for_section",
+      "classification": "product",
+      "authority_plane": "post_boundary",
+      "authority_contract_id": "apps_research_rg_e2e_authority",
+      "product_authority": false,
+      "required_start_stage": "L6_SHADOW",
+      "required_x3_success_codes": [],
+      "current_gap_ids": []
+    }
+  ],
+  "migration_policy": {
+    "handoff_v1_read_allowed_until_wave": 5,
+    "handoff_v1_reader_status": "removed_from_executable_product_paths_in_wave_6",
+    "handoff_v2_write_only_after_wave": 1,
+    "stage_ledger_v2_write_only_after_wave": 2,
+    "terminal_manifest_v1_write_only_after_wave": 2,
+    "legacy_x3_aliases_product_path_allowed": false,
+    "non_product_bypass_must_be_explicitly_classified": true
+  }
+}

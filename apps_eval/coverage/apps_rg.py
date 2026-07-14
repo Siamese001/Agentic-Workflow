@@ -8,13 +8,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from apps_eval.artifacts.apps_rg_resolver import resolve_apps_rg_artifact
 from apps_eval.contracts import (
     AppOutputSnapshot,
     ComponentScorecard,
     CoverageSummary,
     ScorecardRow,
 )
-from apps_eval.artifacts.apps_rg_resolver import resolve_apps_rg_artifact
 
 _REGISTRY_DIR = Path(__file__).resolve().parents[1] / "registries"
 _STAGE_ORDER = {
@@ -35,7 +35,7 @@ _STAGE_ORDER = {
 }
 _PASSISH = {"PASS", "NOT_APPLICABLE"}
 _BLOCKING = {"FAIL", "UNKNOWN", "NOT_RUN"}
-_ALLOW_X3 = {"X3_ALLOW", "X3D_ALLOW_FINISH", "X3D", "ALLOW", "ALLOW_FINISH"}
+_ALLOW_X3 = {"X3D_ALLOW_FINISH"}
 _PRESENCE_GATES = {
     "u0_run_bundle_index_present",
     "u0_runtime_package_present",
@@ -76,14 +76,6 @@ def apps_rg_contract_digest() -> str:
     return _canonical_digest(load_apps_rg_contracts())
 
 
-def _as_list(value: Any) -> list[Any]:
-    if value is None:
-        return []
-    if isinstance(value, list):
-        return value
-    return [value]
-
-
 def _iter_microsteps(contracts: dict[str, Any]) -> list[dict[str, Any]]:
     microstep_contract = contracts["microstep_contract"]
     lane_contract = contracts["lane_contract"]
@@ -99,93 +91,6 @@ def _iter_microsteps(contracts: dict[str, Any]) -> list[dict[str, Any]]:
             rows.append(item)
     rows.extend(dict(item) for item in microstep_contract.get("cross_run_microsteps", []))
     return sorted(rows, key=lambda row: (_STAGE_ORDER.get(str(row.get("stage_id")), 99), str(row.get("lane_id", "")), str(row.get("microstep_id"))))
-
-
-def _path_digest(path: Path) -> str:
-    try:
-        return hashlib.sha256(path.read_bytes()).hexdigest()
-    except OSError:
-        return ""
-
-
-def _json_payload(path: Path) -> Any:
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
-        return None
-
-
-def _string_digest(value: Any) -> str:
-    return _canonical_digest(value) if value not in (None, "") else ""
-
-
-def _resolve_snapshot_index(snapshot: AppOutputSnapshot, role: str, lane: str) -> tuple[str, str, str, Any]:
-    index = snapshot.artifact_index or {}
-    keys = [role, f"{lane}:{role}" if lane else ""]
-    for key in keys:
-        if not key:
-            continue
-        value = index.get(key)
-        if value in (None, "", [], {}):
-            continue
-        first = _as_list(value)[0]
-        return str(first), str(first), _string_digest(value), value
-    return "", "", "", None
-
-
-def _resolve_planned_eval_artifact(planned: dict[str, Any], role: str) -> tuple[str, str, str, Any]:
-    value = planned.get(role)
-    if value in (None, "", [], {}):
-        return "", "", "", None
-    first = _as_list(value)[0]
-    return str(first), "planned_apps_eval_emit", _string_digest(value), value
-
-
-def _resolve_file_artifact(
-    *,
-    root: Path | None,
-    role: str,
-    lane: str,
-    artifact_contract: dict[str, Any],
-) -> tuple[str, str, str, Any]:
-    if root is None:
-        return "", "", "", None
-    role_contract = artifact_contract.get("artifact_roles", {}).get(role, {})
-    for rel_template in role_contract.get("relative_paths", []):
-        rel = str(rel_template).format(lane=lane)
-        candidate = (root / rel).resolve()
-        if candidate.is_file():
-            payload = _json_payload(candidate) if candidate.suffix.lower() == ".json" else None
-            return candidate.as_posix(), rel, _path_digest(candidate), payload
-    return "", "", "", None
-
-
-def _resolve_artifact(
-    *,
-    snapshot: AppOutputSnapshot,
-    role: str,
-    lane: str,
-    artifact_contract: dict[str, Any],
-    planned_eval_artifacts: dict[str, Any],
-) -> tuple[str, str, str, Any]:
-    planned_ref, planned_evidence, planned_digest, planned_payload = _resolve_planned_eval_artifact(planned_eval_artifacts, role)
-    if planned_ref:
-        return planned_ref, planned_evidence, planned_digest, planned_payload
-
-    index_ref, index_evidence, index_digest, index_payload = _resolve_snapshot_index(snapshot, role, lane)
-    if index_ref:
-        return index_ref, index_evidence, index_digest, index_payload
-
-    root = Path(snapshot.run_root).resolve() if snapshot.run_root else None
-    file_ref, file_evidence, file_digest, file_payload = _resolve_file_artifact(
-        root=root,
-        role=role,
-        lane=lane,
-        artifact_contract=artifact_contract,
-    )
-    if file_ref:
-        return file_ref, file_evidence, file_digest, file_payload
-    return "", "", "", None
 
 
 def _x2_verdict(payload: Any) -> tuple[str, str, Any, Any]:
@@ -249,8 +154,8 @@ def _x3_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     if not code or code.upper() == "UNKNOWN":
         return "UNKNOWN", "x3 code missing or UNKNOWN", code, "earned X3 code"
     if code in _ALLOW_X3:
-        return "PASS", "x3 disposition evidence is allow/finish", code, sorted(_ALLOW_X3)
-    return "WARN", f"x3 disposition is non-allow review/block code: {code}", code, sorted(_ALLOW_X3)
+        return "PASS", "x3 disposition is exact canonical allow-finish", code, "X3D_ALLOW_FINISH"
+    return "FAIL", f"x3 disposition is not exact X3D_ALLOW_FINISH: {code}", code, "X3D_ALLOW_FINISH"
 
 
 def _l6_non_mutating_verdict(payload: Any) -> tuple[str, str, Any, Any]:
@@ -576,7 +481,14 @@ def _exit_verdict(payload: Any) -> tuple[str, str, Any, Any]:
     ).strip()
     if not disposition:
         return "UNKNOWN", "whole-run exit disposition missing", disposition, "non-empty disposition"
-    return "PASS", "whole-run exit packet has a single disposition", {"exactly_one_x3": inner.get("exactly_one_x3"), "x3_disposition": disposition}, "single disposition"
+    if disposition != "X3D_ALLOW_FINISH":
+        return (
+            "FAIL",
+            "whole-run exit disposition is not exact X3D_ALLOW_FINISH",
+            {"exactly_one_x3": inner.get("exactly_one_x3"), "x3_disposition": disposition},
+            "X3D_ALLOW_FINISH",
+        )
+    return "PASS", "whole-run exit packet has exactly one canonical allow-finish disposition", {"exactly_one_x3": inner.get("exactly_one_x3"), "x3_disposition": disposition}, "X3D_ALLOW_FINISH"
 
 
 def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any, *, required: bool = True) -> tuple[str, float, str, str, Any, Any]:
@@ -614,7 +526,7 @@ def _evaluate_microstep(gate_id: str, artifact_ref: str, payload: Any, *, requir
 
 
 def _row_id(suite_id: str, scenario_id: str, microstep_id: str) -> str:
-    return hashlib.sha256(f"{suite_id}|{scenario_id}|{microstep_id}".encode("utf-8")).hexdigest()[:20]
+    return hashlib.sha256(f"{suite_id}|{scenario_id}|{microstep_id}".encode()).hexdigest()[:20]
 
 
 def _failure_family(failure_mode: str) -> str:
@@ -649,6 +561,9 @@ def _make_row(
     observed_value: Any,
     threshold: Any,
     source_artifact_schema: str,
+    identity: dict[str, str],
+    microstep_contract_digest: str,
+    snapshot_digest: str,
 ) -> ScorecardRow:
     microstep_id = str(item["microstep_id"])
     return ScorecardRow(
@@ -678,8 +593,48 @@ def _make_row(
         decisive_reason=decisive_reason,
         source_system="apps_eval",
         source_artifact_schema=source_artifact_schema,
+        parent_run_id=identity.get("parent_run_id", ""),
+        child_run_id=identity.get("child_run_id", ""),
+        section_attempt_id=identity.get("section_attempt_id", ""),
+        eval_record_id=run_id,
+        runtime_exhaust_bundle_id=identity.get("runtime_exhaust_bundle_id", ""),
+        microstep_contract_digest=microstep_contract_digest,
+        registry_digest=microstep_contract_digest,
+        snapshot_digest=snapshot_digest,
         created_at=created_at,
     )
+
+
+def _payload_identity_value(payload: Any, key: str) -> str:
+    if not isinstance(payload, dict):
+        return ""
+    direct = str(payload.get(key) or "").strip()
+    if direct:
+        return direct
+    for wrapper in ("identity", "run_identity", "payload", "runtime_exhaust"):
+        found = _payload_identity_value(payload.get(wrapper), key)
+        if found:
+            return found
+    return ""
+
+
+def _bound_row_identity(snapshot: AppOutputSnapshot, payload: Any) -> tuple[dict[str, str], list[str]]:
+    identity: dict[str, str] = {}
+    mismatches: list[str] = []
+    for key in (
+        "parent_run_id",
+        "child_run_id",
+        "section_attempt_id",
+        "runtime_exhaust_bundle_id",
+    ):
+        snapshot_value = str(getattr(snapshot, key, "") or "").strip()
+        payload_value = _payload_identity_value(payload, key)
+        if snapshot_value and payload_value and snapshot_value != payload_value:
+            mismatches.append(key)
+            identity[key] = ""
+        else:
+            identity[key] = payload_value or snapshot_value
+    return identity, mismatches
 
 
 def _rollup_group(rows: list[ScorecardRow], key: tuple[str, str, str, str]) -> ComponentScorecard:
@@ -754,10 +709,22 @@ def build_apps_rg_microstep_evaluation(
     run_id: str,
     created_at: str,
     planned_eval_artifacts: dict[str, Any] | None = None,
+    snapshot_digest: str = "",
 ) -> dict[str, Any]:
     contracts = load_apps_rg_contracts()
+    contract_digest = _canonical_digest(contracts)
     artifact_contract = contracts["artifact_contract"]
     planned = planned_eval_artifacts or {}
+    bound_snapshot_digest = str(snapshot_digest or snapshot.snapshot_digest or "").strip()
+    declared_registry_digests = {
+        str(value or "").strip()
+        for value in (snapshot.registry_digest, snapshot.microstep_contract_digest)
+        if str(value or "").strip()
+    }
+    registry_mismatch = any(
+        digest != contract_digest for digest in declared_registry_digests
+    )
+    identity_binding_required = snapshot.provenance.get("source_unchanged") is True
     rows: list[ScorecardRow] = []
     prior_blocked: dict[str, bool] = defaultdict(bool)
 
@@ -782,6 +749,39 @@ def build_apps_rg_microstep_evaluation(
             payload,
             required=bool(item.get("required", True)),
         )
+        identity, identity_mismatches = _bound_row_identity(snapshot, payload)
+        missing_identity = sorted(key for key, value in identity.items() if not value)
+        if not artifact_ref and resolved.failure_reason:
+            reason = f"{reason}: {resolved.failure_reason}"
+            observed = {"resolution_failure": resolved.failure_reason}
+        if bool(item.get("required", True)) and registry_mismatch:
+            verdict = "FAIL"
+            score = 0.0
+            failure_mode = "evidence.registry_digest_mismatch"
+            reason = "snapshot registry digest does not match the active Apps Eval registry"
+            observed = {
+                "snapshot_registry_digests": sorted(declared_registry_digests),
+                "active_registry_digest": contract_digest,
+            }
+            threshold = contract_digest
+        elif bool(item.get("required", True)) and identity_mismatches:
+            verdict = "FAIL"
+            score = 0.0
+            failure_mode = "evidence.source_identity_mismatch"
+            reason = f"artifact identity conflicts with snapshot identity: {identity_mismatches}"
+            observed = {"identity_mismatches": identity_mismatches}
+            threshold = "artifact identity equals sealed snapshot identity"
+        elif (
+            bool(item.get("required", True))
+            and identity_binding_required
+            and missing_identity
+        ):
+            verdict = "FAIL"
+            score = 0.0
+            failure_mode = "evidence.source_identity_missing"
+            reason = f"sealed source identity is incomplete: {missing_identity}"
+            observed = {"missing_identity_fields": missing_identity}
+            threshold = "complete parent/child/attempt/runtime-exhaust identity"
         scope = _scope_key(item)
         if not artifact_ref and prior_blocked[scope] and bool(item.get("required", True)):
             verdict = "NOT_RUN"
@@ -809,6 +809,9 @@ def build_apps_rg_microstep_evaluation(
             observed_value=observed,
             threshold=threshold,
             source_artifact_schema=str(role_contract.get("source_artifact_schema", "")),
+            identity=identity,
+            microstep_contract_digest=contract_digest,
+            snapshot_digest=bound_snapshot_digest,
         )
         rows.append(row)
 
@@ -823,13 +826,21 @@ def build_apps_rg_microstep_evaluation(
             "artifact_ref": row.artifact_ref,
             "evidence_ref": row.evidence_ref,
             "evidence_digest": row.evidence_digest,
+            "parent_run_id": row.parent_run_id,
+            "child_run_id": row.child_run_id,
+            "section_attempt_id": row.section_attempt_id,
+            "eval_record_id": row.eval_record_id,
+            "runtime_exhaust_bundle_id": row.runtime_exhaust_bundle_id,
+            "microstep_contract_digest": row.microstep_contract_digest,
+            "registry_digest": row.registry_digest,
+            "snapshot_digest": row.snapshot_digest,
             "verdict": row.verdict,
         }
         for row in rows
     ]
     return {
         "contracts": contracts,
-        "contract_digest": _canonical_digest(contracts),
+        "contract_digest": contract_digest,
         "rows": rows,
         "component_scorecards": components,
         "coverage_summary": coverage,

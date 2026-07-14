@@ -70,6 +70,7 @@ jobs:
         run: |
           set +e
           python -m pytest \
+            --confcutdir=tests/unit/ops_scripts/ci \
             tests/unit/ops_scripts/ci/test_skill_contract.py \
             tests/unit/ops_scripts/ci/test_skill_catalog_integration.py \
             -q \

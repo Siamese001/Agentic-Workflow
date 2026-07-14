@@ -5,7 +5,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -36,7 +36,13 @@ class ResearchResult:
     research_artifact_dir: str = ""
     briefing_artifact_path: str = ""
     company_brief_text: str = ""
+    # Compatibility field name; Wave 6 carries only the canonical handoff-v2 manifest.
     apps_research_handoff_envelope: dict[str, Any] | None = None
+    # Explicit, non-overloaded digest contract for the delegated handoff.
+    brief_sha256: str = ""
+    result_metadata_digest: str = ""
+    bundle_manifest_digest: str = ""
+    apps_research_u0_receipt: dict[str, Any] | None = None
 
 
 def _resolve_jd_text(*, job_description_ref: str = "", job_description_text: str = "") -> str:
@@ -77,6 +83,7 @@ class AppsResearchBridge:
         request_id: str,
         run_id: str,
         trace_id: str,
+        tenant_id: str = "default",
         job_description_ref: str = "",
         job_description_text: str = "",
     ) -> ResearchResult:
@@ -106,6 +113,8 @@ class AppsResearchBridge:
                 request_id=request_id,
                 run_id=run_id,
                 trace_id=bridge_trace_id,
+                trace_root=trace_id,
+                tenant_id=tenant_id,
                 job_description_ref=job_description_ref,
                 job_description_text=job_description_text,
             )
@@ -146,10 +155,13 @@ class AppsResearchBridge:
         request_id: str,
         run_id: str,
         trace_id: str,
+        trace_root: str = "",
+        tenant_id: str = "default",
         job_description_ref: str = "",
         job_description_text: str = "",
     ) -> Any:
         from apps_research.integrations.governed_research_run import GovernedResearchRun
+        from apps_research.integrations.spine_handoff import run_research_via_spine
         from apps_research.types.research_types import ResearchRequest
         jd_text = _resolve_jd_text(
             job_description_ref=job_description_ref,
@@ -177,6 +189,8 @@ class AppsResearchBridge:
                 "job_title": job_title,
                 "request_id": request_id,
                 "run_id": run_id,
+                "trace_root": trace_root or trace_id,
+                "tenant_id": tenant_id,
                 "output_format": "apps_rg_targeting_brief_v1",
                 "synthesis_template": "apps_rg_targeting_brief_synthesis_v1",
                 "content": jd_text,
@@ -187,7 +201,7 @@ class AppsResearchBridge:
             },
         )
         runner = GovernedResearchRun()
-        return runner.run_governed_e2e(request=research_request)
+        return run_research_via_spine(research_request, runner=runner)
 
     def _translate(
         self,
@@ -202,9 +216,6 @@ class AppsResearchBridge:
         job_description_ref: str = "",
         job_description_text: str = "",
     ) -> ResearchResult:
-        import hashlib
-        import json as _json
-
         evidence_items_raw = getattr(raw, "evidence_items", None) or ()
         if not evidence_items_raw:
             try:
@@ -300,7 +311,7 @@ class AppsResearchBridge:
         except (ImportError, OSError, RuntimeError, TypeError, ValueError) as exc:
             persistence_reason = str(exc)
             block_reason = (
-                f"missing_apps_research_handoff_envelope:{persistence_reason}"
+                f"missing_apps_research_handoff_v2:{persistence_reason}"
                 if "handoff sidecar" in persistence_reason
                 else f"apps_research_artifact_persistence_failed:{persistence_reason}"
             )
@@ -321,14 +332,10 @@ class AppsResearchBridge:
                 company_brief_text="",
             )
 
-        result_hash = hashlib.sha256(
-            _json.dumps(
-                {"run_id": run_id, "n": len(evidence_items), "confidence": confidence},
-                sort_keys=True,
-            ).encode("utf-8")
-        ).hexdigest()
-
         rid = str(getattr(raw, "run_id", run_id) or run_id)
+        result_metadata_digest = artifact_bundle.result_metadata_digest
+        bundle_manifest_digest = artifact_bundle.bundle_manifest_digest
+        brief_sha256 = artifact_bundle.brief_sha256
 
         return ResearchResult(
             run_id=rid,
@@ -340,14 +347,21 @@ class AppsResearchBridge:
             age_days=float(getattr(raw, "age_days", 0.0)),
             evidence_items=evidence_items,
             confidence_score=confidence,
-            result_hash=f"sha256:{result_hash}",
-            company_brief_hash=result_hash,
+            # Stable bridge field names do not weaken the v2 on-disk authority.
+            result_hash=result_metadata_digest,
+            company_brief_hash=brief_sha256.removeprefix("sha256:"),
             fetch_duration_ms=time.time() * 1000.0 - t_start,
             audit_ref=trace_id,
             research_artifact_dir=str(artifact_bundle.run_dir),
             briefing_artifact_path=str(artifact_bundle.briefing_path),
             company_brief_text=brief_text,
             apps_research_handoff_envelope=artifact_bundle.envelope,
+            brief_sha256=brief_sha256,
+            result_metadata_digest=result_metadata_digest,
+            bundle_manifest_digest=bundle_manifest_digest,
+            apps_research_u0_receipt=(
+                dict(getattr(raw, "apps_research_u0_receipt", {}) or {}) or None
+            ),
         )
 
 
@@ -358,7 +372,7 @@ class MockAppsResearchBridge(AppsResearchBridge):
         is_blocked: bool = False,
         block_reason: str = "",
         is_stale: bool = False,
-        evidence_items: List[EvidenceItem] | None = None,
+        evidence_items: list[EvidenceItem] | None = None,
         confidence_score: float = 0.85,
         company_brief_text: str = "",
         apps_research_handoff_envelope: dict[str, Any] | None = None,
@@ -426,6 +440,12 @@ class MockAppsResearchBridge(AppsResearchBridge):
         raw.evidence_items = list(self._mock_evidence)
         raw.confidence_score = self._mock_confidence
         raw.run_id = str(uuid.uuid4())
+        raw.parent_run_id = str(_kwargs.get("run_id") or raw.run_id)
+        raw.request_id = str(_kwargs.get("request_id") or raw.run_id)
+        raw.trace_root = str(
+            _kwargs.get("trace_root") or _kwargs.get("trace_id") or raw.run_id
+        )
+        raw.tenant_id = str(_kwargs.get("tenant_id") or "apps_research")
         raw.company_brief_text = self._mock_brief
         raw.support_coverage = self._mock_confidence
         raw.fec_run_context = {

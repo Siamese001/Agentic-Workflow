@@ -35,7 +35,7 @@ def test_apps_eval_l6_shadow_bridge_emitted_when_requested(tmp_path: Path) -> No
     assert Path(record.artifact_paths["l6_shadow_bridge_spans_jsonl"]).is_file()
 
 
-def test_completed_eval_bridge_emits_real_apps_eval_grain_parity(tmp_path: Path) -> None:
+def test_completed_eval_bridge_keeps_projected_eval_rows_advisory(tmp_path: Path) -> None:
     record = run_eval(
         EvalRequest(
             suite_id="apps_rg.dev.resume_generation",
@@ -49,10 +49,12 @@ def test_completed_eval_bridge_emits_real_apps_eval_grain_parity(tmp_path: Path)
     parity_path = Path(record.artifact_paths["l6_apps_eval_grain_parity"])
     parity = json.loads(parity_path.read_text(encoding="utf-8"))
 
-    assert parity["alignment_source"] == "apps_eval_scorecard_rows"
-    assert parity["evidence_class"] == "APPS_EVAL_BOUND_PROOF"
-    assert parity["apps_eval_rows_bound"] is True
-    assert parity["grain_parity_status"] == "PASS"
+    assert parity["alignment_source"] == "contract_only_pseudo_rows"
+    assert parity["evidence_class"] == "CONTRACT_ONLY_ADVISORY"
+    assert parity["apps_eval_rows_bound"] is False
+    assert parity["grain_parity_status"] == "WARN"
+    assert parity["projection_consistency_only"] is True
+    assert parity["independent_observations"] is False
 
     proposals_path = Path(record.artifact_paths["l6_microstep_future_run_proposals"])
     proposals = json.loads(proposals_path.read_text(encoding="utf-8"))

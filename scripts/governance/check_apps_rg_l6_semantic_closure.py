@@ -24,33 +24,82 @@ def _source(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def _parse(path: Path, issues: list[str]) -> str:
+def _parse(path: Path, issues: list[str]) -> tuple[str, ast.Module | None]:
     if not path.is_file():
         issues.append(f"missing required file: {path.relative_to(ROOT)}")
-        return ""
+        return "", None
     source = _source(path)
     try:
-        ast.parse(source, filename=path.as_posix())
+        tree = ast.parse(source, filename=path.as_posix())
     except SyntaxError as exc:
         issues.append(f"syntax error in {path.relative_to(ROOT)}:{exc.lineno}: {exc.msg}")
-    return source
+        return source, None
+    return source, tree
+
+
+def _top_level_function(tree: ast.Module, name: str) -> ast.FunctionDef | None:
+    return next(
+        (
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == name
+        ),
+        None,
+    )
+
+
+def _call_lines(function: ast.FunctionDef, dotted_name: str) -> list[int]:
+    """Return direct source locations for one semantically named call."""
+
+    lines: list[int] = []
+    for node in ast.walk(function):
+        if not isinstance(node, ast.Call):
+            continue
+        called = ""
+        if isinstance(node.func, ast.Name):
+            called = node.func.id
+        elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            called = f"{node.func.value.id}.{node.func.attr}"
+        if called == dotted_name:
+            lines.append(node.lineno)
+    return sorted(lines)
+
+
+def _validate_post_x3_authority_order(
+    tree: ast.Module | None,
+    issues: list[str],
+) -> None:
+    """Prove the active post-X3 path closes UWG before eval/L6 observation."""
+
+    if tree is None:
+        return
+    authoritative = _top_level_function(tree, "_complete_apps_rg_post_x3")
+    wrapper = _top_level_function(tree, "complete_apps_rg_post_x3")
+    if authoritative is None or wrapper is None:
+        issues.append("post-X3 authoritative routine or public wrapper not found")
+        return
+
+    wrapper_calls = _call_lines(wrapper, "_complete_apps_rg_post_x3")
+    commit_lines = _call_lines(authoritative, "gateway.commit")
+    eval_lines = _call_lines(authoritative, "_run_current_eval")
+    if not wrapper_calls:
+        issues.append("public post-X3 wrapper does not invoke the authoritative routine")
+    if not commit_lines or not eval_lines:
+        issues.append("post-X3 authority/eval call sites not found")
+    elif max(commit_lines) >= min(eval_lines):
+        issues.append("apps_eval/L6 executes before current-run UWG closure")
 
 
 def validate() -> dict[str, Any]:
     issues: list[str] = []
-    post_x3 = _parse(POST_X3, issues)
-    runner = _parse(RUNNER, issues)
-    bridge = _parse(BRIDGE, issues)
-    independent = _parse(INDEPENDENT_PARITY, issues)
+    post_x3, post_x3_tree = _parse(POST_X3, issues)
+    runner, _ = _parse(RUNNER, issues)
+    bridge, _ = _parse(BRIDGE, issues)
+    independent, _ = _parse(INDEPENDENT_PARITY, issues)
     if not WORKFLOW.is_file():
         issues.append("semantic-closure workflow is not registered")
 
-    commit_index = post_x3.find("gateway.commit(")
-    eval_index = post_x3.find("_run_current_eval(", post_x3.find("def complete_apps_rg_post_x3"))
-    if commit_index < 0 or eval_index < 0:
-        issues.append("post-X3 authority/eval call sites not found")
-    elif commit_index > eval_index:
-        issues.append("apps_eval/L6 executes before current-run UWG closure")
+    _validate_post_x3_authority_order(post_x3_tree, issues)
     if '"l6_influenced_current_uwg_decision": False' not in post_x3:
         issues.append("authority-order receipt does not deny L6 influence")
     if '"apps_eval_influenced_current_uwg_decision": False' not in post_x3:

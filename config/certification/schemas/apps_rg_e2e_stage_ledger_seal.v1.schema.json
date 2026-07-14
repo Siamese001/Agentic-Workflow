@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.e2e_stage_ledger_seal.v1",
+  "title": "Apps RG E2E stage ledger external seal receipt v1",
+  "description": "Non-self-referential receipt that binds the exact bytes of a closed receipt-derived stage ledger.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "authority_contract_id", "identity_sha256", "ledger_ref",
+    "ledger_schema_version", "ledger_sha256", "ledger_byte_length", "entry_count",
+    "terminal_stage_id", "terminal_state", "sealed_at_utc"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.e2e_stage_ledger_seal.v1"},
+    "authority_contract_id": {"const": "apps_research_rg_e2e_authority"},
+    "identity_sha256": {"$ref": "#/$defs/Sha256"},
+    "ledger_ref": {"const": "e2e_stage_ledger.json"},
+    "ledger_schema_version": {"const": "apps_rg.e2e_stage_ledger.v2"},
+    "ledger_sha256": {"$ref": "#/$defs/Sha256"},
+    "ledger_byte_length": {"type": "integer", "minimum": 1},
+    "entry_count": {"type": "integer", "minimum": 1},
+    "terminal_stage_id": {"enum": ["MANDATORY_OUTPUTS", "TERMINAL_NON_PRODUCT"]},
+    "terminal_state": {"$ref": "#/$defs/TerminalState"},
+    "sealed_at_utc": {"type": "string", "format": "date-time"}
+  },
+  "$defs": {
+    "Sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "TerminalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_authorized", "pipeline_complete", "observability_repair_required"],
+      "properties": {
+        "product_authorized": {"type": "boolean"},
+        "pipeline_complete": {"type": "boolean"},
+        "observability_repair_required": {"type": "boolean"}
+      }
+    }
+  }
+}

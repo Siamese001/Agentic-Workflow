@@ -13,13 +13,17 @@ import sys
 from collections import Counter
 from dataclasses import replace
 from datetime import datetime, timezone
-from importlib.metadata import PackageNotFoundError, version as package_version
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as package_version
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.utils import write_gateway as _wg
-
 from apps_eval.adapters import run_apps_lic_live, run_apps_rg_live
+from apps_eval.adapters.apps_rg import (
+    build_source_artifact_manifest,
+    source_artifact_manifest_digest,
+)
 from apps_eval.contracts import (
     CURRENT_EVAL_MANIFEST_SCHEMA_VERSION,
     CURRENT_EVAL_RECORD_SCHEMA_VERSION,
@@ -30,19 +34,19 @@ from apps_eval.contracts import (
     DiagnosticSummaryV1,
     EvalFixture,
     EvalRequest,
-    EvalScenario,
     EvalRunMetadata,
+    EvalScenario,
     FixtureProvenance,
     L6EvalHandoff,
-    RegressionSummary,
     RegressionFlywheelSummary,
+    RegressionSummary,
     Scorecard,
     ScorecardRow,
 )
 from apps_eval.coverage import apps_rg_contract_digest, build_apps_rg_microstep_evaluation
 from apps_eval.diagnostics import build_apps_rg_diagnostics
 from apps_eval.graders.deterministic import build_default_graders
-from apps_eval.outputs.render import render_report, render_record_markdown
+from apps_eval.outputs.render import render_record_markdown, render_report
 from apps_eval.registry import OLD_SUITE_NAMES, load_suite, load_thresholds_registry
 
 
@@ -325,10 +329,19 @@ def _load_snapshot(fixture: EvalFixture) -> AppOutputSnapshot:
 def _run_live(fixture: EvalFixture, run_dir: Path) -> AppOutputSnapshot:
     payload = _load_json(Path(fixture.input_dir) / "request.json")
     scenario_key = hashlib.sha256(fixture.scenario.scenario_id.encode("utf-8")).hexdigest()[:8]
-    artifact_dir = run_dir / "la" / scenario_key
     if fixture.scenario.app_id == "apps_rg":
-        snapshot = run_apps_rg_live(fixture.scenario.scenario_id, payload, artifact_dir)
+        source_root = str(payload.get("existing_run_root") or "").strip()
+        if not source_root:
+            raise PermissionError(
+                "apps_rg live_adapter is read-only; provide existing_run_root for a sealed product run"
+            )
+        snapshot = run_apps_rg_live(
+            fixture.scenario.scenario_id,
+            payload,
+            Path(source_root),
+        )
     elif fixture.scenario.app_id == "apps_lic":
+        artifact_dir = run_dir / "la" / scenario_key
         snapshot = run_apps_lic_live(fixture.scenario.scenario_id, payload, artifact_dir)
     else:
         raise ValueError(f"unsupported app: {fixture.scenario.app_id}")
@@ -392,42 +405,251 @@ def _score(
 
 
 def _planned_eval_artifacts(run_dir: Path) -> dict[str, Any]:
+    root = run_dir.resolve()
     return {
-        "eval_record": (run_dir / "eval_record.json").as_posix(),
-        "scorecard_rows": (run_dir / "scorecard_rows.jsonl").as_posix(),
-        "diagnostic_rows": (run_dir / "diagnostic_rows.jsonl").as_posix(),
-        "diagnostic_summary": (run_dir / "diagnostic_summary.json").as_posix(),
+        "__eval_artifact_root__": root.as_posix(),
+        "__emission_complete__": False,
+        "eval_record": (root / "eval_record.json").as_posix(),
+        "scorecard_rows": (root / "scorecard_rows.jsonl").as_posix(),
+        "diagnostic_rows": (root / "diagnostic_rows.jsonl").as_posix(),
+        "diagnostic_summary": (root / "diagnostic_summary.json").as_posix(),
         "component_scorecards": [
-            (run_dir / "component_scorecards.csv").as_posix(),
-            (run_dir / "apps_rg_component_scorecard.json").as_posix(),
+            (root / "component_scorecards.csv").as_posix(),
+            (root / "apps_rg_component_scorecard.json").as_posix(),
         ],
-        "coverage_matrix": (run_dir / "coverage_matrix.csv").as_posix(),
+        "coverage_matrix": (root / "coverage_matrix.csv").as_posix(),
         "regression_summary": [
-            (run_dir / "regression.json").as_posix(),
-            (run_dir / "regression_flywheel.json").as_posix(),
+            (root / "regression.json").as_posix(),
+            (root / "regression_flywheel.json").as_posix(),
         ],
     }
+
+
+def verify_apps_rg_eval_package_seal(run_dir: Path) -> tuple[bool, list[str]]:
+    """Verify the marker-last receipt over physically emitted Eval outputs."""
+
+    root = Path(run_dir).resolve()
+    seal_path = root / "apps_rg_eval_package_seal.json"
+    try:
+        seal = _load_json(seal_path)
+    except (OSError, ValueError, json.JSONDecodeError):
+        return False, ["eval_package_seal_unreadable"]
+    errors: list[str] = []
+    if seal.get("schema_version") != "apps_eval.apps_rg_eval_package_seal.v1":
+        errors.append("eval_package_seal_schema_mismatch")
+    if seal.get("status") != "PASS":
+        errors.append("eval_package_seal_not_passed")
+    body = {key: value for key, value in seal.items() if key != "manifest_sha256"}
+    expected_manifest_digest = "sha256:" + hashlib.sha256(
+        json.dumps(body, sort_keys=True, separators=(",", ":"), default=str).encode(
+            "utf-8"
+        )
+    ).hexdigest()
+    if seal.get("manifest_sha256") != expected_manifest_digest:
+        errors.append("eval_package_seal_manifest_digest_mismatch")
+    artifacts = seal.get("artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        errors.append("eval_package_seal_artifacts_missing")
+        artifacts = []
+    seen_roles: set[str] = set()
+    for row in artifacts:
+        if not isinstance(row, dict):
+            errors.append("eval_package_seal_artifact_not_object")
+            continue
+        role = str(row.get("artifact_role") or "")
+        seen_roles.add(role)
+        ref = str(row.get("artifact_ref") or "")
+        candidate = (root / ref).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            errors.append(f"eval_package_seal_artifact_outside_root:{role}")
+            continue
+        if not candidate.is_file():
+            errors.append(f"eval_package_seal_artifact_missing:{role}")
+            continue
+        raw = candidate.read_bytes()
+        observed = "sha256:" + hashlib.sha256(raw).hexdigest()
+        if row.get("sha256") != observed:
+            errors.append(f"eval_package_seal_artifact_digest_mismatch:{role}")
+        if row.get("byte_length") != len(raw):
+            errors.append(f"eval_package_seal_artifact_length_mismatch:{role}")
+    required_roles = {
+        "eval_record",
+        "scorecard_rows",
+        "component_scorecards",
+        "coverage_matrix",
+        "regression_summary",
+    }
+    missing_roles = sorted(required_roles - seen_roles)
+    errors.extend(f"eval_package_seal_role_missing:{role}" for role in missing_roles)
+    return not errors, errors
+
+
+def _seal_apps_rg_eval_package(
+    *,
+    run_dir: Path,
+    record_id: str,
+    planned_eval_artifacts: dict[str, Any],
+) -> Path:
+    if planned_eval_artifacts.get("__emission_complete__") is not True:
+        raise RuntimeError("Apps RG Eval package cannot seal before emission completes")
+    root = Path(run_dir).resolve()
+    entries: list[dict[str, Any]] = []
+    for role in (
+        "eval_record",
+        "scorecard_rows",
+        "component_scorecards",
+        "coverage_matrix",
+        "regression_summary",
+    ):
+        raw_refs = planned_eval_artifacts.get(role)
+        refs = raw_refs if isinstance(raw_refs, list) else [raw_refs]
+        if not refs or any(not str(ref or "").strip() for ref in refs):
+            raise RuntimeError(f"Apps RG Eval package has no planned artifact for {role}")
+        for ref in refs:
+            candidate = Path(str(ref)).resolve()
+            try:
+                relative = candidate.relative_to(root)
+            except ValueError as exc:
+                raise RuntimeError(
+                    f"Apps RG Eval package artifact escapes output root: {role}"
+                ) from exc
+            if not candidate.is_file():
+                raise RuntimeError(
+                    f"Apps RG Eval package artifact was not emitted: {role}:{relative}"
+                )
+            raw = candidate.read_bytes()
+            if not raw:
+                raise RuntimeError(
+                    f"Apps RG Eval package artifact is empty: {role}:{relative}"
+                )
+            if candidate.suffix.lower() == ".json":
+                try:
+                    json.loads(raw)
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError(
+                        f"Apps RG Eval package JSON is invalid: {role}:{relative}"
+                    ) from exc
+            entries.append(
+                {
+                    "artifact_role": role,
+                    "artifact_ref": relative.as_posix(),
+                    "sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
+                    "byte_length": len(raw),
+                }
+            )
+    body = {
+        "schema_version": "apps_eval.apps_rg_eval_package_seal.v1",
+        "record_id": record_id,
+        "status": "PASS",
+        "emission_phase": "POST_EMISSION_REOPENED_AND_VALIDATED",
+        "artifacts": entries,
+    }
+    payload = {
+        **body,
+        "manifest_sha256": "sha256:"
+        + hashlib.sha256(
+            json.dumps(
+                body,
+                sort_keys=True,
+                separators=(",", ":"),
+                default=str,
+            ).encode("utf-8")
+        ).hexdigest(),
+    }
+    path = root / "apps_rg_eval_package_seal.json"
+    _wg.write_text(path, json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    valid, errors = verify_apps_rg_eval_package_seal(root)
+    if not valid:
+        raise RuntimeError("Apps RG Eval package seal verification failed: " + ";".join(errors))
+    return path
 
 
 def _snapshot_deterministic_hash(snapshot: AppOutputSnapshot) -> str:
     data = snapshot.to_dict()
     data.pop("deterministic_hash", None)
+    data.pop("snapshot_digest", None)
     return _canonical_digest(data)
 
 
+def _enrich_apps_rg_snapshot(
+    snapshot: AppOutputSnapshot,
+    *,
+    registry_digest: str,
+) -> AppOutputSnapshot:
+    enriched = replace(
+        snapshot,
+        microstep_contract_digest=snapshot.microstep_contract_digest or registry_digest,
+        registry_digest=snapshot.registry_digest or registry_digest,
+    )
+    snapshot_digest = enriched.snapshot_digest or _snapshot_deterministic_hash(enriched)
+    enriched = replace(enriched, snapshot_digest=snapshot_digest)
+    return replace(enriched, deterministic_hash=_snapshot_deterministic_hash(enriched))
+
+
+def _uniform_bound_value(snapshots: list[AppOutputSnapshot], field_name: str) -> str:
+    if not snapshots:
+        return ""
+    values = [str(getattr(snapshot, field_name, "") or "").strip() for snapshot in snapshots]
+    if any(not value for value in values):
+        return ""
+    unique = set(values)
+    return values[0] if len(unique) == 1 else ""
+
+
+def _record_evidence_bindings(
+    snapshots: list[AppOutputSnapshot],
+    *,
+    record_id: str,
+    registry_digest: str,
+) -> dict[str, str]:
+    snapshot_digest = _uniform_bound_value(snapshots, "snapshot_digest")
+    if not snapshot_digest and snapshots and all(snapshot.snapshot_digest for snapshot in snapshots):
+        snapshot_digest = _canonical_digest(
+            [
+                {
+                    "scenario_id": snapshot.scenario_id,
+                    "snapshot_digest": snapshot.snapshot_digest,
+                }
+                for snapshot in sorted(snapshots, key=lambda item: item.scenario_id)
+            ]
+        )
+    return {
+        "parent_run_id": _uniform_bound_value(snapshots, "parent_run_id"),
+        "child_run_id": _uniform_bound_value(snapshots, "child_run_id"),
+        "section_attempt_id": _uniform_bound_value(snapshots, "section_attempt_id"),
+        "eval_record_id": record_id,
+        "runtime_exhaust_bundle_id": _uniform_bound_value(
+            snapshots, "runtime_exhaust_bundle_id"
+        ),
+        "microstep_contract_digest": registry_digest,
+        "registry_digest": registry_digest,
+        "snapshot_digest": snapshot_digest,
+    }
+
+
+def _assert_source_snapshot_unchanged(snapshot: AppOutputSnapshot) -> None:
+    if not snapshot.run_root or not snapshot.source_artifact_manifest:
+        return
+    current_manifest = build_source_artifact_manifest(Path(snapshot.run_root))
+    current_digest = source_artifact_manifest_digest(current_manifest)
+    if current_digest != snapshot.snapshot_digest:
+        raise RuntimeError(
+            "source_run_mutated_during_apps_eval: "
+            f"expected={snapshot.snapshot_digest} observed={current_digest}"
+        )
+
+
 def _default_current_run_expected(snapshot: AppOutputSnapshot) -> dict[str, Any]:
-    sections = snapshot.output.get("sections")
-    required_sections = ["executive_summary", "experience", "skills"]
-    if isinstance(sections, dict):
-        required_sections = [name for name in required_sections if name in sections]
     return {
         "required_output_keys": ["runtime", "sections"],
         "required_artifacts": ["generated_resume.json", "resume.md"],
-        "expected_x3": snapshot.x3_disposition,
+        "expected_x3": "X3D_ALLOW_FINISH",
         "forbidden_terms": [],
         "grounded_claims_required": True,
         "required_provenance": [],
-        "required_sections": required_sections,
+        "required_sections": ["executive_summary", "experience", "skills"],
         "length_bounds": {"min_words": 50, "max_words": 5000},
         "allow_side_effects": False,
         "escalation_required": False,
@@ -454,13 +676,43 @@ def run_current_snapshot_eval(
         raise ValueError(f"current snapshot eval supports apps_rg only, got {snapshot.app_id!r}")
     if not emit_l6_handoff:
         raise PermissionError("apps_rg current-run eval requires L6 shadow handoff")
+    if snapshot.provenance.get("source_unchanged") is not True:
+        raise ValueError(
+            "apps_rg current-run eval requires a read-only, byte-manifested source snapshot"
+        )
+    if snapshot.provenance.get("source_seal_verified") is not True:
+        raise ValueError(
+            "apps_rg current-run eval requires a verified product authorization seal"
+        )
+    if snapshot.provenance.get("preflight_verified") is not True:
+        raise ValueError(
+            "apps_rg current-run eval requires signed, digest-bound preflight evidence"
+        )
+    missing_identity = [
+        field
+        for field in (
+            "parent_run_id",
+            "child_run_id",
+            "section_attempt_id",
+            "runtime_exhaust_bundle_id",
+        )
+        if not str(getattr(snapshot, field, "") or "").strip()
+    ]
+    if missing_identity:
+        raise ValueError(
+            "apps_rg current-run eval requires complete sealed source identity: "
+            + ",".join(missing_identity)
+        )
 
     scenario_id = snapshot.scenario_id or "apps_rg_current_run"
-    stable_snapshot = replace(
+    app_microstep_contract_digest = apps_rg_contract_digest()
+    stable_snapshot = _enrich_apps_rg_snapshot(
         snapshot,
-        deterministic_hash=_snapshot_deterministic_hash(snapshot),
+        registry_digest=app_microstep_contract_digest,
     )
     expected_payload = dict(expected or _default_current_run_expected(stable_snapshot))
+    expected_payload["expected_x3"] = "X3D_ALLOW_FINISH"
+    expected_payload["required_sections"] = ["executive_summary", "experience", "skills"]
     created_at = _run_started_at(deterministic_only)
     repo_root = Path(__file__).resolve().parents[2]
     git_commit = _git_commit(repo_root)
@@ -500,7 +752,7 @@ def run_current_snapshot_eval(
             ),
             input_request_digest=_canonical_digest(stable_snapshot.provenance.get("resolved_inputs", {})),
             expected_digest=_canonical_digest(expected_payload),
-            snapshot_digest=_canonical_digest(stable_snapshot.to_dict()),
+            snapshot_digest=stable_snapshot.snapshot_digest,
         ),
     )
 
@@ -516,7 +768,6 @@ def run_current_snapshot_eval(
     )
     threshold_digest = _threshold_digest(thresholds)
     failure_mode_catalog_digest = _failure_mode_catalog_digest(graders)
-    app_microstep_contract_digest = apps_rg_contract_digest()
     record_seed = {
         "schema_version": CURRENT_EVAL_RECORD_SCHEMA_VERSION,
         "suite_id": suite_id,
@@ -537,6 +788,11 @@ def run_current_snapshot_eval(
         "fixture_provenance": [fixture.provenance.to_dict()],
         "current_run_snapshot_digest": fixture.provenance.snapshot_digest,
         "source_run_root": stable_snapshot.run_root,
+        "parent_run_id": stable_snapshot.parent_run_id,
+        "child_run_id": stable_snapshot.child_run_id,
+        "section_attempt_id": stable_snapshot.section_attempt_id,
+        "runtime_exhaust_bundle_id": stable_snapshot.runtime_exhaust_bundle_id,
+        "registry_digest": app_microstep_contract_digest,
     }
     if not deterministic_only:
         record_seed["created_at"] = created_at
@@ -553,6 +809,7 @@ def run_current_snapshot_eval(
         run_id=record_id,
         created_at=created_at,
         planned_eval_artifacts=planned_eval_artifacts,
+        snapshot_digest=stable_snapshot.snapshot_digest,
     )
     rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
     components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
@@ -626,6 +883,11 @@ def run_current_snapshot_eval(
             compare_baseline=False,
         ),
         fixture_provenance=[fixture.provenance],
+        **_record_evidence_bindings(
+            [stable_snapshot],
+            record_id=record_id,
+            registry_digest=app_microstep_contract_digest,
+        ),
     )
     flywheel = _regression_flywheel_summary(
         record=provisional,
@@ -634,6 +896,86 @@ def run_current_snapshot_eval(
         comparison=regression,
     )
     record = replace(provisional, regression_flywheel=flywheel)
+    # Phase 1 materializes the package. Package-presence microsteps are not
+    # allowed to pass from planned paths; they are rescored only after these
+    # files physically exist and can be reopened by the resolver.
+    _emit_artifacts(
+        record,
+        findings,
+        run_dir,
+        emit_l6_handoff,
+        diagnostic_rows=diagnostic_rows,
+        diagnostic_summary=diagnostic_summary,
+    )
+    planned_eval_artifacts["__emission_complete__"] = True
+    microstep_eval = build_apps_rg_microstep_evaluation(
+        suite_id=suite_id,
+        scenario_id=scenario_id,
+        snapshot=stable_snapshot,
+        run_id=record_id,
+        created_at=created_at,
+        planned_eval_artifacts=planned_eval_artifacts,
+        snapshot_digest=stable_snapshot.snapshot_digest,
+    )
+    rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
+    components = [
+        component.to_dict() for component in microstep_eval["component_scorecards"]
+    ]
+    coverage = microstep_eval["coverage_summary"].to_dict()
+    diagnostic_eval = build_apps_rg_diagnostics(
+        suite_id=suite_id,
+        scenario_id=scenario_id,
+        snapshot=stable_snapshot,
+        run_id=record_id,
+        scorecard_rows=rows,
+        snapshot_ref=stable_snapshot.run_root,
+        snapshot_digest=fixture.provenance.snapshot_digest,
+    )
+    diagnostic_rows = list(diagnostic_eval["rows"])
+    diagnostic_summary = _apps_rg_diagnostic_summary(
+        suite_id=suite_id,
+        app_id=stable_snapshot.app_id,
+        run_id=record_id,
+        observations=diagnostic_rows,
+    )
+    scenario_result = _scenario_rollup(
+        scenario_id,
+        findings,
+        stable_snapshot.run_root,
+        fixture.provenance.snapshot_digest,
+        _canonical_digest(fixture.provenance.to_dict()),
+    )
+    scenario_result["apps_rg_coverage_summary"] = coverage
+    suite_coverage = _apps_rg_suite_coverage(
+        suite_id=suite_id,
+        app_id=stable_snapshot.app_id,
+        rows=rows,
+        scenario_summaries=[coverage],
+    )
+    scorecard = _score(
+        suite_id,
+        stable_snapshot.app_id,
+        1,
+        findings,
+        thresholds=thresholds,
+        scorecard_rows=rows,
+        component_scorecards=components,
+        coverage_summary=suite_coverage,
+    )
+    provisional = replace(
+        record,
+        scenario_results=[scenario_result],
+        scorecard=scorecard,
+    )
+    record = replace(
+        provisional,
+        regression_flywheel=_regression_flywheel_summary(
+            record=provisional,
+            findings=findings,
+            baseline_payload=None,
+            comparison=regression,
+        ),
+    )
     paths = _emit_artifacts(
         record,
         findings,
@@ -658,6 +1000,12 @@ def run_current_snapshot_eval(
         record = replace(record, artifact_paths=paths)
         _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
         _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
+    _seal_apps_rg_eval_package(
+        run_dir=run_dir,
+        record_id=record_id,
+        planned_eval_artifacts=planned_eval_artifacts,
+    )
+    _assert_source_snapshot_unchanged(stable_snapshot)
     return record
 
 
@@ -777,6 +1125,7 @@ def _emit_artifacts(
                 "apps_rg_l6_eval_handoff": run_dir / "apps_rg_l6_eval_handoff.json",
                 "diagnostic_rows": run_dir / "diagnostic_rows.jsonl",
                 "diagnostic_summary": run_dir / "diagnostic_summary.json",
+                "eval_package_seal": run_dir / "apps_rg_eval_package_seal.json",
             }
         )
     _wg.write_text(paths["eval_record"], json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
@@ -855,6 +1204,14 @@ def _emit_artifacts(
             "observed_value",
             "threshold",
             "evidence_digest",
+            "parent_run_id",
+            "child_run_id",
+            "section_attempt_id",
+            "eval_record_id",
+            "runtime_exhaust_bundle_id",
+            "microstep_contract_digest",
+            "registry_digest",
+            "snapshot_digest",
         ]
         coverage_buffer = io.StringIO(newline="")
         coverage_writer = csv.DictWriter(coverage_buffer, fieldnames=coverage_fields)
@@ -877,6 +1234,14 @@ def _emit_artifacts(
             "artifact_ref",
             "evidence_ref",
             "evidence_digest",
+            "parent_run_id",
+            "child_run_id",
+            "section_attempt_id",
+            "eval_record_id",
+            "runtime_exhaust_bundle_id",
+            "microstep_contract_digest",
+            "registry_digest",
+            "snapshot_digest",
             "verdict",
         ]
         evidence_buffer = io.StringIO(newline="")
@@ -1041,11 +1406,18 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
     apps_rg_component_scorecards: list[dict[str, Any]] = []
     apps_rg_scenario_coverages: list[dict[str, Any]] = []
     apps_rg_diagnostic_rows: list[DiagnosticObservationV1] = []
+    apps_rg_snapshots: list[AppOutputSnapshot] = []
     scenario_results = []
     rubric_ids = sorted({fixture.scenario.rubric_id for fixture in fixtures})
     planned_eval_artifacts = _planned_eval_artifacts(run_dir) if suite.get("app_id") == "apps_rg" else {}
     for fixture in fixtures:
         snapshot = _load_snapshot(fixture) if request.mode == "snapshot" else _run_live(fixture, run_dir)
+        if suite.get("app_id") == "apps_rg":
+            snapshot = _enrich_apps_rg_snapshot(
+                snapshot,
+                registry_digest=app_microstep_contract_digest,
+            )
+            apps_rg_snapshots.append(snapshot)
         snapshot_payload = snapshot.to_dict()
         scenario_findings = [grader.grade(fixture, snapshot) for grader in graders]
         findings.extend(scenario_findings)
@@ -1064,6 +1436,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
                 run_id=record_id,
                 created_at=created_at,
                 planned_eval_artifacts=planned_eval_artifacts,
+                snapshot_digest=snapshot.snapshot_digest,
             )
             rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
             components = [component.to_dict() for component in microstep_eval["component_scorecards"]]
@@ -1075,7 +1448,7 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
                 run_id=record_id,
                 scorecard_rows=rows,
                 snapshot_ref=fixture.snapshot_path if request.mode == "snapshot" else str((run_dir / "live_snapshots" / f"{hashlib.sha256(fixture.scenario.scenario_id.encode('utf-8')).hexdigest()[:8]}.json").as_posix()),
-                snapshot_digest=_canonical_digest(snapshot_payload),
+                snapshot_digest=snapshot.snapshot_digest,
             )
             apps_rg_scorecard_rows.extend(rows)
             apps_rg_component_scorecards.extend(components)
@@ -1141,6 +1514,13 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
             compare_baseline=request.compare_baseline,
         ),
         fixture_provenance=fixture_provenance,
+        **_record_evidence_bindings(
+            apps_rg_snapshots,
+            record_id=record_id,
+            registry_digest=app_microstep_contract_digest,
+        )
+        if suite.get("app_id") == "apps_rg"
+        else {"eval_record_id": record_id},
     )
     flywheel = _regression_flywheel_summary(
         record=provisional,
@@ -1160,6 +1540,118 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         if suite.get("app_id") == "apps_rg"
         else None
     )
+    if suite.get("app_id") == "apps_rg":
+        # Materialize first, then reopen and rescore Eval-owned package roles.
+        # This prevents intended output paths from satisfying presence gates.
+        _emit_artifacts(
+            record,
+            findings,
+            run_dir,
+            request.emit_l6_handoff,
+            diagnostic_rows=apps_rg_diagnostic_rows,
+            diagnostic_summary=diagnostic_summary,
+        )
+        planned_eval_artifacts["__emission_complete__"] = True
+        rescored_rows: list[ScorecardRow] = []
+        rescored_components: list[dict[str, Any]] = []
+        rescored_coverages: list[dict[str, Any]] = []
+        rescored_diagnostics: list[DiagnosticObservationV1] = []
+        rescored_scenarios = [dict(item) for item in scenario_results]
+        for index, (fixture, snapshot) in enumerate(zip(fixtures, apps_rg_snapshots)):
+            microstep_eval = build_apps_rg_microstep_evaluation(
+                suite_id=request.suite_id,
+                scenario_id=fixture.scenario.scenario_id,
+                snapshot=snapshot,
+                run_id=record_id,
+                created_at=created_at,
+                planned_eval_artifacts=planned_eval_artifacts,
+                snapshot_digest=snapshot.snapshot_digest,
+            )
+            scenario_rows = _apps_rg_record_rows(list(microstep_eval["rows"]))
+            scenario_components = [
+                component.to_dict()
+                for component in microstep_eval["component_scorecards"]
+            ]
+            scenario_coverage = microstep_eval["coverage_summary"].to_dict()
+            diagnostic_eval = build_apps_rg_diagnostics(
+                suite_id=request.suite_id,
+                scenario_id=fixture.scenario.scenario_id,
+                snapshot=snapshot,
+                run_id=record_id,
+                scorecard_rows=scenario_rows,
+                snapshot_ref=(
+                    fixture.snapshot_path
+                    if request.mode == "snapshot"
+                    else str(
+                        (
+                            run_dir
+                            / "live_snapshots"
+                            / (
+                                hashlib.sha256(
+                                    fixture.scenario.scenario_id.encode("utf-8")
+                                ).hexdigest()[:8]
+                                + ".json"
+                            )
+                        ).as_posix()
+                    )
+                ),
+                snapshot_digest=snapshot.snapshot_digest,
+            )
+            rescored_rows.extend(scenario_rows)
+            rescored_components.extend(scenario_components)
+            rescored_coverages.append(scenario_coverage)
+            rescored_diagnostics.extend(list(diagnostic_eval["rows"]))
+            rescored_scenarios[index]["apps_rg_coverage_summary"] = scenario_coverage
+        apps_rg_coverage_summary = _apps_rg_suite_coverage(
+            suite_id=request.suite_id,
+            app_id=str(suite["app_id"]),
+            rows=rescored_rows,
+            scenario_summaries=rescored_coverages,
+        )
+        scorecard = _score(
+            request.suite_id,
+            str(suite["app_id"]),
+            len(fixtures),
+            findings,
+            thresholds=thresholds,
+            scorecard_rows=rescored_rows,
+            component_scorecards=rescored_components,
+            coverage_summary=apps_rg_coverage_summary,
+        )
+        if request.compare_baseline:
+            base_summary = compare_record_to_baseline(
+                {"scorecard": scorecard.to_dict()},
+                baseline_payload or {},
+            )
+            regression = RegressionSummary(
+                **{
+                    **base_summary.to_dict(),
+                    "baseline_path": request.baseline_path,
+                }
+            )
+        provisional = replace(
+            record,
+            scenario_results=rescored_scenarios,
+            scorecard=scorecard,
+            regression=regression,
+        )
+        record = replace(
+            provisional,
+            regression_flywheel=_regression_flywheel_summary(
+                record=provisional,
+                findings=findings,
+                baseline_payload=baseline_payload,
+                comparison=regression,
+                baseline_path=request.baseline_path if request.compare_baseline else "",
+            ),
+        )
+        apps_rg_diagnostic_rows = rescored_diagnostics
+        diagnostic_summary = _apps_rg_diagnostic_summary(
+            suite_id=request.suite_id,
+            app_id=str(suite["app_id"]),
+            run_id=record_id,
+            observations=apps_rg_diagnostic_rows,
+        )
     paths = _emit_artifacts(
         record,
         findings,
@@ -1184,6 +1676,14 @@ def run_eval(request: EvalRequest) -> CompletedEvalRecord:
         record = replace(record, artifact_paths=paths)
         _wg.write_text(Path(paths["eval_record"]), json.dumps(record.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
         _wg.write_text(Path(paths["report"]), render_report(record, findings), encoding="utf-8")
+    if suite.get("app_id") == "apps_rg":
+        _seal_apps_rg_eval_package(
+            run_dir=run_dir,
+            record_id=record_id,
+            planned_eval_artifacts=planned_eval_artifacts,
+        )
+    for snapshot in apps_rg_snapshots:
+        _assert_source_snapshot_unchanged(snapshot)
     return record
 
 

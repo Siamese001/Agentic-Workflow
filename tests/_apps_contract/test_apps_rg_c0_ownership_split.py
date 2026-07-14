@@ -87,12 +87,14 @@ class TestEvidenceRoomImportBoundary:
         assert "c02_product_hybrid_retrieval" in src
         assert "from apps_rg.runtime.bindings.c0_binding" not in src
 
-    def test_evidence_room_no_c06_weak_refine_import(self) -> None:
+    def test_evidence_room_uses_apps_owned_bounded_c06_refinement(self) -> None:
         tree = _module_ast(EVIDENCE_ROOM)
         imports = _import_names(tree)
-        assert "apps_rg.runtime.c0.c06_weak_refine" not in imports
+        assert "apps_rg.runtime.c0.c06_weak_refine" in imports
         src = EVIDENCE_ROOM.read_text(encoding="utf-8")
-        assert "maybe_c06_weak_refine" not in src
+        assert "maybe_c06_weak_refine(" in src
+        assert "strict_ranked_selection=False" in src
+        assert "receipt_only_refine_removed" not in src
 
     def test_evidence_room_no_core_retrieval_plan_builder(self) -> None:
         imports = _import_names(_module_ast(EVIDENCE_ROOM))

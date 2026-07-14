@@ -1,0 +1,211 @@
+{
+  "schema_version": "apps_rg.c03_resume_graph_w6_engineering_receipt.v1",
+  "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+  "generated_at_utc": "2026-07-14T05:43:24Z",
+  "repository": "Siamese001/Agentic-Workflow",
+  "branch": "agent/apps-rg-c03-resume-graph-w1-w6",
+  "base_sha": "3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7",
+  "parent_sha": "572f844b83378e79fa0319f1e1848f31ac7c6aaf",
+  "implementation_commit_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+  "pull_request": "https://github.com/Siamese001/Agentic-Workflow/pull/556",
+  "status": "ENGINEERING_COMPLETE_HUMAN_EVIDENCE_PENDING",
+  "w6_exit_gate_pass": false,
+  "unknown_is_pass": false,
+  "current_run_mutated": false,
+  "promotion_claimed": false,
+  "w7_w9_started": false,
+  "scope": {
+    "implementation_config_test_and_workflow_files_changed": 46,
+    "touches_agentic_core": false,
+    "w9_assets_activated": false,
+    "human_labels_created": false,
+    "reviewer_identities_created": false,
+    "controlled_packet_committed": false,
+    "blinding_nonce_committed": false
+  },
+  "implementation": {
+    "score_contract": [
+      "authority eligibility",
+      "raw proof strength",
+      "target alignment kept non-authoritative",
+      "claim entailment",
+      "metric binding",
+      "raw path confidence",
+      "source independence",
+      "signed selection margin"
+    ],
+    "evaluation": [
+      "complete bounded finite-universe Recall@1/3/5/10",
+      "nDCG@1/3/5/10",
+      "MRR",
+      "authority and exact-path accuracy",
+      "claim entailment and metric-binding classification metrics",
+      "selection-margin summary",
+      "deterministic isotonic proof calibration",
+      "ECE and Brier reporting",
+      "future-run-only threshold candidate"
+    ],
+    "bounded_refinement": {
+      "maximum_c03_retries": 1,
+      "frozen_selected_plan_required": true,
+      "acl_or_route_widening_forbidden": true,
+      "current_graph_or_atoms_mutation_forbidden": true,
+      "c07_exact_adopted_snapshot_binding": true,
+      "unresolved_or_drift_result": "BLOCKED"
+    },
+    "human_evidence_workflow": [
+      "clean-commit source freeze over six real allocator cases",
+      "secret-HMAC blinding and split assignment",
+      "binding-group proof split isolation",
+      "separate proof and retrieval reviewer cohorts",
+      "two independent humans plus adjudication per item",
+      "private authority-roster receipt required",
+      "sealed adjudicated export",
+      "sanitized aggregate CI receipt"
+    ],
+    "controlled_evidence_boundary": [
+      "owner-only permissions",
+      "outside git checkout",
+      "no final or ancestor symlink components",
+      "no hardlink aliases, including packet and label members",
+      "input rehash before output",
+      "no controlled details in sanitized CI receipt"
+    ]
+  },
+  "source_authority": {
+    "attachment_name": "agentic_process_mapping_v40.md",
+    "attachment_sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
+    "applied_laws": [
+      "L6 is post-run only",
+      "UNKNOWN is non-PASS",
+      "calibration cannot mutate the current run",
+      "human review remains external authority"
+    ]
+  },
+  "controlled_prelabel_evidence": {
+    "source_commit_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+    "source_bundle_sha256": "07ba5174672957174484709a7119b701e21867edbbc6164ccb12d859ef0ad876",
+    "source_freeze_receipt_sha256": "1cd6e91f27a3fe3bcbff00289e47ee5986d38b60d9fbf34950189aa26854bf65",
+    "source_freeze_receipt_digest": "87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5",
+    "graph_digest": "f8ccac05a5c1c56169088bc6e46fe4317199c2209370a27c41d0fcd083459883",
+    "policy_digest": "4f68c3dcb782037d2f5a4fdf564e1cc8f157774bc4ee78d67a2c7275bd1b4ee6",
+    "packet_id": "c03-human-eval::3e810e9ec6958bfe901ea6f5",
+    "packet_manifest_sha256": "37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08",
+    "packet_manifest_digest": "37a80b297dcdd36edf592c0cc0ede4a3ec261c12675f07e2b527ecacd67cfdc7",
+    "prelabel_validation_digest": "dc54de76466cda05bfa86af7d69c61ac5fe74795e85663a1c84933b8bbb6630f",
+    "prelabel_receipt_digest": "047ea87471be22e79598f99bc452151196aa76c0535c24e2bec7345b4f7435a1",
+    "proof_split_policy_id": "c03-proof-binding-group-stratified-sha256-v2",
+    "case_count": 6,
+    "target_profile_count": 3,
+    "claim_item_count": 282,
+    "retrieval_query_count": 84,
+    "proof_split_group_counts": {
+      "calibration": 29,
+      "holdout": 28
+    },
+    "retrieval_query_split_counts": {
+      "calibration": 42,
+      "release_holdout": 42
+    },
+    "w9_pair_count": 0,
+    "official_prelabel_validation": "PASS"
+  },
+  "safe_artifact_inventory": {
+    "proof_reviewer_archive": {
+      "name": "w6_proof_reviewer_packet.tar.gz",
+      "sha256": "f34a21b323e7b029a2cd154bad419d8f6e3e3a88bbd4f777f9d98f974701f85a",
+      "item_count": 282
+    },
+    "retrieval_reviewer_archive": {
+      "name": "w6_retrieval_reviewer_packet.tar.gz",
+      "sha256": "bd93a0398ad46608fc67f5efdc5c57cf6274c8e2600d30dd9cbd2119e16e484a",
+      "item_count": 84
+    },
+    "controller_receipts_archive": {
+      "name": "w6_controller_receipts.tar.gz",
+      "sha256": "0f34f384a35de82e78810ec305cc6d6f83589663fcaab9b38be5ab94b85839ad",
+      "secret_nonce_included": false,
+      "sealed_mappings_included": false
+    },
+    "sanitized_unknown_receipt": {
+      "name": "w6_sanitized_ci_receipt.UNKNOWN.json",
+      "sha256": "9b0b0c9a9049e0db73c076d0e4c96494d005cfeaff11aad55d6a18bbb38401ef",
+      "status": "UNKNOWN",
+      "evaluation_gate_pass": false,
+      "promotion_eligible": false
+    }
+  },
+  "verification": [
+    {
+      "name": "final W6 evaluator/runtime snapshot",
+      "result": "PASS",
+      "evidence": "141 passed in 103.08s"
+    },
+    {
+      "name": "refreshed W1-W5 regression",
+      "result": "PASS",
+      "evidence": "57 passed"
+    },
+    {
+      "name": "packet/source independent review",
+      "result": "PASS",
+      "evidence": "53 passed; no known P0/P1"
+    },
+    {
+      "name": "evaluator independent review",
+      "result": "PASS",
+      "evidence": "105 passed before final hardening; 31 focused final adversarial tests passed; no P0/P1"
+    },
+    {
+      "name": "final adversarial review",
+      "result": "PASS",
+      "evidence": "141 passed; no remaining P0/P1"
+    },
+    {
+      "name": "broader integration snapshot",
+      "result": "BASELINE_BLOCKED",
+      "evidence": "46 passed, 12 skipped, 1 frozen W0 agentic_core literal-boundary failure"
+    },
+    {
+      "name": "graph hardening validator",
+      "result": "PASS",
+      "evidence": "validator status PASS; existing metric-bucket concentration warning remains visible"
+    },
+    {
+      "name": "UNKNOWN CI behavior",
+      "result": "PASS",
+      "evidence": "advisory mode exit 0; fail-closed mode exit 1"
+    },
+    {
+      "name": "compilation/diff/scope",
+      "result": "PASS",
+      "evidence": "py_compile and git diff --check pass; no agentic_core diff"
+    }
+  ],
+  "adversarial_findings_closed": [
+    {
+      "severity": "P1",
+      "finding": "canonical proof-split profile drifted from the shared binding-group split policy",
+      "closure": "profile, evaluator, and CI checker now bind the same shared v2 constant with negative drift tests"
+    },
+    {
+      "severity": "P1",
+      "finding": "official evaluator could reaccept controlled evidence moved into the checkout or reached through aliases",
+      "closure": "checkout containment, ancestor/final symlink, hardlink, recursive member, and no-follow checks now fail closed"
+    }
+  ],
+  "open_external_evidence": [
+    "evaluation-owner approval of the prelabel pin before labeling",
+    "trusted human-review authority roster and assignments",
+    "two independent human labels and adjudication per proof item",
+    "two independent human labels and adjudication per retrieval query from a disjoint cohort",
+    "completed-packet validation and sealed export",
+    "held-out W6 metrics satisfying every frozen release target"
+  ],
+  "downstream_disposition": {
+    "W7": "NOT_STARTED",
+    "W8": "NOT_STARTED",
+    "W9": "NOT_STARTED",
+    "reason": "mandatory W6 human-evidence exit gate remains UNKNOWN"
+  }
+}

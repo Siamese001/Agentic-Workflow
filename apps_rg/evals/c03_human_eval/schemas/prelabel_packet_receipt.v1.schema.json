@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.prelabel_packet_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "status", "official_pass", "unknown_is_pass", "packet_id",
+    "packet_manifest_sha256", "packet_manifest_digest", "source_freeze_receipt_digest",
+    "proof_split_policy_id", "proof_split_policy_salt", "retrieval_split_policy_id",
+    "retrieval_split_assignment_commitment", "prelabel_validation_digest", "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.prelabel_packet_receipt.v1"},
+    "status": {"enum": ["PASS", "PASS_TEST_ONLY"]},
+    "official_pass": {"type": "boolean"},
+    "unknown_is_pass": {"const": false},
+    "packet_id": {"type": "string"},
+    "packet_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "packet_manifest_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_freeze_receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proof_split_policy_id": {"const": "c03-proof-binding-group-stratified-sha256-v2"},
+    "proof_split_policy_salt": {"type": "integer", "minimum": 0},
+    "retrieval_split_policy_id": {"const": "secret-hmac-balanced-by-target-profile-v1"},
+    "retrieval_split_assignment_commitment": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "prelabel_validation_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

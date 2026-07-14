@@ -1,8 +1,10 @@
 ---
 name: u0-app-customization
 description: |
-  Use when adding or updating app customization through U0 runtime_customization_package.
-  Guides canonical procedures for keeping app-specific logic in apps_* with profile refs.
+  Invoke when creating, revising, or validating an app's U0 runtime_customization_package or
+  its route, retrieval, prompt, exit, judge, threshold, cache, meta-feedback, ingress, schema,
+  field-map, and profile-reference contracts. Enforce declarative app ownership and the
+  carrier-only U0 boundary.
 ---
 
 # U0 App Customization Skill

@@ -1,0 +1,30 @@
+schema_version: apps_rg.c03_human_eval.proof_rubric.v1
+rubric_id: c03_claim_proof_v1
+reviewer_policy:
+  independent_primary_reviewers: 2
+  human_only: true
+  unknown_is_pass: false
+  system_scores_visible: false
+dimensions:
+  authority_eligible:
+    values: [PASS, FAIL, UNKNOWN]
+    definition: Whether the supplied source is externally claim-eligible for this lane; UNKNOWN is nonpass.
+  claim_entailment_grade:
+    values: [0, 1, 2, 3]
+    anchors:
+      0: contradicted_or_unsupported
+      1: weak_or_materially_incomplete
+      2: supported_with_minor_imprecision
+      3: directly_and_completely_supported
+  path_accuracy:
+    values: [true, false, UNKNOWN]
+    definition: Whether the human-readable claim-to-skill-to-fact-to-metric path is correct.
+  metric_binding:
+    values: [EXACT, INEXACT, NOT_APPLICABLE, UNKNOWN]
+    definition: Whether every visible metric value and unit exactly matches supplied proof.
+  target_relevance_grade:
+    values: [0, 1, 2, 3]
+    authority: non_authoritative_targeting_signal
+  overall_proof_valid:
+    values: [true, false, UNKNOWN]
+    rule: PASS authority, entailment at least 2, accurate path, and exact or not-applicable metric.

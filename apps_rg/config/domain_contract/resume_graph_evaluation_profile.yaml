@@ -1,0 +1,108 @@
+schema_version: "apps_rg.resume_graph_evaluation_profile.v1"
+profile_id: "apps_rg::resume_graph_evaluation::v1"
+policy_version: "resume_graph_confidence_candidate_v1"
+app_id: "apps_rg"
+task_class: "resume_generation"
+status: "candidate_unpromoted"
+unknown_is_pass: false
+target_alignment_authoritative: false
+
+dataset:
+  dataset_id: "apps_rg_c03_resume_graph_proof"
+  dataset_version: "v1"
+  dataset_path: "apps_eval/fixtures/holdout/apps_rg_c03_resume_graph_proof.v1.jsonl"
+  row_schema_version: "apps_rg.c03_human_eval.adjudicated_evaluation.v1"
+  proof_split_field: "proof_split"
+  retrieval_split_field: "retrieval_split"
+  proof_identity_field: "proof_identity_digest"
+  proof_split_policy_id: "c03-proof-binding-group-stratified-sha256-v2"
+  required_label_source: "human_semantic_review"
+  minimum_total_samples: 40
+  minimum_calibration_samples: 20
+  minimum_holdout_samples: 20
+  minimum_retrieval_samples: 40
+  minimum_calibration_retrieval_samples: 20
+  minimum_holdout_retrieval_samples: 20
+  minimum_metric_binding_samples: 5
+  require_two_reviewers: true
+  require_adjudication_receipt: true
+  require_leakage_check_pass: true
+  require_both_proof_labels_per_split: true
+  required_target_profiles:
+    - "ai_partnerships_gtm"
+    - "svp_agentic_engineering_platform"
+    - "insurance_it_strategy_modernization"
+  required_sections:
+    - "competencies"
+    - "unify_bullets"
+    - "ibm_bullets"
+    - "insurtech_bullets"
+    - "ey_bullets"
+    - "unify_narrative"
+    - "ibm_narrative"
+    - "insurtech_narrative"
+    - "ey_narrative"
+    - "executive_summary"
+    - "headline"
+  required_retrieval_sections:
+    - "competencies"
+    - "unify_bullets"
+    - "ibm_bullets"
+    - "insurtech_bullets"
+    - "ey_bullets"
+    - "executive_summary"
+    - "headline"
+
+retrieval:
+  k_values: [1, 3, 5, 10]
+  gate_k: 10
+  primary_k: 10
+  frontier_k: 10
+  maximum_selected_audit_extras: 1
+  allocator_candidate_budget: 64
+  relevance_positive_floor: 2.0
+  relevance_grade_minimum: 0.0
+  relevance_grade_maximum: 3.0
+  ndcg_gain: "exponential"
+  duplicate_candidate_behavior: "invalid"
+  empty_relevance_behavior: "unknown"
+  exact_path_order_matters: true
+  recall_definition: "micro_pooled_top_k_relevant_hits_over_all_relevant_candidates_in_the_complete_bounded_finite_universe"
+
+calibration:
+  method: "deterministic_isotonic_pav_v1"
+  feature_field: "proof_score_raw"
+  target_field: "proof_label"
+  ece_bins: 10
+  probability_clip_min: 0.0
+  probability_clip_max: 1.0
+  threshold_selection_split: "proof_split:calibration"
+  threshold_precision_floor: 0.90
+  minimum_candidate_threshold: 0.90
+  minimum_predicted_positive_count: 2
+  active_threshold: null
+  activation_status: "UNPROMOTED"
+  future_run_only: true
+
+release_targets:
+  recall_at_k_minimum: 0.95
+  ndcg_at_k_minimum: 0.90
+  mrr_minimum: null
+  authority_eligibility_accuracy_minimum: 1.0
+  exact_path_accuracy_minimum: 1.0
+  claim_entailment_accuracy_minimum: 0.90
+  metric_binding_accuracy_minimum: 0.95
+  ece_maximum: 0.05
+  proof_confidence_candidate_precision_minimum: 0.90
+  proof_confidence_candidate_floor_minimum: 0.90
+  proof_confidence_candidate_support_minimum: 2
+  brier_maximum: null
+  brier_policy: "freeze_first_human_baseline_then_ratchet"
+
+output:
+  protected_artifact_path: null
+  artifact_path: "artifacts/calibration/apps_rg_resume_graph_w6.json"
+  artifact_schema_version: "apps_rg.resume_graph_w6_evaluation.v1"
+  ci_receipt_schema_version: "apps_rg.resume_graph_w6_ci_receipt.v1"
+  emit_per_sample_results_only_after_valid_human_calibration: true
+  unmeasured_metric_value: null

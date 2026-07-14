@@ -10,11 +10,6 @@ from apps_rg.cache.cache_preflight_evidence import (
     CACHE_MISS_RECEIPT_NAME,
     CACHE_PREFLIGHT_MANIFEST_NAME,
 )
-from apps_rg.runtime.section_spine_terminology import (
-    BINDING_CLASSIFICATION_FEC_SHAPE_ONLY,
-    BINDING_CLASSIFICATION_FULL_C03,
-    BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
-)
 from apps_rg.runtime.native_c03_skills_graph import validate_native_c03_contract
 from apps_rg.runtime.non_product_proof_stamp import (
     CI_LANE_DEV_HARNESS_CLASSIFICATION,
@@ -23,6 +18,11 @@ from apps_rg.runtime.non_product_proof_stamp import (
     ORCHESTRATOR_PROOF_CLASSIFICATION,
     PACKAGE_DISPOSITION_CLASSIFICATION,
     SECTION_L7_CORRELATION_CLASSIFICATION,
+)
+from apps_rg.runtime.section_spine_terminology import (
+    BINDING_CLASSIFICATION_FEC_SHAPE_ONLY,
+    BINDING_CLASSIFICATION_FULL_C03,
+    BINDING_CLASSIFICATION_SECTION_GRAPH_CONTEXT,
 )
 
 INTEGRATED_R4_PRODUCT_CLASSIFICATION = "INTEGRATED_R4_PRODUCT_RUNTIME"
@@ -393,7 +393,7 @@ def _live_product_outcome_blockers(run_dir: Path, paths: dict[str, Path | None])
     if fault:
         blockers.append(f"l2_fault:{fault[:160]}")
     x3 = str(r4.get("x3_disposition") or "").strip()
-    if x3 and x3 not in {"X3_ALLOW", "ALLOW"}:
+    if x3 and x3 != "X3D_ALLOW_FINISH":
         blockers.append(f"integrated_x3_disposition:{x3}")
     for name in ("x3_disposition_receipt.json", "exit_disposition_receipt.json"):
         x3_path = run_dir / name
@@ -406,7 +406,7 @@ def _live_product_outcome_blockers(run_dir: Path, paths: dict[str, Path | None])
             code = str(disp.get("x3_code") or disp.get("disposition") or "")
         else:
             code = str(disp or "")
-        if code and code not in {"X3_ALLOW", "ALLOW"}:
+        if code and code != "X3D_ALLOW_FINISH":
             blockers.append(f"integrated_exit_x3:{code}")
         break
     spine_path = run_dir / "agentic_core_spine_proof.json"

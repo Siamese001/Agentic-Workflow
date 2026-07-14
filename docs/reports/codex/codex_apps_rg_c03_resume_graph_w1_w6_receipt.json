@@ -1,0 +1,203 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "apps-rg-c03-resume-graph-w1-w6-20260713",
+  "generated_at": "2026-07-14T05:43:24Z",
+  "repo": {
+    "root": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-live",
+    "worktree": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-live",
+    "repository": "Siamese001/Agentic-Workflow",
+    "branch": "agent/apps-rg-c03-resume-graph-w1-w6",
+    "base_sha": "3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7",
+    "w1_w5_implementation_sha": "07cb833099126cec5e3b043ca94dee9c18b761f7",
+    "pre_w6_evidence_sha": "572f844b83378e79fa0319f1e1848f31ac7c6aaf",
+    "w6_implementation_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+    "dirty_before": false,
+    "dirty_after_expected": false
+  },
+  "scope": {
+    "request": "Finish W1 and the remaining apps_rg C0.3 resume graph hardening plan after completed W0; the user clarified that W6 had not been completed.",
+    "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+    "touches_agentic_core": false,
+    "authorization": "W1-W9 implementation authorized, subject to the plan's mandatory stop conditions",
+    "wave_disposition": {
+      "W1": "COMPLETED",
+      "W2": "COMPLETED",
+      "W3": "COMPLETED",
+      "W4": "COMPLETED",
+      "W5": "COMPLETED",
+      "W6": "ENGINEERING_COMPLETE_HUMAN_EVIDENCE_PENDING",
+      "W7": "NOT_STARTED_DUE_TO_W6_STOP",
+      "W8": "NOT_STARTED_DUE_TO_W6_STOP",
+      "W9": "NOT_STARTED_DUE_TO_W6_STOP"
+    },
+    "w6_changed_file_count": 46,
+    "w6_primary_surfaces": [
+      "apps_rg/runtime/c0/c06_weak_refine.py",
+      "apps_rg/runtime/c0/c07_handoff_audit.py",
+      "apps_rg/runtime/c0/evidence_room.py",
+      "apps_rg/runtime/c0/resume_graph_allocation.py",
+      "apps_rg/evals/resume_graph_evaluation.py",
+      "apps_rg/evals/c03_human_eval/",
+      "apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml",
+      "ops_scripts/calibration/apps_rg_resume_graph_w6.py",
+      "ops_scripts/ci/check_apps_rg_resume_graph_w6.py",
+      "tests/unit/apps_rg/evals/",
+      "tests/unit/apps_rg/test_c06_weak_refine.py"
+    ],
+    "evidence_files": [
+      "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md",
+      "docs/reports/apps_rg/c03_resume_graph_w6_blocker.json",
+      "docs/reports/apps_rg/c03_resume_graph_w6_engineering_receipt.json",
+      "docs/reports/codex/codex_apps_rg_c03_resume_graph_w1_w6_receipt.json"
+    ]
+  },
+  "source_authority": {
+    "attachment": "/workspace/scratch/5d58ecb9b460/project_sources/01-agentic_process_mapping_v40.md",
+    "attachment_sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
+    "applied_contract": "L6 post-run calibration only; UNKNOWN is non-PASS; no current-run mutation; human evidence remains authoritative"
+  },
+  "execution": {
+    "status": "BLOCKED_HUMAN_EVIDENCE_PENDING",
+    "engineering_complete": true,
+    "commands": [
+      {
+        "command": "pytest final W6 evaluator/runtime packet, calibration, retry, and allocation snapshot",
+        "status": "PASS",
+        "result": "141 passed"
+      },
+      {
+        "command": "pytest refreshed W1-W5 focused regression",
+        "status": "PASS",
+        "result": "57 passed"
+      },
+      {
+        "command": "pytest broader app integration/ownership snapshot",
+        "status": "BASELINE_BLOCKED",
+        "result": "46 passed, 12 skipped, 1 frozen W0 agentic_core literal-boundary failure"
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.validate_c03_graph_hardening",
+        "status": "PASS",
+        "result": "validator status PASS; pre-existing metric-bucket concentration warning retained"
+      },
+      {
+        "command": "python tools/apps_rg/c0_evidence_room_stress.py",
+        "status": "PASS",
+        "result": "bounded C0.6/C0.7 stress path completed"
+      },
+      {
+        "command": "python -m py_compile changed W6 implementation and test modules",
+        "status": "PASS",
+        "result": "exit 0"
+      },
+      {
+        "command": "git diff --check and no-agentic_core diff boundary",
+        "status": "PASS",
+        "result": "exit 0; no agentic_core paths"
+      },
+      {
+        "command": "c03_human_eval freeze-source/readiness/build/validate/seal-prelabel",
+        "status": "PASS",
+        "result": "6 cases, 282 proof items, 84 retrieval queries, 57 proof groups, 0 W9 pairs"
+      },
+      {
+        "command": "apps_rg_resume_graph_w6.py without completed human dataset",
+        "status": "EXPECTED_NONPASS",
+        "result": "UNKNOWN, exit 2, promotion_eligible=false"
+      },
+      {
+        "command": "check_apps_rg_resume_graph_w6.py advisory and fail-closed",
+        "status": "PASS",
+        "result": "UNKNOWN advisory exit 0; fail-closed exit 1"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "W0 frozen ADG authority map",
+        "reason": "Live ADG MCP transport was unavailable for the structural edit session.",
+        "substitute": "The W0-approved finite impact map and receipt constrained edits to declared apps_rg surfaces."
+      },
+      {
+        "route": "Dedicated temporary dependency environment",
+        "reason": "The primary runtime omitted packages required during repository-wide test collection.",
+        "substitute": "Tests ran in /tmp with real dependencies and no repository dependency-file changes."
+      },
+      {
+        "route": "GitHub object API publication",
+        "reason": "Direct shell push credentials were unavailable.",
+        "substitute": "Every local blob SHA was verified against the GitHub-created blob before a fast-forward tree/commit/ref update."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "W1-W5 graph hardening",
+        "status": "PASS",
+        "evidence": "authority-before-targeting, complete traversal, allocation, zero reuse, claim binding, and X3 hard-block regression pass"
+      },
+      {
+        "name": "W6 score/evaluation contract",
+        "status": "PASS",
+        "evidence": "separate raw fields; full retrieval/proof metrics; deterministic calibration; target alignment remains non-authoritative"
+      },
+      {
+        "name": "W6 bounded refinement",
+        "status": "PASS",
+        "evidence": "at most one C0.3 retry on the frozen plan; no route/ACL/authority/fact/graph widening; C0.7 binds the exact adopted C0.3 snapshot"
+      },
+      {
+        "name": "W6 prelabel human-evidence workflow",
+        "status": "PASS",
+        "evidence": "clean source freeze, secret blinding, isolated cohorts, full finite-universe retrieval-label workflow, private authority-receipt requirement, and implemented completed-validation/export chain"
+      },
+      {
+        "name": "Controlled evidence privacy",
+        "status": "PASS",
+        "evidence": "repository containment, ancestor/final symlink, hardlink, recursive member, ownership/mode, input rehash, and sanitized receipt negatives pass"
+      },
+      {
+        "name": "Independent reviews",
+        "status": "PASS",
+        "evidence": "packet/source, evaluator, and final adversarial reviewers report no remaining P0/P1"
+      },
+      {
+        "name": "W6 human calibration",
+        "status": "BLOCKED",
+        "evidence": "no authorized reviewer roster, completed labels, adjudications, sealed export, ECE/Brier result, or passing held-out thresholds exist"
+      },
+      {
+        "name": "W7-W9 release and promotion",
+        "status": "SKIPPED",
+        "evidence": "the mandatory W6 stop condition remains active; no downstream release or promotion claim was made"
+      }
+    ]
+  },
+  "controlled_prelabel_evidence": {
+    "packet_id": "c03-human-eval::3e810e9ec6958bfe901ea6f5",
+    "source_freeze_receipt_digest": "87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5",
+    "prelabel_packet_manifest_sha256": "37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08",
+    "prelabel_receipt_digest": "047ea87471be22e79598f99bc452151196aa76c0535c24e2bec7345b4f7435a1",
+    "proof_archive_sha256": "f34a21b323e7b029a2cd154bad419d8f6e3e3a88bbd4f777f9d98f974701f85a",
+    "retrieval_archive_sha256": "bd93a0398ad46608fc67f5efdc5c57cf6274c8e2600d30dd9cbd2119e16e484a",
+    "controller_receipts_archive_sha256": "0f34f384a35de82e78810ec305cc6d6f83589663fcaab9b38be5ab94b85839ad",
+    "sanitized_unknown_receipt_sha256": "9b0b0c9a9049e0db73c076d0e4c96494d005cfeaff11aad55d6a18bbb38401ef",
+    "repository_committed": false,
+    "secret_nonce_committed": false,
+    "sealed_mappings_committed": false,
+    "human_labels_committed": false,
+    "w9_pairs_included": false
+  },
+  "rca": {
+    "symptom": "W6 cannot truthfully pass and W7-W9 cannot start in this run.",
+    "root_cause": "The repository and supplied inputs contain no trusted human-review authority roster, completed independent labels, adjudications, sealed adjudicated export, or measured held-out W6 result.",
+    "engineering_fix_completed": "The production retry path, evaluator/calibrator, private blind packet workflow, authority checks, export chain, CI receipt, security boundaries, and review-ready prelabel packets are complete.",
+    "next": "An evaluation owner must approve the prelabel pin, roster disjoint human cohorts, collect and adjudicate labels, validate/export them, and run the frozen held-out gates without changing labels or treating UNKNOWN as PASS.",
+    "recurrence_guard": "The W6 receipt remains UNKNOWN, fail-closed CI blocks it, no active threshold is emitted, and the plan keeps W7-W9 NOT_STARTED."
+  },
+  "publishing": {
+    "draft_pr": "https://github.com/Siamese001/Agentic-Workflow/pull/556",
+    "merge_requested": false,
+    "merge_performed": false
+  }
+}

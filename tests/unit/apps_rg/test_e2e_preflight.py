@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -74,6 +75,25 @@ def _write_passing_baseline(repo_root: Path) -> Path:
         encoding="utf-8",
     )
     return contract
+
+
+def _run_identity(run_id: str) -> dict[str, str]:
+    return {
+        "producer_app_id": "apps_research",
+        "consumer_app_id": "apps_rg",
+        "parent_run_id": run_id,
+        "child_run_id": "research-child-001",
+        "request_id": "request-001",
+        "trace_root": "trace-001",
+        "tenant_id": "tenant-001",
+        "target_company": "Anthropic",
+        "target_role": "Applied AI Manager",
+        "jd_sha256": "sha256:" + "1" * 64,
+        "brief_sha256": "sha256:" + "2" * 64,
+        "policy_hash": "sha256:" + "3" * 64,
+        "blueprint_hash": "sha256:" + "4" * 64,
+        "schema_version": "apps_research_rg_run_identity.v1",
+    }
 
 
 def test_missing_signing_config_emits_canonical_rca_without_running_dependencies(
@@ -264,3 +284,116 @@ def test_failed_fact_vector_bootstrap_closes_out_before_research(tmp_path: Path)
     assert receipt["research_attempt_count"] == 0
     mandatory = json.loads((run_dir / "APPS_RG_MANDATORY_RUN_OUTPUT.json").read_text(encoding="utf-8"))
     assert mandatory["operational_failure_forensics"]["judge_matrix"][0]["current"] == ("JUDGES_NOT_REACHED")
+
+
+def test_product_continuation_is_signed_digest_bound_and_consumed_once(
+    tmp_path: Path,
+) -> None:
+    from apps_rg.runtime.e2e_preflight import (
+        E2E_PREFLIGHT_CONTINUATION_CONSUMPTION_FILENAME,
+        E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME,
+        run_fresh_e2e_preflight,
+        validate_preflight_continuation,
+    )
+
+    run_dir = tmp_path / "runs" / "signed-continuation"
+    run_dir.mkdir(parents=True)
+    issued = datetime(2026, 7, 13, 12, 0, tzinfo=timezone.utc)
+    identity = _run_identity(run_dir.name)
+    outcome = run_fresh_e2e_preflight(
+        artifact_dir=run_dir,
+        e2e_run_id=run_dir.name,
+        repo_root=tmp_path,
+        baseline_ref=_write_passing_baseline(tmp_path),
+        environ={
+            "APPS_RG_ROUTE_HMAC_SECRET": "continuation-secret",
+            "APPS_RG_ROUTE_HMAC_KEY_ID": "key-001",
+        },
+        run_identity=identity,
+        clock=lambda: issued,
+        nonce_factory=lambda: "nonce-001",
+    )
+
+    assert outcome.passed is True
+    canonical_path = run_dir / E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME
+    canonical = json.loads(canonical_path.read_text(encoding="utf-8"))
+    assert canonical["product_entry_eligible"] is True
+    assert canonical["identity"] == identity
+    assert canonical["continuation_signature"].startswith("hmac-sha256:")
+    legacy = json.loads((run_dir / "e2e_preflight_receipt.json").read_text(encoding="utf-8"))
+    assert legacy["compatibility_projection"]["classification"] == "NON_PRODUCT_ONLY"
+
+    first = validate_preflight_continuation(
+        receipt_path=canonical_path,
+        secret="continuation-secret",
+        expected_e2e_run_id=run_dir.name,
+        expected_key_id="key-001",
+        expected_identity=identity,
+        consumer_id="whole-run-entrypoint",
+        consume=True,
+        now_utc=issued + timedelta(seconds=1),
+    )
+    second = validate_preflight_continuation(
+        receipt_path=canonical_path,
+        secret="continuation-secret",
+        expected_e2e_run_id=run_dir.name,
+        expected_identity=identity,
+        now_utc=issued + timedelta(seconds=2),
+    )
+
+    assert first.valid is True
+    assert (run_dir / E2E_PREFLIGHT_CONTINUATION_CONSUMPTION_FILENAME).is_file()
+    assert second.valid is False
+    assert "continuation_already_consumed" in second.errors
+
+
+def test_product_continuation_rejects_tamper_and_expiry(tmp_path: Path) -> None:
+    from apps_rg.runtime.e2e_preflight import (
+        E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME,
+        run_fresh_e2e_preflight,
+        validate_preflight_continuation,
+    )
+
+    issued = datetime(2026, 7, 13, 12, 0, tzinfo=timezone.utc)
+    run_dir = tmp_path / "runs" / "tampered-continuation"
+    run_dir.mkdir(parents=True)
+    identity = _run_identity(run_dir.name)
+    run_fresh_e2e_preflight(
+        artifact_dir=run_dir,
+        e2e_run_id=run_dir.name,
+        repo_root=tmp_path,
+        baseline_ref=_write_passing_baseline(tmp_path),
+        environ={
+            "APPS_RG_ROUTE_HMAC_SECRET": "continuation-secret",
+            "APPS_RG_ROUTE_HMAC_KEY_ID": "key-001",
+        },
+        run_identity=identity,
+        continuation_ttl_seconds=2,
+        clock=lambda: issued,
+        nonce_factory=lambda: "nonce-002",
+    )
+    canonical_path = run_dir / E2E_PREFLIGHT_CONTINUATION_RECEIPT_FILENAME
+    expired = validate_preflight_continuation(
+        receipt_path=canonical_path,
+        secret="continuation-secret",
+        expected_e2e_run_id=run_dir.name,
+        expected_identity=identity,
+        now_utc=issued + timedelta(seconds=2),
+    )
+    assert expired.valid is False
+    assert "continuation_expired" in expired.errors
+
+    payload = json.loads(canonical_path.read_text(encoding="utf-8"))
+    payload["identity"]["tenant_id"] = "other-tenant"
+    canonical_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    tampered = validate_preflight_continuation(
+        receipt_path=canonical_path,
+        secret="continuation-secret",
+        expected_e2e_run_id=run_dir.name,
+        expected_identity=identity,
+        now_utc=issued + timedelta(seconds=1),
+    )
+    assert tampered.valid is False
+    assert "continuation_payload_digest_mismatch" in tampered.errors
+    assert "continuation_signature_invalid" in tampered.errors
+    assert "continuation_identity_mismatch" in tampered.errors

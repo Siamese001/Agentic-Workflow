@@ -40,8 +40,13 @@ def test_exit_authorized_briefing_reaches_apps_rg_u0(
     assert isinstance(outcome, ResumeBriefingReady)
     briefing_path = Path(outcome.research_briefing_path)
     assert briefing_path.is_file()
-    assert outcome.apps_research_handoff_envelope["x3_code"] == "X3D_ALLOW_FINISH"
-    assert outcome.apps_research_handoff_envelope["canonical_exit_authorized"] is True
+    assert (
+        outcome.apps_research_handoff_envelope["exit_authorization"]["x3_code"]
+        == "X3D_ALLOW_FINISH"
+    )
+    assert outcome.apps_research_handoff_envelope["schema_version"] == (
+        "apps_research.apps_rg_handoff.v2"
+    )
 
     ingress = SimpleNamespace(
         app_payload={
@@ -59,10 +64,10 @@ def test_exit_authorized_briefing_reaches_apps_rg_u0(
             "user_constraints": {},
             "output_preferences": {},
         },
-        request_id="rg-u0-request",
-        run_id="rg-u0-run",
-        trace_id="rg-u0-trace",
-        tenant_id="test",
+        request_id=request.request_id,
+        run_id=request.run_id,
+        trace_id=request.trace_id,
+        tenant_id=request.tenant_id,
         app_id="apps_rg",
     )
 

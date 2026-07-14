@@ -138,7 +138,9 @@ Promote a reviewed passing record as the named baseline:
 python -m apps_eval promote-baseline --record artifacts/apps_eval/runs/.../eval_record.json --name apps_rg.dev.resume_generation
 ```
 
-Run the narrow live adapter only when runtime inputs and path budget are ready:
+Apps RG live evaluation is read-only. The request must identify an already
+closed run using `existing_run_root`; Apps Eval never launches Apps RG or writes
+preflight evidence into the product run:
 
 ```bash
 python -m apps_eval run --suite apps_rg.dev.resume_generation --mode live_adapter --no-deterministic-only
@@ -146,7 +148,7 @@ python -m apps_eval run --suite apps_rg.dev.resume_generation --mode live_adapte
 
 Live adapter mode is deliberately narrow:
 
-- `apps_rg`: `agentic_core.runtime.entry.apps_rg_dispatch:dispatch_apps_rg_run`
+- `apps_rg`: reopens a signed-preflight, product-authorized existing run only
 - `apps_lic`: `apps_lic.runtime.dispatch.canonical_dispatch:build_cli_ingress_raw`
 - `apps_lic`: `apps_lic.runtime.dispatch.canonical_dispatch:run_canonical_apps_lic_spine`
 
