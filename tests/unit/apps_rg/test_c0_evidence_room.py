@@ -312,17 +312,18 @@ def test_c07_requires_fact_vector_index_preflight_for_product_hybrid() -> None:
 
 
 def test_c07_accepts_passed_fact_vector_index_preflight_for_product_hybrid() -> None:
+    atoms = [
+        {
+            "fact_id": "f1",
+            "text_to_embed": "Partnership architecture with measurable adoption.",
+            "source_type": "proof_pool",
+            "source_span_ref": "s",
+            "proof_status": "proof_eligible",
+        }
+    ]
     fec, c05 = build_c05_final_evidence_contract(
         section_id="competencies",
-        atoms=[
-            {
-                "fact_id": "f1",
-                "text_to_embed": "Partnership architecture with measurable adoption.",
-                "source_type": "proof_pool",
-                "source_span_ref": "s",
-                "proof_status": "proof_eligible",
-            }
-        ],
+        atoms=atoms,
         strata={},
         graph_bindings=[],
         front_spine=None,
@@ -349,14 +350,50 @@ def test_c07_accepts_passed_fact_vector_index_preflight_for_product_hybrid() -> 
         "write_authority": False,
         "same_run_write_policy": "forbidden_for_product_retrieval",
     }
+    c03 = {
+        "section_id": "competencies",
+        "role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
+        "new_atoms_created": 0,
+        "pending_trace_promoted": False,
+        "bindings": [
+            {
+                "fact_id": "f1",
+                "graph_support_strength": "DIRECT",
+                "claim_support_allowed": True,
+            }
+        ],
+        "graph_candidate_receipt": {"candidate_conservation_pass": True},
+        "graph_traversal_receipt": {"pass": True, "events": []},
+        "pretarget_authority_receipt": {"authority_before_targeting_pass": True},
+        "broad_fact_link_fallback_used": False,
+        "label_tag_proof_fallback_used": False,
+    }
+    from apps_rg.runtime.c0.c06_weak_refine import (
+        finalize_c06_after_c05,
+        maybe_c06_weak_refine,
+    )
+
+    _, c06 = maybe_c06_weak_refine(
+        section_id="competencies",
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        route_ref="route_contract.json",
+        run_id="hybrid-preflight-pass",
+        atoms=atoms,
+        initial_c03=c03,
+        initial_c05_receipt=c05,
+        selected_graph_plan=None,
+        repo_root=REPO,
+    )
+    c06 = finalize_c06_after_c05(c06, final_c05_receipt=c05)
 
     c07 = audit_c07_handoff(
         fec=fec,
         c02_receipt={"graph_inference_performed": False},
-        c03_receipt={"new_atoms_created": 0, "pending_trace_promoted": False},
-        graph_bindings=[],
+        c03_receipt=c03,
+        graph_bindings=c03["bindings"],
         allowed_fact_ids=["f1"],
         c05_receipt=c05,
+        c06_receipt=c06,
     )
 
     assert c07["handoff_safe"] is True
@@ -507,19 +544,51 @@ def test_c01_extracts_anthropic_partnership_jd_axes_without_making_jd_proof() ->
     assert plan["retrieval_targets"]["jd_role_axis_targets"] == plan["jd_role_axes"]
 
 
-def test_c06_weak_refine_is_retired_compatibility_shim() -> None:
+def test_c06_skips_retry_when_first_c05_packet_has_full_direct_coverage() -> None:
     from apps_rg.runtime.c0.c06_weak_refine import maybe_c06_weak_refine
 
-    atoms = [{"fact_id": "f1"}]
+    atoms = [{"fact_id": "f1", "proof_status": "proof_eligible"}]
+    initial_c03 = {
+        "section_id": "competencies",
+        "role_family_key": "SVP_ENGINEERING_AI_PLATFORM",
+        "bindings": [
+            {
+                "fact_id": "f1",
+                "graph_support_strength": "DIRECT",
+                "claim_support_allowed": True,
+            }
+        ],
+        "graph_candidate_receipt": {"candidate_conservation_pass": True},
+        "graph_traversal_receipt": {"pass": True},
+        "pretarget_authority_receipt": {"authority_before_targeting_pass": True},
+        "selected_graph_plan_receipt": {"graph_hash": "graph-1"},
+        "new_atoms_created": 0,
+        "broad_fact_link_fallback_used": False,
+        "label_tag_proof_fallback_used": False,
+    }
+    plan = {
+        "section_id": "competencies",
+        "plan_digest": "plan-1",
+        "source_authority_contract": {"graph_digest": "graph-1"},
+        "facts": [{"fact_id": "f1"}],
+    }
     out, receipt = maybe_c06_weak_refine(
-        support_status="WEAK",
+        section_id="competencies",
+        role_family_key="SVP_ENGINEERING_AI_PLATFORM",
+        route_ref="route_contract.json",
+        run_id="run-1",
         atoms=atoms,
-        retrieval_plan={"retrieval_targets": {"secondary_targets": []}},
+        initial_c03=initial_c03,
+        initial_c05_receipt={"support_status": "PASS"},
+        selected_graph_plan=plan,
+        repo_root=REPO,
     )
-    assert out == atoms
+    assert out == initial_c03
     assert receipt["schema_version"] == "c06_weak_refine_v1"
     assert receipt["attempted"] is False
-    assert receipt["disabled"] is True
+    assert receipt["attempt_count"] == 0
+    assert receipt["outcome"] == "NOT_REQUIRED"
+    assert receipt["pass"] is True
 
 
 def test_agentic_core_binding_import() -> None:

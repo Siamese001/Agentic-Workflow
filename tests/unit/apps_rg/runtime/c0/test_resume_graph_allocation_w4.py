@@ -146,6 +146,32 @@ def test_blocked_highest_score_never_wins() -> None:
     assert blocked and blocked[0]["reason_codes"] == ["authority_gate_failed"]
 
 
+def test_selection_margin_records_global_constraint_tradeoff() -> None:
+    candidates, slots = _matrix()
+    plan = allocate_candidate_sets(
+        candidate_sets=candidates,
+        slot_specs=slots,
+        graph_digest="g" * 64,
+        policy_digest="p" * 64,
+    )
+    assignments = {row["claim_unit_id"]: row for row in plan["assignments"]}
+
+    # The globally unique solution reserves skill_a for executive summary, so
+    # headline selects skill_b even though skill_a is its stronger local peer.
+    headline = assignments["headline:001"]
+    assert headline["skill_id"] == "skill_b"
+    assert headline["selection_margin"] == -0.03
+    assert headline["selection_margin_available"] is True
+    assert headline["selection_margin_basis"] == "proof_strength_raw"
+    assert headline["best_eligible_rejected_candidate_id"].endswith(
+        ":skill_a:no_metric"
+    )
+    assert (
+        plan["solver_metadata"]["selection_margin_policy"]
+        == "signed_first_differing_lexicographic_component_vs_best_locally_eligible_rejected_v1"
+    )
+
+
 def test_equivalent_metric_signatures_cannot_be_reused() -> None:
     slots = [
         {"slot_id": "executive_summary:001", "section_id": "executive_summary", "metric_required": True},

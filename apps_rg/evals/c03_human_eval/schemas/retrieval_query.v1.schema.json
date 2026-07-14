@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.retrieval_query.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "query_id", "target_profile_id", "section_id",
+    "target_context", "retrieval_target", "candidates", "candidate_count",
+    "candidate_judging_scope",
+    "rubric_id", "content_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.retrieval_query.v1"},
+    "query_id": {"type": "string"},
+    "target_profile_id": {"type": "string"},
+    "section_id": {"type": "string"},
+    "target_context": {"type": "object"},
+    "retrieval_target": {"type": "string"},
+    "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_blind_id", "candidate_text", "proof_context"],
+        "properties": {
+          "candidate_blind_id": {"type": "string"},
+          "candidate_text": {"type": "string"},
+          "proof_context": {"type": "object"}
+        }
+      }
+    },
+    "candidate_count": {"type": "integer", "minimum": 1, "maximum": 64},
+    "candidate_judging_scope": {"const": "FULL_FINITE_UNIVERSE"},
+    "rubric_id": {"const": "c03_retrieval_relevance_v1"},
+    "content_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

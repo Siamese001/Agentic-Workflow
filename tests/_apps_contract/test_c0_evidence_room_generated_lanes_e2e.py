@@ -15,6 +15,7 @@ from agentic_core.runtime.contracts.final_evidence_contract import (
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import default_graph_sqlite_path
 from apps_rg.fact_inventory.candidate_fact_ledger import default_ledger_path
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES
+from apps_rg.runtime.c0.c06_weak_refine import C06_RECEIPT_ARTIFACT
 from apps_rg.runtime.c0.evidence_room import C0_ROOM_RECEIPT
 from apps_rg.runtime.internal.generated_lane_rollup import GENERATED_LANES
 from apps_rg.runtime.c0.section_proof_loader import load_section_proof_for_lane
@@ -117,12 +118,18 @@ def test_generated_lane_c0_evidence_room_e2e(
 
     c03_room = room.get("c03") or {}
     graph_ref = str(c03_room.get("graph_context_ref") or "").strip()
-    assert graph_ref, f"{section_id}: C0.3 must bind augmented skills graph SQLite"
-    graph_path = Path(graph_ref)
-    if not graph_path.is_file():
-        graph_path = REPO / graph_ref
-    assert graph_path.is_file(), f"{section_id}: graph DB missing at {graph_ref}"
-    assert graph_path.name == GRAPH_SQLITE.name, section_id
+    selected_graph_hash = str(
+        (c03_room.get("selected_graph_plan_receipt") or {}).get("graph_hash") or ""
+    )
+    assert graph_ref or selected_graph_hash, (
+        f"{section_id}: C0.3 must bind SQLite or the frozen selected graph snapshot"
+    )
+    if graph_ref:
+        graph_path = Path(graph_ref)
+        if not graph_path.is_file():
+            graph_path = REPO / graph_ref
+        assert graph_path.is_file(), f"{section_id}: graph DB missing at {graph_ref}"
+        assert graph_path.name == GRAPH_SQLITE.name, section_id
     metrics = c03_room.get("binding_metrics") or {}
     assert metrics.get("atom_count", 0) == room.get("c02_atom_count", 0), section_id
     assert "fact_links_available" in metrics, section_id
@@ -136,8 +143,41 @@ def test_generated_lane_c0_evidence_room_e2e(
     c05 = room.get("c05") or {}
     assert c05.get("graph_binding_count", 0) == len(bindings), section_id
     assert c05.get("evidence_item_count", 0) > 0, section_id
+    c06 = room.get("c06") or {}
+    assert c06.get("pass") is True, section_id
+    assert c06.get("attempt_count") in (0, 1), section_id
+    assert c06.get("max_attempts") == 1, section_id
+    assert c06.get("route_changed") is False, section_id
+    assert c06.get("authority_widened") is False, section_id
+    assert c06.get("acl_scope_widened") is False, section_id
+    assert c06.get("binding_fact_ids_before") == c06.get("binding_fact_ids_after"), section_id
+    frozen_graph_digest = str(c06.get("frozen_graph_digest") or "")
+    if frozen_graph_digest:
+        assert c06.get("graph_digest_before") == frozen_graph_digest, section_id
+        assert c06.get("graph_digest_after") == frozen_graph_digest, section_id
+    else:
+        # A direct first pass does not need a frozen-plan retry. Its graph
+        # snapshot still must remain unchanged across the no-op C0.6 boundary.
+        assert c06.get("attempted") is False, section_id
+        assert c06.get("graph_digest_before") == c06.get(
+            "graph_digest_after"
+        ), section_id
+    final_coverage = c06.get("final_coverage") or {}
+    assert final_coverage.get("status") == "PASS", section_id
+    assert final_coverage.get("direct_supported_fact_ids") == final_coverage.get(
+        "proof_fact_ids"
+    ), section_id
+    assert c06.get("final_c05_support_status") == "PASS", section_id
+    if c06.get("attempted"):
+        assert c06.get("attempt_count") == 1, section_id
+        assert c06.get("selected_graph_plan_digest"), section_id
+        assert len(c05.get("weak_support_refinement_attempts") or []) == 1, section_id
+    else:
+        assert c06.get("attempt_count") == 0, section_id
+        assert not (c05.get("weak_support_refinement_attempts") or []), section_id
 
     assert (artifact_dir / C0_ROOM_RECEIPT).is_file()
+    assert (artifact_dir / C06_RECEIPT_ARTIFACT).is_file()
     assert (artifact_dir / FEC_BRIDGE_ARTIFACT).is_file()
     assert (artifact_dir / FEC_BRIDGE_RECEIPT).is_file()
     assert (artifact_dir / C0_GRAPH_LANE_RECEIPT_ARTIFACT).is_file()

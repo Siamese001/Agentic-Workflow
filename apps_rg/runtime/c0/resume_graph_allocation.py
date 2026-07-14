@@ -27,6 +27,7 @@ ALLOCATION_SCOPES = frozenset({WHOLE_RESUME_SCOPE, SECTION_ONLY_SCOPE})
 ALLOCATION_PLAN_ENV = "APPS_RG_RESUME_GRAPH_ALLOCATION_PLAN"
 ALLOCATION_USAGE_LEDGER_ENV = "APPS_RG_RESUME_GRAPH_USAGE_LEDGER"
 SECTION_EVIDENCE_CONTRACTS_ENV = "APPS_RG_SECTION_FINAL_GRAPH_EVIDENCE_CONTRACTS"
+DEFAULT_MAX_CANDIDATES_PER_SLOT = 64
 
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _DIGIT_LETTER_RE = re.compile(r"(?<=\d)(?=[a-z])|(?<=[a-z])(?=\d)")
@@ -206,6 +207,61 @@ def _candidate_sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
     return (-proof, -path, -independence, -target, candidate_id)
 
 
+def _selection_margin_receipt(
+    selected: Mapping[str, Any],
+    eligible_rows: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Compare a selected row with its best locally eligible rejected peer.
+
+    The allocator's objective is lexicographic, not a probability or a blended
+    score.  The margin is therefore the signed difference at the first
+    objective component that distinguishes the selected row from the best
+    per-slot alternative.  A negative margin is expected when a globally
+    feasible assignment must yield local rank to uniqueness or concentration
+    constraints.
+    """
+    selected_id = str(selected.get("candidate_id") or "")
+    alternatives = sorted(
+        (
+            row
+            for row in eligible_rows
+            if str(row.get("candidate_id") or "") != selected_id
+        ),
+        key=_candidate_sort_key,
+    )
+    if not alternatives:
+        return {
+            "selection_margin": 0.0,
+            "selection_margin_available": False,
+            "selection_margin_basis": "no_eligible_rejected_alternative",
+            "best_eligible_rejected_candidate_id": "",
+        }
+    alternative = alternatives[0]
+    components = (
+        "proof_strength_raw",
+        "path_confidence_raw",
+        "source_independence_score",
+        "target_alignment_score",
+    )
+    basis = "stable_candidate_id_tie"
+    margin = 0.0
+    for field in components:
+        selected_value = round(float(selected.get(field) or 0.0), 6)
+        alternative_value = round(float(alternative.get(field) or 0.0), 6)
+        if selected_value != alternative_value:
+            basis = field
+            margin = round(selected_value - alternative_value, 6)
+            break
+    return {
+        "selection_margin": margin,
+        "selection_margin_available": True,
+        "selection_margin_basis": basis,
+        "best_eligible_rejected_candidate_id": str(
+            alternative.get("candidate_id") or ""
+        ),
+    }
+
+
 def _normalize_candidate(
     raw: Mapping[str, Any],
     *,
@@ -292,6 +348,9 @@ def _assignment_view(row: Mapping[str, Any], *, slot: _Slot) -> dict[str, Any]:
         "path_confidence_raw",
         "source_independence_score",
         "selection_margin",
+        "selection_margin_available",
+        "selection_margin_basis",
+        "best_eligible_rejected_candidate_id",
         "graph_path_ids",
         "edge_ids",
         "citation_refs",
@@ -425,7 +484,7 @@ def allocate_candidate_sets(
     section_plan_digests: Mapping[str, str] | None = None,
     max_fact_reuse: int = 2,
     max_source_family_share: float = 0.75,
-    max_candidates_per_slot: int = 64,
+    max_candidates_per_slot: int = DEFAULT_MAX_CANDIDATES_PER_SLOT,
     max_search_states: int = 250000,
 ) -> dict[str, Any]:
     """Allocate one candidate per slot under immutable hard constraints.
@@ -604,10 +663,13 @@ def allocate_candidate_sets(
             receipt=receipt,
         )
 
-    assignments = [
-        _assignment_view(chosen[slot.slot_id], slot=slot)
-        for slot in slots
-    ]
+    assignments = []
+    for slot in slots:
+        selected = dict(chosen[slot.slot_id])
+        selected.update(
+            _selection_margin_receipt(selected, eligible_by_slot[slot.slot_id])
+        )
+        assignments.append(_assignment_view(selected, slot=slot))
     selected_candidate_ids = {str(row["candidate_id"]) for row in assignments}
     candidate_decisions = list(predecisions)
     for slot in slots:
@@ -671,8 +733,13 @@ def allocate_candidate_sets(
                 "target_alignment_score",
                 "stable_candidate_id",
             ],
+            "selection_margin_policy": (
+                "signed_first_differing_lexicographic_component_vs_"
+                "best_locally_eligible_rejected_v1"
+            ),
             "search_states": search_states,
             "max_search_states": max_search_states,
+            "max_candidates_per_slot": max_candidates_per_slot,
             "candidate_input_order_independent": True,
             "section_dispatch_order_independent": True,
         },
@@ -1500,6 +1567,7 @@ __all__ = [
     "WHOLE_RESUME_SCOPE",
     "ALL_CLAIM_BEARING_SECTIONS",
     "CANONICAL_VISIBLE_SECTIONS",
+    "DEFAULT_MAX_CANDIDATES_PER_SLOT",
     "allocate_candidate_sets",
     "build_section_final_evidence_contracts",
     "build_section_only_graph_allocation",

@@ -1,0 +1,67 @@
+schema_version: apps_rg.c03_human_eval.target_cases.v1
+dataset_id: apps_rg_c03_resume_graph_proof
+dataset_version: v1
+claim_count_per_case: 47
+retrieval_slots_per_ranked_section: 2
+section_claim_counts:
+  competencies: 8
+  unify_bullets: 6
+  ibm_bullets: 5
+  insurtech_bullets: 3
+  ey_bullets: 3
+  unify_narrative: 6
+  ibm_narrative: 5
+  insurtech_narrative: 3
+  ey_narrative: 3
+  executive_summary: 3
+  headline: 2
+independently_ranked_sections:
+  - competencies
+  - unify_bullets
+  - ibm_bullets
+  - insurtech_bullets
+  - ey_bullets
+  - executive_summary
+  - headline
+derived_narrative_sections:
+  - unify_narrative
+  - ibm_narrative
+  - insurtech_narrative
+  - ey_narrative
+cases:
+  - case_id: partnerships_anthropic
+    target_profile_id: ai_partnerships_gtm
+    jd_path: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
+    jd_sha256: 957c43a7df84e3c815b4b1e0284cb8c4132567f622d3124a21fcaeea979d4f01
+    brief_path: docs/reports/apps_rg/fixtures/senior_roles/anthropic_partner_applied_ai_brief.txt
+    brief_sha256: ceba31c900c06b72bf0b3aac11a41687ad5e6939ae8b93af3f3172bf42bc4e87
+  - case_id: partnerships_openai
+    target_profile_id: ai_partnerships_gtm
+    jd_path: apps_rg/config/targeting/openai_partner_ade_jd.txt
+    jd_sha256: b8d82ac8d8f0043fe73f613fc3a34b9045576e3998995aa7a3548aedb009154d
+    brief_path: apps_rg/config/targeting/openai_partner_ade_briefing.md
+    brief_sha256: c31a99401eb527ea8425fce1b3423d83ac93adc2719f5e3c99dc09b7396feea1
+  - case_id: platform_truist
+    target_profile_id: svp_agentic_engineering_platform
+    jd_path: apps_rg/config/targeting/truist_head_agentic_ai_engineering_jd.txt
+    jd_sha256: 7dddce9e166ee62432ee7e9443e90acc85199afb11efd84c29026ea230de40f0
+    brief_path: apps_rg/config/targeting/truist_head_agentic_ai_engineering_briefing.md
+    brief_sha256: d809c83ccd813b5d4d703f34c653ec541dd98a16e1961d9b04e2423dde498165
+  - case_id: platform_invesco
+    target_profile_id: svp_agentic_engineering_platform
+    jd_path: apps_rg/config/targeting/invesco_global_head_advanced_engineering_jd.txt
+    jd_sha256: 15c24193c31d0b6c7833438dd9238ad393a09c22de82ea6988fd5229c85e08b0
+    brief_path: apps_rg/config/targeting/invesco_global_head_advanced_engineering_briefing.md
+    brief_sha256: 11a99c283248790c33546abc131dc239dd73d599c79d60e98744e840443d7fc4
+  - case_id: insurance_brown
+    target_profile_id: insurance_it_strategy_modernization
+    jd_path: apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_jd.txt
+    jd_sha256: 23b16bd0ae15188a4de4d533209e34ccff8fae6d12c96894a2dd90cc53bb4dfd
+    brief_path: apps_rg/config/targeting/brown_brown_svp_it_strategy_innovation_briefing.md
+    brief_sha256: b6e915e375587b42165b8036aaf8d36200ebc4e21eb6562fcc49d32f1235afe4
+  - case_id: insurance_lincoln
+    target_profile_id: insurance_it_strategy_modernization
+    jd_path: docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_jd.txt
+    jd_sha256: f6afad71e177b671597dc8e61234048c42bb9cd7747a23aa6a837d2cef0bb919
+    brief_path: docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_brief.txt
+    brief_sha256: 8822f522d5f4801e039033c3fef91d49b80db8caa9e8139b42b8c7bbb7172e4c

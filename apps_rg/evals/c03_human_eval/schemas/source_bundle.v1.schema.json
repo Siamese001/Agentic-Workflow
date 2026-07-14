@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.source_bundle.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_commit_sha", "cases"],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.source_bundle.v1"},
+    "source_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "cases": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["case_id", "run_id", "allocation_plan_digest", "claims"],
+        "properties": {
+          "case_id": {"type": "string"},
+          "run_id": {"type": "string"},
+          "allocation_plan_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "claims": {"type": "array", "minItems": 47, "maxItems": 47},
+          "baseline_resume_text": {"type": "string"},
+          "hardened_resume_text": {"type": "string"}
+        }
+      }
+    }
+  }
+}
