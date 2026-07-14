@@ -4,6 +4,10 @@ Status: **Active reviewer navigation and proof hub**.
 
 Agentic Workflow is presented as a deterministic control plane for governed enterprise agents. Use this page to choose the shortest credible review path for CTO, SVP Engineering, platform, governance, hiring, and contributor audiences.
 
+SVP documentation review is intentionally operator-run outside GitHub Actions.
+Use the local command below when a review is required; no repository workflow
+registers it as pull-request CI.
+
 ## Start Here
 
 | Audience | Read first | Why |

@@ -66,7 +66,7 @@ The weekly job cannot edit or publish. The manual refresh requires a machine-rea
 | `.codex/schemas/svp_docs_run_v1.schema.json` | Run-level replay receipt |
 | `.codex/schemas/svp_docs_approval_v1.schema.json` | Manual edit approval receipt |
 | `scripts/governance/svp_docs_review.py` | X2 gate execution and X3 aggregation |
-| `.github/workflows/svp-docs-gates.yml` | Pull-request validation |
+| `python scripts/governance/svp_docs_review.py --mode audit --phase pre --json` | Operator-run review outside GitHub Actions |
 
 ## X2 deterministic gate set
 
