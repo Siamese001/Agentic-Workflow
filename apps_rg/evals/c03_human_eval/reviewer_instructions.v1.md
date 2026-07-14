@@ -13,22 +13,22 @@ cohort distributions for this packet. Do not publish any cohort distribution in
 a reviewer-accessible pull request, repository, issue, or shared artifact; use
 the controlled handoff channel designated by the evaluation owner.
 
-This directory contains exactly one item data file and its matching rubric.
-Return records conforming to `human_review.v1.schema.json`:
+This directory contains one cohort-specific item data file and its matching
+rubric. Return records conforming to `human_review.v1.schema.json`:
 
 - `claim_items.jsonl` → `proof_label_rubric.v1.yaml`
 - `retrieval_queries.jsonl` → `retrieval_label_rubric.v1.yaml`
 - `w9_blind_pairs.jsonl` → `w9_resume_coach_rubric.v1.yaml`, when included
 
-Every item requires exactly two independent human reviews from distinct
-reviewer identities and label batches. Reviewers must not share labels before
-submitting. `UNKNOWN` is not a completed label. W9 reviewers must be qualified
+The validator requires two independent human reviews per declared item, using
+distinct reviewer identities and label batches. Reviewers must not share labels
+before submitting. `UNKNOWN` is not a completed label. W9 reviewers must be qualified
 resume coaches whose `qualification_ref` uses `resume-coach://`. Preserve the
-opaque item IDs exactly; never try to recover case, claim-unit, system-selection,
-rank, or sibling-cohort linkage.
+opaque item IDs supplied in the packet; never try to recover case, claim-unit,
+system-selection, rank, or sibling-cohort linkage.
 
-For each retrieval query, review every candidate in the supplied shuffled list.
-That list is the complete allocator-bounded finite universe, not a system top-K
+For each retrieval query, review the candidate list in its supplied shuffled
+order. That list is the complete allocator-bounded finite universe, not a system top-K
 sample. Return exactly one final candidate label per `candidate_blind_id`;
 missing, duplicate, or additional IDs invalidate the review.
 
