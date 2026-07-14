@@ -26,12 +26,27 @@ def test_c0_fec_bridge_declares_shape_only_scope_and_rejects_canonical_claim() -
         "final_evidence_contract_authoritative": False,
         "canonical_c0_5_claimed": False,
     }
-    runtime_payload = {"section_fec_bridge": bridge, "product_visible": True}
+    runtime_payload = {
+        "section_fec_bridge": bridge,
+        "product_visible": True,
+        "proof_pool_metadata": {
+            "resume_graph_allocation_scope": "WHOLE_RESUME",
+            "resume_graph_allocation_plan_id": "resume_graph_allocation:test",
+            "resume_graph_allocation_plan_digest": "a" * 64,
+            "resume_graph_global_uniqueness_claimed": True,
+            "final_graph_evidence_contract_digest": "b" * 64,
+            "durable_graph_state_mutated": False,
+        },
+    }
 
     assert_section_pa_fec_preconditions(runtime_payload)
     receipt = pa_consumption_receipt_fields(runtime_payload)
     assert receipt["fec_authority_scope"] == FEC_BRIDGE_AUTHORITY_SCOPE
     assert receipt["final_evidence_contract_authoritative"] is False
+    assert receipt["resume_graph_allocation_scope"] == "WHOLE_RESUME"
+    assert receipt["resume_graph_allocation_plan_digest"] == "a" * 64
+    assert receipt["resume_graph_global_uniqueness_claimed"] is True
+    assert receipt["durable_graph_state_mutated"] is False
 
     bridge["canonical_c0_5_claimed"] = True
     with pytest.raises(SectionFecBridgePreconditionError, match="canonical_c0_5"):

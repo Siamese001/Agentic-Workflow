@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.source_freeze_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "freeze_mode", "official_provenance_eligible",
+    "checkout_head_verified", "checkout_clean_verified",
+    "source_bundle_sha256", "source_bundle_canonical_digest",
+    "source_commit_sha", "target_manifest_digest", "graph_digest",
+    "policy_digest", "case_count", "claim_count",
+    "retrieval_frontier_count", "unknown_is_pass", "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.source_freeze_receipt.v1"},
+    "freeze_mode": {"enum": ["CLEAN_CHECKOUT_REAL_ALLOCATOR", "TEST_ONLY_UNTRUSTED_FIXTURE"]},
+    "official_provenance_eligible": {"type": "boolean"},
+    "checkout_head_verified": {"type": "boolean"},
+    "checkout_clean_verified": {"type": "boolean"},
+    "source_bundle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_bundle_canonical_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "target_manifest_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "case_count": {"const": 6},
+    "claim_count": {"const": 282},
+    "retrieval_frontier_count": {"const": 84},
+    "unknown_is_pass": {"const": false},
+    "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

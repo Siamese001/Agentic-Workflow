@@ -1,0 +1,19 @@
+{
+  "schema_version": "apps_rg.c03_human_eval.human_review_authority_receipt.v1",
+  "authority_mode": "TRUSTED_HUMAN_ROSTER_APPROVAL",
+  "official_authority_eligible": true,
+  "packet_id": "FILL_FROM_PRELABEL_PACKET",
+  "packet_manifest_digest": "FILL_64_HEX",
+  "prelabel_packet_manifest_sha256": "FILL_64_HEX",
+  "source_freeze_receipt_digest": "FILL_64_HEX",
+  "cohort_manifest_digests": {
+    "proof": "FILL_64_HEX",
+    "retrieval": "FILL_64_HEX"
+  },
+  "issuer_ref": "authority-issuer://FILL_VERIFIED_ISSUER",
+  "approval_ref": "approval://FILL_APPROVAL_RECORD",
+  "issued_at": "FILL_ISO_8601_BEFORE_LABELING",
+  "authorized_participants": [],
+  "unknown_is_pass": false,
+  "receipt_digest": "FILL_CANONICAL_RECORD_DIGEST"
+}

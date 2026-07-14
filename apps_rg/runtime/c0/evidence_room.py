@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,11 @@ from apps_rg.runtime.c0.c03_graph_expansion import expand_c03_graph_bindings
 from apps_rg.runtime.c0.c03_role_family import resolve_c0_role_family_key
 from apps_rg.runtime.c0.c04_stratify import stratify_c04_evidence
 from apps_rg.runtime.c0.c05_fec_packet import build_c05_final_evidence_contract
+from apps_rg.runtime.c0.c06_weak_refine import (
+    C06_RECEIPT_ARTIFACT,
+    finalize_c06_after_c05,
+    maybe_c06_weak_refine,
+)
 from apps_rg.runtime.c0.c07_handoff_audit import audit_c07_handoff
 from apps_rg.runtime.c0.constants import C0_SECTIONS_ENABLED, REPO_ROOT
 from apps_rg.runtime.c0 import fact_vector_index_preflight
@@ -171,6 +177,8 @@ def run_section_c0_evidence_room(
         atoms=atoms,
         role_family_key=rf_key,
         repo_root=REPO_ROOT,
+        run_id=run_id,
+        strict_ranked_selection=False,
     )
     bindings = list(c03.get("bindings") or [])
     lane_proof = section_id in ("executive_summary", "headline")
@@ -240,6 +248,91 @@ def run_section_c0_evidence_room(
         retrieval_plan=plan,
         product_hybrid=product_hybrid,
     )
+
+    # C0.6 is a single, deterministic re-entry into C0.3.  The first C0.4/C0.5
+    # packet above is diagnostic only; when refinement is adopted, both are
+    # rebuilt from the refined bindings before any write-back or C0.7 handoff.
+    pp_meta = dict(pool.proof_pool_metadata or {})
+    frozen_graph_plan = pp_meta.get("selected_graph_evidence_plan")
+    c03, c06 = maybe_c06_weak_refine(
+        section_id=section_id,
+        role_family_key=rf_key,
+        route_ref="route_contract.json",
+        run_id=run_id,
+        atoms=atoms,
+        initial_c03=c03,
+        initial_c05_receipt=c05,
+        selected_graph_plan=(
+            frozen_graph_plan if isinstance(frozen_graph_plan, dict) else None
+        ),
+        repo_root=REPO_ROOT,
+    )
+    if c06.get("attempted") and c06.get("pass"):
+        bindings = list(c03.get("bindings") or [])
+        c04 = stratify_c04_evidence(
+            section_id=section_id,
+            atoms=atoms,
+            graph_bindings=bindings,
+            lane_requires_proof=lane_proof,
+        )
+        if section_id == "executive_summary":
+            from apps_rg.runtime.c0.c04_exec_summary_shaping import (
+                shape_executive_summary_c04,
+            )
+
+            c04 = shape_executive_summary_c04(c04, bindings=bindings, atoms=atoms)
+        allowed, fec_materialization_receipt = materialize_fec_allowed_from_c04(
+            c04_allowed=list(c04.get("allowed_fact_ids") or []),
+            canonical=canonical,
+        )
+        runtime_payload["fec_materialization_receipt"] = fec_materialization_receipt
+        fec, c05 = build_c05_final_evidence_contract(
+            section_id=section_id,
+            atoms=atoms,
+            strata=c04.get("strata") or {},
+            graph_bindings=bindings,
+            front_spine=front_spine,
+            allowed_fact_ids=allowed,
+            excluded_refs=list(c04.get("excluded_fact_ids") or []),
+            retrieval_plan=plan,
+            product_hybrid=product_hybrid,
+        )
+    c06 = finalize_c06_after_c05(c06, final_c05_receipt=c05)
+    _write_json(artifact_dir / C06_RECEIPT_ARTIFACT, c06)
+    runtime_payload["c06_weak_refine_receipt_ref"] = C06_RECEIPT_ARTIFACT
+    if c06.get("pass") is not True:
+        blocked_c07 = {
+            "schema_version": "c07_handoff_audit_v1",
+            "handoff_safe": False,
+            "skipped": True,
+            "violations": ["c06_refinement_blocked"],
+        }
+        _emit_room_artifacts(
+            artifact_dir,
+            {
+                "status": "BLOCKED_AT_C0_6",
+                "c01": plan,
+                "c02": c02,
+                "c03": c03,
+                "c04": c04,
+                "c05": c05,
+                "c06": c06,
+                "c07": blocked_c07,
+            },
+        )
+        raise SectionFecBridgePreconditionError(
+            "C0.6 weak-support refinement failed — packet stopped before C0.7/PA: "
+            + ", ".join(str(v) for v in (c06.get("failure_reasons") or []))
+        )
+    c06_attempt_refs: tuple[str, ...] = ()
+    if c06.get("attempted"):
+        c06_attempt_refs = (
+            f"{C06_RECEIPT_ARTIFACT}#{str(c06.get('receipt_digest') or '')}",
+        )
+        fec = replace(fec, weak_support_refinement_attempts=c06_attempt_refs)
+    c05["weak_support_refinement_attempts"] = list(c06_attempt_refs)
+    c05["c06_receipt_ref"] = C06_RECEIPT_ARTIFACT
+
     c05_fact_vectors = maybe_upsert_c05_fact_vector_write_back_atoms(
         c05,
         section_id=section_id,
@@ -304,6 +397,7 @@ def run_section_c0_evidence_room(
         graph_bindings=bindings,
         allowed_fact_ids=allowed,
         c05_receipt=c05,
+        c06_receipt=c06,
     )
     if not c07.get("handoff_safe"):
         raise SectionFecBridgePreconditionError(
@@ -322,11 +416,6 @@ def run_section_c0_evidence_room(
             fec=fec,
             section_id=section_id,
         )
-    c06 = {
-        "schema_version": "c06_weak_refine_v1",
-        "disabled": True,
-        "reason": "receipt_only_refine_removed_use_bounded_c02_retry_when_implemented",
-    }
     from apps_rg.runtime.c0.c03_graph_ref_policy import (
         build_graph_targeting_for_pa,
         collect_receipt_only_json_expansion_refs,
@@ -354,7 +443,6 @@ def run_section_c0_evidence_room(
         fact_vector_index_preflight.FACT_VECTOR_INDEX_PREFLIGHT_ARTIFACT
     )
 
-    pp_meta = dict(pool.proof_pool_metadata or {})
     support_status = _extract_support_status(pp_meta)
     evidence_items = [
         {
@@ -431,6 +519,9 @@ def run_section_c0_evidence_room(
             "excluded_evidence_refs": list(fec.excluded_evidence_refs or ()),
             "evidence_strata": dict(c04.get("strata") or {}),
             "retrieval_plan_ref": fec.retrieval_plan_ref,
+            "weak_support_refinement_attempts": list(
+                fec.weak_support_refinement_attempts or ()
+            ),
         },
         "c0_evidence_room": {
             "c01": plan,

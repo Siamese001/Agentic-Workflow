@@ -1,0 +1,98 @@
+{
+  "schema_version": "apps_rg.c03_resume_graph_wave_closeout.v1",
+  "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+  "generated_at_utc": "2026-07-13T15:50:13Z",
+  "base_sha": "3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7",
+  "implementation_head_sha": "07cb833099126cec5e3b043ca94dee9c18b761f7",
+  "completed_waves": ["W1", "W2", "W3", "W4", "W5"],
+  "status": "PASS_PENDING_BRANCH_CI",
+  "agentic_core_modified": false,
+  "authority": {
+    "canonical_graph_source": "augmented_skills_graph",
+    "sqlite_role": "generated_runtime_projection_only",
+    "targeting_inputs_are_authority": false,
+    "durable_graph_state_mutated": false,
+    "same_run_usage_scope": "current_run_only"
+  },
+  "whole_resume_allocation": {
+    "allocation_plan_digest": "47a0bbaf8828a532e5577f0d871915e50cb3fbc2981419436bde47dc655cddd3",
+    "graph_digest": "f8ccac05a5c1c56169088bc6e46fe4317199c2209370a27c41d0fcd083459883",
+    "policy_digest": "4f68c3dcb782037d2f5a4fdf564e1cc8f157774bc4ee78d67a2c7275bd1b4ee6",
+    "claim_bearing_lane_count": 11,
+    "canonical_visible_assignment_count": 30,
+    "derived_narrative_assignment_count": 17,
+    "total_assignment_count": 47,
+    "candidate_terminal_decision_count": 2329,
+    "search_states": 30,
+    "zero_skill_id_reuse": true,
+    "zero_metric_outcome_id_reuse": true,
+    "zero_normalized_metric_signature_reuse": true,
+    "section_order_invariant": true,
+    "all_section_final_evidence_contracts_pass": true
+  },
+  "claim_binding": {
+    "schema_version": "graph_claim_binding_v1",
+    "all_eleven_lane_contract_tests_pass": true,
+    "exact_metric_value_unit_gate": true,
+    "orphan_claim_and_allocation_gate": true,
+    "causal_cross_root_merge_gate": true,
+    "x2_gate_id": "x2_resume_graph_claim_binding",
+    "x3_hard_block": true,
+    "signed_upstream_digest_drift_is_not_repaired": true
+  },
+  "verification": [
+    {
+      "check": "current_main_patch_replay",
+      "result": "PASS",
+      "detail": "conflict-free rebase with patch-equivalent range-diff onto 3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7"
+    },
+    {
+      "check": "w1_w5_focused_pytest",
+      "result": "PASS",
+      "detail": "38 passed; 50 passed when combined with section-X3 integration on refreshed current main"
+    },
+    {
+      "check": "section_x3_finalize_integration",
+      "result": "PASS",
+      "detail": "12 passed"
+    },
+    {
+      "check": "evidence_contract_authority_scopes",
+      "result": "PASS",
+      "detail": "6 passed on refreshed current main"
+    },
+    {
+      "check": "validate_c03_graph_hardening",
+      "result": "PASS",
+      "detail": "254 skill rows, 54 distinct fact IDs; existing 0.437 bucket-share warning retained"
+    },
+    {
+      "check": "python_compile",
+      "result": "PASS",
+      "detail": "all changed Python implementation modules"
+    },
+    {
+      "check": "git_diff_check",
+      "result": "PASS",
+      "detail": "no whitespace errors"
+    }
+  ],
+  "local_runtime_fallbacks": [
+    {
+      "condition": "openai and chromadb packages absent from local primary runtime",
+      "fallback": "temporary import-only stubs outside the repository",
+      "scope": "optional package import completion only",
+      "assertion": "real repository graph data and generated SQLite projection were exercised"
+    },
+    {
+      "condition": "live ADG MCP transport unavailable",
+      "fallback": "frozen W0 ADG impact map and authority receipt",
+      "scope": "approved W0 structural surfaces only"
+    }
+  ],
+  "next_gate": {
+    "wave": "W6",
+    "status": "BLOCKED",
+    "receipt_ref": "docs/reports/apps_rg/c03_resume_graph_w6_blocker.json"
+  }
+}

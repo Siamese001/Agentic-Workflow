@@ -15,6 +15,13 @@ from apps_rg.runtime.c0.c0_section_authority import (
 )
 from apps_rg.runtime.c0.constants import FORBIDDEN_PROOF_SOURCE_TYPES, GRAPH_STRENGTH_ADJACENT_ONLY
 from apps_rg.runtime.c0.fact_vector_index_preflight import STATUS_PASS
+from apps_rg.runtime.c0.c03_resume_graph_contracts import stable_digest
+from apps_rg.runtime.c0.c06_weak_refine import (
+    C06_MAX_ATTEMPTS,
+    C06_RECEIPT_ARTIFACT,
+    C06_SCHEMA_VERSION,
+    c03_handoff_snapshot,
+)
 
 
 def _packet_fact_vector_index_preflight(
@@ -39,11 +46,16 @@ def audit_c07_handoff(
     graph_bindings: list[dict[str, Any]],
     allowed_fact_ids: list[str],
     c05_receipt: dict[str, Any] | None = None,
+    c06_receipt: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Prove PA/L2 can safely consume the section packet."""
     violations: list[str] = []
     allowed_set = set(allowed_fact_ids)
     c05 = c05_receipt or {}
+    c06 = c06_receipt
+
+    if c06 is None:
+        violations.append("c06_receipt_missing")
 
     if not fec.evidence_items and not allowed_set:
         violations.append("fec_empty_no_allowed_facts")
@@ -54,6 +66,128 @@ def audit_c07_handoff(
         violations.append("c03_new_atoms_violation")
     if c03_receipt.get("pending_trace_promoted"):
         violations.append("c03_pending_trace_promotion")
+
+    if c06 is not None:
+        actual_handoff = c03_handoff_snapshot(c03_receipt)
+        actual_bindings = [
+            dict(binding)
+            for binding in graph_bindings
+            if isinstance(binding, dict)
+        ]
+        attempted = c06.get("attempted") is True
+        attempt_count = int(c06.get("attempt_count") or 0)
+        if c06.get("schema_version") != C06_SCHEMA_VERSION:
+            violations.append("c06_schema_version_invalid")
+        if int(c06.get("max_attempts") or 0) != C06_MAX_ATTEMPTS:
+            violations.append("c06_max_attempts_invalid")
+        if attempt_count not in (0, 1) or attempted != (attempt_count == 1):
+            violations.append("c06_attempt_count_invalid")
+        if c06.get("pass") is not True:
+            violations.append("c06_refinement_not_pass")
+        expected_outcome = "PASS" if attempted else "NOT_REQUIRED"
+        if str(c06.get("outcome") or "") != expected_outcome:
+            violations.append("c06_outcome_invalid")
+        if c06.get("failure_reasons"):
+            violations.append("c06_failure_reasons_present")
+        if c06.get("route_changed") is not False or (
+            c06.get("route_digest_before") != c06.get("route_digest_after")
+        ):
+            violations.append("c06_route_scope_changed")
+        requested_route_scope = c06.get("requested_route_scope") or {}
+        route_scope = c06.get("route_scope") or {}
+        if (
+            not isinstance(requested_route_scope, dict)
+            or not isinstance(route_scope, dict)
+            or requested_route_scope != route_scope
+            or c06.get("requested_route_digest") != c06.get("route_digest_before")
+        ):
+            violations.append("c06_initial_route_scope_invalid")
+        actual_route_scope = {
+            "section_id": str(c03_receipt.get("section_id") or ""),
+            "role_family_key": str(c03_receipt.get("role_family_key") or ""),
+            "route_ref": str(
+                requested_route_scope.get("route_ref")
+                if isinstance(requested_route_scope, dict)
+                else ""
+            ),
+        }
+        if stable_digest(actual_route_scope) != c06.get("route_digest_after"):
+            violations.append("c06_adopted_route_scope_mismatch")
+        if c06.get("atom_payload_digest_before") != c06.get(
+            "atom_payload_digest_after"
+        ):
+            violations.append("c06_atom_payload_changed")
+        if c06.get("atom_scope_digest_before") != c06.get("atom_scope_digest_after"):
+            violations.append("c06_atom_scope_changed")
+        if c06.get("fact_ids_digest_before") != c06.get("fact_ids_digest_after"):
+            violations.append("c06_fact_scope_changed")
+        if c06.get("binding_fact_ids_digest_before") != c06.get(
+            "binding_fact_ids_digest_after"
+        ):
+            violations.append("c06_binding_fact_scope_changed")
+        if c06.get("binding_fact_ids_before") != c06.get("binding_fact_ids_after"):
+            violations.append("c06_binding_fact_ids_changed")
+        for field in (
+            "adopted_c03_digest",
+            "adopted_graph_bindings_digest",
+            "binding_fact_ids_after",
+            "binding_fact_ids_digest_after",
+            "graph_digest_after",
+            "candidate_decisions_digest",
+            "traversal_events_digest",
+        ):
+            if c06.get(field) != actual_handoff.get(field):
+                violations.append(f"c06_{field}_mismatch")
+        if stable_digest(actual_bindings) != actual_handoff.get(
+            "adopted_graph_bindings_digest"
+        ):
+            violations.append("c06_graph_bindings_argument_mismatch")
+        if c06.get("authority_widened") is not False:
+            violations.append("c06_authority_widened")
+        if c06.get("acl_scope_widened") is not False:
+            violations.append("c06_acl_scope_widened")
+        if int(c06.get("new_atoms_created") or 0) != 0:
+            violations.append("c06_new_atoms_created")
+        if c06.get("broad_fact_link_fallback_used") is not False:
+            violations.append("c06_broad_fact_link_fallback_used")
+        if c06.get("label_tag_proof_fallback_used") is not False:
+            violations.append("c06_label_tag_proof_fallback_used")
+        frozen_graph_digest = str(c06.get("frozen_graph_digest") or "")
+        if frozen_graph_digest and (
+            c06.get("graph_digest_before") != frozen_graph_digest
+            or c06.get("graph_digest_after") != frozen_graph_digest
+        ):
+            violations.append("c06_graph_snapshot_changed")
+        final_coverage = c06.get("final_coverage") or {}
+        if not isinstance(final_coverage, dict) or final_coverage.get("status") != "PASS":
+            violations.append("c06_final_coverage_not_pass")
+        elif final_coverage.get("direct_supported_fact_ids") != final_coverage.get(
+            "proof_fact_ids"
+        ):
+            violations.append("c06_direct_coverage_scope_mismatch")
+        if str(c06.get("final_c05_support_status") or "") != "PASS":
+            violations.append("c06_final_c05_support_not_pass")
+        if attempted and not str(c06.get("selected_graph_plan_digest") or ""):
+            violations.append("c06_selected_graph_plan_digest_missing")
+        if attempted and (
+            c06.get("selected_graph_plan_changed") is not False
+            or c06.get("selected_graph_plan_payload_digest_before")
+            != c06.get("selected_graph_plan_payload_digest_after")
+        ):
+            violations.append("c06_selected_graph_plan_changed")
+        fec_attempt_refs = tuple(fec.weak_support_refinement_attempts or ())
+        if attempted and len(fec_attempt_refs) != 1:
+            violations.append("c06_fec_attempt_ref_missing")
+        if not attempted and fec_attempt_refs:
+            violations.append("c06_unattempted_fec_ref_present")
+        receipt_digest = str(c06.get("receipt_digest") or "")
+        digest_payload = dict(c06)
+        digest_payload.pop("receipt_digest", None)
+        if not receipt_digest or receipt_digest != stable_digest(digest_payload):
+            violations.append("c06_receipt_digest_invalid")
+        expected_attempt_ref = f"{C06_RECEIPT_ARTIFACT}#{receipt_digest}"
+        if attempted and fec_attempt_refs != (expected_attempt_ref,):
+            violations.append("c06_fec_attempt_ref_digest_mismatch")
 
     for it in fec.evidence_items:
         st = str(getattr(it, "source_type", "") or "")
@@ -165,6 +299,9 @@ def audit_c07_handoff(
             "same_run_write_policy_visible": bool(
                 str(fact_index_preflight.get("same_run_write_policy") or "")
             ),
+            "c06_receipt_present": c06 is not None,
+            "c06_bounded_refinement_pass": c06 is not None
+            and not any(violation.startswith("c06_") for violation in violations),
             **unify_checks,
         },
     }

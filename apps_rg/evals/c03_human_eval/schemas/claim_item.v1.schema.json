@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.claim_item.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "item_id", "target_profile_id", "section_id",
+    "representation_mode", "target_context", "visible_claim_text",
+    "proof_context", "rubric_id", "content_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.claim_item.v1"},
+    "item_id": {"type": "string"},
+    "target_profile_id": {"type": "string"},
+    "section_id": {"type": "string"},
+    "representation_mode": {"enum": ["CANONICAL_VISIBLE", "DERIVED_ALTERNATIVE"]},
+    "target_context": {"type": "object"},
+    "visible_claim_text": {"type": "string", "minLength": 1},
+    "proof_context": {"type": "object"},
+    "rubric_id": {"const": "c03_claim_proof_v1"},
+    "content_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

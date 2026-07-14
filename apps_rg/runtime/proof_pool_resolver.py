@@ -992,7 +992,7 @@ def resolve_section_proof_pool(
         return raw
 
     try:
-        return _resolve_section_proof_pool_inner(
+        raw_pool = _resolve_section_proof_pool_inner(
             section=section,
             broad_skills_ledger_path=broad_skills_ledger_path,
             root=root,
@@ -1006,8 +1006,14 @@ def resolve_section_proof_pool(
             targeting=targeting,
             front_spine=front_spine,
             product_visible=product_visible,
-            finalize_product_pool=_finalize_product_pool,
+            finalize_product_pool=lambda value: value,
         )
+        from apps_rg.runtime.c0.resume_graph_proof_pool import (
+            bind_proof_pool_to_resume_graph_allocation,
+        )
+
+        allocated_pool = bind_proof_pool_to_resume_graph_allocation(raw_pool)
+        return _finalize_product_pool(allocated_pool)
     except ValueError as exc:
         if product_visible:
             raise ProductEvidenceAuthorityError(str(exc)) from exc

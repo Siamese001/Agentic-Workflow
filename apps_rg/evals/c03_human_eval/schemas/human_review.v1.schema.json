@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.human_review.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "review_id", "item_type", "item_id", "reviewer_type",
+    "reviewer_id_hash", "reviewer_identity_ref", "qualification_ref",
+    "human_attestation", "independent_review", "label_batch_id", "labeled_at",
+    "blinded_payload_digest", "rubric_digest", "labels", "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.human_review.v1"},
+    "review_id": {"type": "string"},
+    "item_type": {"enum": ["claim", "retrieval", "w9_pair"]},
+    "item_id": {"type": "string"},
+    "reviewer_type": {"const": "human"},
+    "reviewer_id_hash": {
+      "type": "string", "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 over the exact UTF-8 reviewer_identity_ref"
+    },
+    "reviewer_identity_ref": {"type": "string", "pattern": "^human-reviewer://"},
+    "qualification_ref": {"type": "string", "minLength": 1},
+    "human_attestation": {"const": true},
+    "independent_review": {"const": true},
+    "label_batch_id": {"type": "string"},
+    "labeled_at": {"type": "string"},
+    "blinded_payload_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "rubric_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "labels": {"type": "object"},
+    "notes": {"type": "string"},
+    "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"item_type": {"const": "w9_pair"}},
+        "required": ["item_type"]
+      },
+      "then": {
+        "properties": {
+          "qualification_ref": {"type": "string", "pattern": "^resume-coach://"}
+        }
+      }
+    }
+  ]
+}

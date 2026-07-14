@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.c03_human_eval.adjudication.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "adjudication_id", "item_type", "item_id", "review_refs",
+    "review_digests", "status", "final_labels", "adjudicated_at", "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.c03_human_eval.adjudication.v1"},
+    "adjudication_id": {"type": "string"},
+    "item_type": {"enum": ["claim", "retrieval", "w9_pair"]},
+    "item_id": {"type": "string"},
+    "review_refs": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "uniqueItems": true, "items": {"type": "string"}
+    },
+    "review_digests": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "status": {"enum": ["CONSENSUS_ACCEPTED", "ADJUDICATED"]},
+    "adjudicator_type": {"enum": ["human", "deterministic_consensus"]},
+    "adjudicator_id_hash": {
+      "type": "string",
+      "description": "SHA-256 over the exact UTF-8 adjudicator_identity_ref"
+    },
+    "adjudicator_identity_ref": {"type": "string"},
+    "qualification_ref": {"type": "string"},
+    "human_attestation": {"type": "boolean"},
+    "final_labels": {"type": "object"},
+    "adjudicated_at": {"type": "string"},
+    "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "ADJUDICATED"}},
+        "required": ["status"]
+      },
+      "then": {
+        "required": [
+          "adjudicator_type", "adjudicator_id_hash", "adjudicator_identity_ref",
+          "qualification_ref", "human_attestation"
+        ],
+        "properties": {
+          "adjudicator_type": {"const": "human"},
+          "adjudicator_id_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "adjudicator_identity_ref": {"type": "string", "pattern": "^human-reviewer://"},
+          "human_attestation": {"const": true}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "item_type": {"const": "w9_pair"},
+          "status": {"const": "ADJUDICATED"}
+        },
+        "required": ["item_type", "status"]
+      },
+      "then": {
+        "properties": {
+          "qualification_ref": {"type": "string", "pattern": "^resume-coach://"}
+        }
+      }
+    }
+  ]
+}

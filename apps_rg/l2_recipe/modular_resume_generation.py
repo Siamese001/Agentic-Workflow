@@ -600,6 +600,8 @@ def run_modular_resume_generation(
     lane_outputs_valid = False
     final_merge_attempted = False
     rg_output_merge_receipt_rel: str | None = None
+    resume_graph_allocation_digest = ""
+    resume_graph_allocation_refs: dict[str, str] = {}
 
     if profile.phase1_invoke_real_lanes:
         sections_root = resolve_phase1_sections_root(art, modular_root)
@@ -630,6 +632,27 @@ def run_modular_resume_generation(
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
         jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
         br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
+        from apps_rg.runtime.c0.resume_graph_allocation import (
+            ALLOCATION_PLAN_ENV,
+            ALLOCATION_USAGE_LEDGER_ENV,
+            SECTION_EVIDENCE_CONTRACTS_ENV,
+            build_whole_resume_graph_allocation,
+            write_whole_resume_graph_allocation_bundle,
+        )
+
+        resume_graph_bundle = build_whole_resume_graph_allocation(
+            repo_root=repo,
+            target_role=tr or str(input_package.target_role or ""),
+            jd_text=jd_txt or str(input_package.jd_text or ""),
+            briefing_text=br_dispatch or str(input_package.briefing_text or ""),
+        )
+        resume_graph_allocation_refs = write_whole_resume_graph_allocation_bundle(
+            resume_graph_bundle,
+            output_dir=modular_root / "resume_graph_allocation",
+        )
+        resume_graph_allocation_digest = str(
+            resume_graph_bundle["allocation_plan"].get("allocation_plan_digest") or ""
+        )
         # Per-lane composite-judge defaults preserve protected Claude-primary panels while keeping
         # bullet/narrative lanes compact. Resolving WITHOUT a section_id would force one global
         # panel onto every lane in whole-run mode, defeating the section policy. Resolve per-lane below.
@@ -661,8 +684,18 @@ def run_modular_resume_generation(
 
         prev_whole_run_env = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE")
         prev_corr_env = os.environ.get("APPS_RG_CORRELATED_CLI_RUN")
+        prev_graph_allocation_env = {
+            ALLOCATION_PLAN_ENV: os.environ.get(ALLOCATION_PLAN_ENV),
+            ALLOCATION_USAGE_LEDGER_ENV: os.environ.get(ALLOCATION_USAGE_LEDGER_ENV),
+            SECTION_EVIDENCE_CONTRACTS_ENV: os.environ.get(SECTION_EVIDENCE_CONTRACTS_ENV),
+        }
         os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
         os.environ["APPS_RG_CORRELATED_CLI_RUN"] = _rel_under_repo(art, repo)
+        os.environ[ALLOCATION_PLAN_ENV] = resume_graph_allocation_refs["allocation_plan"]
+        os.environ[ALLOCATION_USAGE_LEDGER_ENV] = resume_graph_allocation_refs["usage_ledger"]
+        os.environ[SECTION_EVIDENCE_CONTRACTS_ENV] = resume_graph_allocation_refs[
+            "section_final_evidence_contracts"
+        ]
         try:
             from apps_rg.runtime.integrated_lane_evidence_packaging import (
                 emit_integrated_lane_pre_run_failure,
@@ -915,6 +948,8 @@ def run_modular_resume_generation(
                     lane: phase1_anthropic_limit_preflight_by_lane.get(lane, {})
                     for lane in GENERATED_LANES
                 },
+                "resume_graph_allocation_plan_digest": resume_graph_allocation_digest,
+                "resume_graph_allocation_refs": resume_graph_allocation_refs,
             }
             if lane_targeting is not None:
                 inv_extra["lane_argv_targeting"] = asdict(lane_targeting)
@@ -1010,6 +1045,11 @@ def run_modular_resume_generation(
                 os.environ.pop("APPS_RG_CORRELATED_CLI_RUN", None)
             else:
                 os.environ["APPS_RG_CORRELATED_CLI_RUN"] = prev_corr_env
+            for key, previous in prev_graph_allocation_env.items():
+                if previous is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = previous
             if prev_env is None:
                 os.environ.pop(MODULAR_R4_SECTIONS_ROOT_ENV, None)
             else:

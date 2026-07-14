@@ -1,0 +1,30 @@
+schema_version: apps_rg.c03_human_eval.w9_coach_rubric.v1
+rubric_id: c03_w9_blind_resume_coach_v1
+blind_policy:
+  variant_identity_visible: false
+  system_scores_visible: false
+  graph_receipts_visible: false
+  other_reviews_visible: false
+reviewer_policy:
+  independent_primary_reviewers: 2
+  qualified_resume_coach_required: true
+  qualification_ref_scheme: resume-coach://
+  unknown_is_pass: false
+scale:
+  minimum: 1
+  maximum: 5
+dimensions:
+  - target_relevance
+  - claim_naturalness
+  - executive_readability
+  - ats_keyword_coverage
+  - authenticity_factuality
+  - concision
+  - hiring_manager_usefulness
+preference_values: [A, B, TIE]
+release_policy:
+  primary_quality_delta_min_overall: 0.0
+  primary_quality_delta_min_per_profile: 0.0
+  target_relevance_delta_min_overall: 0.0
+  target_relevance_delta_min_per_profile: 0.0
+  authenticity_may_decline_on_any_pair: false

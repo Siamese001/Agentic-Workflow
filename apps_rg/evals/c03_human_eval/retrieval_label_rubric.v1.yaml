@@ -1,0 +1,39 @@
+schema_version: apps_rg.c03_human_eval.retrieval_rubric.v1
+rubric_id: c03_retrieval_relevance_v1
+candidate_order: independently_blinded_and_deterministically_shuffled
+reviewer_policy:
+  independent_primary_reviewers: 2
+  human_only: true
+  unknown_is_pass: false
+  rank_visible: false
+dimensions:
+  relevance_grade:
+    values: [0, 1, 2, 3]
+    anchors:
+      0: irrelevant_or_ineligible
+      1: weak_support_or_low_target_value
+      2: acceptable_relevant_proof
+      3: ideal_relevant_proof
+  path_valid:
+    values: [true, false, UNKNOWN]
+  metric_binding:
+    values: [EXACT, INEXACT, NOT_APPLICABLE, UNKNOWN]
+consistency_rules:
+  - if: path_valid == false
+    then: relevance_grade == 0
+  - if: metric_binding == INEXACT
+    then: relevance_grade == 0
+metrics:
+  k_values: [1, 3, 5, 10]
+  relevant_threshold: 2
+  release_recall_at_10_min: 0.95
+  release_ndcg_at_10_min: 0.90
+  selected_path_accuracy_min: 1.0
+  judged_pool_policy:
+    frontier_k: 10
+    candidate_judging_scope: FULL_FINITE_UNIVERSE
+    finite_universe: every_allocator_admitted_candidate_up_to_64
+    judged_candidate_count: equals_candidate_universe_size
+    candidate_order: blinded_deterministic_shuffle
+    sealed_only_fields: [original_rank, selected]
+    recall_scope: FULL_FINITE_UNIVERSE
