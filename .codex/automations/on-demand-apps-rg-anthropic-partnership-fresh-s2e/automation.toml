@@ -1,23 +1,27 @@
 version = 1
 id = "on-demand-apps-rg-anthropic-partnership-fresh-s2e"
 kind = "manual"
-name = "On-Demand apps_rg Anthropic Partnership Fresh S2E"
+name = "On-Demand apps_rg Anthropic Partnership Hardened Full-Chain E2E"
 prompt = '''
-Run the Agentic-Workflow apps_rg Anthropic partnership fresh source-to-end E2E from C:\Git\Agentic-Workflow-FRESH.
+Run the Agentic-Workflow hardened apps_research -> apps_rg Anthropic partnership fresh source-to-end E2E from C:\Git\Agentic-Workflow-FRESH.
 
 Mission:
-Execute one fresh source-to-end run for Anthropic, Manager of Applied AI Architecture, Partnerships, Manager level. The briefing must be produced by apps_research. This is proof-only and must not publish or repair code.
+Execute one fresh product-authority run for Anthropic, Manager of Applied AI Architecture, Partnerships, Manager level. apps_research must perform the full governed producer run, persist its own briefing evidence, exit with the canonical exact X3D_ALLOW_FINISH disposition, and publish the apps_research.apps_rg_handoff.v2 bundle. apps_rg must consume that exact bundle and continue through U0, L1, L0, C0, PA, L2, X1, X2, X3, product eligibility, UWG, immutable product-authorization close, Apps Eval, L6 shadow, independent parity, promotion terminal, mandatory outputs, stage-ledger v2 sealing, terminal-manifest v1 sealing, and pipeline-completion close. This is proof-only and must not publish or repair code.
 
 Authority and hard stops:
 - Follow AGENTS.md, docs/codex-primary-execution.md, and .codex/skills/apps-rg-runtime/SKILL.md.
+- Treat config/certification/apps_research_rg_e2e_authority_contract.v1.json and docs/architecture/adr/ADR-106-apps-research-rg-e2e-authority-contract.md as the only E2E authority model.
 - Do not reschedule, enable, or convert this automation to recurring active mode.
 - Do not claim success from process exit alone.
 - Do not create, update, merge, publish, fetch, or push a PR.
 - Do not edit the primary checkout after a run failure.
-- Do not use a static manual briefing.
-- Fail with APPS_RESEARCH_ARTIFACT_MISSING before U0/L1/L0/L2 when apps_research does not persist producer-owned briefing evidence.
+- Do not use a static manual briefing, fixture briefing, synthesized handoff identity, or legacy handoff-v1 reader.
+- Fail with APPS_RESEARCH_ARTIFACT_MISSING before apps_rg U0/L1/L0/L2 when apps_research does not complete and persist producer-owned briefing evidence.
+- Require the canonical identity fields producer_app_id, consumer_app_id, parent_run_id, child_run_id, request_id, trace_root, tenant_id, target_company, target_role, jd_sha256, brief_sha256, policy_hash, blueprint_hash, and schema_version. Missing identity is BLOCKED and must never be synthesized on a product path.
+- Only exact X3D_ALLOW_FINISH may authorize the product. Reject ALLOW, X3_ALLOW, X3D, EXIT_OK, EXIT_PARTIAL, and every other legacy alias.
+- Keep product_authorized, pipeline_complete, and observability_repair_required separate. Apps Eval, L6, promotion, reporting, and closeout may not rescue or veto immutable product authorization after UWG_COMMIT_CLOSED.
 - Never select a run by directory modification time. The exact run directory comes only from FRESH_E2E_ARTIFACT_DIR and e2e_launcher_result.json.
-- Never generate, repair, or backfill mandatory outputs after the canonical run exits. Missing output is a deterministic hard failure.
+- Never generate, repair, or backfill mandatory outputs, producer receipts, ledger entries, seals, manifests, or completion receipts after the canonical run exits. Missing output is a deterministic hard failure.
 - The launcher must not abort on missing signing configuration before the canonical child allocates its exact run directory.
 - APPS_RG_ROUTE_SIGNING_PREFLIGHT is the first hash-chained stage. A blocked preflight must emit its receipt, BCG, prior-pass/current-fail bisect, retry explanation, section/gate/judge table, L7 audit output, and mandatory JSON before returning nonzero.
 - A preflight configuration failure is non-retriable inside the current process. Report zero research, generation, judge, and retry attempts and explain why retrying unchanged configuration cannot recover.
@@ -26,28 +30,61 @@ Authority and hard stops:
 Required external environment:
 - APPS_RG_ROUTE_HMAC_SECRET must already contain the signing secret. The automation must not generate or print it.
 - APPS_RG_ROUTE_HMAC_KEY_ID must identify that secret without containing the secret value.
+- All provider, judge, search, and storage credentials required by the configured apps_research and apps_rg product profiles must already exist. Do not generate, print, or weaken around missing credentials.
 - APPS_RG_ENABLE_MANAGED_WORKFLOW_L0 is set by the bounded launcher.
 
-Pinned inputs and baseline:
+Pinned inputs and contracts:
 - JD: apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt
 - Output root: artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e
 - Baseline: apps_rg/config/e2e_baselines/anthropic_partnership.v1.json
+- Authority contract: config/certification/apps_research_rg_e2e_authority_contract.v1.json
 - The canonical child command is python -m apps_rg --fresh-e2e --target-company "Anthropic" --target-role "Manager of Applied AI Architecture, Partnerships" --target-level "Manager" --jd apps_rg/config/targeting/anthropic_manager_applied_ai_architecture_partnerships_jd.txt.
 
 Preflight:
 1. Run python scripts/governance/codex_readiness.py --json.
 2. Record git status without mutating git state.
-3. Confirm the JD, baseline contract, scripts/apps_rg/run_anthropic_partnership_e2e.py, and tools/apps_rg/render_run_summary.py exist.
+3. Confirm the JD, baseline, authority contract, scripts/apps_rg/run_anthropic_partnership_e2e.py, tools/apps_rg/render_run_summary.py, and all referenced schemas exist.
+4. Run the hardened contract and traceability gates exactly:
+   python ops_scripts/ci/check_apps_research_rg_e2e_contract_freeze.py
+   python -m unittest tests.unit.ops_scripts.ci.test_apps_research_rg_e2e_contract_freeze -v
+   python ops_scripts/ci/check_apps_research_rg_handoff_e2e.py
+   python ops_scripts/ci/check_apps_research_rg_e2e_traceability.py --mode structural
+   python ops_scripts/ci/check_apps_research_rg_full_chain_e2e.py
+   python ops_scripts/ci/check_apps_research_rg_e2e_traceability.py --mode evidence
+5. Do not start the live child unless every hardened certification command passes.
 
 Run exactly:
 python scripts/apps_rg/run_anthropic_partnership_e2e.py --output-root artifacts/apps_rg/runs/on_demand_anthropic_partnership_fresh_s2e --baseline-ref apps_rg/config/e2e_baselines/anthropic_partnership.v1.json
 
-Mandatory evidence in the exact receipt-bound run directory:
+Mandatory evidence in or receipt-bound from the exact run directory:
 - e2e_preflight_receipt.json
+- e2e_preflight_continuation_receipt.json
+- e2e_preflight_continuation_consumption_receipt.json
+- e2e_preflight_product_entry_receipt.json
 - e2e_launch_receipt.json
 - e2e_launcher_result.json
-- e2e_stage_ledger.json
+- e2e_stage_ledger.json with schema_version apps_rg.e2e_stage_ledger.v2
 - research/research_artifact_ref.json
+- producer apps_research_u0_receipt.json
+- producer runtime_exhaust_bundle.json
+- producer exit_disposition_receipt.json with exact X3D_ALLOW_FINISH
+- producer apps_research_apps_rg_handoff_v2.json with schema_version apps_research.apps_rg_handoff.v2
+- apps_research_handoff_validation_receipt.json
+- l1_plan_contract.json
+- route_contract.json
+- final_evidence_contract.json
+- compiled_prompt_artifact.json
+- sealed_l2_artifact.json
+- exit_review_packet.json
+- x2_aggregation_result.json
+- x3_disposition_receipt.json
+- apps_rg_product_eligibility_receipt.json
+- uwg_commit_receipt.json
+- apps_rg_product_authorization_receipt.json
+- apps_eval_record.json
+- observability_closure_receipt.json
+- l6_apps_eval_binding_closure_receipt.json
+- future_run_promotion_terminal_receipt.json
 - fresh_e2e_fact_vector_bootstrap_receipt.json
 - pre_u0_fact_vector_readiness.json
 - apps_rg_post_x3_completion_receipt.json
@@ -56,11 +93,22 @@ Mandatory evidence in the exact receipt-bound run directory:
 - 02_section_lane_summary_table.md
 - 03_L7_audit_ability_output.md
 - APPS_RG_MANDATORY_RUN_OUTPUT.json
+- e2e_stage_ledger_seal_receipt.json with schema_version apps_rg.e2e_stage_ledger_seal.v1
+- apps_rg_e2e_terminal_manifest.json with schema_version apps_rg.e2e_terminal_manifest.v1
+- apps_rg_pipeline_completion_receipt.json with schema_version apps_rg.pipeline_completion_receipt.v1
 
-For a passing preflight, verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs. For a blocked preflight, verify those fields are explicitly NOT_REACHED with zero attempt counts. In every outcome verify inline_rca_rendered=true, apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3 or PRE_RUN disposition, completion_status, every judge retry or JUDGES_NOT_REACHED, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present. The launcher output is authoritative; python tools/apps_rg/render_run_summary.py <run_dir> may be rerun only for inspection and must not repair missing canonical artifacts.
+Verification:
+- For a passing preflight, verify research_artifact_dir, research_briefing_path, research_company_brief_path, and research_envelope_path are non-empty existing producer paths under artifacts/apps_research/runs and are digest-bound through the v2 handoff and consumer validation receipt.
+- For a blocked preflight, verify those fields are explicitly NOT_REACHED with zero attempt counts.
+- Verify the stage ledger is receipt-derived, hash chained, complete for the selected terminal path, externally sealed, and bound to the canonical identity and exact authoritative receipt bytes.
+- Verify product_authorized=true only when the fresh continuation, full apps_research proof chain, apps_rg U0 through X2, exact X3D_ALLOW_FINISH, product eligibility, and UWG commit all pass.
+- Verify pipeline_complete=true only when product_authorized=true and Apps Eval, L6, independent parity, promotion terminal, mandatory outputs, stage-ledger seal, terminal manifest, and completion receipt all pass and byte-bind correctly.
+- If product_authorized=true and the post-boundary chain is incomplete, require pipeline_complete=false and observability_repair_required=true without changing product authorization.
+- In every outcome verify inline_rca_rendered=true, apps_eval_record_ref, l6_shadow_bridge_ref, immutable X3 or PRE_RUN disposition, completion_status, every judge retry or JUDGES_NOT_REACHED, prior-pass/current-fail comparison, first causal divergence, and ingestion root cause are present.
+- The launcher output is authoritative; python tools/apps_rg/render_run_summary.py <run_dir> may be rerun only for inspection and must not repair missing canonical artifacts.
 
 Final report:
-Include readiness, exact command, exact run directory, process exit code, mandatory-output status, producer research paths, stage-ledger status, X3 and completion status, apps_eval_record_ref, l6_shadow_bridge_ref, rendered summary, blockers, and RCA. Use symptom, root_cause, evidence, fix_or_next, and recurrence_guard for failures.
+Include readiness, hardened-certification results, exact command, exact run directory, process exit code, mandatory-output status, producer research paths, v2 handoff and identity status, stage-ledger and seal status, exact X3 code, product_authorized, pipeline_complete, observability_repair_required, Apps Eval and L6 parity status, terminal-manifest/completion-receipt status, apps_eval_record_ref, l6_shadow_bridge_ref, rendered summary, blockers, and RCA. Use symptom, root_cause, evidence, fix_or_next, and recurrence_guard for failures.
 '''
 status = "ON_DEMAND"
 model = "gpt-5.5"
@@ -68,4 +116,5 @@ reasoning_effort = "xhigh"
 execution_environment = "local"
 cwds = ["C:\\Git\\Agentic-Workflow-FRESH"]
 created_at = 1782898656099
-updated_at = 1783704000000
+updated_at = 1784050315160
+
