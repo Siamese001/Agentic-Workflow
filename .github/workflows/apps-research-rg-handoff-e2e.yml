@@ -79,6 +79,7 @@ on:
       - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
       - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
       - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".codex/automations/on-demand-apps-rg-anthropic-partnership-fresh-s2e/automation.toml"
       - ".github/workflows/apps-research-rg-handoff-e2e.yml"
   push:
     branches: [main]
@@ -159,6 +160,7 @@ on:
       - "tests/unit/apps_rg/test_apps_research_bridge_contract_gate.py"
       - "tests/unit/apps_rg/test_apps_research_bridge_u0_handoff.py"
       - "tests/unit/apps_rg/test_r3r4_whole_run_reachability.py"
+      - ".codex/automations/on-demand-apps-rg-anthropic-partnership-fresh-s2e/automation.toml"
       - ".github/workflows/apps-research-rg-handoff-e2e.yml"
   workflow_dispatch:
 
