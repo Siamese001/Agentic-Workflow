@@ -1,0 +1,58 @@
+{
+  "schema_version": "apps_rg.c03_resume_graph_w6_blocker.v1",
+  "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+  "generated_at_utc": "2026-07-13T15:50:13Z",
+  "implementation_head_sha": "07cb833099126cec5e3b043ca94dee9c18b761f7",
+  "wave": "W6",
+  "status": "BLOCKED",
+  "stop_condition": "confidence thresholds cannot be calibrated from adequate labeled data",
+  "proof_confidence_calibrated_status": "UNKNOWN",
+  "unknown_is_pass": false,
+  "uncalibrated_probability_emitted": false,
+  "separate_raw_fields_present": [
+    "authority_pass",
+    "proof_strength_raw",
+    "target_alignment_score",
+    "claim_entailment_score",
+    "metric_binding_score",
+    "path_confidence_raw",
+    "source_independence_score",
+    "selection_margin"
+  ],
+  "evidence": [
+    {
+      "ref": "apps_rg/config/domain_contract/judge_calibration_profile.yaml",
+      "observation": "semantic calibration requires at least 40 samples and human labels"
+    },
+    {
+      "ref": "apps_eval/fixtures/holdout/apps_rg_executive_positioning.v1.jsonl",
+      "observation": "configured dataset path is absent"
+    },
+    {
+      "ref": "apps_rg/config/domain_contract/grader_roster.yaml",
+      "observation": "calibration ref is pending-human-semantic-v1; judge is informational-only"
+    },
+    {
+      "ref": "apps_rg/evals/section_quality_benchmark/README.md",
+      "observation": "benchmark is a scoreless scaffold and human label fields are empty"
+    },
+    {
+      "ref": "user-supplied agentic_process_mapping_v40.md",
+      "observation": "L6.4 requires post-run human calibration; L6 cannot rescue or mutate the current run"
+    }
+  ],
+  "required_to_resume": [
+    "A frozen, authorized, versioned, leak-checked human-labeled evaluation set covering all target profiles and claim-bearing section types",
+    "At least 40 semantic calibration rows, each with two independent reviewer references and an adjudication receipt, or an approved statistically justified plan revision",
+    "Held-out relevance labels for Recall@K, nDCG@K, MRR, path accuracy, entailment, and metric binding",
+    "A blinded resume-coach review using the fixed W9 rubric across all three target profiles",
+    "Permission to execute the release-only holdout and record ECE, Brier, thresholds, and promotion evidence"
+  ],
+  "downstream_disposition": {
+    "W7": "NOT_STARTED_DUE_TO_W6_STOP",
+    "W8": "NOT_STARTED_DUE_TO_W6_STOP",
+    "W9": "NOT_STARTED_DUE_TO_W6_STOP",
+    "promotion_claimed": false
+  },
+  "policy_preserved": true
+}
