@@ -74,7 +74,8 @@ jobs:
         continue-on-error: true
         run: >-
           python -m pytest
-          tests/_apps_contract/test_apps_rg_c0_ownership_split.py::TestAgenticCoreGraphSkillBoundary::test_agentic_core_does_not_embed_resume_graph_skill_authority_literals
+          tests/_apps_contract/test_apps_rg_c0_ownership_split.py
+          -k test_agentic_core_does_not_embed_resume_graph_skill_authority_literals
           --junitxml=artifacts/apps_rg/c03_ci/external-baseline.xml
           -q -o addopts=
 
