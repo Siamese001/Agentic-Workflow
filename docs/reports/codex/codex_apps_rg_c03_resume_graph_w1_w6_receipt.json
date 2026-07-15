@@ -52,9 +52,9 @@
     ]
   },
   "source_authority": {
-    "attachment": "/workspace/scratch/5d58ecb9b460/project_sources/01-agentic_process_mapping_v40.md",
-    "attachment_sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
-    "applied_contract": "L6 post-run calibration only; UNKNOWN is non-PASS; no current-run mutation; human evidence remains authoritative"
+    "plan": "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md",
+    "evaluation_profile": "apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml",
+    "applied_contract": "C0.3 UNKNOWN is non-PASS; no current-run mutation; authorized human evidence remains release authority"
   },
   "execution": {
     "status": "BLOCKED_HUMAN_EVIDENCE_PENDING",

@@ -88,6 +88,10 @@ from apps_rg.runtime.assembly.final_resume_x2 import (
 
 )
 from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
+from apps_rg.runtime.c0.whole_resume_graph_evidence import (
+    ARTIFACT_NAME as WHOLE_RESUME_GRAPH_EVIDENCE_ARTIFACT,
+    build_whole_resume_graph_evidence_contract,
+)
 
 from apps_rg.runtime.locked_copy.locked_copy_manifest import find_repo_root, sha256_hex
 
@@ -657,6 +661,27 @@ def assemble_final_resume(
     _wg.ensure_dir(paths.output_dir)
     _sweep_undeclared_assembly_artifacts(paths.output_dir)
 
+    whole_resume_graph_evidence = build_whole_resume_graph_evidence_contract(
+        repo=repo,
+        final_resume_blob=final_resume,
+        rollup_blob=rollup_blob,
+    )
+    final_resume["whole_resume_graph_evidence_contract"] = whole_resume_graph_evidence
+    whole_resume_graph_evidence_path = (
+        paths.output_dir / WHOLE_RESUME_GRAPH_EVIDENCE_ARTIFACT
+    )
+    _wg.write_text(
+        whole_resume_graph_evidence_path,
+        json.dumps(
+            whole_resume_graph_evidence,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
     if coherence_required:
         target_company = os.environ.get("APPS_RG_TARGET_COMPANY", "").strip()
         target_role = os.environ.get("APPS_RG_TARGET_ROLE", "").strip()
@@ -772,6 +797,7 @@ def assemble_final_resume(
         review_policy.get("summary", {}).get("product_allow_claimed")
         and gates_all_pass(gate_results)
         and cross_section_product_pass(cross_gates)
+        and whole_resume_graph_evidence.get("release_pass") is True
         and (coherence_pass if coherence_required else False)
     )
     if isinstance(final_resume.get("assembly_proof_semantics"), dict):
@@ -912,6 +938,12 @@ def assemble_final_resume(
     manifest_body["orchestration_fingerprint"] = paths.rel(fp_path)
 
     manifest_body["cross_section_x2_gate_outputs"] = paths.rel(cross_x2_path)
+    manifest_body["whole_resume_graph_evidence_contract"] = paths.rel(
+        whole_resume_graph_evidence_path
+    )
+    manifest_body["whole_resume_graph_evidence_contract_digest"] = (
+        whole_resume_graph_evidence.get("contract_digest")
+    )
 
     _wg.write_text(
         manifest_fp,
@@ -1015,6 +1047,18 @@ def assemble_final_resume(
         "coherent_rollup_policy_json": paths.rel(coherent_policy_path),
 
         "review_lane_policy_json": paths.rel(review_policy_path),
+
+        "whole_resume_graph_evidence_contract_json": paths.rel(
+            whole_resume_graph_evidence_path
+        ),
+
+        "whole_resume_graph_evidence_contract_digest": (
+            whole_resume_graph_evidence.get("contract_digest")
+        ),
+
+        "whole_resume_graph_evidence_release_pass": (
+            whole_resume_graph_evidence.get("release_pass") is True
+        ),
 
         "final_resume_hash": final_hash,
 

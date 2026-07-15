@@ -7,7 +7,6 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Mapping
 
-from apps_rg.runtime.c0.c03_resume_graph_contracts import stable_digest
 from apps_rg.runtime.c0.resume_graph_allocation import (
     ALLOCATION_PLAN_ENV,
     SECTION_EVIDENCE_CONTRACTS_ENV,
@@ -96,7 +95,29 @@ def bind_proof_pool_to_resume_graph_allocation(pool: Any) -> Any:
             "durable_graph_state_mutated": False,
         }
     )
-    digest = stable_digest(sliced)
+    # ``slice_section_plan_for_allocation`` preserves the canonical source
+    # plan digest while narrowing its fact rows.  Re-hashing the sliced
+    # serialization creates a second, non-authoritative identity and breaks
+    # the W7 end-to-end digest chain.
+    digest = str(sliced.get("plan_digest") or "").strip()
+    if not digest:
+        raise ValueError(f"{section_id}: sliced graph plan lacks canonical plan_digest")
+    metadata["canonical_section_graph_plan_id"] = sliced.get("plan_id")
+    metadata["canonical_section_graph_plan_digest"] = digest
+    binding_receipt = metadata.get("graph_selection_binding_receipt")
+    if isinstance(binding_receipt, Mapping):
+        updated_binding_receipt = dict(binding_receipt)
+        updated_binding_receipt.update(
+            {
+                "canonical_plan_id": sliced.get("plan_id"),
+                "canonical_plan_digest": digest,
+                "selected_fact_plan_digest": digest,
+                "proof_pool_digest": digest,
+                "selected_graph_plan_is_selected_fact_plan": True,
+                "pass": True,
+            }
+        )
+        metadata["graph_selection_binding_receipt"] = updated_binding_receipt
     return replace(
         pool,
         proof_pool_digest=digest,

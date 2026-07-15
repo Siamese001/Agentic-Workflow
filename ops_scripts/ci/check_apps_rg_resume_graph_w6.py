@@ -33,9 +33,6 @@ from apps_rg.evals.resume_graph_evaluation import (  # noqa: E402
 from apps_rg.evals.c03_human_eval.split_policy import (  # noqa: E402
     PROOF_SPLIT_POLICY_ID,
 )
-from ops_scripts.ci._apps_rg_spearman_gate_common import finish  # noqa: E402
-
-
 DEFAULT_ARTIFACT = REPO_ROOT / "artifacts/calibration/apps_rg_resume_graph_w6.json"
 CANONICAL_PROFILE = (
     REPO_ROOT / "apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml"
@@ -131,6 +128,21 @@ _PASS_REQUIRED_FINITE_METRICS = set(_METRIC_NAMES) - {
     "metric_binding_recall",
     "metric_binding_predicted_positive_rate",
 }
+
+
+def _finish(gate_id: str, errors: list[str], *, fail_closed_env: str) -> int:
+    """Report this C0.3 gate without importing unrelated calibration gates."""
+    fail_closed = os.environ.get(fail_closed_env, "").strip() == "1"
+    if not errors:
+        print(f"[{gate_id}] PASS")
+        return 0
+    posture = "BLOCKING" if fail_closed else "ADVISORY"
+    print(f"[{gate_id}] {posture}: {len(errors)} finding(s)")
+    for error in errors:
+        print(f"  - {error}")
+    if not fail_closed:
+        print(f"[{gate_id}] set {fail_closed_env}=1 to fail closed")
+    return 1 if fail_closed else 0
 
 
 def _inventory_error(value: Any, expected: set[str], label: str) -> str | None:
@@ -525,7 +537,7 @@ def main() -> int:
     artifact = Path(configured) if configured else DEFAULT_ARTIFACT
     if not artifact.is_absolute():
         artifact = REPO_ROOT / artifact
-    return finish(
+    return _finish(
         "APPS-RG-RESUME-GRAPH-W6",
         validate_artifact(artifact),
         fail_closed_env=FAIL_CLOSED_ENV,

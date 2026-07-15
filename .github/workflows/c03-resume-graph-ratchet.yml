@@ -1,0 +1,99 @@
+name: C0.3 Resume Graph Ratchet
+
+on:
+  pull_request:
+    paths:
+      - "apps_rg/runtime/c0/**"
+      - "apps_rg/runtime/aggregation/**"
+      - "apps_rg/runtime/assembly/**"
+      - "apps_rg/runtime/internal/final_resume_assembler.py"
+      - "apps_rg/runtime/proof_pool_resolver.py"
+      - "apps_rg/l2_recipe/modular_resume_generation.py"
+      - "apps_rg/evals/c03_**"
+      - "ops_scripts/calibration/apps_rg_resume_graph_w6*.py"
+      - "ops_scripts/ci/check_apps_rg_resume_graph_w6.py"
+      - "tests/unit/apps_rg/**"
+      - "tests/_apps_contract/**"
+      - ".github/workflows/c03-resume-graph-ratchet.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps_rg/runtime/c0/**"
+      - "apps_rg/runtime/aggregation/**"
+      - "apps_rg/runtime/assembly/**"
+      - "apps_rg/runtime/internal/final_resume_assembler.py"
+      - "apps_rg/runtime/proof_pool_resolver.py"
+      - "apps_rg/l2_recipe/modular_resume_generation.py"
+      - "apps_rg/evals/c03_**"
+      - "ops_scripts/calibration/apps_rg_resume_graph_w6*.py"
+      - "ops_scripts/ci/check_apps_rg_resume_graph_w6.py"
+      - "tests/unit/apps_rg/**"
+      - "tests/_apps_contract/**"
+      - ".github/workflows/c03-resume-graph-ratchet.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: c03-resume-graph-ratchet-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  c03-code-contract-ratchet:
+    name: C0.3 code and contract ratchet
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+
+      - name: Strict C0.3 suite
+        run: >-
+          python -m pytest
+          tests/unit/apps_rg/runtime/c0
+          tests/unit/apps_rg/evals/test_resume_graph_evaluation.py
+          tests/unit/apps_rg/evals/test_c03_human_eval_packet.py
+          tests/unit/apps_rg/evals/test_c03_human_eval_source_bundle.py
+          tests/unit/apps_rg/evals/test_c03_proxy_eval.py
+          tests/unit/apps_rg/evals/test_c03_ci_ratchet.py
+          tests/unit/apps_rg/test_shared_lane_skew_elimination.py
+          tests/_apps_contract/test_apps_rg_c0_ownership_split.py
+          --deselect=tests/_apps_contract/test_apps_rg_c0_ownership_split.py::TestAgenticCoreGraphSkillBoundary::test_agentic_core_does_not_embed_resume_graph_skill_authority_literals
+          --junitxml=artifacts/apps_rg/c03_ci/strict.xml
+          -q -o addopts=
+
+      - name: Exact external baseline diagnostic
+        id: baseline
+        continue-on-error: true
+        run: >-
+          python -m pytest
+          tests/_apps_contract/test_apps_rg_c0_ownership_split.py
+          -k test_agentic_core_does_not_embed_resume_graph_skill_authority_literals
+          --junitxml=artifacts/apps_rg/c03_ci/external-baseline.xml
+          -q -o addopts=
+
+      - name: Validate ratchet receipt
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: >-
+          python -m apps_rg.evals.c03_ci_ratchet
+          --strict-junit artifacts/apps_rg/c03_ci/strict.xml
+          --baseline-junit artifacts/apps_rg/c03_ci/external-baseline.xml
+          --source-commit "${GITHUB_SHA}"
+          --base-commit "${BASE_SHA}"
+          --out artifacts/apps_rg/c03_ci/c03_resume_graph_ratchet_receipt.json
+
+      - name: Upload C0.3 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c03-resume-graph-ratchet-evidence
+          path: artifacts/apps_rg/c03_ci/
+          if-no-files-found: error
