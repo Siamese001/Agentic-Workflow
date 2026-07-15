@@ -964,6 +964,15 @@ def run_modular_resume_generation(
                 rollup_blob = None
 
             if rollup_blob is not None:
+                # Carry the frozen whole-resume allocation identity into the
+                # aggregation boundary.  W7 final assembly consumes these
+                # references; it never rediscovers or reallocates evidence.
+                rollup_blob["resume_graph_allocation_plan_digest"] = (
+                    resume_graph_allocation_digest
+                )
+                rollup_blob["resume_graph_allocation_refs"] = dict(
+                    resume_graph_allocation_refs
+                )
                 for lane in GENERATED_LANES:
                     row = rollup_blob["lanes"].get(lane)
                     if isinstance(row, dict):

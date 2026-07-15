@@ -11,22 +11,25 @@ author_gate_receipt_ref: ""
 dod_exempt: false
 supersedes: []
 base_ref: origin/main
-base_sha: 3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7
+base_sha: b94748ad26a7ca01f258805bb77f0d778aebec7d
 ---
 
 # apps_rg C0.3 Resume Graph Retrieval and Allocation Hardening
 
 ## Plan state
 
-- `PLAN_STATUS: BLOCKED`
-- `CURRENT_WAVE: W6`
-- `LAST_COMPLETED_WAVE: W5`
-- `LAST_UPDATED: 2026-07-13`
+- `PLAN_STATUS: IMPLEMENTATION_COMPLETE__RELEASE_EVIDENCE_PENDING`
+- `CURRENT_WAVE: W9_RELEASE_EVIDENCE`
+- `LAST_COMPLETED_WAVE: W9_ENGINEERING`
+- `LAST_UPDATED: 2026-07-14`
 - `IMPLEMENTATION_AUTHORIZED: W1-W9`
-- `STOP_CONDITION: frozen human labels, adjudication, and held-out threshold evidence are not yet present`
-- `DOWNSTREAM_WAVES: W7-W9_NOT_STARTED_BY_PLAN_STOP`
+- `OFFICIAL_W6_STATUS: UNKNOWN`
+- `OFFICIAL_W9_RELEASE_STATUS: UNKNOWN`
+- `PROMOTION_ELIGIBLE: false`
+- `STOP_CONDITION: official human W6 labels/adjudication and authorized W9 generation/coach evidence are not yet present`
+- `DOWNSTREAM_DISPOSITION: W7-W9_ENGINEERING_COMPLETE__RELEASE_AND_PROMOTION_BLOCKED`
 
-> **Implementation authority:** the user explicitly authorized completion of W1 and the entire remaining plan on 2026-07-13. W1-W5 are implemented on current main. W6 engineering and the frozen, blinded W6-only prelabel packets are complete at `c56c75bf9e28455e5c206588f6c53003c8684497`; the W6 exit gate remains open because no authorized human labels, adjudications, or held-out calibration results exist. W7-W9 may not be started, claimed, or promoted until those external W6 inputs are supplied and pass. The separately rostered resume-coach review belongs to W9 and is not a W6 prerequisite.
+> **Implementation authority:** the user explicitly authorized W1-W9 and, on 2026-07-14, approved deterministic representative W6 proxy scoring so engineering could continue while real human scoring remains unavailable. The proxy is non-authoritative, future-replaceable engineering evidence only: it cannot set an official threshold, satisfy the W6 release gate, authorize W9 generation, or permit promotion. W7-W9 engineering is complete at implementation commit `29bee56aa39302d75141909a69999ab6e7201d6a`; official W6 and W9 release status remain `UNKNOWN`. C0.3 authority is this plan and its frozen C0.3 evaluation profile. Unrelated observability programs are not C0.3 dependencies. Automatic GitHub CI covers C0.3 code and contract paths only; SVP documentation gates are intentionally run separately by the user.
 
 ## 1. Objective
 
@@ -531,13 +534,15 @@ Track separately:
 - release thresholds pass on held-out fixtures;
 - refinement is bounded, receipted, and fail-closed.
 
-### W6 engineering disposition (2026-07-13)
+### W6 engineering disposition (updated 2026-07-14)
 
 - **Engineering complete:** separate raw score fields, deterministic isotonic calibration, ECE/Brier reporting, Recall@K/nDCG@K/MRR/path/authority/entailment/metric/margin evaluation, future-run-only threshold candidacy, one bounded C0.6 retry, and the C0.7 receipt binding are implemented.
 - **Frozen source complete:** six real allocator cases were frozen from clean source commit `c56c75bf9e28455e5c206588f6c53003c8684497`, producing 282 proof items, 84 full bounded-universe retrieval queries, 57 binding-only proof split groups, and zero W9 pairs.
 - **Blind review materials complete:** proof and retrieval distributions are isolated, secret-HMAC blinded, source/manifest/checksum pinned, owner-only, outside the repository, and accompanied by a private human-authority receipt template. No labels or reviewer identities were fabricated.
-- **Exit gate still open:** W6 remains `UNKNOWN` until rostered humans provide two independent proof reviews and two independent retrieval reviews per item/query, disjoint cohorts, adjudication, completed-packet validation, sealed export, and held-out metrics that satisfy the frozen release targets.
-- **Stop preserved:** W7-W9 remain not started. W9 materials were not emitted by the W6 build.
+- **Approved representative proxy:** the deterministic `PROVISIONAL_MODEL_PROXY` baseline uses the previously frozen W6 packet and canonical profile without fabricating reviewers, labels, adjudications, or official authority. Its committed sanitized summary is `docs/reports/apps_rg/c03_resume_graph_w6_proxy_baseline.json` (SHA-256 `b2eb273826bbfba6b8c35b5378e15e946d54390b364b7a6ca4142aeaf9635573`; record digest `3b7686578e863513ede32d19c9345c1b3432241fffe3d9b3fc36b0f57e2267e8`).
+- **Representative measurements:** authority eligibility `1.0`, exact-path accuracy `1.0`, metric-binding accuracy `1.0`, claim entailment `0.7142857142857143`, ECE `0.08184523809523811`, Brier `0.19606894841269842`, Recall@10 `0.35560404848039256`, nDCG@10 `0.5257259181730278`, and MRR `0.5283403104831675`. Authority, path, and metric-binding targets are met; entailment, calibration, retrieval, and proof-support targets are not. Floor and precision remain unmeasured.
+- **Exit gate still open:** official W6 remains `UNKNOWN`; no release threshold is activated and promotion remains false until rostered humans provide the frozen reviews, adjudication, validation, sealed export, and held-out metrics required by the official gate.
+- **Historical stop superseded for engineering only:** the user's proxy authorization allowed W7-W9 implementation and test work to proceed. It did not authorize W9 release execution or promotion.
 
 ## W7 — End-to-end digest binding and whole-resume release gate
 
@@ -573,6 +578,13 @@ Track separately:
 - final materialized resume has zero graph allocation drift;
 - any UNKNOWN is non-PASS;
 - final assembly cannot include both alternative role renderings as separately counted claims.
+
+### W7 engineering disposition (2026-07-14)
+
+- `WholeResumeGraphEvidenceContractV1` now binds the allocation plan, per-section evidence contracts, visible claim bindings, exact artifact hashes, traversal conservation, uniqueness, and the official W6 receipt through modular generation, X2, final X2, and final assembly.
+- Engineering status is complete and verified. `engineering_pass` is distinct from `release_pass`; any missing or non-PASS official W6 receipt keeps release false.
+- The final resume, manifest, X2 surfaces, and whole-resume receipt carry the contract reference and digest. Failures in artifact parity, claim coverage, path conservation, reuse, or W6 authority fail closed.
+- Release status remains `UNKNOWN` pending official W6 human evidence and an authorized full generation.
 
 ## W8 — Tests, mutation suite, CI ratchet, and observability
 
@@ -620,6 +632,13 @@ Add mutation-style negative controls that deliberately remove each gate or alter
 - no flaky/order-sensitive test;
 - focused and apps-contract suites pass.
 
+### W8 engineering disposition (2026-07-14)
+
+- A C0.3-specific automatic PR/push ratchet now runs on relevant C0.3 code and contract paths. SVP documentation paths and documentation gates are intentionally excluded for separate user execution.
+- The ratchet records strict-suite results independently from the pinned W0 external diagnostic. Locally, the strict suite passed with 234 passed, 1 skipped, and 1 deselected; the separate diagnostic reproduced the exact known `agentic_core/L0_routing/__init__.py contains augmented_skills_graph` baseline failure.
+- Ratchet receipt v3 passed with record digest `11c87fa5a83597418dbd02c109a5d5018ab6443d000e17eeec337ae7ea470292`. A changed external failure signature is rejected; the exact pinned signature or an improvement is accepted without hiding the debt.
+- No `agentic_core` code is changed. GitHub-hosted execution remains to be verified on the draft PR.
+
 ## W9 — Shadow rollout, resume-coach review, and closeout
 
 **Purpose:** prove product quality, not only structural correctness.
@@ -652,6 +671,12 @@ Add mutation-style negative controls that deliberately remove each gate or alter
 - all claim-bearing generated sections have graph traversal and claim-binding evidence;
 - human quality is no worse than baseline and target relevance improves or remains equal;
 - closeout receipt validates.
+
+### W9 engineering disposition (2026-07-14)
+
+- A fail-closed closeout harness requires six unique blinded comparison pairs, two qualified independent reviews per pair, six adjudications, an official W6 `PASS`, a whole-resume `release_pass`, and explicit authorization for generation.
+- Harness implementation and negative controls are complete. No resume variants, human reviews, adjudications, or quality conclusions were fabricated.
+- Actual representative generation and blinded resume-coach review remain external release inputs. Official W9 status is `UNKNOWN`; promotion is false.
 
 ## 10. Primary code surfaces for ADG confirmation
 
@@ -794,7 +819,7 @@ Use the following prompt in Codex after the user approves this plan:
 - **W3:** role-episode traversal is event-sourced; each bounded root, skill, metric, and source-fact path receives an authority evaluation and terminal decision. Skills and metrics are ranked across the full bounded sibling frontier before caps.
 - **W1-W3 verification:** focused authority, SQLite, traversal, and fail-closed tests pass; see `docs/reports/apps_rg/c03_resume_graph_w1_w3_closeout.md`.
 
-## W4-W6 execution record (2026-07-13)
+## W4-W9 execution record (updated 2026-07-14)
 
 - **W4:** one immutable whole-resume allocator now traverses all eleven claim-bearing lanes before generation; emits a current-run-only allocation plan and usage ledger; allocates 30 canonical-visible claim units plus 17 non-counting derived narrative units; enforces zero skill-ID, metric-ID, and normalized-metric-signature reuse; and is invariant to section dispatch order.
 - **W5:** a shared pre-X3 gate binds each final visible claim to the frozen allocation's exact skill, fact, graph-path, edge, citation, and metric value/unit. It appends a deterministic X2 gate, blocks X3 on any orphan or drift, and carries the allocation digest through FEC, compiled prompt, L2, canonical ledger, X2, X1D, and X3 without rewriting signed upstream artifacts.
@@ -804,4 +829,9 @@ Use the following prompt in Codex after the user approves this plan:
 - **W6 controlled freeze:** packet `c03-human-eval::3e810e9ec6958bfe901ea6f5` binds source-freeze receipt digest `87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5`, prelabel manifest SHA-256 `37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08`, and prelabel receipt digest `047ea87471be22e79598f99bc452151196aa76c0535c24e2bec7345b4f7435a1`. Proof and retrieval archives are separately sealed; W9 item count is zero.
 - **W6 verification:** the final evaluator/runtime suite is 141 passed; the refreshed W1-W5 regression is 57 passed; the broader integration snapshot is 46 passed, 12 skipped, and one known W0 `agentic_core/L0_routing/__init__.py contains augmented_skills_graph` baseline failure. The graph validator, compilation, stress path, whitespace check, and no-`agentic_core` diff boundary pass. Independent packet, evaluator, and final adversarial reviews report no remaining P0/P1 findings.
 - **W6 evidence state:** the sanitized receipt is truthfully `UNKNOWN` with null/unmeasured metrics, no active threshold, `promotion_eligible=false`, advisory exit 0, and fail-closed exit 1. No human-review authority receipt, human labels, or adjudications exist yet.
-- **Disposition:** `BLOCKED_AT_W6_HUMAN_EVIDENCE`. Per §13, W7-W9 were not started and promotion was not claimed. See `docs/reports/apps_rg/c03_resume_graph_w6_blocker.json` and `docs/reports/apps_rg/c03_resume_graph_w6_engineering_receipt.json`.
+- **W6 proxy authorization:** on 2026-07-14 the user approved representative scores for engineering continuity, explicitly allowing later replacement by human scoring. The committed proxy summary is non-authoritative and cannot change official W6 status from `UNKNOWN`.
+- **W7:** the whole-resume evidence contract and end-to-end artifact/digest reconciliation are implemented. Engineering can pass independently; release cannot pass without official W6 authority and authorized final generation.
+- **W8:** the C0.3 automatic code/contract CI ratchet, mutation controls, exact W0 diagnostic handling, and receipt v3 are implemented. Local strict verification is 234 passed, 1 skipped, and 1 deselected, plus the exact known external diagnostic failure. SVP documentation gates are not part of automatic GitHub CI.
+- **W9:** the fail-closed shadow/coach closeout harness is implemented and tested. It contains no manufactured variants or human judgments and cannot promote without authorized generation, qualified reviews, adjudication, official W6 PASS, and whole-resume release PASS.
+- **Implementation commit:** `29bee56aa39302d75141909a69999ab6e7201d6a` on base `b94748ad26a7ca01f258805bb77f0d778aebec7d`; no `agentic_core` diff.
+- **Disposition:** `W1_W9_ENGINEERING_COMPLETE__OFFICIAL_RELEASE_EVIDENCE_PENDING`. The Definition of Done remains unsatisfied because official human W6 evidence and authorized W9 product-quality evidence are external and absent. Promotion is not claimed. See `docs/reports/apps_rg/c03_resume_graph_w7_w9_engineering_closeout.json` and `docs/reports/apps_rg/c03_resume_graph_w6_proxy_baseline.json`.

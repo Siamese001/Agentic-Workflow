@@ -113,9 +113,8 @@
       "observation": "W6 evaluator, calibration, bounded retry, packet, export, privacy, and CI engineering are published"
     },
     {
-      "ref": "user-supplied agentic_process_mapping_v40.md",
-      "sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
-      "observation": "L6 is post-run only, UNKNOWN is non-PASS, and calibration cannot mutate the current run"
+      "ref": "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md and apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml",
+      "observation": "C0.3 UNKNOWN is non-PASS, calibration cannot mutate the current run, and authorized human review remains release authority"
     },
     {
       "ref": "private W6 prelabel controller pins",

@@ -1,0 +1,127 @@
+{
+  "schema_version": "apps_rg.c03_resume_graph.engineering_closeout.v1",
+  "generated_at": "2026-07-14T00:00:00Z",
+  "repository": "Siamese001/Agentic-Workflow",
+  "branch": "agent/apps-rg-c03-w6-proxy-w9-engineering",
+  "base_sha": "b94748ad26a7ca01f258805bb77f0d778aebec7d",
+  "implementation_sha": "29bee56aa39302d75141909a69999ab6e7201d6a",
+  "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+  "scope": {
+    "touches_agentic_core": false,
+    "unrelated_observability_dependency": false,
+    "automatic_github_ci_scope": "C0.3 code and contract paths only",
+    "svp_documentation_gates_in_github": false,
+    "runtime_durable_graph_write": false
+  },
+  "authorization": {
+    "representative_w6_proxy_approved": true,
+    "proxy_is_engineering_only": true,
+    "proxy_may_be_replaced_by_human_scores": true,
+    "human_authority_fabricated": false,
+    "w9_generation_authorized": false,
+    "promotion_authorized": false
+  },
+  "overall": {
+    "engineering_status": "W1_W9_ENGINEERING_COMPLETE",
+    "official_w6_status": "UNKNOWN",
+    "official_w9_release_status": "UNKNOWN",
+    "definition_of_done": false,
+    "promotion_eligible": false,
+    "release_blocker": "Official human W6 evidence and authorized W9 generation, coach review, and adjudication are absent."
+  },
+  "w6_proxy": {
+    "evidence_class": "PROVISIONAL_MODEL_PROXY",
+    "summary_ref": "docs/reports/apps_rg/c03_resume_graph_w6_proxy_baseline.json",
+    "summary_sha256": "b2eb273826bbfba6b8c35b5378e15e946d54390b364b7a6ca4142aeaf9635573",
+    "summary_record_digest": "3b7686578e863513ede32d19c9345c1b3432241fffe3d9b3fc36b0f57e2267e8",
+    "protected_full_report_sha256": "cdfd42d3b8b37d507bb45df2df90de92f751832b67b7a8a73f2a429a63bda4a3",
+    "protected_full_report_record_digest": "2955d35fa2ea2c4eacf619c68e5bd18a8c2ed062de680294bc47a0487585f6fe",
+    "source_commit_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+    "packet_id": "c03-human-eval::3e810e9ec6958bfe901ea6f5",
+    "packet_manifest_sha256": "37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08",
+    "source_freeze_receipt_digest": "87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5",
+    "metrics": {
+      "authority_eligibility_accuracy": 1.0,
+      "exact_path_accuracy": 1.0,
+      "metric_binding_accuracy": 1.0,
+      "claim_entailment_accuracy": 0.7142857142857143,
+      "ece": 0.08184523809523811,
+      "brier": 0.19606894841269842,
+      "recall_at_10": 0.35560404848039256,
+      "ndcg_at_10": 0.5257259181730278,
+      "mrr": 0.5283403104831675
+    },
+    "meets_proxy_target": [
+      "authority_eligibility_accuracy_minimum",
+      "exact_path_accuracy_minimum",
+      "metric_binding_accuracy_minimum"
+    ],
+    "below_proxy_target": [
+      "claim_entailment_accuracy_minimum",
+      "ece_maximum",
+      "ndcg_at_k_minimum",
+      "proof_confidence_candidate_support_minimum",
+      "recall_at_k_minimum"
+    ],
+    "not_measured": [
+      "proof_confidence_candidate_floor_minimum",
+      "proof_confidence_candidate_precision_minimum"
+    ],
+    "active_threshold": null,
+    "release_gate_eligible": false,
+    "promotion_eligible": false
+  },
+  "waves": {
+    "W7": {
+      "engineering_status": "COMPLETE",
+      "release_status": "UNKNOWN",
+      "evidence": "WholeResumeGraphEvidenceContractV1 binds allocation, section contracts, artifacts, traversal, visible claims, uniqueness, and official W6 authority through final assembly."
+    },
+    "W8": {
+      "engineering_status": "COMPLETE",
+      "local_ratchet_status": "PASS",
+      "github_ci_status": "PENDING_PR_EXECUTION",
+      "ratchet_record_digest": "11c87fa5a83597418dbd02c109a5d5018ab6443d000e17eeec337ae7ea470292",
+      "strict_suite": {
+        "passed": 234,
+        "skipped": 1,
+        "deselected": 1
+      },
+      "external_diagnostic": {
+        "status": "EXACT_KNOWN_W0_BASELINE",
+        "test_count": 1,
+        "failure_count": 1,
+        "signature": "agentic_core/L0_routing/__init__.py contains augmented_skills_graph"
+      },
+      "svp_documentation_gates": "USER_RUN_SEPARATELY"
+    },
+    "W9": {
+      "engineering_status": "HARNESS_COMPLETE",
+      "release_status": "UNKNOWN",
+      "required_blinded_pairs": 6,
+      "required_qualified_reviews_per_pair": 2,
+      "required_adjudications": 6,
+      "actual_variants_fabricated": false,
+      "human_reviews_fabricated": false,
+      "quality_claim_made": false
+    }
+  },
+  "verification": [
+    "13 focused W6 proxy, W7, W8, and W9 tests passed",
+    "1 final assembly regression passed and 11 optional cases skipped",
+    "234 strict C0.3 tests passed, 1 skipped, and 1 exact W0 diagnostic deselected",
+    "known W0 external diagnostic reproduced separately with its exact signature",
+    "ruff passed on all new surfaces and F821 passed on modified legacy surfaces",
+    "Python compilation, workflow YAML parsing, graph validation, and git diff checks passed",
+    "no agentic_core diff"
+  ],
+  "open_release_inputs": [
+    "authorized human W6 proof and retrieval reviews",
+    "W6 adjudication and sealed held-out export",
+    "official W6 PASS against frozen thresholds",
+    "authorized representative W9 whole-resume generation",
+    "qualified blinded resume-coach reviews and adjudications",
+    "whole-resume release PASS and validated W9 closeout"
+  ],
+  "record_digest": "ca7199979d2a323a7c37b5bbc765dd088e6cb67efa453bb6cf135639d1707a9e"
+}

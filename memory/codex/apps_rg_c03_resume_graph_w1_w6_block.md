@@ -29,9 +29,9 @@ Implementation commit: `07cb833099126cec5e3b043ca94dee9c18b761f7`
 - W0's frozen ADG authority map constrained structural edits because live ADG transport was unavailable.
 - W6 is `BLOCKED`: its configured human-labeled dataset is absent, the semantic grader is pending, and the
   benchmark is scoreless. `proof_confidence_calibrated` therefore remains `UNKNOWN`, which is non-PASS.
-- Per the plan stop condition and v40 L6 doctrine, W7-W9 are not started. Resumption requires an authorized
-  frozen labeled set (at least 40 samples unless the plan is formally revised), release-holdout permission,
-  and blinded resume-coach review. L6 evidence is post-run and may influence future runs only.
+- Per the C0.3 plan and evaluation profile, W7-W9 were not started in this historical run. Official release
+  still requires an authorized frozen labeled set (at least 40 samples unless the plan is formally revised),
+  release-holdout permission, and blinded resume-coach review. Unrelated observability doctrine is not C0.3 authority.
 
 Evidence:
 

@@ -73,10 +73,9 @@
     ]
   },
   "source_authority": {
-    "attachment_name": "agentic_process_mapping_v40.md",
-    "attachment_sha256": "f7656d7110a376ebda5b2fc9caf4b3912ed19b36ca0d81e0742f5a5e7ee5e481",
+    "plan_ref": "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md",
+    "evaluation_profile_ref": "apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml",
     "applied_laws": [
-      "L6 is post-run only",
       "UNKNOWN is non-PASS",
       "calibration cannot mutate the current run",
       "human review remains external authority"

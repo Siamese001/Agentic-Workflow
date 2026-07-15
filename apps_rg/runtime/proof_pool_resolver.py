@@ -331,7 +331,6 @@ def _resolve_executive_summary_graph_only_proof_pool(
     from apps_rg.fact_inventory.track_weighted_graph_expansion import (
         build_track_weighted_expansion,
         infer_projection_role_family_key,
-        TrackWeightedExpansionContractError,
     )
     from apps_rg.runtime.c03_graphrag_bound import build_section_c03_graphrag_bound
 
@@ -344,34 +343,21 @@ def _resolve_executive_summary_graph_only_proof_pool(
     role_episode_seed_namespace = bool(root_fact_ids) and all(
         fid.startswith("reb_") for fid in root_fact_ids
     )
-    try:
-        track_expansion = build_track_weighted_expansion(
-            graph=graph,
-            role_family_key=role_family_key,
-            jd_text=jd_text,
-            briefing_text=briefing_text,
-            seed_fact_ids=root_fact_ids,
-            enforce_hybrid_contract=False,
-            bind_c03=True,
-            repo_root=root,
-        )
-        track_weighted_seed_fallback_used = False
-        track_weighted_seed_fallback_reason = ""
-    except TrackWeightedExpansionContractError as exc:
-        if not role_episode_seed_namespace:
-            raise
-        track_expansion = build_track_weighted_expansion(
-            graph=graph,
-            role_family_key=role_family_key,
-            jd_text=jd_text,
-            briefing_text=briefing_text,
-            seed_fact_ids=[],
-            enforce_hybrid_contract=False,
-            bind_c03=True,
-            repo_root=root,
-        )
-        track_weighted_seed_fallback_used = True
-        track_weighted_seed_fallback_reason = str(exc)
+    # Exact role-episode seeds are authority-bearing.  If they cannot be
+    # expanded, propagating the contract error is the only safe behavior;
+    # retrying with an empty seed pool silently widens the evidence universe.
+    track_expansion = build_track_weighted_expansion(
+        graph=graph,
+        role_family_key=role_family_key,
+        jd_text=jd_text,
+        briefing_text=briefing_text,
+        seed_fact_ids=root_fact_ids,
+        enforce_hybrid_contract=False,
+        bind_c03=True,
+        repo_root=root,
+    )
+    track_weighted_seed_fallback_used = False
+    track_weighted_seed_fallback_reason = ""
 
     c03 = build_section_c03_graphrag_bound(
         section_id="executive_summary",

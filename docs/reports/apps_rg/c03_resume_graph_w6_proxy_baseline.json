@@ -1,0 +1,61 @@
+{
+  "active_threshold": null,
+  "canonical_profile": {
+    "policy_version": "resume_graph_confidence_candidate_v1",
+    "profile_id": "apps_rg::resume_graph_evaluation::v1",
+    "ref": "apps_rg/config/domain_contract/resume_graph_evaluation_profile.yaml",
+    "sha256": "b306163b84e93e5720b5df6ebc78b1f2275dbc95b2570bfda41ecff75caefbc7",
+    "status": "candidate_unpromoted"
+  },
+  "evidence_class": "PROVISIONAL_MODEL_PROXY",
+  "future_run_only": true,
+  "human_review_complete": false,
+  "metrics": {
+    "authority_eligibility_accuracy": 1.0,
+    "brier": 0.19606894841269842,
+    "claim_entailment_accuracy": 0.7142857142857143,
+    "ece": 0.08184523809523811,
+    "exact_path_accuracy": 1.0,
+    "metric_binding_accuracy": 1.0,
+    "mrr": 0.5283403104831675,
+    "ndcg_at_10": 0.5257259181730278,
+    "recall_at_10": 0.35560404848039256
+  },
+  "official_status": "UNKNOWN",
+  "promotion_eligible": false,
+  "protected_full_report_record_digest": "2955d35fa2ea2c4eacf619c68e5bd18a8c2ed062de680294bc47a0487585f6fe",
+  "protected_full_report_sha256": "cdfd42d3b8b37d507bb45df2df90de92f751832b67b7a8a73f2a429a63bda4a3",
+  "record_digest": "3b7686578e863513ede32d19c9345c1b3432241fffe3d9b3fc36b0f57e2267e8",
+  "release_gate_eligible": false,
+  "schema_version": "apps_rg.c03_proxy_eval.summary.v1",
+  "scorer_kind": "approved_representative_reference_vector_v1",
+  "source": {
+    "case_count": 6,
+    "claim_item_count": 282,
+    "packet_id": "c03-human-eval::3e810e9ec6958bfe901ea6f5",
+    "packet_manifest_digest": "37a80b297dcdd36edf592c0cc0ede4a3ec261c12675f07e2b527ecacd67cfdc7",
+    "packet_manifest_sha256": "37b3155991e87d0592411f75b4ee864332dafcc7e5b3302d383316cb15b67e08",
+    "retrieval_query_count": 84,
+    "source_commit_sha": "c56c75bf9e28455e5c206588f6c53003c8684497",
+    "source_freeze_receipt_digest": "87047d8b651adb7314b49a2f9d88d2c3e35b753fb881fe58d8570c2be7c2c2c5"
+  },
+  "superseded_by_human_labels": true,
+  "target_disposition": {
+    "below_proxy_target": [
+      "claim_entailment_accuracy_minimum",
+      "ece_maximum",
+      "ndcg_at_k_minimum",
+      "proof_confidence_candidate_support_minimum",
+      "recall_at_k_minimum"
+    ],
+    "meets_proxy_target": [
+      "authority_eligibility_accuracy_minimum",
+      "exact_path_accuracy_minimum",
+      "metric_binding_accuracy_minimum"
+    ],
+    "not_measured": [
+      "proof_confidence_candidate_floor_minimum",
+      "proof_confidence_candidate_precision_minimum"
+    ]
+  }
+}

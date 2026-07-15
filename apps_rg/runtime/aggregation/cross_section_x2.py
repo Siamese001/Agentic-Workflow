@@ -798,6 +798,28 @@ def run_cross_section_x2_gates(
         ),
     )
 
+    whole_resume = final_resume_blob.get("whole_resume_graph_evidence_contract")
+    if isinstance(whole_resume, Mapping) and whole_resume.get("active") is True:
+        release_pass = whole_resume.get("release_pass") is True
+        gates.append(
+            CrossSectionGateResult(
+                gate_id="x2_whole_resume_graph_evidence_release",
+                verdict=VERDICT_PASS if release_pass else VERDICT_FAIL,
+                decisive_reason=(
+                    None
+                    if release_pass
+                    else "whole-resume graph evidence or official W6 release authority is non-PASS"
+                ),
+                observed={
+                    "engineering_pass": whole_resume.get("engineering_pass"),
+                    "official_w6_status": whole_resume.get("official_w6_status"),
+                    "release_pass": whole_resume.get("release_pass"),
+                    "contract_digest": whole_resume.get("contract_digest"),
+                },
+                evidence_refs=["whole_resume_graph_evidence_contract.json"],
+            ),
+        )
+
     return gates, kept, removed, rewritten, decisions
 
 

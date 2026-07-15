@@ -58,6 +58,7 @@ ASSEMBLY_ALLOWED_ARTIFACT_FILES: frozenset[str] = frozenset(
         "overlap_decisions.json",
         "cross_section_warn_resolution.json",
         "orchestration_fingerprint.json",
+        "whole_resume_graph_evidence_contract.json",
     },
 )
 
