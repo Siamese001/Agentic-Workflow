@@ -1,0 +1,165 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "apps-rg-c03-resume-graph-w6-proxy-w9-engineering-20260714",
+  "generated_at": "2026-07-15T00:30:54Z",
+  "repo": {
+    "root": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+    "worktree": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+    "repository": "Siamese001/Agentic-Workflow",
+    "branch": "agent/apps-rg-c03-w6-proxy-w9-engineering",
+    "base_sha": "b94748ad26a7ca01f258805bb77f0d778aebec7d",
+    "current_pr_base_sha": "6cd50fdd6160fe0573bee12a61a2dbe89cf61223",
+    "local_implementation_sha": "29bee56aa39302d75141909a69999ab6e7201d6a",
+    "published_content_sha": "c9fa0fffbeddca4aecb3d019b528bbdfb131bb9b",
+    "head": "464f1047d6dbcaea18d30521ebae238755ef2398",
+    "dirty_before": false,
+    "dirty_after": false
+  },
+  "scope": {
+    "request": "Complete C0.3 W6-W9 engineering with approved representative W6 proxy scores, publish a draft PR, keep official human release gates fail-closed, exclude SVP documentation gates from automatic GitHub CI, and verify C0.3 CI without merging.",
+    "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
+    "authorization": "W1-W9 engineering, representative proxy scoring, branch publication, draft PR creation, and CI verification approved; merge and official release not authorized.",
+    "files_changed": [
+      ".github/workflows/c03-resume-graph-ratchet.yml",
+      "apps_rg/evals/c03_ci_ratchet.py",
+      "apps_rg/evals/c03_proxy_eval/__init__.py",
+      "apps_rg/evals/c03_proxy_eval/evaluation.py",
+      "apps_rg/evals/c03_w9_closeout.py",
+      "apps_rg/l2_recipe/modular_resume_generation.py",
+      "apps_rg/runtime/aggregation/cross_section_x2.py",
+      "apps_rg/runtime/assembly/final_resume_x2.py",
+      "apps_rg/runtime/c0/resume_graph_proof_pool.py",
+      "apps_rg/runtime/c0/whole_resume_graph_evidence.py",
+      "apps_rg/runtime/internal/final_resume_assembler.py",
+      "apps_rg/runtime/proof_pool_resolver.py",
+      "ops_scripts/calibration/apps_rg_resume_graph_w6_proxy.py",
+      "ops_scripts/ci/check_apps_rg_resume_graph_w6.py",
+      "tests/unit/apps_rg/evals/test_c03_ci_ratchet.py",
+      "tests/unit/apps_rg/evals/test_c03_proxy_eval.py",
+      "tests/unit/apps_rg/evals/test_c03_w9_closeout.py",
+      "tests/unit/apps_rg/runtime/c0/test_whole_resume_graph_evidence_w7.py",
+      "docs/reports/apps_rg/c03_resume_graph_w6_blocker.json",
+      "docs/reports/apps_rg/c03_resume_graph_w6_engineering_receipt.json",
+      "docs/reports/apps_rg/c03_resume_graph_w6_proxy_baseline.json",
+      "docs/reports/apps_rg/c03_resume_graph_w7_w9_engineering_closeout.json",
+      "docs/reports/codex/codex_apps_rg_c03_resume_graph_w1_w6_receipt.json",
+      "docs/reports/codex/codex_apps_rg_c03_resume_graph_w6_proxy_w9_engineering_20260714.json",
+      "memory/codex/apps_rg_c03_resume_graph_w1_w6_block.md",
+      "memory/codex/apps_rg_c03_resume_graph_w6_proxy_w9_engineering_closeout.md",
+      "plans/apps-rg-c03-resume-graph-hardening-9f3c2a.md"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "engineering_complete": true,
+    "official_release_complete": false,
+    "commands": [
+      {
+        "command": "focused W6 proxy, W7, W8, and W9 tests",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "13 passed"
+      },
+      {
+        "command": "final assembly regression",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "1 passed, 11 skipped"
+      },
+      {
+        "command": "local strict C0.3 ratchet suite and exact external diagnostic",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "234 passed, 1 skipped, 1 deselected; exact known W0 external failure reproduced separately"
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.validate_c03_graph_hardening",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "PASS with pre-existing metric-bucket concentration warning"
+      },
+      {
+        "command": "workflow reference, YAML, ruff, Python compilation, digest, diff, and no-agentic_core checks",
+        "cwd": "/workspace/scratch/5d58ecb9b460/Agentic-Workflow-w6proxy",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "all pass; no agentic_core diff"
+      },
+      {
+        "command": "GitHub Actions C0.3 Resume Graph Ratchet run 29378994070",
+        "cwd": "GitHub Actions",
+        "status": "PASS",
+        "exit_code": 0,
+        "result": "232 passed, 1 skipped, 1 deselected; exact known external debt accepted; documentation gates excluded"
+      },
+      {
+        "command": "official W6 human evaluation and W9 coach release execution",
+        "cwd": "external controlled evidence workflow",
+        "status": "SKIPPED",
+        "exit_code": null,
+        "result": "human evidence and authorized W9 generation are not available; official status remains UNKNOWN"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "GitHub connected object API",
+        "reason": "Direct shell push could not authenticate because GitHub CLI credentials are unavailable in the workspace.",
+        "substitute": "Created exact content blobs and trees, published fast-forward commits, opened draft PR 562, and verified the resulting remote branch and Actions runs through the connected GitHub integration."
+      },
+      {
+        "route": "Pinned W0 ADG impact map",
+        "reason": "The previously approved C0.3 impact boundary remained the declared authority for these app-local edits.",
+        "substitute": "Edits remained within apps_rg, tests, C0.3 CI, plan, and evidence surfaces; no agentic_core change was made."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "W6 representative proxy",
+        "status": "PASS",
+        "evidence": "Deterministic PROVISIONAL_MODEL_PROXY report validates and is explicitly non-authoritative, future-replaceable, threshold-null, and promotion-ineligible."
+      },
+      {
+        "name": "W7 whole-resume contract",
+        "status": "PASS",
+        "evidence": "Allocation, section evidence, artifacts, traversal, visible claims, uniqueness, and W6 authority are reconciled through final assembly."
+      },
+      {
+        "name": "W8 automatic C0.3 CI",
+        "status": "PASS",
+        "evidence": "GitHub run 29378994070 passed; receipt digest c84a6179086b6746a64db0e34c5baa8a15b9b7218309938dde0313854ccdd7a3; artifact 8329009705 digest sha256:129214e386549e58542b4b954f3733392aef5523321e21accebd15b61777ce85."
+      },
+      {
+        "name": "SVP documentation CI boundary",
+        "status": "PASS",
+        "evidence": "The C0.3 workflow has no documentation paths or documentation test gates; hosted receipt records documentation_gates_included=false."
+      },
+      {
+        "name": "W9 fail-closed harness",
+        "status": "PASS",
+        "evidence": "Harness requires six pairs, two qualified reviews per pair, six adjudications, official W6 PASS, whole-resume release PASS, and authorized generation."
+      },
+      {
+        "name": "Official W6 and W9 release",
+        "status": "SKIPPED",
+        "evidence": "No human authority was fabricated; official statuses remain UNKNOWN and promotion_eligible=false."
+      },
+      {
+        "name": "Draft publication",
+        "status": "PASS",
+        "evidence": "PR 562 is open, draft, mergeable against current main, and unmerged."
+      }
+    ]
+  },
+  "publishing": {
+    "draft_pr": "https://github.com/Siamese001/Agentic-Workflow/pull/562",
+    "remote_branch": "agent/apps-rg-c03-w6-proxy-w9-engineering",
+    "merge_requested": false,
+    "merge_performed": false
+  }
+}

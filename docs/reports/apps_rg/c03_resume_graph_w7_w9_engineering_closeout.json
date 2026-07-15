@@ -4,7 +4,9 @@
   "repository": "Siamese001/Agentic-Workflow",
   "branch": "agent/apps-rg-c03-w6-proxy-w9-engineering",
   "base_sha": "b94748ad26a7ca01f258805bb77f0d778aebec7d",
-  "implementation_sha": "29bee56aa39302d75141909a69999ab6e7201d6a",
+  "local_implementation_sha": "29bee56aa39302d75141909a69999ab6e7201d6a",
+  "published_content_sha": "c9fa0fffbeddca4aecb3d019b528bbdfb131bb9b",
+  "published_ci_fix_sha": "464f1047d6dbcaea18d30521ebae238755ef2398",
   "plan_id": "apps-rg-c03-resume-graph-hardening-9f3c2a",
   "scope": {
     "touches_agentic_core": false,
@@ -80,8 +82,17 @@
     "W8": {
       "engineering_status": "COMPLETE",
       "local_ratchet_status": "PASS",
-      "github_ci_status": "PENDING_PR_EXECUTION",
+      "github_ci_status": "PASS",
       "ratchet_record_digest": "11c87fa5a83597418dbd02c109a5d5018ab6443d000e17eeec337ae7ea470292",
+      "github_run_id": 29378994070,
+      "github_ratchet_record_digest": "c84a6179086b6746a64db0e34c5baa8a15b9b7218309938dde0313854ccdd7a3",
+      "github_artifact_id": 8329009705,
+      "github_artifact_digest": "sha256:129214e386549e58542b4b954f3733392aef5523321e21accebd15b61777ce85",
+      "github_strict_suite": {
+        "passed": 232,
+        "skipped": 1,
+        "deselected": 1
+      },
       "strict_suite": {
         "passed": 234,
         "skipped": 1,
@@ -123,5 +134,5 @@
     "qualified blinded resume-coach reviews and adjudications",
     "whole-resume release PASS and validated W9 closeout"
   ],
-  "record_digest": "ca7199979d2a323a7c37b5bbc765dd088e6cb67efa453bb6cf135639d1707a9e"
+  "record_digest": "a2439eaf14ccc3f1470820bd556d5c48faaeb96d4a58b83ac95e42e7281228d1"
 }
