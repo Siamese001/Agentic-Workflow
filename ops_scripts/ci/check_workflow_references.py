@@ -109,11 +109,17 @@ def changed_files(root: Path, args: argparse.Namespace) -> list[Path]:
         return [_repo_relative(root, p) for p in args.changed_files]
 
     if args.base_sha and args.head_sha:
-        return [_repo_relative(root, p) for p in _run_git(root, ["diff", "--name-only", args.base_sha, args.head_sha])]
+        return [
+            _repo_relative(root, p)
+            for p in _run_git(root, ["diff", "--name-only", args.base_sha, args.head_sha])
+        ]
 
     if args.base_ref:
         _run_git(root, ["fetch", "--no-tags", "--depth=1", "origin", args.base_ref])
-        return [_repo_relative(root, p) for p in _run_git(root, ["diff", "--name-only", f"origin/{args.base_ref}...HEAD"])]
+        return [
+            _repo_relative(root, p)
+            for p in _run_git(root, ["diff", "--name-only", f"origin/{args.base_ref}...HEAD"])
+        ]
 
     if args.changed_only:
         return [_repo_relative(root, p) for p in _run_git(root, ["diff", "--name-only", "HEAD"])]
@@ -189,7 +195,12 @@ def _extract_pytest_paths(text: str) -> Iterable[str]:
             if token.startswith("-") or "=" in token:
                 continue
             if token.startswith("tests/") or token.endswith(".py"):
-                yield token
+                # Pytest node IDs append collection selectors to the real path,
+                # e.g. ``tests/unit/test_x.py::TestX::test_y``. Reference
+                # validation owns filesystem existence, not pytest collection,
+                # so validate the file portion without treating ``::`` as part
+                # of the filename.
+                yield token.split("::", 1)[0]
 
 
 def _extract_python_script_paths(text: str) -> Iterable[str]:
@@ -213,49 +224,106 @@ def _validate_file(root: Path, path: Path) -> list[Issue]:
     issues: list[Issue] = []
 
     if "requirements.txt" in text_no_comments and not (root / "requirements.txt").exists():
-        issues.append(Issue(path, "references requirements.txt, but requirements.txt is absent", _line_number(text, "requirements.txt")))
+        issues.append(
+            Issue(
+                path,
+                "references requirements.txt, but requirements.txt is absent",
+                _line_number(text, "requirements.txt"),
+            )
+        )
 
-    if "./.github/actions/common-setup" in text_no_comments or ".github/actions/common-setup" in text_no_comments:
-        issues.append(Issue(path, "references deleted common-setup action", _line_number(text, "common-setup")))
+    if (
+        "./.github/actions/common-setup" in text_no_comments
+        or ".github/actions/common-setup" in text_no_comments
+    ):
+        issues.append(
+            Issue(path, "references deleted common-setup action", _line_number(text, "common-setup"))
+        )
 
     for match in re.finditer(r"uses:\s+(\./\.github/actions/[^\s#]+)", text_no_comments):
         local_action = match.group(1).split("@", 1)[0]
         action_file = root / local_action[2:] / "action.yml"
         if not action_file.exists():
-            issues.append(Issue(path, f"uses missing local action {local_action}", _line_number(text, match.group(0))))
+            issues.append(
+                Issue(path, f"uses missing local action {local_action}", _line_number(text, match.group(0)))
+            )
 
     for script_path in _extract_python_script_paths(text_no_comments):
         if not _path_exists(root, script_path):
-            issues.append(Issue(path, f"runs missing python script {script_path}", _line_number(text, script_path)))
+            issues.append(
+                Issue(path, f"runs missing python script {script_path}", _line_number(text, script_path))
+            )
 
     for pytest_path in _extract_pytest_paths(text_no_comments):
         if not _path_exists(root, pytest_path):
-            issues.append(Issue(path, f"runs pytest against missing path {pytest_path}", _line_number(text, pytest_path)))
+            issues.append(
+                Issue(
+                    path, f"runs pytest against missing path {pytest_path}", _line_number(text, pytest_path)
+                )
+            )
 
     has_pr = _has_event(workflow, "pull_request")
     has_schedule = _has_event(workflow, "schedule")
     has_changes_job = "changes" in _workflow_jobs(workflow)
     has_changed_file_command = "--changed-only" in text_no_comments or "--changed-files" in text_no_comments
 
-    if has_pr and not _event_has_paths(workflow, "pull_request") and not has_changes_job and not has_changed_file_command:
+    if (
+        has_pr
+        and not _event_has_paths(workflow, "pull_request")
+        and not has_changes_job
+        and not has_changed_file_command
+    ):
         issues.append(Issue(path, "has broad pull_request trigger without paths or a changes job"))
 
-    if re.search(r"github\.event_name\s*(?:==|=)\s*['\"]schedule['\"]", text_no_comments) and not has_schedule:
-        issues.append(Issue(path, "contains schedule event logic but has no on.schedule trigger", _line_number(text, "schedule")))
+    if (
+        re.search(r"github\.event_name\s*(?:==|=)\s*['\"]schedule['\"]", text_no_comments)
+        and not has_schedule
+    ):
+        issues.append(
+            Issue(
+                path,
+                "contains schedule event logic but has no on.schedule trigger",
+                _line_number(text, "schedule"),
+            )
+        )
 
     if re.search(r"github\.event_name\s*(?:==|=)\s*['\"]pull_request['\"]", text_no_comments) and not has_pr:
-        issues.append(Issue(path, "contains pull_request event logic but has no on.pull_request trigger", _line_number(text, "pull_request")))
+        issues.append(
+            Issue(
+                path,
+                "contains pull_request event logic but has no on.pull_request trigger",
+                _line_number(text, "pull_request"),
+            )
+        )
 
     if "pull-requests: write" in text_no_comments and not has_pr:
-        issues.append(Issue(path, "requests pull-requests: write without an on.pull_request trigger", _line_number(text, "pull-requests: write")))
+        issues.append(
+            Issue(
+                path,
+                "requests pull-requests: write without an on.pull_request trigger",
+                _line_number(text, "pull-requests: write"),
+            )
+        )
 
     for deleted in sorted(DELETED_REFERENCES):
         if deleted in text_no_comments:
-            issues.append(Issue(path, f"references deleted or retired workflow/action name {deleted}", _line_number(text, deleted)))
+            issues.append(
+                Issue(
+                    path,
+                    f"references deleted or retired workflow/action name {deleted}",
+                    _line_number(text, deleted),
+                )
+            )
 
     for old_guardian in sorted(OLD_GUARDIAN_MODULES):
         if old_guardian in text_no_comments:
-            issues.append(Issue(path, f"references old guardian module path {old_guardian}", _line_number(text, old_guardian)))
+            issues.append(
+                Issue(
+                    path,
+                    f"references old guardian module path {old_guardian}",
+                    _line_number(text, old_guardian),
+                )
+            )
 
     return issues
 
@@ -272,7 +340,9 @@ def find_reference_issues(root: Path, files: Iterable[Path]) -> list[Issue]:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
-    mode.add_argument("--changed-only", action="store_true", help="validate only changed workflow/action files")
+    mode.add_argument(
+        "--changed-only", action="store_true", help="validate only changed workflow/action files"
+    )
     mode.add_argument("--all", action="store_true", help="validate all workflow/action files")
     parser.add_argument("--base-sha")
     parser.add_argument("--head-sha")
