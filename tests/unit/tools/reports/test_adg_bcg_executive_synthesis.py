@@ -113,7 +113,9 @@ def _p0_empty_plan(path: Path) -> None:
     )
 
 
-def _gate(gate_id: str, *, verdict: str = "FIX", band: str = "P0", records: int = 1, baseline: int = 0) -> dict:
+def _gate(
+    gate_id: str, *, verdict: str = "FIX", band: str = "P0", records: int = 1, baseline: int = 0
+) -> dict:
     classification = "blocked" if verdict == "FIX" else "pass"
     enforcement = "block" if verdict == "FIX" else "ratchet"
     return {
@@ -140,7 +142,9 @@ def _sqlite(path: Path) -> None:
         conn.execute("create table mv_empty_noise(path text)")
         conn.execute("create table mv_guardian_inventory(path text)")
         conn.execute("insert into mv_guardian_inventory values ('guardian.py')")
-        conn.execute("create table nodes(id int primary key, resolved_path text, layer text, type_surface text)")
+        conn.execute(
+            "create table nodes(id int primary key, resolved_path text, layer text, type_surface text)"
+        )
         conn.execute("create table edges(src_id int, dst_id int, relation_type text)")
         conn.executemany(
             "insert into nodes values (?,?,?,?)",
@@ -196,7 +200,17 @@ def test_test_scope_inventory_classifies_all_required_scopes(tmp_path: Path) -> 
     _repo_tests(tmp_path)
     inv = build_test_scope_inventory(tmp_path)
     types = {f["test_type"] for f in inv["files"]}
-    assert {"unit", "e2e", "regression", "integration", "smoke", "golden", "contract", "fixture", "unknown"} <= types
+    assert {
+        "unit",
+        "e2e",
+        "regression",
+        "integration",
+        "smoke",
+        "golden",
+        "contract",
+        "fixture",
+        "unknown",
+    } <= types
     domains = {f["app_or_domain"] for f in inv["files"]}
     assert "agentic_core" in domains
     assert "apps_sales" in domains
@@ -210,12 +224,22 @@ def test_testing_map_can_prioritize_apps_testing_over_p0_ratchet(tmp_path: Path)
     action_queue = {"actions": [{"scope": "apps_sales/runtime/checkout.py", "why": "coverage"}]}
     testing = synthesize_testing_investment_map(db, tmp_path, inv, action_queue)
     assert "tests/e2e/test_app.py" in testing["investment_map"][0]["current_tests_found"]["e2e"]
-    graph = synthesize_graphdb_decision_impact(db, {}, [_gate("p0_ratchet", verdict="TRACK", records=99)], action_queue)
-    artifacts = build_artifact_usage_matrix({"gate_results": tmp_path / "gate.json", "sqlite_snapshot": db}, {}, {"used_artifact_keys": ["sqlite_snapshot"]})
+    graph = synthesize_graphdb_decision_impact(
+        db, {}, [_gate("p0_ratchet", verdict="TRACK", records=99)], action_queue
+    )
+    artifacts = build_artifact_usage_matrix(
+        {"gate_results": tmp_path / "gate.json", "sqlite_snapshot": db},
+        {},
+        {"used_artifact_keys": ["sqlite_snapshot"]},
+    )
     mv = build_mv_usefulness_audit(db, graph, [])
-    actions = build_canonical_next_best_actions([_gate("p0_ratchet", verdict="TRACK", records=99)], graph, testing, artifacts, mv, action_queue)
+    actions = build_canonical_next_best_actions(
+        [_gate("p0_ratchet", verdict="TRACK", records=99)], graph, testing, artifacts, mv, action_queue
+    )
     assert actions["rows"][0]["action_type"] in {"add_tests", "burn_down_ratchet"}
-    assert any(r["action_type"] == "add_tests" and r["scope"].startswith("apps_sales") for r in actions["rows"])
+    assert any(
+        r["action_type"] == "add_tests" and r["scope"].startswith("apps_sales") for r in actions["rows"]
+    )
 
 
 def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> None:
@@ -254,7 +278,12 @@ def test_fix_blocker_rows_carry_canonical_priority_backing(tmp_path: Path) -> No
         gate_rows,
         {"top_graph_risks": []},
         {"investment_map": []},
-        {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
+        {
+            "rows": [
+                {"artifact_key": "gate_results", "exists": True},
+                {"artifact_key": "sqlite_snapshot", "exists": True},
+            ]
+        },
         {"rows": []},
         {},
         sqlite_path=db,
@@ -327,7 +356,12 @@ def test_canonical_next_best_actions_prioritizes_p0_over_p3_hygiene(tmp_path: Pa
         gate_rows,
         {"top_graph_risks": []},
         {"investment_map": []},
-        {"rows": [{"artifact_key": "gate_results", "exists": True}, {"artifact_key": "sqlite_snapshot", "exists": True}]},
+        {
+            "rows": [
+                {"artifact_key": "gate_results", "exists": True},
+                {"artifact_key": "sqlite_snapshot", "exists": True},
+            ]
+        },
         {"rows": []},
         {},
         sqlite_path=db,
@@ -352,13 +386,24 @@ def test_canonical_next_best_actions_prioritizes_p0_over_p3_hygiene(tmp_path: Pa
 def test_graphdb_mv_audit_classifies_all_mvs_and_suppresses_raw_counts(tmp_path: Path) -> None:
     db = tmp_path / "adg.sqlite"
     _sqlite(db)
-    impact = synthesize_graphdb_decision_impact(db, {"structural_outputs": {"centrality": [{"path": "x"}]}}, [_gate("unrelated", verdict="FIX")], {})
+    impact = synthesize_graphdb_decision_impact(
+        db, {"structural_outputs": {"centrality": [{"path": "x"}]}}, [_gate("unrelated", verdict="FIX")], {}
+    )
     mv = build_mv_usefulness_audit(db, impact, [])
     names = {r["mv_name"] for r in mv["rows"]}
-    assert {"mv_hotspot_coverage_risk", "mv_p0_ratchet_inventory", "mv_empty_noise", "mv_guardian_inventory"} <= names
+    assert {
+        "mv_hotspot_coverage_risk",
+        "mv_p0_ratchet_inventory",
+        "mv_empty_noise",
+        "mv_guardian_inventory",
+    } <= names
     empty = next(r for r in mv["rows"] if r["mv_name"] == "mv_empty_noise")
     assert empty["recommendation"] == "deprecate_candidate"
-    diagnostic = [r for r in impact["decision_impact_rows"] if r["decision_role"] == "diagnostic_monitor" and r["signal_type"] == "materialized_view"]
+    diagnostic = [
+        r
+        for r in impact["decision_impact_rows"]
+        if r["decision_role"] == "diagnostic_monitor" and r["signal_type"] == "materialized_view"
+    ]
     assert all("Raw" in r["why_or_why_not"] or "not enough" in r["why_or_why_not"] for r in diagnostic)
 
 
@@ -431,7 +476,9 @@ def test_locked_inline_contract_validates_final_bcg_shape() -> None:
     _validate_locked_bcg_inline_markdown("\n\n".join(expected_sections), contract)
 
     with pytest.raises(ValueError, match="forbidden legacy inline content"):
-        _validate_locked_bcg_inline_markdown("\n\n".join(expected_sections + ["### 1. Key Findings"]), contract)
+        _validate_locked_bcg_inline_markdown(
+            "\n\n".join(expected_sections + ["### 1. Key Findings"]), contract
+        )
 
     bad_order = "\n\n".join(
         [
@@ -470,7 +517,9 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     )
     _write_json(queue, {"actions": [{"scope": "apps_sales/runtime/checkout.py"}]})
     _write_json(review, {"artifact_kind": "adg_run_review_template"})
-    _write_json(burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}})
+    _write_json(
+        burndown, {"summary": {"P0": {"gross": 1, "guardian": 0, "net": 1}, "P1": {}, "P2": {}, "P3": {}}}
+    )
     dead_code_report = artifacts / "dead_code_zone_control_report_run.json"
     _write_json(
         dead_code_report,
@@ -560,7 +609,14 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
         queue,
         review,
         burndown,
-        {"structural_outputs": None, "refactor_accelerator": None, "graphdb_queries": None, "runtime_spine": None, "p0_wave_plan": p0_plan, "dead_code_report": dead_code_report},
+        {
+            "structural_outputs": None,
+            "refactor_accelerator": None,
+            "graphdb_queries": None,
+            "runtime_spine": None,
+            "p0_wave_plan": p0_plan,
+            "dead_code_report": dead_code_report,
+        },
         print_inline=True,
         docs_dir=docs,
     )
@@ -592,7 +648,9 @@ def test_emit_bcg_summary_writes_locked_outputs_and_inline_structure(tmp_path: P
     assert data["lens_0_p0_landmines"]["landmines"][0]["protected_surface"] is True
     assert "lens_4_testing_control_gaps" in data
     assert data["dead_code_report"]["summary"]["total_dead_code_candidates"] == 0
-    assert data["deprecation_deletion_plan"]["summary"]["executive_read"].startswith("No deletions are approved")
+    assert data["deprecation_deletion_plan"]["summary"]["executive_read"].startswith(
+        "No deletions are approved"
+    )
     for key in [
         "lens_0_p0_landmines",
         "lens_1_health_gates",
@@ -668,7 +726,15 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     db = artifacts / "adg_indexed_run.sqlite"
     _sqlite_structural(db)
     gate = artifacts / "adg_gate_results_run.json"
-    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blocker", records=1)]})
+    _write_json(
+        gate,
+        {
+            "timestamp": "run",
+            "total_gates": 1,
+            "overall_exit_code": 1,
+            "gates": [_gate("blocker", records=1)],
+        },
+    )
 
     rc, out = emit_bcg_executive_summary(
         artifacts,
@@ -699,7 +765,10 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "Open blocker queue" in md
     assert "Report consistency" in md
     assert "| Question | Answer |" in md
-    assert "| Can we merge? | No. A live critical gate driver is red and must be treated as a P0 blocker. |" in md
+    assert (
+        "| Can we merge? | No. A live critical gate driver is red and must be treated as a P0 blocker. |"
+        in md
+    )
     assert "| What blocks merge? | `blocker` has 1 blocking row(s). |" in md
     assert "### 1. Key Findings" not in md
     assert "| Repair graph/report consistency |" not in md
@@ -710,7 +779,10 @@ def test_inconsistent_report_brief_uses_decision_status_and_repair_next_step(tmp
     assert "| Priority | Action | Evidence | Exit criterion |" in md
     assert md.index("Decision gate:") < md.index("Fix now:")
     assert md.index("Fix now:") < md.index("ADG Run Metrics")
-    assert "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3." not in md
+    assert (
+        "Rerun ADG after the P0 fix; if report consistency still fails, repair the report pipeline before ranking P1-P3."
+        not in md
+    )
     assert "Repair runtime proof if it is still missing or failing after the P0 rerun" not in md
     assert "Post-P0 ADG has report consistency PASS or an explicit waiver." not in md
     assert "Rerun ADG after the blocker fix" in md
@@ -811,7 +883,10 @@ def test_inline_report_prioritizes_open_blocker_before_candidate_blockers(tmp_pa
     assert "| Can we merge? | No. ADG has open blocker action rows. |" in md
     assert "No. A P0 FIX gate is red." not in md
     assert "| Open critical gate drivers | 0 |" in md
-    assert "| Open blocker queue | 1 P0 blocker row(s); 2 candidate-blocker row(s): H1_new_orphans_delta_ratchet, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py |" in md
+    assert (
+        "| Open blocker queue | 1 P0 blocker row(s); 2 candidate-blocker row(s): H1_new_orphans_delta_ratchet, agentic_core/L1_cognition/__init__.py, agentic_core/L1_cognition/apps_research_c0_binding.py |"
+        in md
+    )
     assert "top red FIX gate=H1_new_orphans_delta_ratchet; rows=1" in md
     assert md.index("| 1 | Clear P0 blocker rows.") < md.rindex("Address H1_new_orphans_delta_ratchet")
 
@@ -823,10 +898,21 @@ def test_render_markdown_accepts_locked_verdicts(tmp_path: Path) -> None:
     _sqlite(db)
     gate = artifacts / "gate.json"
     _write_json(gate, {"timestamp": "ts", "total_gates": 0, "overall_exit_code": 0, "gates": []})
-    rc, out = emit_bcg_executive_summary(artifacts, "ts", db, gate, None, None, None, {}, print_inline=False, docs_dir=tmp_path / "docs_mirror")
+    rc, out = emit_bcg_executive_summary(
+        artifacts, "ts", db, gate, None, None, None, {}, print_inline=False, docs_dir=tmp_path / "docs_mirror"
+    )
     assert rc == 0
     doc = json.loads(out.read_text(encoding="utf-8"))
-    assert doc["executive_decision"]["verdict"] in {"BLOCKED", "GREEN_WITH_DEBT", "REPORT_INCONSISTENT", "DEGRADED", "CLEAN", "NEEDS_RUNTIME_PROOF", "TESTING_CONTROL_GAP", "RUNTIME_PROOF_FAILING"}
+    assert doc["executive_decision"]["verdict"] in {
+        "BLOCKED",
+        "GREEN_WITH_DEBT",
+        "REPORT_INCONSISTENT",
+        "DEGRADED",
+        "CLEAN",
+        "NEEDS_RUNTIME_PROOF",
+        "TESTING_CONTROL_GAP",
+        "RUNTIME_PROOF_FAILING",
+    }
     assert render_bcg_inline_markdown(doc).startswith("## ADG Executive Brief")
 
 
@@ -841,23 +927,63 @@ def _sqlite_structural(path: Path) -> None:
     """ADG snapshot with real structural-graph MVs (centrality / blast radius / reverse
     deps / cones / chokepoints / SCC / newly-introduced) + a graph-vs-report mismatch."""
     with sqlite3.connect(path) as conn:
-        conn.execute("create table mv_hotspot_coverage_risk(file text, priority_band text, risk_band text, coverage_band text, coverage_pct real, fan_in int, fan_out int, criticality_score real, combined_risk_score real, violation_count int)")
-        conn.execute("insert into mv_hotspot_coverage_risk values (?,?,?,?,?,?,?,?,?,?)", (_STRUCT_SCOPE, "P1_URGENT", "CRITICAL", "ABSENT", 0, 40, 30, 95, 99, 7))
-        conn.execute("create table mv_hotspot_centrality(node_id int, resolved_path text, layer text, fan_in int, fan_out int, degree int, betweenness_approx real, degree_centrality real)")
-        conn.execute("insert into mv_hotspot_centrality values (1, ?, 'L0', 40, 30, 70, 0.42, 0.31)", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_graph_critical_path_blast_radius(node_id int, file_path text, layer text, direct_downstream int, hop2_downstream int, raw_blast_radius int, weighted_blast_radius real, critical_downstream_count int, blast_radius_type text)")
-        conn.execute("insert into mv_graph_critical_path_blast_radius values (1, ?, 'L0', 20, 50, 70, 612.5, 12, 'critical')", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_graph_reverse_dependency_hotspots(node_id int, file_path text, layer text, direct_inbound int, hop2_inbound int, reverse_dependency_score real, layer_criticality_weight real)")
-        conn.execute("insert into mv_graph_reverse_dependency_hotspots values (1, ?, 'L0', 35, 80, 410.0, 2.0)", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_dependency_cone_risk(node_id int, resolved_path text, layer text, direct_fan_in int, hop2_fan_in int, hop3_fan_in int, transitive_depth_approx int, cone_risk_score real)")
-        conn.execute("insert into mv_dependency_cone_risk values (1, ?, 'L0', 35, 60, 90, 5, 288.0)", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_graph_chokepoint_bridges(node_id int, file_path text, layer text, fan_in int, fan_out int, bridge_score real, imbalance_ratio real, bridge_type text)")
-        conn.execute("insert into mv_graph_chokepoint_bridges values (1, ?, 'L0', 40, 30, 120.0, 1.3, 'articulation')", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_graph_scc_clusters(node_id int, file_path text, layer text, cluster_size int, cluster_members text, scc_risk_score real, cluster_type text)")  # intentionally empty
-        conn.execute("create table mv_newly_introduced_critical_paths(node_id int, adg_name text, layer text, file text, criticality_score real, prev_score real, delta real, is_new int)")
-        conn.execute("insert into mv_newly_introduced_critical_paths values (1, 'ADG::Module::router', 'L0', ?, 99.0, 0.0, 99.0, 1)", (_STRUCT_SCOPE,))
-        conn.execute("create table mv_graph_vs_report_mismatches(snapshot_id text, mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)")
-        conn.execute("insert into mv_graph_vs_report_mismatches values ('s', 'centrality_drift', 'n1', ?, 'report disagrees with graph', 3)", (_STRUCT_SCOPE,))
+        conn.execute(
+            "create table mv_hotspot_coverage_risk(file text, priority_band text, risk_band text, coverage_band text, coverage_pct real, fan_in int, fan_out int, criticality_score real, combined_risk_score real, violation_count int)"
+        )
+        conn.execute(
+            "insert into mv_hotspot_coverage_risk values (?,?,?,?,?,?,?,?,?,?)",
+            (_STRUCT_SCOPE, "P1_URGENT", "CRITICAL", "ABSENT", 0, 40, 30, 95, 99, 7),
+        )
+        conn.execute(
+            "create table mv_hotspot_centrality(node_id int, resolved_path text, layer text, fan_in int, fan_out int, degree int, betweenness_approx real, degree_centrality real)"
+        )
+        conn.execute(
+            "insert into mv_hotspot_centrality values (1, ?, 'L0', 40, 30, 70, 0.42, 0.31)", (_STRUCT_SCOPE,)
+        )
+        conn.execute(
+            "create table mv_graph_critical_path_blast_radius(node_id int, file_path text, layer text, direct_downstream int, hop2_downstream int, raw_blast_radius int, weighted_blast_radius real, critical_downstream_count int, blast_radius_type text)"
+        )
+        conn.execute(
+            "insert into mv_graph_critical_path_blast_radius values (1, ?, 'L0', 20, 50, 70, 612.5, 12, 'critical')",
+            (_STRUCT_SCOPE,),
+        )
+        conn.execute(
+            "create table mv_graph_reverse_dependency_hotspots(node_id int, file_path text, layer text, direct_inbound int, hop2_inbound int, reverse_dependency_score real, layer_criticality_weight real)"
+        )
+        conn.execute(
+            "insert into mv_graph_reverse_dependency_hotspots values (1, ?, 'L0', 35, 80, 410.0, 2.0)",
+            (_STRUCT_SCOPE,),
+        )
+        conn.execute(
+            "create table mv_dependency_cone_risk(node_id int, resolved_path text, layer text, direct_fan_in int, hop2_fan_in int, hop3_fan_in int, transitive_depth_approx int, cone_risk_score real)"
+        )
+        conn.execute(
+            "insert into mv_dependency_cone_risk values (1, ?, 'L0', 35, 60, 90, 5, 288.0)", (_STRUCT_SCOPE,)
+        )
+        conn.execute(
+            "create table mv_graph_chokepoint_bridges(node_id int, file_path text, layer text, fan_in int, fan_out int, bridge_score real, imbalance_ratio real, bridge_type text)"
+        )
+        conn.execute(
+            "insert into mv_graph_chokepoint_bridges values (1, ?, 'L0', 40, 30, 120.0, 1.3, 'articulation')",
+            (_STRUCT_SCOPE,),
+        )
+        conn.execute(
+            "create table mv_graph_scc_clusters(node_id int, file_path text, layer text, cluster_size int, cluster_members text, scc_risk_score real, cluster_type text)"
+        )  # intentionally empty
+        conn.execute(
+            "create table mv_newly_introduced_critical_paths(node_id int, adg_name text, layer text, file text, criticality_score real, prev_score real, delta real, is_new int)"
+        )
+        conn.execute(
+            "insert into mv_newly_introduced_critical_paths values (1, 'ADG::Module::router', 'L0', ?, 99.0, 0.0, 99.0, 1)",
+            (_STRUCT_SCOPE,),
+        )
+        conn.execute(
+            "create table mv_graph_vs_report_mismatches(snapshot_id text, mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)"
+        )
+        conn.execute(
+            "insert into mv_graph_vs_report_mismatches values ('s', 'centrality_drift', 'n1', ?, 'report disagrees with graph', 3)",
+            (_STRUCT_SCOPE,),
+        )
 
 
 def test_structural_graph_mvs_are_actually_queried(tmp_path: Path) -> None:
@@ -887,10 +1013,14 @@ def test_high_blast_scope_overlapping_fix_emits_refactor_action(tmp_path: Path) 
     inv = build_test_scope_inventory(tmp_path)
     testing = synthesize_testing_investment_map(db, tmp_path, inv, {})
     graph = synthesize_graphdb_decision_impact(db, {}, [fix_gate], {})
-    artifacts = build_artifact_usage_matrix({"gate_results": tmp_path / "g.json", "sqlite_snapshot": db}, {}, {})
+    artifacts = build_artifact_usage_matrix(
+        {"gate_results": tmp_path / "g.json", "sqlite_snapshot": db}, {}, {}
+    )
     mv = build_mv_usefulness_audit(db, graph, [fix_gate])
     actions = build_canonical_next_best_actions([fix_gate], graph, testing, artifacts, mv, {})
-    assert any(r["action_type"] == "refactor" for r in actions["rows"]), [r["action_type"] for r in actions["rows"]]
+    assert any(r["action_type"] == "refactor" for r in actions["rows"]), [
+        r["action_type"] for r in actions["rows"]
+    ]
 
 
 def test_artifact_consistency_reflects_graph_vs_report_mismatches(tmp_path: Path) -> None:
@@ -910,7 +1040,9 @@ def test_artifact_consistency_pass_when_no_mismatch_rows(tmp_path: Path) -> None
 
     db = tmp_path / "adg.sqlite"
     with sqlite3.connect(db) as conn:
-        conn.execute("create table mv_graph_vs_report_mismatches(mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)")
+        conn.execute(
+            "create table mv_graph_vs_report_mismatches(mismatch_type text, ref_id text, file text, detail text, mismatch_delta int)"
+        )
     assert _artifact_consistency(db)["status"] == "PASS"
 
 
@@ -946,7 +1078,16 @@ def test_summary_fails_when_gate_artifacts_do_not_match_sqlite_snapshot(tmp_path
     db = artifacts / "adg_indexed_06272026_2302.sqlite"
     _sqlite(db)
     gate = artifacts / "adg_gate_results_20260627_091354.json"
-    _write_json(gate, {"timestamp": "2026-06-27T09:13:54Z", "total_gates": 1, "gates": [_gate("old_blocker")]})
+    wrong_snapshot = artifacts / "other" / db.name
+    _write_json(
+        gate,
+        {
+            "timestamp": "2026-06-27T09:13:54Z",
+            "snapshot_path": str(wrong_snapshot),
+            "total_gates": 1,
+            "gates": [_gate("old_blocker")],
+        },
+    )
     _write_json(
         artifacts / "adg_generation_manifest_06272026_2302.json",
         {
@@ -971,8 +1112,53 @@ def test_summary_fails_when_gate_artifacts_do_not_match_sqlite_snapshot(tmp_path
     assert consistency["status"] == "FAIL"
     assert doc["executive_decision"]["verdict"] == "REPORT_INCONSISTENT"
     mismatch_types = {err["mismatch_type"] for err in consistency["errors"]}
-    assert "artifact_timestamp_mismatch" in mismatch_types
+    assert "gate_results_snapshot_path_mismatch" in mismatch_types
     assert "generation_manifest_not_certified" in mismatch_types
+
+
+def test_summary_accepts_utc_gate_filename_bound_to_current_snapshot(tmp_path: Path) -> None:
+    from tools.reports.adg_bcg_executive_synthesis import build_bcg_executive_summary
+
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_06272026_2302.sqlite"
+    _sqlite(db)
+    gate = artifacts / "adg_gate_results_20260628_030254.json"
+    _write_json(
+        gate,
+        {
+            "timestamp": "2026-06-28T03:02:54Z",
+            "snapshot_path": str(db),
+            "total_gates": 1,
+            "gates": [_gate("current_gate", verdict="TRACK", records=0)],
+        },
+    )
+    _write_json(
+        artifacts / "adg_generation_manifest_06272026_2302.json",
+        {
+            "certification_status": "clean",
+            "sqlite_path": str(db),
+            "snapshot_path": str(db),
+        },
+    )
+
+    doc = build_bcg_executive_summary(
+        artifacts,
+        "06272026_2302",
+        db,
+        gate,
+        None,
+        None,
+        None,
+        {},
+    )
+
+    mismatch_types = {
+        error["mismatch_type"] for error in doc["audit_notes"]["artifact_consistency"]["errors"]
+    }
+    assert "artifact_timestamp_mismatch" not in mismatch_types
+    assert "generation_manifest_not_certified" not in mismatch_types
+    assert "gate_results_snapshot_path_mismatch" not in mismatch_types
 
 
 def test_missing_artifact_is_not_loaded_or_used_even_if_requested(tmp_path: Path) -> None:
@@ -995,7 +1181,15 @@ def test_p0_wave_plan_json_drives_lens_zero(tmp_path: Path) -> None:
     db = artifacts / "adg_indexed_run.sqlite"
     _sqlite(db)
     gate = artifacts / "adg_gate_results_run.json"
-    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blocker", records=1)]})
+    _write_json(
+        gate,
+        {
+            "timestamp": "run",
+            "total_gates": 1,
+            "overall_exit_code": 1,
+            "gates": [_gate("blocker", records=1)],
+        },
+    )
     p0_json = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
     _p0_plan(p0_json)
 
@@ -1029,7 +1223,15 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
     db = artifacts / "adg_indexed_run.sqlite"
     _sqlite(db)
     gate = artifacts / "adg_gate_results_run.json"
-    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("G_REACH_l0_reachability", records=3)]})
+    _write_json(
+        gate,
+        {
+            "timestamp": "run",
+            "total_gates": 1,
+            "overall_exit_code": 1,
+            "gates": [_gate("G_REACH_l0_reachability", records=3)],
+        },
+    )
     p0_json = artifacts / "issues" / "p0_remediation_wave_plan_run.json"
     _p0_empty_plan(p0_json)
     burndown = artifacts / "adg_burndown_table_run.json"
@@ -1070,7 +1272,10 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
 
     md = (artifacts / "adg_bcg_executive_summary_run.md").read_text(encoding="utf-8")
     assert "Impact Inventory" in md
-    assert "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |" in md
+    assert (
+        "| Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |"
+        in md
+    )
     assert "| P0 | critical | 43 | 40 | 3 | 0 | 1 |" in md
     assert "| P1 | high | 10 | 8 | 2 | n/a | 0 |" in md
     assert "| P2 | medium | 7 | 2 | 5 | n/a | 0 |" in md
@@ -1078,8 +1283,14 @@ def test_p0_scorecard_separates_foundation_blockers_from_audit_net(tmp_path: Pat
     assert "### 1. Key Findings" not in md
     assert "foundation candidate inventory=0; critical audit net=3; live blocker drivers=1" in md
     assert "| Decision ledgers |" in md
-    assert "Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates." in md
-    assert "Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate." in md
+    assert (
+        "Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates."
+        in md
+    )
+    assert (
+        "Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate."
+        in md
+    )
     assert "### 3A. KPI Scorecard — Decision vs Audit" not in md
     assert "### 4. Lens 0 — Foundation Blockers" not in md
     assert "### 4. Lens 0 — P0 Landmines / Foundation Cracks" not in md
@@ -1094,14 +1305,22 @@ def test_report_inconsistency_and_runtime_failure_precede_fix_gates() -> None:
     }
     testing = {"summary": {}}
     artifacts = {"rows": [{"artifact_key": "gate_results", "exists": True}]}
-    assert _verdict(health, {"status": "present"}, testing, artifacts, {"status": "FAIL"})["verdict"] == "REPORT_INCONSISTENT"
-    assert _verdict(health, {"status": "present_failing"}, testing, artifacts, {"status": "PASS"})["verdict"] == "RUNTIME_PROOF_FAILING"
+    assert (
+        _verdict(health, {"status": "present"}, testing, artifacts, {"status": "FAIL"})["verdict"]
+        == "REPORT_INCONSISTENT"
+    )
+    assert (
+        _verdict(health, {"status": "present_failing"}, testing, artifacts, {"status": "PASS"})["verdict"]
+        == "RUNTIME_PROOF_FAILING"
+    )
 
 
 def test_generator_uses_emitted_p0_wave_plan_json_path() -> None:
-    src = Path("tools/generate/generate_full_adg.py").read_text(encoding="utf-8")
-    assert "p0_wave_plan.get(\"json_path\")" in src
-    assert "adg_p0_remediation_wave_plan_" not in src
+    generator_src = Path("tools/generate/generate_full_adg.py").read_text(encoding="utf-8")
+    bundle_src = Path("tools/reports/adg_run_output_bundle.py").read_text(encoding="utf-8")
+    assert '"p0_wave_plan": existing(f"issues/p0_remediation_wave_plan_{run_id}.json")' in bundle_src
+    assert "adg_p0_remediation_wave_plan_" not in generator_src
+    assert "adg_p0_remediation_wave_plan_" not in bundle_src
 
 
 def test_docs_dir_isolates_writes(tmp_path: Path) -> None:
@@ -1111,12 +1330,67 @@ def test_docs_dir_isolates_writes(tmp_path: Path) -> None:
     db = artifacts / "adg_indexed_run.sqlite"
     _sqlite_structural(db)
     gate = artifacts / "adg_gate_results_run.json"
-    _write_json(gate, {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blk", records=1)]})
+    _write_json(
+        gate,
+        {"timestamp": "run", "total_gates": 1, "overall_exit_code": 1, "gates": [_gate("blk", records=1)]},
+    )
     docs = tmp_path / "docs_mirror"
-    rc, _ = emit_bcg_executive_summary(artifacts, "run", db, gate, None, None, None, {}, print_inline=False, docs_dir=docs)
+    rc, _ = emit_bcg_executive_summary(
+        artifacts, "run", db, gate, None, None, None, {}, print_inline=False, docs_dir=docs
+    )
     assert rc == 0
     assert (docs / "adg_bcg_executive_summary_latest.md").is_file()
     assert (artifacts / "adg_bcg_executive_summary_latest.md").is_file()
+
+
+def test_emitter_can_use_exact_burndown_report_without_publishing_aliases(tmp_path: Path) -> None:
+    _repo_tests(tmp_path)
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    db = artifacts / "adg_indexed_run.sqlite"
+    _sqlite_structural(db)
+    gate = artifacts / "adg_gate_results_run.json"
+    _write_json(
+        gate,
+        {
+            "timestamp": "run",
+            "total_gates": 1,
+            "overall_exit_code": 1,
+            "gates": [_gate("blk", records=1)],
+        },
+    )
+    exact_report = artifacts / "adg_burndown_report_run.md"
+    exact_report.write_text("# exact current-run report\n", encoding="utf-8")
+    (artifacts / "adg_burndown_report.md").write_text("# stale alias\n", encoding="utf-8")
+    docs = tmp_path / "docs_mirror"
+
+    rc, out = emit_bcg_executive_summary(
+        artifacts,
+        "run",
+        db,
+        gate,
+        None,
+        None,
+        None,
+        {},
+        print_inline=False,
+        fail_closed=True,
+        docs_dir=docs,
+        write_latest=False,
+        burndown_report_path=exact_report,
+    )
+
+    assert rc == 0
+    assert out == artifacts / "adg_bcg_executive_summary_run.json"
+    assert out.is_file()
+    assert out.with_suffix(".yaml").is_file()
+    assert out.with_suffix(".md").is_file()
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["raw_inputs"]["artifacts"]["burndown_report"] == str(exact_report)
+    assert not (artifacts / "adg_bcg_executive_summary_latest.json").exists()
+    assert not (artifacts / "adg_bcg_executive_summary_latest.yaml").exists()
+    assert not (artifacts / "adg_bcg_executive_summary_latest.md").exists()
+    assert not docs.exists()
 
 
 def test_module_has_no_hardcoded_current_run_values() -> None:

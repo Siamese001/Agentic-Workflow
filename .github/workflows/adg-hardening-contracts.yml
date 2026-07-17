@@ -5,42 +5,62 @@ on:
     branches: ["**"]
     paths:
       - ".github/workflows/adg-hardening-contracts.yml"
+      - ".codex/automations/adg-audit-and-burndown/automation.toml"
       - ".codex/governance/scripts/pre_mcp_gate.py"
+      - ".codex/governance/scripts/post_agent_adg_burndown_inline_audit.py"
+      - ".codex/governance/scripts/post_agent_runtime_rca_audit.py"
+      - ".codex/rules/adg-post-run-burndown.md"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "ops_scripts/ci/check_adg_query_plans.py"
       - "ops_scripts/ci/check_adg_writer_authority.py"
+      - "ops_scripts/ci/verify_adg_report_mece.py"
       - "tests/unit/agentic_core/adg/**"
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
+      - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+      - "tests/unit/codex/test_adg_audit_automation_contract.py"
       - "tests/unit/tools/adg/**"
+      - "tests/unit/tools_adg/test_run_full_adg_audit.py"
       - "tests/unit/tools/generate/**"
       - "tests/unit/tools/graphdb/**"
+      - "tests/unit/tools/reports/**"
       - "tools/adg/**"
       - "tools/generate/**"
       - "tools/graphdb/**"
+      - "tools/reports/**"
   push:
     branches: [main, master]
     paths:
       - ".github/workflows/adg-hardening-contracts.yml"
+      - ".codex/automations/adg-audit-and-burndown/automation.toml"
       - ".codex/governance/scripts/pre_mcp_gate.py"
+      - ".codex/governance/scripts/post_agent_adg_burndown_inline_audit.py"
+      - ".codex/governance/scripts/post_agent_runtime_rca_audit.py"
+      - ".codex/rules/adg-post-run-burndown.md"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "ops_scripts/ci/check_adg_query_plans.py"
       - "ops_scripts/ci/check_adg_writer_authority.py"
+      - "ops_scripts/ci/verify_adg_report_mece.py"
       - "tests/unit/agentic_core/adg/**"
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
+      - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+      - "tests/unit/codex/test_adg_audit_automation_contract.py"
       - "tests/unit/tools/adg/**"
+      - "tests/unit/tools_adg/test_run_full_adg_audit.py"
       - "tests/unit/tools/generate/**"
       - "tests/unit/tools/graphdb/**"
+      - "tests/unit/tools/reports/**"
       - "tools/adg/**"
       - "tools/generate/**"
       - "tools/graphdb/**"
+      - "tools/reports/**"
   workflow_dispatch:
 
 permissions:
@@ -66,7 +86,9 @@ jobs:
           python -m pytest \
             tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py \
             tests/unit/agentic_core/adg/test_canonical_snapshot_identity.py \
+            tests/unit/ops_scripts/ci/adg_gates/test_run_dispatcher.py \
             tests/unit/ops_scripts/ci/adg_gates/test_write_sovereignty_temporal_contract.py \
+            tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py \
             tests/unit/tools/adg/contracts/test_metric_registry.py \
             tests/unit/tools/adg/shared_modules/test_snapshot_registry.py \
             tests/unit/tools/adg/test_adg_mcp_fixes.py \
@@ -74,9 +96,36 @@ jobs:
             tests/unit/tools/adg/test_query_catalog.py \
             tests/unit/tools/adg/test_audit_snapshot_promotion.py \
             tests/unit/tools/adg/test_reopen_connections_hardening.py \
+            tests/unit/tools/reports/test_adg_run_output_bundle.py \
+            tests/unit/tools/reports/test_adg_bcg_adapter.py \
+            tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py \
+            tests/unit/tools/reports/test_adg_burndown_report_mandatory.py \
+            tests/unit/tools/reports/test_adg_action_queue.py \
+            tests/unit/tools/reports/test_adg_cleanup_queue_and_p2_blocker_trace.py \
+            tests/unit/tools/reports/test_adg_dead_code_report.py \
+            tests/unit/tools/reports/test_adg_review_template.py \
+            tests/unit/tools/generate/test_simplification_e2e_9b4c27.py::TestRunPostAdgGatesParallel \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_diagnostic_mode_fails_when_mandatory_output_bundle_is_blocked \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_main_returns_run_result_exit_code_even_with_diagnostic_generator_opt_out \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_three_bucket_outputs_are_captured_as_snapshot_bound_run_artifacts \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_existing_bundle_reuse_requires_exact_wrapper_certification_gates \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_wrapper_renders_one_bundle_only_after_receipt \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_failed_generator_seals_degraded_bundle_but_blocks_handoff \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_certification_generator_enables_three_bucket_env \
+            tests/unit/tools_adg/test_run_full_adg_audit.py::test_diagnostic_generator_does_not_force_three_bucket \
             tests/unit/tools/generate/test_graph_projection.py \
             tests/unit/tools/generate/test_materialized_views_phase_d.py \
             tests/unit/tools/generate/test_materialized_views_phase_d_exact_diffs.py \
             tests/unit/tools/generate/test_sqlite_integrity_hardening.py \
             tests/unit/tools/graphdb/test_projection.py \
+            -p no:xdist -p no:testmon -q --timeout=120
+      - name: Run sealed output static contracts
+        run: |
+          python -m pytest \
+            tests/unit/codex/test_adg_audit_automation_contract.py \
+            -k "one_sealed_terminal_bundle or one_snapshot_bound_bundle or adg_inline_audit" \
+            -p no:xdist -p no:testmon -q --timeout=120
+          python -m pytest \
+            tests/unit/tools/generate/test_generate_full_adg_failfast.py \
+            -k "one_sealed_terminal_bundle or one_snapshot_bound_bundle or SealedOutputBundleWiring or ReviewTemplateWiring or DeadCodeReportWiring" \
             -p no:xdist -p no:testmon -q --timeout=120

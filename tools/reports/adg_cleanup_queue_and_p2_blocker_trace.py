@@ -81,12 +81,16 @@ def _resolve_existing_path(raw: Any, *bases: Path) -> Path | None:
     return None
 
 
-def _latest_snapshot_sqlite(adg_artifacts_dir: Path) -> tuple[Path | None, Path | None, dict[str, Any] | None]:
+def _latest_snapshot_sqlite(
+    adg_artifacts_dir: Path,
+) -> tuple[Path | None, Path | None, dict[str, Any] | None]:
     manifests = []
     latest_manifest = adg_artifacts_dir / "adg_generation_manifest_latest.json"
     if latest_manifest.is_file():
         manifests.append(latest_manifest)
-    manifests.extend(sorted(adg_artifacts_dir.glob("adg_generation_manifest_*.json"), key=lambda p: p.stat().st_mtime))
+    manifests.extend(
+        sorted(adg_artifacts_dir.glob("adg_generation_manifest_*.json"), key=lambda p: p.stat().st_mtime)
+    )
     seen: set[Path] = set()
     for manifest_path in reversed(manifests):
         if manifest_path in seen:
@@ -164,7 +168,9 @@ def _is_archived_surface(scope: str) -> bool:
     )
 
 
-def _cleanup_queue_rows(dead_code_report: dict[str, Any] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def _cleanup_queue_rows(
+    dead_code_report: dict[str, Any] | None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     unresolved = (dead_code_report or {}).get("unresolved_imports") or {}
     hotspots = unresolved.get("unresolved_hotspots") or []
     live_rows: list[dict[str, Any]] = []
@@ -178,9 +184,7 @@ def _cleanup_queue_rows(dead_code_report: dict[str, Any] | None) -> tuple[list[d
         count = int(hotspot[1] or 0)
         archived = _is_archived_surface(scope)
         move = "Triage unresolved imports" if not archived else "Defer archived unresolved imports"
-        why_it_matters = (
-            "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy."
-        )
+        why_it_matters = "This is where unresolved-import noise is concentrated, so fixing it will make the next scan more trustworthy."
         evidence = f"{count} unresolved import(s) on this surface."
         next_step = (
             "Trace the live imports, then rerun the scan."
@@ -257,10 +261,12 @@ def _p2_summary(
         {
             "scope": file_path,
             "count": count,
-            "surface": "live runtime" if file_path.startswith("apps_rg/runtime/") else (
-                "core" if file_path.startswith("agentic_core/") else (
-                    "apps" if file_path.startswith("apps_") else "other"
-                )
+            "surface": "live runtime"
+            if file_path.startswith("apps_rg/runtime/")
+            else (
+                "core"
+                if file_path.startswith("agentic_core/")
+                else ("apps" if file_path.startswith("apps_") else "other")
             ),
             "move": "Reduce MEDIUM hygiene debt",
             "why_it_matters": "This path concentrates MEDIUM hygiene debt on a visible runtime or core surface.",
@@ -355,15 +361,16 @@ def _p2_summary(
         status_label="P2 ratchet status",
         business_read=business_read,
         technical_read=[
-            f"Published sqlite snapshot: {_repo_rel(sqlite_path)}" if sqlite_path else "Published sqlite snapshot: missing",
+            f"Published sqlite snapshot: {_repo_rel(sqlite_path)}"
+            if sqlite_path
+            else "Published sqlite snapshot: missing",
             f"P2 ceiling: {ceiling}",
             f"Current MEDIUM hygiene count: {current_count}",
             f"Delta vs ceiling: {delta:+d}",
             f"Baseline snapshot: {baseline_snapshot or 'missing'}",
             (
                 "Latest failed run: "
-                f"{failed_timestamp or 'missing'}"
-                + (f" ({failed_status})" if failed_status else "")
+                f"{failed_timestamp or 'missing'}" + (f" ({failed_status})" if failed_status else "")
             ),
         ],
         priority_rule=(
@@ -680,8 +687,12 @@ def render_adg_cleanup_queue_and_p2_blocker_trace(doc: dict[str, Any]) -> str:
     lines.extend(_render_p2_section(p2))
     a("### What This Means")
     a("")
-    a("- There are no confirmed dead-code deletions in the latest dead-code report, so deletion stays deferred.")
-    a("- The published snapshot still carries MEDIUM hygiene debt against the P2 ceiling, so the ratchet remains open.")
+    a(
+        "- There are no confirmed dead-code deletions in the latest dead-code report, so deletion stays deferred."
+    )
+    a(
+        "- The published snapshot still carries MEDIUM hygiene debt against the P2 ceiling, so the ratchet remains open."
+    )
     a("- Reduce the live runtime hotspots first, then rerun ADG and confirm the ceiling stays honest.")
     a("")
     return "\n".join(lines)
@@ -716,6 +727,7 @@ def emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
     fail_closed: bool = True,
     print_inline: bool = False,
     docs_dir: Path | None = None,
+    write_latest: bool = True,
 ) -> tuple[int, Path | None]:
     docs_target = docs_dir if docs_dir is not None else DOCS_ADG
     try:
@@ -724,14 +736,15 @@ def emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
         paths = _artifact_paths(adg_artifacts_dir=adg_artifacts_dir, docs_dir=docs_target, ts=ts)
         _write_json(paths["json"], doc)
         _write_text(paths["md"], md)
-        _write_json(paths["json_alias"], doc)
-        _write_text(paths["md_alias"], md)
-        _write_json(paths["json_latest"], doc)
-        _write_text(paths["md_latest"], md)
-        _write_json(paths["docs_json"], doc)
-        _write_text(paths["docs_md"], md)
-        _write_json(paths["docs_json_latest"], doc)
-        _write_text(paths["docs_md_latest"], md)
+        if write_latest:
+            _write_json(paths["json_alias"], doc)
+            _write_text(paths["md_alias"], md)
+            _write_json(paths["json_latest"], doc)
+            _write_text(paths["md_latest"], md)
+            _write_json(paths["docs_json"], doc)
+            _write_text(paths["docs_md"], md)
+            _write_json(paths["docs_json_latest"], doc)
+            _write_text(paths["docs_md_latest"], md)
         if print_inline:
             sys.stdout.write("\n" + md + ("\n" if md.endswith("\n") else "\n"))
         print(f"[adg_cleanup_queue_and_p2_blocker_trace] SUMMARY={_repo_rel(paths['json'])}", file=sys.stderr)

@@ -1,28 +1,35 @@
 """Generate full ADG with entities and relations in the comprehensive format.
 
-Non-redundant output set (5 files, 100% edge coverage):
+Canonical core output set (2 files, 100% edge coverage):
     adg_snapshot_<ts>.json        Tier 1: CI-light (~50 KB) — metrics only
     adg_indexed_<ts>.sqlite       Tier 2: primary queryable store (~38 MB, all 18 edge types)
-    adg_file_graph_<ts>.json      imports, exports, dead_imports, covers, influences, in_cycle
-    adg_symbol_graph_<ts>.json    calls, implements, reads_from, writes_to, instantiates, ...
-    adg_governance_graph_<ts>.json violates, antipattern, generates_prompt, ...
 
-Timestamp format: MMDDYYYY in US Eastern time  (e.g. 03122026 for March 12, 2026)
+Post-generation reports are sealed under one timestamped
+``adg_run_output_bundle_<ts>.json`` manifest. The manifest binds every required
+report to this run's SQLite and dispatcher-result digests and authorizes exactly
+one terminal executive brief.
+
+Timestamp format: MMDDYYYY_HHMM in US Eastern time (e.g. 03122026_1430)
 Internal state file (not part of the 5-file model):
     adg_graphsnap_<ts>.json       E7 drift detection — previous-run snapshot for diff (uncompressed)
 
-NOTE: adg_full.json removed (SQLite supersedes it). test_graph removed (covers lives in file_graph).
+NOTE: adg_full.json and split JSON graph planes are disabled (SQLite supersedes them).
 NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default).
 """
 
 from __future__ import annotations
 
+import atexit
+import functools
+import hashlib
+import io
 import json
 import os
 import re
 import subprocess as _subprocess
 import time
-from contextlib import contextmanager
+import uuid
+from contextlib import contextmanager, redirect_stdout
 
 try:
     import orjson as _orjson
@@ -48,10 +55,343 @@ def _json_write_payload(obj: object) -> str:
 
 
 import sys
+from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, TypeVar
 
 from tqdm import tqdm  # noqa: E402  (§16 progress-bar compliance for pipeline loops)
+
+RUN_ID_COLLISION_EXIT_CODE = 73
+_GENERATION_LOCK_STALE_AFTER_S = 4 * 60 * 60
+_GENERATION_LOCK_MALFORMED_GRACE_S = 5.0
+_T = TypeVar("_T")
+
+
+def _pid_is_alive(pid: int) -> bool | None:
+    """Return process liveness without ever signaling a Windows process."""
+    if pid <= 0:
+        return False
+    if pid == os.getpid():
+        return True
+    if os.name == "posix":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        except OSError:
+            return None
+        return True
+    if os.name == "nt":
+        try:
+            import ctypes
+            from ctypes import wintypes
+
+            process_query_limited_information = 0x1000
+            still_active = 259
+            kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+            kernel32.OpenProcess.argtypes = (
+                wintypes.DWORD,
+                wintypes.BOOL,
+                wintypes.DWORD,
+            )
+            kernel32.OpenProcess.restype = wintypes.HANDLE
+            kernel32.GetExitCodeProcess.argtypes = (
+                wintypes.HANDLE,
+                ctypes.POINTER(wintypes.DWORD),
+            )
+            kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+            kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+            kernel32.CloseHandle.restype = wintypes.BOOL
+            handle = kernel32.OpenProcess(
+                process_query_limited_information,
+                False,
+                pid,
+            )
+            if not handle:
+                # Access denied proves that a process owns the PID; other
+                # failures (notably invalid PID) mean there is no live owner.
+                return True if ctypes.get_last_error() == 5 else False
+            try:
+                exit_code = wintypes.DWORD()
+                if not kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                    return None
+                return exit_code.value == still_active
+            finally:
+                kernel32.CloseHandle(handle)
+        except (AttributeError, OSError, TypeError, ValueError):
+            return None
+    return None
+
+
+def _claim_generation_lock(
+    adg_artifacts_dir: Path,
+    run_id: str,
+    *,
+    stale_after_s: float = _GENERATION_LOCK_STALE_AFTER_S,
+) -> tuple[Path, str]:
+    """Claim one producer-root lock for the full generation/archive lifetime."""
+    adg_artifacts_dir.mkdir(parents=True, exist_ok=True)
+    lock_path = adg_artifacts_dir / ".adg_generation.lock"
+    owner_token = uuid.uuid4().hex
+    payload = {
+        "pid": os.getpid(),
+        "run_id": run_id,
+        "owner_token": owner_token,
+        "acquired_at_epoch_s": time.time(),
+    }
+    while True:
+        try:
+            descriptor = os.open(
+                lock_path,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
+                0o600,
+            )
+        except FileExistsError:
+            existing: dict[str, Any] | None = None
+            try:
+                raw = json.loads(lock_path.read_text(encoding="utf-8"))
+                existing = raw if isinstance(raw, dict) else None
+                age_s = max(0.0, time.time() - lock_path.stat().st_mtime)
+            except (OSError, json.JSONDecodeError, TypeError, ValueError):
+                try:
+                    age_s = max(0.0, time.time() - lock_path.stat().st_mtime)
+                except OSError:
+                    age_s = 0.0
+            raw_pid = existing.get("pid") if existing is not None else None
+            owner_alive = (
+                _pid_is_alive(raw_pid) if isinstance(raw_pid, int) and not isinstance(raw_pid, bool) else None
+            )
+            unknown_owner_grace_s = min(
+                stale_after_s,
+                _GENERATION_LOCK_MALFORMED_GRACE_S,
+            )
+            stale = owner_alive is False or (owner_alive is None and age_s >= unknown_owner_grace_s)
+            if stale:
+                try:
+                    lock_path.unlink()
+                except FileNotFoundError:
+                    pass
+                except OSError:
+                    stale = False
+                if stale:
+                    continue
+            owner_run = existing.get("run_id") if existing is not None else "unknown"
+            _render_run_id_collision(
+                run_id,
+                "another full ADG generator is active at this producer root: "
+                f"run_id={owner_run!r} pid={raw_pid!r}",
+            )
+            raise SystemExit(RUN_ID_COLLISION_EXIT_CODE) from None
+        try:
+            os.write(
+                descriptor,
+                (json.dumps(payload, sort_keys=True) + "\n").encode("utf-8"),
+            )
+        except OSError:
+            os.close(descriptor)
+            try:
+                lock_path.unlink()
+            except OSError:
+                pass
+            raise
+        os.close(descriptor)
+        return lock_path, owner_token
+
+
+def _release_generation_lock(lock: tuple[Path, str]) -> None:
+    """Release only the exact lock owned by this invocation."""
+    lock_path, owner_token = lock
+    try:
+        payload = json.loads(lock_path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict) or payload.get("owner_token") != owner_token:
+            return
+        lock_path.unlink()
+    except (FileNotFoundError, json.JSONDecodeError, OSError, TypeError):
+        return
+
+
+def _single_flight_generation(func: Callable[[], _T]) -> Callable[[], _T]:
+    """Hold the producer-root generation lock through every main exit path."""
+
+    @functools.wraps(func)
+    def wrapped() -> _T:
+        prior_run_id = os.environ.get("ADG_RUN_ID")
+        requested_run_id = prior_run_id or _generate_timestamp()
+        if prior_run_id is None:
+            os.environ["ADG_RUN_ID"] = requested_run_id
+        generation_lock: tuple[Path, str] | None = None
+        try:
+            generation_lock = _claim_generation_lock(
+                ROOT / "artifacts" / "adg",
+                requested_run_id,
+            )
+            return func()
+        finally:
+            if generation_lock is not None:
+                _release_generation_lock(generation_lock)
+            if prior_run_id is None:
+                os.environ.pop("ADG_RUN_ID", None)
+
+    return wrapped
+
+
+def _claim_run_id(adg_artifacts_dir: Path, run_id: str) -> None:
+    """Atomically reserve a minute-resolution run ID and reject overwrites."""
+    try:
+        datetime.strptime(run_id, "%m%d%Y_%H%M")
+    except ValueError as exc:
+        raise SystemExit(f"invalid ADG_RUN_ID {run_id!r}; expected MMDDYYYY_HHMM") from exc
+
+    immutable_sentinels = (
+        adg_artifacts_dir / f"adg_indexed_{run_id}.sqlite",
+        adg_artifacts_dir / f"adg_snapshot_{run_id}.json",
+        adg_artifacts_dir / f"adg_generation_manifest_{run_id}.json",
+        adg_artifacts_dir / f"adg_gate_invocation_manifest_{run_id}.json",
+        adg_artifacts_dir / f"adg_run_output_bundle_{run_id}.json",
+    )
+    collision = next((path for path in immutable_sentinels if path.exists()), None)
+    lock_path = adg_artifacts_dir / f".adg_run_{run_id}.lock"
+    adg_artifacts_dir.mkdir(parents=True, exist_ok=True)
+    if collision is not None:
+        _render_run_id_collision(run_id, f"immutable artifact already exists: {collision.name}")
+        raise SystemExit(RUN_ID_COLLISION_EXIT_CODE)
+    try:
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    except FileExistsError:
+        _render_run_id_collision(run_id, "another generator owns this run ID")
+        raise SystemExit(RUN_ID_COLLISION_EXIT_CODE) from None
+    os.write(descriptor, f"pid={os.getpid()} run_id={run_id}\n".encode())
+    os.close(descriptor)
+
+    def _release() -> None:
+        try:
+            lock_path.unlink()
+        except OSError:
+            pass
+
+    atexit.register(_release)
+
+
+def _render_run_id_collision(run_id: str, diagnostic: str) -> None:
+    if os.environ.get("ADG_SUPPRESS_TERMINAL_SUMMARY") == "1":
+        print(f"[ADG] RUN_ID_COLLISION={run_id}: {diagnostic}", file=sys.stderr)
+        return
+    print(
+        "\n## ADG Executive Brief\n\n"
+        f"- **Run:** `{run_id}`\n"
+        "- **Status:** `BLOCKED`\n"
+        "- **Impact Inventory:** unavailable because the run ID is already owned\n"
+        "- **Decision gate:** BLOCKED\n"
+        "- **Fix now:** rerun after a new ADG run ID is allocated\n\n"
+        "## Final disposition\n\n"
+        f"- **Process exit code:** `{RUN_ID_COLLISION_EXIT_CODE}`\n"
+        f"- **Diagnostic:** {diagnostic}"
+    )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _verify_committed_candidate_pointer(
+    *,
+    adg_artifacts_dir: Path,
+    sqlite_candidate: Path,
+    certification_status: str,
+    source_artifacts: dict[str, Path],
+) -> None:
+    """Prove a candidate pointer committed despite a post-replace error."""
+    from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
+        SnapshotPointerError,
+        load_snapshot_pointer,
+    )
+
+    published = load_snapshot_pointer(
+        adg_artifacts_dir,
+        "candidate",
+        verify_digest=True,
+    )
+    if published.path.resolve() != sqlite_candidate.resolve():
+        raise SnapshotPointerError("activated candidate pointer snapshot differs from current run")
+    if published.certification_status != certification_status or published.artifact_status != "candidate":
+        raise SnapshotPointerError("activated candidate pointer status differs from current run")
+    if set(published.source_artifacts) != set(source_artifacts):
+        raise SnapshotPointerError("activated candidate pointer source set differs from current run")
+    base = adg_artifacts_dir.resolve()
+    for label, source in source_artifacts.items():
+        source_resolved = source.resolve()
+        try:
+            expected_path = source_resolved.relative_to(base).as_posix()
+        except ValueError as exc:
+            raise SnapshotPointerError(
+                f"candidate source artifact is outside ADG directory: {source_resolved}"
+            ) from exc
+        actual_ref = published.source_artifacts.get(label)
+        if (
+            not isinstance(actual_ref, dict)
+            or actual_ref.get("path") != expected_path
+            or actual_ref.get("sha256") != _sha256_file(source_resolved)
+        ):
+            raise SnapshotPointerError(
+                f"activated candidate pointer source differs from current run: {label}"
+            )
+
+
+def _publish_candidate_snapshot_pointer(
+    *,
+    adg_artifacts_dir: Path,
+    run_id: str,
+    sqlite_candidate: Path,
+    generation_exit_code: int,
+    source_artifacts: dict[str, Path],
+) -> tuple[bool, str | None]:
+    """Monotonically activate one candidate pointer at the shared ADG root."""
+    from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
+        SnapshotPointerError,
+        publish_snapshot_pointer,
+    )
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        _publication_lock,
+        _reserve_latest_publication,
+    )
+
+    certification_status = "clean" if generation_exit_code == 0 else "failed"
+    try:
+        with _publication_lock(adg_artifacts_dir):
+            # Reserve before replace. An older overlapping run must never
+            # roll the shared candidate role back after a newer run wins.
+            _reserve_latest_publication(adg_artifacts_dir, run_id)
+            try:
+                publish_snapshot_pointer(
+                    adg_dir=adg_artifacts_dir,
+                    role="candidate",
+                    snapshot_path=sqlite_candidate,
+                    certification_status=certification_status,
+                    artifact_status="candidate",
+                    source_artifacts=source_artifacts,
+                )
+            except (OSError, ValueError, SnapshotPointerError) as exc:
+                # Directory fsync can fail after os.replace committed. Verify
+                # the exact active pointer before treating publication as a
+                # failure; otherwise the caller would mutate its bound files.
+                try:
+                    _verify_committed_candidate_pointer(
+                        adg_artifacts_dir=adg_artifacts_dir,
+                        sqlite_candidate=sqlite_candidate,
+                        certification_status=certification_status,
+                        source_artifacts=source_artifacts,
+                    )
+                except (OSError, ValueError, SnapshotPointerError):
+                    return False, str(exc)
+    except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
+        return False, str(exc)
+    return True, None
 
 
 # W3: SQLite WAL mode helper for concurrent read resilience
@@ -70,6 +410,7 @@ def _sqlite_connect_with_wal(sqlite_path: Path) -> Any:
     Returns a connection with WAL mode enabled for concurrent access safety.
     """
     import sqlite3 as _sqlite3
+
     conn = _sqlite3.connect(str(sqlite_path))
     _enable_wal_mode(conn)
     return conn
@@ -91,19 +432,109 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
 
-def _resolve_dispatcher_results_path(stdout: str, output_dir: Path) -> str:
-    """Resolve the gate dispatcher JSON path without trusting noisy stdout."""
+def _dispatcher_result_is_current(
+    path: Path,
+    *,
+    expected_snapshot_path: Path | None,
+    not_before_ns: int | None,
+) -> bool:
+    """Return True only for a fresh result bound to the expected snapshot."""
+    try:
+        if not path.is_file():
+            return False
+        if not_before_ns is not None and path.stat().st_mtime_ns < not_before_ns:
+            return False
+        if expected_snapshot_path is None:
+            return True
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(payload, dict):
+            return False
+        raw_snapshot = payload.get("snapshot_path")
+        if not isinstance(raw_snapshot, str) or not raw_snapshot.strip():
+            return False
+        declared = Path(raw_snapshot)
+        if not declared.is_absolute():
+            declared = ROOT / declared
+        try:
+            return declared.resolve().samefile(expected_snapshot_path.resolve())
+        except OSError:
+            return os.path.normcase(str(declared.resolve())) == os.path.normcase(
+                str(expected_snapshot_path.resolve())
+            )
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        return False
+
+
+def _resolve_dispatcher_results_path(
+    stdout: str,
+    output_dir: Path,
+    *,
+    expected_snapshot_path: Path | None = None,
+    not_before_ns: int | None = None,
+) -> str:
+    """Resolve a fresh, snapshot-bound dispatcher JSON from noisy stdout."""
     pattern = re.compile(r"(?:[A-Za-z]:)?[^\s`'\"]*adg_gate_results_[^\s`'\"]+\.json")
     for line in reversed(stdout.strip().splitlines()):
         for raw in reversed(pattern.findall(line)):
             candidate = Path(raw.strip().strip("`'\""))
-            candidate_paths = [candidate] if candidate.is_absolute() else [ROOT / candidate, output_dir / candidate.name]
+            candidate_paths = (
+                [candidate] if candidate.is_absolute() else [ROOT / candidate, output_dir / candidate.name]
+            )
             for path in candidate_paths:
-                if path.is_file():
+                if _dispatcher_result_is_current(
+                    path,
+                    expected_snapshot_path=expected_snapshot_path,
+                    not_before_ns=not_before_ns,
+                ):
                     return str(path)
 
-    candidates = sorted(output_dir.glob("adg_gate_results_*.json"), key=lambda p: p.stat().st_mtime)
-    return str(candidates[-1]) if candidates else ""
+    candidates = sorted(
+        output_dir.glob("adg_gate_results_*.json"),
+        key=lambda path: (path.stat().st_mtime_ns, path.name),
+        reverse=True,
+    )
+    for candidate in candidates:
+        if _dispatcher_result_is_current(
+            candidate,
+            expected_snapshot_path=expected_snapshot_path,
+            not_before_ns=not_before_ns,
+        ):
+            return str(candidate)
+    return ""
+
+
+def _seal_early_failure_terminal(
+    *,
+    adg_artifacts_dir: Path,
+    run_id: str,
+    exit_code: int,
+    diagnostic: str,
+) -> None:
+    """Seal one blocked terminal bundle when generation exits before its tail."""
+    from tools.generate.integration import adg_run_state  # noqa: PLC0415
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        emit_adg_run_output_bundle,
+        print_adg_run_terminal_summary,
+    )
+
+    gate_results = (
+        Path(adg_run_state.dispatcher_results_path) if adg_run_state.dispatcher_results_path else None
+    )
+    result = emit_adg_run_output_bundle(
+        adg_artifacts_dir=adg_artifacts_dir,
+        run_id=run_id,
+        sqlite_path=adg_artifacts_dir / f"adg_indexed_{run_id}.sqlite",
+        gate_results_path=gate_results,
+        burndown_path=adg_artifacts_dir / f"adg_burndown_table_{run_id}.json",
+        print_terminal=False,
+        repo_root=ROOT,
+    )
+    print_adg_run_terminal_summary(
+        result,
+        final_exit_code=exit_code,
+        diagnostics=[diagnostic],
+        print_terminal=os.environ.get("ADG_SUPPRESS_TERMINAL_SUMMARY") != "1",
+    )
 
 
 def _git_rev_parse(*args: str) -> str:
@@ -131,7 +562,7 @@ from agentic_core.adg.analysis.ImpactReport import impact_summary, predict_impac
 from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership  # noqa: E402
 from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations  # noqa: E402
 from agentic_core.adg.artifact.ArtifactPaths import ArtifactPaths, write_all_artifacts  # noqa: E402
-from agentic_core.adg.artifact.builder_types import ADGArtifact, build_artifact  # noqa: E402
+from agentic_core.adg.artifact.builder_types import build_artifact  # noqa: E402
 from agentic_core.adg.extraction.static_scanner import (  # noqa: E402
     ADGStaticScanner,
 )
@@ -607,7 +1038,7 @@ def generate_full_adg(
     enable_reports: bool = True,
     enable_analysis: bool = True,
     repair_dry_run: bool = False,
-) -> tuple[ADGArtifact, dict[str, int], list[str]]:
+) -> list[Path]:
     """Generate full ADG and write all artifact tiers.
 
     Args:
@@ -615,11 +1046,14 @@ def generate_full_adg(
         ts: Timestamp string (MMDDYYYY format)
         archive_old: If True, archive artifacts older than retention period
         enable_zip: Write a zip archive of all artifacts (default True)
-        enable_reports: Generate all 8 standardized reports (default True)
+        enable_reports: Generate optional standardized analysis reports (default True).
+            The sealed current-run output bundle remains mandatory.
         enable_analysis: Run score_edges + route_violations analytics (default True)
         repair_dry_run: Analyze repair candidates without applying AUTO_FIX rules.
 
-    Always runs in full mode with all artifacts enabled.
+    Always runs in full mode with all artifacts enabled. Returns the canonical
+    current-run paths used to build the archive so the final output bundle can
+    refresh that archive without a latest/mtime glob.
     """
     import time as _time
 
@@ -667,11 +1101,7 @@ def generate_full_adg(
         sys.exit(1)
 
     repo_state_hash = _git_rev_parse("HEAD^{tree}")
-    if (
-        repo_state_hash_before_scan
-        and repo_state_hash
-        and repo_state_hash_before_scan != repo_state_hash
-    ):
+    if repo_state_hash_before_scan and repo_state_hash and repo_state_hash_before_scan != repo_state_hash:
         print("\n[ERROR] Repository state changed during AST scan (HEAD tree mismatch)")
         print(f"[ERROR]   Before scan: {repo_state_hash_before_scan}")
         print(f"[ERROR]   After scan:  {repo_state_hash}")
@@ -701,7 +1131,9 @@ def generate_full_adg(
         print("[ERROR]")
         print("[ERROR] Syntax errors prevent complete ADG analysis")
         print("[ERROR] Fix all syntax errors before running ADG generation")
-        print("[ERROR] See wave plan: docs/archive/windsurf/legacy-tree/plans/burn-down-syntax-errors-wave-plan-20260406.md")
+        print(
+            "[ERROR] See wave plan: docs/archive/windsurf/legacy-tree/plans/burn-down-syntax-errors-wave-plan-20260406.md"
+        )
         sys.exit(1)
 
     # --- Build canonical artifact (schema v3) ---
@@ -1136,9 +1568,7 @@ def generate_full_adg(
                 time.sleep(_mv_sleep_s)
                 _perform_wal_checkpoint(paths.sqlite)
     except (OSError, RuntimeError, ValueError, _phase2_sqlite3.Error) as _mv_exc:
-        _record_pipeline_skip(
-            adg_artifacts_dir, ts, layer="MV", name="materialize_all_views", exc=_mv_exc
-        )
+        _record_pipeline_skip(adg_artifacts_dir, ts, layer="MV", name="materialize_all_views", exc=_mv_exc)
         print("\n[ERROR] Materialized-view refresh failed — snapshot has no MV tables.")
         print(f"[ERROR]   {type(_mv_exc).__name__}: {_mv_exc}")
         print("[ERROR] The 12 MV-backed P0/P1 gates + dispatcher fleet cannot run without MVs.")
@@ -1253,6 +1683,7 @@ def generate_full_adg(
         # snapshot could be graded. `--output-dir` keeps the results JSON in the
         # current run's artifacts dir.
         _disp_env = {**os.environ, "ADG_SNAPSHOT": str(prod_sqlite_path)}
+        _dispatcher_not_before_ns = time.time_ns()
         _disp = _sp.run(
             [
                 sys.executable,
@@ -1271,7 +1702,12 @@ def generate_full_adg(
         )
         _dispatcher_exit = int(_disp.returncode)
         _adg_run_state.dispatcher_exit_code = _dispatcher_exit
-        _dispatcher_json_path = _resolve_dispatcher_results_path(_disp.stdout or "", adg_artifacts_dir)
+        _dispatcher_json_path = _resolve_dispatcher_results_path(
+            _disp.stdout or "",
+            adg_artifacts_dir,
+            expected_snapshot_path=prod_sqlite_path,
+            not_before_ns=_dispatcher_not_before_ns,
+        )
         _adg_run_state.dispatcher_results_path = _dispatcher_json_path
         print(
             f"[ADG] Gate dispatcher exit={_dispatcher_exit} results={_dispatcher_json_path or '?'} "
@@ -1294,26 +1730,35 @@ def generate_full_adg(
                 absorb_ratchets_and_retry_dispatcher,
             )
 
+            _retry_not_before_ns = time.time_ns()
             _retry_exit, _retry_path = absorb_ratchets_and_retry_dispatcher(
                 sqlite_path=prod_sqlite_path,
                 prior_exit_code=_dispatcher_exit,
             )
-            if _retry_exit != _dispatcher_exit:
-                _dispatcher_exit = _retry_exit
-                _adg_run_state.dispatcher_exit_code = _retry_exit
-                _dispatcher_json_path = _retry_path or _dispatcher_json_path
-                _adg_run_state.dispatcher_results_path = _dispatcher_json_path
-                if _rec_disp is not None:
-                    _rec_disp.record(
-                        "adg_gate_dispatcher",
-                        phase="post-commit-validation",
-                        kind="subprocess",
-                        blocking_mode="hard_fail",
-                        status="pass" if _dispatcher_exit == 0 else "fail",
-                        exit_code=_dispatcher_exit,
-                        script_rel="ops_scripts/ci/adg_gates/run.py",
-                        message=f"retry:{_dispatcher_json_path or ''}",
-                    )
+            _dispatcher_exit = _retry_exit
+            _adg_run_state.dispatcher_exit_code = _retry_exit
+            if _retry_path and _dispatcher_result_is_current(
+                Path(_retry_path),
+                expected_snapshot_path=prod_sqlite_path,
+                not_before_ns=_retry_not_before_ns,
+            ):
+                _dispatcher_json_path = _retry_path
+            else:
+                _dispatcher_json_path = ""
+                _dispatcher_exit = _dispatcher_exit or 1
+                _adg_run_state.dispatcher_exit_code = _dispatcher_exit
+            _adg_run_state.dispatcher_results_path = _dispatcher_json_path
+            if _rec_disp is not None:
+                _rec_disp.record(
+                    "adg_gate_dispatcher",
+                    phase="post-commit-validation",
+                    kind="subprocess",
+                    blocking_mode="hard_fail",
+                    status="pass" if _dispatcher_exit == 0 else "fail",
+                    exit_code=_dispatcher_exit,
+                    script_rel="ops_scripts/ci/adg_gates/run.py",
+                    message=f"retry:{_dispatcher_json_path or 'missing-current-run-results'}",
+                )
     except (OSError, _sp.TimeoutExpired) as _e:
         _dispatcher_exit = 1
         _adg_run_state.dispatcher_exit_code = 1
@@ -1412,7 +1857,7 @@ def generate_full_adg(
         watchlist_path = build_and_emit_watchlist(
             paths.sqlite,
             adg_artifacts_dir,
-            print_summary=True,
+            print_summary=False,
         )
         print(f"[ADG] P4 watchlist artifact: {watchlist_path.name}")
 
@@ -1436,7 +1881,6 @@ def generate_full_adg(
         with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
             graph_watchlist_items = builder.build_graph_watchlist()
             graph_watchlist_path = builder.emit_artifact(graph_watchlist_items, adg_artifacts_dir)
-            print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
             try:
                 graph_delta_result = builder._compute_deltas(  # noqa: SLF001 -- private today; see plan W1.2 deferred item
                     graph_watchlist_items,
@@ -1570,7 +2014,6 @@ def generate_full_adg(
     )
 
     # --- E11: Graph-native SQL analytics (Prompt 6/7/9 integration) ---
-    graph_delta_result = None
     if graph_watchlist_items:
         # Count promoted signals
         rev_dep_count = sum(1 for i in graph_watchlist_items if i.reverse_dep_score > 0)
@@ -1640,273 +2083,45 @@ def generate_full_adg(
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
     # --- Wave 6: Generate standardized reports ---
-    closure_report = _generate_standardized_reports(
-        adg_artifacts_dir,
-        ts,
-        artifact,
-        result=result,
-        repo_root=ROOT,
-        enable_determinism_probe=_env_flag("ADG_ENABLE_DETERMINISM_PROBE", default=True),
-    )
-
-    # --- Post-run action queue (plan adg-action-dispatch-c9e4a2 W1.2; non-blocking) ---
-    action_queue_path: Path | None = None
-    bcg_adapter_path: Path | None = None
-    review_template_path: Path | None = None
-    dead_code_report_path: Path | None = None
-    cleanup_queue_and_p2_blocker_trace_path: Path | None = None
-    try:
-        from tools.reports.adg_action_queue import emit_adg_action_queue_from_adg_run  # noqa: PLC0415
-
-        _action_queue_rc, action_queue_path = emit_adg_action_queue_from_adg_run(
-            adg_artifacts_dir=adg_artifacts_dir,
-            ts=ts,
-            fail_closed=False,
-        )
-        if _action_queue_rc != 0:
-            print(
-                f"[ADG] WARNING: action queue emit returned {_action_queue_rc}",
-                file=sys.stderr,
-            )
-    except Exception as _action_queue_exc:
-        print(
-            f"[adg_action_queue] NEXT_ACTION_ERROR={_action_queue_exc}",
-            file=sys.stderr,
+    closure_report = None
+    if enable_reports:
+        closure_report = _generate_standardized_reports(
+            adg_artifacts_dir,
+            ts,
+            artifact,
+            result=result,
+            repo_root=ROOT,
+            enable_determinism_probe=_env_flag("ADG_ENABLE_DETERMINISM_PROBE", default=True),
         )
 
-    # --- BCG gate adapter first: normalize FIX/BURN/KPI/CLEAR before reports consume it ---
-    try:
-        from tools.reports.adg_bcg_adapter import emit_bcg_gate_adapter  # noqa: PLC0415
+    # Post-run reports are deliberately emitted later, after the burndown,
+    # post-ADG gates, and generation manifest are final.  Keeping producers
+    # behind one output-bundle boundary prevents stale/latest fallback and
+    # duplicate terminal reports.
 
-        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
-        _bcg_adapter_rc, bcg_adapter_path = emit_bcg_gate_adapter(
-            adg_artifacts_dir=adg_artifacts_dir,
-            ts=ts,
-            gate_results_path=gate_results_path,
-            burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
-            fail_closed=False,
-            print_inline=False,
+    # Validate report closure and materialize the current-run burndown before
+    # any archive or post-run consumer can observe it.
+    if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
+        failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
+        if set(failed_caps).issubset(KNOWN_TOLERATED_CLOSURE_GAPS):
+            for cap in failed_caps:
+                print(f"[ADG] WARNING: {cap} validation failed (known issue)")
+                semantic_warnings.append(cap)
+            print("[ADG] Tolerated closure gaps do not block ADG generation; investigate separately.")
+        else:
+            print(f"\n[ERROR] ADG closure validation failed: {failed_caps}")
+            print("[ERROR] Fix all closure validation gaps before regenerating ADG")
+            sys.exit(1)
+
+    run_burndown_path = adg_artifacts_dir / f"adg_burndown_table_{ts}.json"
+    with redirect_stdout(io.StringIO()):
+        _print_defect_table(
+            routing_summary,
+            semantic_warnings,
+            sqlite_path=paths.sqlite,
+            burndown_output_path=run_burndown_path,
         )
-        if _bcg_adapter_rc != 0:
-            print(f"[ADG] WARNING: BCG adapter emit returned {_bcg_adapter_rc}", file=sys.stderr)
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _bcg_adapter_exc:
-        print(f"[adg_bcg_adapter] ADAPTER_ERROR={_bcg_adapter_exc}", file=sys.stderr)
-
-    _rec_bcg_adapter = _current_recorder()
-    if _rec_bcg_adapter is not None:
-        _rec_bcg_adapter.record(
-            "adg_bcg_adapter",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status="pass" if bcg_adapter_path is not None and bcg_adapter_path.is_file() else "fail",
-            exit_code=0 if bcg_adapter_path is not None and bcg_adapter_path.is_file() else 1,
-            script_rel="tools/reports/adg_bcg_adapter.py",
-            message="mandatory first BCG gate adapter",
-        )
-
-    # --- Mandatory CI burndown markdown artifacts (inline replay happens after BCG) ---
-    from tools.reports.adg_burndown_report import (  # noqa: PLC0415
-        emit_existing_burndown_markdown,
-        emit_mandatory_adg_burndown_report,
-    )
-
-    _burndown_emit_rc = emit_mandatory_adg_burndown_report(
-        burndown=adg_artifacts_dir / "adg_burndown_table.json",
-        fail_closed=False,
-        print_inline=False,
-    )
-    if _burndown_emit_rc != 0:
-        print(
-            f"[ADG] WARNING: burndown report emit returned {_burndown_emit_rc} "
-            "(gate-results or burndown-table not yet available)"
-        )
-
-    _rec_burndown = _current_recorder()
-    if _rec_burndown is not None:
-        _rec_burndown.record(
-            "adg_burndown_report",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status="pass" if _burndown_emit_rc == 0 else "fail",
-            exit_code=_burndown_emit_rc,
-            script_rel="tools/reports/adg_burndown_report.py",
-            message="mandatory markdown burndown",
-        )
-
-    # --- Mandatory machine-readable review template (JSON/YAML) ---
-    try:
-        from tools.reports.adg_review_template import emit_mandatory_adg_review_template  # noqa: PLC0415
-
-        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
-        _review_template_rc, review_template_path = emit_mandatory_adg_review_template(
-            adg_artifacts_dir=adg_artifacts_dir,
-            ts=ts,
-            gate_results=gate_results_path,
-            burndown=adg_artifacts_dir / "adg_burndown_table.json",
-            action_queue=action_queue_path,
-            generation_manifest=adg_artifacts_dir / f"adg_generation_manifest_{ts}.json",
-            fail_closed=False,
-        )
-        if _review_template_rc != 0:
-            print(
-                f"[ADG] WARNING: review template emit returned {_review_template_rc} "
-                "(gate-results or burndown-table not yet available)"
-            )
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _review_template_exc:
-        print(
-            f"[adg_review_template] REVIEW_TEMPLATE_ERROR={_review_template_exc}",
-            file=sys.stderr,
-        )
-
-    _rec_review = _current_recorder()
-    if _rec_review is not None:
-        _rec_review.record(
-            "adg_review_template",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status="pass" if review_template_path is not None and review_template_path.is_file() else "fail",
-            exit_code=0 if review_template_path is not None and review_template_path.is_file() else 1,
-            script_rel="tools/reports/adg_review_template.py",
-            message="mandatory JSON/YAML review template",
-        )
-
-    # --- Mandatory dead-code control report (post review template; non-blocking) ---
-    try:
-        from tools.reports.adg_dead_code_report import emit_mandatory_adg_dead_code_report  # noqa: PLC0415
-
-        _dead_code_rc, dead_code_report_path = emit_mandatory_adg_dead_code_report(
-            adg_artifacts_dir=adg_artifacts_dir,
-            ts=ts,
-            print_inline=False,
-            fail_closed=False,
-        )
-        if _dead_code_rc != 0:
-            print(f"[ADG] WARNING: dead-code report emit returned {_dead_code_rc}", file=sys.stderr)
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _dead_code_exc:
-        print(
-            f"[adg_dead_code_report] DEAD_CODE_REPORT_ERROR={_dead_code_exc}",
-            file=sys.stderr,
-        )
-
-    _rec_dead_code = _current_recorder()
-    if _rec_dead_code is not None:
-        _rec_dead_code.record(
-            "adg_dead_code_report",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status="pass" if dead_code_report_path is not None and dead_code_report_path.is_file() else "fail",
-            exit_code=0 if dead_code_report_path is not None and dead_code_report_path.is_file() else 1,
-            script_rel="tools/reports/adg_dead_code_report.py",
-            message="mandatory JSON dead-code control report",
-        )
-
-    # --- Mandatory cleanup queue + P2 blocker trace (non-blocking) ---
-    try:
-        from tools.reports.adg_cleanup_queue_and_p2_blocker_trace import (  # noqa: PLC0415
-            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace,
-        )
-
-        _cleanup_queue_rc, cleanup_queue_and_p2_blocker_trace_path = (
-            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                print_inline=False,
-                fail_closed=False,
-            )
-        )
-        if _cleanup_queue_rc != 0:
-            print(
-                f"[ADG] WARNING: cleanup queue and P2 trace emit returned {_cleanup_queue_rc}",
-                file=sys.stderr,
-            )
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _cleanup_queue_exc:
-        print(
-            f"[adg_cleanup_queue_and_p2_blocker_trace] CLEANUP_QUEUE_TRACE_ERROR={_cleanup_queue_exc}",
-            file=sys.stderr,
-        )
-
-    _rec_cleanup_queue = _current_recorder()
-    if _rec_cleanup_queue is not None:
-        _rec_cleanup_queue.record(
-            "adg_cleanup_queue_and_p2_blocker_trace",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status=(
-                "pass"
-                if cleanup_queue_and_p2_blocker_trace_path is not None
-                and cleanup_queue_and_p2_blocker_trace_path.is_file()
-                else "fail"
-            ),
-            exit_code=(
-                0
-                if cleanup_queue_and_p2_blocker_trace_path is not None
-                and cleanup_queue_and_p2_blocker_trace_path.is_file()
-                else 1
-            ),
-            script_rel="tools/reports/adg_cleanup_queue_and_p2_blocker_trace.py",
-            message="mandatory cleanup queue and P2 blocker trace report",
-        )
-
-    # --- Mandatory BCG executive synthesis (post review template; non-blocking) ---
-    bcg_summary_path: Path | None = None
-    try:
-        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
-
-        gate_results_path = Path(_dispatcher_json_path) if _dispatcher_json_path else None
-        _p7_paths = {
-            "structural_outputs": adg_artifacts_dir / f"adg_structural_outputs_{ts}.json",
-            "refactor_accelerator": adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json",
-            "graphdb_queries": adg_artifacts_dir / f"adg_graphdb_queries_{ts}.json",
-            "runtime_spine": adg_artifacts_dir / f"adg_runtime_spine_{ts}.json",
-            "graphdb_projection": adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
-            "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
-            "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
-            "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
-            "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
-            "dead_code_report": dead_code_report_path,
-        }
-        _bcg_rc, bcg_summary_path = emit_bcg_executive_summary(
-            adg_artifacts_dir=adg_artifacts_dir,
-            ts=ts,
-            sqlite_path=prod_sqlite_path,
-            gate_results_path=gate_results_path,
-            action_queue_path=action_queue_path,
-            review_template_path=review_template_path,
-            burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
-            p7_paths=_p7_paths,
-            print_inline=True,
-            fail_closed=False,
-        )
-        if _bcg_rc != 0:
-            print(f"[ADG] WARNING: BCG executive synthesis returned {_bcg_rc}", file=sys.stderr)
-    except (ImportError, OSError, RuntimeError, TypeError, ValueError) as _bcg_exc:
-        print(f"[adg_bcg_executive_synthesis] SUMMARY_ERROR={_bcg_exc}", file=sys.stderr)
-
-    if _burndown_emit_rc == 0:
-        _burndown_inline_rc = emit_existing_burndown_markdown()
-        if _burndown_inline_rc != 0:
-            print(
-                f"[ADG] WARNING: burndown inline replay returned {_burndown_inline_rc}",
-                file=sys.stderr,
-            )
-
-    _rec_bcg = _current_recorder()
-    if _rec_bcg is not None:
-        _rec_bcg.record(
-            "adg_bcg_executive_summary",
-            phase="post-ADG",
-            kind="subprocess",
-            blocking_mode="warn",
-            status="pass" if bcg_summary_path is not None and bcg_summary_path.is_file() else "fail",
-            exit_code=0 if bcg_summary_path is not None and bcg_summary_path.is_file() else 1,
-            script_rel="tools/reports/adg_bcg_executive_synthesis.py",
-            message="mandatory JSON/YAML/Markdown BCG executive synthesis",
-        )
+    print("[ADG] Current-run burndown table materialized")
 
     # --- Create zip archive of consolidated artifacts + Wave 6 reports ---
     # Build artifact file list for zip (no JSON graphs - 100.75 MB savings)
@@ -1965,43 +2180,8 @@ def generate_full_adg(
     burndown = adg_artifacts_dir / "adg_burndown_table.json"
     if burndown.exists():
         extra_files.append(burndown)
-    from tools.reports.adg_burndown_report import BURNDOWN_REPORT_OUTPUTS  # noqa: PLC0415
-
-    for _burndown_md in BURNDOWN_REPORT_OUTPUTS:
-        if _burndown_md.is_file():
-            extra_files.append(_burndown_md)
-    if bcg_adapter_path is not None and bcg_adapter_path.is_file():
-        extra_files.append(bcg_adapter_path)
-        bcg_adapter_md_path = bcg_adapter_path.with_suffix(".md")
-        if bcg_adapter_md_path.is_file():
-            extra_files.append(bcg_adapter_md_path)
-        for _bcg_adapter_latest in adg_artifacts_dir.glob("adg_bcg_adapter_latest.*"):
-            if _bcg_adapter_latest.is_file():
-                extra_files.append(_bcg_adapter_latest)
-    if review_template_path is not None and review_template_path.is_file():
-        extra_files.append(review_template_path)
-        review_template_yaml_path = review_template_path.with_suffix(".yaml")
-        if review_template_yaml_path.is_file():
-            extra_files.append(review_template_yaml_path)
-    if dead_code_report_path is not None and dead_code_report_path.is_file():
-        extra_files.append(dead_code_report_path)
-        for _dead_code_latest in adg_artifacts_dir.glob("dead_code_zone_control_report_latest.*"):
-            if _dead_code_latest.is_file():
-                extra_files.append(_dead_code_latest)
-    if cleanup_queue_and_p2_blocker_trace_path is not None and cleanup_queue_and_p2_blocker_trace_path.is_file():
-        extra_files.append(cleanup_queue_and_p2_blocker_trace_path)
-        for _cleanup_latest in adg_artifacts_dir.glob("adg_cleanup_queue_and_p2_blocker_trace*.*"):
-            if _cleanup_latest.is_file():
-                extra_files.append(_cleanup_latest)
-    if bcg_summary_path is not None and bcg_summary_path.is_file():
-        extra_files.append(bcg_summary_path)
-        for _bcg_suffix in (".yaml", ".md"):
-            _bcg_peer = bcg_summary_path.with_suffix(_bcg_suffix)
-            if _bcg_peer.is_file():
-                extra_files.append(_bcg_peer)
-        for _bcg_latest in adg_artifacts_dir.glob("adg_bcg_executive_summary_latest.*"):
-            if _bcg_latest.is_file():
-                extra_files.append(_bcg_latest)
+    if run_burndown_path.exists():
+        extra_files.append(run_burndown_path)
     if watchlist_path is not None and watchlist_path.exists():
         extra_files.append(watchlist_path)
     if graph_watchlist_path is not None and graph_watchlist_path.exists():
@@ -2058,37 +2238,12 @@ def generate_full_adg(
             adg_artifacts_dir,
             ts,
             keep_runs=1,
-            protected_run_ids=protected_snapshot_run_ids(
-                adg_artifacts_dir
-            ),
+            protected_run_ids=protected_snapshot_run_ids(adg_artifacts_dir),
         )
         if not zip_created:
             print(
-                "[ADG] Archive: retention ran despite zip failure; "
-                "see archive_skipped breadcrumb if present",
+                "[ADG] Archive: retention ran despite zip failure; see archive_skipped breadcrumb if present",
             )
-
-    # --- Closure validation check ---
-    # W2.2 (plan adg-pipeline-simplification-e2e-9b4c27): data-driven
-    # tolerance for known-issue capabilities. Previously, three explicit
-    # `if/elif` branches enumerated tuple membership for the two tolerated
-    # caps; adding a third would require a 4-branch rewrite. Now: if
-    # ``failed_caps ⊆ KNOWN_TOLERATED_CLOSURE_GAPS``, we warn and append
-    # each to semantic_warnings; otherwise we fail hard.
-    if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
-        failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
-        if set(failed_caps).issubset(KNOWN_TOLERATED_CLOSURE_GAPS):
-            for cap in failed_caps:
-                print(f"[ADG] WARNING: {cap} validation failed (known issue)")
-                semantic_warnings.append(cap)
-            print("[ADG] Tolerated closure gaps do not block ADG generation; investigate separately.")
-        else:
-            print(f"\n[ERROR] ADG closure validation failed: {failed_caps}")
-            print("[ERROR] Fix all closure validation gaps before regenerating ADG")
-            sys.exit(1)
-
-    # Print P1-P4 defect table (including semantic warnings as P4)
-    _print_defect_table(routing_summary, semantic_warnings, sqlite_path=paths.sqlite)
 
     # NOTE: Redis hot-cache repoint moved to immediately after prod_sqlite_path
     # is resolved (above, ~L764) so it fires regardless of any Tier-2 gate
@@ -2146,6 +2301,7 @@ def generate_full_adg(
 
     _adg_elapsed = _time.time() - _adg_start
     print(f"[ADG] Total generation time: {_adg_elapsed:.2f}s")
+    return list(dict.fromkeys(artifact_files))
 
 
 # M.5: _auto_ingest_to_redis extracted to tools.generate.integration.redis_ingest
@@ -2217,6 +2373,7 @@ _RUNTIME_ENFORCEMENT_FILES = [
 # M.5: _run_p1_p2_auto_fix extracted to tools.generate.integration.repair_runner
 
 
+@_single_flight_generation
 def main() -> None:
     """Main entry point with CLI argument parsing."""
     import argparse
@@ -2240,7 +2397,10 @@ def main() -> None:
     parser.add_argument(
         "--no-reports",
         action="store_true",
-        help="Disable report generation (default: enabled)",
+        help=(
+            "Disable optional standardized analysis reports. The sealed "
+            "current-run output bundle and terminal brief remain mandatory."
+        ),
     )
     parser.add_argument(
         "--no-wiring-check",
@@ -2326,9 +2486,22 @@ def main() -> None:
         print("[ADG] --continue-on-p0 enabled: P0 failure will be deferred to end-of-run exit")
 
     # Generate timestamp and artifacts directory
-    ts = _generate_timestamp()
+    ts = os.environ.get("ADG_RUN_ID") or _generate_timestamp()
     adg_artifacts_dir = ROOT / "artifacts" / "adg"
+    _claim_run_id(adg_artifacts_dir, ts)
+    from tools.generate.integration.deferred_failures import reset_for_run as _reset_deferred_failures  # noqa: PLC0415
+    from tools.generate.integration.p0_runner import reset_for_run as _reset_deferred_p0  # noqa: PLC0415
+
+    _reset_deferred_failures()
+    _reset_deferred_p0()
     p0_wave_plan: dict[str, str] | None = None
+
+    # ``main`` can be invoked more than once in one interpreter by tests and
+    # automation. Never let a prior run's dispatcher path authorize this run.
+    from tools.generate.integration import adg_run_state as _adg_run_state_reset  # noqa: PLC0415
+
+    _adg_run_state_reset.dispatcher_exit_code = 0
+    _adg_run_state_reset.dispatcher_results_path = ""
 
     def _discover_p0_wave_plan() -> dict[str, str] | None:
         issues_dir = adg_artifacts_dir / "issues"
@@ -2354,50 +2527,127 @@ def main() -> None:
     # Pre-flight checks (recorded individually so the manifest proves they ran)
     def _record_preflight(name: str, fn) -> None:  # noqa: ANN001
         import time as _t
+
         _start = _t.monotonic()
         try:
             fn()
         except SystemExit:
-            _recorder.record(name, phase="preflight", kind="python_function",
-                             blocking_mode="hard_fail", status="fail",
-                             duration_s=_t.monotonic() - _start)
+            _recorder.record(
+                name,
+                phase="preflight",
+                kind="python_function",
+                blocking_mode="hard_fail",
+                status="fail",
+                duration_s=_t.monotonic() - _start,
+            )
             raise
         except Exception as _e:  # noqa: BLE001 — preflight integrity: any failure is terminal
-            _recorder.record(name, phase="preflight", kind="python_function",
-                             blocking_mode="hard_fail", status="fail",
-                             duration_s=_t.monotonic() - _start, message=str(_e)[:200])
+            _recorder.record(
+                name,
+                phase="preflight",
+                kind="python_function",
+                blocking_mode="hard_fail",
+                status="fail",
+                duration_s=_t.monotonic() - _start,
+                message=str(_e)[:200],
+            )
             raise
-        _recorder.record(name, phase="preflight", kind="python_function",
-                         blocking_mode="hard_fail", status="pass",
-                         duration_s=_t.monotonic() - _start)
+        _recorder.record(
+            name,
+            phase="preflight",
+            kind="python_function",
+            blocking_mode="hard_fail",
+            status="pass",
+            duration_s=_t.monotonic() - _start,
+        )
 
-    _record_preflight("mcp_config_drift", _check_mcp_config_drift)
-    _record_preflight("wal_checkpoint", _perform_wal_checkpoint)
-    _record_preflight("locked_files", _check_locked_files)
+    def _seal_guarded_failure(stage: str, exit_code: int, detail: str) -> None:
+        if os.environ.get("ADG_DEFER_OUTPUT_BUNDLE_TO_WRAPPER") == "1":
+            print(
+                f"[ADG] deferred output-bundle seal to audit wrapper after {stage}: {detail}",
+                file=sys.stderr,
+            )
+            return
+        try:
+            _seal_early_failure_terminal(
+                adg_artifacts_dir=adg_artifacts_dir,
+                run_id=ts,
+                exit_code=exit_code,
+                diagnostic=f"{stage}: {detail}",
+            )
+        except Exception as seal_exc:  # guardian: allow-broad-exception -- preserve original terminal failure
+            print(
+                f"[ADG] ERROR: could not seal early-failure output bundle: {seal_exc}",
+                file=sys.stderr,
+            )
+
+    def _run_guarded_stage(stage: str, fn):  # noqa: ANN001, ANN202
+        try:
+            return fn()
+        except SystemExit as exc:
+            raw_code = exc.code
+            exit_code = (
+                raw_code
+                if isinstance(raw_code, int) and not isinstance(raw_code, bool) and raw_code != 0
+                else 1
+            )
+            _seal_guarded_failure(stage, exit_code, f"SystemExit({raw_code!r})")
+            raise
+        except (
+            Exception
+        ) as exc:  # guardian: allow-broad-exception -- terminal boundary records then re-raises
+            _seal_guarded_failure(stage, 2, f"{type(exc).__name__}: {exc}")
+            raise
+
+    _run_guarded_stage(
+        "mcp_config_drift preflight",
+        lambda: _record_preflight("mcp_config_drift", _check_mcp_config_drift),
+    )
+    _run_guarded_stage(
+        "wal_checkpoint preflight",
+        lambda: _record_preflight("wal_checkpoint", _perform_wal_checkpoint),
+    )
+    _run_guarded_stage(
+        "locked_files preflight",
+        lambda: _record_preflight("locked_files", _check_locked_files),
+    )
 
     print(f"[ADG] Starting generation with timestamp: {ts}")
 
-    # Generate ADG
-    try:
-        generate_full_adg(
-            adg_artifacts_dir,
-            ts,
-            enable_zip=not args.no_zip,
-            enable_reports=not args.no_reports,
-            enable_analysis=True,
-            repair_dry_run=args.repair_dry_run,
-        )
-        p0_wave_plan = _discover_p0_wave_plan()
-    except RuntimeError as e:
-        if "Zip creation failed" in str(e) and not args.no_zip:
-            print(f"\n[ERROR] ADG generation failed: {e}")
-            print("[ERROR] Zip archive was requested but could not be created")
-            print("[ERROR] This is a critical failure for full ADG generation")
-            sys.exit(1)
-        raise
+    # Generate ADG. Any early exit is sealed into the same blocked terminal
+    # bundle used by the normal tail before the original failure propagates.
+    def _generate_current_run() -> list[Path]:
+        try:
+            return generate_full_adg(
+                adg_artifacts_dir,
+                ts,
+                enable_zip=not args.no_zip,
+                enable_reports=not args.no_reports,
+                enable_analysis=True,
+                repair_dry_run=args.repair_dry_run,
+            )
+        except RuntimeError as exc:
+            if "Zip creation failed" in str(exc) and not args.no_zip:
+                print(f"\n[ERROR] ADG generation failed: {exc}")
+                print("[ERROR] Zip archive was requested but could not be created")
+                print("[ERROR] This is a critical failure for full ADG generation")
+                raise SystemExit(1) from exc
+            raise
+
+    run_artifact_files = _run_guarded_stage("full ADG generation", _generate_current_run)
+    p0_wave_plan = _discover_p0_wave_plan()
 
     # Verify artifacts
-    _verify_artifacts(adg_artifacts_dir, ts, args.no_zip, args.no_reports)
+    _run_guarded_stage(
+        "artifact verification",
+        lambda: _verify_artifacts(
+            adg_artifacts_dir,
+            ts,
+            args.no_zip,
+            args.no_reports,
+            verify_review_template=False,
+        ),
+    )
 
     # Post-ADG gate chain — each gate is invoked as a bounded subprocess
     # (§14 shell=False timeout=30). Authors get feedback within the same
@@ -2488,7 +2738,9 @@ def main() -> None:
         _run_post_adg_gates_parallel(_gate_specs)
 
     if args.repair:
-        print("[ADG] --repair is deprecated: repair already ran once during generation; skipping duplicate pass")
+        print(
+            "[ADG] --repair is deprecated: repair already ran once during generation; skipping duplicate pass"
+        )
 
     # W8 (plan adg-pipeline-simplification-e2e-9b4c27): if a P0 failure was
     # deferred via --continue-on-p0 (or env ADG_CONTINUE_ON_P0=1), surface
@@ -2506,7 +2758,6 @@ def main() -> None:
     from tools.generate.integration.deferred_failures import (  # noqa: E402, PLC0415
         deferred_exit_code as _shared_deferred_exit_code,
         deferred_failure_summary as _shared_deferred_summary,
-        format_summary_table as _shared_format_summary_table,
         is_failure_deferred as _shared_is_failure_deferred,
     )
 
@@ -2522,7 +2773,9 @@ def main() -> None:
         p0_status: str,
         *,
         p0_wave_plan: dict[str, Any] | None = None,
-    ) -> None:
+        run_plane2: bool = True,
+        publish_candidate: bool = True,
+    ) -> int:
         sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
         rt_status, rt_count = ("view_absent", 0)
         try:
@@ -2532,7 +2785,8 @@ def main() -> None:
             pass
         # ADR-081 plane 2: quick manifest before manifest finalize (certification only).
         if (
-            os.environ.get("ADG_CERTIFICATION_MODE") == "1"
+            run_plane2
+            and os.environ.get("ADG_CERTIFICATION_MODE") == "1"
             and sqlite_candidate.is_file()
             and os.environ.get("ADG_SKIP_PLANE2_MANIFEST") != "1"
         ):
@@ -2561,177 +2815,195 @@ def main() -> None:
                 p0_status=p0_status,
             )
         except Exception as _e:  # noqa: BLE001
-            print(f"[ADG] WARN manifest finalize failed: {_e}")
+            print(f"[ADG] ERROR manifest finalize failed: {_e}", file=sys.stderr)
+            gen_rc = gen_rc or 2
 
         # Candidate publication never grants certified read authority. The
         # audit wrapper promotes only a clean, fully validated result.
-        if sqlite_candidate.is_file():
-            try:
-                from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
-                    SnapshotPointerError,
-                    publish_snapshot_pointer,
-                )
-
-                source_artifacts = {}
+        if publish_candidate and sqlite_candidate.is_file():
+            output_bundle_path = adg_artifacts_dir / f"adg_run_output_bundle_{ts}.json"
+            source_artifacts = {
+                label: candidate_path
                 for label, candidate_path in {
-                    "generation_manifest": (
-                        adg_artifacts_dir
-                        / f"adg_generation_manifest_{ts}.json"
-                    ),
-                    "gate_manifest": (
-                        adg_artifacts_dir
-                        / f"adg_gate_invocation_manifest_{ts}.json"
-                    ),
-                }.items():
-                    if candidate_path.is_file():
-                        source_artifacts[label] = candidate_path
-                publish_snapshot_pointer(
-                    adg_dir=adg_artifacts_dir,
-                    role="candidate",
-                    snapshot_path=sqlite_candidate,
-                    certification_status=(
-                        "clean" if gen_rc == 0 else "failed"
-                    ),
-                    artifact_status="candidate",
+                    "generation_manifest": (adg_artifacts_dir / f"adg_generation_manifest_{ts}.json"),
+                    "gate_manifest": (adg_artifacts_dir / f"adg_gate_invocation_manifest_{ts}.json"),
+                    "output_bundle": output_bundle_path,
+                }.items()
+                if candidate_path.is_file()
+            }
+            if not output_bundle_path.is_file():
+                published = False
+                publication_error = "candidate publication requires the finalized output bundle"
+            else:
+                published, publication_error = _publish_candidate_snapshot_pointer(
+                    adg_artifacts_dir=adg_artifacts_dir,
+                    run_id=ts,
+                    sqlite_candidate=sqlite_candidate,
+                    generation_exit_code=gen_rc,
                     source_artifacts=source_artifacts,
                 )
-            except (OSError, ValueError, SnapshotPointerError) as exc:
+            if not published:
                 print(
-                    "[ADG] WARN candidate pointer publication failed: "
-                    f"{exc}"
+                    f"[ADG] ERROR candidate pointer publication failed: {publication_error}",
+                    file=sys.stderr,
                 )
-        try:
-            from tools.reports.adg_bcg_adapter import emit_bcg_gate_adapter  # noqa: PLC0415
+                gen_rc = gen_rc or 2
+        return gen_rc
 
-            _dispatcher_latest = _resolve_dispatcher_results_path("", adg_artifacts_dir)
-            emit_bcg_gate_adapter(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                gate_results_path=Path(_dispatcher_latest) if _dispatcher_latest else None,
-                burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
-                print_inline=False,
-                fail_closed=False,
-            )
-        except ImportError:
-            pass
-        _burndown_emit_rc = 2
-        try:
-            from tools.reports.adg_burndown_report import (  # noqa: PLC0415
-                emit_existing_burndown_markdown,
-                emit_mandatory_adg_burndown_report,
-            )
-
-            _burndown_emit_rc = emit_mandatory_adg_burndown_report(
-                fail_closed=False,
-                print_inline=False,
-            )
-        except ImportError:
-            pass
-        try:
-            from tools.reports.adg_review_template import emit_mandatory_adg_review_template  # noqa: PLC0415
-
-            emit_mandatory_adg_review_template(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                action_queue=adg_artifacts_dir / f"adg_action_queue_{ts}.json",
-                generation_manifest=adg_artifacts_dir / f"adg_generation_manifest_{ts}.json",
-                print_inline=False,
-                fail_closed=False,
-            )
-        except ImportError:
-            pass
-        try:
-            from tools.reports.adg_dead_code_report import emit_mandatory_adg_dead_code_report  # noqa: PLC0415
-
-            emit_mandatory_adg_dead_code_report(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                print_inline=False,
-                fail_closed=False,
-            )
-        except ImportError:
-            pass
-        try:
-            from tools.reports.adg_cleanup_queue_and_p2_blocker_trace import (  # noqa: PLC0415
-                emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace,
-            )
-
-            emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                print_inline=False,
-                fail_closed=False,
-            )
-        except ImportError:
-            pass
-        try:
-            from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
-
-            _dispatcher_latest = _resolve_dispatcher_results_path("", adg_artifacts_dir)
-            emit_bcg_executive_summary(
-                adg_artifacts_dir=adg_artifacts_dir,
-                ts=ts,
-                sqlite_path=sqlite_candidate,
-                gate_results_path=Path(_dispatcher_latest) if _dispatcher_latest else None,
-                action_queue_path=adg_artifacts_dir / f"adg_action_queue_{ts}.json",
-                review_template_path=adg_artifacts_dir / f"adg_review_template_{ts}.json",
-                burndown_path=adg_artifacts_dir / "adg_burndown_table.json",
-                p7_paths={
-                    "structural_outputs": adg_artifacts_dir / f"adg_structural_outputs_{ts}.json",
-                    "refactor_accelerator": adg_artifacts_dir / f"adg_refactor_accelerator_{ts}.json",
-                    "graphdb_queries": adg_artifacts_dir / f"adg_graphdb_queries_{ts}.json",
-                    "runtime_spine": adg_artifacts_dir / f"adg_runtime_spine_{ts}.json",
-                    "graphdb_projection": adg_artifacts_dir / f"adg_graphdb_projection_{ts}.json",
-                    "graphdb_metadata": adg_artifacts_dir / f"adg_graphdb_metadata_{ts}.json",
-                    "graphdb_index": adg_artifacts_dir / f"adg_graphdb_index_{ts}.json",
-                    "graph_watchlist": adg_artifacts_dir / f"adg_graph_watchlist_{ts}.json",
-                    "p0_wave_plan": p0_wave_plan.get("json_path") if isinstance(p0_wave_plan, dict) else None,
-                    "dead_code_report": adg_artifacts_dir / f"dead_code_zone_control_report_{ts}.json",
-                },
-                print_inline=True,
-                fail_closed=False,
-            )
-        except ImportError:
-            pass
-        if _burndown_emit_rc == 0:
-            try:
-                emit_existing_burndown_markdown()
-            except OSError:
-                pass
-
+    core_rc = 0
+    p0_status = "pass"
     if p0_deferred or shared_deferred:
-        # Codex Wave B summary line + W3.1 markdown table for full visibility.
         if shared_deferred:
             shared_rows = _shared_deferred_summary()
             print(
                 f"[ADG] Deferred failure registry: {len(shared_rows)} gate(s) recorded — "
                 + ", ".join(f"{r['gate_name']}(rc={r['rc']})" for r in shared_rows)
             )
-            # W3.1 (plan adg-fail-aggregating-gate-chain-9d4e1f): render the
-            # full-aggregated markdown table so operators see every failed
-            # gate's name, rc, and message in one place instead of grep-ing
-            # the multi-thousand-line build log.
-            print(_shared_format_summary_table())
-        # Choose exit code: prefer the shared registry's first non-zero rc
-        # if present (covers P1/SC/agentic), otherwise fall back to the
-        # legacy p0_runner-only signal.
-        rc = _shared_deferred_exit_code() or deferred_p0_exit_code() or 1
-        print(f"[ERROR] One or more failures were deferred; final exit code = {rc}")
-        _finalize_manifests(rc, p0_status="deferred_fail", p0_wave_plan=p0_wave_plan)
-        sys.exit(rc)
+        core_rc = _shared_deferred_exit_code() or deferred_p0_exit_code() or 1
+        p0_status = "deferred_fail"
+        print(f"[ERROR] One or more failures were deferred; final exit code = {core_rc}")
 
-    # Clean-exit path: all gates passed, no deferred failures.
-    _finalize_manifests(0, p0_status="pass", p0_wave_plan=p0_wave_plan)
+    from tools.generate.integration import adg_run_state as _adg_run_state_exit  # noqa: PLC0415
 
-    if os.environ.get("ADG_CERTIFICATION_MODE") == "1":
-        from tools.generate.integration import adg_run_state as _adg_run_state_exit  # noqa: PLC0415
+    if os.environ.get("ADG_CERTIFICATION_MODE") == "1" and _adg_run_state_exit.dispatcher_exit_code != 0:
+        dispatcher_rc = _adg_run_state_exit.dispatcher_exit_code or 1
+        core_rc = core_rc or dispatcher_rc
+        print(f"[ERROR] ADG certification: plane-3 dispatcher failed (exit={dispatcher_rc})")
 
-        if _adg_run_state_exit.dispatcher_exit_code != 0:
-            print(
-                "[ERROR] ADG certification: plane-3 dispatcher failed "
-                f"(exit={_adg_run_state_exit.dispatcher_exit_code})"
+    # First manifest pass gives downstream report builders a current-run
+    # generation manifest. Candidate publication waits until every output gate
+    # and the final archive refresh have reached a terminal state.
+    core_rc = _finalize_manifests(
+        core_rc,
+        p0_status=p0_status,
+        p0_wave_plan=p0_wave_plan,
+        publish_candidate=False,
+    )
+
+    if os.environ.get("ADG_DEFER_OUTPUT_BUNDLE_TO_WRAPPER") == "1":
+        # The audit wrapper must add its own plane-2, Stage-2, and enforcement
+        # gates before the sole output bundle and snapshot pointer are sealed.
+        deferred_rc = _finalize_manifests(
+            core_rc,
+            p0_status=p0_status,
+            p0_wave_plan=p0_wave_plan,
+            run_plane2=False,
+            publish_candidate=False,
+        )
+        if deferred_rc != 0:
+            raise SystemExit(deferred_rc)
+        return
+
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        emit_adg_run_output_bundle,
+        print_adg_run_terminal_summary,
+    )
+
+    dispatcher_results = (
+        Path(_adg_run_state_exit.dispatcher_results_path)
+        if _adg_run_state_exit.dispatcher_results_path
+        else None
+    )
+    sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
+    output_bundle = emit_adg_run_output_bundle(
+        adg_artifacts_dir=adg_artifacts_dir,
+        run_id=ts,
+        sqlite_path=sqlite_candidate,
+        gate_results_path=dispatcher_results,
+        burndown_path=adg_artifacts_dir / f"adg_burndown_table_{ts}.json",
+        print_terminal=False,
+        repo_root=ROOT,
+    )
+    for output_gate in output_bundle.gates:
+        if not output_gate.required:
+            continue
+        output_passed = output_gate.status == "pass"
+        _recorder.record(
+            f"output_bundle.{output_gate.key}",
+            phase="post-ADG-output",
+            kind="report",
+            blocking_mode="hard_fail",
+            status="pass" if output_passed else "fail",
+            exit_code=0 if output_passed else (output_gate.producer_exit_code or 2),
+            message=(output_gate.diagnostic[:1000] or None),
+        )
+
+    final_rc = core_rc or output_bundle.required_exit_code
+    packaging_diagnostics: list[str] = []
+    if not args.no_zip:
+        # The terminal summary and its digest manifest are finalized only
+        # after archive/pointer disposition is known, so they remain adjacent
+        # authoritative artifacts rather than stale copies inside the zip.
+        post_archive_paths = {
+            output_bundle.manifest_path.resolve(),
+            output_bundle.terminal_summary_path.resolve()
+            if output_bundle.terminal_summary_path is not None
+            else None,
+        }
+        final_archive_files = [
+            *run_artifact_files,
+            *(path for path in output_bundle.artifact_paths if path.resolve() not in post_archive_paths),
+        ]
+        try:
+            _create_zip_archive(adg_artifacts_dir, ts, final_archive_files)
+            _recorder.record(
+                "output_bundle.archive_refresh",
+                phase="post-ADG-output",
+                kind="archive",
+                blocking_mode="hard_fail",
+                status="pass",
+                exit_code=0,
             )
-            sys.exit(_adg_run_state_exit.dispatcher_exit_code or 1)
+        except RuntimeError as exc:
+            packaging_diagnostics.append(str(exc))
+            final_rc = final_rc or 2
+            _recorder.record(
+                "output_bundle.archive_refresh",
+                phase="post-ADG-output",
+                kind="archive",
+                blocking_mode="hard_fail",
+                status="fail",
+                exit_code=2,
+                message=str(exc),
+            )
+
+    # Freeze the terminal and bundle digests before binding them into the
+    # candidate snapshot pointer. The final render below is idempotent unless
+    # pointer publication changes the process disposition.
+    print_adg_run_terminal_summary(
+        output_bundle,
+        final_exit_code=final_rc,
+        diagnostics=packaging_diagnostics,
+        print_terminal=False,
+    )
+
+    finalized_rc = _finalize_manifests(
+        final_rc,
+        p0_status=p0_status,
+        p0_wave_plan=p0_wave_plan,
+        run_plane2=False,
+        publish_candidate=True,
+    )
+    if finalized_rc != final_rc:
+        final_rc = finalized_rc
+        # Persist pointer/publication failure in the manifest without retrying
+        # the external pointer mutation.
+        _finalize_manifests(
+            final_rc,
+            p0_status=p0_status,
+            p0_wave_plan=p0_wave_plan,
+            run_plane2=False,
+            publish_candidate=False,
+        )
+
+    print_adg_run_terminal_summary(
+        output_bundle,
+        final_exit_code=final_rc,
+        diagnostics=packaging_diagnostics,
+        print_terminal=os.environ.get("ADG_SUPPRESS_TERMINAL_SUMMARY") != "1",
+    )
+    if final_rc != 0:
+        sys.exit(final_rc)
 
 
 def _run_post_adg_gate(
@@ -2745,9 +3017,10 @@ def _run_post_adg_gate(
     """Invoke a post-ADG CI gate as a bounded subprocess.
 
     Constitutional §14: argv form, shell=False, explicit timeout. Non-zero
-    exit halts the ADG generation run so authors see the gate failure in the
-    same window, not later at pre-commit. Generic wrapper so all five post-
-    ADG gates share one invocation path and logging shape.
+    exits are recorded in the shared deferred-failure registry so the run can
+    still seal its output bundle before returning the first failure code.
+    Generic wrapper so all post-ADG gates share one invocation path and
+    logging shape.
 
     Plan ``adg-audit-pipeline-integration-7f2c93`` W1.1/W1.2:
     - Records invocation via the module-level GateManifestRecorder so the
@@ -2759,6 +3032,7 @@ def _run_post_adg_gate(
     import time as _time
 
     from tools.generate._gate_manifest import current_recorder
+    from tools.generate.integration.deferred_failures import record_failure
 
     recorder = current_recorder()
     certification_mode = os.environ.get("ADG_CERTIFICATION_MODE") == "1"
@@ -2778,7 +3052,8 @@ def _run_post_adg_gate(
             )
         if certification_mode:
             print(f"[ADG] [{label}] FAIL — {msg} (certification mode)")
-            sys.exit(2)
+            record_failure(f"post_adg_gate.{label}", 2, message=msg)
+            return
         print(f"[ADG] [{label}] SKIP (diagnostic mode) — {msg}")
         return
     print(f"[ADG] Running {label} gate ({script_rel}) ...")
@@ -2805,7 +3080,12 @@ def _run_post_adg_gate(
                 message=f"timed out after {timeout_s}s",
             )
         print(f"[ADG] [{label}] gate timed out after {timeout_s}s — failing")
-        sys.exit(2)
+        record_failure(
+            f"post_adg_gate.{label}",
+            2,
+            message=f"timed out after {timeout_s}s",
+        )
+        return
     if proc.stdout:
         print(proc.stdout.rstrip())
     if proc.stderr:
@@ -2825,7 +3105,12 @@ def _run_post_adg_gate(
                 message=fail_hint,
             )
         print(f"[ADG] [{label}] FAIL — {fail_hint}")
-        sys.exit(proc.returncode)
+        record_failure(
+            f"post_adg_gate.{label}",
+            proc.returncode,
+            message=fail_hint,
+        )
+        return
     if recorder is not None:
         recorder.record(
             label,
@@ -2851,9 +3136,9 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
     Outputs are buffered per-gate and printed in a deterministic order
     after all gates complete, so build logs remain human-readable.
 
-    On any non-zero exit, print all outputs then sys.exit with the first
-    failure's return code — identical fail-fast semantics to the serial
-    version, just without the pay-one-by-one wait.
+    On any non-zero exit, print all outputs and record the first failure in
+    the shared deferred-failure registry. ``main()`` seals the current-run
+    output bundle, then returns that failure code.
     """
     import concurrent.futures
     import subprocess
@@ -2995,15 +3280,12 @@ def _run_post_adg_gates_parallel(gate_specs: list[dict[str, object]]) -> None:
                 )
             print(f"[ADG] [{label}] PASS")
     if first_failure_rc is not None:
-        # Plan adg-fail-aggregating-gate-chain-9d4e1f W4.1: route Stage-2
-        # parallel-gate failures through record_or_exit so the drain block
-        # in main() can render the full aggregated summary table covering
-        # both Stage-1 ratchet/integrity gates AND Stage-2 subprocess
-        # gates. Default behaviour (env var unset) is unchanged: first
-        # non-zero rc still exits immediately.
-        from tools.generate.integration.deferred_failures import record_or_exit  # noqa: PLC0415
+        # Always defer post-generation gate exits until the terminal output
+        # bundle has been sealed. The final exit code is still the first
+        # non-zero gate result in deterministic spec order.
+        from tools.generate.integration.deferred_failures import record_failure  # noqa: PLC0415
 
-        record_or_exit(
+        record_failure(
             f"post_adg_gate.{first_failure_label or 'unknown'}",
             first_failure_rc,
             message=(first_failure_hint or "")[:160],

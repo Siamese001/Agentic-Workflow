@@ -244,13 +244,11 @@ def _format_action_items(items: list[dict[str, Any]], *, max_items: int = 5) -> 
     )
     if len(sorted_items) <= max_items:
         return "; ".join(
-            f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}"
-            for item in sorted_items
+            f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}" for item in sorted_items
         )
     visible = sorted_items[:3]
     visible_text = "; ".join(
-        f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}"
-        for item in visible
+        f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}" for item in visible
     )
     remaining = len(sorted_items) - len(visible)
     total = sum(int(item.get("records", 0) or 0) for item in sorted_items)
@@ -266,8 +264,7 @@ def _format_bullet_items(items: list[dict[str, Any]], *, max_items: int = 5) -> 
     )
     visible = sorted_items[:max_items]
     text = "; ".join(
-        f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}"
-        for item in visible
+        f"`{_md_cell(item.get('label'))}` {_fmt_int(item.get('records', 0))}" for item in visible
     )
     if len(sorted_items) > max_items:
         remaining = len(sorted_items) - max_items
@@ -510,7 +507,11 @@ def _review_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
     executive = doc.get("executive_decision_brief") or {}
     graphdb = doc.get("graphdb_mv_analyst_summary") or {}
     testing_gap = graphdb.get("testing_gap_summary") or {}
-    priority_bullets = doc.get("next_best_action", {}).get("priority_bullets") or doc.get("high_signal_review", {}).get("do_this_next") or []
+    priority_bullets = (
+        doc.get("next_best_action", {}).get("priority_bullets")
+        or doc.get("high_signal_review", {}).get("do_this_next")
+        or []
+    )
     priority_plan = doc.get("priority_execution_plan") or {}
     execution_rows = priority_plan.get("rows") or []
     priority_rows: list[dict[str, Any]] = []
@@ -535,7 +536,10 @@ def _review_bcg_brief(doc: dict[str, Any]) -> dict[str, Any]:
         status=str(doc.get("run_id") or ""),
         status_label="Run ID",
         business_read=(
-            str(executive.get("decision") or "Stabilize the run, close testing exposure, then reduce accepted debt.")
+            str(
+                executive.get("decision")
+                or "Stabilize the run, close testing exposure, then reduce accepted debt."
+            )
         ),
         technical_read=[
             str(executive.get("situation") or ""),
@@ -671,8 +675,7 @@ def _graphdb_mv_analyst_summary(
                 mv_names = [
                     str(row[0])
                     for row in con.execute(
-                        "SELECT name FROM sqlite_master "
-                        "WHERE type='table' AND name LIKE 'mv_%' ORDER BY name"
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'mv_%' ORDER BY name"
                     ).fetchall()
                 ]
                 for name in mv_names:
@@ -806,9 +809,7 @@ def _graphdb_mv_analyst_summary(
             }
         )
     if graph_actions:
-        targets = "; ".join(
-            f"`{_md_cell(row.get('target'), limit=80)}`" for row in graph_actions[:3]
-        )
+        targets = "; ".join(f"`{_md_cell(row.get('target'), limit=80)}`" for row in graph_actions[:3])
         priority_rows.append(
             {
                 "rank": len(priority_rows) + 1,
@@ -819,9 +820,7 @@ def _graphdb_mv_analyst_summary(
             }
         )
     if refactor_actions:
-        targets = "; ".join(
-            f"`{_md_cell(row.get('target'), limit=80)}`" for row in refactor_actions[:3]
-        )
+        targets = "; ".join(f"`{_md_cell(row.get('target'), limit=80)}`" for row in refactor_actions[:3])
         priority_rows.append(
             {
                 "rank": len(priority_rows) + 1,
@@ -869,7 +868,9 @@ def _graphdb_mv_analyst_summary(
             "nonempty_mv_tables": len(nonempty),
             "empty_mv_tables": len(clean),
             "routing_counts": routing_counts,
-            "action_driver_mvs": len([row for row in inventory if row.get("routing_status") == "action_driver"]),
+            "action_driver_mvs": len(
+                [row for row in inventory if row.get("routing_status") == "action_driver"]
+            ),
             "gate_driver_mvs": len([row for row in inventory if row.get("routing_status") == "gate_driver"]),
             "diagnostic_only_mvs": len(diagnostic),
         },
@@ -1120,7 +1121,9 @@ def _p0_next_step(*, work_type: str, records: int) -> str:
     if work_type == "Burn down ratchet":
         if records <= 5:
             return "Close or bundle this small floor, rerun ADG, then absorb the lower baseline."
-        return "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
+        return (
+            "Open a burn-down slice for this gate, reduce records, rerun ADG, then absorb the lower baseline."
+        )
     if records <= 5:
         return "Close when touching nearby code; it is open work but not ratchet burn-down."
     return "Schedule after P0 ratchets unless the fix is tiny, already in hand, or high-leverage."
@@ -1312,9 +1315,7 @@ def _priority_actions(
                 band = _md_cell(row.get("band") or "?")
                 records = _fmt_int(row.get("records", 0))
                 signal = _md_cell(row.get("signal"), limit=150)
-                bullets.append(
-                    f"Fix `{target}` ({band}, {records} record(s)): {signal}"
-                )
+                bullets.append(f"Fix `{target}` ({band}, {records} record(s)): {signal}")
         else:
             for row in fix_bands:
                 bullets.append(
@@ -1336,8 +1337,12 @@ def _priority_actions(
                 + targets
                 + "."
             )
-        bullets.append("Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue.")
-        bullets.append("Review guardian exceptions separately; they are severity audit math, not burn-down work.")
+        bullets.append(
+            "Rerun ADG after the red gates clear; only then treat ratchet burn-down as the main queue."
+        )
+        bullets.append(
+            "Review guardian exceptions separately; they are severity audit math, not burn-down work."
+        )
         return bullets
 
     inserted_hotspot_overlay = False
@@ -1373,9 +1378,7 @@ def _priority_actions(
             for item in list(hotspot_overlay.get("rows") or [])[:3]
         )
         bullets.append(
-            "Apply GraphDB/MV testing hotspot overlay before the next code slice: "
-            + targets
-            + "."
+            "Apply GraphDB/MV testing hotspot overlay before the next code slice: " + targets + "."
         )
 
     p0 = next((row for row in band_rows if row.get("band") == "P0"), None)
@@ -1432,8 +1435,7 @@ def _high_signal_review(
         headline = "Fix red ADG gates before burn-down work."
     else:
         run_meaning = (
-            f"The ADG run is {verdict}: 0 fix-now gates. There is no current blocker "
-            "or ratchet regression."
+            f"The ADG run is {verdict}: 0 fix-now gates. There is no current blocker or ratchet regression."
         )
         headline = "Green for enforcement; burn-down work remains."
 
@@ -1460,8 +1462,7 @@ def _high_signal_review(
     ]
     if top_graphdb:
         what_this_means.append(
-            "GraphDB/MV says the first testing hotspot is "
-            f"`{top_graphdb.get('target') or '?'}`."
+            f"GraphDB/MV says the first testing hotspot is `{top_graphdb.get('target') or '?'}`."
         )
 
     return {
@@ -1498,6 +1499,7 @@ def build_review_template(
     generation_manifest_path: Path | None = None,
     enforcement_report_path: Path | None = None,
     run_id: str | None = None,
+    include_default_burndown_refs: bool = True,
 ) -> dict[str, Any]:
     gate_results = _load_json(gate_results_path)
     burndown = _load_json(burndown_path)
@@ -1555,11 +1557,11 @@ def build_review_template(
         "enforcement_report": _artifact_ref("enforcement_report", enforcement_report_path),
         "markdown_burndown": _artifact_ref(
             "markdown_burndown",
-            ARTIFACTS_ADG / "adg_burndown_report.md",
+            ARTIFACTS_ADG / "adg_burndown_report.md" if include_default_burndown_refs else None,
         ),
         "docs_markdown_burndown": _artifact_ref(
             "docs_markdown_burndown",
-            DOCS_ADG / "adg_burndown_report.md",
+            DOCS_ADG / "adg_burndown_report.md" if include_default_burndown_refs else None,
         ),
     }
 
@@ -1585,9 +1587,7 @@ def build_review_template(
                 "Real open work from warn/inventory gates. Close it after ratchets unless the item "
                 "is tiny or high-leverage. It is not a current run blocker."
             ),
-            "cleanup_backlog": (
-                "Compatibility alias for open_non_ratchet_work."
-            ),
+            "cleanup_backlog": ("Compatibility alias for open_non_ratchet_work."),
             "not_counted_as": [
                 "guardian exemptions",
                 "test failures",
@@ -1654,7 +1654,10 @@ def build_review_template(
         title="BCG Review Template Brief",
         status=str(doc.get("run_id") or ""),
         status_label="Run ID",
-        business_read=str((doc.get("executive_decision_brief") or {}).get("decision") or "Stabilize the run, close testing exposure, then reduce accepted debt."),
+        business_read=str(
+            (doc.get("executive_decision_brief") or {}).get("decision")
+            or "Stabilize the run, close testing exposure, then reduce accepted debt."
+        ),
         technical_read=[
             str((doc.get("executive_decision_brief") or {}).get("situation") or ""),
             str((doc.get("executive_decision_brief") or {}).get("risk") or ""),
@@ -1675,7 +1678,10 @@ def build_review_template(
             for row in (doc.get("priority_execution_plan") or {}).get("rows", [])[:4]
         ],
         why_this_order=(doc.get("high_signal_review") or {}).get("what_this_means", [])[:4],
-        next_step=((doc.get("next_best_action") or {}).get("priority_bullets") or ["Follow the Priority Execution Plan."])[0],
+        next_step=(
+            (doc.get("next_best_action") or {}).get("priority_bullets")
+            or ["Follow the Priority Execution Plan."]
+        )[0],
         table_limit=4,
     )
     return doc
@@ -1764,9 +1770,13 @@ def render_inline_review_template(
     testing_gap = graphdb.get("testing_gap_summary") or {}
     execution_plan = doc.get("priority_execution_plan") or {}
     what_this_means = high_signal.get("what_this_means") or []
-    priority_bullets = high_signal.get("do_this_next") or doc.get("next_best_action", {}).get(
-        "priority_bullets",
-    ) or []
+    priority_bullets = (
+        high_signal.get("do_this_next")
+        or doc.get("next_best_action", {}).get(
+            "priority_bullets",
+        )
+        or []
+    )
     yaml_path = output_path.with_suffix(".yaml") if output_path is not None else None
 
     lines: list[str] = [
@@ -1814,14 +1824,8 @@ def render_inline_review_template(
     top_test_files = testing_gap.get("top_files") or []
     if top_test_files:
         for row in top_test_files[:5]:
-            risk = (
-                f"{_md_cell(row.get('priority_band'))} / "
-                f"{_md_cell(row.get('risk_band'))}"
-            )
-            coverage = (
-                f"{_md_cell(row.get('coverage_band'))} "
-                f"({_md_cell(row.get('coverage_pct'))})"
-            )
+            risk = f"{_md_cell(row.get('priority_band'))} / {_md_cell(row.get('risk_band'))}"
+            coverage = f"{_md_cell(row.get('coverage_band'))} ({_md_cell(row.get('coverage_pct'))})"
             lines.append(
                 f"| {_fmt_int(row.get('rank', 0))} | "
                 f"`{_md_cell(row.get('file'), limit=88)}` | "
@@ -1829,7 +1833,9 @@ def render_inline_review_template(
                 f"{_md_cell(row.get('analyst_read'), limit=115)} |"
             )
     else:
-        lines.append("| - | None | Not quantified | Not quantified | No GraphDB testing-gap table available. |")
+        lines.append(
+            "| - | None | Not quantified | Not quantified | No GraphDB testing-gap table available. |"
+        )
     lines.extend(
         [
             "",
@@ -1976,46 +1982,52 @@ def emit_mandatory_adg_review_template(
     enforcement_report: Path | None = None,
     output_path: Path | None = None,
     write_latest: bool = True,
+    allow_latest_fallback: bool = True,
     write_yaml: bool = True,
     print_inline: bool = True,
     fail_closed: bool = True,
 ) -> tuple[int, Path | None]:
     """Write the review template JSON/YAML. Returns ``(exit_code, json_path_or_none)``."""
     artifacts = Path(adg_artifacts_dir)
-    gate_path = gate_results or _resolve_latest("adg_gate_results_*.json", artifacts)
-    burndown_path = burndown or (artifacts / "adg_burndown_table.json")
+    gate_path = gate_results
+    burndown_path = burndown
+    if allow_latest_fallback:
+        gate_path = gate_path or _resolve_latest("adg_gate_results_*.json", artifacts)
+        burndown_path = burndown_path or (artifacts / "adg_burndown_table.json")
 
-    if action_queue is None and ts:
-        candidate = artifacts / f"adg_action_queue_{ts}.json"
-        if candidate.is_file():
-            action_queue = candidate
-    if action_queue is None:
-        action_queue = _resolve_latest("adg_action_queue_*.json", artifacts)
+    if allow_latest_fallback:
+        if action_queue is None and ts:
+            candidate = artifacts / f"adg_action_queue_{ts}.json"
+            if candidate.is_file():
+                action_queue = candidate
+        if action_queue is None:
+            action_queue = _resolve_latest("adg_action_queue_*.json", artifacts)
 
-    if generation_manifest is None and ts:
-        candidate = artifacts / f"adg_generation_manifest_{ts}.json"
-        if candidate.is_file():
-            generation_manifest = candidate
-    if generation_manifest is None:
-        generation_manifest = _resolve_latest("adg_generation_manifest_*.json", artifacts)
+        if generation_manifest is None and ts:
+            candidate = artifacts / f"adg_generation_manifest_{ts}.json"
+            if candidate.is_file():
+                generation_manifest = candidate
+        if generation_manifest is None:
+            generation_manifest = _resolve_latest("adg_generation_manifest_*.json", artifacts)
 
-    if enforcement_report is None and ts:
-        candidate = artifacts / f"adg_enforcement_report_{ts}.json"
-        if candidate.is_file():
-            enforcement_report = candidate
-    if enforcement_report is None:
-        enforcement_report = _resolve_latest("adg_enforcement_report_*.json", artifacts)
+        if enforcement_report is None and ts:
+            candidate = artifacts / f"adg_enforcement_report_{ts}.json"
+            if candidate.is_file():
+                enforcement_report = candidate
+        if enforcement_report is None:
+            enforcement_report = _resolve_latest("adg_enforcement_report_*.json", artifacts)
 
     missing: list[str] = []
     if gate_path is None or not gate_path.is_file():
         missing.append("gate_results")
-    if not burndown_path.is_file():
+    if burndown_path is None or not burndown_path.is_file():
         missing.append("burndown")
     if missing:
         print(f"[adg_review_template] REVIEW_TEMPLATE_ERROR=missing {', '.join(missing)}", file=sys.stderr)
         return (1 if fail_closed else 0, None)
 
     assert gate_path is not None
+    assert burndown_path is not None
     try:
         doc = build_review_template(
             gate_results_path=gate_path,
@@ -2024,6 +2036,7 @@ def emit_mandatory_adg_review_template(
             generation_manifest_path=generation_manifest,
             enforcement_report_path=enforcement_report,
             run_id=ts,
+            include_default_burndown_refs=allow_latest_fallback,
         )
         errors = validate_review_template(doc)
         if errors:

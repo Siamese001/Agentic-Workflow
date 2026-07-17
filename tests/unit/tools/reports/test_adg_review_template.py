@@ -108,7 +108,7 @@ def _write_burndown(path: Path) -> None:
                         "guardian": 6,
                         "net": 4,
                         "diff": 6,
-                    }
+                    },
                 },
                 "provenance": {"counting_mode": "violations_plus_exempted_edge_inference"},
             }
@@ -260,8 +260,7 @@ def test_review_template_names_tracked_records_and_separates_guardian_math(tmp_p
     high_signal = doc["high_signal_review"]
     assert high_signal["headline"] == "Green for enforcement; burn-down work remains."
     assert any(
-        "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 848."
-        in line
+        "P0 open non-ratchet work is separate from P0 ratchets: `write_sovereignty` 848." in line
         for line in high_signal["what_this_means"]
     )
     assert (
@@ -392,6 +391,46 @@ def test_emit_mandatory_review_template_writes_timestamped_json_and_yaml(tmp_pat
     assert "Largest P0 ratchet floor" in yaml_text
 
 
+def test_emit_review_template_can_disable_all_input_fallbacks(tmp_path: Path) -> None:
+    gate = tmp_path / "exact_gate_results.json"
+    burndown = tmp_path / "exact_burndown.json"
+    _write_gate_results(gate)
+    _write_burndown(burndown)
+    for name in (
+        "adg_action_queue_run.json",
+        "adg_generation_manifest_run.json",
+        "adg_enforcement_report_run.json",
+        "adg_action_queue_stale.json",
+    ):
+        (tmp_path / name).write_text("{}", encoding="utf-8")
+
+    rc, out = emit_mandatory_adg_review_template(
+        adg_artifacts_dir=tmp_path,
+        ts="run",
+        gate_results=gate,
+        burndown=burndown,
+        write_latest=False,
+        allow_latest_fallback=False,
+        print_inline=False,
+        fail_closed=True,
+    )
+
+    assert rc == 0
+    assert out is not None
+    doc = json.loads(out.read_text(encoding="utf-8"))
+    assert doc["artifacts"]["gate_results"]["path"] == str(gate)
+    assert doc["artifacts"]["burndown"]["path"] == str(burndown)
+    for key in (
+        "action_queue",
+        "generation_manifest",
+        "enforcement_report",
+        "markdown_burndown",
+        "docs_markdown_burndown",
+    ):
+        assert doc["artifacts"][key]["path"] is None
+        assert doc["artifacts"][key]["exists"] is False
+
+
 def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     gate = tmp_path / "adg_gate_results_test.json"
     burndown = tmp_path / "adg_burndown_table.json"
@@ -420,7 +459,10 @@ def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     assert "| 1 | Burn down ratchets: `G_REACH` 2,792; `S2_UWG` 1,583; `L2_LPG` 1 | P0 | 4,376 |" in inline
     assert "| 2 | Burn down ratchets: `B2_layer_skip` 900 | P1 | 900 |" in inline
     assert "| 3 | Open non-ratchet work: `write_sovereignty` 848 | P0 | 848 |" in inline
-    assert "Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing." in inline
+    assert (
+        "Non-exempt severity rows are included for review, but they do not populate Fix now unless a gate is failing."
+        in inline
+    )
     assert "### P0 Action Plan" in inline
     assert "| # | Work | Gate | Records | Why this priority | Next step |" in inline
     assert "| 1 | Burn down ratchet | `G_REACH` | 2,792 | Largest P0 ratchet floor" in inline
@@ -428,7 +470,10 @@ def test_inline_review_template_renders_chat_summary(tmp_path: Path) -> None:
     assert "| 3 | Burn down ratchet | `L2_LPG` | 1 | Small P0 ratchet" in inline
     assert "| 4 | Open non-ratchet work | `write_sovereignty` | 848 | Real open P0 work" in inline
     assert "Comments:" in inline
-    assert "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor." in inline
+    assert (
+        "Open non-ratchet work is still real work; it is second because it does not lower the P0 ratchet floor."
+        in inline
+    )
     assert "### Priority Execution Plan" in inline
     assert "`apps_rg/runtime/sections/executive_summary_lane.py`" in inline
     assert "### Testing Hotspot Overlay" not in inline

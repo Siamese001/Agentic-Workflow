@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
-"""post_agent_adg_burndown_inline_audit.py — ADG burndown inline-render gate.
+"""post_agent_adg_burndown_inline_audit.py — sealed ADG output-bundle gate.
 
 Reads the agent response from stdin (post-agent payload). If the response
-contains a ``generate_full_adg`` / ``run_full_adg_audit`` / ``adg_gates/run.py``
+contains a ``generate_full_adg`` / ``run_full_adg_audit``
 invocation AND a completion claim (PASS / completed / "exit 0"), it asserts the
-SAME response also rendered the ADG CI burndown **inline** — i.e. the severity-band
-summary AND the CI-gates table.
+SAME response also rendered exactly one sealed ADG executive brief **inline** —
+including the impact inventory, decision-gate/FIX view, and final process
+disposition. A standalone burndown replay is rejected as duplicate terminal
+output.
 
 Rationale: ``.codex/rules/adg-post-run-burndown.md`` § Completion Gate makes the
-inline summary + gates table a non-bypassable completion requirement. The report
-is already emitted to stdout by ``emit_mandatory_adg_burndown_report()``; this gate
-catches the case where the operator ran the generator but did not surface the table
+single sealed summary a non-bypassable completion requirement. The report is
+emitted only after the output bundle and wrapper gates finish; this gate catches
+the case where the operator ran the generator but did not surface that final brief
 in chat (a proof-contract violation per ``002-pass-blocked-proof-contract``).
 
 **Advisory only** — always exits 0 (fail-open). Logs a VIOLATION row to
@@ -48,7 +50,6 @@ MAX_RESPONSE_BYTES = 1024 * 1024
 _RUN_PATTERNS = (
     re.compile(r"generate_full_adg\.py", re.IGNORECASE),
     re.compile(r"run_full_adg_audit\.py", re.IGNORECASE),
-    re.compile(r"adg_gates[\\/]run\.py", re.IGNORECASE),
     re.compile(r"\bpython\b[^\n]*\bgenerate_full_adg\b", re.IGNORECASE),
 )
 
@@ -60,17 +61,23 @@ _COMPLETION_PATTERNS = (
     re.compile(r"\bgeneration\s+(complete|completed|succeeded)\b", re.IGNORECASE),
 )
 
-# Inline burndown was rendered: need BOTH a band-summary signal AND a gates-table signal.
+# One sealed executive brief: need its unique header, impact inventory, and decision gate.
+_BUNDLE_HEADER = re.compile(r"^## ADG Executive Brief\s*$", re.IGNORECASE | re.MULTILINE)
 _BAND_SUMMARY_PATTERNS = (
-    re.compile(r"Burndown by Severity Band", re.IGNORECASE),
-    re.compile(r"\bP0\b[^\n]*\blayer_violations\b", re.IGNORECASE),
-    re.compile(r"\bFIX\b[^\n]*\bTRACK\b[^\n]*\bCLEAR\b"),
+    re.compile(r"Impact Inventory", re.IGNORECASE),
+    re.compile(r"\|\s*Band\s*\|\s*Impact severity\s*\|", re.IGNORECASE),
 )
 _GATES_TABLE_PATTERNS = (
-    re.compile(r"Recommended Next Step", re.IGNORECASE),
-    re.compile(r"All CI Gates", re.IGNORECASE),
-    re.compile(r"\|\s*Gate ID\s*\|", re.IGNORECASE),
+    re.compile(r"Decision gate:", re.IGNORECASE),
+    re.compile(r"\|\s*Gate\s*\|\s*Status\s*\|\s*Evidence\s*\|", re.IGNORECASE),
+    re.compile(r"Fix now:", re.IGNORECASE),
 )
+_FINAL_DISPOSITION_HEADER = re.compile(r"^## Final disposition\s*$", re.IGNORECASE | re.MULTILINE)
+_PROCESS_EXIT_CODE = re.compile(
+    r"^\s*-\s*\*\*Process exit code:\*\*\s*`?-?\d+`?\s*$",
+    re.IGNORECASE | re.MULTILINE,
+)
+_STANDALONE_BURNDOWN_HEADER = re.compile(r"^# ADG CI Burndown Report\s*$", re.IGNORECASE | re.MULTILINE)
 
 
 def _read_response() -> str:
@@ -95,16 +102,35 @@ def evaluate(text: str) -> tuple[str, str]:
         return "NOT_APPLICABLE", "no ADG generate/audit run in response"
     if not _any(text, _COMPLETION_PATTERNS):
         return "NOT_APPLICABLE", "ADG run present but no completion/PASS claim"
+    header_count = len(_BUNDLE_HEADER.findall(text))
+    final_disposition_count = len(_FINAL_DISPOSITION_HEADER.findall(text))
+    process_exit_code_count = len(_PROCESS_EXIT_CODE.findall(text))
+    burndown_replay_count = len(_STANDALONE_BURNDOWN_HEADER.findall(text))
     has_band = _any(text, _BAND_SUMMARY_PATTERNS)
     has_table = _any(text, _GATES_TABLE_PATTERNS)
-    if has_band and has_table:
-        return "ALLOW", "inline burndown summary + gates table present"
+    if (
+        header_count == 1
+        and has_band
+        and has_table
+        and final_disposition_count == 1
+        and process_exit_code_count == 1
+        and burndown_replay_count == 0
+    ):
+        return "ALLOW", "one sealed ADG executive brief with final disposition present"
     missing = []
+    if header_count != 1:
+        missing.append(f"exactly one executive brief (found {header_count})")
     if not has_band:
         missing.append("severity-band summary")
     if not has_table:
         missing.append("CI-gates table")
-    return "VIOLATION", "ADG run marked complete without inline " + " + ".join(missing)
+    if final_disposition_count != 1:
+        missing.append(f"exactly one final disposition (found {final_disposition_count})")
+    if process_exit_code_count != 1:
+        missing.append(f"exactly one process exit code (found {process_exit_code_count})")
+    if burndown_replay_count:
+        missing.append(f"no standalone burndown replay (found {burndown_replay_count})")
+    return "VIOLATION", "ADG run marked complete without sealed inline " + " + ".join(missing)
 
 
 def _log_violation(reason: str) -> None:

@@ -37,11 +37,11 @@ Zero-loss artifact contract:
 - Do not infer repair_ready from newest files, latest files, prompt context, or rewritten docs/reports mirrors.
 - If artifact_status is missing, artifact_status_source is not direct, repair_handoff is missing, or any required artifact is missing/stale/timestamp-inconsistent/digest-invalid, report artifact_status=incomplete and stop without editing.
 
-Inline report order contract:
-- The first inline report is mandatory and must be the BCG RCA / executive summary.
-- The second inline report must be the ADG burndown report.
-- This ordering must hold across the primary generator path, finalize/recovery path, and wrapper fallback path.
-- If the run cannot emit BCG first and burndown second, report contract drift or incomplete output instead of silently changing order.
+Sealed terminal-output contract:
+- Render exactly one inline report, `## ADG Executive Brief`, after generator and wrapper certification gates finish.
+- The brief must include the decision-gate/FIX view, P0-P3 impact inventory, and final process disposition.
+- The standalone burndown remains a timestamped, digest-inventoried artifact; never replay it as a second inline report.
+- Direct generation and wrapper fallback must use the same snapshot-bound output-bundle orchestrator. Missing, stale, mixed-run, or duplicate output is incomplete.
 
 Status semantics:
 - certified: certification_status is clean and no blocking P0/P1 gate work remains.

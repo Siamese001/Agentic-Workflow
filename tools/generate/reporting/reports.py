@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
 import sqlite3
 import subprocess as _sp
 import sys as _sys
@@ -49,6 +51,7 @@ def _print_defect_table(
     routing_summary: dict,
     semantic_warnings: list[str] | None = None,
     sqlite_path: Path | None = None,
+    burndown_output_path: Path | None = None,
 ) -> None:
     """Print impact-inventory defect table in terminal output."""
     sqlite_source, source_mismatch = _resolve_reporting_sqlite(sqlite_path)
@@ -428,9 +431,15 @@ def _print_defect_table(
     _rt_sym = "✓" if _p0_signal_counts.get("runtime_trace", 0) > 0 else "—"
     _hd_sym = "✓" if _p0_signal_counts.get("hitl_decision", 0) > 0 else "—"
     _rs_sym = "✓" if _p0_signal_counts.get("reads_secret", 0) > 0 else "—"
-    print(f"|     |  otel_coverage               |     {_rt_sym} |        | {_p0_signal_counts.get('runtime_trace', 0):5} |      |")
-    print(f"|     |  hitl_decision_log           |     {_hd_sym} |        | {_p0_signal_counts.get('hitl_decision', 0):5} |      |")
-    print(f"|     |  reads_secret_instrumented   |     {_rs_sym} |        | {_p0_signal_counts.get('reads_secret', 0):5} |      |")
+    print(
+        f"|     |  otel_coverage               |     {_rt_sym} |        | {_p0_signal_counts.get('runtime_trace', 0):5} |      |"
+    )
+    print(
+        f"|     |  hitl_decision_log           |     {_hd_sym} |        | {_p0_signal_counts.get('hitl_decision', 0):5} |      |"
+    )
+    print(
+        f"|     |  reads_secret_instrumented   |     {_rs_sym} |        | {_p0_signal_counts.get('reads_secret', 0):5} |      |"
+    )
     print(_TH)
 
     # P1 / P2 / P3 bands
@@ -483,10 +492,7 @@ def _print_defect_table(
                 _p2_star_imports = int(_star_row[0]) if _star_row else 0
         except sqlite3.Error:
             pass
-    _writes_ratio_str = (
-        f"{_p2_writes_through * 100 // _p2_writes_to}%"
-        if _p2_writes_to else "—"
-    )
+    _writes_ratio_str = f"{_p2_writes_through * 100 // _p2_writes_to}%" if _p2_writes_to else "—"
 
     for _band, _label, _count, _sev, _ceil, _delta in tqdm(_bands, desc="Processing", unit="item"):
         _exempt = _guardian_by_sev.get(_sev, 0)
@@ -502,14 +508,20 @@ def _print_defect_table(
         # µW-3.2: P1 augment rows
         if _band == "P1":
             _lu_sym = "✓" if _p1_l_unknown_count == 0 else "~"
-            print(f"| {_lu_sym}   |  L_UNKNOWN modules           |       |        | {_p1_l_unknown_count:5} |      |")
+            print(
+                f"| {_lu_sym}   |  L_UNKNOWN modules           |       |        | {_p1_l_unknown_count:5} |      |"
+            )
             if _p1_l_contracts_count:
-                print(f"|     |    L_CONTRACTS unclassified  |       |        | {_p1_l_contracts_count:5} |      |")
+                print(
+                    f"|     |    L_CONTRACTS unclassified  |       |        | {_p1_l_contracts_count:5} |      |"
+                )
         # µW-3.3: P2 augment rows
         if _band == "P2":
             print(f"| ~   |  writes_bypass_ratio         |       |        | {_writes_ratio_str:>5} |      |")
             if _p2_star_imports:
-                print(f"| ~   |  star_imports                |       |        | {_p2_star_imports:5} |      |")
+                print(
+                    f"| ~   |  star_imports                |       |        | {_p2_star_imports:5} |      |"
+                )
         print(_TH)
 
     # SC/AP audit rows
@@ -605,7 +617,9 @@ def _print_defect_table(
         except (OSError, json.JSONDecodeError, ValueError):
             pass
 
-    print("  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=audit net/actionable candidates  %=exempt/gross")
+    print(
+        "  Gross=total  Exempt=approved exceptions (guardian:allow)  Net=audit net/actionable candidates  %=exempt/gross"
+    )
     print("  Critical impact inventory is separate from BCG foundation blockers and live blockers.")
     print("  Gate: *=BLOCKS  ^=ratchet  ~=watch  ✓=clean  ✗=failing  CI✓/CI✗=ci-gate")
 
@@ -743,6 +757,11 @@ def _print_defect_table(
             "generator_module": "tools.generate.reporting.reports._print_defect_table",
             "severity_band_ssot": "agentic_core.adg.severity_bands",
             "sqlite_source_path": str(sqlite_source) if sqlite_source else "",
+            "sqlite_source_sha256": (
+                hashlib.sha256(sqlite_source.read_bytes()).hexdigest()
+                if sqlite_source is not None and sqlite_source.is_file()
+                else ""
+            ),
             "sqlite_source_name": sqlite_source.name if sqlite_source else "",
             "sqlite_source_timestamp": sqlite_source.stem.replace("adg_indexed_", "")
             if sqlite_source
@@ -773,10 +792,20 @@ def _print_defect_table(
             "guardian_by_band": dict(_guardian_by_band),
         },
     }
-    _burndown_path = ROOT / "artifacts" / "adg" / "adg_burndown_table.json"
+    _burndown_path = burndown_output_path or ROOT / "artifacts" / "adg" / "adg_burndown_table.json"
     try:
-        _burndown_path.parent.mkdir(parents=True, exist_ok=True)
-        _burndown_path.write_text(json.dumps(_burndown, indent=2, sort_keys=True), encoding="utf-8")
+        rendered = json.dumps(_burndown, indent=2, sort_keys=True)
+        for target in (_burndown_path,):
+            target.parent.mkdir(parents=True, exist_ok=True)
+            temporary = target.with_name(f".{target.name}.{os.getpid()}.tmp")
+            try:
+                temporary.write_text(rendered, encoding="utf-8")
+                os.replace(temporary, target)
+            finally:
+                try:
+                    temporary.unlink(missing_ok=True)
+                except OSError:
+                    pass
         print(f"[ADG] Burndown artifact: {_burndown_path.name}")
     except OSError as e:
         print(f"[ADG] WARNING: Could not write burndown artifact: {e}")

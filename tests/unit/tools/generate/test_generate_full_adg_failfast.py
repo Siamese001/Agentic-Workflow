@@ -30,6 +30,28 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
+def _create_queryable_adg_schema(conn: sqlite3.Connection) -> None:
+    conn.execute(
+        "CREATE TABLE nodes ("
+        "id INTEGER PRIMARY KEY, layer TEXT, resolved_path TEXT, "
+        "adg_name TEXT, entity_type TEXT)"
+    )
+    conn.execute(
+        "CREATE TABLE edges ("
+        "id INTEGER PRIMARY KEY, src_id INTEGER, dst_id INTEGER, "
+        "relation_type TEXT, edge_kind TEXT, source_file TEXT, line_no INTEGER, "
+        "symbol TEXT, authority_status TEXT)"
+    )
+    conn.execute("CREATE TABLE violations (id INTEGER PRIMARY KEY)")
+    conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+    conn.execute("CREATE INDEX idx_nodes_layer ON nodes(layer)")
+    conn.execute("CREATE INDEX idx_nodes_resolved_path ON nodes(resolved_path)")
+    conn.execute("CREATE INDEX idx_nodes_name ON nodes(adg_name)")
+    conn.execute("CREATE INDEX idx_edges_src_rel ON edges(src_id, relation_type)")
+    conn.execute("CREATE INDEX idx_edges_dst_rel ON edges(dst_id, relation_type)")
+    conn.commit()
+
+
 class TestZipFlagWiring:
     """Static regression coverage for generate_full_adg CLI flag wiring."""
 
@@ -74,7 +96,7 @@ class TestZipFlagWiring:
             return False
 
         assert all(has_enable_zip_guard(call) for call in calls)
-        assert "zip_label = \"ON\" if enable_zip else \"OFF\"" in source
+        assert 'zip_label = "ON" if enable_zip else "OFF"' in source
         assert "Zip creation skipped" in source
 
 
@@ -83,15 +105,15 @@ class TestReviewTemplateWiring:
 
     def test_review_template_emit_and_zip_inclusion_are_wired(self):
         source_path = next(
-            candidate / "tools" / "generate" / "generate_full_adg.py"
+            candidate / "tools" / "reports" / "adg_run_output_bundle.py"
             for candidate in Path(__file__).resolve().parents
-            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+            if (candidate / "tools" / "reports" / "adg_run_output_bundle.py").is_file()
         )
         source = source_path.read_text(encoding="utf-8")
         assert "emit_mandatory_adg_review_template" in source
-        assert "\"adg_review_template\"" in source
-        assert "extra_files.append(review_template_path)" in source
-        assert "review_template_path.with_suffix(\".yaml\")" in source
+        assert 'key="review_template"' in source
+        assert 'review_path.with_suffix(".yaml")' in source
+        assert "write_latest=False" in source
 
 
 class TestDeadCodeReportWiring:
@@ -99,73 +121,309 @@ class TestDeadCodeReportWiring:
 
     def test_dead_code_report_emit_and_zip_inclusion_are_wired(self):
         source_path = next(
-            candidate / "tools" / "generate" / "generate_full_adg.py"
+            candidate / "tools" / "reports" / "adg_run_output_bundle.py"
             for candidate in Path(__file__).resolve().parents
-            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
+            if (candidate / "tools" / "reports" / "adg_run_output_bundle.py").is_file()
         )
         source = source_path.read_text(encoding="utf-8")
         assert "emit_mandatory_adg_dead_code_report" in source
-        assert "\"dead_code_report\"" in source
-        assert "dead_code_report_path" in source
-        assert "dead_code_zone_control_report_" in source
+        assert 'key="dead_code_report"' in source
+        assert "required=False" in source
+        assert "write_latest=False" in source
 
 
-class TestBCGInlineOrdering:
-    """Static regression coverage for BCG-before-burndown inline ordering."""
+class TestSealedOutputBundleWiring:
+    """Static regression coverage for the single terminal-output boundary."""
 
-    def test_bcg_emits_before_burndown_inline_in_primary_and_finalize_paths(self):
+    @staticmethod
+    def _generator_source_and_main() -> tuple[str, ast.FunctionDef]:
         source_path = next(
             candidate / "tools" / "generate" / "generate_full_adg.py"
             for candidate in Path(__file__).resolve().parents
             if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
         )
         source = source_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        main = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main")
+        return source, main
 
-        main_materialize = source.index(
-            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
-            "        burndown=adg_artifacts_dir / \"adg_burndown_table.json\",\n"
-            "        fail_closed=False,\n"
-            "        print_inline=False,"
-        )
-        main_bcg = source.index("_bcg_rc, bcg_summary_path = emit_bcg_executive_summary(", main_materialize)
-        main_inline = source.index("_burndown_inline_rc = emit_existing_burndown_markdown()", main_bcg)
-        assert main_materialize < main_bcg < main_inline
+    def test_generator_delegates_reports_to_one_current_run_bundle(self):
+        source, main = self._generator_source_and_main()
+        bundle_calls = [
+            node
+            for node in ast.walk(main)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "emit_adg_run_output_bundle"
+        ]
+        assert len(bundle_calls) == 1
 
-        finalize_materialize = source.index(
-            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
-            "                fail_closed=False,\n"
-            "                print_inline=False,",
-            main_inline,
+        keywords = {keyword.arg: keyword.value for keyword in bundle_calls[0].keywords}
+        assert ast.unparse(keywords["run_id"]) == "ts"
+        assert ast.unparse(keywords["sqlite_path"]) == "sqlite_candidate"
+        assert ast.unparse(keywords["gate_results_path"]) == "dispatcher_results"
+        assert ast.unparse(keywords["burndown_path"]) == (
+            "adg_artifacts_dir / f'adg_burndown_table_{ts}.json'"
         )
-        finalize_bcg = source.index("emit_bcg_executive_summary(", finalize_materialize)
-        finalize_inline = source.index("emit_existing_burndown_markdown()", finalize_bcg)
-        assert finalize_materialize < finalize_bcg < finalize_inline
+        assert isinstance(keywords["print_terminal"], ast.Constant)
+        assert keywords["print_terminal"].value is False
+        assert "final_rc = core_rc or output_bundle.required_exit_code" in source
+        assert 'blocking_mode="hard_fail"' in source
+        assert 'os.environ.get("ADG_DEFER_OUTPUT_BUNDLE_TO_WRAPPER") == "1"' in source
+        assert '"output_bundle": output_bundle_path' in source
 
-    def test_bcg_adapter_emits_before_burndown_materialization(self):
-        source_path = next(
-            candidate / "tools" / "generate" / "generate_full_adg.py"
-            for candidate in Path(__file__).resolve().parents
-            if (candidate / "tools" / "generate" / "generate_full_adg.py").is_file()
-        )
-        source = source_path.read_text(encoding="utf-8")
+    def test_run_id_collision_is_rejected_before_any_overwrite(
+        self,
+        tmp_path,
+        monkeypatch,
+        capsys,
+    ):
+        from tools.generate import generate_full_adg as generator
 
-        main_adapter = source.index("_bcg_adapter_rc, bcg_adapter_path = emit_bcg_gate_adapter(")
-        main_materialize = source.index(
-            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
-            "        burndown=adg_artifacts_dir / \"adg_burndown_table.json\",\n"
-            "        fail_closed=False,\n"
-            "        print_inline=False,"
-        )
-        assert main_adapter < main_materialize
+        artifacts = tmp_path / "artifacts" / "adg"
+        artifacts.mkdir(parents=True)
+        run_id = "07172026_1200"
+        sentinel = artifacts / f"adg_indexed_{run_id}.sqlite"
+        sentinel.write_bytes(b"existing-snapshot")
+        monkeypatch.setenv("ADG_SUPPRESS_TERMINAL_SUMMARY", "1")
 
-        finalize_adapter = source.index("emit_bcg_gate_adapter(", main_materialize)
-        finalize_materialize = source.index(
-            "_burndown_emit_rc = emit_mandatory_adg_burndown_report(\n"
-            "                fail_closed=False,\n"
-            "                print_inline=False,",
-            finalize_adapter,
+        with pytest.raises(SystemExit) as exc_info:
+            generator._claim_run_id(artifacts, run_id)
+
+        assert exc_info.value.code == generator.RUN_ID_COLLISION_EXIT_CODE
+        assert sentinel.read_bytes() == b"existing-snapshot"
+        assert "RUN_ID_COLLISION" in capsys.readouterr().err
+
+    def test_older_run_cannot_roll_back_newer_candidate_pointer(self, tmp_path):
+        from tools.adg.shared_modules.snapshot_registry import load_snapshot_pointer
+        from tools.generate import generate_full_adg as generator
+
+        artifacts = tmp_path / "artifacts" / "adg"
+        artifacts.mkdir(parents=True)
+
+        def run_files(run_id: str) -> tuple[Path, dict[str, Path]]:
+            snapshot = artifacts / f"adg_indexed_{run_id}.sqlite"
+            snapshot.write_bytes(f"snapshot-{run_id}".encode())
+            sources: dict[str, Path] = {}
+            for label, prefix in (
+                ("generation_manifest", "adg_generation_manifest"),
+                ("gate_manifest", "adg_gate_invocation_manifest"),
+                ("output_bundle", "adg_run_output_bundle"),
+            ):
+                path = artifacts / f"{prefix}_{run_id}.json"
+                path.write_text(json.dumps({"run_id": run_id, "label": label}), encoding="utf-8")
+                sources[label] = path
+            return snapshot, sources
+
+        newer_id = "07172026_1201"
+        older_id = "07172026_1200"
+        newer_snapshot, newer_sources = run_files(newer_id)
+        older_snapshot, older_sources = run_files(older_id)
+
+        newer_ok, newer_error = generator._publish_candidate_snapshot_pointer(
+            adg_artifacts_dir=artifacts,
+            run_id=newer_id,
+            sqlite_candidate=newer_snapshot,
+            generation_exit_code=0,
+            source_artifacts=newer_sources,
         )
-        assert finalize_adapter < finalize_materialize
+        older_ok, older_error = generator._publish_candidate_snapshot_pointer(
+            adg_artifacts_dir=artifacts,
+            run_id=older_id,
+            sqlite_candidate=older_snapshot,
+            generation_exit_code=0,
+            source_artifacts=older_sources,
+        )
+
+        assert newer_ok and newer_error is None
+        assert not older_ok
+        assert older_error and "equal or newer run is reserved" in older_error
+        published = load_snapshot_pointer(artifacts, "candidate", verify_digest=True)
+        assert published.path == newer_snapshot.resolve()
+        assert set(published.source_artifacts) == set(newer_sources)
+
+    def test_candidate_post_replace_error_keeps_committed_seal(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.adg.shared_modules import snapshot_registry
+        from tools.generate import generate_full_adg as generator
+
+        artifacts = tmp_path / "artifacts" / "adg"
+        artifacts.mkdir(parents=True)
+        run_id = "07172026_1202"
+        snapshot = artifacts / f"adg_indexed_{run_id}.sqlite"
+        snapshot.write_bytes(b"sealed-snapshot")
+        sources: dict[str, Path] = {}
+        for label, prefix in (
+            ("generation_manifest", "adg_generation_manifest"),
+            ("gate_manifest", "adg_gate_invocation_manifest"),
+            ("output_bundle", "adg_run_output_bundle"),
+        ):
+            path = artifacts / f"{prefix}_{run_id}.json"
+            path.write_text(json.dumps({"run_id": run_id, "label": label}), encoding="utf-8")
+            sources[label] = path
+        sealed_bytes = {path: path.read_bytes() for path in sources.values()}
+
+        real_publish = snapshot_registry.publish_snapshot_pointer
+
+        def commit_then_raise(**kwargs):  # noqa: ANN003, ANN202
+            real_publish(**kwargs)
+            raise OSError("simulated directory fsync failure after replace")
+
+        monkeypatch.setattr(snapshot_registry, "publish_snapshot_pointer", commit_then_raise)
+
+        published, error = generator._publish_candidate_snapshot_pointer(
+            adg_artifacts_dir=artifacts,
+            run_id=run_id,
+            sqlite_candidate=snapshot,
+            generation_exit_code=0,
+            source_artifacts=sources,
+        )
+
+        assert published and error is None
+        pointer = snapshot_registry.load_snapshot_pointer(
+            artifacts,
+            "candidate",
+            verify_digest=True,
+        )
+        assert pointer.path == snapshot.resolve()
+        assert {path: path.read_bytes() for path in sources.values()} == sealed_bytes
+
+    def test_global_generation_lock_blocks_adjacent_run_ids_then_releases(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.generate import generate_full_adg as generator
+
+        artifacts = tmp_path / "artifacts" / "adg"
+        monkeypatch.setenv("ADG_SUPPRESS_TERMINAL_SUMMARY", "1")
+        first = generator._claim_generation_lock(artifacts, "07172026_1200")
+        try:
+            with pytest.raises(SystemExit) as exc_info:
+                generator._claim_generation_lock(artifacts, "07172026_1201")
+            assert exc_info.value.code == generator.RUN_ID_COLLISION_EXIT_CODE
+        finally:
+            generator._release_generation_lock(first)
+
+        second = generator._claim_generation_lock(artifacts, "07172026_1201")
+        generator._release_generation_lock(second)
+        assert not (artifacts / ".adg_generation.lock").exists()
+
+    def test_global_generation_lock_reclaims_dead_owner(self, tmp_path):
+        from tools.generate import generate_full_adg as generator
+
+        artifacts = tmp_path / "artifacts" / "adg"
+        artifacts.mkdir(parents=True)
+        lock_path = artifacts / ".adg_generation.lock"
+        lock_path.write_text(
+            json.dumps(
+                {
+                    "pid": 2_147_483_647,
+                    "run_id": "07172026_1159",
+                    "owner_token": "dead-owner",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        claimed = generator._claim_generation_lock(artifacts, "07172026_1200")
+        try:
+            payload = json.loads(lock_path.read_text(encoding="utf-8"))
+            assert payload["owner_token"] == claimed[1]
+            assert payload["run_id"] == "07172026_1200"
+        finally:
+            generator._release_generation_lock(claimed)
+
+    def test_global_generation_lock_reclaims_abandoned_empty_file(self, tmp_path):
+        from tools.generate import generate_full_adg as generator
+
+        artifacts = tmp_path / "artifacts" / "adg"
+        artifacts.mkdir(parents=True)
+        lock_path = artifacts / ".adg_generation.lock"
+        lock_path.write_text("", encoding="utf-8")
+
+        claimed = generator._claim_generation_lock(
+            artifacts,
+            "07172026_1200",
+            stale_after_s=0,
+        )
+        generator._release_generation_lock(claimed)
+
+        assert not lock_path.exists()
+
+    def test_single_flight_wrapper_releases_between_same_process_runs(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.generate import generate_full_adg as generator
+
+        monkeypatch.setattr(generator, "ROOT", tmp_path)
+        lock_path = tmp_path / "artifacts" / "adg" / ".adg_generation.lock"
+        observed: list[str] = []
+
+        @generator._single_flight_generation
+        def probe() -> None:
+            payload = json.loads(lock_path.read_text(encoding="utf-8"))
+            observed.append(payload["run_id"])
+
+        monkeypatch.setenv("ADG_RUN_ID", "07172026_1200")
+        probe()
+        assert not lock_path.exists()
+        monkeypatch.setenv("ADG_RUN_ID", "07172026_1201")
+        probe()
+
+        assert observed == ["07172026_1200", "07172026_1201"]
+        assert not lock_path.exists()
+
+    def test_new_run_resets_both_deferred_failure_registries(self):
+        from tools.generate.integration import deferred_failures, p0_runner
+
+        deferred_failures.record_failure("prior_run_gate", 7)
+        p0_runner._DEFERRED_P0_FAILURE.update(  # noqa: SLF001 - regression probes run reset
+            {"failed": True, "rc": 9, "plan_path": "prior.json"}
+        )
+
+        deferred_failures.reset_for_run()
+        p0_runner.reset_for_run()
+
+        assert not deferred_failures.is_failure_deferred()
+        assert deferred_failures.deferred_exit_code() == 0
+        assert not p0_runner.is_p0_failure_deferred()
+        assert p0_runner.deferred_p0_exit_code() == 0
+
+    def test_generator_has_one_guarded_terminal_summary_and_no_legacy_replay(self):
+        source, main = self._generator_source_and_main()
+        call_names = [
+            node.func.id
+            for node in ast.walk(main)
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+        ]
+
+        terminal_calls = [
+            node
+            for node in ast.walk(main)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "print_adg_run_terminal_summary"
+        ]
+        assert len(terminal_calls) == 2
+        print_modes = [
+            ast.unparse(keyword.value)
+            for call in terminal_calls
+            for keyword in call.keywords
+            if keyword.arg == "print_terminal"
+        ]
+        assert print_modes.count("False") == 1
+        assert len(print_modes) == 2
+        assert call_names.count("emit_bcg_executive_summary") == 0
+        assert call_names.count("emit_existing_burndown_markdown") == 0
+        assert call_names.count("emit_mandatory_adg_burndown_report") == 0
+        assert call_names.count("emit_bcg_gate_adapter") == 0
+        assert 'print_terminal=os.environ.get("ADG_SUPPRESS_TERMINAL_SUMMARY") != "1"' in source
 
 
 class TestDispatcherResultsPathResolution:
@@ -198,6 +456,41 @@ class TestDispatcherResultsPathResolution:
         )
 
         assert Path(resolved).resolve() == latest.resolve()
+
+    def test_rejects_result_bound_to_another_snapshot(self, tmp_path):
+        from tools.generate.generate_full_adg import _resolve_dispatcher_results_path
+
+        expected = tmp_path / "expected.sqlite"
+        other = tmp_path / "other.sqlite"
+        expected.write_bytes(b"expected")
+        other.write_bytes(b"other")
+        gate_results = tmp_path / "adg_gate_results_20260613_192959.json"
+        gate_results.write_text(json.dumps({"snapshot_path": str(other)}), encoding="utf-8")
+
+        resolved = _resolve_dispatcher_results_path(
+            str(gate_results),
+            tmp_path,
+            expected_snapshot_path=expected,
+        )
+
+        assert resolved == ""
+
+    def test_rejects_result_older_than_dispatch_start(self, tmp_path):
+        from tools.generate.generate_full_adg import _resolve_dispatcher_results_path
+
+        snapshot = tmp_path / "expected.sqlite"
+        snapshot.write_bytes(b"expected")
+        gate_results = tmp_path / "adg_gate_results_20260613_192959.json"
+        gate_results.write_text(json.dumps({"snapshot_path": str(snapshot)}), encoding="utf-8")
+
+        resolved = _resolve_dispatcher_results_path(
+            str(gate_results),
+            tmp_path,
+            expected_snapshot_path=snapshot,
+            not_before_ns=gate_results.stat().st_mtime_ns + 1,
+        )
+
+        assert resolved == ""
 
 
 class TestArtifactValidityCheck:
@@ -313,10 +606,7 @@ class TestSQLiteIntegrityCheck:
 
         sqlite_path = tmp_path / "test.sqlite"
         conn = sqlite3.connect(str(sqlite_path))
-        conn.execute("CREATE TABLE nodes (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE edges (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE violations (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE meta (id INTEGER PRIMARY KEY)")
+        _create_queryable_adg_schema(conn)
         conn.close()
 
         # Should not raise
@@ -329,11 +619,7 @@ class TestPostCommitSqliteResolution:
     @staticmethod
     def _create_valid_sqlite(path: Path) -> None:
         conn = sqlite3.connect(str(path))
-        conn.execute("CREATE TABLE nodes (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE edges (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE violations (id INTEGER PRIMARY KEY)")
-        conn.execute("CREATE TABLE meta (key TEXT, value TEXT)")
-        conn.commit()
+        _create_queryable_adg_schema(conn)
         conn.close()
 
     def test_prefers_current_run_paths_sqlite_over_lexicographic_latest(self, tmp_path):
@@ -452,7 +738,9 @@ class TestRepairRunnerSqliteResolution:
                 )
 
         monkeypatch.setattr(repair_pkg, "ADGRepairOrchestrator", FakeOrchestrator)
-        monkeypatch.setattr(rule_engine, "register_builtin_rules", lambda: calls.setdefault("registered", True))
+        monkeypatch.setattr(
+            rule_engine, "register_builtin_rules", lambda: calls.setdefault("registered", True)
+        )
 
         _run_p1_p2_auto_fix(adg_dir, "04192026_0622", sqlite_path=current, dry_run=True)
 
@@ -4348,6 +4636,7 @@ class TestBurndownProvenance:
         provenance = data["provenance"]
         assert provenance["generator_module"] == "tools.generate.reporting.reports._print_defect_table"
         assert provenance["sqlite_source_path"].endswith(".sqlite")
+        assert len(provenance["sqlite_source_sha256"]) == 64
         assert provenance["counting_mode"] == "violations_plus_exempted_edge_inference"
         assert "single-tranche" in provenance["historical_interpretation_note"]
 

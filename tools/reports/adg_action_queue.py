@@ -237,22 +237,22 @@ def _build_fix_actions(gates: list[dict[str, Any]], source_digest: str) -> list[
     for gate in fix_gates:
         sub = display_verdict_sub(gate)
         action = {
-                "verdict_cluster": "FIX",
-                "gate_id": gate.get("gate_id"),
-                "source_id": None,
-                "action_kind": "fix_gate",
-                "file_path": None,
-                "symbol": None,
-                "scoped_tests": [],
-                "plan_hint": "immediate_session",
-                "signal": format_gate_signal(gate),
-                "sort_bucket": SUB_TO_SORT_BUCKET.get(sub, 9),
-                "sort_band": str(gate.get("band", "P3")),
-                "violation_count": int(gate.get("violation_count") or 0),
-                "source_artifact": "gate_results",
-                "source_digest": source_digest,
-                "ordering_reason": _ordering_reason_for_fix(gate),
-            }
+            "verdict_cluster": "FIX",
+            "gate_id": gate.get("gate_id"),
+            "source_id": None,
+            "action_kind": "fix_gate",
+            "file_path": None,
+            "symbol": None,
+            "scoped_tests": [],
+            "plan_hint": "immediate_session",
+            "signal": format_gate_signal(gate),
+            "sort_bucket": SUB_TO_SORT_BUCKET.get(sub, 9),
+            "sort_band": str(gate.get("band", "P3")),
+            "violation_count": int(gate.get("violation_count") or 0),
+            "source_artifact": "gate_results",
+            "source_digest": source_digest,
+            "ordering_reason": _ordering_reason_for_fix(gate),
+        }
         action.update(action_semantics(action))
         rows.append(action)
     return rows
@@ -298,28 +298,30 @@ def _build_candidate_blocker_actions(
         if not source_file:
             continue
         action = {
-                "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
-                "gate_id": None,
-                "source_id": source_file,
-                "action_kind": "candidate_blocker_file",
-                "file_path": source_file,
-                "symbol": None,
-                "scoped_tests": [],
-                "plan_hint": "candidate_blocker_triage_session",
-                "signal": f"Candidate blocker file; issues={item.get('issue_count', 0)}",
-                "sort_bucket": 3,
-                "sort_band": "P0",
-                "violation_count": int(item.get("issue_count") or 0),
-                "source_artifact": "p0_wave_plan",
-                "source_digest": source_digest,
-                "ordering_reason": "candidate_blocker_top_files_priority",
-            }
+            "verdict_cluster": "CANDIDATE_BLOCKER_TRIAGE",
+            "gate_id": None,
+            "source_id": source_file,
+            "action_kind": "candidate_blocker_file",
+            "file_path": source_file,
+            "symbol": None,
+            "scoped_tests": [],
+            "plan_hint": "candidate_blocker_triage_session",
+            "signal": f"Candidate blocker file; issues={item.get('issue_count', 0)}",
+            "sort_bucket": 3,
+            "sort_band": "P0",
+            "violation_count": int(item.get("issue_count") or 0),
+            "source_artifact": "p0_wave_plan",
+            "source_digest": source_digest,
+            "ordering_reason": "candidate_blocker_top_files_priority",
+        }
         action.update(action_semantics(action))
         rows.append(action)
     return rows
 
 
-def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max_candidates: int = 3) -> list[dict[str, Any]]:
+def _build_refactor_actions(
+    accelerator: dict[str, Any], source_digest: str, max_candidates: int = 3
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     seen_paths: set[str] = set()
     for cand in accelerator.get("candidates") or []:
@@ -332,22 +334,24 @@ def _build_refactor_actions(accelerator: dict[str, Any], source_digest: str, max
             tests = []
         dimensions = cand.get("dimensions") if isinstance(cand.get("dimensions"), dict) else {}
         action = {
-                "verdict_cluster": "REFACTOR",
-                "gate_id": None,
-                "source_id": file_path,
-                "action_kind": "refactor_candidate",
-                "file_path": file_path,
-                "symbol": cand.get("symbol") or cand.get("adg_name"),
-                "scoped_tests": [str(t) for t in tests[:5]],
-                "plan_hint": "refactor_when_fix_clear",
-                "signal": f"Refactor candidate; score={cand.get('score', cand.get('priority_score', 'n/a'))}",
-                "sort_bucket": 4,
-                "sort_band": str(cand.get("layer") or cand.get("band") or "L_APP"),
-                "violation_count": _int_value(cand.get("violation_count"), dimensions.get("violations"), default=0),
-                "source_artifact": "refactor_accelerator",
-                "source_digest": source_digest,
-                "ordering_reason": "refactor_accelerator_candidates_desc",
-            }
+            "verdict_cluster": "REFACTOR",
+            "gate_id": None,
+            "source_id": file_path,
+            "action_kind": "refactor_candidate",
+            "file_path": file_path,
+            "symbol": cand.get("symbol") or cand.get("adg_name"),
+            "scoped_tests": [str(t) for t in tests[:5]],
+            "plan_hint": "refactor_when_fix_clear",
+            "signal": f"Refactor candidate; score={cand.get('score', cand.get('priority_score', 'n/a'))}",
+            "sort_bucket": 4,
+            "sort_band": str(cand.get("layer") or cand.get("band") or "L_APP"),
+            "violation_count": _int_value(
+                cand.get("violation_count"), dimensions.get("violations"), default=0
+            ),
+            "source_artifact": "refactor_accelerator",
+            "source_digest": source_digest,
+            "ordering_reason": "refactor_accelerator_candidates_desc",
+        }
         action.update(action_semantics(action))
         rows.append(action)
         if len(rows) >= max_candidates:
@@ -413,8 +417,7 @@ def _build_test_hotspot_actions(
         con.row_factory = sqlite3.Row
         try:
             has_mv = con.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' "
-                "AND name='mv_hotspot_coverage_risk'"
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='mv_hotspot_coverage_risk'"
             ).fetchone()
             if not has_mv:
                 return []
@@ -449,27 +452,27 @@ def _build_test_hotspot_actions(
         coverage_text = "absent" if coverage_pct < 0 else f"{coverage_pct:.1f}%"
         priority = str(row["priority_band"] or "P?_GAP")
         action = {
-                "verdict_cluster": "GRAPHDB",
-                "gate_id": None,
-                "source_id": file_path,
-                "action_kind": "test_hotspot_gap",
-                "file_path": file_path,
-                "symbol": None,
-                "scoped_tests": [f"tests/**/test_{leaf}.py"],
-                "plan_hint": "test_hotspot_when_fix_clear",
-                "signal": (
-                    f"Test hotspot gap from mv_hotspot_coverage_risk; priority={priority}; "
-                    f"risk={row['risk_band']}; coverage={row['coverage_band']} ({coverage_text}); "
-                    f"criticality={_float_value(row['criticality_score']):.2f}; "
-                    f"fan_in={_int_value(row['fan_in'])}"
-                ),
-                "sort_bucket": 3,
-                "sort_band": priority,
-                "violation_count": _int_value(row["violation_count"], default=0),
-                "source_artifact": "sqlite:mv_hotspot_coverage_risk",
-                "source_digest": source_digest,
-                "ordering_reason": "mv_hotspot_coverage_risk_priority",
-            }
+            "verdict_cluster": "GRAPHDB",
+            "gate_id": None,
+            "source_id": file_path,
+            "action_kind": "test_hotspot_gap",
+            "file_path": file_path,
+            "symbol": None,
+            "scoped_tests": [f"tests/**/test_{leaf}.py"],
+            "plan_hint": "test_hotspot_when_fix_clear",
+            "signal": (
+                f"Test hotspot gap from mv_hotspot_coverage_risk; priority={priority}; "
+                f"risk={row['risk_band']}; coverage={row['coverage_band']} ({coverage_text}); "
+                f"criticality={_float_value(row['criticality_score']):.2f}; "
+                f"fan_in={_int_value(row['fan_in'])}"
+            ),
+            "sort_bucket": 3,
+            "sort_band": priority,
+            "violation_count": _int_value(row["violation_count"], default=0),
+            "source_artifact": "sqlite:mv_hotspot_coverage_risk",
+            "source_digest": source_digest,
+            "ordering_reason": "mv_hotspot_coverage_risk_priority",
+        }
         action.update(action_semantics(action))
         rows.append(action)
     return rows
@@ -511,25 +514,25 @@ def _build_structural_hotspot_actions(
         seen_paths.add(file_path)
         fan_in = _int_value(cand.get("direct_fan_in"), cand.get("fan_in"), default=0)
         action = {
-                "verdict_cluster": "GRAPHDB",
-                "gate_id": None,
-                "source_id": file_path,
-                "action_kind": "graphdb_hotspot",
-                "file_path": file_path,
-                "symbol": cand.get("adg_name") or cand.get("symbol"),
-                "scoped_tests": [],
-                "plan_hint": "graphdb_when_fix_clear",
-                "signal": (
-                    f"GraphDB/MV hotspot from {cand.get('_mv_source')}; "
-                    f"fan_in={fan_in}; centrality={_float_value(cand.get('centrality_score')):.4f}"
-                ),
-                "sort_bucket": 5,
-                "sort_band": str(cand.get("layer") or "L_APP"),
-                "violation_count": 0,
-                "source_artifact": "structural_outputs",
-                "source_digest": source_digest,
-                "ordering_reason": "structural_outputs_hotspot_desc",
-            }
+            "verdict_cluster": "GRAPHDB",
+            "gate_id": None,
+            "source_id": file_path,
+            "action_kind": "graphdb_hotspot",
+            "file_path": file_path,
+            "symbol": cand.get("adg_name") or cand.get("symbol"),
+            "scoped_tests": [],
+            "plan_hint": "graphdb_when_fix_clear",
+            "signal": (
+                f"GraphDB/MV hotspot from {cand.get('_mv_source')}; "
+                f"fan_in={fan_in}; centrality={_float_value(cand.get('centrality_score')):.4f}"
+            ),
+            "sort_bucket": 5,
+            "sort_band": str(cand.get("layer") or "L_APP"),
+            "violation_count": 0,
+            "source_artifact": "structural_outputs",
+            "source_digest": source_digest,
+            "ordering_reason": "structural_outputs_hotspot_desc",
+        }
         action.update(action_semantics(action))
         rows.append(action)
         if len(rows) >= max_candidates:
@@ -575,25 +578,25 @@ def _build_graphdb_structural_actions(
     rows: list[dict[str, Any]] = []
     for count, key, label in scored[:max_candidates]:
         action = {
-                "verdict_cluster": "GRAPHDB",
-                "gate_id": None,
-                "source_id": key,
-                "action_kind": "graphdb_structural_signal",
-                "file_path": None,
-                "symbol": None,
-                "scoped_tests": [],
-                "plan_hint": "graphdb_when_fix_clear",
-                "signal": (
-                    f"GraphDB structural signal; rows={count}; {label}. "
-                    "Inspect adg_graphdb_queries for concrete rows."
-                ),
-                "sort_bucket": 5,
-                "sort_band": "GRAPHDB",
-                "violation_count": count,
-                "source_artifact": "graphdb_queries",
-                "source_digest": source_digest,
-                "ordering_reason": "graphdb_structural_signal_count_desc",
-            }
+            "verdict_cluster": "GRAPHDB",
+            "gate_id": None,
+            "source_id": key,
+            "action_kind": "graphdb_structural_signal",
+            "file_path": None,
+            "symbol": None,
+            "scoped_tests": [],
+            "plan_hint": "graphdb_when_fix_clear",
+            "signal": (
+                f"GraphDB structural signal; rows={count}; {label}. "
+                "Inspect adg_graphdb_queries for concrete rows."
+            ),
+            "sort_bucket": 5,
+            "sort_band": "GRAPHDB",
+            "violation_count": count,
+            "source_artifact": "graphdb_queries",
+            "source_digest": source_digest,
+            "ordering_reason": "graphdb_structural_signal_count_desc",
+        }
         action.update(action_semantics(action))
         rows.append(action)
     return rows
@@ -745,8 +748,14 @@ def build_action_queue(
     fix_count = len(fix_rows)
     if accel_prov.status == "present" and accel_prov.raw and (fix_count < max_actions or not fix_rows):
         combined.extend(_build_refactor_actions(accel_prov.raw, accel_prov.digest_sha256 or ""))
-    if structural_prov.status == "present" and structural_prov.raw and (fix_count < max_actions or not fix_rows):
-        combined.extend(_build_structural_hotspot_actions(structural_prov.raw, structural_prov.digest_sha256 or ""))
+    if (
+        structural_prov.status == "present"
+        and structural_prov.raw
+        and (fix_count < max_actions or not fix_rows)
+    ):
+        combined.extend(
+            _build_structural_hotspot_actions(structural_prov.raw, structural_prov.digest_sha256 or "")
+        )
     if graphdb_prov.status == "present" and graphdb_prov.raw and (fix_count < max_actions or not fix_rows):
         combined.extend(_build_graphdb_structural_actions(graphdb_prov.raw, graphdb_prov.digest_sha256 or ""))
 
@@ -917,58 +926,64 @@ def emit_adg_action_queue(
     ts: str | None = None,
     max_actions: int = DEFAULT_MAX_ACTIONS,
     fail_closed: bool = True,
+    allow_latest_fallback: bool = True,
     repo_root: Path = REPO_ROOT,
 ) -> tuple[int, Path | None]:
     """Emit queue JSON. Returns (exit_code, path_or_none)."""
     artifacts = repo_root / "artifacts" / "adg"
-    gate_path = gate_results or _resolve_latest("adg_gate_results_*.json", artifacts)
-    burndown_path = burndown or (artifacts / "adg_burndown_table.json")
+    gate_path = gate_results
+    burndown_path = burndown
+    if allow_latest_fallback:
+        gate_path = gate_path or _resolve_latest("adg_gate_results_*.json", artifacts)
+        burndown_path = burndown_path or (artifacts / "adg_burndown_table.json")
 
     if gate_path is None or not gate_path.is_file():
         msg = "required gate_results not found"
         print(f"[adg_action_queue] NEXT_ACTION_ERROR={msg}", file=sys.stderr)
         return (1 if fail_closed else 0, None)
-    if not burndown_path.is_file():
+    if burndown_path is None or not burndown_path.is_file():
         msg = "required burndown table not found"
         print(f"[adg_action_queue] NEXT_ACTION_ERROR={msg}", file=sys.stderr)
         return (1 if fail_closed else 0, None)
 
-    if p0_wave_plan is None and ts:
-        candidate = artifacts / "issues" / f"p0_remediation_wave_plan_{ts}.json"
-        if candidate.is_file():
-            p0_wave_plan = candidate
-    if p0_wave_plan is None:
-        p0_wave_plan = _resolve_latest("issues/p0_remediation_wave_plan_*.json", artifacts)
-
-    if refactor_accelerator is None:
-        if ts:
-            candidate = artifacts / f"adg_refactor_accelerator_{ts}.json"
+    if allow_latest_fallback:
+        if p0_wave_plan is None and ts:
+            candidate = artifacts / "issues" / f"p0_remediation_wave_plan_{ts}.json"
             if candidate.is_file():
-                refactor_accelerator = candidate
-    if refactor_accelerator is None:
-        refactor_accelerator = _resolve_latest("adg_refactor_accelerator_*.json", artifacts)
+                p0_wave_plan = candidate
+        if p0_wave_plan is None:
+            p0_wave_plan = _resolve_latest("issues/p0_remediation_wave_plan_*.json", artifacts)
 
-    if failure_clusters is None:
-        fc = artifacts / "adg_failure_clusters.json"
-        failure_clusters = fc if fc.is_file() else None
+        if refactor_accelerator is None:
+            if ts:
+                candidate = artifacts / f"adg_refactor_accelerator_{ts}.json"
+                if candidate.is_file():
+                    refactor_accelerator = candidate
+        if refactor_accelerator is None:
+            refactor_accelerator = _resolve_latest("adg_refactor_accelerator_*.json", artifacts)
 
-    if structural_outputs is None:
-        if ts:
-            candidate = artifacts / f"adg_structural_outputs_{ts}.json"
-            if candidate.is_file():
-                structural_outputs = candidate
-    if structural_outputs is None:
-        structural_outputs = _resolve_latest("adg_structural_outputs_*.json", artifacts)
+        if failure_clusters is None:
+            fc = artifacts / "adg_failure_clusters.json"
+            failure_clusters = fc if fc.is_file() else None
 
-    if graphdb_queries is None:
-        if ts:
-            candidate = artifacts / f"adg_graphdb_queries_{ts}.json"
-            if candidate.is_file():
-                graphdb_queries = candidate
-    if graphdb_queries is None:
-        graphdb_queries = _resolve_latest("adg_graphdb_queries_*.json", artifacts)
+        if structural_outputs is None:
+            if ts:
+                candidate = artifacts / f"adg_structural_outputs_{ts}.json"
+                if candidate.is_file():
+                    structural_outputs = candidate
+        if structural_outputs is None:
+            structural_outputs = _resolve_latest("adg_structural_outputs_*.json", artifacts)
+
+        if graphdb_queries is None:
+            if ts:
+                candidate = artifacts / f"adg_graphdb_queries_{ts}.json"
+                if candidate.is_file():
+                    graphdb_queries = candidate
+        if graphdb_queries is None:
+            graphdb_queries = _resolve_latest("adg_graphdb_queries_*.json", artifacts)
 
     try:
+        assert burndown_path is not None
         doc = build_action_queue(
             gate_results_path=gate_path,
             burndown_path=burndown_path,

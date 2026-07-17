@@ -28,6 +28,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
@@ -46,7 +47,10 @@ REPAIR_ARTIFACT_KEYS: tuple[str, ...] = (
     "burndown_table",
     "generation_manifest",
     "gate_manifest",
+    "output_bundle",
 )
+RUN_ID_COLLISION_EXIT_CODE = 73
+_LAST_GENERATOR_RUN_ID: str | None = None
 
 
 def _utcnow_iso() -> str:
@@ -68,19 +72,45 @@ class WrapperResult:
     started_at_utc: str | None = None
     completed_at_utc: str | None = None
     repair_handoff: dict[str, Any] | None = None
+    process_exit_code: int = 1
 
     @property
     def ok(self) -> bool:
-        return self.certification_status == "clean"
+        return (
+            self.certification_status == "clean" and self.artifact_status == "certified" and not self.reasons
+        )
 
 
-def _find_generation_manifest(since_monotonic_start: float) -> Path | None:
+@dataclass(frozen=True)
+class PublicationDocuments:
+    """Immutable documents prepared before snapshot-pointer activation."""
+
+    receipt_path: Path
+    handoff_path: Path
+    latest_handoff_pointer: dict[str, Any]
+    receipt_text: str
+
+
+def _find_generation_manifest(
+    since_monotonic_start: float,
+    *,
+    expected_run_id: str | None = None,
+) -> Path | None:
     """Return the newest generation manifest created during this run.
 
     We filter by mtime strictly greater than ``wall_start`` to avoid
     picking up a stale manifest from a prior run. ``latest.json`` is
     NEVER consulted from CI — CI resolves by timestamped filename.
     """
+    if expected_run_id is not None:
+        exact = ARTIFACTS_ADG / f"adg_generation_manifest_{expected_run_id}.json"
+        # The wrapper chooses the exact run ID before spawning the generator.
+        # Unlike newest-file discovery, no clock-skew allowance is safe here:
+        # accepting a pre-spawn same-minute manifest can adopt a prior run when
+        # the child dies before it reaches its run-ID claim.
+        if not exact.is_file() or exact.stat().st_mtime < since_monotonic_start:
+            return None
+        return exact
     candidates = sorted(
         ARTIFACTS_ADG.glob("adg_generation_manifest_*.json"),
         key=lambda p: p.stat().st_mtime,
@@ -97,7 +127,10 @@ def _find_generation_manifest(since_monotonic_start: float) -> Path | None:
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise TypeError(f"JSON document must be an object: {path}")
+    return payload
 
 
 def _sha256(path: Path) -> str:
@@ -149,12 +182,13 @@ def _is_timestamped_artifact(path: Path, key: str) -> bool:
         "action_queue": ("adg_action_queue_", ".json"),
         "burndown_report": ("adg_burndown_report_", ".md"),
         "burndown_table": ("adg_burndown_table_", ".json"),
+        "output_bundle": ("adg_run_output_bundle_", ".json"),
     }
     prefix, suffix = expected[key]
     name = path.name
     if not name.startswith(prefix) or not name.endswith(suffix):
         return False
-    stamp = name[len(prefix):-len(suffix)]
+    stamp = name[len(prefix) : -len(suffix)]
     if key in {"gate_results", "action_queue"}:
         return _is_gate_results_stamp(stamp) or _is_generator_run_stamp(stamp)
     return _is_generator_run_stamp(stamp)
@@ -217,7 +251,9 @@ def _copy_immutable_artifact(source: Path, destination: Path, *, key: str) -> Pa
     source_sha256 = _sha256(source_resolved)
     if destination.exists():
         if _sha256(destination) != source_sha256:
-            raise RuntimeError(f"immutable {key} artifact already exists with different content: {destination}")
+            raise RuntimeError(
+                f"immutable {key} artifact already exists with different content: {destination}"
+            )
         return destination_resolved
     shutil.copy2(source_resolved, destination)
     if _sha256(destination) != source_sha256:
@@ -228,7 +264,7 @@ def _copy_immutable_artifact(source: Path, destination: Path, *, key: str) -> Pa
 def _published_generation_manifest_text(source: Path, destinations: dict[str, Path]) -> str | None:
     try:
         payload = _load_json(source)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError, TypeError):
         return None
     snapshot = destinations.get("snapshot")
     if snapshot is not None:
@@ -239,6 +275,286 @@ def _published_generation_manifest_text(source: Path, destinations: dict[str, Pa
     if gate_manifest is not None and "gate_manifest_path" in payload:
         payload["gate_manifest_path"] = str(gate_manifest.resolve())
     return json.dumps(payload, indent=2) + "\n"
+
+
+def _transport_artifact_priority(path: Path) -> tuple[int, str]:
+    """Order a bundle closure so referenced digests are resealed first."""
+    name = path.name
+    if path.suffix == ".sqlite":
+        priority = 0
+    elif name.startswith("adg_gate_results_"):
+        priority = 10
+    elif name.startswith("adg_burndown_table_"):
+        priority = 20
+    elif name.startswith("adg_gate_invocation_manifest_"):
+        priority = 21
+    elif name.startswith("adg_generation_manifest_"):
+        priority = 22
+    elif name.startswith("adg_action_queue_"):
+        priority = 30
+    elif name.startswith("adg_bcg_adapter_"):
+        priority = 40
+    elif name.startswith("adg_review_template_"):
+        priority = 45
+    elif name.startswith("adg_bcg_executive_summary_"):
+        priority = 60
+    elif name.startswith("adg_run_terminal_summary_"):
+        priority = 70
+    elif name.startswith("adg_output_publication_"):
+        priority = 90
+    else:
+        # Optional P7 evidence and wrapper certification artifacts feed the
+        # action/review/executive layers even though they are not mandatory
+        # output gates.  Transport them before those consumers so any rebased
+        # path changes are reflected in downstream digests.
+        priority = 25
+    return priority, str(path)
+
+
+def _replace_transport_values(value: Any, replacements: dict[str, str]) -> Any:
+    """Replace exact sealed paths/digests in a JSON-compatible value."""
+    if isinstance(value, dict):
+        return {key: _replace_transport_values(item, replacements) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_replace_transport_values(item, replacements) for item in value]
+    if isinstance(value, str):
+        replaced = replacements.get(value)
+        if replaced is not None:
+            return replaced
+        for old, new in sorted(replacements.items(), key=lambda item: len(item[0]), reverse=True):
+            if old and old in value:
+                value = value.replace(old, new)
+        return value
+    return value
+
+
+def _transport_destination(
+    source: Path,
+    *,
+    source_artifacts: Path,
+    producer_artifacts: Path,
+) -> Path:
+    source = source.resolve()
+    try:
+        relative = source.relative_to(source_artifacts.resolve())
+    except ValueError:
+        relative = Path(source.name)
+    destination = (producer_artifacts / relative).resolve()
+    if not destination.is_relative_to(producer_artifacts.resolve()):
+        raise RuntimeError(f"bundle artifact transport escaped producer root: {source}")
+    return destination
+
+
+def _transport_json_dependencies(source: Path) -> set[Path]:
+    """Return digest/provenance inputs that a JSON artifact claims are present."""
+    if source.suffix.lower() != ".json":
+        return set()
+    document = _load_json(source)
+    dependencies: set[Path] = set()
+
+    def add_declared(raw_path: Any, raw_digest: Any, *, label: str) -> None:
+        if not isinstance(raw_path, str) or not raw_path:
+            raise RuntimeError(f"{source.name} {label} path is missing")
+        path = _abs(Path(raw_path)).resolve()
+        if not path.is_file():
+            raise RuntimeError(f"{source.name} {label} artifact is missing: {path}")
+        if isinstance(raw_digest, str) and raw_digest and _sha256(path) != raw_digest:
+            raise RuntimeError(f"{source.name} {label} digest mismatch: {path}")
+        dependencies.add(path)
+
+    provenance = document.get("provenance")
+    if isinstance(provenance, dict):
+        inputs = provenance.get("inputs")
+        if isinstance(inputs, list):
+            for row in inputs:
+                if not isinstance(row, dict) or row.get("status") != "present":
+                    continue
+                add_declared(
+                    row.get("path"),
+                    row.get("digest_sha256"),
+                    label=f"provenance input {row.get('artifact_key')!r}",
+                )
+
+    raw_inputs = document.get("raw_inputs")
+    if isinstance(raw_inputs, dict):
+        artifacts = raw_inputs.get("artifacts")
+        loaded_status = raw_inputs.get("loaded_status")
+        used = (
+            loaded_status.get("used")
+            if isinstance(loaded_status, dict) and isinstance(loaded_status.get("used"), list)
+            else []
+        )
+        if isinstance(artifacts, dict):
+            for key in used:
+                if isinstance(key, str) and key in artifacts:
+                    add_declared(artifacts[key], None, label=f"raw input {key!r}")
+
+    usage = document.get("artifact_usage_matrix")
+    rows = usage.get("rows") if isinstance(usage, dict) else None
+    if isinstance(rows, list):
+        for row in rows:
+            if isinstance(row, dict) and row.get("exists") is True:
+                add_declared(
+                    row.get("path"),
+                    None,
+                    label=f"artifact usage {row.get('artifact_key')!r}",
+                )
+    return dependencies
+
+
+def _transport_output_bundle_closure(
+    *,
+    source_bundle: Path,
+    producer_artifacts: Path,
+    handoff_sources: dict[str, Path],
+) -> tuple[Path, dict[str, Path]]:
+    """Copy and reseal one portable output-bundle closure for BCG handoff.
+
+    The output bundle is a digest graph, not a loose group of files.  Moving
+    only its top-level handoff references leaves gate provenance, action-queue
+    provenance, publication receipts, and the inventory bound to the producer
+    repository.  Transport the complete closure in dependency order and then
+    render the bundle itself last.
+    """
+    source_bundle = source_bundle.resolve()
+    source_artifacts = source_bundle.parent.resolve()
+    producer_artifacts = producer_artifacts.resolve()
+    payload = _load_json(source_bundle)
+    if not isinstance(payload, dict):
+        raise RuntimeError("output bundle root must be a JSON object")
+
+    closure: set[Path] = {path.resolve() for path in handoff_sources.values() if path.is_file()}
+    raw_inventory = payload.get("artifacts")
+    if not isinstance(raw_inventory, list):
+        raise RuntimeError("output bundle artifact inventory is missing")
+    for row in raw_inventory:
+        if not isinstance(row, dict) or not isinstance(row.get("path"), str):
+            raise RuntimeError("output bundle artifact inventory row is malformed")
+        path = _abs(Path(row["path"])).resolve()
+        if not path.is_file():
+            raise RuntimeError(f"output bundle artifact missing during transport: {path}")
+        closure.add(path)
+    for field in (
+        "snapshot_path",
+        "gate_results_path",
+        "enforcement_report_path",
+        "terminal_summary_path",
+    ):
+        raw_path = payload.get(field)
+        if isinstance(raw_path, str) and raw_path:
+            path = _abs(Path(raw_path)).resolve()
+            if not path.is_file():
+                raise RuntimeError(f"output bundle {field} missing during transport: {path}")
+            closure.add(path)
+    for gate in payload.get("gates") or []:
+        if not isinstance(gate, dict):
+            raise RuntimeError("output bundle gate row is malformed")
+        for raw_path in gate.get("paths") or []:
+            if not isinstance(raw_path, str) or not raw_path:
+                raise RuntimeError("output bundle gate path is malformed")
+            path = _abs(Path(raw_path)).resolve()
+            if not path.is_file():
+                raise RuntimeError(f"output bundle gate artifact missing during transport: {path}")
+            closure.add(path)
+    closure.discard(source_bundle)
+
+    # The report bundle deliberately inventories emitted reports, not every
+    # optional P7 input consumed to build them.  Follow explicit present/used
+    # provenance recursively so the transported BCG closure never points back
+    # to a different checkout or to evidence that was not copied.
+    inspected: set[Path] = set()
+    while pending := sorted(closure - inspected):
+        for source in pending:
+            inspected.add(source)
+            closure.update(_transport_json_dependencies(source))
+
+    destinations: dict[Path, Path] = {}
+    destination_owners: dict[Path, Path] = {}
+    for source in closure:
+        destination = _transport_destination(
+            source,
+            source_artifacts=source_artifacts,
+            producer_artifacts=producer_artifacts,
+        )
+        owner = destination_owners.get(destination)
+        if owner is not None and owner != source:
+            raise RuntimeError(f"bundle artifact transport basename collision: {owner} and {source}")
+        destination_owners[destination] = source
+        destinations[source] = destination
+
+    destination_bundle = _transport_destination(
+        source_bundle,
+        source_artifacts=source_artifacts,
+        producer_artifacts=producer_artifacts,
+    )
+    replacements: dict[str, str] = {}
+    for source, destination in destinations.items():
+        replacements[str(source)] = str(destination)
+        replacements[str(source.resolve())] = str(destination.resolve())
+
+    for source in sorted(closure, key=_transport_artifact_priority):
+        destination = destinations[source]
+        old_digest = _sha256(source)
+        if source.suffix.lower() == ".json":
+            document = json.loads(source.read_text(encoding="utf-8"))
+            document = _replace_transport_values(document, replacements)
+            rendered = json.dumps(document, indent=2, sort_keys=True) + "\n"
+            _write_immutable_text(destination, rendered, label=f"transported {source.name}")
+        elif source.suffix.lower() in {".md", ".yaml", ".yml", ".txt"}:
+            rendered = source.read_text(encoding="utf-8")
+            for old, new in sorted(replacements.items(), key=lambda item: len(item[0]), reverse=True):
+                if old:
+                    rendered = rendered.replace(old, new)
+            _write_immutable_text(destination, rendered, label=f"transported {source.name}")
+        else:
+            _copy_immutable_artifact(source, destination, key=source.name)
+        new_digest = _sha256(destination)
+        prior = replacements.get(old_digest)
+        if prior is not None and prior != new_digest:
+            raise RuntimeError(
+                f"bundle artifact transport digest collision for {source}: {prior} != {new_digest}"
+            )
+        replacements[old_digest] = new_digest
+
+    transported_payload = _replace_transport_values(payload, replacements)
+    if not isinstance(transported_payload, dict):
+        raise RuntimeError("transported output bundle root must be a JSON object")
+    transported_payload["latest_promoted"] = False
+    _write_immutable_text(
+        destination_bundle,
+        json.dumps(transported_payload, indent=2, sort_keys=True) + "\n",
+        label="transported output bundle",
+    )
+
+    run_id = transported_payload.get("run_id")
+    source_snapshot = _abs(Path(payload["snapshot_path"])).resolve()
+    target_snapshot = destinations.get(source_snapshot)
+    if not isinstance(run_id, str) or not run_id or target_snapshot is None:
+        raise RuntimeError("transported output bundle is missing its run or snapshot binding")
+    raw_enforcement = payload.get("enforcement_report_path")
+    target_enforcement = (
+        destinations.get(_abs(Path(raw_enforcement)).resolve())
+        if isinstance(raw_enforcement, str) and raw_enforcement
+        else None
+    )
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        validate_existing_adg_run_output_bundle,
+    )
+
+    valid, reason = validate_existing_adg_run_output_bundle(
+        adg_artifacts_dir=producer_artifacts,
+        run_id=run_id,
+        sqlite_path=target_snapshot,
+        enforcement_report_path=target_enforcement,
+    )
+    if not valid:
+        raise RuntimeError(f"transported output bundle failed validation: {reason}")
+
+    keyed_destinations: dict[str, Path] = {}
+    for key, source in handoff_sources.items():
+        resolved = source.resolve()
+        keyed_destinations[key] = destination_bundle if resolved == source_bundle else destinations[resolved]
+    return destination_bundle, keyed_destinations
 
 
 def _copy_result_for_handoff_root(result: WrapperResult, *, producer_artifacts: Path) -> WrapperResult:
@@ -262,18 +578,28 @@ def _copy_result_for_handoff_root(result: WrapperResult, *, producer_artifacts: 
             continue
         sources[key] = source
         destinations[key] = producer_artifacts / source.name
-    for key, source in sources.items():
-        destination = destinations[key]
-        if key == "generation_manifest":
-            manifest_text = _published_generation_manifest_text(source, destinations)
-            if manifest_text is not None:
-                _write_immutable_text(destination, manifest_text, label="generation manifest artifact")
-                copied = destination.resolve()
+    output_bundle = sources.get("output_bundle")
+    if output_bundle is not None:
+        _bundle, transported = _transport_output_bundle_closure(
+            source_bundle=output_bundle,
+            producer_artifacts=producer_artifacts,
+            handoff_sources=sources,
+        )
+        for key, copied in transported.items():
+            artifacts[key] = _artifact_ref(key, copied)
+    else:
+        for key, source in sources.items():
+            destination = destinations[key]
+            if key == "generation_manifest":
+                manifest_text = _published_generation_manifest_text(source, destinations)
+                if manifest_text is not None:
+                    _write_immutable_text(destination, manifest_text, label="generation manifest artifact")
+                    copied = destination.resolve()
+                else:
+                    copied = _copy_immutable_artifact(source, destination, key=key)
             else:
                 copied = _copy_immutable_artifact(source, destination, key=key)
-        else:
-            copied = _copy_immutable_artifact(source, destination, key=key)
-        artifacts[key] = _artifact_ref(key, copied)
+            artifacts[key] = _artifact_ref(key, copied)
     return replace(result, repair_handoff=handoff)
 
 
@@ -318,7 +644,7 @@ def _stamp_from_artifact_name(path: Path | None, *, prefix: str, suffix: str) ->
     name = path.name
     if not name.startswith(prefix) or not name.endswith(suffix):
         return None
-    stamp = name[len(prefix):-len(suffix)]
+    stamp = name[len(prefix) : -len(suffix)]
     return stamp if _is_generator_run_stamp(stamp) else None
 
 
@@ -438,11 +764,10 @@ def _run_retention_sweep(
         print("[audit] retention skipped: no ADG run id available")
         return
     try:
-        from tools.generate.archiving import _archive_old_artifacts  # noqa: PLC0415
-
         from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
             protected_snapshot_run_ids,
         )
+        from tools.generate.archiving import _archive_old_artifacts  # noqa: PLC0415
 
         target_dir = (adg_dir or ARTIFACTS_ADG).resolve()
         _archive_old_artifacts(
@@ -475,7 +800,7 @@ def _find_gate_results_for_snapshot(
             continue
         try:
             data = _load_json(candidate)
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
             reasons.append(f"gate_results malformed: {candidate}: {exc}")
             continue
         if _gate_results_matches_snapshot(data, snapshot_path):
@@ -555,6 +880,7 @@ def _write_degraded_gate_results(
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "snapshot": snapshot_path.name,
         "snapshot_path": str(snapshot_path),
+        "snapshot_sha256": _sha256(snapshot_path),
         "overall_exit_code": 1,
         "total_gates": 0,
         "gates": [],
@@ -611,14 +937,13 @@ def _write_degraded_burndown_table(
             "generator_module": "tools.adg.run_full_adg_audit",
             "counting_mode": "degraded_pre_dispatch_fallback",
             "sqlite_source_path": str(snapshot_path),
+            "sqlite_source_sha256": _sha256(snapshot_path),
             "degradation_reasons": reasons,
         },
     }
-    latest = ARTIFACTS_ADG / "adg_burndown_table.json"
     timestamped = ARTIFACTS_ADG / f"adg_burndown_table_{adg_run_id}.json"
-    latest.parent.mkdir(parents=True, exist_ok=True)
+    timestamped.parent.mkdir(parents=True, exist_ok=True)
     rendered = json.dumps(payload, indent=2, sort_keys=True) + "\n"
-    latest.write_text(rendered, encoding="utf-8")
     timestamped.write_text(rendered, encoding="utf-8")
     return timestamped
 
@@ -628,7 +953,7 @@ def _json_has_degraded_fallback_marker(path: Path) -> bool:
         return False
     try:
         data = _load_json(path)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError, TypeError):
         return False
     provenance = data.get("provenance") if isinstance(data.get("provenance"), dict) else {}
     return any(
@@ -645,17 +970,82 @@ def _optional_run_artifact(adg_run_id: str, name: str) -> Path | None:
     return path if path.is_file() else None
 
 
+def _bundle_matches_certification_gates(
+    manifest_path: Path,
+    certification_gates: list[Any],
+) -> bool:
+    """Require an existing seal to contain these exact wrapper-owned gates."""
+    try:
+        manifest = _load_json(manifest_path)
+    except (OSError, json.JSONDecodeError, TypeError):
+        return False
+    rows = manifest.get("gates")
+    if not isinstance(rows, list):
+        return False
+    by_key = {
+        row.get("key"): row for row in rows if isinstance(row, dict) and isinstance(row.get("key"), str)
+    }
+    for expected in certification_gates:
+        actual = by_key.get(expected.key)
+        if not isinstance(actual, dict):
+            return False
+        if (
+            actual.get("required") is not expected.required
+            or actual.get("status") != expected.status
+            or actual.get("producer_exit_code") != expected.producer_exit_code
+        ):
+            return False
+        actual_paths = actual.get("paths")
+        if not isinstance(actual_paths, list):
+            return False
+        if {str(_abs(Path(path)).resolve()) for path in actual_paths} != {
+            str(_abs(Path(path)).resolve()) for path in expected.paths
+        }:
+            return False
+    return True
+
+
 def _emit_mandatory_run_outputs(
     *,
     snapshot_path: Path | None,
     adg_run_id: str | None,
     since_wall_start: float,
     generator_exit_code: int | None,
-) -> list[str]:
+    enforcement_report_path: Path | None,
+    certification_gates: list[Any],
+) -> tuple[list[str], object | None, Path | None]:
     if snapshot_path is None or not snapshot_path.is_file():
-        return ["mandatory ADG outputs not emitted because same-run snapshot is unavailable"]
+        return ["mandatory ADG outputs not emitted because same-run snapshot is unavailable"], None, None
     if not adg_run_id:
-        return ["mandatory ADG outputs not emitted because adg_run_id is unavailable"]
+        return ["mandatory ADG outputs not emitted because adg_run_id is unavailable"], None, None
+
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        emit_adg_run_output_bundle,
+        validate_existing_adg_run_output_bundle,
+    )
+
+    existing_valid, _existing_reason = validate_existing_adg_run_output_bundle(
+        adg_artifacts_dir=ARTIFACTS_ADG,
+        run_id=adg_run_id,
+        sqlite_path=snapshot_path,
+        enforcement_report_path=enforcement_report_path,
+    )
+    if existing_valid:
+        existing_valid = _bundle_matches_certification_gates(
+            ARTIFACTS_ADG / f"adg_run_output_bundle_{adg_run_id}.json",
+            certification_gates,
+        )
+    if existing_valid:
+        from tools.reports.adg_run_output_bundle import load_existing_adg_run_output_bundle  # noqa: PLC0415
+
+        loaded_bundle = load_existing_adg_run_output_bundle(
+            adg_artifacts_dir=ARTIFACTS_ADG,
+            run_id=adg_run_id,
+            sqlite_path=snapshot_path,
+        )
+        bundle_manifest = _load_json(loaded_bundle.manifest_path)
+        gate_raw = bundle_manifest.get("gate_results_path")
+        return [], loaded_bundle, Path(gate_raw) if gate_raw else None
 
     errors: list[str] = []
     missing: list[str] = []
@@ -687,65 +1077,20 @@ def _emit_mandatory_run_outputs(
             missing=missing,
         )
 
-    action_queue_path, queue_errors = _ensure_action_queue_for_handoff(
+    bundle = emit_adg_run_output_bundle(
+        adg_artifacts_dir=ARTIFACTS_ADG,
+        run_id=adg_run_id,
+        sqlite_path=snapshot_path,
         gate_results_path=gate_results_path,
-        burndown_table_path=burndown_table_path,
-        snapshot_path=snapshot_path,
-        adg_run_id=adg_run_id,
+        burndown_path=burndown_table_path,
+        enforcement_report_path=enforcement_report_path,
+        certification_gates=certification_gates,
+        print_terminal=False,
+        repo_root=REPO_ROOT,
     )
-    errors.extend(queue_errors)
-
-    try:
-        from tools.reports.adg_bcg_executive_synthesis import emit_bcg_executive_summary  # noqa: PLC0415
-
-        bcg_rc, _bcg_path = emit_bcg_executive_summary(
-            adg_artifacts_dir=ARTIFACTS_ADG,
-            ts=adg_run_id,
-            sqlite_path=snapshot_path,
-            gate_results_path=gate_results_path,
-            action_queue_path=action_queue_path,
-            review_template_path=_optional_run_artifact(adg_run_id, "adg_review_template_{ts}.json"),
-            burndown_path=burndown_table_path,
-            p7_paths={
-                "structural_outputs": _optional_run_artifact(adg_run_id, "adg_structural_outputs_{ts}.json"),
-                "refactor_accelerator": _optional_run_artifact(adg_run_id, "adg_refactor_accelerator_{ts}.json"),
-                "graphdb_queries": _optional_run_artifact(adg_run_id, "adg_graphdb_queries_{ts}.json"),
-                "runtime_spine": _optional_run_artifact(adg_run_id, "adg_runtime_spine_{ts}.json"),
-                "graphdb_projection": _optional_run_artifact(adg_run_id, "adg_graphdb_projection_{ts}.json"),
-                "graphdb_metadata": _optional_run_artifact(adg_run_id, "adg_graphdb_metadata_{ts}.json"),
-                "graphdb_index": _optional_run_artifact(adg_run_id, "adg_graphdb_index_{ts}.json"),
-                "graph_watchlist": _optional_run_artifact(adg_run_id, "adg_graph_watchlist_{ts}.json"),
-                "p0_wave_plan": ARTIFACTS_ADG / "issues" / f"p0_remediation_wave_plan_{adg_run_id}.json",
-                "dead_code_report": _optional_run_artifact(adg_run_id, "dead_code_zone_control_report_{ts}.json"),
-            },
-            print_inline=True,
-            fail_closed=False,
-        )
-        if bcg_rc != 0:
-            errors.append(f"BCG executive summary emit exit_code={bcg_rc}")
-    except ImportError as exc:
-        errors.append(f"BCG executive summary module unavailable: {exc}")
-
-    try:
-        from tools.reports.adg_burndown_report import (  # noqa: PLC0415
-            emit_existing_burndown_markdown,
-            emit_mandatory_adg_burndown_report,
-        )
-
-        burndown_rc = emit_mandatory_adg_burndown_report(
-            gate_results=gate_results_path,
-            burndown=burndown_table_path,
-            fail_closed=False,
-            print_inline=False,
-        )
-        if burndown_rc != 0:
-            errors.append(f"burndown report emit exit_code={burndown_rc}")
-        elif emit_existing_burndown_markdown() != 0:
-            errors.append("burndown inline replay exit_code=2")
-    except ImportError as exc:
-        errors.append(f"burndown report module unavailable: {exc}")
-
-    return errors
+    if bundle.required_exit_code != 0:
+        errors.append(f"ADG output bundle status={bundle.status}")
+    return errors, bundle, gate_results_path
 
 
 def _ensure_action_queue_for_handoff(
@@ -764,20 +1109,23 @@ def _ensure_action_queue_for_handoff(
         return None, [f"action_queue module unavailable: {exc}"]
 
     output_path = ARTIFACTS_ADG / f"adg_action_queue_{adg_run_id}.json"
-    rc, path = emit_adg_action_queue(
-        gate_results=gate_results_path,
-        burndown=burndown_table_path,
-        sqlite_snapshot=snapshot_path,
-        output_path=output_path,
-        ts=adg_run_id,
-        fail_closed=True,
-        repo_root=REPO_ROOT,
-    )
-    if rc != 0 or path is None or not path.is_file():
-        return None, [f"action_queue emit failed exit_code={rc}"]
+    path: Path | None = output_path if output_path.is_file() else None
+    if path is None:
+        rc, path = emit_adg_action_queue(
+            gate_results=gate_results_path,
+            burndown=burndown_table_path,
+            sqlite_snapshot=snapshot_path,
+            output_path=output_path,
+            ts=adg_run_id,
+            fail_closed=True,
+            allow_latest_fallback=False,
+            repo_root=REPO_ROOT,
+        )
+        if rc != 0 or path is None or not path.is_file():
+            return None, [f"action_queue emit failed exit_code={rc}"]
     try:
         doc = _load_json(path)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
         return path, [f"action_queue malformed: {exc}"]
     errors = validate_action_queue(doc)
     return path, [f"action_queue validation: {err}" for err in errors]
@@ -827,6 +1175,7 @@ def _build_repair_handoff(
     generation_manifest: dict[str, Any],
     certification_status: str,
     since_wall_start: float,
+    allow_unfinalized_output_bundle: bool = False,
 ) -> tuple[str, dict[str, Any], list[str]]:
     errors: list[str] = []
     artifacts: dict[str, dict[str, Any]] = {}
@@ -918,6 +1267,9 @@ def _build_repair_handoff(
     else:
         errors.append("action_queue not emitted because prerequisite artifacts are incomplete")
     required_paths["action_queue"] = action_queue_path
+    required_paths["output_bundle"] = (
+        ARTIFACTS_ADG / f"adg_run_output_bundle_{adg_run_id}.json" if adg_run_id else None
+    )
 
     for key in REPAIR_ARTIFACT_KEYS:
         path = required_paths.get(key)
@@ -929,6 +1281,65 @@ def _build_repair_handoff(
             continue
         if key in {"gate_results", "burndown_table"} and _json_has_degraded_fallback_marker(path):
             errors.append(f"{key} is degraded pre-dispatch fallback and not downstream-consumable: {path}")
+        if key == "output_bundle":
+            try:
+                bundle = _load_json(path)
+                if bundle.get("status") != "complete":
+                    errors.append(f"output_bundle status={bundle.get('status')!r}")
+                if bundle.get("run_id") != adg_run_id:
+                    errors.append("output_bundle run_id mismatch")
+                if snapshot_path is None or bundle.get("snapshot_sha256") != _sha256(snapshot_path):
+                    errors.append("output_bundle snapshot digest mismatch")
+                if snapshot_path is None or not _path_matches(bundle.get("snapshot_path"), snapshot_path):
+                    errors.append("output_bundle snapshot path mismatch")
+                final_exit_code = bundle.get("final_exit_code")
+                bundle_is_finalized = isinstance(final_exit_code, int) and not isinstance(
+                    final_exit_code,
+                    bool,
+                )
+                if not bundle_is_finalized and not allow_unfinalized_output_bundle:
+                    errors.append("output_bundle terminal finalization missing")
+                inventory = bundle.get("artifacts")
+                action_row = (
+                    next(
+                        (
+                            row
+                            for row in inventory or []
+                            if isinstance(row, dict) and _path_matches(row.get("path"), action_queue_path)
+                        ),
+                        None,
+                    )
+                    if action_queue_path is not None
+                    else None
+                )
+                if action_queue_path is None or not isinstance(action_row, dict):
+                    errors.append("output_bundle does not inventory the handoff action_queue")
+                elif action_row.get("sha256") != _sha256(action_queue_path):
+                    errors.append("output_bundle action_queue digest mismatch")
+                if gate_results_path is None or not _path_matches(
+                    bundle.get("gate_results_path"), gate_results_path
+                ):
+                    errors.append("output_bundle gate_results path mismatch")
+                elif bundle.get("gate_results_sha256") != _sha256(gate_results_path):
+                    errors.append("output_bundle gate_results digest mismatch")
+                if (
+                    snapshot_path is not None
+                    and adg_run_id is not None
+                    and (bundle_is_finalized or not allow_unfinalized_output_bundle)
+                ):
+                    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+                        validate_existing_adg_run_output_bundle,
+                    )
+
+                    bundle_valid, bundle_reason = validate_existing_adg_run_output_bundle(
+                        adg_artifacts_dir=path.parent,
+                        run_id=adg_run_id,
+                        sqlite_path=snapshot_path,
+                    )
+                    if not bundle_valid:
+                        errors.append(f"output_bundle validation failed: {bundle_reason}")
+            except (OSError, json.JSONDecodeError, TypeError) as exc:
+                errors.append(f"output_bundle malformed: {exc}")
         artifacts[key] = _artifact_ref(key, path)
 
     counts = _repair_handoff_counts()
@@ -942,7 +1353,7 @@ def _build_repair_handoff(
                 artifact_status = "certified"
             elif not errors:
                 artifact_status = "repair_ready"
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
             errors.append(f"handoff artifact malformed during count: {exc}")
 
     if errors:
@@ -966,6 +1377,7 @@ def _artifact_generator_run_stamp(path: Path, key: str) -> str | None:
         "action_queue": ("adg_action_queue_", ".json"),
         "burndown_report": ("adg_burndown_report_", ".md"),
         "burndown_table": ("adg_burndown_table_", ".json"),
+        "output_bundle": ("adg_run_output_bundle_", ".json"),
     }
     if key not in expected:
         return None
@@ -983,7 +1395,7 @@ def validate_repair_handoff_receipt(
     counts = _repair_handoff_counts()
     try:
         receipt = _load_json(receipt_path)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
         return None, counts, [f"receipt unreadable or malformed: {exc}"]
 
     if expected_receipt_sha256 and _sha256(receipt_path) != expected_receipt_sha256:
@@ -994,6 +1406,21 @@ def validate_repair_handoff_receipt(
         errors.append(f"artifact_status not consumable: {receipt.get('artifact_status')!r}")
     if receipt.get("artifact_status_source") != "direct":
         errors.append("artifact_status_source must be direct")
+    run_state = receipt.get("run_state")
+    if not isinstance(run_state, dict):
+        errors.append("run_state missing or malformed")
+        receipt_process_exit: int | None = None
+    else:
+        raw_process_exit = run_state.get("process_exit_code")
+        receipt_process_exit = (
+            raw_process_exit
+            if isinstance(raw_process_exit, int) and not isinstance(raw_process_exit, bool)
+            else None
+        )
+        if receipt_process_exit is None:
+            errors.append("run_state.process_exit_code missing or malformed")
+    if receipt.get("artifact_status") == "certified" and receipt_process_exit != 0:
+        errors.append("certified receipt requires process_exit_code=0")
     receipt_run_id = receipt.get("adg_run_id")
     if expected_adg_run_id and receipt_run_id != expected_adg_run_id:
         errors.append(
@@ -1038,17 +1465,47 @@ def validate_repair_handoff_receipt(
             errors.append(f"{key} sha256 mismatch")
 
     counts_recomputed = False
+    if all(
+        key in resolved and resolved[key].is_file() for key in ("output_bundle", "snapshot", "gate_results")
+    ):
+        try:
+            bundle = _load_json(resolved["output_bundle"])
+            from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+                validate_existing_adg_run_output_bundle,
+            )
+
+            bundle_valid, bundle_reason = validate_existing_adg_run_output_bundle(
+                adg_artifacts_dir=resolved["output_bundle"].parent,
+                run_id=artifact_run_id or "",
+                sqlite_path=resolved["snapshot"],
+            )
+            if not bundle_valid:
+                errors.append(f"output_bundle validation failed: {bundle_reason}")
+            bundle_exit = bundle.get("final_exit_code")
+            if not isinstance(bundle_exit, int) or isinstance(bundle_exit, bool):
+                errors.append("output_bundle final_exit_code missing or malformed")
+            elif receipt_process_exit != bundle_exit:
+                errors.append("receipt process_exit_code differs from output_bundle final_exit_code")
+            if not _path_matches(bundle.get("gate_results_path"), resolved["gate_results"]):
+                errors.append("output_bundle gate_results path differs from repair_handoff")
+            elif bundle.get("gate_results_sha256") != _sha256(resolved["gate_results"]):
+                errors.append("output_bundle gate_results digest differs from repair_handoff")
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
+            errors.append(f"output_bundle malformed: {exc}")
+
     if all(key in resolved and resolved[key].is_file() for key in ("gate_results", "action_queue")):
         try:
             gate_results = _load_json(resolved["gate_results"])
             action_queue = _load_json(resolved["action_queue"])
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
             errors.append(f"handoff JSON artifact malformed: {exc}")
         else:
             try:
                 from tools.reports.adg_action_queue import validate_action_queue  # noqa: PLC0415
 
-                errors.extend(f"action_queue validation: {err}" for err in validate_action_queue(action_queue))
+                errors.extend(
+                    f"action_queue validation: {err}" for err in validate_action_queue(action_queue)
+                )
             except ImportError as exc:
                 errors.append(f"action_queue validator unavailable: {exc}")
             gate_digest = artifacts.get("gate_results", {}).get("sha256")
@@ -1059,7 +1516,9 @@ def validate_repair_handoff_receipt(
                     break
             else:
                 errors.append("action_queue missing gate_results provenance")
-            if "snapshot" in resolved and not _gate_results_matches_snapshot(gate_results, resolved["snapshot"]):
+            if "snapshot" in resolved and not _gate_results_matches_snapshot(
+                gate_results, resolved["snapshot"]
+            ):
                 errors.append("gate_results snapshot does not match handoff snapshot")
             counts = _repair_counts(action_queue, gate_results)
             counts_recomputed = True
@@ -1080,7 +1539,7 @@ def validate_repair_handoff_receipt(
     if generation_path and generation_path.is_file():
         try:
             generation_manifest = _load_json(generation_path)
-        except (OSError, json.JSONDecodeError) as exc:
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
             errors.append(f"generation_manifest malformed: {exc}")
         else:
             manifest_snapshot_declared = bool(
@@ -1104,7 +1563,9 @@ def validate_repair_handoff_receipt(
                     suffix=".sqlite",
                 )
                 if manifest_stamp != snapshot_stamp:
-                    errors.append("generation_manifest missing snapshot path and run stamp differs from repair_handoff")
+                    errors.append(
+                        "generation_manifest missing snapshot path and run stamp differs from repair_handoff"
+                    )
             if gate_manifest_path and not _path_matches(
                 generation_manifest.get("gate_manifest_path"),
                 gate_manifest_path,
@@ -1120,7 +1581,7 @@ def _resolve_handoff_pointer(pointer_path: Path) -> tuple[dict[str, Any] | None,
     errors: list[str] = []
     try:
         pointer = _load_json(pointer_path)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
         return None, [f"handoff pointer unreadable or malformed: {exc}"]
 
     schema = pointer.get("schema_version")
@@ -1142,7 +1603,7 @@ def _resolve_handoff_pointer(pointer_path: Path) -> tuple[dict[str, Any] | None,
         errors.append("handoff sha256 mismatch")
     try:
         handoff_doc = _load_json(handoff_path)
-    except (OSError, json.JSONDecodeError) as exc:
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
         errors.append(f"handoff document unreadable or malformed: {exc}")
         return None, errors
     if handoff_doc.get("schema_version") != REPAIR_HANDOFF_SCHEMA_VERSION:
@@ -1187,7 +1648,8 @@ def validate_repair_handoff_pointer(
 
     receipt, counts, receipt_errors = validate_repair_handoff_receipt(
         _abs(Path(raw_receipt_path)),
-        expected_adg_run_id=expected_adg_run_id or (handoff_run_id if isinstance(handoff_run_id, str) else None),
+        expected_adg_run_id=expected_adg_run_id
+        or (handoff_run_id if isinstance(handoff_run_id, str) else None),
         expected_receipt_sha256=raw_receipt_digest,
     )
     errors.extend(receipt_errors)
@@ -1224,7 +1686,7 @@ def _append_manifest_gate_record(
 ) -> None:
     try:
         data = _load_json(gate_manifest_path)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError, TypeError):
         return
     gates = data.setdefault("gates", [])
     gates.append(
@@ -1296,10 +1758,20 @@ def _run_generator(
 ) -> int:
     import os as _os
 
+    global _LAST_GENERATOR_RUN_ID
     env = _os.environ.copy()
-    prior_snapshot = _validated_producer_prior_snapshot(
-        _handoff_producer_artifacts_adg()
+    requested_run_id = env.get("ADG_RUN_ID") or datetime.now(ZoneInfo("America/New_York")).strftime(
+        "%m%d%Y_%H%M"
     )
+    env["ADG_RUN_ID"] = requested_run_id
+    _LAST_GENERATOR_RUN_ID = requested_run_id
+    # The wrapper owns the sole final terminal summary after its own planes,
+    # enforcement report, handoff, and receipt have completed.
+    env["ADG_SUPPRESS_TERMINAL_SUMMARY"] = "1"
+    # Stage 1 must not publish a bundle that predates the wrapper-owned
+    # plane-2, three-bucket, and enforcement artifacts.
+    env["ADG_DEFER_OUTPUT_BUNDLE_TO_WRAPPER"] = "1"
+    prior_snapshot = _validated_producer_prior_snapshot(_handoff_producer_artifacts_adg())
     if prior_snapshot is not None:
         env["ADG_PHASE_D_PRIOR_SNAPSHOT"] = str(prior_snapshot)
         print(f"[audit] Phase-D prior snapshot: {prior_snapshot}")
@@ -1321,7 +1793,10 @@ def _run_generator(
     if env.get("ADG_THREE_BUCKET_SIGN", "").strip().lower() in ("1", "true", "yes"):
         env_bits.append("ADG_THREE_BUCKET_SIGN=1")
     env_note = " ".join(env_bits) + (" " if env_bits else "")
-    print(f"[audit] Stage-1: {env_note}python tools/generate/generate_full_adg.py {' '.join(extra_args)}")
+    print(
+        f"[audit] Stage-1: ADG_RUN_ID={requested_run_id} {env_note}"
+        f"python tools/generate/generate_full_adg.py {' '.join(extra_args)}"
+    )
     try:
         proc = subprocess.run(  # noqa: S603
             [sys.executable, str(REPO_ROOT / "tools" / "generate" / "generate_full_adg.py"), *extra_args],
@@ -1347,8 +1822,10 @@ def _run_report(
     args = [
         sys.executable,
         str(REPO_ROOT / "tools" / "adg" / "three_bucket_gap_report.py"),
-        "--snapshot", str(snapshot),
-        "--format", fmt,
+        "--snapshot",
+        str(snapshot),
+        "--format",
+        fmt,
     ]
     if require_runtime_proof:
         args.append("--require-runtime-proof")
@@ -1358,13 +1835,74 @@ def _run_report(
             args,
             cwd=str(REPO_ROOT),
             timeout=timeout_s,
+            capture_output=True,
+            text=True,
             shell=False,
             check=False,
         )
     except subprocess.TimeoutExpired:
         print(f"[audit] Stage-2 FAIL — timed out after {timeout_s}s", file=sys.stderr)
         return 124
+    if proc.returncode != 0:
+        diagnostic = (proc.stderr or proc.stdout or "").strip().splitlines()[-5:]
+        if diagnostic:
+            print("[audit] Stage-2 diagnostic: " + " | ".join(diagnostic), file=sys.stderr)
     return proc.returncode
+
+
+def _capture_three_bucket_report_paths(
+    *,
+    fmt: str,
+    adg_run_id: str | None,
+    snapshot_path: Path | None,
+    since_wall_start: float,
+) -> tuple[list[Path], list[str]]:
+    """Copy this invocation's fixed Stage-2 outputs into immutable run paths."""
+    if not adg_run_id:
+        return [], ["three-bucket report run id unavailable"]
+    if snapshot_path is None or not snapshot_path.is_file():
+        return [], ["three-bucket report snapshot unavailable"]
+
+    suffixes = {
+        "json": (".json",),
+        "md": (".md",),
+        "both": (".json", ".md"),
+    }[fmt]
+    report_dir = REPO_ROOT / "docs" / "reports" / "adg"
+    captured: list[Path] = []
+    errors: list[str] = []
+    snapshot_digest = _sha256(snapshot_path)
+
+    for suffix in suffixes:
+        source = report_dir / f"THREE_BUCKET_GAP_REPORT{suffix}"
+        if not source.is_file() or source.stat().st_size == 0:
+            errors.append(f"three-bucket report output missing: {source}")
+            continue
+        if source.stat().st_mtime + 2 < since_wall_start:
+            errors.append(f"three-bucket report output stale: {source}")
+            continue
+        try:
+            if suffix == ".json":
+                report = _load_json(source)
+                if report.get("source_snapshot_sha256") != snapshot_digest:
+                    raise ValueError("snapshot digest mismatch")
+                if not _path_matches(report.get("source_snapshot_path"), snapshot_path):
+                    raise ValueError("snapshot path mismatch")
+            elif snapshot_path.name not in source.read_text(encoding="utf-8"):
+                raise ValueError("snapshot name missing")
+
+            destination = ARTIFACTS_ADG / f"adg_three_bucket_gap_report_{adg_run_id}{suffix}"
+            captured.append(
+                _copy_immutable_artifact(
+                    source,
+                    destination,
+                    key=f"three_bucket_gap_report{suffix}",
+                )
+            )
+        except (OSError, json.JSONDecodeError, RuntimeError, ValueError) as exc:
+            errors.append(f"three-bucket report output invalid: {source}: {exc}")
+
+    return captured, errors
 
 
 def _default_incomplete_handoff() -> dict[str, Any]:
@@ -1406,9 +1944,10 @@ def _write_repair_handoff_pointer(
     receipt_path: Path,
     receipt_sha256: str,
     artifacts_adg: Path | None = None,
-) -> None:
+    publish_latest: bool = True,
+) -> tuple[Path, dict[str, Any]] | None:
     if not result.adg_run_id:
-        return
+        return None
     handoff_path, latest_pointer_path = _handoff_paths(result.adg_run_id, artifacts_adg=artifacts_adg)
     handoff_path.parent.mkdir(parents=True, exist_ok=True)
     receipt_resolved = receipt_path.resolve()
@@ -1442,112 +1981,365 @@ def _write_repair_handoff_pointer(
         "artifact_status": result.artifact_status,
         "downstream_release_status": _downstream_release_status(result),
     }
-    latest_pointer_path.write_text(json.dumps(latest_pointer, indent=2) + "\n", encoding="utf-8")
+    if publish_latest:
+        latest_pointer_path.write_text(json.dumps(latest_pointer, indent=2) + "\n", encoding="utf-8")
     try:
         display = handoff_path.relative_to(REPO_ROOT)
     except ValueError:
         display = handoff_path
-    print(f"[audit] wrote repair handoff pointer: {display}")
+    print(f"[audit] wrote immutable repair handoff: {display}")
+    return handoff_path, latest_pointer
 
 
 def _publish_result_snapshot_pointer(
     result: WrapperResult,
     *,
     artifacts_adg: Path,
+    receipt_path: Path | None = None,
+    handoff_path: Path | None = None,
 ) -> list[str]:
     """Publish exactly one role pointer for a finalized wrapper result."""
-    if (
-        result.artifact_status == "certified"
-        and result.certification_status == "clean"
-    ):
+    if result.artifact_status == "certified" and result.certification_status == "clean":
         role = "certified"
-    elif (
-        result.artifact_status == "repair_ready"
-        and result.certification_status in {"failed", "diagnostic_only"}
-    ):
+    elif result.artifact_status == "repair_ready" and result.certification_status in {
+        "failed",
+        "diagnostic_only",
+    }:
         role = "repair"
     else:
         return []
 
     handoff = result.repair_handoff or {}
-    refs = (
-        handoff.get("artifacts")
-        if isinstance(handoff.get("artifacts"), dict)
-        else {}
-    )
-    snapshot_ref = (
-        refs.get("snapshot")
-        if isinstance(refs.get("snapshot"), dict)
-        else {}
-    )
+    refs = handoff.get("artifacts") if isinstance(handoff.get("artifacts"), dict) else {}
+    snapshot_ref = refs.get("snapshot") if isinstance(refs.get("snapshot"), dict) else {}
     raw_snapshot = snapshot_ref.get("path")
     if not isinstance(raw_snapshot, str):
-        return [
-            f"{role} pointer publication failed: snapshot handoff path missing"
-        ]
+        return [f"{role} pointer publication failed: snapshot handoff path missing"]
 
     sources: dict[str, Path] = {}
-    for key in ("generation_manifest", "gate_manifest", "gate_results"):
+    for key in ("generation_manifest", "gate_manifest", "gate_results", "output_bundle"):
         ref = refs.get(key)
         if isinstance(ref, dict) and isinstance(ref.get("path"), str):
             sources[key] = Path(ref["path"])
 
+    if "output_bundle" not in sources:
+        return [f"{role} pointer publication failed: sealed output bundle missing"]
+    if receipt_path is None or handoff_path is None:
+        return [f"{role} pointer publication failed: immutable receipt or handoff missing"]
+    sources["audit_receipt"] = receipt_path
+    sources["repair_handoff"] = handoff_path
+
     try:
         from tools.adg.shared_modules.snapshot_registry import (  # noqa: PLC0415
             SnapshotPointerError,
+            load_snapshot_pointer,
             publish_snapshot_pointer,
+        )
+        from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+            _publication_lock,
+            _reserve_latest_publication,
         )
 
         known_sha = snapshot_ref.get("sha256")
-        publish_snapshot_pointer(
-            adg_dir=artifacts_adg,
-            role=role,
-            snapshot_path=Path(raw_snapshot),
-            snapshot_sha256=(
-                known_sha if isinstance(known_sha, str) else None
-            ),
-            certification_status=result.certification_status,
-            artifact_status=result.artifact_status,
-            source_artifacts=sources,
-        )
-    except (OSError, ValueError, SnapshotPointerError) as exc:
-        return [f"{role} pointer publication failed: {exc}"]
+        if not result.adg_run_id:
+            raise ValueError("snapshot pointer publication requires adg_run_id")
+        with _publication_lock(artifacts_adg):
+            _reserve_latest_publication(artifacts_adg, result.adg_run_id)
+            publish_snapshot_pointer(
+                adg_dir=artifacts_adg,
+                role=role,
+                snapshot_path=Path(raw_snapshot),
+                snapshot_sha256=(known_sha if isinstance(known_sha, str) else None),
+                certification_status=result.certification_status,
+                artifact_status=result.artifact_status,
+                source_artifacts=sources,
+            )
+    except (OSError, RuntimeError, TimeoutError, ValueError, SnapshotPointerError) as exc:
+        # A directory fsync may fail after os.replace has already activated the
+        # pointer. Reload the exact role before deciding the publication failed;
+        # mutating any digest-bound artifact after a committed replace would
+        # invalidate an active pointer.
+        try:
+            published = load_snapshot_pointer(
+                artifacts_adg,
+                role,  # type: ignore[arg-type]
+                verify_digest=True,
+            )
+            expected_snapshot = Path(raw_snapshot).resolve()
+            if published.path.resolve() != expected_snapshot:
+                raise SnapshotPointerError("activated pointer snapshot differs from current run")
+            if (
+                published.certification_status != result.certification_status
+                or published.artifact_status != result.artifact_status
+            ):
+                raise SnapshotPointerError("activated pointer status differs from current run")
+            base = artifacts_adg.resolve()
+            for label, source in sources.items():
+                source_resolved = source.resolve()
+                expected_path = source_resolved.relative_to(base).as_posix()
+                actual_ref = published.source_artifacts.get(label)
+                if (
+                    not isinstance(actual_ref, dict)
+                    or actual_ref.get("path") != expected_path
+                    or actual_ref.get("sha256") != _sha256(source_resolved)
+                ):
+                    raise SnapshotPointerError(f"activated pointer source differs from current run: {label}")
+        except (OSError, ValueError, SnapshotPointerError):
+            return [f"{role} pointer publication failed: {exc}"]
+    return []
+
+
+def _receipt_payload(result: WrapperResult) -> dict[str, Any]:
+    handoff = result.repair_handoff or _default_incomplete_handoff()
+    refs = handoff.get("artifacts") if isinstance(handoff.get("artifacts"), dict) else {}
+    bundle_ref = refs.get("output_bundle") if isinstance(refs.get("output_bundle"), dict) else {}
+    bundle_raw = bundle_ref.get("path")
+    if not isinstance(bundle_raw, str) or not bundle_raw:
+        raise RuntimeError("audit pipeline receipt requires a sealed output_bundle reference")
+    bundle_path = Path(bundle_raw)
+    bundle = _load_json(bundle_path)
+    expected_digest = bundle_ref.get("sha256")
+    if not isinstance(expected_digest, str) or _sha256(bundle_path) != expected_digest:
+        raise RuntimeError("audit pipeline receipt output_bundle digest mismatch")
+    bundle_exit_code = bundle.get("final_exit_code")
+    if not isinstance(bundle_exit_code, int) or isinstance(bundle_exit_code, bool):
+        raise RuntimeError("audit pipeline receipt output_bundle is not terminally finalized")
+    if bundle_exit_code != result.process_exit_code:
+        raise RuntimeError("audit pipeline receipt process exit differs from output_bundle final_exit_code")
+    if result.artifact_status == "certified" and bundle_exit_code != 0:
+        raise RuntimeError("certified audit pipeline receipt requires process exit code 0")
+    return {
+        "schema_version": RECEIPT_SCHEMA_VERSION,
+        "run_state": {
+            "certification_status": result.certification_status,
+            "process_exit_code": result.process_exit_code,
+            "generator_exit_code": result.generator_exit_code,
+            "report_exit_code": result.report_exit_code,
+            "runtime_proof_status": result.runtime_proof_status,
+            "reasons": result.reasons,
+        },
+        "artifact_status": result.artifact_status,
+        "artifact_status_source": result.artifact_status_source,
+        "adg_run_id": result.adg_run_id,
+        "started_at_utc": result.started_at_utc,
+        "completed_at_utc": result.completed_at_utc,
+        "repair_handoff": handoff,
+    }
+
+
+def _prepare_immutable_publication(
+    result: WrapperResult,
+    *,
+    producer_artifacts: Path,
+) -> PublicationDocuments:
+    if not result.adg_run_id:
+        raise RuntimeError("immutable publication requires adg_run_id")
+    receipt_text = json.dumps(_receipt_payload(result), indent=2) + "\n"
+    immutable_receipt = _immutable_receipt_path(
+        result.adg_run_id,
+        artifacts_adg=producer_artifacts,
+    )
+    immutable_receipt.parent.mkdir(parents=True, exist_ok=True)
+    _write_immutable_text(immutable_receipt, receipt_text, label="audit pipeline receipt")
+    handoff_publication = _write_repair_handoff_pointer(
+        result,
+        receipt_path=immutable_receipt,
+        receipt_sha256=_sha256(immutable_receipt),
+        artifacts_adg=producer_artifacts,
+        publish_latest=False,
+    )
+    if handoff_publication is None:
+        raise RuntimeError("immutable repair handoff was not written")
+    handoff_path, latest_pointer = handoff_publication
+    return PublicationDocuments(
+        receipt_path=immutable_receipt,
+        handoff_path=handoff_path,
+        latest_handoff_pointer=latest_pointer,
+        receipt_text=receipt_text,
+    )
+
+
+def _publish_convenience_aliases(
+    publication: PublicationDocuments,
+    result: WrapperResult,
+    *,
+    producer_artifacts: Path,
+) -> list[str]:
+    """Publish recoverable aliases only after the role pointer activates."""
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        _atomic_write_text,
+        _publication_lock,
+        _reserve_latest_publication,
+    )
+
+    if not result.adg_run_id:
+        return ["convenience alias publication skipped: adg_run_id missing"]
+    aliases = (
+        (
+            RECEIPT_PATH,
+            publication.receipt_text,
+            "receipt alias",
+        ),
+        (
+            _handoff_paths(result.adg_run_id or "", artifacts_adg=producer_artifacts)[1],
+            json.dumps(publication.latest_handoff_pointer, indent=2) + "\n",
+            "repair handoff alias",
+        ),
+    )
+    try:
+        with _publication_lock(producer_artifacts):
+            _reserve_latest_publication(producer_artifacts, result.adg_run_id)
+            for path, text, _label in aliases:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                _atomic_write_text(path, text)
+
+            refs = (result.repair_handoff or {}).get("artifacts")
+            bundle_ref = refs.get("output_bundle") if isinstance(refs, dict) else None
+            bundle_raw = bundle_ref.get("path") if isinstance(bundle_ref, dict) else None
+            if not isinstance(bundle_raw, str):
+                raise RuntimeError("output bundle alias source missing after activation")
+            bundle_path = Path(bundle_raw)
+            bundle_text = bundle_path.read_text(encoding="utf-8")
+            _atomic_write_text(
+                producer_artifacts / "adg_run_output_bundle_latest.json",
+                bundle_text,
+            )
+    except (OSError, RuntimeError, TimeoutError) as exc:
+        return [f"convenience alias publication failed after activation: {exc}"]
+    return []
+
+
+def _publish_blocked_latest_state(
+    result: WrapperResult,
+    *,
+    producer_artifacts: Path,
+    diagnostics: list[str],
+) -> list[str]:
+    """Advance mutable latest views to an explicit fail-closed tombstone."""
+    from tools.reports.adg_run_output_bundle import (  # noqa: PLC0415
+        _atomic_write_text,
+        _publication_lock,
+        _reserve_latest_publication,
+    )
+
+    blocked_run_id = result.adg_run_id or datetime.now(ZoneInfo("America/New_York")).strftime("%Y%m%d_%H%M%S")
+    blocked_document_id = blocked_run_id if result.adg_run_id else f"{blocked_run_id}_{time.time_ns()}"
+    blocked_handoff = json.loads(json.dumps(result.repair_handoff or _default_incomplete_handoff()))
+    blocked_handoff["status"] = "incomplete"
+    validation_errors = blocked_handoff.setdefault("validation_errors", [])
+    if not isinstance(validation_errors, list):
+        validation_errors = []
+        blocked_handoff["validation_errors"] = validation_errors
+    validation_errors.extend(diagnostics or ["current run was not activated"])
+    validation_errors[:] = sorted({str(item) for item in validation_errors})
+
+    receipt_payload = {
+        "schema_version": RECEIPT_SCHEMA_VERSION,
+        "run_state": {
+            "certification_status": "failed",
+            "process_exit_code": 1,
+            "generator_exit_code": result.generator_exit_code,
+            "report_exit_code": result.report_exit_code,
+            "runtime_proof_status": result.runtime_proof_status,
+            "reasons": sorted({*result.reasons, *diagnostics}),
+        },
+        "artifact_status": "incomplete",
+        "artifact_status_source": "direct",
+        "adg_run_id": blocked_run_id,
+        "started_at_utc": result.started_at_utc,
+        "completed_at_utc": result.completed_at_utc,
+        "repair_handoff": blocked_handoff,
+    }
+    receipt_text = json.dumps(receipt_payload, indent=2) + "\n"
+    handoff_dir = producer_artifacts / "handoffs"
+    blocked_receipt = handoff_dir / f"adg_audit_pipeline_receipt_{blocked_document_id}_blocked.json"
+    blocked_handoff_path = handoff_dir / f"adg_repair_handoff_{blocked_document_id}_blocked.json"
+    blocked_handoff_doc = {
+        "schema_version": REPAIR_HANDOFF_SCHEMA_VERSION,
+        "adg_run_id": blocked_run_id,
+        "receipt": {
+            "path": str(blocked_receipt.resolve()),
+            "sha256": "",
+        },
+        "artifact_status": "incomplete",
+        "artifact_status_source": "direct",
+        "downstream_release_status": "blocked",
+        "started_at_utc": result.started_at_utc,
+        "completed_at_utc": result.completed_at_utc,
+        "repair_handoff": blocked_handoff,
+    }
+    bundle_tombstone = {
+        "schema_version": "adg-run-output-bundle/v1",
+        "run_id": blocked_run_id,
+        "status": "blocked",
+        "latest_promoted": False,
+        "final_exit_code": 1,
+        "diagnostics": sorted(set(diagnostics or ["current run was not activated"])),
+    }
+    try:
+        with _publication_lock(producer_artifacts):
+            _reserve_latest_publication(producer_artifacts, blocked_run_id)
+            _write_immutable_text(
+                blocked_receipt,
+                receipt_text,
+                label="blocked audit pipeline receipt",
+            )
+            blocked_handoff_doc["receipt"]["sha256"] = _sha256(blocked_receipt)
+            blocked_handoff_text = json.dumps(blocked_handoff_doc, indent=2) + "\n"
+            _write_immutable_text(
+                blocked_handoff_path,
+                blocked_handoff_text,
+                label="blocked repair handoff",
+            )
+            latest_pointer = {
+                "schema_version": REPAIR_HANDOFF_POINTER_SCHEMA_VERSION,
+                "adg_run_id": blocked_run_id,
+                "handoff_path": str(blocked_handoff_path.resolve()),
+                "handoff_sha256": _sha256(blocked_handoff_path),
+                "receipt_path": str(blocked_receipt.resolve()),
+                "receipt_sha256": _sha256(blocked_receipt),
+                "artifact_status": "incomplete",
+                "downstream_release_status": "blocked",
+            }
+            RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
+            _atomic_write_text(RECEIPT_PATH, receipt_text)
+            _atomic_write_text(
+                _handoff_paths(blocked_run_id, artifacts_adg=producer_artifacts)[1],
+                json.dumps(latest_pointer, indent=2) + "\n",
+            )
+            _atomic_write_text(
+                producer_artifacts / "adg_run_output_bundle_latest.json",
+                json.dumps(bundle_tombstone, indent=2, sort_keys=True) + "\n",
+            )
+    except (OSError, RuntimeError, TimeoutError) as exc:
+        return [f"blocked latest state publication failed: {exc}"]
     return []
 
 
 def _write_receipt(result: WrapperResult, *, producer_artifacts: Path | None = None) -> None:
+    """Compatibility helper for direct callers; run_audit controls activation order."""
     if producer_artifacts is None:
         producer_artifacts = _handoff_producer_artifacts_adg()
     handoff_result = _copy_result_for_handoff_root(result, producer_artifacts=producer_artifacts)
-    RECEIPT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "schema_version": RECEIPT_SCHEMA_VERSION,
-        "run_state": {
-            "certification_status": handoff_result.certification_status,
-            "generator_exit_code": handoff_result.generator_exit_code,
-            "report_exit_code": handoff_result.report_exit_code,
-            "runtime_proof_status": handoff_result.runtime_proof_status,
-            "reasons": handoff_result.reasons,
-        },
-        "artifact_status": handoff_result.artifact_status,
-        "artifact_status_source": handoff_result.artifact_status_source,
-        "adg_run_id": handoff_result.adg_run_id,
-        "started_at_utc": handoff_result.started_at_utc,
-        "completed_at_utc": handoff_result.completed_at_utc,
-        "repair_handoff": handoff_result.repair_handoff or _default_incomplete_handoff(),
-    }
-    receipt_text = json.dumps(payload, indent=2) + "\n"
-    RECEIPT_PATH.write_text(receipt_text, encoding="utf-8")
-    if handoff_result.adg_run_id:
-        immutable_receipt = _immutable_receipt_path(handoff_result.adg_run_id, artifacts_adg=producer_artifacts)
-        immutable_receipt.parent.mkdir(parents=True, exist_ok=True)
-        _write_immutable_text(immutable_receipt, receipt_text, label="audit pipeline receipt")
-        _write_repair_handoff_pointer(
-            handoff_result,
-            receipt_path=immutable_receipt,
-            receipt_sha256=_sha256(immutable_receipt),
-            artifacts_adg=producer_artifacts,
-        )
+    publication = _prepare_immutable_publication(
+        handoff_result,
+        producer_artifacts=producer_artifacts,
+    )
+    activation_errors = _publish_result_snapshot_pointer(
+        handoff_result,
+        artifacts_adg=producer_artifacts,
+        receipt_path=publication.receipt_path,
+        handoff_path=publication.handoff_path,
+    )
+    if activation_errors:
+        raise RuntimeError("; ".join(activation_errors))
+    alias_errors = _publish_convenience_aliases(
+        publication,
+        handoff_result,
+        producer_artifacts=producer_artifacts,
+    )
+    for error in alias_errors:
+        print(f"[audit] warning: {error}", file=sys.stderr)
     try:
         display = RECEIPT_PATH.relative_to(REPO_ROOT)
     except ValueError:
@@ -1568,6 +2360,7 @@ def run_audit(
 ) -> WrapperResult:
     """Run the audit pipeline. Pure function so tests can drive it."""
 
+    global _LAST_GENERATOR_RUN_ID
     reasons: list[str] = []
     wall_start = time.time()
     started_at_utc = _utcnow_iso()
@@ -1581,17 +2374,24 @@ def run_audit(
     certification_mode = mode == "certification"
 
     # Stage 1 — generator.
+    _LAST_GENERATOR_RUN_ID = None
     gen_rc = _run_generator(
         extra_args=extra,
         timeout_s=generator_timeout_s,
         certification_mode=certification_mode,
     )
-    if gen_rc != 0:
-        if certification_mode and not diagnostic_allow_failed_generator:
-            reasons.append(f"generator exit_code={gen_rc}")
+    if gen_rc != 0 and (certification_mode or not diagnostic_allow_failed_generator):
+        reasons.append(f"generator exit_code={gen_rc}")
 
     # Locate manifests.
-    gen_manifest_path = _find_generation_manifest(wall_start)
+    gen_manifest_path = (
+        None
+        if gen_rc == RUN_ID_COLLISION_EXIT_CODE
+        else _find_generation_manifest(
+            wall_start,
+            expected_run_id=_LAST_GENERATOR_RUN_ID,
+        )
+    )
     gate_manifest_path: Path | None = None
     generation_manifest: dict[str, Any] = {}
     gate_manifest: dict[str, Any] = {}
@@ -1610,7 +2410,7 @@ def run_audit(
                     gate_manifest = _load_json(gate_manifest_path)
                 else:
                     reasons.append(f"gate manifest path declared but missing: {gate_manifest_path}")
-        except (OSError, json.JSONDecodeError) as e:
+        except (OSError, json.JSONDecodeError, TypeError) as e:
             reasons.append(f"failed to read generation manifest: {e}")
 
     snapshot_raw = generation_manifest.get("sqlite_path") or generation_manifest.get("snapshot_path")
@@ -1630,20 +2430,24 @@ def run_audit(
     elif certification_mode:
         reasons.extend(snapshot_recovery_errors)
 
-    # Mandatory BCG + burndown inline ordering. Use same-run artifacts only;
-    # when dispatcher output is absent, emit degraded artifacts that remain
-    # blocked for downstream repair consumption.
-    mandatory_output_errors = _emit_mandatory_run_outputs(
-        snapshot_path=snapshot_path_for_outputs,
-        adg_run_id=adg_run_id_for_outputs,
-        since_wall_start=wall_start,
-        generator_exit_code=gen_rc,
-    )
-    if certification_mode:
-        reasons.extend(mandatory_output_errors)
+    # Resolve the current dispatcher result for plane-3/enforcement without
+    # sealing the output bundle yet. The wrapper must finish every producer
+    # before it publishes or revalidates the single mandatory bundle.
+    current_gate_results_path: Path | None = None
+    if snapshot_path_for_outputs is not None and snapshot_path_for_outputs.is_file():
+        current_gate_results_path, _gate_result_errors = _find_gate_results_for_snapshot(
+            snapshot_path_for_outputs,
+            since_wall_start=wall_start,
+        )
 
     # Plane 2 — three-graph manifest (certification; generator skips via env).
-    if certification_mode and snapshot_raw and gate_manifest_path:
+    if (
+        certification_mode
+        and gen_rc == 0
+        and snapshot_raw
+        and gate_manifest_path is not None
+        and gate_manifest_path.is_file()
+    ):
         snap_path = Path(snapshot_raw)
         if snap_path.is_file():
             reasons.extend(
@@ -1654,7 +2458,7 @@ def run_audit(
             )
             try:
                 gate_manifest = _load_json(gate_manifest_path)
-            except (OSError, json.JSONDecodeError):
+            except (OSError, json.JSONDecodeError, TypeError):
                 pass
 
     # Cross-check required gates (certification mode only).
@@ -1663,30 +2467,24 @@ def run_audit(
 
     # Plane-3 dispatcher failure (generator records + exits; double-check JSON).
     if certification_mode:
-        disp_candidates = sorted(
-            ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        for disp_candidate in reversed(disp_candidates):
+        if current_gate_results_path is None:
+            reasons.append("adg_gate_dispatcher current-run results unavailable")
+        else:
             try:
-                disp_payload = _load_json(disp_candidate)
-                if _json_has_degraded_fallback_marker(disp_candidate):
-                    continue
-                if int(disp_payload.get("overall_exit_code", 0)) != 0:
-                    reasons.append(
-                        f"adg_gate_dispatcher overall_exit_code={disp_payload.get('overall_exit_code')}"
-                    )
-                    break
-                break
-            except (OSError, json.JSONDecodeError):
+                disp_payload = _load_json(current_gate_results_path)
+                if not isinstance(disp_payload, dict):
+                    raise TypeError("dispatcher result must be an object")
+                dispatcher_exit = disp_payload.get("overall_exit_code")
+                if not isinstance(dispatcher_exit, int) or isinstance(dispatcher_exit, bool):
+                    reasons.append("adg_gate_dispatcher overall_exit_code malformed")
+                elif dispatcher_exit != 0:
+                    reasons.append(f"adg_gate_dispatcher overall_exit_code={dispatcher_exit}")
+            except (OSError, json.JSONDecodeError, TypeError):
                 reasons.append("adg_gate_dispatcher results unreadable")
-                break
 
     # Runtime-proof gate.
     if require_runtime_proof and runtime_proof_status != "attested":
-        reasons.append(
-            f"--require-runtime-proof set but runtime_proof_status={runtime_proof_status!r}"
-        )
+        reasons.append(f"--require-runtime-proof set but runtime_proof_status={runtime_proof_status!r}")
 
     # Stage 2 — report, only if we have a snapshot.
     report_rc: int | None = None
@@ -1709,8 +2507,17 @@ def run_audit(
     else:
         reasons.append("snapshot path absent from generation manifest")
 
+    three_bucket_report_paths, three_bucket_report_errors = _capture_three_bucket_report_paths(
+        fmt=fmt,
+        adg_run_id=adg_run_id_for_outputs,
+        snapshot_path=snapshot_path_for_outputs,
+        since_wall_start=wall_start,
+    )
+
     # ADR-081: unified enforcement report (planes 1–3 rollup).
     enforcement_path: Path | None = None
+    enforcement_rollup: str | None = None
+    enforcement_diagnostic = ""
     try:
         from tools.adg.integration.enforcement_report import (  # noqa: PLC0415
             build_enforcement_report,
@@ -1718,11 +2525,7 @@ def run_audit(
         )
 
         rollup_path = REPO_ROOT / "docs" / "reports" / "adg" / "three_graph_test_rollup.json"
-        disp_candidates = sorted(
-            ARTIFACTS_ADG.glob("adg_gate_results_*.json"),
-            key=lambda p: p.stat().st_mtime,
-        )
-        disp_path = disp_candidates[-1] if disp_candidates else None
+        disp_path = current_gate_results_path
         snap_path = Path(snapshot) if snapshot else None
         run_ts = _derive_adg_run_stamp(generation_manifest, gen_manifest_path, snap_path)
         report = build_enforcement_report(
@@ -1735,11 +2538,80 @@ def run_audit(
             ts=run_ts,
         )
         enforcement_path = write_enforcement_report(report, ts=run_ts)
-        if certification_mode and report.get("certified_rollup") == "NOT_CERTIFIED":
+        enforcement_rollup = report.get("certified_rollup")
+        if certification_mode and enforcement_rollup == "NOT_CERTIFIED":
             reasons.append("enforcement_report certified_rollup=NOT_CERTIFIED")
     except (ImportError, OSError, TypeError, ValueError) as exc:
+        enforcement_diagnostic = f"enforcement_report build failed: {exc}"
         if certification_mode:
-            reasons.append(f"enforcement_report build failed: {exc}")
+            reasons.append(enforcement_diagnostic)
+
+    from tools.reports.adg_run_output_bundle import OutputGate  # noqa: PLC0415
+
+    report_gate_passed = report_rc == 0 and bool(three_bucket_report_paths) and not three_bucket_report_errors
+    report_gate = OutputGate(
+        key="wrapper_three_bucket_report",
+        required=True,
+        status="pass" if report_gate_passed else "fail",
+        producer_exit_code=report_rc if isinstance(report_rc, int) else 2,
+        paths=[str(path.resolve()) for path in three_bucket_report_paths],
+        diagnostic="; ".join(three_bucket_report_errors),
+    )
+
+    enforcement_errors: list[str] = []
+    if enforcement_diagnostic:
+        enforcement_errors.append(enforcement_diagnostic)
+    if enforcement_path is None or not enforcement_path.is_file():
+        enforcement_errors.append("current-run enforcement report missing")
+    else:
+        if enforcement_path.stat().st_size == 0:
+            enforcement_errors.append("current-run enforcement report is empty")
+        if enforcement_path.stat().st_mtime + 2 < wall_start:
+            enforcement_errors.append("current-run enforcement report is stale")
+        try:
+            persisted_enforcement = _load_json(enforcement_path)
+            if not isinstance(persisted_enforcement, dict):
+                raise TypeError("enforcement report root must be an object")
+            if persisted_enforcement.get("certified_rollup") != "CERTIFIED":
+                enforcement_errors.append(
+                    f"enforcement report certified_rollup={persisted_enforcement.get('certified_rollup')!r}"
+                )
+            if snapshot_path_for_outputs is not None and not _path_matches(
+                persisted_enforcement.get("snapshot_path"),
+                snapshot_path_for_outputs,
+            ):
+                enforcement_errors.append("enforcement report snapshot mismatch")
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
+            enforcement_errors.append(f"enforcement report unreadable: {exc}")
+    if enforcement_rollup != "CERTIFIED":
+        enforcement_errors.append(f"in-memory enforcement rollup={enforcement_rollup!r}")
+    enforcement_gate_passed = not enforcement_errors
+    enforcement_gate = OutputGate(
+        key="wrapper_enforcement",
+        required=True,
+        status="pass" if enforcement_gate_passed else "fail",
+        producer_exit_code=0 if enforcement_gate_passed else 1,
+        paths=[str(enforcement_path.resolve())]
+        if enforcement_path is not None and enforcement_path.is_file()
+        else [],
+        diagnostic="; ".join(dict.fromkeys(enforcement_errors)),
+    )
+
+    # Seal only after plane 2, Stage-2 reporting, and the exact current-run
+    # enforcement report have completed. Mandatory output failures are fatal
+    # in diagnostic mode too; the generator-only diagnostic opt-out does not
+    # waive a missing or blocked output contract.
+    mandatory_output_errors, output_bundle, sealed_gate_results_path = _emit_mandatory_run_outputs(
+        snapshot_path=snapshot_path_for_outputs,
+        adg_run_id=adg_run_id_for_outputs,
+        since_wall_start=wall_start,
+        generator_exit_code=gen_rc,
+        enforcement_report_path=enforcement_path,
+        certification_gates=[report_gate, enforcement_gate],
+    )
+    reasons.extend(mandatory_output_errors)
+    if current_gate_results_path is None:
+        current_gate_results_path = sealed_gate_results_path
 
     # Classify certification_status.
     if not certification_mode:
@@ -1749,7 +2621,58 @@ def run_audit(
     else:
         status = "clean"
 
-    artifact_status, repair_handoff, _handoff_errors = _build_repair_handoff(
+    # First classify the artifact closure without requiring terminal finalization.
+    # This lets us calculate the only exit code that will be sealed into the
+    # terminal and bundle; the strict handoff is rebuilt after that one write.
+    predicted_artifact_status, _predicted_handoff, predicted_handoff_errors = _build_repair_handoff(
+        generation_manifest_path=gen_manifest_path,
+        gate_manifest_path=gate_manifest_path,
+        generation_manifest=generation_manifest,
+        certification_status=status,
+        since_wall_start=wall_start,
+        allow_unfinalized_output_bundle=True,
+    )
+    predicted_exit_code = (
+        0
+        if (
+            certification_mode
+            and status == "clean"
+            and predicted_artifact_status == "certified"
+            and not reasons
+        )
+        or (
+            not certification_mode
+            and predicted_artifact_status in {"certified", "repair_ready"}
+            and not reasons
+        )
+        else 1
+    )
+    seal_diagnostics = [
+        f"certification_status={status}",
+        f"artifact_status={predicted_artifact_status}",
+        f"generator_exit_code={gen_rc}; report_exit_code={report_rc}",
+        f"runtime_proof_status={runtime_proof_status}",
+        *reasons,
+        *predicted_handoff_errors,
+    ]
+    seal_error: str | None = None
+    if output_bundle is not None:
+        from tools.reports.adg_run_output_bundle import print_adg_run_terminal_summary  # noqa: PLC0415
+
+        try:
+            print_adg_run_terminal_summary(
+                output_bundle,
+                final_exit_code=predicted_exit_code,
+                diagnostics=seal_diagnostics,
+                print_terminal=False,
+                publish_latest=False,
+            )
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            seal_error = f"output bundle terminal finalization failed: {exc}"
+    else:
+        seal_error = "output bundle terminal finalization failed: bundle unavailable"
+
+    artifact_status, repair_handoff, handoff_errors = _build_repair_handoff(
         generation_manifest_path=gen_manifest_path,
         gate_manifest_path=gate_manifest_path,
         generation_manifest=generation_manifest,
@@ -1761,8 +2684,12 @@ def run_audit(
         gen_manifest_path,
         Path(snapshot) if snapshot else None,
     )
-    retention_run_id = adg_run_id or adg_run_id_for_outputs or _find_recent_sqlite_run_stamp(
-        since_wall_start=wall_start,
+    retention_run_id = (
+        adg_run_id
+        or adg_run_id_for_outputs
+        or _find_recent_sqlite_run_stamp(
+            since_wall_start=wall_start,
+        )
     )
     completed_at_utc = _utcnow_iso()
 
@@ -1780,17 +2707,55 @@ def run_audit(
         started_at_utc=started_at_utc,
         completed_at_utc=completed_at_utc,
         repair_handoff=repair_handoff,
+        process_exit_code=predicted_exit_code,
     )
-    result = _copy_result_for_handoff_root(
-        result,
-        producer_artifacts=producer_artifacts,
-    )
-    promotion_errors = _publish_result_snapshot_pointer(
-        result,
-        artifacts_adg=producer_artifacts,
-    )
-    if promotion_errors:
-        result.reasons.extend(promotion_errors)
+    publication_errors: list[str] = []
+    if seal_error:
+        publication_errors.append(seal_error)
+    if artifact_status != predicted_artifact_status:
+        publication_errors.append(
+            "post-finalization handoff status differs from predicted status: "
+            f"predicted={predicted_artifact_status} actual={artifact_status}"
+        )
+    if handoff_errors and not predicted_handoff_errors:
+        publication_errors.append(
+            "post-finalization handoff validation failed: " + "; ".join(sorted(set(handoff_errors)))
+        )
+
+    publication: PublicationDocuments | None = None
+    if not publication_errors and _downstream_release_status(result) == "released":
+        try:
+            # Transport/reseal exactly once before immutable receipt creation.
+            result = _copy_result_for_handoff_root(
+                result,
+                producer_artifacts=producer_artifacts,
+            )
+            publication = _prepare_immutable_publication(
+                result,
+                producer_artifacts=producer_artifacts,
+            )
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            publication_errors.append(f"immutable publication preparation failed: {exc}")
+
+    if publication is not None and not publication_errors:
+        publication_errors.extend(
+            _publish_result_snapshot_pointer(
+                result,
+                artifacts_adg=producer_artifacts,
+                receipt_path=publication.receipt_path,
+                handoff_path=publication.handoff_path,
+            )
+        )
+        if not publication_errors:
+            for warning in _publish_convenience_aliases(
+                publication,
+                result,
+                producer_artifacts=producer_artifacts,
+            ):
+                print(f"[audit] warning: {warning}", file=sys.stderr)
+
+    if publication_errors:
+        result.reasons.extend(publication_errors)
         result.artifact_status = "incomplete"
         if result.certification_status == "clean":
             result.certification_status = "failed"
@@ -1800,28 +2765,74 @@ def run_audit(
                 "validation_errors",
                 [],
             )
-            validation_errors.extend(promotion_errors)
+            validation_errors.extend(publication_errors)
+        result.process_exit_code = 1
+        for error in publication_errors:
+            print(f"[audit] BLOCKED after sealing: {error}", file=sys.stderr)
+
+    if publication is None or publication_errors:
+        handoff_validation_errors = (
+            (result.repair_handoff or {}).get("validation_errors")
+            if isinstance((result.repair_handoff or {}).get("validation_errors"), list)
+            else []
+        )
+        blocked_diagnostics = list(
+            dict.fromkeys(
+                [
+                    *publication_errors,
+                    *result.reasons,
+                    *(str(item) for item in handoff_validation_errors),
+                ]
+            )
+        ) or ["current run was not eligible for snapshot activation"]
+        for warning in _publish_blocked_latest_state(
+            result,
+            producer_artifacts=producer_artifacts,
+            diagnostics=blocked_diagnostics,
+        ):
+            print(f"[audit] warning: {warning}", file=sys.stderr)
 
     _run_retention_sweep(
         retention_run_id,
         adg_dir=producer_artifacts,
     )
-    status = result.certification_status
-    artifact_status = result.artifact_status
-    reasons = result.reasons
-    _write_receipt(result, producer_artifacts=producer_artifacts)
     if enforcement_path is not None:
         print(f"[audit] enforcement report: {enforcement_path}")
 
-    # Render summary.
-    print(f"[audit] certification_status={status}")
-    print(f"[audit] artifact_status={artifact_status}")
-    print(f"[audit] generator_exit_code={gen_rc}  report_exit_code={report_rc}")
-    print(f"[audit] runtime_proof_status={runtime_proof_status}")
-    if reasons:
-        print("[audit] reasons:")
-        for r in reasons:
-            print(f"  - {r}")
+    wrapper_exit_code = result.process_exit_code
+    terminal_matches_exit = False
+    if output_bundle is not None:
+        manifest_path = getattr(output_bundle, "manifest_path", None)
+        try:
+            terminal_matches_exit = not isinstance(manifest_path, Path) or (
+                _load_json(manifest_path).get("final_exit_code") == wrapper_exit_code
+            )
+        except (OSError, json.JSONDecodeError, TypeError):
+            terminal_matches_exit = False
+    if (
+        output_bundle is not None
+        and terminal_matches_exit
+        and output_bundle.terminal_summary_path is not None
+        and output_bundle.terminal_summary_path.is_file()
+    ):
+        sys.stdout.write("\n" + output_bundle.terminal_summary_path.read_text(encoding="utf-8"))
+    else:
+        lines = [
+            "## ADG Executive Brief",
+            "",
+            "- **Status:** `BLOCKED`",
+            "- **Output bundle:** unavailable",
+            "- **Impact Inventory:** unavailable",
+            "- **Decision gate:** BLOCKED",
+            "- **Fix now:** restore the current-run output bundle, then rerun",
+            "",
+            "## Final disposition",
+            "",
+            f"- **Process exit code:** `{wrapper_exit_code}`",
+        ]
+        lines.extend(f"- **Diagnostic:** {diagnostic}" for diagnostic in seal_diagnostics)
+        lines.extend(f"- **Diagnostic:** {diagnostic}" for diagnostic in publication_errors)
+        print("\n" + "\n".join(lines))
     return result
 
 
@@ -1834,8 +2845,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--continue-on-p0", action="store_true")
     parser.add_argument("--generator-timeout-seconds", type=int, default=1800)
     parser.add_argument("--report-timeout-seconds", type=int, default=300)
-    parser.add_argument("--generator-arg", action="append", default=[],
-                        help="Extra arg to pass through to generate_full_adg.py (repeatable).")
+    parser.add_argument(
+        "--generator-arg",
+        action="append",
+        default=[],
+        help="Extra arg to pass through to generate_full_adg.py (repeatable).",
+    )
     args = parser.parse_args(argv)
 
     result = run_audit(
@@ -1849,14 +2864,7 @@ def main(argv: list[str] | None = None) -> int:
         generator_extra_args=args.generator_arg,
     )
 
-    if args.mode == "diagnostic":
-        # Diagnostic mode: generator failure is tolerated if flag set; otherwise propagate.
-        if args.diagnostic_allow_failed_generator:
-            return 0
-        return 1 if (result.generator_exit_code or 0) != 0 else 0
-
-    # Certification mode: any reason = non-zero.
-    return 0 if result.ok else 1
+    return result.process_exit_code
 
 
 if __name__ == "__main__":

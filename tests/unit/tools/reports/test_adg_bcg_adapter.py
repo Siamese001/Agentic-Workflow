@@ -1,14 +1,280 @@
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
 from tools.reports.adg_bcg_adapter import (
     build_bcg_brief,
     build_bcg_gate_adapter,
     build_deprecation_deletion_plan,
     build_report_bcg_findings,
+    emit_bcg_gate_adapter,
     has_bcg_findings,
     render_bcg_brief_md,
     render_bcg_gate_adapter_md,
 )
+
+
+def _valid_gate_results(snapshot: Path) -> dict:
+    return {
+        "timestamp": "2026-07-17T12:00:00+00:00",
+        "snapshot": snapshot.name,
+        "snapshot_path": str(snapshot),
+        "snapshot_sha256": hashlib.sha256(snapshot.read_bytes()).hexdigest(),
+        "total_gates": 1,
+        "overall_exit_code": 0,
+        "gates": [
+            {
+                "gate_id": "G1_test",
+                "band": "P0",
+                "enforcement": "block",
+                "classification": "pass",
+                "status": "pass",
+                "exit_code": 0,
+                "violation_count": 0,
+            }
+        ],
+    }
+
+
+def _write_adapter_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
+    snapshot = tmp_path / "adg_indexed_07172026_0700.sqlite"
+    snapshot.write_bytes(b"sqlite-snapshot")
+    gate_results = tmp_path / "adg_gate_results_20260717_120000.json"
+    gate_results.write_text(json.dumps(_valid_gate_results(snapshot)), encoding="utf-8")
+    burndown = tmp_path / "adg_burndown_table_07172026_0700.json"
+    burndown.write_text(
+        json.dumps(
+            {
+                "schema_version": "2.2",
+                "summary": {},
+                "provenance": {
+                    "sqlite_source_path": str(snapshot),
+                    "sqlite_source_sha256": hashlib.sha256(snapshot.read_bytes()).hexdigest(),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    return snapshot, gate_results, burndown
+
+
+def test_emitter_fails_closed_when_gate_results_missing(tmp_path: Path) -> None:
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=tmp_path / "missing.json",
+        burndown_path=tmp_path / "missing-burndown.json",
+        docs_dir=tmp_path / "docs",
+    )
+
+    assert rc == 2
+    assert path is None
+
+
+def test_emitter_rejects_mixed_snapshot_and_empty_gate_rows(tmp_path: Path) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    other_snapshot = tmp_path / "adg_indexed_other.sqlite"
+    other_snapshot.write_bytes(b"other")
+
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=other_snapshot,
+        docs_dir=tmp_path / "docs",
+    )
+    assert (rc, path) == (2, None)
+
+    malformed = _valid_gate_results(snapshot)
+    malformed["gates"] = [{}]
+    gate_results.write_text(json.dumps(malformed), encoding="utf-8")
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    )
+    assert (rc, path) == (2, None)
+
+
+@pytest.mark.parametrize("fallback_status", ["error", "unknown"])
+def test_emitter_accepts_bound_error_evidence_without_negative_totals(
+    tmp_path: Path, fallback_status: str
+) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    payload = _valid_gate_results(snapshot)
+    payload["overall_exit_code"] = 1
+    payload["gates"][0].update(
+        {
+            "classification": "error",
+            "status": fallback_status,
+            "exit_code": -1,
+            "violation_count": -1,
+        }
+    )
+    gate_results.write_text(json.dumps(payload), encoding="utf-8")
+
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    )
+
+    assert rc == 0
+    assert path is not None
+    adapter = json.loads(path.read_text(encoding="utf-8"))
+    row = adapter["sections"]["fix_now"]["rows"][0]
+    assert row["sub"] == "error"
+    assert row["rows"] == 0
+    assert row["evidence_status"] == "error"
+    assert adapter["source"]["snapshot_sha256"]
+
+
+def test_emitter_rejects_unknown_status_without_error_classification_or_nonzero_exit(
+    tmp_path: Path,
+) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    payload = _valid_gate_results(snapshot)
+    payload["gates"][0]["status"] = "unknown"
+    gate_results.write_text(json.dumps(payload), encoding="utf-8")
+
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    )
+
+    assert (rc, path) == (2, None)
+
+
+@pytest.mark.parametrize(
+    ("updates", "overall_exit_code"),
+    [
+        ({"classification": "pass", "status": "fail", "exit_code": 0}, 0),
+        ({"classification": "pass", "status": "pass", "exit_code": 1}, 0),
+        ({"classification": "blocked", "status": "pass", "exit_code": 1}, 1),
+        ({"classification": "error", "status": "error", "exit_code": 0}, 1),
+        ({"violation_count": "0"}, 0),
+        ({"exit_code": True}, 0),
+    ],
+)
+def test_emitter_rejects_contradictory_or_non_strict_gate_rows(
+    tmp_path: Path,
+    updates: dict[str, object],
+    overall_exit_code: int,
+) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    payload = _valid_gate_results(snapshot)
+    payload["overall_exit_code"] = overall_exit_code
+    payload["gates"][0].update(updates)
+    gate_results.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    ) == (2, None)
+
+
+def test_emitter_rejects_nonzero_overall_when_all_gate_rows_pass(tmp_path: Path) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    payload = _valid_gate_results(snapshot)
+    payload.update(
+        {
+            "overall_exit_code": 1,
+            "snapshot_changed_during_run": False,
+            "fleet_registry_valid": True,
+        }
+    )
+    gate_results.write_text(json.dumps(payload), encoding="utf-8")
+
+    assert emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    ) == (2, None)
+
+
+@pytest.mark.parametrize(
+    ("integrity_field", "integrity_value", "failure_name"),
+    [
+        ("snapshot_changed_during_run", True, "snapshot_changed_during_run"),
+        ("fleet_registry_valid", False, "fleet_registry_invalid"),
+    ],
+)
+def test_emitter_surfaces_dispatcher_integrity_failure_as_synthetic_fix(
+    tmp_path: Path,
+    integrity_field: str,
+    integrity_value: bool,
+    failure_name: str,
+) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    payload = _valid_gate_results(snapshot)
+    payload["overall_exit_code"] = 1
+    payload[integrity_field] = integrity_value
+    gate_results.write_text(json.dumps(payload), encoding="utf-8")
+
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=tmp_path / "docs",
+    )
+
+    assert rc == 0
+    assert path is not None
+    adapter = json.loads(path.read_text(encoding="utf-8"))
+    integrity = next(
+        row for row in adapter["sections"]["fix_now"]["rows"] if row["gate_id"] == "run_integrity"
+    )
+    assert integrity["verdict"] == "FIX"
+    assert integrity["sub"] == "error"
+    assert integrity["evidence_status"] == "error"
+    assert integrity["raw_gate"]["integrity_failures"] == [failure_name]
+
+
+def test_emitter_can_skip_latest_and_docs_publication(tmp_path: Path) -> None:
+    snapshot, gate_results, burndown = _write_adapter_inputs(tmp_path)
+    docs = tmp_path / "docs"
+
+    rc, path = emit_bcg_gate_adapter(
+        adg_artifacts_dir=tmp_path,
+        ts="07172026_0700",
+        gate_results_path=gate_results,
+        burndown_path=burndown,
+        expected_snapshot_path=snapshot,
+        docs_dir=docs,
+        publish_latest=False,
+    )
+
+    assert rc == 0
+    assert path == tmp_path / "adg_bcg_adapter_07172026_0700.json"
+    assert path.is_file()
+    assert path.with_suffix(".md").is_file()
+    assert not (tmp_path / "adg_bcg_adapter_latest.json").exists()
+    assert not (tmp_path / "adg_bcg_adapter_latest.md").exists()
+    assert not docs.exists()
 
 
 def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
@@ -56,7 +322,10 @@ def test_render_bcg_brief_md_uses_shared_business_and_technical_style() -> None:
     assert "- **Status:** PASS" not in md
     assert "- **Business read:** Fix the blocker first, then clean the waste." in md
     assert "Decision gate:" in md
-    assert "| Repair graph/report consistency | Ranking is not trustworthy yet. | 1 mismatch. | Repair consistency before ranking work. |" in md
+    assert (
+        "| Repair graph/report consistency | Ranking is not trustworthy yet. | 1 mismatch. | Repair consistency before ranking work. |"
+        in md
+    )
     assert "Fix now:" in md
     assert "| Priority | Move | Why it matters | Evidence | Next step |" in md
     assert "Business reason" not in md

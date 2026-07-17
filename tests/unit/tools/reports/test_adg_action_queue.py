@@ -10,6 +10,7 @@ import pytest
 
 from tools.reports.adg_action_queue import (
     build_action_queue,
+    emit_adg_action_queue,
     extract_notion_fix_rows,
     validate_action_queue,
 )
@@ -103,7 +104,10 @@ def test_track_never_in_actions(tmp_path: Path) -> None:
     assert blocker["enforcement_effect"] == "blocker"
     assert blocker["work_priority"] == "P0"
     assert blocker["queue_section"] == "open_blockers"
-    assert display_verdict({"classification": "pass", "violation_count": 2792, "enforcement": "ratchet"}) == "TRACK"
+    assert (
+        display_verdict({"classification": "pass", "violation_count": 2792, "enforcement": "ratchet"})
+        == "TRACK"
+    )
 
 
 def test_p0_wave_does_not_promote_ratchet_floor(tmp_path: Path) -> None:
@@ -368,6 +372,54 @@ def test_missing_accelerator_fix_only_degraded(tmp_path: Path) -> None:
     assert all(a["verdict_cluster"] == "FIX" for a in doc["actions"])
 
 
+def test_emitter_can_disable_fixed_latest_and_glob_input_fallbacks(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    gate = tmp_path / "exact_gate_results.json"
+    burndown = tmp_path / "exact_burndown.json"
+    output = artifacts / "adg_action_queue_run.json"
+    _write_gate_results(
+        gate,
+        [_gate("10_infra_wiring", classification="blocked", violation_count=1)],
+    )
+    _write_burndown(burndown)
+    for path in (
+        artifacts / "adg_gate_results_stale.json",
+        artifacts / "adg_refactor_accelerator_run.json",
+        artifacts / "adg_failure_clusters.json",
+        artifacts / "adg_structural_outputs_run.json",
+        artifacts / "adg_graphdb_queries_run.json",
+        artifacts / "issues" / "p0_remediation_wave_plan_run.json",
+    ):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}", encoding="utf-8")
+
+    rc, out = emit_adg_action_queue(
+        gate_results=gate,
+        burndown=burndown,
+        output_path=output,
+        ts="run",
+        allow_latest_fallback=False,
+        fail_closed=True,
+        repo_root=tmp_path,
+    )
+
+    assert rc == 0
+    assert out == output
+    doc = json.loads(output.read_text(encoding="utf-8"))
+    provenance = {row["artifact_key"]: row for row in doc["provenance"]["inputs"]}
+    assert provenance["gate_results"]["path"] == str(gate)
+    assert provenance["burndown"]["path"] == str(burndown)
+    for key in (
+        "p0_wave_plan",
+        "refactor_accelerator",
+        "failure_clusters",
+        "structural_outputs",
+        "graphdb_queries",
+    ):
+        assert provenance[key]["status"] == "missing"
+
+
 def test_cap_preserves_rank1_fix(tmp_path: Path) -> None:
     gate = tmp_path / "gates.json"
     burndown = tmp_path / "burndown.json"
@@ -408,9 +460,7 @@ def test_stale_failure_clusters_rejected(tmp_path: Path) -> None:
         burndown_path=burndown,
         failure_clusters_path=clusters,
     )
-    cluster_input = next(
-        i for i in doc["provenance"]["inputs"] if i["artifact_key"] == "failure_clusters"
-    )
+    cluster_input = next(i for i in doc["provenance"]["inputs"] if i["artifact_key"] == "failure_clusters")
     assert cluster_input["status"] in {"stale", "rejected"}
     assert len(doc["actions"]) == 1
 

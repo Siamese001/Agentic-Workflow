@@ -203,13 +203,14 @@ def format_summary_table() -> str:
     return "\n".join(lines)
 
 
-def reset_for_tests() -> None:
-    """Clear the registry. Tests only.
-
-    Production callers MUST NOT invoke this; the registry is meant to
-    accumulate across the entire run.
-    """
+def reset_for_run() -> None:
+    """Clear process-local failures before a newly claimed ADG run starts."""
     _DEFERRED_FAILURES.clear()
+
+
+def reset_for_tests() -> None:
+    """Backward-compatible test helper; production uses ``reset_for_run``."""
+    reset_for_run()
 
 
 __all__ = [
@@ -218,5 +219,6 @@ __all__ = [
     "deferred_failure_summary",
     "record_failure",
     "record_or_exit",
+    "reset_for_run",
     "reset_for_tests",
 ]
