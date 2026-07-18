@@ -1,9 +1,9 @@
 {
   "gate_id": "M_taint_actionable_ratchet",
-  "count": 700,
-  "seeded_at": "2026-07-13T10:21:50.390884+00:00",
-  "snapshot": "adg_indexed_07132026_0614.sqlite",
+  "count": 699,
+  "seeded_at": "2026-07-14T04:39:22.256883+00:00",
+  "snapshot": "adg_indexed_07142026_0023.sqlite",
   "zero_run_streak": 0,
-  "last_run_at": "2026-07-13T10:57:50.251674+00:00",
-  "last_run_snapshot": "adg_indexed_07132026_0651.sqlite"
+  "last_run_at": "2026-07-14T04:39:51.210344+00:00",
+  "last_run_snapshot": "adg_indexed_07142026_0023.sqlite"
 }

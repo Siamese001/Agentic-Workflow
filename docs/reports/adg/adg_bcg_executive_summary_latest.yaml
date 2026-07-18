@@ -1,11 +1,11 @@
 schema_version: '1.0'
 artifact_kind: adg_bcg_executive_summary
 run:
-  run_id: '07132026_0651'
-  generated_at_utc: '2026-07-13T11:01:47+00:00'
-  snapshot_ts: '2026-07-13T10:58:02.552667+00:00'
-  commit_sha: a89fd2f230b52c1991049aaf6b82ba540eab0a2a
-  repo_state_hash: 05247c00fb0df9b0
+  run_id: '07142026_0023'
+  generated_at_utc: '2026-07-14T04:43:29+00:00'
+  snapshot_ts: '2026-07-14T04:40:04.942970+00:00'
+  commit_sha: 3ada93fc2c780fe548e723d68e7e5e5bdf8b21c7
+  repo_state_hash: 4cde368cc9901c6d
   emit_status: PASS
   decision_grade_status: REPORT_INCONSISTENT
   degradation_reasons: []
@@ -23,11 +23,11 @@ plain_english_context:
     caveats: []
 patient_size:
   status: present
-  total_python_files: 12514
-  production_python_files: 7177
-  test_python_files: 5337
+  total_python_files: 12545
+  production_python_files: 7197
+  test_python_files: 5348
   agentic_core:
-    file_count: 2904
+    file_count: 2905
     largest_layers:
     - layer: L5_safety
       file_count: 472
@@ -45,10 +45,10 @@ patient_size:
       file_count: 224
       executive_read: Large core layer; treat as control-plane blast-radius context.
   apps:
-    total_files: 1512
+    total_files: 1522
     app_breakdown:
     - app: apps_rg
-      file_count: 627
+      file_count: 635
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_shared
@@ -72,7 +72,7 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_eval
-      file_count: 52
+      file_count: 54
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
     - app: apps_architect
@@ -80,12 +80,12 @@ patient_size:
       executive_read: Product surface; prioritize when high blast radius and missing
         e2e/regression tests overlap.
   tests:
-    total_files: 5337
+    total_files: 5348
     folder_breakdown:
     - folder: tests/unit
-      file_count: 3159
+      file_count: 3168
     - folder: tests/e2e
-      file_count: 63
+      file_count: 64
     - folder: tests/regression
       file_count: 1
     - folder: tests/integration
@@ -99,10 +99,10 @@ patient_size:
     - folder: tests/fixtures
       file_count: 9
     - folder: tests/unknown
-      file_count: 2044
+      file_count: 2045
   executive_read: Patient-size metrics show where ADG risk lands across core, apps,
     and tests.
-  snapshot_ts: '2026-07-13T10:58:02.552667+00:00'
+  snapshot_ts: '2026-07-14T04:40:04.942970+00:00'
 executive_decision:
   verdict: REPORT_INCONSISTENT
   recommendation: Repair report consistency before treating lower-severity ranking
@@ -159,7 +159,7 @@ prioritization_model:
   - Every suppressed signal records why it was suppressed.
 bcg_gate_adapter:
   artifact_kind: adg_bcg_gate_adapter
-  generated_at_utc: '2026-07-13T11:01:18+00:00'
+  generated_at_utc: '2026-07-14T04:42:51+00:00'
   policy:
     kpi_watchlist_rule: KPI/watchlist rows are not burn-down work unless a future
       plan gives them an owner, target, and retirement condition.
@@ -234,18 +234,18 @@ bcg_gate_adapter:
       source: sql
       status: warn
       stderr_tail: []
-      violation_count: 108
+      violation_count: 100
     reported_for_priority_queue: true
-    rows: 108
+    rows: 100
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).
-      Sub: 108 warn inventory; not halt-tier.'
+      Sub: 100 warn inventory; not halt-tier.'
     status: warn
     sub: inventory
     verdict: TRACK
   - band: P0
-    baseline_count: 108
+    baseline_count: 100
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -258,7 +258,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P0
-      baseline_count: 108
+      baseline_count: 100
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -270,13 +270,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 108
+      violation_count: 100
     reported_for_priority_queue: true
-    rows: 108
+    rows: 100
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty edges).
-      Sub: 108 at floor (baseline 108); no new debt.'
+      Sub: 100 at floor (baseline 100); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -317,7 +317,7 @@ bcg_gate_adapter:
     sub: floor
     verdict: TRACK
   - band: P1
-    baseline_count: 700
+    baseline_count: 699
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -330,7 +330,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P1
-      baseline_count: 700
+      baseline_count: 699
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -342,13 +342,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 700
+      violation_count: 699
     reported_for_priority_queue: true
-    rows: 700
+    rows: 699
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Actionable taint surfaces without output schema binding. Sub:
-      700 at floor (baseline 700); no new debt.'
+      699 at floor (baseline 699); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -533,7 +533,7 @@ bcg_gate_adapter:
     sub: floor
     verdict: TRACK
   - band: P2
-    baseline_count: 1015
+    baseline_count: 1023
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -546,7 +546,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P2
-      baseline_count: 1015
+      baseline_count: 1023
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -558,13 +558,13 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 1015
+      violation_count: 1023
     reported_for_priority_queue: true
-    rows: 1015
+    rows: 1023
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-      Sub: 1015 at floor (baseline 1015); no new debt.'
+      Sub: 1023 at floor (baseline 1023); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -641,7 +641,7 @@ bcg_gate_adapter:
     sub: advis
     verdict: TRACK
   - band: P3
-    baseline_count: 10318
+    baseline_count: 10351
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -654,7 +654,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 10318
+      baseline_count: 10351
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -666,18 +666,18 @@ bcg_gate_adapter:
       source: sql
       status: pass
       stderr_tail: []
-      violation_count: 10318
+      violation_count: 10351
     reported_for_priority_queue: false
-    rows: 10318
+    rows: 10351
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10318 at floor
-      (baseline 10318); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10351 at floor
+      (baseline 10351); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
   - band: P3
-    baseline_count: 1281
+    baseline_count: 1317
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -690,7 +690,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 1281
+      baseline_count: 1317
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -702,18 +702,18 @@ bcg_gate_adapter:
       source: disk
       status: pass
       stderr_tail: []
-      violation_count: 1281
+      violation_count: 1317
     reported_for_priority_queue: false
-    rows: 1281
+    rows: 1317
     section: kpi_watchlist
     section_label: KPI / watchlist
     signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub:
-      1281 at floor (baseline 1281); no new debt.'
+      1317 at floor (baseline 1317); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
   - band: P3
-    baseline_count: 447
+    baseline_count: 451
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -726,7 +726,7 @@ bcg_gate_adapter:
       wave. No action needed to pass CI.'
     raw_gate:
       band: P3
-      baseline_count: 447
+      baseline_count: 451
       classification: pass
       dispatch: in-process
       enforcement: ratchet
@@ -738,13 +738,13 @@ bcg_gate_adapter:
       source: disk
       status: pass
       stderr_tail: []
-      violation_count: 447
+      violation_count: 451
     reported_for_priority_queue: false
-    rows: 447
+    rows: 451
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 447
-      at floor (baseline 447); no new debt.'
+    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 451
+      at floor (baseline 451); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -790,7 +790,7 @@ bcg_gate_adapter:
         rows clear.
       gate_count: 12
       label: Burn down / owned backlog
-      row_count: 6198
+      row_count: 6189
       rows:
       - band: P0
         baseline_count: 1370
@@ -854,18 +854,18 @@ bcg_gate_adapter:
           source: sql
           status: warn
           stderr_tail: []
-          violation_count: 108
+          violation_count: 100
         reported_for_priority_queue: true
-        rows: 108
+        rows: 100
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: Non-UWG durable write paths in mv_write_sovereignty_paths
-          (inventory). Sub: 108 warn inventory; not halt-tier.'
+          (inventory). Sub: 100 warn inventory; not halt-tier.'
         status: warn
         sub: inventory
         verdict: TRACK
       - band: P0
-        baseline_count: 108
+        baseline_count: 100
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -878,7 +878,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id004
           band: P0
-          baseline_count: 108
+          baseline_count: 100
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -890,13 +890,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 108
+          violation_count: 100
         reported_for_priority_queue: true
-        rows: 108
+        rows: 100
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty
-          edges). Sub: 108 at floor (baseline 108); no new debt.'
+          edges). Sub: 100 at floor (baseline 100); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -937,7 +937,7 @@ bcg_gate_adapter:
         sub: floor
         verdict: TRACK
       - band: P1
-        baseline_count: 700
+        baseline_count: 699
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -950,7 +950,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id006
           band: P1
-          baseline_count: 700
+          baseline_count: 699
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -962,13 +962,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 700
+          violation_count: 699
         reported_for_priority_queue: true
-        rows: 700
+        rows: 699
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: Actionable taint surfaces without output schema binding.
-          Sub: 700 at floor (baseline 700); no new debt.'
+          Sub: 699 at floor (baseline 699); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -1153,7 +1153,7 @@ bcg_gate_adapter:
         sub: floor
         verdict: TRACK
       - band: P2
-        baseline_count: 1015
+        baseline_count: 1023
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -1166,7 +1166,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id012
           band: P2
-          baseline_count: 1015
+          baseline_count: 1023
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -1178,13 +1178,13 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 1015
+          violation_count: 1023
         reported_for_priority_queue: true
-        rows: 1015
+        rows: 1023
         section: burn_down
         section_label: Burn down / owned backlog
         signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-          Sub: 1015 at floor (baseline 1015); no new debt.'
+          Sub: 1023 at floor (baseline 1023); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -2361,7 +2361,7 @@ bcg_gate_adapter:
         work without an owner and target.
       gate_count: 5
       label: KPI / watchlist
-      row_count: 12154
+      row_count: 12227
       rows:
       - band: P2
         baseline_count: null
@@ -2399,7 +2399,7 @@ bcg_gate_adapter:
         sub: advis
         verdict: TRACK
       - band: P3
-        baseline_count: 10318
+        baseline_count: 10351
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2412,7 +2412,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id015
           band: P3
-          baseline_count: 10318
+          baseline_count: 10351
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2424,18 +2424,18 @@ bcg_gate_adapter:
           source: sql
           status: pass
           stderr_tail: []
-          violation_count: 10318
+          violation_count: 10351
         reported_for_priority_queue: false
-        rows: 10318
+        rows: 10351
         section: kpi_watchlist
         section_label: KPI / watchlist
-        signal: 'Counts: Unused import edges in production modules. Sub: 10318 at
-          floor (baseline 10318); no new debt.'
+        signal: 'Counts: Unused import edges in production modules. Sub: 10351 at
+          floor (baseline 10351); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
       - band: P3
-        baseline_count: 1281
+        baseline_count: 1317
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2448,7 +2448,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id016
           band: P3
-          baseline_count: 1281
+          baseline_count: 1317
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2460,18 +2460,18 @@ bcg_gate_adapter:
           source: disk
           status: pass
           stderr_tail: []
-          violation_count: 1281
+          violation_count: 1317
         reported_for_priority_queue: false
-        rows: 1281
+        rows: 1317
         section: kpi_watchlist
         section_label: KPI / watchlist
         signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling.
-          Sub: 1281 at floor (baseline 1281); no new debt.'
+          Sub: 1317 at floor (baseline 1317); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
       - band: P3
-        baseline_count: 447
+        baseline_count: 451
         classification: pass
         delta_vs_baseline: 0
         enforcement: ratchet
@@ -2484,7 +2484,7 @@ bcg_gate_adapter:
           plan wave. No action needed to pass CI.'
         raw_gate: &id017
           band: P3
-          baseline_count: 447
+          baseline_count: 451
           classification: pass
           dispatch: in-process
           enforcement: ratchet
@@ -2496,13 +2496,13 @@ bcg_gate_adapter:
           source: disk
           status: pass
           stderr_tail: []
-          violation_count: 447
+          violation_count: 451
         reported_for_priority_queue: false
-        rows: 447
+        rows: 451
         section: kpi_watchlist
         section_label: KPI / watchlist
         signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub:
-          447 at floor (baseline 447); no new debt.'
+          451 at floor (baseline 451); no new debt.'
         status: pass
         sub: floor
         verdict: TRACK
@@ -2544,24 +2544,24 @@ bcg_gate_adapter:
   source:
     burndown_schema_version: '2.2'
     overall_exit_code: 0
-    snapshot: adg_indexed_07132026_0651.sqlite
-    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07132026_0651.sqlite
-    timestamp: '2026-07-13T10:58:02.552667+00:00'
+    snapshot: adg_indexed_07142026_0023.sqlite
+    snapshot_path: C:\Git\Agentic-Workflow-FRESH-worktrees\codex-adg-p0-blocker-burndown\artifacts\adg\adg_indexed_07142026_0023.sqlite
+    timestamp: '2026-07-14T04:40:04.942970+00:00'
   summary:
     burn_down_gates: 12
-    burn_down_rows: 6198
+    burn_down_rows: 6189
     clear_gates: 32
     fix_now_gates: 0
     fix_now_rows: 0
     kpi_watchlist_gates: 5
-    kpi_watchlist_rows: 12154
+    kpi_watchlist_rows: 12227
     priority_queue_gate_count: 12
-    priority_queue_row_count: 6198
+    priority_queue_row_count: 6189
     report_only_gate_count: 5
-    report_only_row_count: 12154
+    report_only_row_count: 12227
     total_gates: 49
     work_section_gate_count: 12
-    work_section_row_count: 6198
+    work_section_row_count: 6189
 kpi_scorecard: &id001
   status: present
   executive_read: 'Impact severity is split from enforcement: foundation candidates,
@@ -2571,16 +2571,16 @@ kpi_scorecard: &id001
   kpis:
   - id: foundation_blockers
     kpi: Foundation candidate inventory
-    value: 200
-    display_value: '200'
+    value: 201
+    display_value: '201'
     meaning: Candidate run-trust hazards that can make ADG evidence incomplete, unstable,
       or misleading.
     action_rule: Triage as candidate blockers; stop the line only when linked to a
       live blocker gate.
   - id: p0_audit_net
     kpi: Critical impact inventory
-    value: 14
-    display_value: '14'
+    value: 17
+    display_value: '17'
     meaning: Critical impact inventory after guardian exemptions.
     action_rule: Audit-only unless mapped to a failing gate, runtime failure, hotspot,
       or changed code.
@@ -2592,40 +2592,40 @@ kpi_scorecard: &id001
     action_rule: Only live blocker gates can become P0 work.
   p0_p3_audit_inventory:
   - band: P0
-    audit_gross: 46
+    audit_gross: 49
     guardian_exempted: 32
-    audit_net: 14
-    audit_net_display: '14'
-    foundation_blockers: 200
-    foundation_blockers_display: '200'
+    audit_net: 17
+    audit_net_display: '17'
+    foundation_blockers: 201
+    foundation_blockers_display: '201'
     live_gate_drivers: 0
     action_role: Stop-the-line only if foundation blockers are present; otherwise
       audit net is evidence to map.
   - band: P1
-    audit_gross: 1149
+    audit_gross: 1150
     guardian_exempted: 1143
-    audit_net: 6
-    audit_net_display: '6'
+    audit_net: 7
+    audit_net_display: '7'
     foundation_blockers: null
     foundation_blockers_display: n/a
     live_gate_drivers: 0
     action_role: Severity inventory to map to a failing gate, hotspot, changed code,
       or owner.
   - band: P2
-    audit_gross: 740
-    guardian_exempted: 698
-    audit_net: 42
-    audit_net_display: '42'
+    audit_gross: 746
+    guardian_exempted: 700
+    audit_net: 46
+    audit_net_display: '46'
     foundation_blockers: null
     foundation_blockers_display: n/a
     live_gate_drivers: 0
     action_role: Severity inventory to map to a failing gate, hotspot, changed code,
       or owner.
   - band: P3
-    audit_gross: 19638
+    audit_gross: 19772
     guardian_exempted: 87
-    audit_net: 19551
-    audit_net_display: 19,551
+    audit_net: 19685
+    audit_net_display: 19,685
     foundation_blockers: null
     foundation_blockers_display: n/a
     live_gate_drivers: 0
@@ -2698,17 +2698,17 @@ gate_mece_summary:
       CI.'
     raw_gate: *id003
     reported_for_priority_queue: true
-    rows: 108
+    rows: 100
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Non-UWG durable write paths in mv_write_sovereignty_paths (inventory).
-      Sub: 108 warn inventory; not halt-tier.'
+      Sub: 100 warn inventory; not halt-tier.'
     status: warn
     sub: inventory
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P0
-    baseline_count: 108
+    baseline_count: 100
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2721,11 +2721,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id004
     reported_for_priority_queue: true
-    rows: 108
+    rows: 100
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Write paths that bypass UWG (overlay on write_sovereignty edges).
-      Sub: 108 at floor (baseline 108); no new debt.'
+      Sub: 100 at floor (baseline 100); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -2754,7 +2754,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P1
-    baseline_count: 700
+    baseline_count: 699
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2767,11 +2767,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id006
     reported_for_priority_queue: true
-    rows: 700
+    rows: 699
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: Actionable taint surfaces without output schema binding. Sub:
-      700 at floor (baseline 700); no new debt.'
+      699 at floor (baseline 699); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -2892,7 +2892,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: BURN_DOWN_AFTER_GREEN
   - band: P2
-    baseline_count: 1015
+    baseline_count: 1023
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2905,11 +2905,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id012
     reported_for_priority_queue: true
-    rows: 1015
+    rows: 1023
     section: burn_down
     section_label: Burn down / owned backlog
     signal: 'Counts: State mutations not consumed by replay surface (gap_flag=1).
-      Sub: 1015 at floor (baseline 1015); no new debt.'
+      Sub: 1023 at floor (baseline 1023); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -2961,7 +2961,7 @@ gate_mece_summary:
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 10318
+    baseline_count: 10351
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2974,17 +2974,17 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id015
     reported_for_priority_queue: false
-    rows: 10318
+    rows: 10351
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Unused import edges in production modules. Sub: 10318 at floor
-      (baseline 10318); no new debt.'
+    signal: 'Counts: Unused import edges in production modules. Sub: 10351 at floor
+      (baseline 10351); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 1281
+    baseline_count: 1317
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -2997,17 +2997,17 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id016
     reported_for_priority_queue: false
-    rows: 1281
+    rows: 1317
     section: kpi_watchlist
     section_label: KPI / watchlist
     signal: 'Counts: Functions with McCabe cyclomatic complexity above ceiling. Sub:
-      1281 at floor (baseline 1281); no new debt.'
+      1317 at floor (baseline 1317); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
     bucket: KPI_WATCHLIST
   - band: P3
-    baseline_count: 447
+    baseline_count: 451
     classification: pass
     delta_vs_baseline: 0
     enforcement: ratchet
@@ -3020,11 +3020,11 @@ gate_mece_summary:
       wave. No action needed to pass CI.'
     raw_gate: *id017
     reported_for_priority_queue: false
-    rows: 447
+    rows: 451
     section: kpi_watchlist
     section_label: KPI / watchlist
-    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 447
-      at floor (baseline 447); no new debt.'
+    signal: 'Counts: Production modules exceeding LOC ceiling (disk scan). Sub: 451
+      at floor (baseline 451); no new debt.'
     status: pass
     sub: floor
     verdict: TRACK
@@ -3053,40 +3053,40 @@ gate_mece_summary:
     bucket: KPI_WATCHLIST
   severity_inventory:
   - band: P0
-    gross: 46
+    gross: 49
     guardian: 32
-    non_exempt: 14
-    audit_net: 14
+    non_exempt: 17
+    audit_net: 17
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
     bucket: SEVERITY_INVENTORY
   - band: P1
-    gross: 1149
+    gross: 1150
     guardian: 1143
-    non_exempt: 6
-    audit_net: 6
+    non_exempt: 7
+    audit_net: 7
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
     bucket: SEVERITY_INVENTORY
   - band: P2
-    gross: 740
-    guardian: 698
-    non_exempt: 42
-    audit_net: 42
+    gross: 746
+    guardian: 700
+    non_exempt: 46
+    audit_net: 46
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
     bucket: SEVERITY_INVENTORY
   - band: P3
-    gross: 19638
+    gross: 19772
     guardian: 87
-    non_exempt: 19551
-    audit_net: 19551
+    non_exempt: 19685
+    audit_net: 19685
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
@@ -3811,12 +3811,12 @@ lens_0_p0_landmines:
     circular_imports: 0
     dynamic_exec: 0
     l0_reachability_orphans: 200
-    layer_violations: 0
+    layer_violations: 1
     protected_layer_violations: 0
-    remaining_layer_violations: 0
-    total_p0_issues: 200
-    foundation_blockers: 200
-    wrong_way_imports: 0
+    remaining_layer_violations: 1
+    total_p0_issues: 201
+    foundation_blockers: 201
+    wrong_way_imports: 1
     protected_surfaces: 200
     max_direct_fan_in: 0
   landmines:
@@ -4277,15 +4277,15 @@ lens_1_health_gates:
       green.
   red_gates: []
   managed_debt:
-    ratchet_floor_records: 6090
-    open_non_ratchet_records: 108
+    ratchet_floor_records: 6089
+    open_non_ratchet_records: 100
     top_ratchets:
     - gate_id: G_REACH_l0_reachability
       records: 1370
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: I2_replay_surface_gaps_ratchet
-      records: 1015
+      records: 1023
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: F1_untyped_seam_ratchet
@@ -4297,27 +4297,27 @@ lens_1_health_gates:
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
     - gate_id: M_taint_actionable_ratchet
-      records: 700
+      records: 699
       executive_read: Accepted baseline debt, not current red.
       after_green_action: Burn down after FIX rows clear.
   kpi_watchlist:
     gate_count: 5
-    row_count: 12154
+    row_count: 12227
     top_signals:
     - gate_id: S4_unused_imports_ratchet
-      records: 10318
+      records: 10351
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
         to a plan wave. No action needed to pass CI.'
     - gate_id: Q2_cyclomatic_complexity_ratchet
-      records: 1281
+      records: 1317
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
         to a plan wave. No action needed to pass CI.'
     - gate_id: M1_module_loc_ratchet
-      records: 447
+      records: 451
       executive_read: Watchlist signal; do not treat as burn-down work without an
         owner and target.
       recommended_action: 'Backlog (within ratchet ceiling): shrink over time, defer
@@ -4466,7 +4466,7 @@ lens_4_testing_control_gaps:
     scanned_tests_root: tests
     folders:
     - folder: tests/unit
-      file_count: 3265
+      file_count: 3274
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -4643,6 +4643,7 @@ lens_4_testing_control_gaps:
       - agentic_core/runtime/gates
       - agentic_core/runtime/judges
       - agentic_core/runtime/judges/panel
+      - agentic_core/runtime/judges/resume_judges
       - agentic_core/runtime/l6
       - agentic_core/runtime/profiles
       - agentic_core/runtime/prove_requirements
@@ -4914,7 +4915,7 @@ lens_4_testing_control_gaps:
       - tools/tmp/work
       - tools/utils
     - folder: tests/e2e
-      file_count: 91
+      file_count: 92
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -5294,7 +5295,7 @@ lens_4_testing_control_gaps:
       - apps_rg/runtime
       - ops_scripts/ci
     - folder: tests/unknown
-      file_count: 1334
+      file_count: 1335
       mapped_production_scopes:
       - agentic_core
       - agentic_core.py
@@ -7277,6 +7278,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_judge_models_ssot.py
       - tests/unit/apps_rg/test_narrative_pa_opener_gate_consistency.py
       - tests/unit/apps_rg/test_post_x3_completion.py
+      - tests/unit/apps_rg/test_product_entry.py
       - tests/unit/apps_rg/test_prompt_judge_x2_alignment_w0.py
       - tests/unit/apps_rg/test_r1b_semantic_cache_opt_in.py
       - tests/unit/apps_rg/test_role_episode_x1d_judge.py
@@ -7617,6 +7619,7 @@ lens_4_testing_control_gaps:
       - tests/unit/apps_rg/test_per_section_model_pin_wiring.py
       - tests/unit/apps_rg/test_phase1_dispatch_x3_dict_pass.py
       - tests/unit/apps_rg/test_post_x3_completion.py
+      - tests/unit/apps_rg/test_product_entry.py
       - tests/unit/apps_rg/test_product_evidence_authority_contract.py
       - tests/unit/apps_rg/test_prompt_judge_x2_alignment_w0.py
       - tests/unit/apps_rg/test_prompt_judge_x2_alignment_w4.py
@@ -7779,7 +7782,7 @@ lens_5_graphdb_mv_decision_impact:
   decision_impact_rows:
   - signal: mv_actionable_surface_without_schema
     signal_type: materialized_view
-    row_count: 803
+    row_count: 805
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7789,7 +7792,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_agent_specialization_overlap
     signal_type: materialized_view
-    row_count: 3049
+    row_count: 3050
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7829,7 +7832,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_critical_path_segments
     signal_type: materialized_view
-    row_count: 189
+    row_count: 190
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7849,7 +7852,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_debt_concentration_hotspots
     signal_type: materialized_view
-    row_count: 4997
+    row_count: 5021
     decision_role: used_for_testing
     used_inline: true
     why_or_why_not: Translates structural risk into concrete test-placement decisions.
@@ -7858,7 +7861,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_dependency_cone_risk
     signal_type: materialized_view
-    row_count: 12032
+    row_count: 12063
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `cone_risk_score`); a
@@ -7869,7 +7872,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_determinism_provenance_drift
     signal_type: materialized_view
-    row_count: 6697
+    row_count: 6717
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7898,7 +7901,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_exemptions_near_critical_paths
     signal_type: materialized_view
-    row_count: 3186
+    row_count: 3193
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -7927,7 +7930,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_chokepoint_bridges
     signal_type: materialized_view
-    row_count: 1112
+    row_count: 1118
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
@@ -7937,7 +7940,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_critical_path_blast_radius
     signal_type: materialized_view
-    row_count: 141
+    row_count: 140
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `weighted_blast_radius`);
@@ -7948,7 +7951,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_graph_reverse_dependency_hotspots
     signal_type: materialized_view
-    row_count: 112
+    row_count: 113
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `reverse_dependency_score`);
@@ -7999,7 +8002,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_high_fan_in_out_with_defects
     signal_type: materialized_view
-    row_count: 11110
+    row_count: 11141
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8009,7 +8012,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hitl_reclearance_gaps
     signal_type: materialized_view
-    row_count: 2014
+    row_count: 2015
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8019,7 +8022,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_centrality
     signal_type: materialized_view
-    row_count: 12032
+    row_count: 12063
     decision_role: used_now
     used_inline: true
     why_or_why_not: Structural MV studied (25 ranked rows on `betweenness_approx`);
@@ -8030,7 +8033,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_hotspot_coverage_risk
     signal_type: materialized_view
-    row_count: 4489
+    row_count: 4500
     decision_role: used_now
     used_inline: true
     why_or_why_not: Linked to a current FIX/action signal, so it changes immediate
@@ -8079,7 +8082,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_modified_area_regressions
     signal_type: materialized_view
-    row_count: 5027
+    row_count: 5055
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8089,7 +8092,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_new_cross_layer_dependencies
     signal_type: materialized_view
-    row_count: 175
+    row_count: 176
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8109,7 +8112,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_new_write_bypass_paths
     signal_type: materialized_view
-    row_count: 108
+    row_count: 100
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8119,7 +8122,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_newly_introduced_critical_paths
     signal_type: materialized_view
-    row_count: 8573
+    row_count: 8606
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8139,7 +8142,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_path_criticality_rollup
     signal_type: materialized_view
-    row_count: 12032
+    row_count: 12063
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8169,7 +8172,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_repeated_p3_near_critical_paths
     signal_type: materialized_view
-    row_count: 1464
+    row_count: 1467
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8179,7 +8182,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_replay_surface_gaps
     signal_type: materialized_view
-    row_count: 1015
+    row_count: 1023
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8200,7 +8203,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_repo_health_hotspots
     signal_type: materialized_view
-    row_count: 4485
+    row_count: 4496
     decision_role: used_for_testing
     used_inline: true
     why_or_why_not: Translates structural risk into concrete test-placement decisions.
@@ -8249,7 +8252,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_snapshot_integrity_anomalies
     signal_type: materialized_view
-    row_count: 411792
+    row_count: 415715
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8279,7 +8282,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_task_contract_gaps
     signal_type: materialized_view
-    row_count: 1054
+    row_count: 1062
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8299,7 +8302,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_trace_replay_eval_gaps
     signal_type: materialized_view
-    row_count: 475
+    row_count: 480
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8309,7 +8312,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_unknown_taxonomy_and_orphans
     signal_type: materialized_view
-    row_count: 6697
+    row_count: 6717
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8329,7 +8332,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: mv_write_sovereignty_paths
     signal_type: materialized_view
-    row_count: 508
+    row_count: 502
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Useful context, but not enough by itself to fund work; raw count
@@ -8379,7 +8382,7 @@ lens_5_graphdb_mv_decision_impact:
     related_scopes: []
   - signal: graphdb_projection
     signal_type: graphdb_report
-    row_count: 1237429
+    row_count: 1244732
     decision_role: diagnostic_monitor
     used_inline: false
     why_or_why_not: Parsed P7 structural context; promoted only when it overlaps a
@@ -8431,7 +8434,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/adg/extraction/static_scanner.py
     layer: L_TOOLS
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 2.1543
+    centrality: 2.1488
     blast_radius: 84.0
     reverse_dependency: 84.0
     dependency_cone: 84.0
@@ -8444,7 +8447,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/base_agents/SovereignBaseAgent.py
     layer: L_SHARED
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.7975
+    centrality: 0.7954
     blast_radius: 175.93
     reverse_dependency: 91.0
     dependency_cone: 91.0
@@ -8457,7 +8460,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L2_execution/utils/write_gateway.py
     layer: L2
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 0.7652
+    centrality: 0.7632
     blast_radius: 168.23
     reverse_dependency: 85.0
     dependency_cone: 85.0
@@ -8470,7 +8473,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/L0_routing/config/__init__.py
     layer: L0
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone, chokepoint
-    centrality: 2.4739
+    centrality: 2.4675
     blast_radius: 173.63
     reverse_dependency: 110.0
     dependency_cone: 110.0
@@ -8483,7 +8486,7 @@ lens_5_graphdb_mv_decision_impact:
     scope: agentic_core/runtime/contracts/lifecycle_trace_contract.py
     layer: L_RUNTIME
     graph_signal: centrality, reverse_dependency, blast_radius, dependency_cone
-    centrality: 26.4953
+    centrality: 26.4272
     blast_radius: 3236.67
     reverse_dependency: 1769.0
     dependency_cone: 1769.0
@@ -8499,31 +8502,31 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: betweenness_approx
       rows_used: 25
-      total_rows: 12032
+      total_rows: 12063
     mv_graph_reverse_dependency_hotspots:
       available: true
       queried: true
       score_column: reverse_dependency_score
       rows_used: 25
-      total_rows: 112
+      total_rows: 113
     mv_graph_critical_path_blast_radius:
       available: true
       queried: true
       score_column: weighted_blast_radius
       rows_used: 25
-      total_rows: 141
+      total_rows: 140
     mv_dependency_cone_risk:
       available: true
       queried: true
       score_column: cone_risk_score
       rows_used: 25
-      total_rows: 12032
+      total_rows: 12063
     mv_graph_chokepoint_bridges:
       available: true
       queried: true
       score_column: bridge_score
       rows_used: 25
-      total_rows: 1112
+      total_rows: 1118
     mv_graph_scc_clusters:
       available: true
       queried: true
@@ -8535,7 +8538,7 @@ lens_5_graphdb_mv_decision_impact:
       queried: true
       score_column: criticality_score
       rows_used: 0
-      total_rows: 8573
+      total_rows: 8606
   action_impact_rows:
   - signal: mv_debt_concentration_hotspots
     impact: Translates structural risk into concrete test-placement decisions.
@@ -8708,7 +8711,7 @@ after_green_plan:
   - order: 2
     work_class: ratchet_burndown
     scope: I2_replay_surface_gaps_ratchet
-    records: 1015
+    records: 1023
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -8735,7 +8738,7 @@ after_green_plan:
   - order: 5
     work_class: ratchet_burndown
     scope: M_taint_actionable_ratchet
-    records: 700
+    records: 699
     driver_signals:
     - gate_results
     why_after_green: Ratchet floor work should not distract from current FIX rows.
@@ -8745,7 +8748,7 @@ artifact_usage_matrix:
   status: present
   rows:
   - artifact_key: gate_results
-    path: artifacts/adg/adg_gate_results_20260713_105802.json
+    path: artifacts/adg/adg_gate_results_20260714_044004.json
     exists: true
     loaded: true
     stale: false
@@ -8755,7 +8758,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: bcg_adapter
-    path: artifacts/adg/adg_bcg_adapter_07132026_0651.json
+    path: artifacts/adg/adg_bcg_adapter_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8767,7 +8770,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: action_queue
-    path: artifacts/adg/adg_action_queue_07132026_0651.json
+    path: artifacts/adg/adg_action_queue_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8777,7 +8780,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: review_template
-    path: artifacts/adg/adg_review_template_07132026_0651.json
+    path: artifacts/adg/adg_review_template_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8787,7 +8790,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: burndown_table
-    path: artifacts/adg/adg_burndown_table_07132026_0651.json
+    path: artifacts/adg/adg_burndown_table_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8809,7 +8812,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: sqlite_snapshot
-    path: artifacts/adg/adg_indexed_07132026_0651.sqlite
+    path: artifacts/adg/adg_indexed_07142026_0023.sqlite
     exists: true
     loaded: false
     stale: false
@@ -8820,7 +8823,7 @@ artifact_usage_matrix:
     rationale: Existing non-JSON artifact or SQLite snapshot mapped to a decision
       lens.
   - artifact_key: generation_manifest
-    path: artifacts/adg/adg_generation_manifest_07132026_0651.json
+    path: artifacts/adg/adg_generation_manifest_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8830,7 +8833,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: structural_outputs
-    path: artifacts/adg/adg_structural_outputs_07132026_0651.json
+    path: artifacts/adg/adg_structural_outputs_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8840,7 +8843,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: refactor_accelerator
-    path: artifacts/adg/adg_refactor_accelerator_07132026_0651.json
+    path: artifacts/adg/adg_refactor_accelerator_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8850,7 +8853,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_queries
-    path: artifacts/adg/adg_graphdb_queries_07132026_0651.json
+    path: artifacts/adg/adg_graphdb_queries_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8860,7 +8863,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: runtime_spine
-    path: artifacts/adg/adg_runtime_spine_07132026_0651.json
+    path: artifacts/adg/adg_runtime_spine_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8870,7 +8873,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: graphdb_projection
-    path: artifacts/adg/adg_graphdb_projection_07132026_0651.json
+    path: artifacts/adg/adg_graphdb_projection_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8882,7 +8885,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_metadata
-    path: artifacts/adg/adg_graphdb_metadata_07132026_0651.json
+    path: artifacts/adg/adg_graphdb_metadata_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8894,7 +8897,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: graphdb_index
-    path: artifacts/adg/adg_graphdb_index_07132026_0651.json
+    path: artifacts/adg/adg_graphdb_index_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8906,7 +8909,7 @@ artifact_usage_matrix:
     rationale: Available only as diagnostic/evidence context or missing from this
       run.
   - artifact_key: p0_wave_plan
-    path: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0651.json
+    path: artifacts/adg/issues/p0_remediation_wave_plan_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8916,7 +8919,7 @@ artifact_usage_matrix:
     recommendation: keep
     rationale: Loaded and mapped to a decision lens.
   - artifact_key: dead_code_report
-    path: artifacts/adg/dead_code_zone_control_report_07132026_0651.json
+    path: artifacts/adg/dead_code_zone_control_report_07142026_0023.json
     exists: true
     loaded: true
     stale: false
@@ -8940,7 +8943,7 @@ mv_usefulness_audit:
     deprecate_candidates: 8
   rows:
   - mv_name: mv_actionable_surface_without_schema
-    row_count: 803
+    row_count: 805
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -8949,7 +8952,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_agent_specialization_overlap
-    row_count: 3049
+    row_count: 3050
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -8985,7 +8988,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_critical_path_segments
-    row_count: 189
+    row_count: 190
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9003,14 +9006,14 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_debt_concentration_hotspots
-    row_count: 4997
+    row_count: 5021
     category: testing_driver
     decision_impact: Translates structural risk into concrete test-placement decisions.
     recommendation: keep
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_dependency_cone_risk
-    row_count: 12032
+    row_count: 12063
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `cone_risk_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9019,7 +9022,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_determinism_provenance_drift
-    row_count: 6697
+    row_count: 6717
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9044,7 +9047,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_exemptions_near_critical_paths
-    row_count: 3186
+    row_count: 3193
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9069,7 +9072,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_graph_chokepoint_bridges
-    row_count: 1112
+    row_count: 1118
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `bridge_score`); a high-risk
       scope overlaps a current FIX gate or coverage hotspot, so it drives work now.
@@ -9077,7 +9080,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_graph_critical_path_blast_radius
-    row_count: 141
+    row_count: 140
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `weighted_blast_radius`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9086,7 +9089,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_graph_reverse_dependency_hotspots
-    row_count: 112
+    row_count: 113
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `reverse_dependency_score`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9131,7 +9134,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_high_fan_in_out_with_defects
-    row_count: 11110
+    row_count: 11141
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9140,7 +9143,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_hitl_reclearance_gaps
-    row_count: 2014
+    row_count: 2015
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9149,7 +9152,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_hotspot_centrality
-    row_count: 12032
+    row_count: 12063
     category: decision_driver
     decision_impact: Structural MV studied (25 ranked rows on `betweenness_approx`);
       a high-risk scope overlaps a current FIX gate or coverage hotspot, so it drives
@@ -9158,7 +9161,7 @@ mv_usefulness_audit:
     replacement_or_refinement: ''
     why_not_used_if_suppressed: ''
   - mv_name: mv_hotspot_coverage_risk
-    row_count: 4489
+    row_count: 4500
     category: decision_driver
     decision_impact: Linked to a current FIX/action signal, so it changes immediate
       work order.
@@ -9200,7 +9203,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_modified_area_regressions
-    row_count: 5027
+    row_count: 5055
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9209,7 +9212,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_new_cross_layer_dependencies
-    row_count: 175
+    row_count: 176
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9227,7 +9230,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_new_write_bypass_paths
-    row_count: 108
+    row_count: 100
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9236,7 +9239,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_newly_introduced_critical_paths
-    row_count: 8573
+    row_count: 8606
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9254,7 +9257,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_path_criticality_rollup
-    row_count: 12032
+    row_count: 12063
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9281,7 +9284,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_repeated_p3_near_critical_paths
-    row_count: 1464
+    row_count: 1467
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9290,7 +9293,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_replay_surface_gaps
-    row_count: 1015
+    row_count: 1023
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9308,7 +9311,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_repo_health_hotspots
-    row_count: 4485
+    row_count: 4496
     category: testing_driver
     decision_impact: Translates structural risk into concrete test-placement decisions.
     recommendation: keep
@@ -9351,7 +9354,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_snapshot_integrity_anomalies
-    row_count: 411792
+    row_count: 415715
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9378,7 +9381,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_task_contract_gaps
-    row_count: 1054
+    row_count: 1062
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9396,7 +9399,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_trace_replay_eval_gaps
-    row_count: 475
+    row_count: 480
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9405,7 +9408,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_unknown_taxonomy_and_orphans
-    row_count: 6697
+    row_count: 6717
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9423,7 +9426,7 @@ mv_usefulness_audit:
       consistency rule.
     why_not_used_if_suppressed: Raw MV count alone is not a funding signal.
   - mv_name: mv_write_sovereignty_paths
-    row_count: 508
+    row_count: 502
     category: diagnostic_monitor
     decision_impact: Useful context, but not enough by itself to fund work; raw count
       alone is suppressed.
@@ -9548,15 +9551,15 @@ dead_code_report:
         decision_options: []
         diagram: null
         done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-        evidence: First-party low-confidence ratio = 1.48% and inferred-symbol ratio
-          = 10.15%.
+        evidence: First-party low-confidence ratio = 1.47% and inferred-symbol ratio
+          = 10.17%.
         move: Reduce low-confidence noise
         next_step: Lower the noise floor, then rerun the scan.
         priority: 5
         rank: 5
         scope: first-party nodes
-        technical_reason: First-party low-confidence ratio = 1.48% and inferred-symbol
-          ratio = 10.15%.
+        technical_reason: First-party low-confidence ratio = 1.47% and inferred-symbol
+          ratio = 10.17%.
         why_it_matters: Cleaner evidence makes later reviews faster and lowers the
           risk of deleting the wrong thing.
         why_this_rank: Lower the noise floor, then rerun the scan.
@@ -9591,12 +9594,12 @@ dead_code_report:
       status_label: Deletion status
       table_limit: 6
       technical_read:
-      - 'ADG source: artifacts/adg/adg_indexed_07132026_0651.sqlite (snapshot 07132026_0651)'
+      - 'ADG source: artifacts/adg/adg_indexed_07142026_0023.sqlite (snapshot 07142026_0023)'
       - 'Dead code candidates: 899'
       - 'Dead imports: 899'
       - 'Unresolved imports: 466'
-      - 'First-party low-confidence ratio: 1.48%'
-      - 'Inferred-symbol ratio: 10.15%'
+      - 'First-party low-confidence ratio: 1.47%'
+      - 'Inferred-symbol ratio: 10.17%'
       - 'Cleanup candidates surfaced: 0'
       title: BCG Deletion Brief
       why_this_order:
@@ -9715,15 +9718,15 @@ dead_code_report:
       decision_options: []
       diagram: null
       done_condition: Rerun ADG and confirm the relevant evidence stays clean.
-      evidence: First-party low-confidence ratio = 1.48% and inferred-symbol ratio
-        = 10.15%.
+      evidence: First-party low-confidence ratio = 1.47% and inferred-symbol ratio
+        = 10.17%.
       move: Reduce low-confidence noise
       next_step: Lower the noise floor, then rerun the scan.
       priority: 5
       rank: 5
       scope: first-party nodes
-      technical_reason: First-party low-confidence ratio = 1.48% and inferred-symbol
-        ratio = 10.15%.
+      technical_reason: First-party low-confidence ratio = 1.47% and inferred-symbol
+        ratio = 10.17%.
       why_it_matters: Cleaner evidence makes later reviews faster and lowers the risk
         of deleting the wrong thing.
       why_this_rank: Lower the noise floor, then rerun the scan.
@@ -9757,8 +9760,8 @@ dead_code_report:
       dead_imports: 899
       executive_read: ADG found confirmed dead-code targets; remove the most certain
         ones first, then clean up uncertainty and noisy diagnostics.
-      first_party_low_confidence_ratio: 1.4805871512994853
-      inferred_symbol_ratio: 10.153193442402737
+      first_party_low_confidence_ratio: 1.474823559198658
+      inferred_symbol_ratio: 10.168224716092903
       unresolved_imports: 466
       why_this_order:
       - Confirmed dead code is the highest-confidence waste and should be removed
@@ -9772,7 +9775,7 @@ dead_code_report:
       HIGH: 868
     dead_code_by_entity_type:
       module: 868
-      symbol: 412
+      symbol: 414
     dead_code_by_layer:
       L0: 8
       L1: 114
@@ -9837,7 +9840,7 @@ dead_code_report:
     dead_imports_by_domain: {}
     dead_imports_by_entity_type:
       module: 868
-      symbol: 412
+      symbol: 414
     dead_imports_by_layer: {}
     l4_dead_imports: 0
     overlay_dead_imports_by_severity: {}
@@ -9850,8 +9853,8 @@ dead_code_report:
     executive_metrics:
       dead_code_count: 899
       dead_import_count: 899
-      first_party_low_confidence_ratio: 1.4805871512994853
-      inferred_symbol_ratio: 10.153193442402737
+      first_party_low_confidence_ratio: 1.474823559198658
+      inferred_symbol_ratio: 10.168224716092903
       l4_unresolved_import_count: 0
       low_confidence_count: 466
       unresolved_import_count: 466
@@ -9865,28 +9868,28 @@ dead_code_report:
     readiness_issues: []
   inferred_symbols:
     inferred_by_confidence:
-      MEDIUM: 18140
+      MEDIUM: 18230
     inferred_by_layer:
       L0: 1348
       L1: 575
       L2: 894
       L3: 861
-      L4: 625
+      L4: 630
       L5: 1284
-      L6: 1334
-      L_APP: 5592
-      L_OPS: 519
+      L6: 1345
+      L_APP: 5634
+      L_OPS: 545
       L_PG: 516
-      L_RUNTIME: 1069
+      L_RUNTIME: 1073
       L_SHARED: 602
-      L_TEST: 292
+      L_TEST: 294
       L_TOOLS: 2413
       L_UNKNOWN: 216
-    inferred_symbol_ratio: 10.153193442402737
-    total_inferred_symbols: 18140
-    total_symbols: 178663
+    inferred_symbol_ratio: 10.168224716092903
+    total_inferred_symbols: 18230
+    total_symbols: 179284
   low_confidence_zones:
-    first_party_low_confidence_ratio: 1.4805871512994853
+    first_party_low_confidence_ratio: 1.474823559198658
     governance_low_confidence_ratio: 0.0
     low_conf_by_entity_type:
       symbol: 466
@@ -9900,8 +9903,8 @@ dead_code_report:
       - 466
     total_low_confidence: 466
   source:
-    adg_snapshot: artifacts/adg/adg_indexed_07132026_0651.sqlite
-    adg_snapshot_ts: '07132026_0651'
+    adg_snapshot: artifacts/adg/adg_indexed_07142026_0023.sqlite
+    adg_snapshot_ts: '07142026_0023'
     dead_code_signal_sources:
     - overlay_violations.category=dead_import_resolved
     - mv_dead_import_hotspots_overlay
@@ -9909,11 +9912,11 @@ dead_code_report:
     - edges.relation_type=dead_code_candidate
   status: PASS
   summary:
-    adg_snapshot: artifacts/adg/adg_indexed_07132026_0651.sqlite
-    adg_snapshot_ts: '07132026_0651'
+    adg_snapshot: artifacts/adg/adg_indexed_07142026_0023.sqlite
+    adg_snapshot_ts: '07142026_0023'
     executive_ready: true
-    first_party_low_confidence_ratio: 1.4805871512994853
-    inferred_symbol_ratio: 10.153193442402737
+    first_party_low_confidence_ratio: 1.474823559198658
+    inferred_symbol_ratio: 10.168224716092903
     l4_unresolved_imports: 0
     total_dead_code_candidates: 899
     total_dead_imports: 899
@@ -9966,8 +9969,8 @@ deprecation_deletion_plan:
     dead_code_candidates: 899
     dead_imports: 899
     unresolved_imports: 466
-    first_party_low_confidence_ratio: 1.4805871512994853
-    inferred_symbol_ratio: 10.153193442402737
+    first_party_low_confidence_ratio: 1.474823559198658
+    inferred_symbol_ratio: 10.168224716092903
     cleanup_candidate_count: 18
   brief:
     title: BCG Deletion Brief
@@ -9976,12 +9979,12 @@ deprecation_deletion_plan:
     business_read: ADG found confirmed dead-code targets; remove the most certain
       ones first, then clean up uncertainty and noisy diagnostics.
     technical_read:
-    - 'ADG source: artifacts/adg/adg_indexed_07132026_0651.sqlite (snapshot 07132026_0651)'
+    - 'ADG source: artifacts/adg/adg_indexed_07142026_0023.sqlite (snapshot 07142026_0023)'
     - 'Dead code candidates: 899'
     - 'Dead imports: 899'
     - 'Unresolved imports: 466'
-    - 'First-party low-confidence ratio: 1.48%'
-    - 'Inferred-symbol ratio: 10.15%'
+    - 'First-party low-confidence ratio: 1.47%'
+    - 'Inferred-symbol ratio: 10.17%'
     - 'Cleanup candidates surfaced: 18'
     decision_gates: []
     priority_rule: Confirmed dead code first, then unresolved imports, then low-confidence
@@ -10092,10 +10095,10 @@ deprecation_deletion_plan:
         of deleting the wrong thing.
       business_reason: Cleaner evidence makes later reviews faster and lowers the
         risk of deleting the wrong thing.
-      evidence: First-party low-confidence ratio = 1.48% and inferred-symbol ratio
-        = 10.15%.
-      technical_reason: First-party low-confidence ratio = 1.48% and inferred-symbol
-        ratio = 10.15%.
+      evidence: First-party low-confidence ratio = 1.47% and inferred-symbol ratio
+        = 10.17%.
+      technical_reason: First-party low-confidence ratio = 1.47% and inferred-symbol
+        ratio = 10.17%.
       next_step: Lower the noise floor, then rerun the scan.
       why_this_rank: Lower the noise floor, then rerun the scan.
       decision: stabilize
@@ -10247,10 +10250,10 @@ deprecation_deletion_plan:
       of deleting the wrong thing.
     business_reason: Cleaner evidence makes later reviews faster and lowers the risk
       of deleting the wrong thing.
-    evidence: First-party low-confidence ratio = 1.48% and inferred-symbol ratio =
-      10.15%.
-    technical_reason: First-party low-confidence ratio = 1.48% and inferred-symbol
-      ratio = 10.15%.
+    evidence: First-party low-confidence ratio = 1.47% and inferred-symbol ratio =
+      10.17%.
+    technical_reason: First-party low-confidence ratio = 1.47% and inferred-symbol
+      ratio = 10.17%.
     next_step: Lower the noise floor, then rerun the scan.
     why_this_rank: Lower the noise floor, then rerun the scan.
     decision: stabilize
@@ -10287,14 +10290,14 @@ deprecation_deletion_plan:
   cleanup_candidates: &id051
   - item: mv_actionable_surface_without_schema
     item_type: mv
-    current_value: 803 rows; diagnostic_monitor
+    current_value: 805 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
       or planned slice.
   - item: mv_agent_specialization_overlap
     item_type: mv
-    current_value: 3049 rows; diagnostic_monitor
+    current_value: 3050 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10322,7 +10325,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_critical_path_segments
     item_type: mv
-    current_value: 189 rows; diagnostic_monitor
+    current_value: 190 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10336,7 +10339,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_determinism_provenance_drift
     item_type: mv
-    current_value: 6697 rows; diagnostic_monitor
+    current_value: 6717 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10350,7 +10353,7 @@ deprecation_deletion_plan:
       or planned slice.
   - item: mv_exemptions_near_critical_paths
     item_type: mv
-    current_value: 3186 rows; diagnostic_monitor
+    current_value: 3193 rows; diagnostic_monitor
     recommendation: keep_hide_inline
     rationale: Raw MV count alone is not a funding signal.
     revisit_condition: Promote only when tied to blocker, test gap, critical path,
@@ -10376,37 +10379,37 @@ audit_notes:
   status: present
   guardian_summary:
   - band: P0
-    gross: 46
+    gross: 49
     guardian: 32
-    non_exempt: 14
-    audit_net: 14
+    non_exempt: 17
+    audit_net: 17
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
   - band: P1
-    gross: 1149
+    gross: 1150
     guardian: 1143
-    non_exempt: 6
-    audit_net: 6
+    non_exempt: 7
+    audit_net: 7
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
   - band: P2
-    gross: 740
-    guardian: 698
-    non_exempt: 42
-    audit_net: 42
+    gross: 746
+    guardian: 700
+    non_exempt: 46
+    audit_net: 46
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
       hotspot, or changed code.
   - band: P3
-    gross: 19638
+    gross: 19772
     guardian: 87
-    non_exempt: 19551
-    audit_net: 19551
+    non_exempt: 19685
+    audit_net: 19685
     meaning: Severity audit inventory after guardian exemptions; not a live work order
       by itself.
     executive_read: Audit context only until it maps to a failing gate, runtime failure,
@@ -10421,28 +10424,28 @@ audit_notes:
     - mismatch_type: meta_count_mismatch
       ref_id: total_edges
       file: ''
-      detail: meta=1045945 actual=1046053
-      delta: 108
+      detail: meta=1052589 actual=1052701
+      delta: 112
     - mismatch_type: meta_count_mismatch
       ref_id: total_nodes
       file: ''
-      detail: meta=190774 actual=190775
+      detail: meta=191427 actual=191428
       delta: 1
     - mismatch_type: artifact_timestamp_mismatch
       artifact_key: gate_results
-      file: artifacts/adg/adg_gate_results_20260713_105802.json
-      expected_snapshot_minute: '20260713_0651'
-      observed_snapshot_minute: '20260713_1058'
+      file: artifacts/adg/adg_gate_results_20260714_044004.json
+      expected_snapshot_minute: '20260714_0023'
+      observed_snapshot_minute: '20260714_0440'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: action_queue
       field: snapshot_ts
-      expected_snapshot_minute: '20260713_0651'
-      observed_snapshot_minute: '20260713_1058'
+      expected_snapshot_minute: '20260714_0023'
+      observed_snapshot_minute: '20260714_0440'
     - mismatch_type: artifact_embedded_snapshot_mismatch
       artifact_key: review_template
       field: snapshot_ts
-      expected_snapshot_minute: '20260713_0651'
-      observed_snapshot_minute: '20260713_1058'
+      expected_snapshot_minute: '20260714_0023'
+      observed_snapshot_minute: '20260714_0440'
     - mismatch_type: generation_manifest_not_certified
       artifact_key: generation_manifest
       certification_status: failed
@@ -10470,23 +10473,23 @@ honest_bottom_line:
     a decision role.
 raw_inputs:
   artifacts:
-    gate_results: artifacts/adg/adg_gate_results_20260713_105802.json
-    bcg_adapter: artifacts/adg/adg_bcg_adapter_07132026_0651.json
-    action_queue: artifacts/adg/adg_action_queue_07132026_0651.json
-    review_template: artifacts/adg/adg_review_template_07132026_0651.json
-    burndown_table: artifacts/adg/adg_burndown_table_07132026_0651.json
+    gate_results: artifacts/adg/adg_gate_results_20260714_044004.json
+    bcg_adapter: artifacts/adg/adg_bcg_adapter_07142026_0023.json
+    action_queue: artifacts/adg/adg_action_queue_07142026_0023.json
+    review_template: artifacts/adg/adg_review_template_07142026_0023.json
+    burndown_table: artifacts/adg/adg_burndown_table_07142026_0023.json
     burndown_report: artifacts/adg/adg_burndown_report.md
-    sqlite_snapshot: artifacts/adg/adg_indexed_07132026_0651.sqlite
-    generation_manifest: artifacts/adg/adg_generation_manifest_07132026_0651.json
-    structural_outputs: artifacts/adg/adg_structural_outputs_07132026_0651.json
-    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07132026_0651.json
-    graphdb_queries: artifacts/adg/adg_graphdb_queries_07132026_0651.json
-    runtime_spine: artifacts/adg/adg_runtime_spine_07132026_0651.json
-    graphdb_projection: artifacts/adg/adg_graphdb_projection_07132026_0651.json
-    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07132026_0651.json
-    graphdb_index: artifacts/adg/adg_graphdb_index_07132026_0651.json
-    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07132026_0651.json
-    dead_code_report: artifacts/adg/dead_code_zone_control_report_07132026_0651.json
+    sqlite_snapshot: artifacts/adg/adg_indexed_07142026_0023.sqlite
+    generation_manifest: artifacts/adg/adg_generation_manifest_07142026_0023.json
+    structural_outputs: artifacts/adg/adg_structural_outputs_07142026_0023.json
+    refactor_accelerator: artifacts/adg/adg_refactor_accelerator_07142026_0023.json
+    graphdb_queries: artifacts/adg/adg_graphdb_queries_07142026_0023.json
+    runtime_spine: artifacts/adg/adg_runtime_spine_07142026_0023.json
+    graphdb_projection: artifacts/adg/adg_graphdb_projection_07142026_0023.json
+    graphdb_metadata: artifacts/adg/adg_graphdb_metadata_07142026_0023.json
+    graphdb_index: artifacts/adg/adg_graphdb_index_07142026_0023.json
+    p0_wave_plan: artifacts/adg/issues/p0_remediation_wave_plan_07142026_0023.json
+    dead_code_report: artifacts/adg/dead_code_zone_control_report_07142026_0023.json
   loaded_status:
     missing: []
     stale: []
@@ -10853,7 +10856,7 @@ bcg_findings:
   technical_read:
   - 'First P0 evidence: `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`;
     rows: 0.'
-  - 'Source: ADG `07132026_0651` emitted this as decision-linked queue evidence.'
+  - 'Source: ADG `07142026_0023` emitted this as decision-linked queue evidence.'
   - 'Report caveat: graph/report consistency is FAIL; only lower-priority ranking
     is provisional.'
   - 'Run context: 0 FIX gate(s); 4 action rows emitted.'

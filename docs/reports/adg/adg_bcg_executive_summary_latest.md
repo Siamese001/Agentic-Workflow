@@ -24,7 +24,7 @@ Fix now:
 |---:|---|---|---|
 | 1 | Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py. Add mapped tests before touching this surface again. | Add mapped tests/regression coverage for agentic_core. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 2 | Rerun ADG after the blocker fix; if report consistency still fails, repair the report pipeline before ranking lower-impact work. | Report consistency=FAIL. | Post-blocker ADG has report consistency PASS or an explicit waiver. |
-| 3 | Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation candidate inventory=200; critical audit net=14; live blocker drivers=0. | Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
+| 3 | Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation candidate inventory=201; critical audit net=17; live blocker drivers=0. | Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
 | 4 | Repair runtime proof if it is still missing or failing after the blocker rerun; do not rely on runtime evidence until it is present and passing. | runtime_spine=present_failing. | Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision. |
 | 5 | After blockers are green and mapped tests are decided, open a scoped refactor/test slice for agentic_core/L0_routing/config/__init__.py only if ADG still flags it or the blocker fix touches it. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 6 | Burn down ratchet G_REACH_l0_reachability. Burn down the ratchet after the current red gates clear. | 1,370 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
@@ -36,16 +36,16 @@ ADG Run Metrics
 
 | Metric | Value |
 |---|---|
-| Run ID | 07132026_0651 |
-| Snapshot | 2026-07-13T10:58:02.552667+00:00 |
-| SQLite snapshot | artifacts/adg/adg_indexed_07132026_0651.sqlite |
+| Run ID | 07142026_0023 |
+| Snapshot | 2026-07-14T04:40:04.942970+00:00 |
+| SQLite snapshot | artifacts/adg/adg_indexed_07142026_0023.sqlite |
 | Audit caveat | REPORT_INCONSISTENT; report consistency=FAIL |
 | FIX gates (all bands) | 0 |
 | Open critical gate drivers | 0 |
 | Open blocker queue | no open blocker or candidate-blocker rows |
 | Top FIX gate | none |
 | Action rows | 4 |
-| Decision ledgers | foundation candidate inventory=200; critical audit net=14; live blocker drivers=0 |
+| Decision ledgers | foundation candidate inventory=201; critical audit net=17; live blocker drivers=0 |
 | Runtime proof | present_failing |
 | Testing hotspot | agentic_core/L5_safety/reasoning/FileClassificationAgent.py; risk=CRITICAL |
 
@@ -53,10 +53,10 @@ Impact Inventory
 
 | Band | Impact severity | Gross | Guardian exempted | Net | Foundation candidates | Live blocker drivers |
 |---|---|---|---|---|---|---|
-| P0 | critical | 46 | 32 | 14 | 200 | 0 |
-| P1 | high | 1,149 | 1,143 | 6 | n/a | 0 |
-| P2 | medium | 740 | 698 | 42 | n/a | 0 |
-| P3 | low | 19,638 | 87 | 19,551 | n/a | 0 |
+| P0 | critical | 49 | 32 | 17 | 201 | 0 |
+| P1 | high | 1,150 | 1,143 | 7 | n/a | 0 |
+| P2 | medium | 746 | 700 | 46 | n/a | 0 |
+| P3 | low | 19,772 | 87 | 19,685 | n/a | 0 |
 
 ### Recommended Next Steps
 
@@ -64,7 +64,7 @@ Impact Inventory
 |---|---|---|---|
 | 1 | Fund mapped tests for agentic_core/L5_safety/reasoning/FileClassificationAgent.py. Add mapped tests before touching this surface again. | Add mapped tests/regression coverage for agentic_core. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 2 | Rerun ADG after the blocker fix; if report consistency still fails, repair the report pipeline before ranking lower-impact work. | Report consistency=FAIL. | Post-blocker ADG has report consistency PASS or an explicit waiver. |
-| 3 | Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation candidate inventory=200; critical audit net=14; live blocker drivers=0. | Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
+| 3 | Classify remaining critical-impact counts after the rerun: live blocker drivers block merge; foundation-candidate/audit-net rows become follow-up backlog unless they still appear as live FIX gates. | Foundation candidate inventory=201; critical audit net=17; live blocker drivers=0. | Receipt shows open_blocker_fix_count=0, or any remaining foundation/audit row is attached to an explicit live FIX gate. |
 | 4 | Repair runtime proof if it is still missing or failing after the blocker rerun; do not rely on runtime evidence until it is present and passing. | runtime_spine=present_failing. | Runtime proof is present and passing, or the receipt explicitly scopes it out of the decision. |
 | 5 | After blockers are green and mapped tests are decided, open a scoped refactor/test slice for agentic_core/L0_routing/config/__init__.py only if ADG still flags it or the blocker fix touches it. | Studied structural risk (blast radius / centrality / reverse-deps) on this scope overlaps a blocker, coverage hotspot, or newly-introduced critical path. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |
 | 6 | Burn down ratchet G_REACH_l0_reachability. Burn down the ratchet after the current red gates clear. | 1,370 floor-row(s) remain on the ratchet gate. | Rerun ADG and confirm the relevant gate/test/report status is green or explicitly waived. |

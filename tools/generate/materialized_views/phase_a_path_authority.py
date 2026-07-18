@@ -493,6 +493,23 @@ _NON_DURABLE_ARTIFACT_WRITE_SITES = (
     ("open", "apps_lic/migrations/w5_migration.py"),
     ("shutil.move", "apps_shared/utils/subatomic_hop_util.py"),
     ("get_validated_project_root", "apps_shared/utils/waterfall_reconciliation_util.py"),
+    # 2026-07-14 P0 ADG burndown: exact artifact/receipt/seal sites from
+    # the digest-bound 07132026_2306 write-sovereignty delta.
+    ("path.write_text", "agentic_core/L6_observability/shadow_eval/independent_parity.py"),
+    ("os.open", "apps_rg/prerequisites/briefing_validator.py"),
+    ("temporary.open", "apps_rg/prerequisites/briefing_validator.py"),
+    ("consumption_path.open", "apps_rg/runtime/e2e_preflight.py"),
+    ("temporary.write_text", "apps_rg/runtime/e2e_preflight.py"),
+    ("path.write_text", "apps_rg/runtime/e2e_stage_ledger.py"),
+    ("temporary.write_text", "apps_rg/runtime/e2e_stage_ledger.py"),
+    ("marker_tmp.write_bytes", "apps_rg/runtime/mandatory_outputs/seal.py"),
+    ("os.open", "apps_rg/runtime/mandatory_outputs/seal.py"),
+    ("path.write_bytes", "apps_rg/runtime/mandatory_outputs/seal.py"),
+    ("shutil.rmtree", "apps_rg/runtime/mandatory_outputs/seal.py"),
+    ("temporary.write_bytes", "apps_rg/runtime/product_stage_authority.py"),
+    ("temporary.write_text", "apps_rg/runtime/product_stage_authority.py"),
+    ("path.open", "apps_rg/runtime/terminal_manifest.py"),
+    ("target.open", "apps_rg/runtime/terminal_state.py"),
 )
 
 # Site-scoped scanner false positives. These are not durable writes at the

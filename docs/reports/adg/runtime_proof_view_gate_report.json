@@ -1,8 +1,8 @@
 {
   "gate": "G-RUNTIME-PROOF-VIEW-WELL-FORMED",
   "tier": "B",
-  "timestamp": "2026-07-13T11:02:14.252674+00:00",
-  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0651.sqlite",
+  "timestamp": "2026-07-14T04:44:00.237469+00:00",
+  "snapshot_used": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07142026_0023.sqlite",
   "strict_mode": true,
   "total_rows": 0,
   "by_authority_status": {},

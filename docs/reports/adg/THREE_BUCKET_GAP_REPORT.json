@@ -1,17 +1,17 @@
 {
   "report_kind": "ADG_THREE_BUCKET_GAP_REPORT",
-  "generated_at": "2026-07-13T11:02:20.943958+00:00",
-  "snapshot": "adg_indexed_07132026_0651.sqlite",
-  "snapshot_path": "artifacts\\adg\\adg_indexed_07132026_0651.sqlite",
-  "source_snapshot": "adg_indexed_07132026_0651.sqlite",
-  "source_snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07132026_0651.sqlite",
-  "source_snapshot_sha256": "ba928433afe0c9faf9277fdae4c3e08e2579039bbd0c1f8226225a7f58919edb",
-  "source_snapshot_mtime_iso": "2026-07-13T10:58:19.489325+00:00",
-  "source_snapshot_size_bytes": 937467904,
+  "generated_at": "2026-07-14T04:44:07.432251+00:00",
+  "snapshot": "adg_indexed_07142026_0023.sqlite",
+  "snapshot_path": "artifacts\\adg\\adg_indexed_07142026_0023.sqlite",
+  "source_snapshot": "adg_indexed_07142026_0023.sqlite",
+  "source_snapshot_path": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-p0-blocker-burndown\\artifacts\\adg\\adg_indexed_07142026_0023.sqlite",
+  "source_snapshot_sha256": "eb4ed076b76bdc7eb4f8b7d7f191bb492fd25bedc0900f479908e51ba0050dab",
+  "source_snapshot_mtime_iso": "2026-07-14T04:40:22.792690+00:00",
+  "source_snapshot_size_bytes": 942624768,
   "runtime_view_present": true,
   "runtime_attested_edges": 0,
   "runtime_proof_status": "view_present_zero_attested",
-  "total_edges_classified": 515243,
+  "total_edges_classified": 517213,
   "health_score_pct_triplet_attested": 0.0,
   "summary_by_class": [
     {
@@ -31,14 +31,14 @@
     {
       "defect_class": "DEAD_PATH",
       "severity": "P3",
-      "edge_count": 266,
+      "edge_count": 267,
       "edge_pct": 0.05,
       "description": "Wired in code AND declared in registry, but never traced at runtime. Untested code path or vestigial policy."
     },
     {
       "defect_class": "UNOBSERVED_CODE",
       "severity": "P3",
-      "edge_count": 514955,
+      "edge_count": 516924,
       "edge_pct": 99.94,
       "description": "Static-only \u2014 orphan import, dead code, or never-traced path."
     },
@@ -69,105 +69,105 @@
     "REGISTRY_DRIFT": [],
     "DEAD_PATH": [
       {
-        "src": "<id=18>",
-        "dst": "<id=190776>",
+        "src": "<id=19>",
+        "dst": "<id=191429>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190777>",
+        "src": "<id=19>",
+        "dst": "<id=191430>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190778>",
+        "src": "<id=19>",
+        "dst": "<id=191431>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190779>",
+        "src": "<id=19>",
+        "dst": "<id=191432>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190780>",
+        "src": "<id=19>",
+        "dst": "<id=191433>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190781>",
+        "src": "<id=19>",
+        "dst": "<id=191434>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190782>",
+        "src": "<id=19>",
+        "dst": "<id=191435>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190783>",
+        "src": "<id=19>",
+        "dst": "<id=191436>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=18>",
-        "dst": "<id=190784>",
+        "src": "<id=19>",
+        "dst": "<id=191437>",
         "relation": "references_mcp_server"
       },
       {
-        "src": "<id=28>",
-        "dst": "<id=190776>",
+        "src": "<id=29>",
+        "dst": "<id=191429>",
         "relation": "references_mcp_server"
       }
     ],
     "UNOBSERVED_CODE": [
       {
-        "src": "<id=7>",
-        "dst": "<id=15267>",
+        "src": "<id=8>",
+        "dst": "<id=15305>",
         "relation": "implements"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=18746>",
+        "src": "<id=8>",
+        "dst": "<id=18788>",
         "relation": "reads_from"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=21111>",
+        "src": "<id=8>",
+        "dst": "<id=21160>",
         "relation": "reads_from"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28502>",
+        "src": "<id=8>",
+        "dst": "<id=28557>",
         "relation": "exports"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28502>",
+        "src": "<id=8>",
+        "dst": "<id=28557>",
         "relation": "reads_from"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28513>",
+        "src": "<id=8>",
+        "dst": "<id=28568>",
         "relation": "exports"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28513>",
+        "src": "<id=8>",
+        "dst": "<id=28568>",
         "relation": "reads_from"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28946>",
+        "src": "<id=8>",
+        "dst": "<id=29001>",
         "relation": "covers"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=28947>",
+        "src": "<id=8>",
+        "dst": "<id=29002>",
         "relation": "imports"
       },
       {
-        "src": "<id=7>",
-        "dst": "<id=56241>",
+        "src": "<id=8>",
+        "dst": "<id=56327>",
         "relation": "unused_import"
       }
     ],
@@ -175,53 +175,53 @@
     "SHADOW_CHANNEL": [],
     "CONFIG_BLOAT": [
       {
-        "src": "<id=190775>",
-        "dst": "<id=190776>",
+        "src": "<id=191428>",
+        "dst": "<id=191429>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190777>",
+        "src": "<id=191428>",
+        "dst": "<id=191430>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190778>",
+        "src": "<id=191428>",
+        "dst": "<id=191431>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190779>",
+        "src": "<id=191428>",
+        "dst": "<id=191432>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190780>",
+        "src": "<id=191428>",
+        "dst": "<id=191433>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190781>",
+        "src": "<id=191428>",
+        "dst": "<id=191434>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190782>",
+        "src": "<id=191428>",
+        "dst": "<id=191435>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190783>",
+        "src": "<id=191428>",
+        "dst": "<id=191436>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190775>",
-        "dst": "<id=190784>",
+        "src": "<id=191428>",
+        "dst": "<id=191437>",
         "relation": "MCP_SERVER_DECLARED"
       },
       {
-        "src": "<id=190785>",
-        "dst": "<id=190786>",
+        "src": "<id=191438>",
+        "dst": "<id=191439>",
         "relation": "AGENT_SPEC_DECLARED"
       }
     ]
