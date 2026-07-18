@@ -3,9 +3,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from apps_rg.fact_inventory.master_skills_arsenal_ledger import collect_canonical_graph_issues
 
 DEFAULT_GRAPH_PATH = Path("apps_rg/fact_inventory/master_skills_arsenal_ledger.json")
 REQUIRED_EDGE_TYPES = {
@@ -19,6 +27,7 @@ REQUIRED_EDGE_TYPES = {
 MIN_HARDENED_SKILLS = 12
 MIN_METRIC_BUCKETS = 12
 MIN_METRIC_OPTIONS = 18
+_ISSUE_COUNT_RE = re.compile(r"(?:^|\s)count=(\d+)(?:\s|$)")
 
 
 def _repo_root() -> Path:
@@ -30,17 +39,14 @@ def _load(path: Path) -> dict[str, Any]:
 
 
 def validate_graph(graph: dict[str, Any]) -> list[str]:
-    errors: list[str] = []
+    errors = collect_canonical_graph_issues(graph)
     nodes = graph.get("graph_nodes") or []
     edges = graph.get("graph_edges") or []
     skills = graph.get("skill_rows") or []
-    node_ids = [str(n.get("node_id")) for n in nodes if isinstance(n, dict) and n.get("node_id")]
-    edge_ids = [str(e.get("edge_id")) for e in edges if isinstance(e, dict) and e.get("edge_id")]
     skill_ids = [str(s.get("skill_id")) for s in skills if isinstance(s, dict) and s.get("skill_id")]
-    for label, ids in (("graph_nodes", node_ids), ("graph_edges", edge_ids), ("skill_rows", skill_ids)):
-        dupes = [k for k, v in Counter(ids).items() if v > 1]
-        if dupes:
-            errors.append(f"{label} duplicate ids: {dupes[:20]}")
+    duplicate_skill_ids = [skill_id for skill_id, count in Counter(skill_ids).items() if count > 1]
+    if duplicate_skill_ids:
+        errors.append(f"skill_rows duplicate ids: {duplicate_skill_ids[:20]}")
     edge_types = {str(e.get("edge_type")) for e in edges if isinstance(e, dict)}
     missing_edge_types = sorted(REQUIRED_EDGE_TYPES - edge_types)
     if missing_edge_types:
@@ -77,20 +83,45 @@ def validate_graph(graph: dict[str, Any]) -> list[str]:
     return errors
 
 
-def main() -> None:
+def _issue_record(message: str) -> dict[str, Any]:
+    code, separator, detail = str(message).partition(":")
+    match = _ISSUE_COUNT_RE.search(detail) if separator else None
+    return {
+        "code": code.strip() or "C03_GRAPH_SKILL_GRANULARITY_VALIDATION_ERROR",
+        "count": int(match.group(1)) if match else 1,
+        "detail": detail.strip() if separator else str(message).strip(),
+    }
+
+
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=None)
     parser.add_argument("--graph-path", default=str(DEFAULT_GRAPH_PATH))
-    args = parser.parse_args()
+    parser.add_argument("--output", default=None)
+    args = parser.parse_args(argv)
     root = Path(args.repo_root).resolve() if args.repo_root else _repo_root()
     graph_path = Path(args.graph_path)
     if not graph_path.is_absolute():
         graph_path = root / graph_path
     graph = _load(graph_path)
     errors = validate_graph(graph)
+    status = "NOT_READY" if errors else "PASS"
+    receipt = {
+        "schema_version": "apps_rg.c03_graph_skill_granularity_validation.v1",
+        "status": status,
+        "validation": status,
+        "graph_path": str(graph_path.resolve()),
+        "issues": [_issue_record(error) for error in errors],
+    }
+    if args.output:
+        output_path = Path(args.output)
+        if not output_path.is_absolute():
+            output_path = root / output_path
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(receipt, indent=2))
     if errors:
-        raise SystemExit("C03_GRAPH_SKILL_GRANULARITY_VALIDATION_FAILED: " + "; ".join(errors))
-    print(json.dumps({"validation": "PASS", "graph_path": str(graph_path)}, indent=2))
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import tempfile
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -29,7 +30,7 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
 
 REPO_REL_DB = Path("artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite")
 C03_SQLITE_MATERIALIZER_CODE_VERSION = (
-    "c03_sqlite_materializer.v20260627.partner_section_eligibility_freshness"
+    "c03_sqlite_materializer.v20260718.assertion_hardened_cas"
 )
 
 CANONICAL_NODE_TYPES = frozenset(
@@ -203,14 +204,14 @@ FORBIDDEN_PROMOTION_SKILL_SUBSTRINGS = (
 DDL_STATEMENTS: tuple[str, ...] = (
     """
     CREATE TABLE IF NOT EXISTS graph_nodes (
-        node_id TEXT PRIMARY KEY,
-        node_type TEXT NOT NULL,
-        label TEXT NOT NULL,
+        node_id TEXT PRIMARY KEY CHECK (TRIM(node_id) <> ''),
+        node_type TEXT NOT NULL CHECK (TRIM(node_type) <> ''),
+        label TEXT NOT NULL CHECK (TRIM(label) <> ''),
         description TEXT NOT NULL DEFAULT '',
         activation_status TEXT NOT NULL DEFAULT '',
         support_level TEXT NOT NULL DEFAULT '',
         confidence TEXT NOT NULL DEFAULT '',
-        external_eligible INTEGER NOT NULL DEFAULT 0,
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -218,14 +219,14 @@ DDL_STATEMENTS: tuple[str, ...] = (
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_edges (
-        edge_id TEXT PRIMARY KEY,
-        source_node_id TEXT NOT NULL,
-        target_node_id TEXT NOT NULL,
+        edge_id TEXT PRIMARY KEY CHECK (TRIM(edge_id) <> ''),
+        source_node_id TEXT NOT NULL CHECK (TRIM(source_node_id) <> ''),
+        target_node_id TEXT NOT NULL CHECK (TRIM(target_node_id) <> ''),
         edge_family TEXT NOT NULL DEFAULT '',
-        edge_type TEXT NOT NULL,
-        weight REAL NOT NULL DEFAULT 1.0,
+        edge_type TEXT NOT NULL CHECK (TRIM(edge_type) <> ''),
+        weight REAL NOT NULL DEFAULT 1.0 CHECK (weight >= 0.0 AND weight <= 1.0),
         confidence TEXT NOT NULL DEFAULT '',
-        directional INTEGER NOT NULL DEFAULT 1,
+        directional INTEGER NOT NULL DEFAULT 1 CHECK (directional IN (0, 1)),
         evidence_status TEXT NOT NULL DEFAULT '',
         section_fit TEXT NOT NULL DEFAULT '',
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
@@ -236,7 +237,9 @@ DDL_STATEMENTS: tuple[str, ...] = (
         edge_note TEXT NOT NULL DEFAULT '',
         operator_note TEXT NOT NULL DEFAULT '',
         business_story TEXT NOT NULL DEFAULT '',
-        technical_story TEXT NOT NULL DEFAULT ''
+        technical_story TEXT NOT NULL DEFAULT '',
+        FOREIGN KEY (source_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (target_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -244,23 +247,26 @@ DDL_STATEMENTS: tuple[str, ...] = (
         skill_id TEXT NOT NULL,
         fact_id TEXT NOT NULL,
         support_level TEXT NOT NULL DEFAULT '',
-        claim_eligibility INTEGER NOT NULL DEFAULT 0,
+        claim_eligibility INTEGER NOT NULL DEFAULT 0 CHECK (claim_eligibility IN (0, 1)),
         source_trace TEXT NOT NULL DEFAULT '',
         archive_trace TEXT NOT NULL DEFAULT '',
-        human_confirmed INTEGER NOT NULL DEFAULT 0,
-        external_eligible INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY (skill_id, fact_id)
+        human_confirmed INTEGER NOT NULL DEFAULT 0 CHECK (human_confirmed IN (0, 1)),
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
+        PRIMARY KEY (skill_id, fact_id),
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (fact_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS section_eligibility (
         node_id TEXT NOT NULL,
         section_id TEXT NOT NULL,
-        allowed INTEGER NOT NULL DEFAULT 0,
+        allowed INTEGER NOT NULL DEFAULT 0 CHECK (allowed IN (0, 1)),
         claim_policy TEXT NOT NULL DEFAULT '',
         reason TEXT NOT NULL DEFAULT '',
         blocked_reason TEXT NOT NULL DEFAULT '',
-        PRIMARY KEY (node_id, section_id)
+        PRIMARY KEY (node_id, section_id),
+        FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -288,19 +294,21 @@ DDL_STATEMENTS: tuple[str, ...] = (
         confidence TEXT NOT NULL DEFAULT '',
         activation_status TEXT NOT NULL DEFAULT '',
         support_level TEXT NOT NULL DEFAULT '',
-        external_eligible INTEGER NOT NULL DEFAULT 0,
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
         source_trace TEXT NOT NULL DEFAULT '[]',
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS c03_role_family_skill_weights (
         skill_id TEXT NOT NULL,
         role_family_key TEXT NOT NULL,
-        weight REAL NOT NULL DEFAULT 0.0,
+        weight REAL NOT NULL DEFAULT 0.0 CHECK (weight >= 0.0),
         source TEXT NOT NULL DEFAULT 'skill_row.role_family_weights',
-        PRIMARY KEY (skill_id, role_family_key)
+        PRIMARY KEY (skill_id, role_family_key),
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -308,30 +316,43 @@ DDL_STATEMENTS: tuple[str, ...] = (
         path_id TEXT PRIMARY KEY,
         start_node_id TEXT NOT NULL,
         end_node_id TEXT NOT NULL,
-        path_depth INTEGER NOT NULL,
+        path_depth INTEGER NOT NULL CHECK (path_depth >= 1),
         path_signature TEXT NOT NULL,
-        node_path_json TEXT NOT NULL,
-        edge_path_json TEXT NOT NULL,
-        edge_types_json TEXT NOT NULL,
-        proof_fact_ids_json TEXT NOT NULL DEFAULT '[]',
-        metric_ids_json TEXT NOT NULL DEFAULT '[]',
-        section_ids_json TEXT NOT NULL DEFAULT '[]',
+        node_path_json TEXT NOT NULL
+            CHECK (json_valid(node_path_json) AND json_type(node_path_json) = 'array'),
+        edge_path_json TEXT NOT NULL
+            CHECK (json_valid(edge_path_json) AND json_type(edge_path_json) = 'array'),
+        edge_types_json TEXT NOT NULL
+            CHECK (json_valid(edge_types_json) AND json_type(edge_types_json) = 'array'),
+        proof_fact_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(proof_fact_ids_json) AND json_type(proof_fact_ids_json) = 'array'),
+        metric_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(metric_ids_json) AND json_type(metric_ids_json) = 'array'),
+        section_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(section_ids_json) AND json_type(section_ids_json) = 'array'),
         path_score REAL NOT NULL DEFAULT 0.0,
         novelty_score REAL NOT NULL DEFAULT 0.0,
         proof_strength_score REAL NOT NULL DEFAULT 0.0,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (start_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (end_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_neighborhoods (
         center_node_id TEXT NOT NULL,
         neighbor_node_id TEXT NOT NULL,
-        distance INTEGER NOT NULL,
-        connecting_path_json TEXT NOT NULL,
-        edge_types_json TEXT NOT NULL,
+        distance INTEGER NOT NULL CHECK (distance >= 1),
+        connecting_path_json TEXT NOT NULL
+            CHECK (json_valid(connecting_path_json) AND json_type(connecting_path_json) = 'array'),
+        edge_types_json TEXT NOT NULL
+            CHECK (json_valid(edge_types_json) AND json_type(edge_types_json) = 'array'),
         relationship_summary TEXT NOT NULL DEFAULT '',
         neighbor_score REAL NOT NULL DEFAULT 0.0,
-        PRIMARY KEY (center_node_id, neighbor_node_id, distance)
+        PRIMARY KEY (center_node_id, neighbor_node_id, distance),
+        CHECK (center_node_id <> neighbor_node_id),
+        FOREIGN KEY (center_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (neighbor_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -342,44 +363,51 @@ DDL_STATEMENTS: tuple[str, ...] = (
         shared_parent_node_id TEXT NOT NULL DEFAULT '',
         shared_edge_type TEXT NOT NULL DEFAULT '',
         sibling_score REAL NOT NULL DEFAULT 0.0,
-        PRIMARY KEY (node_id, sibling_node_id)
+        PRIMARY KEY (node_id, sibling_node_id),
+        CHECK (node_id <> sibling_node_id),
+        FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (sibling_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS resume_metric_usage (
-        run_id TEXT NOT NULL,
-        resume_section TEXT NOT NULL,
-        metric_id TEXT NOT NULL,
+        run_id TEXT NOT NULL CHECK (TRIM(run_id) <> ''),
+        resume_section TEXT NOT NULL CHECK (TRIM(resume_section) <> ''),
+        metric_id TEXT NOT NULL CHECK (TRIM(metric_id) <> ''),
         metric_value TEXT NOT NULL DEFAULT '',
         fact_id TEXT NOT NULL DEFAULT '',
         skill_id TEXT NOT NULL DEFAULT '',
         role_family_key TEXT NOT NULL DEFAULT '',
-        usage_count INTEGER NOT NULL DEFAULT 1,
+        usage_count INTEGER NOT NULL DEFAULT 1 CHECK (usage_count >= 1),
         created_at TEXT NOT NULL,
         PRIMARY KEY (run_id, resume_section, metric_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS section_evidence_budget (
-        section_id TEXT NOT NULL,
-        role_family_key TEXT NOT NULL,
-        max_metric_reuse INTEGER NOT NULL DEFAULT 1,
-        max_fact_family_reuse INTEGER NOT NULL DEFAULT 2,
-        required_node_types_json TEXT NOT NULL DEFAULT '[]',
-        preferred_edge_types_json TEXT NOT NULL DEFAULT '[]',
-        forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]',
-        preferred_metric_families_json TEXT NOT NULL DEFAULT '[]',
+        section_id TEXT NOT NULL CHECK (TRIM(section_id) <> ''),
+        role_family_key TEXT NOT NULL CHECK (TRIM(role_family_key) <> ''),
+        max_metric_reuse INTEGER NOT NULL DEFAULT 1 CHECK (max_metric_reuse >= 0),
+        max_fact_family_reuse INTEGER NOT NULL DEFAULT 2 CHECK (max_fact_family_reuse >= 0),
+        required_node_types_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(required_node_types_json) AND json_type(required_node_types_json) = 'array'),
+        preferred_edge_types_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(preferred_edge_types_json) AND json_type(preferred_edge_types_json) = 'array'),
+        forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(forbidden_metric_ids_json) AND json_type(forbidden_metric_ids_json) = 'array'),
+        preferred_metric_families_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(preferred_metric_families_json) AND json_type(preferred_metric_families_json) = 'array'),
         PRIMARY KEY (section_id, role_family_key)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_selection_rejections (
-        run_id TEXT NOT NULL,
-        section_id TEXT NOT NULL,
-        candidate_node_id TEXT NOT NULL,
-        candidate_node_type TEXT NOT NULL,
-        rejected_reason TEXT NOT NULL,
-        rejected_at_stage TEXT NOT NULL,
+        run_id TEXT NOT NULL CHECK (TRIM(run_id) <> ''),
+        section_id TEXT NOT NULL CHECK (TRIM(section_id) <> ''),
+        candidate_node_id TEXT NOT NULL CHECK (TRIM(candidate_node_id) <> ''),
+        candidate_node_type TEXT NOT NULL CHECK (TRIM(candidate_node_type) <> ''),
+        rejected_reason TEXT NOT NULL CHECK (TRIM(rejected_reason) <> ''),
+        rejected_at_stage TEXT NOT NULL CHECK (TRIM(rejected_at_stage) <> ''),
         competing_selected_node_id TEXT NOT NULL DEFAULT '',
         path_signature TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL,
@@ -400,6 +428,8 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_type ON graph_edges(edge_type)",
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_src ON graph_edges(source_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_tgt ON graph_edges(target_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_edges_src_type_tgt ON graph_edges(source_node_id, edge_type, target_node_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_graph_edges_src_tgt_type ON graph_edges(source_node_id, target_node_id, edge_type)",
     "CREATE INDEX IF NOT EXISTS idx_section_eligibility_section ON section_eligibility(section_id)",
     "CREATE INDEX IF NOT EXISTS idx_skill_fact_links_fact ON skill_fact_links(fact_id)",
     "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_metric ON c03_skill_selection_features(metric_bucket)",
@@ -410,14 +440,22 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_start ON graph_paths(start_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_end ON graph_paths(end_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_depth ON graph_paths(path_depth)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_paths_end_depth_score ON graph_paths(end_node_id, path_depth, path_score DESC)",
     "CREATE INDEX IF NOT EXISTS idx_neighborhood_center ON graph_neighborhoods(center_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_neighborhood_neighbor ON graph_neighborhoods(neighbor_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_distance ON graph_neighborhoods(distance)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_center_distance_score ON graph_neighborhoods(center_node_id, distance, neighbor_score DESC)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_node ON graph_sibling_links(node_id)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_peer ON graph_sibling_links(sibling_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_node_score ON graph_sibling_links(node_id, sibling_score DESC)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_metric ON resume_metric_usage(metric_id)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_section ON resume_metric_usage(resume_section)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_fact ON resume_metric_usage(fact_id)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_skill ON resume_metric_usage(skill_id)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_role ON resume_metric_usage(role_family_key)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_metric_section ON resume_metric_usage(metric_id, resume_section)",
+    "CREATE INDEX IF NOT EXISTS idx_rejections_run_section ON graph_selection_rejections(run_id, section_id)",
+    "CREATE INDEX IF NOT EXISTS idx_rejections_candidate ON graph_selection_rejections(candidate_node_id)",
     """
     CREATE VIEW IF NOT EXISTS graph_edges_reverse AS
     SELECT
@@ -499,6 +537,86 @@ def _utc_now() -> str:
 def _sha256_hex(text: str | bytes) -> str:
     data = text.encode("utf-8") if isinstance(text, str) else text
     return hashlib.sha256(data).hexdigest()
+
+
+def _sqlite_sidecar_paths(path: Path) -> tuple[Path, ...]:
+    return tuple(Path(f"{path}{suffix}") for suffix in ("-journal", "-wal", "-shm"))
+
+
+def _new_sibling_temp_db_path(path: Path) -> Path:
+    descriptor, raw_path = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    os.close(descriptor)
+    return Path(raw_path)
+
+
+def _cleanup_temp_sqlite(path: Path) -> None:
+    for candidate in (path, *_sqlite_sidecar_paths(path)):
+        candidate.unlink(missing_ok=True)
+
+
+def _require_sidecar_free_atomic_target(path: Path) -> None:
+    present = [sidecar.name for sidecar in _sqlite_sidecar_paths(path) if sidecar.exists()]
+    if present:
+        raise RuntimeError(
+            "cannot atomically replace SQLite projection while sidecars exist: "
+            + ",".join(present)
+        )
+
+
+def _sqlite_projection_digest(path: Path) -> str | None:
+    """Return a byte-exact projection digest for compare-and-swap replacement."""
+    if not path.exists():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _sqlite_maintenance_lock_path(path: Path) -> Path:
+    return path.with_name(f".{path.name}.maintenance.lock")
+
+
+def _acquire_sqlite_maintenance_lock(path: Path) -> Path:
+    """Acquire the projection maintenance lock using an atomic create."""
+    lock_path = _sqlite_maintenance_lock_path(path)
+    try:
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError as exc:
+        raise RuntimeError(
+            f"SQLite projection maintenance is already active: {lock_path}"
+        ) from exc
+    try:
+        os.write(descriptor, f"pid={os.getpid()}\n".encode("ascii"))
+    finally:
+        os.close(descriptor)
+    return lock_path
+
+
+def _release_sqlite_maintenance_lock(lock_path: Path) -> None:
+    lock_path.unlink(missing_ok=True)
+
+
+def _replace_sqlite_projection_if_unchanged(
+    *,
+    target: Path,
+    replacement: Path,
+    expected_digest: str | None,
+) -> None:
+    """CAS-replace a sidecar-free projection while its maintenance lock is held."""
+    _require_sidecar_free_atomic_target(target)
+    current_digest = _sqlite_projection_digest(target)
+    if current_digest != expected_digest:
+        raise RuntimeError(
+            "SQLite projection changed during maintenance; refusing atomic replace: "
+            f"expected={expected_digest!r}, current={current_digest!r}"
+        )
+    os.replace(replacement, target)
 
 
 def default_graph_sqlite_path(repo_root: Path | None = None) -> Path:
@@ -1431,6 +1549,9 @@ def materialize_augmented_skills_graph_sqlite(
 ) -> dict[str, Any]:
     """Build SQLite DB from augmented skills graph JSON. Returns materialization summary."""
     root = repo_root or _repo_root()
+    out_path = db_path or default_graph_sqlite_path(root)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    _require_sidecar_free_atomic_target(out_path)
     payload = graph or load_augmented_skills_graph(repo_root=root)
     validate_arsenal_ledger_shape(payload)
     src_path = json_source_path or (root / "apps_rg/fact_inventory/master_skills_arsenal_ledger.json")
@@ -1439,9 +1560,6 @@ def materialize_augmented_skills_graph_sqlite(
     )
     gver = graph_version_from_payload(payload)
     ts = _utc_now()
-    out_path = db_path or default_graph_sqlite_path(root)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-
     skill_rows_by_id = build_skill_rows_by_id(payload)
     candidate_registry = load_candidate_fact_promotion_registry(root)
 
@@ -1760,6 +1878,8 @@ def materialize_augmented_skills_graph_sqlite(
     section_rows = list(section_by_key.values())
     from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
         POLICY_VERSION as C03_METRIC_POLICY_VERSION,
+    )
+    from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
         metric_bucket_for_row,
     )
 
@@ -1876,6 +1996,9 @@ def materialize_augmented_skills_graph_sqlite(
     from apps_rg.fact_inventory.graph_sqlite_path_index import (
         GRAPH_INDEX_SCHEMA_VERSION,
         build_graph_index_rows,
+        compute_sqlite_graph_digest,
+        require_graphdb_capability_schema,
+        validate_graphdb_capability_integrity,
     )
 
     graph_index_rows = build_graph_index_rows(
@@ -1906,10 +2029,34 @@ def materialize_augmented_skills_graph_sqlite(
         "section_evidence_budget_count": len(graph_index_rows["section_evidence_budget"]),
     }
 
-    if out_path.exists():
-        out_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- rebuild overwrites prior materialized sqlite artifact in reports path
-    conn = sqlite3.connect(str(out_path), timeout=30)
+    maintenance_lock = _acquire_sqlite_maintenance_lock(out_path)
+    expected_target_digest = _sqlite_projection_digest(out_path)
     try:
+        _require_sidecar_free_atomic_target(out_path)
+    except (OSError, RuntimeError):
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
+    try:
+        temp_path = _new_sibling_temp_db_path(out_path)
+    except OSError:
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
+    build_succeeded = False
+    try:
+        conn = sqlite3.connect(
+            str(temp_path),
+            timeout=30,
+        )
+    except sqlite3.Error:
+        _cleanup_temp_sqlite(temp_path)
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
+    try:
+        conn.execute("PRAGMA foreign_keys=ON")
+        if int(conn.execute("PRAGMA foreign_keys").fetchone()[0]) != 1:
+            raise RuntimeError(
+                "SQLite foreign key enforcement could not be enabled for materialization"
+            )
         for stmt in DDL_STATEMENTS:
             conn.execute(stmt)
         conn.executemany(
@@ -2054,6 +2201,9 @@ def materialize_augmented_skills_graph_sqlite(
             """,
             graph_index_rows["section_evidence_budget"],
         )
+        summary["canonical_graph_digest"] = ledger_hash
+        summary["canonical_digest_kind"] = "canonical_payload_v1"
+        summary["sqlite_graph_digest"] = compute_sqlite_graph_digest(conn)
         conn.execute(
             """
             INSERT INTO graph_metadata (
@@ -2071,8 +2221,29 @@ def materialize_augmented_skills_graph_sqlite(
             ),
         )
         conn.commit()
+        require_graphdb_capability_schema(conn)
+        validate_graphdb_capability_integrity(
+            conn,
+            expected_materializer_version=C03_SQLITE_MATERIALIZER_CODE_VERSION,
+        )
+        build_succeeded = True
     finally:
         conn.close()
+        if not build_succeeded:
+            _cleanup_temp_sqlite(temp_path)
+            _release_sqlite_maintenance_lock(maintenance_lock)
+
+    try:
+        _replace_sqlite_projection_if_unchanged(
+            target=out_path,
+            replacement=temp_path,
+            expected_digest=expected_target_digest,
+        )
+    except (OSError, RuntimeError):
+        _cleanup_temp_sqlite(temp_path)
+        raise
+    finally:
+        _release_sqlite_maintenance_lock(maintenance_lock)
 
     return {
         "sqlite_db_path": str(out_path),
@@ -2111,8 +2282,34 @@ def open_graph_sqlite(
     path = db_path or default_graph_sqlite_path(repo_root)
     if not path.is_file():
         raise FileNotFoundError(f"augmented skills graph sqlite missing: {path}")
-    uri = f"file:{path.as_posix()}?mode=ro" if read_only else f"file:{path.as_posix()}"
-    return sqlite3.connect(uri, uri=True, timeout=15)
+    if read_only:
+        uri = f"file:{path.as_posix()}?mode=ro"
+        conn = sqlite3.connect(
+            uri,
+            uri=True,
+            timeout=15,
+        )
+        conn.execute("PRAGMA query_only=ON")
+        if int(conn.execute("PRAGMA query_only").fetchone()[0]) != 1:
+            conn.close()
+            raise RuntimeError("SQLite query_only mode could not be enabled")
+        return conn
+    maintenance_lock = _sqlite_maintenance_lock_path(path)
+    if maintenance_lock.exists():
+        raise RuntimeError(
+            f"SQLite projection is locked for maintenance: {maintenance_lock}"
+        )
+    uri = f"file:{path.as_posix()}?mode=rw"
+    conn = sqlite3.connect(
+        uri,
+        uri=True,
+        timeout=15,
+    )
+    conn.execute("PRAGMA foreign_keys=ON")
+    if int(conn.execute("PRAGMA foreign_keys").fetchone()[0]) != 1:
+        conn.close()
+        raise RuntimeError("SQLite foreign key enforcement could not be enabled for writes")
+    return conn
 
 
 def load_graph_metadata_row(conn: sqlite3.Connection) -> dict[str, Any]:

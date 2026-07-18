@@ -1,14 +1,30 @@
 from __future__ import annotations
 
 # apps-test-model: APP CONTRACT
-
 import copy
 import json
+import sys
 from pathlib import Path
 
-from apps_rg.fact_inventory.apply_c03_graph_skill_granularity_hardening import apply_hardening, validate_zero_loss
-from apps_rg.fact_inventory.validate_c03_graph_skill_granularity import validate_graph
-from apps_rg.runtime.graph.graph_metric_diversity_policy import rank_with_metric_diversity, build_metric_diversity_receipt
+import pytest
+
+from apps_rg.fact_inventory.apply_c03_graph_skill_granularity_hardening import (
+    apply_hardening,
+    validate_zero_loss,
+)
+from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
+    graph_node_requires_source_refs,
+)
+from apps_rg.fact_inventory.validate_c03_graph_skill_granularity import (
+    main as validate_main,
+)
+from apps_rg.fact_inventory.validate_c03_graph_skill_granularity import (
+    validate_graph,
+)
+from apps_rg.runtime.graph.graph_metric_diversity_policy import (
+    build_metric_diversity_receipt,
+    rank_with_metric_diversity,
+)
 
 
 def _catalog() -> dict:
@@ -51,6 +67,13 @@ def test_apply_hardening_is_zero_loss_and_idempotent() -> None:
 def test_validate_graph_requires_metric_diversity_policy() -> None:
     hardened = apply_hardening(_minimal_graph(), _catalog())["graph"]
     assert validate_graph(hardened) == []
+
+
+def test_validate_graph_rejects_unregistered_endpoint_via_shared_collector() -> None:
+    hardened = apply_hardening(_minimal_graph(), _catalog())["graph"]
+    hardened["graph_edges"][0]["target_node_id"] = "unregistered_endpoint"
+    errors = validate_graph(hardened)
+    assert any(error.startswith("GRAPH_EDGE_ENDPOINT_UNREGISTERED:") for error in errors)
 
 
 def test_apply_hardening_emits_full_w4a_shape_fields() -> None:
@@ -121,3 +144,67 @@ def test_metric_diversity_ranking_penalizes_repeated_buckets() -> None:
     assert ranked[0]["skill_id"] == "b"
     receipt = build_metric_diversity_receipt(ranked)
     assert receipt["distinct_metric_bucket_count"] == 2
+
+
+def test_granularity_validator_cli_is_stdout_only_unless_output_is_explicit(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+) -> None:
+    graph_path = Path("apps_rg/fact_inventory/master_skills_arsenal_ledger.json").resolve()
+    monkeypatch.chdir(tmp_path)
+    payload = json.loads(graph_path.read_text(encoding="utf-8"))
+    for node in payload["graph_nodes"]:
+        if graph_node_requires_source_refs(node) and not node.get("source_refs"):
+            node["source_refs"] = [f"fixture://provenance/{node['node_id']}"]
+    graph_path = tmp_path / "canonical.json"
+    graph_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["validate_c03_graph_skill_granularity", "--graph-path", str(graph_path)],
+    )
+    validate_main()
+    assert json.loads(capsys.readouterr().out)["validation"] == "PASS"
+    assert not (tmp_path / "docs").exists()
+
+    output = tmp_path / "explicit" / "granularity.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            "validate_c03_graph_skill_granularity",
+            "--graph-path",
+            str(graph_path),
+            "--output",
+            str(output),
+        ],
+    )
+    validate_main()
+    assert json.loads(capsys.readouterr().out)["validation"] == "PASS"
+    assert json.loads(output.read_text(encoding="utf-8"))["validation"] == "PASS"
+
+
+def test_granularity_validator_cli_emits_structured_not_ready_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    tmp_path: Path,
+) -> None:
+    canonical_path = Path(
+        "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
+    ).resolve()
+    monkeypatch.chdir(tmp_path)
+
+    with pytest.raises(SystemExit) as exc_info:
+        validate_main(["--graph-path", str(canonical_path)])
+
+    assert exc_info.value.code == 2
+    receipt = json.loads(capsys.readouterr().out)
+    assert receipt["status"] == "NOT_READY"
+    issue = next(
+        item
+        for item in receipt["issues"]
+        if item["code"] == "GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING"
+    )
+    assert issue["count"] == 84
+    assert not (tmp_path / "docs").exists()

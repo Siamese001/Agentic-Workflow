@@ -10,6 +10,8 @@ on:
       - "apps_rg/runtime/proof_pool_resolver.py"
       - "apps_rg/l2_recipe/modular_resume_generation.py"
       - "apps_rg/evals/c03_**"
+      - "apps_rg/fact_inventory/**"
+      - "apps_rg/config/c03_graph_health_policy.v1.json"
       - "ops_scripts/calibration/apps_rg_resume_graph_w6*.py"
       - "ops_scripts/ci/check_apps_rg_resume_graph_w6.py"
       - "tests/unit/apps_rg/**"
@@ -25,6 +27,8 @@ on:
       - "apps_rg/runtime/proof_pool_resolver.py"
       - "apps_rg/l2_recipe/modular_resume_generation.py"
       - "apps_rg/evals/c03_**"
+      - "apps_rg/fact_inventory/**"
+      - "apps_rg/config/c03_graph_health_policy.v1.json"
       - "ops_scripts/calibration/apps_rg_resume_graph_w6*.py"
       - "ops_scripts/ci/check_apps_rg_resume_graph_w6.py"
       - "tests/unit/apps_rg/**"
@@ -63,6 +67,13 @@ jobs:
           tests/unit/apps_rg/evals/test_c03_human_eval_source_bundle.py
           tests/unit/apps_rg/evals/test_c03_proxy_eval.py
           tests/unit/apps_rg/evals/test_c03_ci_ratchet.py
+          tests/unit/apps_rg/fact_inventory/test_augmented_skills_graph_sqlite.py
+          tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py
+          tests/unit/apps_rg/fact_inventory/test_graph_sqlite_constraints.py
+          tests/unit/apps_rg/fact_inventory/test_master_skills_arsenal_ledger.py
+          tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_hardening.py
+          tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_granularity_hardening.py
+          tests/unit/apps_rg/fact_inventory/test_c03_graph_kpi_health.py
           tests/unit/apps_rg/test_shared_lane_skew_elimination.py
           tests/_apps_contract/test_apps_rg_c0_ownership_split.py
           --deselect=tests/_apps_contract/test_apps_rg_c0_ownership_split.py::TestAgenticCoreGraphSkillBoundary::test_agentic_core_does_not_embed_resume_graph_skill_authority_literals

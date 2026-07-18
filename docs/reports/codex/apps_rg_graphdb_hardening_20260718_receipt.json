@@ -1,0 +1,213 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "apps-rg-graphdb-hardening-20260718T131058-0400",
+  "generated_at": "2026-07-18T13:10:58-04:00",
+  "repo": {
+    "root": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+    "worktree": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+    "branch": "codex-apps-rg-graphdb-hardening",
+    "head": "e46d8d37b26f8c3a100c857bc19b09f3fb49f13b",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Assess and harden the apps_rg C0.3 graphDB against major NEE graph-health KPIs, implement on an isolated Codex branch, test, commit, and execute the governed PR-to-main publication path.",
+    "plan_id": "apps-rg-graphdb-hardening-20260718",
+    "files_changed": [
+      ".github/workflows/c03-resume-graph-ratchet.yml",
+      "apps_rg/config/c03_graph_health_policy.v1.json",
+      "apps_rg/fact_inventory/apply_graphdb_capability_sqlite_hardening.py",
+      "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",
+      "apps_rg/fact_inventory/c03_graph_kpi_health.py",
+      "apps_rg/fact_inventory/graph_metric_heterogeneity_policy.py",
+      "apps_rg/fact_inventory/graph_sqlite_path_index.py",
+      "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "apps_rg/fact_inventory/master_skills_arsenal_ledger.py",
+      "apps_rg/fact_inventory/validate_c03_graph_hardening.py",
+      "apps_rg/fact_inventory/validate_c03_graph_skill_granularity.py",
+      "apps_rg/fact_inventory/validate_graph_sqlite_path_index.py",
+      "apps_rg/runtime/c0/c03_errors.py",
+      "apps_rg/runtime/c0/c03_sqlite_graph_selection.py",
+      "apps_rg/runtime/c03_graph_sqlite_context.py",
+      "docs/reports/codex/apps_rg_graphdb_hardening_20260718_receipt.json",
+      "tests/unit/apps_rg/fact_inventory/test_c03_graph_full_zero_loss_overwrite.py",
+      "tests/unit/apps_rg/fact_inventory/test_c03_graph_kpi_health.py",
+      "tests/unit/apps_rg/fact_inventory/test_c03_graph_skill_granularity_hardening.py",
+      "tests/unit/apps_rg/fact_inventory/test_graph_sqlite_constraints.py",
+      "tests/unit/apps_rg/fact_inventory/test_graph_sqlite_path_index.py",
+      "tests/unit/apps_rg/fact_inventory/test_master_skills_arsenal_ledger.py",
+      "tests/unit/apps_rg/runtime/c0/test_c03_graph_sqlite_read_purity.py"
+    ]
+  },
+  "execution": {
+    "status": "PARTIAL",
+    "commands": [
+      {
+        "command": "git worktree add -b codex-apps-rg-graphdb-hardening C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening origin/main",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python tools/adg/run_full_adg_audit.py --mode certification --format both --continue-on-p0",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-adg-audit-20260718",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "python -m pytest <six focused pre-change modules> -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest <nine integrated storage-runtime-canonical-KPI modules> -q",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/apps_rg/fact_inventory tests/unit/apps_rg/runtime/c0 --ignore=tests/unit/apps_rg/fact_inventory/test_p2_graph_skills_accelerated_closeout.py -qq",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check <19 changed Python files> && python -m compileall -q <19 changed Python files>",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.validate_graph_sqlite_path_index",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.validate_c03_graph_hardening && python -m apps_rg.fact_inventory.validate_c03_graph_skill_granularity",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 2,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "python -m apps_rg.fact_inventory.c03_graph_kpi_health",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 2,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "python ops_scripts/ci/check_apps_test_model.py --paths <changed tests>; python ops_scripts/ci/check_graph_skills_agentic_core_boundary.py; python ops_scripts/ci/check_apps_rg_c0_boundary.py; validate JSON and workflow YAML",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "changed-production secret regex scan",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/codex_readiness.py --json --skip-searxng",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 1,
+        "status": "BLOCKED"
+      },
+      {
+        "command": "python scripts/governance/codex_publication_audit.py --json --branch-limit 100 --require-pr-flow",
+        "cwd": "C:/Git/Agentic-Workflow-FRESH-worktrees/codex-apps-rg-graphdb-hardening",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "adg_sqlite",
+        "reason": "The certified ADG pointer was missing and the active HTTP MCP route was not callable; a fresh certification audit still generated a timestamped diagnostic snapshot.",
+        "substitute": "Explicit DEGRADED_FALLBACK structural queries against artifacts/adg/adg_indexed_07182026_1105.sqlite after the fresh audit."
+      },
+      {
+        "route": "security_scanner",
+        "reason": "gitleaks, detect-secrets, and bandit were not installed in the workspace runtime.",
+        "substitute": "Changed-production secret-pattern scan plus Ruff, compile, boundary, and dependency review."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "integrated focused regression",
+        "status": "PASS",
+        "evidence": "137 passed in 19.53s across SQLite materialization, constraints, canonical assertions, KPI health, runtime selection, and read-purity modules."
+      },
+      {
+        "name": "broad apps_rg target regression",
+        "status": "PASS",
+        "evidence": "369 passed in 28.43s across tests/unit/apps_rg/fact_inventory and tests/unit/apps_rg/runtime/c0, excluding one pre-existing accelerated-closeout file."
+      },
+      {
+        "name": "pre-existing accelerated-closeout baseline",
+        "status": "PASS",
+        "evidence": "The excluded file had the same 8 failures and 7 passes on this branch and untouched origin/main, so it is not a branch regression."
+      },
+      {
+        "name": "changed-file static checks",
+        "status": "PASS",
+        "evidence": "Ruff and compileall passed on 19 changed Python files; git diff --check passed with line-ending warnings only; JSON and YAML parsed."
+      },
+      {
+        "name": "SQLite assertion and migration integrity",
+        "status": "PASS",
+        "evidence": "Schema apps_rg.graph_sqlite_path_index.v3.assertion_hardened passed FK/CHECK/index admission, integrity, canonical and semantic digests, count parity, path/sibling/neighborhood continuity, and zero-loss temp migration."
+      },
+      {
+        "name": "runtime read purity",
+        "status": "PASS",
+        "evidence": "Runtime and KPI readers use locking-aware mode=ro plus query_only; missing, stale, malformed, emptied, partner-view, WAL-tampered, and authority-blocked projections fail closed without repair."
+      },
+      {
+        "name": "canonical graph health",
+        "status": "BLOCKED",
+        "evidence": "Structured validators report NOT_READY: GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING count=84."
+      },
+      {
+        "name": "NEE-inspired KPI health",
+        "status": "BLOCKED",
+        "evidence": "37 metrics: control_plane_status=UNKNOWN, graph_data_readiness=NOT_READY, overall_status=NOT_READY; claim evidence 179/254, skill-node coverage 250/254, required source refs 117/201, domain and epoch coverage 235/254."
+      },
+      {
+        "name": "graph structural KPI assertions",
+        "status": "PASS",
+        "evidence": "Canonical/SQLite binding 2/2, registered endpoint closure 3816/3816, FK coverage 13/13, orphan edges 0/1908, reverse/path/sibling/neighborhood integrity all passed, and SQLite file/sidecar state was unchanged by health reads."
+      },
+      {
+        "name": "app/core boundary and test model",
+        "status": "PASS",
+        "evidence": "Apps test model scanned 7 changed app tests; graph-skills core boundary passed with no agentic_core diffs. The broad C0 boundary command exited 0 and reported 116 historical advisory findings outside this diff."
+      },
+      {
+        "name": "fresh ADG certification",
+        "status": "BLOCKED",
+        "evidence": "Run 07182026_1105 failed with 131 repository-wide write-sovereignty rows, 2 P0 layer violations, and dependency_not_ready/incomplete downstream handoff; findings are outside this bounded apps_rg change."
+      },
+      {
+        "name": "Codex readiness",
+        "status": "BLOCKED",
+        "evidence": "Required active-session routes for memory, GitKraken, adg_sqlite, and vector_db were unproven or unavailable; contract, environment, protected-worktree, and MCP protocol-file checks passed."
+      },
+      {
+        "name": "PR publication contract",
+        "status": "PASS",
+        "evidence": "Publication audit status WARN with no blockers; PR flow is clean, disallows direct main push/bypass merge, and requires green GitHub CI."
+      }
+    ]
+  },
+  "rca": {
+    "symptom": "The implementation and branch-owned regressions pass, but current graph data, repository-wide ADG certification, and active-session Codex readiness are not green enough to claim certification or authorize an unguarded main publication.",
+    "root_cause": "The canonical graph has real provenance and coverage debt, the fresh ADG audit found unrelated repository-wide P0/write-sovereignty blockers, and required MCP route callability receipts are absent in this Codex session.",
+    "evidence": "Graph health is NOT_READY with 75 missing graph-bound claim proofs, 84 required source-ref gaps, 4 missing skill nodes, and 19 domain/epoch gaps; ADG run 07182026_1105 is incomplete/dependency_not_ready; codex_readiness status is FAIL.",
+    "fix_or_next": "next: publish the tested feature branch through a GitHub PR, require exact-head CI, and merge only after hard publication gates permit it; separately remediate the governed provenance backlog and repository-wide ADG P0 lane without fabricating evidence or widening this change.",
+    "recurrence_guard": "Keep storage/runtime integrity, graph-data readiness, ADG certification, and publication topology as separate receipts; UNKNOWN or NOT_READY dimensions can never be promoted to PASS."
+  }
+}

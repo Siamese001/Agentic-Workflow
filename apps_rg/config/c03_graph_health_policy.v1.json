@@ -1,0 +1,355 @@
+{
+  "schema_version": "apps_rg.c03_graph_health_policy.v1",
+  "policy_version": "c03_graph_health_policy.v1",
+  "sample_limit": 12,
+  "rare_edge_type_min_count": 2,
+  "operational_evidence_schema_versions": [
+    "apps_rg.c03_graph_health_operational_evidence.v1"
+  ],
+  "required_operational_authority_status": "VERIFIED",
+  "temporal_node_types": [
+    "employment"
+  ],
+  "derived_endpoint_authority": "master_skills_arsenal_ledger.canonical_derivation.v1",
+  "required_foreign_keys": [
+    {
+      "table": "graph_edges",
+      "from": "source_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_edges",
+      "from": "target_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "skill_fact_links",
+      "from": "skill_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "skill_fact_links",
+      "from": "fact_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "section_eligibility",
+      "from": "node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "c03_skill_selection_features",
+      "from": "skill_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "c03_role_family_skill_weights",
+      "from": "skill_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_paths",
+      "from": "start_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_paths",
+      "from": "end_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_sibling_links",
+      "from": "node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_sibling_links",
+      "from": "sibling_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_neighborhoods",
+      "from": "center_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_neighborhoods",
+      "from": "neighbor_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    }
+  ],
+  "metrics": {
+    "canonical_artifact_available": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "sqlite_artifact_available": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "sqlite_read_purity": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "canonical_sqlite_digest_match": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "canonical_metadata_node_count_parity": {
+      "plane": "control_plane",
+      "operator": "==",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "canonical_metadata_edge_count_parity": {
+      "plane": "control_plane",
+      "operator": "==",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sqlite_projection_node_count_parity": {
+      "plane": "control_plane",
+      "operator": "==",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sqlite_projection_edge_count_parity": {
+      "plane": "control_plane",
+      "operator": "==",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sqlite_foreign_key_coverage": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sqlite_foreign_key_integrity": {
+      "plane": "control_plane",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "reverse_view_parity": {
+      "plane": "control_plane",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "decision_safe_regression": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "source_currentness": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "source_freshness": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "hitl_approval_coverage": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "write_audit_coverage": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "p0_sla_compliance": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "BLOCK",
+      "required": true
+    },
+    "p1_sla_compliance": {
+      "plane": "control_plane",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "orphan_edge_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "duplicate_node_id_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "duplicate_edge_id_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "duplicate_logical_edge_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "identity_collision_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "explicit_endpoint_closure": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": false
+    },
+    "registered_endpoint_closure": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "claim_evidence_completeness": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "skill_row_node_coverage": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "skill_source_metadata_completeness": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "graph_node_source_ref_completeness": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "temporal_completeness": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "rare_edge_type_rate": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "path_integrity": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sibling_integrity": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "neighborhood_integrity": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "metric_bucket_concentration": {
+      "plane": "graph_data",
+      "operator": "<=",
+      "target": 0.34,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "domain_coverage": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    },
+    "epoch_coverage": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "FAIL",
+      "required": true
+    }
+  }
+}

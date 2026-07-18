@@ -487,9 +487,9 @@ def select_c03_sqlite_graph_candidates(
     root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[3]
     # Lazy import prevents the historical materializer -> core package -> L0 ->
     # selector -> context circular import while preserving one public helper.
-    from apps_rg.runtime.c03_graph_sqlite_context import ensure_c03_graph_sqlite
+    from apps_rg.runtime.c03_graph_sqlite_context import require_c03_graph_sqlite
 
-    path = ensure_c03_graph_sqlite(root, Path(db_path) if db_path else None)
+    path = require_c03_graph_sqlite(root, Path(db_path) if db_path else None)
     meta, section_budget, candidates = _query_candidates(
         repo_root=root,
         db_path=path,
@@ -674,6 +674,7 @@ def select_c03_sqlite_graph_candidates(
             candidate_conservation_pass
             and authority_receipt["authority_before_targeting_pass"]
             and not missing_fact_frontier_ids
+            and selected_flat
         ),
     }
 
