@@ -25,6 +25,9 @@ Each entry under `mcpServers` in **both** editor configs MUST include:
     "adg_sqlite": {
       "command": "python",
       "args": ["..."],
+      "required": false,
+      "startup_timeout_sec": 15,
+      "tool_timeout_sec": 120,
       "disabled": false
     }
   }
@@ -34,7 +37,10 @@ Each entry under `mcpServers` in **both** editor configs MUST include:
 Required fields:
 
 - `command` OR `url` — at least one must be present
-- `args` — argument list (may be empty array for remote-only servers)
+- `args` — argument list for command-based servers
+- `required` — explicit boolean controlling Codex startup/prompt blocking
+- `startup_timeout_sec` — positive integer startup/protocol-probe timeout
+- `tool_timeout_sec` — positive integer default tool-call timeout
 - `disabled` — explicit boolean when present (default effective: enabled)
 
 Filesystem server (Rule #0): `args` must be exactly `[<editor-launcher>, "${env:AGENTIC_REPO_ROOT}"]`.

@@ -32,13 +32,13 @@ def _callability_green(_servers: tuple[str, ...]) -> list:
     return []
 
 
-def test_all_enabled_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> None:
+def test_only_required_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> None:
     config = _write_config(
         tmp_path / ".mcp.json",
         {
-            "adg_sqlite": {"command": "python", "args": ["-m", "server"]},
-            "memory": {"command": "python", "args": ["server.py"]},
-            "deepwiki": {"url": "https://example.test/mcp"},
+            "adg_sqlite": {"command": "python", "args": ["-m", "server"], "required": True},
+            "memory": {"command": "python", "args": ["server.py"], "required": True},
+            "deepwiki": {"url": "https://example.test/mcp", "required": False},
             "disabled_one": {"command": "python", "disabled": True},
         },
     )
@@ -62,17 +62,50 @@ def test_all_enabled_repo_mcps_must_probe_green(tmp_path: Path, monkeypatch) -> 
 
     assert sorted(seen) == [
         ("adg_sqlite", "stdio"),
-        ("deepwiki", "http"),
         ("memory", "stdio"),
     ]
+
+
+def test_dead_optional_mcp_does_not_block_basic_first_turn(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {
+            "dead_optional": {
+                "command": "definitely-not-a-real-mcp-command",
+                "args": ["--serve"],
+                "required": False,
+            }
+        },
+    )
+    monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
+    monkeypatch.delenv(gate.CALLABILITY_SERVER_LIST_ENV, raising=False)
+
+    def probe(_spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
+        raise AssertionError("optional MCPs must not be probed for a basic first turn")
+
+    assert (
+        gate.run_gate(
+            _payload("hello"),
+            config_path=config,
+            probe_func=probe,
+            callability_check_func=lambda servers: [],
+            timeout=0.1,
+        )
+        == 0
+    )
+    assert "optional MCPs are not first-turn blockers" in capsys.readouterr().err
 
 
 def test_strict_prompt_red_required_mcp_blocks(tmp_path: Path, capsys, monkeypatch) -> None:
     config = _write_config(
         tmp_path / ".mcp.json",
         {
-            "adg_sqlite": {"command": "python"},
-            "memory": {"command": "python"},
+            "adg_sqlite": {"command": "python", "required": True},
+            "memory": {"command": "python", "required": True},
         },
     )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
@@ -103,8 +136,8 @@ def test_non_strict_red_required_mcp_warns(tmp_path: Path, capsys, monkeypatch) 
     config = _write_config(
         tmp_path / ".mcp.json",
         {
-            "adg_sqlite": {"command": "python"},
-            "memory": {"command": "python"},
+            "adg_sqlite": {"command": "python", "required": True},
+            "memory": {"command": "python", "required": True},
         },
     )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
@@ -136,7 +169,10 @@ def test_protocol_green_still_blocks_when_callability_route_red(
     capsys,
     monkeypatch,
 ) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"memory": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"memory": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.delenv(gate.CALLABILITY_SERVER_LIST_ENV, raising=False)
     monkeypatch.delenv(gate.ENFORCE_ENV, raising=False)
@@ -145,8 +181,7 @@ def test_protocol_green_still_blocks_when_callability_route_red(
         return gate.ProbeResult(spec.server_id, "ok", transport=spec.transport, tools_count=1)
 
     def callability_check(required_servers: tuple[str, ...]) -> list[gate.ProbeResult]:
-        assert required_servers == gate.DEFAULT_CALLABILITY_REQUIRED_SERVERS
-        assert "vector_db" in required_servers
+        assert required_servers == ("memory",)
         return [
             gate.ProbeResult(
                 "memory",
@@ -198,7 +233,10 @@ def test_http_callable_route_classification_passes_callability_check(monkeypatch
 
 
 def test_mcp_repair_prompt_allows_without_probing(tmp_path: Path, monkeypatch, capsys) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"adg_sqlite": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.delenv(gate.DISABLE_REPAIR_BYPASS_ENV, raising=False)
 
@@ -222,7 +260,10 @@ def test_mcp_green_health_words_do_not_bypass_without_repair_intent(
     monkeypatch,
     capsys,
 ) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"adg_sqlite": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.delenv(gate.DISABLE_REPAIR_BYPASS_ENV, raising=False)
 
@@ -249,7 +290,10 @@ def test_disable_repair_bypass_forces_probe_even_for_explicit_repair_prompt(
     monkeypatch,
     capsys,
 ) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"adg_sqlite": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
     monkeypatch.setenv(gate.DISABLE_REPAIR_BYPASS_ENV, "1")
     monkeypatch.setenv(gate.ENFORCE_ENV, "block")
@@ -273,7 +317,10 @@ def test_disable_repair_bypass_forces_probe_even_for_explicit_repair_prompt(
 
 
 def test_adg_repair_prompt_allows_without_generic_mcp_word(tmp_path: Path, monkeypatch, capsys) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"adg_sqlite": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"adg_sqlite": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
 
     def probe(_spec: gate.ProbeSpec, _timeout: float) -> gate.ProbeResult:
@@ -292,7 +339,10 @@ def test_adg_repair_prompt_allows_without_generic_mcp_word(tmp_path: Path, monke
 
 
 def test_pass_message_scopes_to_protocol_probes(tmp_path: Path, capsys, monkeypatch) -> None:
-    config = _write_config(tmp_path / ".mcp.json", {"memory": {"command": "python"}})
+    config = _write_config(
+        tmp_path / ".mcp.json",
+        {"memory": {"command": "python", "required": True}},
+    )
     monkeypatch.delenv(gate.SERVER_LIST_ENV, raising=False)
 
     def probe(spec: gate.ProbeSpec, timeout: float) -> gate.ProbeResult:
@@ -309,7 +359,7 @@ def test_pass_message_scopes_to_protocol_probes(tmp_path: Path, capsys, monkeypa
         == 0
     )
     err = capsys.readouterr().err
-    assert "configured MCP protocol probes green" in err
+    assert "required MCP protocol probes green" in err
     assert "all required MCP transports green" not in err
     assert "active-session ADG callability is enforced separately" in err
 
@@ -326,6 +376,7 @@ def test_missing_auth_passthrough_env_blocks_before_spawn(
                 "command": "cmd",
                 "args": ["/c", "npx", "-y", "@notionhq/notion-mcp-server"],
                 "env": {"NOTION_TOKEN": "${NOTION_TOKEN}"},
+                "required": True,
             }
         },
     )
@@ -373,6 +424,7 @@ def test_adg_protocol_probe_uses_non_destructive_launcher_args(tmp_path: Path, m
             "adg_sqlite": {
                 "command": "python",
                 "args": ["-u", "-m", "tools.mcp.launch_adg_sqlite_mcp"],
+                "required": True,
             }
         },
     )

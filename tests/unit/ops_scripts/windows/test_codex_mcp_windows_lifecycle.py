@@ -160,20 +160,26 @@ def test_launcher_no_launch_and_shortcut_avoid_versioned_codex_path() -> None:
     assert not re.search(r"Codex[^\r\n]*app-\d", launcher + shortcut, re.IGNORECASE)
 
 
-def test_repo_routes_remain_required_streamable_http() -> None:
+def test_repo_routes_remain_optional_streamable_http() -> None:
     mcp = json.loads((REPO_ROOT / ".mcp.json").read_text(encoding="utf-8"))
     config = (REPO_ROOT / ".codex" / "config.toml").read_text(encoding="utf-8")
 
-    assert mcp["mcpServers"]["adg_sqlite"] == {"url": "http://127.0.0.1:8765/mcp"}
-    assert mcp["mcpServers"]["memory"] == {"url": "http://127.0.0.1:8766/mcp"}
+    expected_policy = {
+        "required": False,
+        "startup_timeout_sec": 15,
+        "tool_timeout_sec": 120,
+    }
     for server_id, url in (
         ("adg_sqlite", "http://127.0.0.1:8765/mcp"),
         ("memory", "http://127.0.0.1:8766/mcp"),
     ):
+        assert mcp["mcpServers"][server_id] == {"url": url, **expected_policy}
         block = re.search(rf"(?ms)^\[mcp_servers\.{server_id}\]\s*$\n(.*?)(?=^\[|\Z)", config)
         assert block is not None
         assert f'url = "{url}"' in block.group(1)
-        assert "required = true" in block.group(1)
+        assert "required = false" in block.group(1)
+        assert "startup_timeout_sec = 15" in block.group(1)
+        assert "tool_timeout_sec = 120" in block.group(1)
         assert "command =" not in block.group(1)
 
 

@@ -2,7 +2,7 @@
 """MCP Config Schema Validation Gate (MCP-SCHEMA).
 
 Validates the repo SSOT `.mcp.json`:
-- Required servers present: GitKraken, adg_sqlite, memory, notion, otel_mcp, pytest_mcp, redis, vector_db
+- Required live registry servers present: GitKraken, adg_sqlite, deepwiki, memory, vector_db, notion, context7, playwright
 - Each server has required fields: command, args (array)
 - Optional fields valid: env (object), disabled (boolean), url (for remote)
 - No unknown top-level keys (constitutional §27 compliance)
@@ -214,6 +214,27 @@ def check_server_structure(
             message=f"Server '{name}' 'disabled' must be boolean",
             path=f"{path_prefix}.disabled",
         ))
+
+    required = config.get("required")
+    if required is not None and not isinstance(required, bool):
+        violations.append(Violation(
+            severity="ERROR",
+            code="INVALID_REQUIRED_TYPE",
+            message=f"Server '{name}' 'required' must be boolean",
+            path=f"{path_prefix}.required",
+        ))
+
+    for key in ("startup_timeout_sec", "tool_timeout_sec"):
+        value = config.get(key)
+        if value is not None and (
+            isinstance(value, bool) or not isinstance(value, int) or value <= 0
+        ):
+            violations.append(Violation(
+                severity="ERROR",
+                code="INVALID_TIMEOUT_TYPE",
+                message=f"Server '{name}' '{key}' must be a positive integer",
+                path=f"{path_prefix}.{key}",
+            ))
     
     # Validate env field if present
     env = config.get("env")
