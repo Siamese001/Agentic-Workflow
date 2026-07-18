@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Codex MCP transport readiness gate for UserPromptSubmit.
 
-This gate checks every enabled repo-declared MCP server before a normal user
-prompt is accepted. A server's configured command/url probe is green only when
+This gate checks repo-declared MCP servers marked ``required = true`` before a
+normal user prompt is accepted. A server's configured command/url probe is green only when
 it can complete a real MCP JSON-RPC ``initialize`` plus ``tools/list`` exchange.
 That proves protocol viability, not active-session Codex tool callability.
 
 Scope: root ``.mcp.json`` is the repo MCP SSOT. The generated Codex Desktop
-projection marks these servers ``required = true``. This hook records the same
-per-turn evidence, blocks strict proof/eval/publication prompts and nonnegotiable
+projection reads each server's ``required`` policy. This hook records the same
+per-turn evidence for required servers, blocks strict proof/eval/publication prompts and nonnegotiable
 config/spawn failures, and warns for ordinary exploratory prompts instead of
 letting transport churn stop low-risk design work.
 
@@ -240,10 +240,12 @@ def _server_filter_from_env() -> set[str] | None:
     return {part.strip() for part in raw.split(",") if part.strip()}
 
 
-def _callability_servers_from_env() -> tuple[str, ...]:
+def _callability_servers_from_env(
+    default_servers: tuple[str, ...] = DEFAULT_CALLABILITY_REQUIRED_SERVERS,
+) -> tuple[str, ...]:
     raw = os.environ.get(CALLABILITY_SERVER_LIST_ENV)
     if raw is None:
-        return DEFAULT_CALLABILITY_REQUIRED_SERVERS
+        return default_servers
     return tuple(part.strip() for part in raw.split(",") if part.strip())
 
 
@@ -256,6 +258,7 @@ def _load_enabled_specs(config_path: Path = MCP_CONFIG) -> list[ProbeSpec]:
         raise ValueError(f"{config_path} has no mcpServers object")
 
     include = _server_filter_from_env()
+    required_only = include is None
     specs: list[ProbeSpec] = []
     for server_id, cfg_value in servers.items():
         if include is not None and server_id not in include:
@@ -264,6 +267,8 @@ def _load_enabled_specs(config_path: Path = MCP_CONFIG) -> list[ProbeSpec]:
             continue
 
         cfg = cfg_value
+        if required_only and cfg.get("required") is not True:
+            continue
         if cfg.get("command"):
             command, args = sync._codex_command_projection(  # noqa: SLF001 - same governance package
                 str(cfg["command"]),
@@ -737,10 +742,13 @@ def run_gate(
         return 2
 
     if not specs:
-        result = ProbeResult("mcp_config", "fail", "no enabled MCP servers found", "config")
-        _print_failures([result])
-        _append_receipt(payload, [result], "block")
-        return 2
+        print(
+            "[required_mcp_gate] PASS: no required MCP protocol probes configured; "
+            "optional MCPs are not first-turn blockers.",
+            file=sys.stderr,
+        )
+        _append_receipt(payload, [], "allow")
+        return 0
 
     results = _run_probes(specs, timeout_value, probe_func)
     failures = [result for result in results if not result.ok]
@@ -753,7 +761,10 @@ def run_gate(
         _append_receipt(payload, results, "warn")
         return 0
 
-    callability_failures = callability_check_func(_callability_servers_from_env())
+    protocol_required_servers = tuple(result.server_id for result in results if result.ok)
+    callability_failures = callability_check_func(
+        _callability_servers_from_env(protocol_required_servers)
+    )
     if callability_failures:
         if _should_block_failures(prompt):
             _print_failures(callability_failures)
@@ -765,7 +776,7 @@ def run_gate(
 
     summary = ", ".join(f"{result.server_id}:{result.tools_count}" for result in results)
     print(
-        "[required_mcp_gate] PASS: configured MCP protocol probes green "
+        "[required_mcp_gate] PASS: required MCP protocol probes green "
         f"({summary}); active-session ADG callability is enforced separately.",
         file=sys.stderr,
     )

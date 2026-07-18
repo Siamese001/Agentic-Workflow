@@ -6,15 +6,97 @@ web_search = "cached"
 max_depth = 1
 max_threads = 6
 
-[mcp_servers]
+[features]
+codex_hooks = true
+
+
+# AGENTIC-WORKFLOW-MCP:START
+# Generated from repo .mcp.json by .codex/governance/scripts/sync_mcp_config.py.
+# Keep repo-specific governance in the repository; this is the Codex Desktop runtime projection.
+# Run: python .codex/governance/scripts/sync_mcp_config.py --sync-user-config
 
 [mcp_servers.GitKraken]
-command = "gk"
-args = ["mcp"]
+command = "cmd"
+args = ["/c", "C:/Users/amita/AppData/Local/GitKrakenCLI/gk.exe", "mcp"]
 cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
+required = false
+startup_timeout_sec = 15
 tool_timeout_sec = 120
+
+[mcp_servers.adg_sqlite]
+url = "http://127.0.0.1:8765/mcp"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.deepwiki]
+url = "https://mcp.deepwiki.com/mcp"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.filesystem]
+command = "cmd"
+args = ["/c", "node", "C:/Git/Agentic-Workflow-FRESH/.codex/governance/scripts/filesystem_mcp_launcher.js", "C:/Git/Agentic-Workflow-FRESH"]
+cwd = "C:/Git/Agentic-Workflow-FRESH"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.memory]
+url = "http://127.0.0.1:8766/mcp"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.vector_db]
+command = "cmd"
+args = ["/c", "python", "-u", "C:/Git/Agentic-Workflow-FRESH/tools/mcp/vector_db_server.py"]
+cwd = "C:/Git/Agentic-Workflow-FRESH"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.vector_db.env]
+EMBEDDING_DEVICE = "cuda"
+HF_HUB_OFFLINE = "1"
+MCP_MAX_THREADPOOL_WORKERS = "2"
+PYTHONPATH = "C:/Git/Agentic-Workflow-FRESH"
+VECTOR_DB_ALLOW_MODEL_DOWNLOAD = "0"
+VECTOR_DB_CHROMA_PATH = "C:/Git/Agentic-Workflow-FRESH/data/cache/chromadb"
+VECTOR_DB_DEVICE = "cuda"
+VECTOR_DB_EMBEDDING_MODEL = "BAAI/bge-m3"
+VECTOR_DB_ENABLE_MODEL_PREWARM = "1"
+VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT = "90"
+VECTOR_DB_MODEL_LOAD_TIMEOUT = "75"
+VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT = "15"
+
+[mcp_servers.notion]
+command = "cmd"
+args = ["/c", "npx", "-y", "@notionhq/notion-mcp-server"]
+cwd = "C:/Git/Agentic-Workflow-FRESH"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+env_vars = ["NOTION_TOKEN"]
+
+[mcp_servers.context7]
+command = "cmd"
+args = ["/c", "npx", "-y", "@upstash/context7-mcp"]
+cwd = "C:/Git/Agentic-Workflow-FRESH"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+[mcp_servers.playwright]
+command = "cmd"
+args = ["/c", "npx", "-y", "@playwright/mcp", "--output-dir", "artifacts/mcp/playwright", "--output-mode", "file"]
+cwd = "C:/Git/Agentic-Workflow-FRESH"
+required = false
+startup_timeout_sec = 15
+tool_timeout_sec = 120
+
+# AGENTIC-WORKFLOW-MCP:END
 
 [mcp_servers.GitKraken.tools.git_branch]
 approval_mode = "approve"
@@ -24,12 +106,6 @@ approval_mode = "approve"
 
 [mcp_servers.GitKraken.tools.git_add_or_commit]
 approval_mode = "approve"
-
-[mcp_servers.adg_sqlite]
-url = "http://127.0.0.1:8765/mcp"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
 
 [mcp_servers.adg_sqlite.tools.adg_health]
 approval_mode = "approve"
@@ -43,72 +119,5 @@ approval_mode = "approve"
 [mcp_servers.adg_sqlite.tools.adg_edge_fanout]
 approval_mode = "approve"
 
-[mcp_servers.deepwiki]
-url = "https://mcp.deepwiki.com/mcp"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[mcp_servers.filesystem]
-command = "node"
-args = ["C:/Git/Agentic-Workflow-FRESH/.codex/governance/scripts/filesystem_mcp_launcher.js", "C:/Git/Agentic-Workflow-FRESH"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[mcp_servers.memory]
-url = "http://127.0.0.1:8766/mcp"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
 [mcp_servers.memory.tools.mem_recall_session_start]
 approval_mode = "approve"
-
-[mcp_servers.vector_db]
-command = "cmd"
-args = ["/c", "python", "-u", "C:/Git/Agentic-Workflow-FRESH/tools/mcp/vector_db_server.py"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[mcp_servers.vector_db.env]
-PYTHONPATH = "C:/Git/Agentic-Workflow-FRESH"
-VECTOR_DB_CHROMA_PATH = "C:/Git/Agentic-Workflow-FRESH/data/cache/chromadb"
-VECTOR_DB_EMBEDDING_MODEL = "BAAI/bge-m3"
-VECTOR_DB_ALLOW_MODEL_DOWNLOAD = "0"
-HF_HUB_OFFLINE = "1"
-VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT = "90"
-VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT = "15"
-MCP_MAX_THREADPOOL_WORKERS = "2"
-PYTHONUNBUFFERED = "1"
-
-[mcp_servers.notion]
-command = "cmd"
-args = ["/c", "npx", "-y", "@notionhq/notion-mcp-server"]
-env_vars = ["NOTION_TOKEN"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[mcp_servers.context7]
-command = "cmd"
-args = ["/c", "npx", "-y", "@upstash/context7-mcp"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[mcp_servers.playwright]
-command = "cmd"
-args = ["/c", "npx", "-y", "@playwright/mcp"]
-cwd = "C:/Git/Agentic-Workflow-FRESH"
-required = true
-startup_timeout_sec = 120
-tool_timeout_sec = 120
-
-[features]
-codex_hooks = true

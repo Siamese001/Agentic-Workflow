@@ -20,18 +20,18 @@ REPO_REQUIRED_SERVERS: frozenset[str] = frozenset({
     "deepwiki",
     "memory",
     "vector_db",
-    "otel_mcp",
-    "pytest_mcp",
-    "redis",
     "notion",
-    "tavily",
     "context7",
     "playwright",
 })
 
 OPTIONAL_SERVERS: frozenset[str] = frozenset({
     "filesystem",
+    "otel_mcp",
+    "pytest_mcp",
+    "redis",
     "task_manager",
+    "tavily",
 })
 
 VALID_TOP_KEYS: frozenset[str] = frozenset({
@@ -45,6 +45,9 @@ VALID_SERVER_KEYS: frozenset[str] = frozenset({
     "args",
     "env",
     "disabled",
+    "required",
+    "startup_timeout_sec",
+    "tool_timeout_sec",
     "url",
     "type",
     "transport",

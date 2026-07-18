@@ -36,7 +36,8 @@ global_config = GLOBAL_CONFIG
 USER_CONFIG_BLOCK_START = "# AGENTIC-WORKFLOW-MCP:START"
 USER_CONFIG_BLOCK_END = "# AGENTIC-WORKFLOW-MCP:END"
 DEFAULT_REDIS_URL = "redis://localhost:6379/0"
-DEFAULT_STARTUP_TIMEOUT_SEC = 120
+DEFAULT_REQUIRED = False
+DEFAULT_STARTUP_TIMEOUT_SEC = 15
 DEFAULT_TOOL_TIMEOUT_SEC = 120
 _ENV_PLACEHOLDER_RE = re.compile(r"\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}")
 _EXACT_PLACEHOLDER_RE = re.compile(r"\A\$\{(?:env:)?([A-Za-z_][A-Za-z0-9_]*)\}\Z")
@@ -171,6 +172,15 @@ def validate_config(data: dict[str, Any]) -> list[str]:
         env = cfg.get("env")
         if env is not None and not isinstance(env, dict):
             issues.append(f"Server '{name}' env must be an object when present.")
+        required = cfg.get("required")
+        if required is not None and not isinstance(required, bool):
+            issues.append(f"Server '{name}' required must be a boolean when present.")
+        for key in ("startup_timeout_sec", "tool_timeout_sec"):
+            value = cfg.get(key)
+            if value is not None and (
+                isinstance(value, bool) or not isinstance(value, int) or value <= 0
+            ):
+                issues.append(f"Server '{name}' {key} must be a positive integer when present.")
     return issues
 
 
@@ -226,8 +236,26 @@ def _toml_scalar(value: Any) -> str:
     return _toml_string(str(value))
 
 
-def _server_timeout(_server_id: str, _cfg: dict[str, Any]) -> int:
-    return DEFAULT_STARTUP_TIMEOUT_SEC
+def _server_required(_server_id: str, cfg: dict[str, Any]) -> bool:
+    value = cfg.get("required", DEFAULT_REQUIRED)
+    return value if isinstance(value, bool) else DEFAULT_REQUIRED
+
+
+def _server_positive_int(_server_id: str, cfg: dict[str, Any], key: str, default: int) -> int:
+    value = cfg.get(key, default)
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, int) and value > 0:
+        return value
+    return default
+
+
+def _server_startup_timeout(server_id: str, cfg: dict[str, Any]) -> int:
+    return _server_positive_int(server_id, cfg, "startup_timeout_sec", DEFAULT_STARTUP_TIMEOUT_SEC)
+
+
+def _server_tool_timeout(server_id: str, cfg: dict[str, Any]) -> int:
+    return _server_positive_int(server_id, cfg, "tool_timeout_sec", DEFAULT_TOOL_TIMEOUT_SEC)
 
 
 def _codex_command_projection(command: str, args: list[Any], root: Path) -> tuple[str, list[str]]:
@@ -254,8 +282,8 @@ def _env_projection(env: dict[str, Any], root: Path) -> tuple[dict[str, str], li
 def render_codex_user_mcp_block(data: dict[str, Any], root: Path = repo_root) -> str:
     """Render the repo MCP registry as the Codex Desktop runtime projection.
 
-    Every enabled `.mcp.json` server is marked `required = true` so new Codex
-    chats fail startup/resume instead of silently dropping an MCP.
+    Startup and tool-call policy is projected from each enabled `.mcp.json`
+    server entry so optional/task-specific MCPs do not become global blockers.
     """
     servers = data.get("mcpServers", {}) or {}
     lines: list[str] = [
@@ -283,9 +311,9 @@ def render_codex_user_mcp_block(data: dict[str, Any], root: Path = repo_root) ->
             lines.append(f"command = {_toml_string(projected_command)}")
             lines.append(f"args = {_toml_scalar(projected_args)}")
             lines.append(f"cwd = {_toml_string(cwd)}")
-        lines.append("required = true")
-        lines.append(f"startup_timeout_sec = {_server_timeout(server_id, cfg)}")
-        lines.append(f"tool_timeout_sec = {DEFAULT_TOOL_TIMEOUT_SEC}")
+        lines.append(f"required = {_toml_scalar(_server_required(server_id, cfg))}")
+        lines.append(f"startup_timeout_sec = {_server_startup_timeout(server_id, cfg)}")
+        lines.append(f"tool_timeout_sec = {_server_tool_timeout(server_id, cfg)}")
 
         env = cfg.get("env")
         static_env: dict[str, str] = {}

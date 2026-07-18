@@ -191,6 +191,18 @@ class TestCheckServerStructure:
         violations = check_server_structure("test", config)
         assert any(v.code == "INVALID_DISABLED_TYPE" for v in violations)
 
+    def test_invalid_required_type(self) -> None:
+        """Non-boolean required produces ERROR."""
+        config = {"command": "python", "args": [], "required": "yes"}
+        violations = check_server_structure("test", config)
+        assert any(v.code == "INVALID_REQUIRED_TYPE" for v in violations)
+
+    def test_invalid_timeout_type(self) -> None:
+        """Non-positive timeout policy produces ERROR."""
+        config = {"command": "python", "args": [], "startup_timeout_sec": 0, "tool_timeout_sec": True}
+        violations = check_server_structure("test", config)
+        assert sum(v.code == "INVALID_TIMEOUT_TYPE" for v in violations) == 2
+
     def test_invalid_env_type(self) -> None:
         """Non-object env produces ERROR."""
         config = {"command": "python", "args": [], "env": "not-an-object"}
@@ -301,7 +313,16 @@ class TestConstants:
 
     def test_valid_server_keys_comprehensive(self) -> None:
         """VALID_SERVER_KEYS should cover common keys."""
-        essential_keys = {"command", "args", "env", "disabled", "url"}
+        essential_keys = {
+            "command",
+            "args",
+            "env",
+            "disabled",
+            "required",
+            "startup_timeout_sec",
+            "tool_timeout_sec",
+            "url",
+        }
         assert essential_keys.issubset(VALID_SERVER_KEYS)
 
     def test_valid_top_keys_comprehensive(self) -> None:
@@ -324,7 +345,6 @@ class TestIntegration:
         import ops_scripts.ci.check_mcp_config_schema as module
         original_path = module.CONFIG_PATH
         module.CONFIG_PATH = config_file
-        monkeypatch.setattr(module, "profile_config_path", lambda _profile, _mirror_path: config_file)
         
         try:
             result = module.main([])
@@ -332,7 +352,7 @@ class TestIntegration:
         finally:
             module.CONFIG_PATH = original_path
 
-    def test_main_fail_closed_exit_1(self, tmp_path: Path) -> None:
+    def test_main_fail_closed_exit_1(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Main function exits 1 in fail-closed mode with errors."""
         config = {"mcpServers": {}}  # Missing all required servers
         config_file = tmp_path / "mcp_config.json"
@@ -341,6 +361,7 @@ class TestIntegration:
         import ops_scripts.ci.check_mcp_config_schema as module
         original_path = module.CONFIG_PATH
         module.CONFIG_PATH = config_file
+        monkeypatch.setattr(module, "profile_config_path", lambda _profile, _mirror_path: config_file)
         
         try:
             result = module.main(["--fail-closed"])
@@ -435,6 +456,7 @@ class TestEdgeCases:
         
         original_path = module.CONFIG_PATH
         module.CONFIG_PATH = config_file
+        monkeypatch.setattr(module, "profile_config_path", lambda _profile, _mirror_path: config_file)
         
         try:
             result = module.main([])  # No --fail-closed flag, but env var set

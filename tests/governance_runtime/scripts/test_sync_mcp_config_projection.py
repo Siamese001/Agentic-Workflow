@@ -76,20 +76,40 @@ def test_sync_global_config_writes_alternate_path(tmp_path: Path) -> None:
 def test_sync_global_config_noop_when_target_is_repo_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     same_path = tmp_path / ".mcp.json"
     same_path.write_text("{}", encoding="utf-8")
-    monkeypatch.setattr(sync_mod, "repo_config", same_path)
+    monkeypatch.setitem(sync_mod.sync_global_config.__globals__, "repo_config", same_path)
 
     assert sync_mod.sync_global_config(_repo_data(), global_path=same_path) is False
 
 
-def test_user_config_projection_marks_every_server_required() -> None:
-    block = sync_mod.render_codex_user_mcp_block(_repo_data())
+def test_user_config_projection_uses_per_server_policy() -> None:
+    data = _repo_data()
+    data["mcpServers"]["GitKraken"].update(
+        {
+            "required": True,
+            "startup_timeout_sec": 7,
+            "tool_timeout_sec": 45,
+        }
+    )
+    data["mcpServers"]["memory"].update(
+        {
+            "required": False,
+            "startup_timeout_sec": 3,
+            "tool_timeout_sec": 90,
+        }
+    )
 
-    assert block.count("required = true") == len(_repo_data()["mcpServers"])
+    block = sync_mod.render_codex_user_mcp_block(data)
+
+    assert block.count("required = true") == 1
+    assert block.count("required = false") == len(data["mcpServers"]) - 1
+    assert "startup_timeout_sec = 7" in block
+    assert "tool_timeout_sec = 45" in block
+    assert "startup_timeout_sec = 3" in block
+    assert "tool_timeout_sec = 90" in block
     assert "[mcp_servers.memory]" in block
     assert 'args = ["/c", "python", "-u", "-m", "tools.mcp.launch_memory_mcp"]' in block
     assert 'env_vars = ["NOTION_TOKEN"]' in block
     assert "[mcp_servers.context7]" in block
-    assert "required = false" not in block
 
 
 def test_sync_user_config_replaces_managed_block(tmp_path: Path) -> None:
