@@ -112,7 +112,9 @@ def _merge_hotspots(*groups: list[tuple[Any, ...]]) -> list[tuple[str, int]]:
     return sorted(merged.items(), key=lambda item: (-item[1], item[0]))[:10]
 
 
-def _overlay_dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str] | None = None) -> dict[str, Any]:
+def _overlay_dead_imports_section(
+    cursor: sqlite3.Cursor, warnings: list[str] | None = None
+) -> dict[str, Any]:
     if _table_exists(cursor, "mv_dead_import_hotspots_overlay"):
         node_path_expr = _nodes_path_expr(cursor, "n")
         total_dead_imports = _fetch_count(
@@ -255,7 +257,9 @@ def _overlay_dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str] | 
 
 
 def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[str, Any]:
-    legacy_dead_import_edges = _fetch_count(cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'")
+    legacy_dead_import_edges = _fetch_count(
+        cursor, "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_imports'"
+    )
     overlay_dead_imports = _overlay_dead_imports_section(cursor, warnings)
     total_dead_imports = legacy_dead_import_edges + int(
         overlay_dead_imports.get("total_overlay_dead_imports", 0) or 0
@@ -303,7 +307,9 @@ def _dead_imports_section(cursor: sqlite3.Cursor, warnings: list[str]) -> dict[s
         SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
         JOIN nodes n ON e.src_id = n.id
         WHERE e.relation_type = 'dead_imports'
-        AND """ + _first_party_filter("n") + """
+        AND """
+        + _first_party_filter("n")
+        + """
         GROUP BY n.id, n.adg_name
         ORDER BY dead_count DESC
         LIMIT 10
@@ -386,7 +392,9 @@ def _dead_code_candidates_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
         SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
         JOIN nodes n ON e.src_id = n.id
         WHERE e.relation_type = 'dead_code_candidate'
-        AND """ + _first_party_filter("n") + """
+        AND """
+        + _first_party_filter("n")
+        + """
         GROUP BY n.id, n.adg_name
         ORDER BY dead_count DESC
         LIMIT 10
@@ -432,7 +440,9 @@ def _unresolved_imports_section(cursor: sqlite3.Cursor, errors: list[str]) -> di
         JOIN edges e ON e.dst_id = n_unres.id
         JOIN nodes n_src ON e.src_id = n_src.id
         WHERE n_unres.identity_kind = 'unresolved_import'
-        AND """ + _first_party_filter("n_src") + """
+        AND """
+        + _first_party_filter("n_src")
+        + """
         GROUP BY n_src.id, n_src.adg_name
         ORDER BY unresolved_count DESC
         LIMIT 10
@@ -578,14 +588,18 @@ def _executive_readiness_section(cursor: sqlite3.Cursor) -> dict[str, Any]:
     calculated_metrics: dict[str, Any] = {}
     for metric_name, query in executive_metrics.items():
         if query == "calculated":
-            inferred = _fetch_count(cursor, "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'inferred_symbol'")
+            inferred = _fetch_count(
+                cursor, "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'inferred_symbol'"
+            )
             total_symbols = _fetch_count(cursor, "SELECT COUNT(*) FROM nodes WHERE entity_type = 'symbol'")
             calculated_metrics[metric_name] = (inferred / max(1, total_symbols)) * 100
         elif query == "calculated_first_party_low_confidence_ratio":
             first_party_low_conf = _fetch_count(
                 cursor, f"SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW' AND {_first_party_filter()}"
             )
-            total_first_party = _fetch_count(cursor, f"SELECT COUNT(*) FROM nodes WHERE {_first_party_filter()}")
+            total_first_party = _fetch_count(
+                cursor, f"SELECT COUNT(*) FROM nodes WHERE {_first_party_filter()}"
+            )
             calculated_metrics[metric_name] = (first_party_low_conf / max(1, total_first_party)) * 100
         else:
             calculated_metrics[metric_name] = _fetch_count(cursor, query)
@@ -715,6 +729,7 @@ def emit_mandatory_adg_dead_code_report(
     fail_closed: bool = True,
     print_inline: bool = False,
     docs_dir: Path | None = None,
+    write_latest: bool = True,
 ) -> tuple[int, Path | None]:
     """Write the dead-code control report and latest copies.
 
@@ -730,12 +745,13 @@ def emit_mandatory_adg_dead_code_report(
         json_path = base.with_suffix(".json")
         _write_json(json_path, report)
 
-        latest = adg_artifacts_dir / "dead_code_zone_control_report_latest.json"
-        docs_latest = docs_target / "dead_code_zone_control_report_latest.json"
-        latest.parent.mkdir(parents=True, exist_ok=True)
-        docs_latest.parent.mkdir(parents=True, exist_ok=True)
-        _copyfile_if_different(json_path, latest)
-        _copyfile_if_different(json_path, docs_latest)
+        if write_latest:
+            latest = adg_artifacts_dir / "dead_code_zone_control_report_latest.json"
+            docs_latest = docs_target / "dead_code_zone_control_report_latest.json"
+            latest.parent.mkdir(parents=True, exist_ok=True)
+            docs_latest.parent.mkdir(parents=True, exist_ok=True)
+            _copyfile_if_different(json_path, latest)
+            _copyfile_if_different(json_path, docs_latest)
 
         if print_inline:
             sys.stdout.write("\n" + _render_inline_summary(report) + "\n")

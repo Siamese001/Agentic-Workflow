@@ -123,6 +123,26 @@ jobs:
     assert "runs pytest against missing path tests/missing/test_nope.py" in found
 
 
+def test_accepts_existing_pytest_node_id_path(tmp_path: Path) -> None:
+    write(tmp_path / "tests/unit/test_existing.py", "def test_existing():\n    pass\n")
+    write(
+        tmp_path / ".github/workflows/node-id.yml",
+        """
+name: node-id
+on:
+  pull_request:
+    paths: ["tests/**"]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: python -m pytest tests/unit/test_existing.py::test_existing -q
+""",
+    )
+
+    assert messages(tmp_path, ".github/workflows/node-id.yml") == []
+
+
 def test_changed_file_scope_ignores_untouched_stale_workflows(tmp_path: Path) -> None:
     write(
         tmp_path / ".github/workflows/stale.yml",

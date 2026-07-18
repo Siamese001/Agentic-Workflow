@@ -201,10 +201,42 @@ def test_emit_cleanup_queue_and_p2_trace_writes_latest_copies(tmp_path: Path) ->
     assert data["cleanup"]["brief"]["status"] == "DELETION_CANDIDATES"
     assert data["cleanup"]["priority_rows"][0]["decision"] == "delete_after_deprecation"
     assert data["cleanup"]["priority_rows"][0]["scope"] == "ADG::Module::legacy_path"
-    assert data["cleanup"]["live_queue"][0]["scope"] == "tests/_apps_contract/test_apps_rg_u0_structured_resume_support.py"
+    assert (
+        data["cleanup"]["live_queue"][0]["scope"]
+        == "tests/_apps_contract/test_apps_rg_u0_structured_resume_support.py"
+    )
     assert data["p2"]["summary"]["current_medium_hygiene_count"] == 5
     assert data["p2"]["summary"]["delta"] == 2
     assert data["p2"]["summary"]["failed_run_timestamp"] == "2026-06-18T10:30:15Z"
+
+
+def test_emit_cleanup_queue_can_skip_all_latest_and_docs_aliases(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    docs = tmp_path / "docs_mirror"
+    _sqlite(artifacts / "adg_indexed_20260618_120000.sqlite")
+    _dead_code_report(artifacts / "dead_code_zone_control_report_latest.json")
+    _p2_ratchet(artifacts / "p2_ratchet.json")
+    _gate_manifest(artifacts / "adg_gate_invocation_manifest_20260618_0625.json")
+
+    rc, out = emit_mandatory_adg_cleanup_queue_and_p2_blocker_trace(
+        adg_artifacts_dir=artifacts,
+        ts="run",
+        print_inline=False,
+        fail_closed=True,
+        docs_dir=docs,
+        write_latest=False,
+    )
+
+    assert rc == 0
+    assert out == artifacts / "adg_cleanup_queue_and_p2_blocker_trace_run.json"
+    assert out.is_file()
+    assert out.with_suffix(".md").is_file()
+    assert not (artifacts / "adg_cleanup_queue_and_p2_blocker_trace.json").exists()
+    assert not (artifacts / "adg_cleanup_queue_and_p2_blocker_trace.md").exists()
+    assert not (artifacts / "adg_cleanup_queue_and_p2_blocker_trace_latest.json").exists()
+    assert not (artifacts / "adg_cleanup_queue_and_p2_blocker_trace_latest.md").exists()
+    assert not docs.exists()
 
 
 def test_emit_cleanup_queue_and_p2_trace_inline_uses_bcg_brief(tmp_path: Path, capsys) -> None:

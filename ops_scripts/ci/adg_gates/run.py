@@ -34,9 +34,11 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import traceback
@@ -209,7 +211,7 @@ def _run_gate_in_process(spec: GateSpec, snapshot: Path) -> dict[str, Any]:
     """Execute a gate in-process via WiringGate.execute(); return the row shape."""
     cls = _load_gate_class(spec)
     if cls is None:
-        return _run_gate_subprocess(spec)  # defensive fallback
+        return _run_gate_subprocess(spec, snapshot=snapshot)  # defensive fallback
 
     stderr_tail: list[str] = []
     try:
@@ -243,7 +245,7 @@ def _run_gate_in_process(spec: GateSpec, snapshot: Path) -> dict[str, Any]:
     }
 
 
-def _run_gate_subprocess(spec: GateSpec) -> dict[str, Any]:
+def _run_gate_subprocess(spec: GateSpec, *, snapshot: Path | None = None) -> dict[str, Any]:
     """Legacy fallback: subprocess one gate and parse its summary line."""
     script_path = REPO_ROOT / spec.handler
     try:
@@ -252,6 +254,7 @@ def _run_gate_subprocess(spec: GateSpec) -> dict[str, Any]:
             capture_output=True,
             text=True,
             cwd=REPO_ROOT,
+            env={**os.environ, **({"ADG_SNAPSHOT": str(snapshot)} if snapshot is not None else {})},
             timeout=180,
             check=False,
         )
@@ -339,8 +342,14 @@ def _run_canonical_gate_in_process(spec: GateSpec, snapshot: Path) -> dict[str, 
             status, exit_code = "fail", 1
         elif raw_status == "warn":
             status, exit_code = "warn", 0
-        else:
+        elif raw_status == "passed":
             status, exit_code = "pass", 0
+        else:
+            return _canonical_error_row(
+                spec,
+                f"invalid_status:{raw_status!r}",
+                [],
+            )
     except Exception as exc:  # guardian: allow-in-process-dispatcher -- isolate canonical gate failures
         count = -1
         status = "error"
@@ -385,7 +394,7 @@ def _canonical_error_row(spec: GateSpec, reason: str, stderr_tail: list[str]) ->
 def _run_gate(spec: GateSpec, snapshot: Path | None = None) -> dict[str, Any]:
     """Dispatch one gate in-process if possible, else via subprocess fallback."""
     if snapshot is None or not spec.gate_class:
-        return _run_gate_subprocess(spec)
+        return _run_gate_subprocess(spec, snapshot=snapshot)
     if spec.owner == "adg_gates":
         return _run_canonical_gate_in_process(spec, snapshot)
     return _run_gate_in_process(spec, snapshot)
@@ -445,8 +454,22 @@ def _classify(row: dict[str, Any]) -> str:
     the gate's exit_code is authoritative — no external baseline file lookup.
     Wiring gates (owner='wiring_ci') still need external baseline comparison.
     """
-    enf = row["enforcement"]
-    count = row["violation_count"]
+    enf = row.get("enforcement")
+    count = row.get("violation_count")
+    exit_code = row.get("exit_code")
+    if (
+        enf not in {"block", "ratchet", "warn"}
+        or not isinstance(count, int)
+        or isinstance(count, bool)
+        or count < 0
+        or not isinstance(exit_code, int)
+        or isinstance(exit_code, bool)
+        or exit_code < 0
+        or row.get("status") not in {"pass", "fail", "warn", "bypass"}
+        or (row.get("status") == "fail" and exit_code == 0)
+        or (row.get("status") in {"pass", "warn", "bypass"} and exit_code != 0)
+    ):
+        return "error"
     if row.get("owner") == "adg_gates":
         row["baseline_count"] = None  # baseline is internal to ADGGateBase
         if enf == "block":
@@ -457,7 +480,7 @@ def _classify(row: dict[str, Any]) -> str:
             if row["exit_code"] == 0:
                 return "pass"
             return "regressed"
-        return "pass"  # warn
+        return "pass"  # a successfully executed warn gate is advisory
     baseline = _load_baseline(row["gate_id"])
     row["baseline_count"] = baseline
     if enf == "block":
@@ -473,6 +496,14 @@ def _classify(row: dict[str, Any]) -> str:
     if enf == "warn":
         return "pass"
     return "unknown"
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _emit_marker(spec_id: str, delta: int) -> str | None:
@@ -519,13 +550,24 @@ def main(argv: list[str] | None = None) -> int:
     except (FileNotFoundError, ImportError, OSError):
         snapshot = None
 
+    snapshot_sha256: str | None = None
+    if snapshot is not None:
+        try:
+            snapshot_sha256 = _sha256(snapshot)
+        except OSError:
+            snapshot = None
+
     # H5: fleet now covers CANONICAL_GATES (13, ADGGateBase) + WIRING_GATES (13, WiringGate).
     # VALIDATION_GATES remain pipeline-phase gates inside generate_full_adg.py
     # and are not dispatched here.
     fleet: list[GateSpec] = [*CANONICAL_GATES, *WIRING_GATES]
+    fleet_ids = [spec.gate_id for spec in fleet]
+    fleet_registry_valid = bool(fleet_ids) and len(fleet_ids) == len(set(fleet_ids))
 
     rows: list[dict[str, Any]] = []
-    overall_exit = 0
+    # Results without an explicit snapshot binding are unusable even if a
+    # legacy subprocess happens to pass against some implicit "latest" DB.
+    overall_exit = 1 if snapshot is None or not fleet_registry_valid else 0
     for spec in tqdm(fleet, desc="ADG gates", unit="gate"):
         row = _run_gate(spec, snapshot=snapshot)
         classification = _classify(row)
@@ -533,9 +575,22 @@ def main(argv: list[str] | None = None) -> int:
         rows.append(row)
 
         # Exit-code policy: any block fail OR any ratchet regression -> 1.
-        if spec.enforcement == Enforcement.BLOCK and row["exit_code"] != 0:
+        if classification in {"error", "unknown", "seed_missing"}:
+            # Missing/invalid evidence is never a green gate, regardless of
+            # nominal enforcement level.
+            overall_exit = 1
+        elif spec.enforcement == Enforcement.BLOCK and row["exit_code"] != 0:
             overall_exit = 1
         elif spec.enforcement == Enforcement.RATCHET and classification == "regressed":
+            overall_exit = 1
+
+    snapshot_changed_during_run = False
+    if snapshot is not None and snapshot_sha256 is not None:
+        try:
+            snapshot_changed_during_run = _sha256(snapshot) != snapshot_sha256
+        except OSError:
+            snapshot_changed_during_run = True
+        if snapshot_changed_during_run:
             overall_exit = 1
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
@@ -544,6 +599,9 @@ def main(argv: list[str] | None = None) -> int:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "snapshot": snapshot.name if snapshot else None,
         "snapshot_path": str(snapshot) if snapshot else None,
+        "snapshot_sha256": snapshot_sha256,
+        "snapshot_changed_during_run": snapshot_changed_during_run,
+        "fleet_registry_valid": fleet_registry_valid,
         "total_gates": len(rows),
         "overall_exit_code": overall_exit,
         "summary": {
@@ -558,6 +616,7 @@ def main(argv: list[str] | None = None) -> int:
             ),
             "ratchet_regressed": sum(1 for r in rows if r["classification"] == "regressed"),
             "ratchet_seed_missing": sum(1 for r in rows if r["classification"] == "seed_missing"),
+            "error": sum(1 for r in rows if r["classification"] in {"error", "unknown"}),
             "warn": sum(1 for r in rows if r["enforcement"] == "warn"),
         },
         "gates": rows,
@@ -565,7 +624,16 @@ def main(argv: list[str] | None = None) -> int:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     json_path = args.output_dir / f"adg_gate_results_{ts}.json"
-    json_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    rendered_payload = json.dumps(payload, indent=2, default=str)
+    temporary_path = json_path.with_name(f".{json_path.name}.{os.getpid()}.tmp")
+    try:
+        temporary_path.write_text(rendered_payload, encoding="utf-8")
+        os.replace(temporary_path, json_path)
+    finally:
+        try:
+            temporary_path.unlink(missing_ok=True)
+        except OSError:
+            pass
 
     # Append trend row to JSONL sink.
     SINK_DIR.mkdir(parents=True, exist_ok=True)
@@ -597,15 +665,22 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(str(json_path))
 
-    # Mandatory burndown markdown when burndown table exists from a prior/full ADG run.
-    try:
-        from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
+    # Full generation owns report materialization through its sealed output
+    # bundle. A standalone human dispatcher run may refresh markdown, but the
+    # machine/json-only path must remain side-effect free.
+    if not args.json_only:
+        try:
+            from tools.reports.adg_burndown_report import emit_mandatory_adg_burndown_report  # noqa: PLC0415
 
-        emit_mandatory_adg_burndown_report(gate_results=json_path, fail_closed=False)
-    except ImportError:
-        pass
+            emit_mandatory_adg_burndown_report(
+                gate_results=json_path,
+                fail_closed=False,
+                print_inline=False,
+            )
+        except ImportError:
+            pass
 
-    if args.markers:
+    if args.markers and not args.json_only:
         for r in rows:
             if r["classification"] == "regressed":
                 base = r.get("baseline_count") or 0

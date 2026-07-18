@@ -16,6 +16,11 @@ from pathlib import Path
 _DEFERRED_P0_FAILURE: dict[str, object] = {"failed": False, "rc": 0, "plan_path": None}
 
 
+def reset_for_run() -> None:
+    """Clear process-local P0 defer state before a newly claimed ADG run."""
+    _DEFERRED_P0_FAILURE.update({"failed": False, "rc": 0, "plan_path": None})
+
+
 def is_p0_failure_deferred() -> bool:
     """Return True when a P0 failure was deferred and the run must still exit non-zero."""
     return bool(_DEFERRED_P0_FAILURE["failed"])

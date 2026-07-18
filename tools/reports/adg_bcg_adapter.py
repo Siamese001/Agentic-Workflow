@@ -8,7 +8,9 @@ view; JSON can keep legacy aliases and richer evidence payloads.
 from __future__ import annotations
 
 import datetime as _dt
+import hashlib
 import json
+import os
 import shutil
 import sys
 from dataclasses import asdict, dataclass, field
@@ -35,6 +37,8 @@ LEGACY_ROW_ALIASES: dict[str, str] = {
 
 BCG_GATE_ADAPTER_SCHEMA_VERSION = "1.0"
 BCG_GATE_ADAPTER_POLICY_VERSION = "2026-06-28.high_signal_burndown_v1"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DOCS_ADG = REPO_ROOT / "docs" / "reports" / "adg"
 
 # These signals are useful to monitor, but they are not a burn-down queue unless
 # a future plan gives them an owner, target, and explicit retirement condition.
@@ -143,7 +147,7 @@ def _gate_id(gate: dict[str, Any]) -> str:
 
 def _gate_rows(gate: dict[str, Any]) -> int:
     try:
-        return int(gate.get("violation_count") or gate.get("violations_count") or 0)
+        return max(0, int(gate.get("violation_count") or gate.get("violations_count") or 0))
     except (TypeError, ValueError):
         return 0
 
@@ -219,6 +223,11 @@ def normalize_bcg_gate_row(gate: dict[str, Any]) -> dict[str, Any]:
         "section_label": SECTION_LABELS[section],
         "materiality": materiality,
         "rows": rows,
+        "evidence_status": (
+            "error"
+            if gate.get("classification") == "error" or gate.get("status") in {"error", "unknown"}
+            else "available"
+        ),
         "baseline_count": baseline,
         "delta_vs_baseline": delta,
         "is_kpi_or_watchlist": section == "kpi_watchlist",
@@ -246,7 +255,13 @@ def _sort_adapter_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "governance_hygiene": 5,
         }.get(str(row.get("materiality") or ""), 9)
         if section == "fix_now":
-            return (band_rank, enforcement_rank, materiality_rank, -int(row.get("delta_vs_baseline") or 0), str(row.get("gate_id") or ""))
+            return (
+                band_rank,
+                enforcement_rank,
+                materiality_rank,
+                -int(row.get("delta_vs_baseline") or 0),
+                str(row.get("gate_id") or ""),
+            )
         return (band_rank, materiality_rank, -int(row.get("rows") or 0), 0, str(row.get("gate_id") or ""))
 
     return sorted(
@@ -256,6 +271,32 @@ def _sort_adapter_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             _within_section_key(row),
         ),
     )
+
+
+def _run_integrity_failures(source: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    if source.get("snapshot_changed_during_run") is True:
+        failures.append("snapshot_changed_during_run")
+    if source.get("fleet_registry_valid") is False:
+        failures.append("fleet_registry_invalid")
+    return failures
+
+
+def _run_integrity_gate(source: dict[str, Any]) -> dict[str, Any] | None:
+    failures = _run_integrity_failures(source)
+    if not failures:
+        return None
+    return {
+        "gate_id": "run_integrity",
+        "gate_class": "dispatcher_integrity",
+        "band": "P0",
+        "enforcement": "block",
+        "classification": "error",
+        "status": "error",
+        "exit_code": 1,
+        "violation_count": len(failures),
+        "integrity_failures": failures,
+    }
 
 
 def build_bcg_gate_adapter(
@@ -270,6 +311,9 @@ def build_bcg_gate_adapter(
     """
     source = gates_doc or {}
     gates = [g for g in list(source.get("gates") or []) if isinstance(g, dict)]
+    integrity_gate = _run_integrity_gate(source)
+    if integrity_gate is not None:
+        gates.append(integrity_gate)
     rows = _sort_adapter_rows([normalize_bcg_gate_row(g) for g in gates])
     sections: dict[str, dict[str, Any]] = {}
     for section in SECTION_ORDER:
@@ -311,6 +355,8 @@ def build_bcg_gate_adapter(
             "timestamp": source.get("timestamp"),
             "snapshot": source.get("snapshot"),
             "snapshot_path": source.get("snapshot_path"),
+            "snapshot_changed_during_run": source.get("snapshot_changed_during_run"),
+            "fleet_registry_valid": source.get("fleet_registry_valid"),
             "overall_exit_code": source.get("overall_exit_code"),
             "burndown_schema_version": (burndown or {}).get("schema_version"),
         },
@@ -347,7 +393,9 @@ def render_bcg_gate_adapter_md(adapter: dict[str, Any]) -> str:
         f"{_fmt_int(summary.get('report_only_row_count'))} row(s)"
     )
     a("")
-    a("This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work.")
+    a(
+        "This adapter is MECE: FIX, burn-down, KPI/watchlist, and clear rows have one ownership section each. FIX rows can block green; burn-down rows are after-green work; KPI/watchlist rows stay visible without becoming automatic cleanup work."
+    )
     for section in SECTION_ORDER:
         sec = (adapter.get("sections") or {}).get(section) or {}
         rows = list(sec.get("rows") or [])
@@ -379,12 +427,181 @@ def _read_json(path: Path | None) -> dict[str, Any] | None:
     if path is None or not path.is_file():
         return None
     data = json.loads(path.read_text(encoding="utf-8"))
-    return data if isinstance(data, dict) else {"value": data}
+    if not isinstance(data, dict):
+        raise TypeError(f"JSON document must be an object: {path}")
+    return data
 
 
 def _write_json(path: Path, doc: dict[str, Any]) -> None:
+    _write_text(path, json.dumps(doc, indent=2, sort_keys=True, default=str))
+
+
+def _write_text(path: Path, text: str) -> None:
+    """Atomically replace one adapter artifact."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(doc, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(text, encoding="utf-8")
+        os.replace(temporary, path)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _copy_atomic(source: Path, target: Path) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_name(f".{target.name}.{os.getpid()}.tmp")
+    try:
+        shutil.copyfile(source, temporary)
+        os.replace(temporary, target)
+    finally:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _same_file(left: Path, right: Path) -> bool:
+    try:
+        return left.samefile(right)
+    except OSError:
+        return os.path.normcase(str(left.resolve())) == os.path.normcase(str(right.resolve()))
+
+
+def _validate_gate_results(gates_doc: dict[str, Any], *, expected_snapshot_path: Path | None) -> None:
+    gates = gates_doc.get("gates")
+    if not isinstance(gates, list) or not gates:
+        raise ValueError("gate results must contain a non-empty gates[] list")
+    if not isinstance(gates_doc.get("timestamp"), str) or not gates_doc.get("timestamp"):
+        raise ValueError("gate results timestamp is required")
+    overall_exit_code = gates_doc.get("overall_exit_code")
+    if not isinstance(overall_exit_code, int) or isinstance(overall_exit_code, bool) or overall_exit_code < 0:
+        raise ValueError("gate results overall_exit_code must be an integer")
+    for field in ("snapshot_changed_during_run", "fleet_registry_valid"):
+        if field in gates_doc and not isinstance(gates_doc[field], bool):
+            raise ValueError(f"gate results {field} must be a boolean")
+    declared_count = gates_doc.get("total_gates")
+    if declared_count is not None and (
+        not isinstance(declared_count, int)
+        or isinstance(declared_count, bool)
+        or declared_count != len(gates)
+    ):
+        raise ValueError(
+            f"gate results total_gates mismatch: declared={declared_count!r} actual={len(gates)}"
+        )
+    seen_gate_ids: set[str] = set()
+    for index, gate in enumerate(gates):
+        if not isinstance(gate, dict):
+            raise TypeError(f"gate results row {index} must be an object")
+        gate_id = str(gate.get("gate_id") or "").strip()
+        if not gate_id:
+            raise ValueError(f"gate results row {index} is missing gate_id")
+        if gate_id in seen_gate_ids:
+            raise ValueError(f"gate results contains duplicate gate_id: {gate_id}")
+        seen_gate_ids.add(gate_id)
+        if gate.get("band") not in {"P0", "P1", "P2", "P3"}:
+            raise ValueError(f"gate results row {index} has invalid band: {gate.get('band')!r}")
+        if gate.get("enforcement") not in {"block", "ratchet", "warn"}:
+            raise ValueError(f"gate results row {index} has invalid enforcement: {gate.get('enforcement')!r}")
+        if gate.get("classification") not in {
+            "pass",
+            "blocked",
+            "regressed",
+            "seed_missing",
+            "warn",
+            "error",
+        }:
+            raise ValueError(
+                f"gate results row {index} has invalid classification: {gate.get('classification')!r}"
+            )
+        status = gate.get("status")
+        if status not in {"pass", "fail", "warn", "bypass", "error", "unknown"}:
+            raise ValueError(f"gate results row {index} has invalid status: {status!r}")
+        if status == "unknown" and gate.get("classification") != "error":
+            raise ValueError(f"gate results row {index} status='unknown' requires classification='error'")
+        classification = gate.get("classification")
+        exit_code = gate.get("exit_code")
+        if not isinstance(exit_code, int) or isinstance(exit_code, bool):
+            raise ValueError(f"gate results row {index} has an invalid exit_code: {exit_code!r}")
+        rows = gate.get("violation_count", gate.get("violations_count", 0))
+        if not isinstance(rows, int) or isinstance(rows, bool):
+            raise ValueError(f"gate results row {index} has an invalid violation count: {rows!r}")
+        if classification == "error":
+            if status not in {"error", "unknown"} or exit_code == 0:
+                raise ValueError(f"gate results row {index} has incoherent error status/exit_code")
+        else:
+            if status in {"error", "unknown"} or exit_code < 0:
+                raise ValueError(f"gate results row {index} has incoherent non-error evidence")
+            if classification in {"pass", "warn"} and (status == "fail" or exit_code != 0):
+                raise ValueError(
+                    f"gate results row {index} pass/warn classification conflicts with status/exit_code"
+                )
+            if classification == "blocked" and (status != "fail" or exit_code == 0):
+                raise ValueError(
+                    f"gate results row {index} blocked classification conflicts with status/exit_code"
+                )
+        if rows < 0 and classification != "error":
+            raise ValueError(f"gate results row {index} has a negative violation count")
+
+    has_blocking_result = any(
+        gate.get("classification") in {"blocked", "regressed", "seed_missing", "error"} for gate in gates
+    )
+    integrity_failures = _run_integrity_failures(gates_doc)
+    if (has_blocking_result or integrity_failures) and gates_doc["overall_exit_code"] == 0:
+        raise ValueError("gate results overall_exit_code=0 conflicts with blocking classifications")
+    if not has_blocking_result and gates_doc["overall_exit_code"] != 0 and not integrity_failures:
+        raise ValueError(
+            "gate results nonzero overall_exit_code lacks a blocking gate or run-integrity failure"
+        )
+
+    if expected_snapshot_path is None:
+        return
+    expected = expected_snapshot_path.resolve()
+    if not expected.is_file():
+        raise FileNotFoundError(f"expected snapshot missing: {expected}")
+    raw_snapshot = gates_doc.get("snapshot_path")
+    if not isinstance(raw_snapshot, str) or not raw_snapshot.strip():
+        raise ValueError("gate results snapshot_path is required for current-run binding")
+    declared = Path(raw_snapshot)
+    if not declared.is_absolute():
+        declared = REPO_ROOT / declared
+    if not _same_file(declared.resolve(), expected):
+        raise ValueError(f"gate results snapshot mismatch: declared={declared.resolve()} expected={expected}")
+    declared_digest = gates_doc.get("snapshot_sha256")
+    if not isinstance(declared_digest, str) or declared_digest != _sha256(expected):
+        raise ValueError("gate results snapshot_sha256 does not match the current snapshot")
+
+
+def _validate_burndown(burndown: dict[str, Any], *, expected_snapshot_path: Path | None) -> None:
+    if not isinstance(burndown.get("summary"), dict):
+        raise ValueError("burndown table summary object is required")
+    if expected_snapshot_path is None:
+        return
+    provenance = burndown.get("provenance")
+    if not isinstance(provenance, dict):
+        raise ValueError("burndown table provenance object is required")
+    raw_snapshot = provenance.get("sqlite_source_path")
+    if not isinstance(raw_snapshot, str) or not raw_snapshot.strip():
+        raise ValueError("burndown provenance sqlite_source_path is required")
+    declared = Path(raw_snapshot)
+    if not declared.is_absolute():
+        declared = REPO_ROOT / declared
+    expected = expected_snapshot_path.resolve()
+    if not _same_file(declared.resolve(), expected):
+        raise ValueError(f"burndown snapshot mismatch: declared={declared.resolve()} expected={expected}")
+    declared_digest = provenance.get("sqlite_source_sha256")
+    if not isinstance(declared_digest, str) or declared_digest != _sha256(expected):
+        raise ValueError("burndown sqlite_source_sha256 does not match the current snapshot")
 
 
 def emit_bcg_gate_adapter(
@@ -394,30 +611,47 @@ def emit_bcg_gate_adapter(
     gate_results_path: Path | None = None,
     burndown_path: Path | None = None,
     docs_dir: Path | None = None,
+    expected_snapshot_path: Path | None = None,
     print_inline: bool = False,
-    fail_closed: bool = False,
+    fail_closed: bool = True,
+    publish_latest: bool = True,
 ) -> tuple[int, Path | None]:
-    """Emit the first BCG artifact for a generated ADG run."""
+    """Emit a snapshot-bound BCG gate artifact for one generated ADG run."""
     try:
         gates_doc = _read_json(gate_results_path)
         if gates_doc is None:
             raise FileNotFoundError(f"gate results missing: {gate_results_path}")
-        burndown = _read_json(burndown_path) or {}
+        _validate_gate_results(gates_doc, expected_snapshot_path=expected_snapshot_path)
+        burndown = _read_json(burndown_path)
+        if burndown is None:
+            raise FileNotFoundError(f"burndown table missing: {burndown_path}")
+        _validate_burndown(burndown, expected_snapshot_path=expected_snapshot_path)
         adapter = build_bcg_gate_adapter(gates_doc, burndown)
+        adapter["source"].update(
+            {
+                "run_id": ts,
+                "gate_results_path": str(gate_results_path.resolve()) if gate_results_path else None,
+                "gate_results_sha256": _sha256(gate_results_path) if gate_results_path else None,
+                "burndown_path": str(burndown_path.resolve()) if burndown_path else None,
+                "burndown_sha256": _sha256(burndown_path) if burndown_path else None,
+                "snapshot_sha256": (
+                    _sha256(expected_snapshot_path.resolve()) if expected_snapshot_path is not None else None
+                ),
+            }
+        )
         md = render_bcg_gate_adapter_md(adapter)
         base = adg_artifacts_dir / f"adg_bcg_adapter_{ts}"
         json_path = base.with_suffix(".json")
         md_path = base.with_suffix(".md")
         _write_json(json_path, adapter)
-        md_path.write_text(md, encoding="utf-8")
-        docs_target = docs_dir or Path("docs/reports/adg")
-        for suffix, src in (("json", json_path), ("md", md_path)):
-            latest = adg_artifacts_dir / f"adg_bcg_adapter_latest.{suffix}"
-            docs_latest = docs_target / f"adg_bcg_adapter_latest.{suffix}"
-            latest.parent.mkdir(parents=True, exist_ok=True)
-            docs_latest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(src, latest)
-            shutil.copyfile(src, docs_latest)
+        _write_text(md_path, md)
+        if publish_latest:
+            docs_target = docs_dir or DOCS_ADG
+            for suffix, src in (("json", json_path), ("md", md_path)):
+                latest = adg_artifacts_dir / f"adg_bcg_adapter_latest.{suffix}"
+                docs_latest = docs_target / f"adg_bcg_adapter_latest.{suffix}"
+                _copy_atomic(src, latest)
+                _copy_atomic(src, docs_latest)
         if print_inline:
             sys.stdout.write("\n" + md)
         print(f"[adg_bcg_adapter] ADAPTER={json_path}", file=sys.stderr)
@@ -462,11 +696,7 @@ def _normalize_priority_row(row: dict[str, Any] | ExecutivePriorityRow | None) -
         or ""
     )
     next_step = (
-        data.get("next_step")
-        or data.get("decision")
-        or data.get("why_this_rank")
-        or data.get("why")
-        or ""
+        data.get("next_step") or data.get("decision") or data.get("why_this_rank") or data.get("why") or ""
     )
 
     normalized = {
@@ -532,7 +762,6 @@ def build_bcg_brief(
         "secondary_statuses": dict(secondary_statuses or {}),
         "table_limit": table_limit,
     }
-
 
 
 def build_report_bcg_findings(
@@ -618,6 +847,7 @@ def has_bcg_findings(doc: dict[str, Any] | None) -> bool:
         findings.get("business_read") and findings.get("technical_read") and findings.get("priority_rule")
     )
 
+
 def render_bcg_brief_md(brief: dict[str, Any]) -> str:
     """Render a compact BCG-style brief as markdown."""
     lines: list[str] = []
@@ -698,8 +928,7 @@ def _defer_delete(
                     "recommendation": "deprecate"
                     if r.get("recommendation") == "deprecate_candidate"
                     else r.get("recommendation", "keep"),
-                    "rationale": r.get("why_not_used_if_suppressed")
-                    or r.get("decision_impact"),
+                    "rationale": r.get("why_not_used_if_suppressed") or r.get("decision_impact"),
                     "revisit_condition": (
                         "Promote only when tied to blocker, test gap, critical path, or planned slice."
                     ),
@@ -758,10 +987,7 @@ def build_deprecation_deletion_plan(
                 "First-party low-confidence ratio: "
                 f"{float(low_conf.get('first_party_low_confidence_ratio', 0) or 0):.2f}%"
             ),
-            (
-                "Inferred-symbol ratio: "
-                f"{float(inferred.get('inferred_symbol_ratio', 0) or 0):.2f}%"
-            ),
+            (f"Inferred-symbol ratio: {float(inferred.get('inferred_symbol_ratio', 0) or 0):.2f}%"),
             f"Cleanup candidates surfaced: {_fmt_int(len(cleanup_candidates))}",
         ]
     )
@@ -932,7 +1158,9 @@ def build_deprecation_deletion_plan(
             "dead_code_candidates": int(summary.get("total_dead_code_candidates", 0) or 0),
             "dead_imports": int(summary.get("total_dead_imports", 0) or 0),
             "unresolved_imports": int(summary.get("total_unresolved_imports", 0) or 0),
-            "first_party_low_confidence_ratio": float(low_conf.get("first_party_low_confidence_ratio", 0) or 0),
+            "first_party_low_confidence_ratio": float(
+                low_conf.get("first_party_low_confidence_ratio", 0) or 0
+            ),
             "inferred_symbol_ratio": float(inferred.get("inferred_symbol_ratio", 0) or 0),
             "cleanup_candidate_count": len(cleanup_candidates),
         },

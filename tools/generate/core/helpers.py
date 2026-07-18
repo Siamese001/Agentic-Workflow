@@ -122,7 +122,9 @@ def _artifact_locations(adg_artifacts_dir: Path, ts: str, name: str) -> list[Pat
         archive_month = adg_artifacts_dir / "_archive" / dt.strftime("%Y-%m")
         candidates.append(archive_month / name)
         candidates.append(archive_month / f"{name}.gz")
-    except ValueError:  # guardian: allow-broad-exception -- ts format degraded; root-level check still applies
+    except (
+        ValueError
+    ):  # guardian: allow-broad-exception -- ts format degraded; root-level check still applies
         pass
     return candidates
 
@@ -158,9 +160,7 @@ def _write_text_artifact(path: Path, text: str) -> None:
         fh.write(text)
 
 
-def _probe_run_zip_for_member(
-    adg_artifacts_dir: Path, ts: str, name: str
-) -> Path | None:
+def _probe_run_zip_for_member(adg_artifacts_dir: Path, ts: str, name: str) -> Path | None:
     """Open the archived run zip(s) for ``ts`` and check for ``adg/<name>``.
 
     Both ``adg_run_<ts>.zip`` and ``adg_run_<ts>.zip.gz`` are tried (root
@@ -208,12 +208,24 @@ def _probe_run_zip_for_member(
                 with zipfile.ZipFile(zp) as zf:
                     if member_name in zf.namelist():
                         return zp
-        except (OSError, zipfile.BadZipFile, gzip.BadGzipFile, EOFError):  # guardian: allow-broad-exception -- corrupt or locked archive treated as "not present"; verifier fails closed
+        except (
+            OSError,
+            zipfile.BadZipFile,
+            gzip.BadGzipFile,
+            EOFError,
+        ):  # guardian: allow-broad-exception -- corrupt or locked archive treated as "not present"; verifier fails closed
             continue
     return None
 
 
-def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports: bool) -> None:
+def _verify_artifacts(
+    adg_artifacts_dir: Path,
+    ts: str,
+    no_zip: bool,
+    no_reports: bool,
+    *,
+    verify_review_template: bool = True,
+) -> None:
     """Verify that requested artifacts were created.
 
     Plan adg-fail-aggregating-gate-chain-9d4e1f W2.3: artifact-verification
@@ -255,9 +267,7 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
             f"provenance_report_{ts}.json",
             f"closure_validation_report_{ts}.json",
         ]
-        missing_reports = [
-            rf for rf in report_files if _artifact_present(adg_artifacts_dir, ts, rf) is None
-        ]
+        missing_reports = [rf for rf in report_files if _artifact_present(adg_artifacts_dir, ts, rf) is None]
         if missing_reports:
             print(f"\n[ERROR] ADG generation incomplete: {len(missing_reports)} report(s) missing")
             print(f"[ERROR] Missing: {', '.join(missing_reports)}")
@@ -273,28 +283,27 @@ def _verify_artifacts(adg_artifacts_dir: Path, ts: str, no_zip: bool, no_reports
         else:
             print(f"[ADG] Reports verification: {len(report_files)} reports exist")
 
-    review_template_files = [
-        f"adg_review_template_{ts}.json",
-        f"adg_review_template_{ts}.yaml",
-    ]
-    missing_review_templates = [
-        name for name in review_template_files if _artifact_present(adg_artifacts_dir, ts, name) is None
-    ]
-    if missing_review_templates:
-        print(
-            "\n[ERROR] Mandatory ADG review template missing: "
-            f"{', '.join(missing_review_templates)}"
-        )
-        print(
-            "[ERROR] Checked: artifacts/adg/, artifacts/adg/_archive/<YYYY-MM>/, "
-            ".gz variants, and the run zip."
-        )
-        record_or_exit(
-            "verify_artifacts.review_template",
-            1,
-            message=f"missing {', '.join(missing_review_templates)}",
-        )
-    else:
-        print("[ADG] Review template verification: JSON/YAML present")
+    if verify_review_template:
+        review_template_files = [
+            f"adg_review_template_{ts}.json",
+            f"adg_review_template_{ts}.yaml",
+        ]
+        missing_review_templates = [
+            name for name in review_template_files if _artifact_present(adg_artifacts_dir, ts, name) is None
+        ]
+        if missing_review_templates:
+            print(f"\n[ERROR] Mandatory ADG review template missing: {', '.join(missing_review_templates)}")
+            print(
+                "[ERROR] Checked: artifacts/adg/, artifacts/adg/_archive/<YYYY-MM>/, "
+                ".gz variants, and the run zip."
+            )
+            record_or_exit(
+                "verify_artifacts.review_template",
+                1,
+                message=f"missing {', '.join(missing_review_templates)}",
+            )
+        else:
+            print("[ADG] Review template verification: JSON/YAML present")
 
-    print("[ADG] Full ADG generation verification: all artifacts present")
+    scope = "core artifacts" if not verify_review_template else "all artifacts"
+    print(f"[ADG] Full ADG generation verification: {scope} present")

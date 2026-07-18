@@ -43,17 +43,33 @@ workflows:
         command: python scripts/governance/verify_codex_primary.py --repo-only
       adg-report-mece:
         match:
+          - ".codex/automations/adg-audit-and-burndown/automation.toml"
+          - ".codex/governance/scripts/post_agent_adg_burndown_inline_audit.py"
+          - ".codex/governance/scripts/post_agent_runtime_rca_audit.py"
+          - ".codex/rules/adg-post-run-burndown.md"
+          - "tools/generate/generate_full_adg.py"
+          - "tools/adg/run_full_adg_audit.py"
+          - "ops_scripts/ci/adg_gates/run.py"
           - "tools/reports/adg_bcg_adapter.py"
           - "tools/reports/adg_bcg_executive_synthesis.py"
           - "tools/reports/adg_burndown_report.py"
+          - "tools/reports/adg_run_output_bundle.py"
           - "ops_scripts/ci/verify_adg_report_mece.py"
+          - "tests/unit/codex/test_adg_audit_automation_contract.py"
           - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+          - "tests/unit/ops_scripts/ci/adg_gates/**"
+          - "tests/unit/tools/generate/test_generate_full_adg_failfast.py"
+          - "tests/unit/tools/generate/test_simplification_e2e_9b4c27.py"
+          - "tests/unit/tools_adg/test_run_full_adg_audit.py"
           - "tests/unit/tools/reports/**"
           - "docs/reports/adg/adg_bcg_*"
           - "docs/reports/adg/adg_burndown_report.md"
           - ".github/ci-lanes.yaml"
+          - ".github/workflows/adg-hardening-contracts.yml"
           - ".github/workflows/contract-gates.yml"
-        command: python ops_scripts/ci/verify_adg_report_mece.py
+        command: >-
+          python -m pytest tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py
+          -p no:xdist -p no:testmon -q --timeout=120
       apps-rg-prompt-judge-sync:
         match:
           - "apps_rg/prompt_assembly/**"

@@ -105,7 +105,9 @@ def _allowed_floor_display(gate: dict[str, Any]) -> str:
     return "0"
 
 
-def _ci_band_summary(gates: list[dict[str, Any]], adapter: dict[str, Any] | None = None) -> dict[str, dict[str, int]]:
+def _ci_band_summary(
+    gates: list[dict[str, Any]], adapter: dict[str, Any] | None = None
+) -> dict[str, dict[str, int]]:
     adapter_by_id = {
         str(row.get("gate_id")): row
         for row in (adapter or {}).get("priority_rows", []) + (adapter or {}).get("report_only_rows", [])
@@ -260,8 +262,7 @@ def emit_existing_burndown_markdown(*, report_path: Path | None = None) -> int:
     """Replay an already-written burndown markdown artifact to stdout."""
     if _inline_burndown_bypassed():
         print(
-            "[adg_burndown_report] WARNING: inline stdout suppressed "
-            "(ADG_BURNDOWN_INLINE_BYPASS=1)",
+            "[adg_burndown_report] WARNING: inline stdout suppressed (ADG_BURNDOWN_INLINE_BYPASS=1)",
             file=sys.stderr,
         )
         return 0
@@ -288,6 +289,8 @@ def emit_mandatory_adg_burndown_report(
     burndown: Path | None = None,
     fail_closed: bool = True,
     print_inline: bool = True,
+    output_paths: tuple[Path, ...] | list[Path] | None = None,
+    emit_canvas: bool = True,
 ) -> int:
     """Write burndown markdown to disk and stdout (Cursor inline display).
 
@@ -299,6 +302,8 @@ def emit_mandatory_adg_burndown_report(
         burndown: ``adg_burndown_table.json`` (defaults to artifacts/adg/).
         fail_closed: When True, return 2 if inputs are missing; else 0 with warning.
         print_inline: When True, emit full markdown to stdout for Cursor Agent chat.
+        output_paths: Exact markdown outputs. Defaults to the fixed artifact/docs mirrors.
+        emit_canvas: When True, also emit the Cursor Canvas projection.
 
     Returns:
         0 on success, 2 when inputs missing (if fail_closed), 2 on write errors.
@@ -324,7 +329,10 @@ def emit_mandatory_adg_burndown_report(
 
     try:
         md = render(gate_path, burndown_path)
-        for out_path in BURNDOWN_REPORT_OUTPUTS:
+        selected_output_paths = (
+            BURNDOWN_REPORT_OUTPUTS if output_paths is None else tuple(Path(path) for path in output_paths)
+        )
+        for out_path in selected_output_paths:
             out_path.parent.mkdir(parents=True, exist_ok=True)
             out_path.write_text(md, encoding="utf-8")
             try:
@@ -332,31 +340,29 @@ def emit_mandatory_adg_burndown_report(
             except ValueError:
                 label = out_path
             print(
-                f"[adg_burndown_report] wrote {label} "
-                f"({len(md.splitlines())} lines, {len(md)} bytes)",
+                f"[adg_burndown_report] wrote {label} ({len(md.splitlines())} lines, {len(md)} bytes)",
                 file=sys.stderr,
             )
         if print_inline and not _inline_burndown_bypassed():
             _emit_inline_markdown(md, source="fresh render")
         elif _inline_burndown_bypassed():
             print(
-                "[adg_burndown_report] WARNING: inline stdout suppressed "
-                "(ADG_BURNDOWN_INLINE_BYPASS=1)",
+                "[adg_burndown_report] WARNING: inline stdout suppressed (ADG_BURNDOWN_INLINE_BYPASS=1)",
                 file=sys.stderr,
             )
-        from tools.reports.adg_burndown_canvas import emit_adg_burndown_canvas
+        if emit_canvas:
+            from tools.reports.adg_burndown_canvas import emit_adg_burndown_canvas
 
-        emit_adg_burndown_canvas(
-            gate_results=gate_path,
-            burndown=burndown_path,
-            open_markdown=True,
-            open_canvas=False,
-        )
+            emit_adg_burndown_canvas(
+                gate_results=gate_path,
+                burndown=burndown_path,
+                open_markdown=True,
+                open_canvas=False,
+            )
     except OSError as exc:
         print(f"[adg_burndown_report] mandatory emit failed: {exc}", file=sys.stderr)
         return 2
     return 0
-
 
 
 def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, Any]) -> dict[str, Any]:
@@ -382,7 +388,9 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
             }
         )
     if not priority_rows and burn_rows:
-        for gate in sorted(burn_rows, key=lambda r: (-int(r.get("rows", 0) or 0), str(r.get("gate_id", ""))))[:4]:
+        for gate in sorted(burn_rows, key=lambda r: (-int(r.get("rows", 0) or 0), str(r.get("gate_id", ""))))[
+            :4
+        ]:
             priority_rows.append(
                 {
                     "priority": len(priority_rows) + 1,
@@ -445,6 +453,7 @@ def build_burndown_bcg_findings(gates_doc: dict[str, Any], burndown: dict[str, A
         table_limit=6,
     )
 
+
 def render(
     gate_results_path: Path,
     burndown_path: Path,
@@ -495,7 +504,9 @@ def render(
     a("## 1. ADG Status By Band")
     a("")
     a("Operator summary from `adg_gate_results_*.json`.")
-    a("Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work.")
+    a(
+        "Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work."
+    )
     a("")
     a("| Band | Status | Fix now | Burn-down backlog | KPI / watchlist | Read it as | Next move |")
     a("|------|:------:|--------:|-------------------|-----------------|------------|-----------|")
@@ -508,7 +519,9 @@ def render(
             f"{_band_plain_read(row)} | {_band_next_move(row)} |"
         )
     a("")
-    a("`Fix now` counts red gates. `Burn-down backlog` is accepted work. `KPI / watchlist` is report-only unless a plan gives it an owner and target.")
+    a(
+        "`Fix now` counts red gates. `Burn-down backlog` is accepted work. `KPI / watchlist` is report-only unless a plan gives it an owner and target."
+    )
     a("")
 
     # ---------------------------------------------------- §2 all gates
@@ -516,15 +529,23 @@ def render(
     a("")
     a("One row per registered gate.")
     a("")
-    a("- **Section** — **FIX** = address now · **BURN** = owned backlog · **KPI** = watchlist only · **CLEAR** = zero rows.")
+    a(
+        "- **Section** — **FIX** = address now · **BURN** = owned backlog · **KPI** = watchlist only · **CLEAR** = zero rows."
+    )
     a("- **Sub** — detail (block / regr / floor / inventory / …); see glossary.")
-    a("- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise.")
+    a(
+        "- **Allowed Floor** — zero-tolerance for block gates, baseline for ratchets, advisory/inventory otherwise."
+    )
     a("- **Rows** — gate-specific `violation_count`; meaning depends on Action/Sub.")
     a("- **Signal** — what Rows count + short Sub note.")
     a("- **Next Best Action** — concrete action for this gate (fix / re-baseline / defer / none).")
     a("")
-    a("| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |")
-    a("|---------|:-------:|-------------|:-------:|:---:|---------:|---------------|--------|------------------|")
+    a(
+        "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |"
+    )
+    a(
+        "|---------|:-------:|-------------|:-------:|:---:|---------:|---------------|--------|------------------|"
+    )
     band_order = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
     sorted_gates = sorted(
         gates,
@@ -564,11 +585,7 @@ def render(
             fix_gates,
             key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", "")),
         ):
-            a(
-                f"| `{g.get('gate_id', '?')}` | "
-                f"{g.get('sub', '?')} | "
-                f"{g.get('rows', 0)} |"
-            )
+            a(f"| `{g.get('gate_id', '?')}` | {g.get('sub', '?')} | {g.get('rows', 0)} |")
     burn_gates = list(gate_adapter.get("sections", {}).get("burn_down", {}).get("rows", []))
     if burn_gates:
         a("")
@@ -580,17 +597,15 @@ def render(
             burn_gates,
             key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", "")),
         ):
-            a(
-                f"| `{g.get('gate_id', '?')}` | "
-                f"{g.get('sub', '?')} | "
-                f"{g.get('rows', 0)} |"
-            )
+            a(f"| `{g.get('gate_id', '?')}` | {g.get('sub', '?')} | {g.get('rows', 0)} |")
     a("")
 
     # ---------------------------------------------------- §3 KPI/watchlist
     a("## 3. KPI / Watchlist Signals")
     a("")
-    a("These rows are visible for trend awareness, but they are not burn-down work unless a plan gives them an owner, target, and retirement condition.")
+    a(
+        "These rows are visible for trend awareness, but they are not burn-down work unless a plan gives them an owner, target, and retirement condition."
+    )
     kpi_gates = list(gate_adapter.get("sections", {}).get("kpi_watchlist", {}).get("rows", []))
     if not kpi_gates:
         a("")
@@ -599,7 +614,9 @@ def render(
         a("")
         a("| Gate ID | Band | Rows | Why it is separate | Next step |")
         a("|---------|:----:|-----:|--------------------|-----------|")
-        for row in sorted(kpi_gates, key=lambda r: (-int(r.get("rows") or 0), str(r.get("gate_id") or "")))[:12]:
+        for row in sorted(kpi_gates, key=lambda r: (-int(r.get("rows") or 0), str(r.get("gate_id") or "")))[
+            :12
+        ]:
             a(
                 f"| `{row.get('gate_id', '?')}` | "
                 f"{row.get('band', '?')} | "
@@ -614,10 +631,16 @@ def render(
     a("")
     a("Counts come from the canonical `adg_burndown_table.json` (schema 2.2).")
     a("This is raw MV defect inventory by impact/source band; it is not one row per CI gate.")
-    a("Use this section for guardian math, not the status table above, and not the BCG foundation-blocker KPI.")
+    a(
+        "Use this section for guardian math, not the status table above, and not the BCG foundation-blocker KPI."
+    )
     a("`gross` = raw violations found. `guardian` = guardian-exempted (still counted).")
-    a("`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers.")
-    a("Critical impact inventory can be nonzero while BCG foundation blockers are zero; the BCG KPI scorecard reconciles that split.")
+    a(
+        "`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers."
+    )
+    a(
+        "Critical impact inventory can be nonzero while BCG foundation blockers are zero; the BCG KPI scorecard reconciles that split."
+    )
     a("")
     a("| Impact Band | Impact Severity | Label | Gross | Guardian | Audit net | Diff vs prev |")
     a("|-------------|-----------------|-------|------:|---------:|----:|-------------:|")
@@ -653,12 +676,16 @@ def render(
         f"| block_fail | {summary.get('block_fail', 0)} | "
         "Block-class gates that halted the run — clear the gate blocking condition. |"
     )
-    a(f"| ratchet_pass | {summary.get('ratchet_pass', 0)} | Ratchet-class gates within their baseline ceiling. |")
+    a(
+        f"| ratchet_pass | {summary.get('ratchet_pass', 0)} | Ratchet-class gates within their baseline ceiling. |"
+    )
     a(
         f"| ratchet_regressed | {summary.get('ratchet_regressed', 0)} | "
         "Ratchet-class gates with NEW rows beyond baseline. |"
     )
-    a(f"| ratchet_seed_missing | {summary.get('ratchet_seed_missing', 0)} | Ratchet-class gates without a baseline seed (first run). |")
+    a(
+        f"| ratchet_seed_missing | {summary.get('ratchet_seed_missing', 0)} | Ratchet-class gates without a baseline seed (first run). |"
+    )
     a(f"| warn | {summary.get('warn', 0)} | Advisory-class gates (do not gate the run). |")
     a("")
     a("### Per-gate verdict rollup (this report)")
@@ -681,9 +708,7 @@ def render(
     else:
         a("| Gate | Band | Enf | Sub | Rows | Signal |")
         a("|------|:----:|:---:|:---:|---------:|--------|")
-        for g in sorted(
-            blockers, key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", ""))
-        ):
+        for g in sorted(blockers, key=lambda r: (-int(r.get("rows", 0)), r.get("gate_id", ""))):
             a(
                 f"| `{g.get('gate_id', '?')}` | "
                 f"{g.get('band', '?')} | "
@@ -758,11 +783,11 @@ def _render_next_action_section(snapshot_ts: str | None = None) -> list[str]:
             lines.append(f"No current-run `adg_action_queue_*.json` found for snapshot `{snapshot_ts}`.")
         else:
             lines.append("No `adg_action_queue_*.json` found.")
-        lines.append(
-            "Emit with: `python tools/reports/adg_action_queue.py --latest`"
-        )
+        lines.append("Emit with: `python tools/reports/adg_action_queue.py --latest`")
         lines.append("")
-        lines.append("Playbook: [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md)")
+        lines.append(
+            "Playbook: [adg_action_dispatch_playbook.md](../../docs/reports/cursor/adg_action_dispatch_playbook.md)"
+        )
         lines.append("")
         return lines
 
@@ -803,9 +828,7 @@ def _render_next_action_section(snapshot_ts: str | None = None) -> list[str]:
                 f"{action.get('ordering_reason', '')} | {signal} |"
             )
     lines.append("")
-    lines.append(
-        "CLI: `python tools/reports/adg_action_queue.py --latest --top 10 --format markdown`"
-    )
+    lines.append("CLI: `python tools/reports/adg_action_queue.py --latest --top 10 --format markdown`")
     lines.append("")
     return lines
 

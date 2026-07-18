@@ -1,4 +1,5 @@
 """Mandatory ADG burndown markdown emit."""
+
 from __future__ import annotations
 
 import json
@@ -74,6 +75,51 @@ def test_emit_mandatory_writes_all_outputs(tmp_path: Path, monkeypatch) -> None:
     assert "## 1. ADG Status By Band" in text
     assert "## 2. ADG CI Gates" in text
     assert text.index("## 1. ADG Status By Band") < text.index("## 2. ADG CI Gates")
+
+
+def test_emit_can_target_only_timestamped_path_without_canvas(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    gate = tmp_path / "adg_gate_results_run.json"
+    burndown = tmp_path / "adg_burndown_table_run.json"
+    gate.write_text(
+        json.dumps(
+            {
+                "overall_exit_code": 0,
+                "summary": {"block_pass": 0, "block_fail": 0, "ratchet_pass": 0, "warn": 0},
+                "gates": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    burndown.write_text(json.dumps({"schema_version": "2.2", "bands": {}}), encoding="utf-8")
+    fixed = tmp_path / "fixed" / "adg_burndown_report.md"
+    docs = tmp_path / "docs" / "adg_burndown_report.md"
+    timestamped = tmp_path / "adg_burndown_report_run.md"
+    monkeypatch.setattr(
+        "tools.reports.adg_burndown_report.BURNDOWN_REPORT_OUTPUTS",
+        (fixed, docs),
+    )
+    monkeypatch.setattr(
+        "tools.reports.adg_burndown_canvas.emit_adg_burndown_canvas",
+        lambda **_kwargs: pytest.fail("canvas emitter must not run"),
+    )
+
+    assert (
+        emit_mandatory_adg_burndown_report(
+            gate_results=gate,
+            burndown=burndown,
+            output_paths=[timestamped],
+            emit_canvas=False,
+            print_inline=False,
+        )
+        == 0
+    )
+
+    assert timestamped.is_file()
+    assert not fixed.exists()
+    assert not docs.exists()
 
 
 def test_emit_prints_markdown_to_stdout(
@@ -184,18 +230,35 @@ def test_render_fix_cluster_for_blocked_gate(tmp_path: Path) -> None:
     md = render(gate, burndown)
     assert "| FIX | block | 2 |" in md
     assert "### Fix now" in md
-    assert "| P0 | BLOCKED | 1 | 0 gates / 0 rows | 0 gates / 0 rows | red gates present | fix red gates first |" in md
+    assert (
+        "| P0 | BLOCKED | 1 | 0 gates / 0 rows | 0 gates / 0 rows | red gates present | fix red gates first |"
+        in md
+    )
 
 
 def test_verdict_three_clusters_mece() -> None:
     cases: list[tuple[dict, str, str]] = [
         ({"classification": "blocked", "violation_count": 1, "enforcement": "block"}, "FIX", "block"),
-        ({"classification": "regressed", "violation_count": 10, "enforcement": "ratchet", "baseline_count": 5}, "FIX", "regr"),
+        (
+            {
+                "classification": "regressed",
+                "violation_count": 10,
+                "enforcement": "ratchet",
+                "baseline_count": 5,
+            },
+            "FIX",
+            "regr",
+        ),
         ({"classification": "seed_missing", "violation_count": 0, "enforcement": "ratchet"}, "FIX", "seed"),
         ({"classification": "pass", "violation_count": 0, "enforcement": "block"}, "CLEAR", "—"),
         ({"classification": "pass", "violation_count": 3, "enforcement": "warn"}, "TRACK", "advis"),
         (
-            {"classification": "pass", "violation_count": 2792, "enforcement": "ratchet", "baseline_count": 2792},
+            {
+                "classification": "pass",
+                "violation_count": 2792,
+                "enforcement": "ratchet",
+                "baseline_count": 2792,
+            },
             "TRACK",
             "floor",
         ),
@@ -224,9 +287,7 @@ def test_render_includes_cluster_glossary(tmp_path: Path) -> None:
     gate = tmp_path / "gates.json"
     burndown = tmp_path / "burndown.json"
     gate.write_text(
-        json.dumps(
-            {"overall_exit_code": 0, "timestamp": "2026-05-25T00:00:00Z", "summary": {}, "gates": []}
-        ),
+        json.dumps({"overall_exit_code": 0, "timestamp": "2026-05-25T00:00:00Z", "summary": {}, "gates": []}),
         encoding="utf-8",
     )
     burndown.write_text(json.dumps({"schema_version": "2.2", "summary": {}}), encoding="utf-8")
@@ -264,13 +325,25 @@ def test_render_orders_p0_p3_then_adg_ci_then_severity_inventory(tmp_path: Path)
 
     md = render(gate, burndown)
 
-    assert "Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work." in md
+    assert (
+        "Burn-down rows come from the BCG adapter priority queue; KPI/watchlist rows stay visible but do not imply cleanup work."
+        in md
+    )
     assert "| Band | Status | Fix now | Burn-down backlog | KPI / watchlist | Read it as | Next move |" in md
-    assert "| P0 | PASS | 0 | 1 gate / 2,792 rows | 0 gates / 0 rows | green; tracked backlog | work ranked queue; do not treat as new failures |" in md
+    assert (
+        "| P0 | PASS | 0 | 1 gate / 2,792 rows | 0 gates / 0 rows | green; tracked backlog | work ranked queue; do not treat as new failures |"
+        in md
+    )
     assert "Allowed Floor" in md
-    assert "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |" in md
+    assert (
+        "| Gate ID | CI Band | Enforcement | Section | Sub | Rows | Allowed Floor | Signal | Next Best Action |"
+        in md
+    )
     assert "| `G_REACH_l0_reachability` | P0 | ratchet | BURN | floor | 2792 | 2792 |" in md
-    assert "`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers." in md
+    assert (
+        "`net` = audit net (`gross - guardian`). It is impact inventory, not live gate drivers and not foundation blockers."
+        in md
+    )
     assert "Critical impact inventory can be nonzero while BCG foundation blockers are zero" in md
     assert "| Impact Band | Impact Severity | Label | Gross | Guardian | Audit net | Diff vs prev |" in md
     assert md.index("## 1. ADG Status By Band") < md.index("## 2. ADG CI Gates")
@@ -305,9 +378,15 @@ def test_render_separates_kpi_watchlist_from_burndown(tmp_path: Path) -> None:
 
     md = render(gate, burndown)
 
-    assert "| P3 | PASS | 0 | 0 gates / 0 rows | 1 gate / 10,750 rows | green; KPI/watchlist only | watch trend; no burn-down action |" in md
+    assert (
+        "| P3 | PASS | 0 | 0 gates / 0 rows | 1 gate / 10,750 rows | green; KPI/watchlist only | watch trend; no burn-down action |"
+        in md
+    )
     assert "## 3. KPI / Watchlist Signals" in md
-    assert "| `S4_unused_imports_ratchet` | P3 | 10750 | KPI/watchlist signal, not an owned burn-down item." in md
+    assert (
+        "| `S4_unused_imports_ratchet` | P3 | 10750 | KPI/watchlist signal, not an owned burn-down item."
+        in md
+    )
 
 
 def test_emit_fail_closed_when_gate_results_missing(tmp_path: Path) -> None:

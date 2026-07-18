@@ -12,151 +12,63 @@ from dataclasses import dataclass, field
 # What the Rows column counts (not necessarily CI failures).
 GATE_WHAT: dict[str, str] = {
     # --- Canonical ADGGateBase (12) -----------------------------------------
-    "1_critical_path_integrity": (
-        "Broken or missing links on declared critical execution paths (L0→sink)."
-    ),
-    "2_authority_boundary": (
-        "Calls that cross layer authority without UWG/spine sanction."
-    ),
-    "3_write_sovereignty": (
-        "Non-UWG durable write paths in mv_write_sovereignty_paths (inventory)."
-    ),
-    "4_capability_egress": (
-        "Outbound provider/SDK calls not leaving through sanctioned adapters."
-    ),
-    "5_text_to_action": (
-        "User text reaching action-class tools without prompt-governance gating."
-    ),
-    "6_determinism_provenance": (
-        "Trace roots missing determinism digest or replay key emission."
-    ),
-    "7_lifecycle_coverage": (
-        "Lifecycle gaps: resources opened without matching close/cleanup."
-    ),
+    "1_critical_path_integrity": ("Broken or missing links on declared critical execution paths (L0→sink)."),
+    "2_authority_boundary": ("Calls that cross layer authority without UWG/spine sanction."),
+    "3_write_sovereignty": ("Non-UWG durable write paths in mv_write_sovereignty_paths (inventory)."),
+    "4_capability_egress": ("Outbound provider/SDK calls not leaving through sanctioned adapters."),
+    "5_text_to_action": ("User text reaching action-class tools without prompt-governance gating."),
+    "6_determinism_provenance": ("Trace roots missing determinism digest or replay key emission."),
+    "7_lifecycle_coverage": ("Lifecycle gaps: resources opened without matching close/cleanup."),
     "8_trace_replay_eval": (
         "Eval/replay coverage regressions vs baseline by layer (mv_eval_coverage_by_path)."
     ),
-    "9_executor_theater": (
-        "Executor-theater signals: import-only or stub execution patterns."
-    ),
-    "10_infra_wiring": (
-        "Infra wiring defects (canonical pipeline / spine reachability)."
-    ),
-    "11_architecture_witness": (
-        "Architecture witness Class A/B absence or live-plane write violations."
-    ),
-    "12_prompt_assembly_wiring": (
-        "Prompt-assembly subgraph disconnected from runtime spine."
-    ),
+    "9_executor_theater": ("Executor-theater signals: import-only or stub execution patterns."),
+    "10_infra_wiring": ("Infra wiring defects (canonical pipeline / spine reachability)."),
+    "11_architecture_witness": ("Architecture witness Class A/B absence or live-plane write violations."),
+    "12_prompt_assembly_wiring": ("Prompt-assembly subgraph disconnected from runtime spine."),
     # --- Wiring / graph / W3–W6 (36) ----------------------------------------
-    "J1_canonical_pipeline_wiring": (
-        "Declared canonical_pipelines.yaml steps missing required call wiring."
-    ),
+    "J1_canonical_pipeline_wiring": ("Declared canonical_pipelines.yaml steps missing required call wiring."),
     "G2_seam_test_export_coherence": (
         "Production seam symbols exported in tests but not in package __all__/exports."
     ),
-    "E1_trace_stub_module": (
-        "Modules with high test:production import ratio (trace-theater stub pattern)."
-    ),
-    "A3_dead_public_symbol_ratchet": (
-        "Public symbols with zero importers (dead surface)."
-    ),
-    "L2_lpg_drift_ratchet": (
-        "Illegal or drifted imports touching L_PG boundary."
-    ),
-    "M1_module_loc_ratchet": (
-        "Production modules exceeding LOC ceiling (disk scan)."
-    ),
-    "D1_layer_doc_binding": (
-        "Layer folders missing or mismatched LAYER.md binding (advisory)."
-    ),
-    "S2_uwg_bypass_ratchet": (
-        "Write paths that bypass UWG (overlay on write_sovereignty edges)."
-    ),
-    "S4_unused_imports_ratchet": (
-        "Unused import edges in production modules."
-    ),
-    "W5_waiver_expiry": (
-        "Expired wiring-CI waiver entries in config."
-    ),
-    "B2_layer_skip_ratchet": (
-        "Import edges that skip more than one layer ordinal (layer-hop)."
-    ),
+    "E1_trace_stub_module": ("Modules with high test:production import ratio (trace-theater stub pattern)."),
+    "A3_dead_public_symbol_ratchet": ("Public symbols with zero importers (dead surface)."),
+    "L2_lpg_drift_ratchet": ("Illegal or drifted imports touching L_PG boundary."),
+    "M1_module_loc_ratchet": ("Production modules exceeding LOC ceiling (disk scan)."),
+    "D1_layer_doc_binding": ("Layer folders missing or mismatched LAYER.md binding (advisory)."),
+    "S2_uwg_bypass_ratchet": ("Write paths that bypass UWG (overlay on write_sovereignty edges)."),
+    "S4_unused_imports_ratchet": ("Unused import edges in production modules."),
+    "W5_waiver_expiry": ("Expired wiring-CI waiver entries in config."),
+    "B2_layer_skip_ratchet": ("Import edges that skip more than one layer ordinal (layer-hop)."),
     "D2_role_duplication_warn": (
         "Role-suffix clusters (_reranker, _planner, …) with fan_in=0 members (advisory)."
     ),
-    "Q2_cyclomatic_complexity_ratchet": (
-        "Functions with McCabe cyclomatic complexity above ceiling."
-    ),
-    "C1_uwg_bypass_pview": (
-        "Any row in UWG-bypass materialized view (zero tolerance block)."
-    ),
-    "C2_l5_bypass_pview": (
-        "Provider/tool calls skipping L5 gateway (materialized view)."
-    ),
-    "C3_silent_writes_ratchet": (
-        "writes_to edges without sibling emits_side_effect on same source."
-    ),
-    "C4_policy_without_audit_ratchet": (
-        "controls_flow edges without paired audit/telemetry emission."
-    ),
-    "C5_unresolved_callsites_ratchet": (
-        "resolves_callsite edges with NULL destination (unresolved callee)."
-    ),
-    "I1_exit_disposition_ratchet": (
-        "Terminal exit paths not covered in mv_exit_disposition_coverage."
-    ),
-    "I2_replay_surface_gaps_ratchet": (
-        "State mutations not consumed by replay surface (gap_flag=1)."
-    ),
+    "Q2_cyclomatic_complexity_ratchet": ("Functions with McCabe cyclomatic complexity above ceiling."),
+    "C1_uwg_bypass_pview": ("Any row in UWG-bypass materialized view (zero tolerance block)."),
+    "C2_l5_bypass_pview": ("Provider/tool calls skipping L5 gateway (materialized view)."),
+    "C3_silent_writes_ratchet": ("writes_to edges without sibling emits_side_effect on same source."),
+    "C4_policy_without_audit_ratchet": ("controls_flow edges without paired audit/telemetry emission."),
+    "C5_unresolved_callsites_ratchet": ("resolves_callsite edges with NULL destination (unresolved callee)."),
+    "I1_exit_disposition_ratchet": ("Terminal exit paths not covered in mv_exit_disposition_coverage."),
+    "I2_replay_surface_gaps_ratchet": ("State mutations not consumed by replay surface (gap_flag=1)."),
     "O_tool_call_parity_ratchet": (
         "Tool invocations missing observability receipt (Anthropic parity pattern)."
     ),
-    "N_guardrail_separation_ratchet": (
-        "L5 guardrail and L3 core-response sharing same write target."
-    ),
-    "M_taint_actionable_ratchet": (
-        "Actionable taint surfaces without output schema binding."
-    ),
-    "P_structured_output_ratchet": (
-        "generates_prompt at scale without structured output schema."
-    ),
-    "F1_untyped_seam_ratchet": (
-        "Cross-layer imports where target has empty type_surface."
-    ),
-    "F2_broken_contract_ratchet": (
-        "Import targets publishing zero exports edges (contract drift)."
-    ),
-    "F3_missing_adapter_warn": (
-        "Protocol/ABC/Interface with zero implements edges (advisory)."
-    ),
-    "H1_new_orphans_delta_ratchet": (
-        "Modules newly fan_in=0 vs prior snapshot (new orphans)."
-    ),
-    "H2_fanin_collapse_ratchet": (
-        "Hotspot modules with >30% fan_in drop vs prior snapshot."
-    ),
-    "H4_mv_staleness_ratchet": (
-        "Total edge count delta >5% vs prior snapshot (graph drift)."
-    ),
-    "K1_churn_complexity_kpi": (
-        "High churn×complexity files (KPI advisory, jsonl sink)."
-    ),
-    "E3_trace_theater_kpi": (
-        "Emit-symbol density per layer vs imports (KPI advisory)."
-    ),
-    "H3_ap_velocity_kpi": (
-        "Antipattern edge density per 1k LOC (KPI advisory)."
-    ),
-    "G_REACH_l0_reachability": (
-        "Production-layer modules with no import path from any L0 node (orphans)."
-    ),
-    "G_ISLAND_connected_components": (
-        "Non-giant connected components on undirected import graph."
-    ),
-    "G_WATCHLIST_DELTA_hotspot_regressions": (
-        "Graph watchlist items newly FAIL/WARN vs prior run."
-    ),
+    "N_guardrail_separation_ratchet": ("L5 guardrail and L3 core-response sharing same write target."),
+    "M_taint_actionable_ratchet": ("Actionable taint surfaces without output schema binding."),
+    "P_structured_output_ratchet": ("generates_prompt at scale without structured output schema."),
+    "F1_untyped_seam_ratchet": ("Cross-layer imports where target has empty type_surface."),
+    "F2_broken_contract_ratchet": ("Import targets publishing zero exports edges (contract drift)."),
+    "F3_missing_adapter_warn": ("Protocol/ABC/Interface with zero implements edges (advisory)."),
+    "H1_new_orphans_delta_ratchet": ("Modules newly fan_in=0 vs prior snapshot (new orphans)."),
+    "H2_fanin_collapse_ratchet": ("Hotspot modules with >30% fan_in drop vs prior snapshot."),
+    "H4_mv_staleness_ratchet": ("Total edge count delta >5% vs prior snapshot (graph drift)."),
+    "K1_churn_complexity_kpi": ("High churn×complexity files (KPI advisory, jsonl sink)."),
+    "E3_trace_theater_kpi": ("Emit-symbol density per layer vs imports (KPI advisory)."),
+    "H3_ap_velocity_kpi": ("Antipattern edge density per 1k LOC (KPI advisory)."),
+    "G_REACH_l0_reachability": ("Production-layer modules with no import path from any L0 node (orphans)."),
+    "G_ISLAND_connected_components": ("Non-giant connected components on undirected import graph."),
+    "G_WATCHLIST_DELTA_hotspot_regressions": ("Graph watchlist items newly FAIL/WARN vs prior run."),
 }
 
 
@@ -307,6 +219,7 @@ VERDICT_CLUSTER_DEFINITIONS: dict[str, str] = {
 }
 
 VERDICT_SUB_DEFINITIONS: dict[str, str] = {
+    "error": "Gate evidence is missing, malformed, or execution failed.",
     "block": "Block policy halted the run (exit 1).",
     "regr": "Ratchet count rose above baseline (+N new).",
     "seed": "Ratchet baseline file missing.",
@@ -316,6 +229,7 @@ VERDICT_SUB_DEFINITIONS: dict[str, str] = {
 }
 
 _DETAIL_TO_SUB: dict[str, str] = {
+    "ERROR": "error",
     "FAIL": "block",
     "REGR": "regr",
     "SEED": "seed",
@@ -326,6 +240,7 @@ _DETAIL_TO_SUB: dict[str, str] = {
 }
 
 _DETAIL_TO_CLUSTER: dict[str, str] = {
+    "ERROR": "FIX",
     "FAIL": "FIX",
     "REGR": "FIX",
     "SEED": "FIX",
@@ -337,22 +252,35 @@ _DETAIL_TO_CLUSTER: dict[str, str] = {
 
 CLUSTER_SORT: dict[str, int] = {"FIX": 0, "TRACK": 1, "CLEAR": 2}
 SUB_SORT: dict[str, int] = {
-    "block": 0,
-    "regr": 1,
-    "seed": 2,
-    "floor": 3,
-    "inventory": 4,
-    "advis": 5,
+    "error": 0,
+    "block": 1,
+    "regr": 2,
+    "seed": 3,
+    "floor": 4,
+    "inventory": 5,
+    "advis": 6,
     "—": 9,
 }
 
 
 def _verdict_detail(gate: dict) -> str:
-    """Internal 7-way label (drives Sub); use ``display_verdict`` for the 3-way cluster."""
-    cls = str(gate.get("classification", "pass"))
-    n = int(gate.get("violation_count") or 0)
+    """Internal detail label (drives Sub); use ``display_verdict`` for the 3-way cluster."""
+    cls = str(gate.get("classification", "unknown"))
+    try:
+        n = int(gate.get("violation_count") or 0)
+        exit_code = int(gate.get("exit_code", 0))
+    except (TypeError, ValueError):
+        return "ERROR"
     enf = str(gate.get("enforcement", ""))
     raw_status = str(gate.get("status", ""))
+
+    if (
+        cls not in {"pass", "blocked", "regressed", "seed_missing", "warn"}
+        or raw_status in {"error", "unknown"}
+        or n < 0
+        or exit_code < 0
+    ):
+        return "ERROR"
 
     if cls == "blocked":
         return "FAIL"
@@ -372,7 +300,7 @@ def _verdict_detail(gate: dict) -> str:
         return "OPEN"
     if cls == "pass" and n > 0:
         return "OPEN"
-    return "PASS"
+    return "ERROR"
 
 
 def display_verdict(gate: dict) -> str:
@@ -410,7 +338,7 @@ def render_verdict_legend_markdown() -> str:
         "",
         "| Verdict | You need to… | Sub (detail) |",
         "|---------|--------------|--------------|",
-        f"| **FIX** | Fix for green ADG | block, regr, seed |",
+        f"| **FIX** | Fix for green ADG | error, block, regr, seed |",
         f"| **TRACK** | Plan hygiene; CI OK | floor, inventory, advis |",
         f"| **CLEAR** | Nothing | — |",
         "",
@@ -418,6 +346,7 @@ def render_verdict_legend_markdown() -> str:
         "|-----|--------|---------|",
     ]
     for sub, parent, meaning in (
+        ("error", "FIX", VERDICT_SUB_DEFINITIONS["error"]),
         ("block", "FIX", VERDICT_SUB_DEFINITIONS["block"]),
         ("regr", "FIX", VERDICT_SUB_DEFINITIONS["regr"]),
         ("seed", "FIX", VERDICT_SUB_DEFINITIONS["seed"]),

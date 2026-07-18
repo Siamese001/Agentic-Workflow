@@ -36,7 +36,7 @@ edit-tool invocation but NO ``STATUS:`` line (rule 001 § Canonical post-turn ou
 High-precision: the dispatcher feeds only the final assistant prose, so this catches malformed/partial
 floors, not every prose wrap-up after a code turn; pure prose with no floor signal stays clean.
 ``generate_full_adg`` / ``run_full_adg_audit`` / ``adg_gates`` runs are EXEMPT from this entire audit —
-their BCG burndown + gates output supersedes both the floor and the Outcome frame and is owned by
+their sealed ADG executive output bundle supersedes both the floor and the Outcome frame and is owned by
 post_agent_adg_burndown_inline_audit.py.
 
 Violation kinds: missing_response_floor, missing_refactor_outcome, missing_plan_waves,
@@ -49,6 +49,7 @@ token in prose can self-trigger); the JSONL is a review surface, not a hard gate
 
 Bypass: RUNTIME_RCA_AUDIT_BYPASS=1
 """
+
 from __future__ import annotations
 
 import json
@@ -93,9 +94,7 @@ _RCA_MARKER_RE = re.compile(r"(?im)^\s*(?:\*\*\s*)?(?:layered\s+)?rca\b")
 _RCA_ROOT_CAUSE_RE = re.compile(r"(?i)root[_ ]cause\s*:")
 _RCA_EVIDENCE_RE = re.compile(r"(?i)\bevidence\s*:")
 _RCA_FIXNEXT_RE = re.compile(r"(?i)(?:fix[_ ]or[_ ]next|fix|next[_ ]step|next)\s*:")
-_RCA_FIX_OR_NEXT_FIELD_RE = re.compile(
-    r"(?im)^\s*(?:[-*]\s*)?fix[_ ]or[_ ]next\s*:\s*(?P<value>.*)$"
-)
+_RCA_FIX_OR_NEXT_FIELD_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?fix[_ ]or[_ ]next\s*:\s*(?P<value>.*)$")
 _FIXNEXT_DISCRIMINATOR_RE = re.compile(r"(?i)^\s*(?:fix|next)\s*:\s*\S")
 _RCA_SYMPTOM_RE = re.compile(r"(?im)^\s*(?:[-*]\s*)?(?:immediate\s+)?symptom\s*:")
 
@@ -147,7 +146,7 @@ _REPO_WORK_SIGNALS: tuple[tuple[re.Pattern[str], str], ...] = (
     (_EDIT_TOOL_RE, "edit_tool_invoked"),
 )
 
-# ADG generate/audit runs have their OWN output contract — the BCG-grade burndown + gates table
+# ADG generate/audit runs have their OWN output contract — one sealed BCG-grade executive brief
 # (adg-post-run-burndown.md § Completion Gate, audited by post_agent_adg_burndown_inline_audit.py).
 # That output SUPERSEDES both the response floor AND the Outcome-frame requirement, so an ADG-run turn
 # is exempt from this entire audit. Signal mirrors that audit's _RUN_PATTERNS (rule 001 § Canonical
@@ -193,14 +192,10 @@ _MISSING_FLOOR_REMEDY = (
 
 _PROOF_SECTIONS: tuple[str, ...] = ("FILES_CHANGED", "COMMANDS_RUN", "TESTS_GATES", "ARTIFACTS")
 _PLAN_WAVES_RE = re.compile(r"(?im)^\s*PLAN_WAVES\s*:")
-_PLAN_MARKER_RE = re.compile(
-    r"(?im)^\s*(?:WAVE_START|WAVE_COMPLETE|PHASE_COMPLETE|PLAN_COMPLETE)\s*:"
-)
+_PLAN_MARKER_RE = re.compile(r"(?im)^\s*(?:WAVE_START|WAVE_COMPLETE|PHASE_COMPLETE|PLAN_COMPLETE)\s*:")
 _PLAN_COMPLETE_RE = re.compile(r"(?im)^\s*PLAN_COMPLETE\s*:")
 _PLAN_STATE_RE = re.compile(r"(?im)^\s*(?:CURRENT_WAVE|LAST_COMPLETED_WAVE)\s*:")
-_PLAN_FILE_RE = re.compile(
-    r"(?im)^\s*-\s*(?:\[[^\]]+\]\()?\.?(?:plans|\.codex/plans)/[^)\s]+\.md\)?"
-)
+_PLAN_FILE_RE = re.compile(r"(?im)^\s*-\s*(?:\[[^\]]+\]\()?\.?(?:plans|\.codex/plans)/[^)\s]+\.md\)?")
 _RECEIPT_SECTION_RE = re.compile(
     r"(?im)^\s*(?:STATUS|BRANCH|FILES_CHANGED|COMMANDS_RUN|TESTS_GATES|RCA|ARTIFACTS|"
     r"REPORTS_GENERATED|NOTES)\s*:"
@@ -259,7 +254,7 @@ def _line_value(text: str, pattern: re.Pattern[str]) -> str:
     if not m:
         return ""
     nl = text.find("\n", m.end())
-    seg = text[m.end(): nl if nl != -1 else len(text)]
+    seg = text[m.end() : nl if nl != -1 else len(text)]
     return re.sub(r"\s+", " ", seg).strip().lower()
 
 
@@ -294,7 +289,7 @@ def _extract_plan_waves_block(text: str) -> str:
     if not match:
         return ""
     lines: list[str] = []
-    for line in text[match.end():].splitlines():
+    for line in text[match.end() :].splitlines():
         if _RECEIPT_SECTION_RE.match(line):
             break
         lines.append(line)
@@ -432,8 +427,8 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
 
     status None => not a repo-work receipt (no STATUS line) => caller no-ops.
     """
-    # generate_full_adg / run_full_adg_audit / adg_gates runs are governed SOLELY by the BCG burndown +
-    # gates contract (adg-post-run-burndown.md, audited by post_agent_adg_burndown_inline_audit.py).
+    # generate_full_adg / run_full_adg_audit / adg_gates runs are governed SOLELY by the sealed ADG
+    # output-bundle contract (adg-post-run-burndown.md, audited by post_agent_adg_burndown_inline_audit.py).
     # That output supersedes BOTH the response floor and the Outcome-frame requirement, so the
     # runtime-rca audit defers entirely for ADG runs (rule 001 § Canonical post-turn output, point 3).
     if any(rx.search(text) for rx in _ADG_RUN_RE):
@@ -498,26 +493,29 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
 
     # speculative_pass: 'should pass' / 'likely pass' language is forbidden on any repo-work turn.
     if _SPECULATIVE_RE.search(text):
-        violations.append({
-            "ts_utc": ts,
-            "kind": "speculative_pass",
-            "status": status_value,
-            "refactor_turn": refactor_turn,
-            "has_outcome_frame": has_outcome,
-            "failure_signals": [],
-            "remedy": _SPECULATIVE_REMEDY,
-            "rule_ref": "constitutional §37 / 002 § Forbidden status behavior",
-        })
+        violations.append(
+            {
+                "ts_utc": ts,
+                "kind": "speculative_pass",
+                "status": status_value,
+                "refactor_turn": refactor_turn,
+                "has_outcome_frame": has_outcome,
+                "failure_signals": [],
+                "remedy": _SPECULATIVE_REMEDY,
+                "rule_ref": "constitutional §37 / 002 § Forbidden status behavior",
+            }
+        )
 
     # pass_without_proof: STATUS:PASS is expensive — requires all four proof sections.
     if status_value == "PASS":
-        _missing_proof = [
-            s for s in _PROOF_SECTIONS
-            if not re.search(rf"(?im)^\s*{s}\s*:", text)
-        ]
+        _missing_proof = [s for s in _PROOF_SECTIONS if not re.search(rf"(?im)^\s*{s}\s*:", text)]
         if _missing_proof:
             violations.append(
-                _record("pass_without_proof", [], extra={"missing_proof": _missing_proof, "remedy": _PASS_PROOF_REMEDY})
+                _record(
+                    "pass_without_proof",
+                    [],
+                    extra={"missing_proof": _missing_proof, "remedy": _PASS_PROOF_REMEDY},
+                )
             )
 
     plan_waves_issue = _plan_waves_issue(text)
@@ -561,8 +559,10 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
         depth = _rca_descent_depth(text)
         symptom_txt = _line_value(text, _RCA_SYMPTOM_RE)
         root_txt = _line_value(text, _RCA_ROOT_CAUSE_RE)
-        symptom_equals_root = bool(symptom_txt) and bool(root_txt) and (
-            symptom_txt == root_txt or symptom_txt in root_txt or root_txt in symptom_txt
+        symptom_equals_root = (
+            bool(symptom_txt)
+            and bool(root_txt)
+            and (symptom_txt == root_txt or symptom_txt in root_txt or root_txt in symptom_txt)
         )
         missing_layer = not bool(_LAYERED_LAYER_RE.search(text))
         # High confidence in the root cause must be stated, not implied.
@@ -570,13 +570,7 @@ def detect(text: str) -> tuple[str | None, list[dict]]:
         # The next step must derive from the diagnosis; a bare platitude does not.
         next_txt = _line_value(text, _RCA_FIXNEXT_RE)
         next_step_generic = bool(next_txt) and bool(_GENERIC_NEXT_FULL_RE.match(_action_value(next_txt)))
-        if (
-            depth < 2
-            or symptom_equals_root
-            or missing_layer
-            or missing_confidence
-            or next_step_generic
-        ):
+        if depth < 2 or symptom_equals_root or missing_layer or missing_confidence or next_step_generic:
             violations.append(
                 _record(
                     "shallow_rca",

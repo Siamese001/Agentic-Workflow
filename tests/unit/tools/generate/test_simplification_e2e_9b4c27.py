@@ -234,6 +234,14 @@ def _write_gate_script(
 
 
 class TestRunPostAdgGatesParallel:
+    @pytest.fixture(autouse=True)
+    def _reset_deferred_failures(self):
+        from tools.generate.integration.deferred_failures import reset_for_tests
+
+        reset_for_tests()
+        yield
+        reset_for_tests()
+
     def test_all_pass_no_exit(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
     ) -> None:
@@ -254,10 +262,14 @@ class TestRunPostAdgGatesParallel:
         assert "[alpha] PASS" in out
         assert "[beta] PASS" in out
 
-    def test_first_failure_rc_propagates(
+    def test_first_failure_rc_is_deferred_until_bundle_sealing(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
     ) -> None:
         from tools.generate import generate_full_adg as gfa
+        from tools.generate.integration.deferred_failures import (
+            deferred_exit_code,
+            deferred_failure_summary,
+        )
 
         monkeypatch.setattr(gfa, "ROOT", tmp_path)
 
@@ -279,10 +291,11 @@ class TestRunPostAdgGatesParallel:
                 "timeout_s": 30,
             },
         ]
-        with pytest.raises(SystemExit) as excinfo:
-            _run_post_adg_gates_parallel(specs)
-        # First spec's failure rc wins (deterministic).
-        assert excinfo.value.code == 7
+        _run_post_adg_gates_parallel(specs)
+        # First spec's failure rc wins (deterministic), but the subprocess
+        # does not exit before the terminal output bundle can be sealed.
+        assert deferred_exit_code() == 7
+        assert deferred_failure_summary()[0]["gate_name"] == "post_adg_gate.alpha"
         out = capsys.readouterr().out
         assert "[alpha] FAIL" in out
         assert "[beta] FAIL" in out
@@ -334,10 +347,11 @@ class TestRunPostAdgGatesParallel:
                 "timeout_s": 1,
             },
         ]
-        with pytest.raises(SystemExit) as excinfo:
-            _run_post_adg_gates_parallel(specs)
-        # Timeout exit code is 2 (matches the serial helper's contract).
-        assert excinfo.value.code == 2
+        from tools.generate.integration.deferred_failures import deferred_exit_code
+
+        _run_post_adg_gates_parallel(specs)
+        # Timeout exit code is 2, deferred until terminal bundle sealing.
+        assert deferred_exit_code() == 2
         out = capsys.readouterr().out
         assert "[slow] FAIL" in out
         assert "timed out" in out.lower()

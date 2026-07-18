@@ -38,6 +38,8 @@ def _result(
     snapshot,
     generation_manifest,
 ):
+    run_id = snapshot.stem.replace("adg_indexed_", "")
+    output_bundle = _source(snapshot.parent / f"adg_run_output_bundle_{run_id}.json")
     return WrapperResult(
         certification_status=certification_status,
         generator_exit_code=0,
@@ -47,7 +49,7 @@ def _result(
         runtime_proof_status="attested",
         reasons=[],
         artifact_status=artifact_status,
-        adg_run_id=snapshot.stem.replace("adg_indexed_", ""),
+        adg_run_id=run_id,
         repair_handoff={
             "status": artifact_status,
             "artifacts": {
@@ -59,6 +61,10 @@ def _result(
                     "path": str(generation_manifest),
                     "sha256": _sha(generation_manifest),
                 },
+                "output_bundle": {
+                    "path": str(output_bundle),
+                    "sha256": _sha(output_bundle),
+                },
             },
             "validation_errors": [],
         },
@@ -66,51 +72,65 @@ def _result(
 
 
 def test_failed_audit_never_replaces_certified_pointer(tmp_path):
-    certified = _snapshot(
-        tmp_path / "adg_indexed_07112026_1200.sqlite"
-    )
-    certified_manifest = _source(
-        tmp_path / "adg_generation_manifest_07112026_1200.json"
-    )
+    certified = _snapshot(tmp_path / "adg_indexed_07112026_1200.sqlite")
+    certified_manifest = _source(tmp_path / "adg_generation_manifest_07112026_1200.json")
     certified_result = _result(
         certification_status="clean",
         artifact_status="certified",
         snapshot=certified,
         generation_manifest=certified_manifest,
     )
-    assert _publish_result_snapshot_pointer(
-        certified_result,
-        artifacts_adg=tmp_path,
-    ) == []
+    certified_receipt = _source(tmp_path / "adg_audit_pipeline_receipt_07112026_1200.json")
+    certified_handoff = _source(tmp_path / "adg_repair_handoff_07112026_1200.json")
+    assert (
+        _publish_result_snapshot_pointer(
+            certified_result,
+            artifacts_adg=tmp_path,
+            receipt_path=certified_receipt,
+            handoff_path=certified_handoff,
+        )
+        == []
+    )
     pointer_path = tmp_path / POINTER_FILENAMES["certified"]
     before = pointer_path.read_bytes()
 
     repair = _snapshot(tmp_path / "adg_indexed_07112026_1300.sqlite")
-    repair_manifest = _source(
-        tmp_path / "adg_generation_manifest_07112026_1300.json"
-    )
+    repair_manifest = _source(tmp_path / "adg_generation_manifest_07112026_1300.json")
     repair_result = _result(
         certification_status="failed",
         artifact_status="repair_ready",
         snapshot=repair,
         generation_manifest=repair_manifest,
     )
-    assert _publish_result_snapshot_pointer(
-        repair_result,
-        artifacts_adg=tmp_path,
-    ) == []
+    repair_receipt = _source(tmp_path / "adg_audit_pipeline_receipt_07112026_1300.json")
+    repair_handoff = _source(tmp_path / "adg_repair_handoff_07112026_1300.json")
+    assert (
+        _publish_result_snapshot_pointer(
+            repair_result,
+            artifacts_adg=tmp_path,
+            receipt_path=repair_receipt,
+            handoff_path=repair_handoff,
+        )
+        == []
+    )
 
     assert pointer_path.read_bytes() == before
-    assert load_snapshot_pointer(
-        tmp_path,
-        "certified",
-        verify_digest=True,
-    ).path == certified
-    assert load_snapshot_pointer(
-        tmp_path,
-        "repair",
-        verify_digest=True,
-    ).path == repair
+    assert (
+        load_snapshot_pointer(
+            tmp_path,
+            "certified",
+            verify_digest=True,
+        ).path
+        == certified
+    )
+    assert (
+        load_snapshot_pointer(
+            tmp_path,
+            "repair",
+            verify_digest=True,
+        ).path
+        == repair
+    )
 
 
 def test_clean_result_with_missing_snapshot_cannot_promote(tmp_path):

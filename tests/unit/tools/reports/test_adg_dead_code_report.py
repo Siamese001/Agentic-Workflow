@@ -31,7 +31,16 @@ def _sqlite(path: Path) -> None:
             (7, "L0", "core", "HIGH", "ADG::Module::stable_6", "module", "module", "pkg/stable_6.py"),
             (8, "L0", "core", "HIGH", "ADG::Module::stable_7", "module", "module", "pkg/stable_7.py"),
             (9, "L0", "core", "HIGH", "ADG::Module::stable_8", "module", "module", "pkg/stable_8.py"),
-            (10, "L0", "core", "LOW", "ADG::Module::unstable_import", "unresolved_import", "symbol", "pkg/unstable_import.py"),
+            (
+                10,
+                "L0",
+                "core",
+                "LOW",
+                "ADG::Module::unstable_import",
+                "unresolved_import",
+                "symbol",
+                "pkg/unstable_import.py",
+            ),
         ]
         conn.executemany("insert into nodes values (?,?,?,?,?,?,?,?)", rows)
         conn.execute("create table edges(src_id int, dst_id int, relation_type text)")
@@ -52,10 +61,42 @@ def _sqlite(path: Path) -> None:
         conn.executemany(
             "insert into overlay_violations(category, severity, file_path, line_no, evidence, violation_class, disposition) values (?,?,?,?,?,?,?)",
             [
-                ("dead_import_resolved", "MEDIUM", "pkg/stable_0.py", 1, "unused import", "overlay_enrichment", "untriaged"),
-                ("dead_import_resolved", "MEDIUM", "pkg/stable_0.py", 2, "unused import", "overlay_enrichment", "untriaged"),
-                ("dead_import_resolved", "MEDIUM", "pkg/stable_0.py", 3, "unused import", "overlay_enrichment", "untriaged"),
-                ("dead_import_resolved", "MEDIUM", "pkg/stable_1.py", 4, "unused import", "overlay_enrichment", "untriaged"),
+                (
+                    "dead_import_resolved",
+                    "MEDIUM",
+                    "pkg/stable_0.py",
+                    1,
+                    "unused import",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "dead_import_resolved",
+                    "MEDIUM",
+                    "pkg/stable_0.py",
+                    2,
+                    "unused import",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "dead_import_resolved",
+                    "MEDIUM",
+                    "pkg/stable_0.py",
+                    3,
+                    "unused import",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "dead_import_resolved",
+                    "MEDIUM",
+                    "pkg/stable_1.py",
+                    4,
+                    "unused import",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
             ],
         )
         conn.execute(
@@ -95,10 +136,42 @@ def _add_dead_import_overlay(path: Path) -> None:
             ) values (?,?,?,?,?,?,?)
             """,
             [
-                ("dead_import_resolved", "HIGH", "pkg/a.py", 10, "unused import x", "overlay_enrichment", "untriaged"),
-                ("dead_import_resolved", "HIGH", "pkg/a.py", 11, "unused import y", "overlay_enrichment", "untriaged"),
-                ("dead_import_resolved", "HIGH", "pkg/b.py", 5, "unused import z", "overlay_enrichment", "untriaged"),
-                ("hidden_write_outside_uwg", "HIGH", "pkg/c.py", 1, "not dead code", "overlay_enrichment", "untriaged"),
+                (
+                    "dead_import_resolved",
+                    "HIGH",
+                    "pkg/a.py",
+                    10,
+                    "unused import x",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "dead_import_resolved",
+                    "HIGH",
+                    "pkg/a.py",
+                    11,
+                    "unused import y",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "dead_import_resolved",
+                    "HIGH",
+                    "pkg/b.py",
+                    5,
+                    "unused import z",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
+                (
+                    "hidden_write_outside_uwg",
+                    "HIGH",
+                    "pkg/c.py",
+                    1,
+                    "not dead code",
+                    "overlay_enrichment",
+                    "untriaged",
+                ),
             ],
         )
         conn.execute(
@@ -144,6 +217,28 @@ def test_emit_dead_code_report_writes_latest_copies(tmp_path: Path) -> None:
     assert data["summary"]["executive_ready"] is True
     assert data["dead_imports"]["dead_import_hotspots"][0] == ["pkg/stable_0.py", 3]
     assert data["dead_code_candidates"]["dead_code_hotspots"][0] == ["pkg/stable_0.py", 3]
+
+
+def test_emit_dead_code_report_can_skip_latest_and_docs_aliases(tmp_path: Path) -> None:
+    artifacts = tmp_path / "artifacts" / "adg"
+    artifacts.mkdir(parents=True)
+    _sqlite(artifacts / "adg_indexed_20260618_120000.sqlite")
+    docs = tmp_path / "docs_mirror"
+
+    rc, out = emit_mandatory_adg_dead_code_report(
+        adg_artifacts_dir=artifacts,
+        ts="run",
+        print_inline=False,
+        fail_closed=True,
+        docs_dir=docs,
+        write_latest=False,
+    )
+
+    assert rc == 0
+    assert out == artifacts / "dead_code_zone_control_report_run.json"
+    assert out.is_file()
+    assert not (artifacts / "dead_code_zone_control_report_latest.json").exists()
+    assert not docs.exists()
 
 
 def test_emit_dead_code_report_inline_uses_bcg_brief(tmp_path: Path, capsys) -> None:
