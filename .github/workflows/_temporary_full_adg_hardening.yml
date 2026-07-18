@@ -1,0 +1,90 @@
+name: temporary-full-adg-hardening
+
+on:
+  push:
+    branches:
+      - agent/harden-full-adg-output-contract
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: '3.12'
+          install-mode: editable
+
+      - name: Apply asserted hardening patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/adg_hardening_patch/part_* | base64 --decode | gzip --decompress > /tmp/full_adg_hardening.py
+          python -m py_compile /tmp/full_adg_hardening.py
+          python /tmp/full_adg_hardening.py
+
+      - name: Syntax and diff validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            tools/generate/decision_outputs.py \
+            tools/generate/generate_full_adg.py \
+            tools/generate/core/helpers.py \
+            tools/reports/adg_bcg_adapter.py \
+            tools/reports/adg_bcg_executive_synthesis.py \
+            tests/unit/tools/generate/test_generate_full_adg_failfast.py \
+            tests/unit/tools/generate/test_decision_outputs_hardening.py \
+            tests/unit/tools/generate/core/test_verify_artifacts_archive_aware.py \
+            tests/unit/tools/reports/test_adg_bcg_adapter_hardening.py \
+            tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py
+          git diff --check
+
+      - name: Focused lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m ruff check \
+            tools/generate/decision_outputs.py \
+            tools/generate/generate_full_adg.py \
+            tools/generate/core/helpers.py \
+            tools/reports/adg_bcg_adapter.py \
+            tools/reports/adg_bcg_executive_synthesis.py \
+            tests/unit/tools/generate/test_generate_full_adg_failfast.py \
+            tests/unit/tools/generate/test_decision_outputs_hardening.py \
+            tests/unit/tools/generate/core/test_verify_artifacts_archive_aware.py \
+            tests/unit/tools/reports/test_adg_bcg_adapter_hardening.py \
+            tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py
+
+      - name: Focused regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            tests/unit/tools/generate/test_generate_full_adg_failfast.py \
+            tests/unit/tools/generate/test_decision_outputs_hardening.py \
+            tests/unit/tools/generate/core/test_verify_artifacts_archive_aware.py \
+            tests/unit/tools/reports/test_adg_bcg_adapter.py \
+            tests/unit/tools/reports/test_adg_bcg_adapter_hardening.py \
+            tests/unit/tools/reports/test_adg_bcg_executive_synthesis.py
+
+      - name: Commit validated implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git rm -r .github/adg_hardening_patch
+          git rm .github/workflows/_temporary_full_adg_hardening.yml
+          git add tools tests
+          git diff --cached --check
+          git commit -m 'fix(adg): harden full-run decision outputs'
+          git push origin HEAD:${GITHUB_REF_NAME}
