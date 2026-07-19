@@ -9,14 +9,17 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import tempfile
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 from agentic_core.L6_system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+from agentic_core.L6_system_learning.stores.index_file_lock import (
+    atomic_write_json_mapping,
+    runtime_adg_index_lock,
+)
+from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
 trace_contract._emit_applies_guardrail("p0", "version_store", "p0_governance")
 trace_contract._emit_reads_policy_state("p0", "version_store", "policy_binding")
@@ -111,8 +114,12 @@ class InMemoryVersionStore:
         The package must have a ``canonical_bytes()`` method for
         content-hash computation.
         """
-        trace_contract._emit_snapshots_state(str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE")
-        trace_contract._emit_writes_through(str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE")
+        trace_contract._emit_snapshots_state(
+            str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE"
+        )
+        trace_contract._emit_writes_through(
+            str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE"
+        )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
@@ -156,28 +163,48 @@ class FileBackedVersionStore:
         self._index_path = self._base_dir / "_index.json"
         self._index: dict[str, str] = self._load_index()
 
-    def _load_index(self) -> dict[str, str]:
+    def _load_index(self, *, fail_closed: bool = False) -> dict[str, str]:
         if self._index_path.exists():
             try:
-                return json.loads(self._index_path.read_text(encoding="utf-8"))
+                raw = json.loads(self._index_path.read_text(encoding="utf-8"))
             except (json.JSONDecodeError, OSError) as exc:
+                if fail_closed:
+                    raise ValueError(f"malformed version index {self._index_path}: {exc}") from exc
                 logger.warning("Failed to load version index %s: %s", self._index_path, exc)
                 return {}
+            if not isinstance(raw, dict):
+                if fail_closed:
+                    raise ValueError(f"malformed version index {self._index_path}: expected an object")
+                logger.warning("Version index %s is not an object", self._index_path)
+                return {}
+            index: dict[str, str] = {}
+            for version_id, content_hash in raw.items():
+                if not isinstance(version_id, str) or not isinstance(content_hash, str):
+                    if fail_closed:
+                        raise ValueError(
+                            f"malformed version index {self._index_path}: keys and values must be strings"
+                        )
+                    logger.warning("Version index %s contains non-string entries", self._index_path)
+                    return {}
+                normalized_hash = content_hash.lower()
+                if (
+                    len(normalized_hash) != 64
+                    or any(char not in "0123456789abcdef" for char in normalized_hash)
+                    or version_id != f"v_{normalized_hash[:16]}"
+                ):
+                    if fail_closed:
+                        raise ValueError(
+                            f"malformed version index {self._index_path}: invalid mapping "
+                            f"{version_id!r} -> {content_hash!r}"
+                        )
+                    logger.warning("Version index %s contains an invalid mapping", self._index_path)
+                    return {}
+                index[version_id] = normalized_hash
+            return index
         return {}
 
-    def _save_index(self) -> None:
-        self._index_path.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=self._index_path.parent,
-            prefix=self._index_path.name + ".",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            json.dump(self._index, handle, indent=2, sort_keys=True)
-            tmp_name = handle.name
-        Path(tmp_name).replace(self._index_path)
+    def _save_index(self, index: dict[str, str]) -> None:
+        atomic_write_json_mapping(self._index_path, index)
 
     def commit_change_package(self, pkg: Any) -> str:
         """Commit a change package and return its version_id."""
@@ -196,30 +223,30 @@ class FileBackedVersionStore:
             payload = json.dumps(str(pkg), sort_keys=True).encode("utf-8")
         content_hash = hashlib.sha256(payload).hexdigest()
         version_id = f"v_{content_hash[:16]}"
-        if version_id in self._index:
-            return version_id
-        shard_dir = self._base_dir / content_hash[:2]
-        shard_dir.mkdir(exist_ok=True)
-        entry_path = shard_dir / f"{content_hash}.json"
-        meta = {
-            "version_id": version_id,
-            "content_hash": content_hash,
-            "type": type(pkg).__name__,
-            "payload_hex": payload.hex(),
-        }
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=shard_dir,
-            prefix=entry_path.name + ".",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            json.dump(meta, handle, indent=2)
-            tmp_name = handle.name
-        Path(tmp_name).replace(entry_path)
-        self._index[version_id] = content_hash
-        self._save_index()
+        with runtime_adg_index_lock(self._base_dir):
+            current_index = self._load_index(fail_closed=True)
+            existing_hash = current_index.get(version_id)
+            if existing_hash is not None:
+                if existing_hash != content_hash:
+                    raise ValueError(
+                        f"version_id collision for {version_id!r}: {existing_hash!r} != {content_hash!r}"
+                    )
+                self._index = current_index
+                return version_id
+            shard_dir = self._base_dir / content_hash[:2]
+            shard_dir.mkdir(exist_ok=True)
+            entry_path = shard_dir / f"{content_hash}.json"
+            meta = {
+                "version_id": version_id,
+                "content_hash": content_hash,
+                "type": type(pkg).__name__,
+                "payload_hex": payload.hex(),
+            }
+            atomic_write_json_mapping(entry_path, {key: str(value) for key, value in meta.items()})
+            updated_index = dict(current_index)
+            updated_index[version_id] = content_hash
+            self._save_index(updated_index)
+            self._index = updated_index
         try:
             get_sl_memory_bridge().persist_active_version("version_store", version_id, ts=str(uuid.uuid4()))
         except (  # guardian: allow-log-and-swallow -- version metadata persistence best-effort: non-fatal, version still stored on disk
@@ -232,6 +259,7 @@ class FileBackedVersionStore:
         return version_id
 
     def get(self, version_id: str) -> bytes | None:
+        self._index = self._load_index()
         content_hash = self._index.get(version_id)
         if content_hash is None:
             return None
@@ -250,6 +278,7 @@ class FileBackedVersionStore:
             return None
 
     def list_versions(self) -> list[str]:
+        self._index = self._load_index()
         return sorted(self._index.keys())
 
 

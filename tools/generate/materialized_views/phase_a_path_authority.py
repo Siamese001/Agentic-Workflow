@@ -20,6 +20,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+from tools.generate.infra_wiring_views import materialize_receipt_ast_sites
 from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv as _connect_sqlite
 
 
@@ -346,7 +347,10 @@ _NON_DURABLE_ARTIFACT_WRITE_SITES = (
     ("lock_file_path.write_text", "agentic_core/L2_execution/utils/dependency_locker.py"),
     ("get_validated_project_root", "agentic_core/L3_orchestration/reasoning/engines/orchestrator_engine.py"),
     ("get_validated_project_root", "agentic_core/L5_safety/config/structure_blueprint/ssot.py"),
-    ("output_path.write_text", "agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py"),
+    (
+        "output_path.write_text",
+        "agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py",
+    ),
     ("file_path.write_text", "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"),
     ("path.write_text", "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py"),
     ("requirements_path.write_text", "agentic_core/L5_safety/utils/dependency_pruning_util.py"),
@@ -354,7 +358,10 @@ _NON_DURABLE_ARTIFACT_WRITE_SITES = (
     ("output_path.write_text", "agentic_core/L5_safety/utils/structure_drift_writer.py"),
     ("output_file.write_text", "agentic_core/L5_safety/validators/structure_drift_validator.py"),
     ("json_path.write_text", "agentic_core/L6_observability/shadow_eval/span_export.py"),
-    ("report_path.write_text", "agentic_core/L6_system_learning/engines/cross_repo_system_learning_import.py"),
+    (
+        "report_path.write_text",
+        "agentic_core/L6_system_learning/engines/cross_repo_system_learning_import.py",
+    ),
     ("output_path.write_bytes", "agentic_core/L6_system_learning/engines/seed_embedding_pack_builder.py"),
     ("out_path.write_text", "agentic_core/L7_auditability/coverage/route_family_l7_coverage.py"),
     ("tmp_path.write_text", "agentic_core/mixins/atomic_execution_mixin.py"),
@@ -514,9 +521,9 @@ _NON_DURABLE_ARTIFACT_HELPER_SITES = (
 # none of these surfaces.
 _NON_DURABLE_WRITER_PATH_FRAGMENTS = (
     "/runtime/prove_requirements/",  # Runtime proof writers (proof artifacts only)
-    "/proof/",                        # Proof-harness writers
-    "/outputs/",                      # App-layer rendered outputs (briefs, reports)
-    "/reports/",                      # Report rendering files
+    "/proof/",  # Proof-harness writers
+    "/outputs/",  # App-layer rendered outputs (briefs, reports)
+    "/reports/",  # Report rendering files
 )
 
 # Path fragments identifying CANONICAL LAYER-WRITER ABSTRACTIONS — these files
@@ -525,9 +532,9 @@ _NON_DURABLE_WRITER_PATH_FRAGMENTS = (
 # not the implementations of the layer's own state-store. Caught alongside
 # the within-layer (src.layer == dst.layer) filter applied at MV construction.
 _CANONICAL_LAYER_WRITER_PATH_FRAGMENTS = (
-    "/L4_state/",         # L4 state store implementations
+    "/L4_state/",  # L4 state store implementations
     "system_learning/engines/l4_state_writer",  # System-learning L4 writer impls
-    "/L4_state/uwg/",     # UWG itself sits inside L4
+    "/L4_state/uwg/",  # UWG itself sits inside L4
 )
 
 # 2026-04-29 W5.2/W5.4 (Author-Gate): LAYER SELF-AUTHORITY FILES.
@@ -570,11 +577,11 @@ _LAYER_SELF_AUTHORITY_FILES = (
 # These are SQL LIKE patterns, not path fragments — evaluated against
 # `src.resolved_path` with the % wildcard.
 _SANCTIONED_BRIDGE_PATH_PATTERNS = (
-    "apps_%/integrations/%",   # documented adapter modules
-    "apps_%/services/%",       # service bridges with their own contracts
-    "apps_%/enforcement/%",    # app-local guardrail gates
-    "%_adapter.py",            # explicit adapter naming convention
-    "%_adapter_util.py",       # adapter util naming convention
+    "apps_%/integrations/%",  # documented adapter modules
+    "apps_%/services/%",  # service bridges with their own contracts
+    "apps_%/enforcement/%",  # app-local guardrail gates
+    "%_adapter.py",  # explicit adapter naming convention
+    "%_adapter_util.py",  # adapter util naming convention
 )
 
 _L2_PHASE_KEYWORDS: list[tuple[str, str]] = [
@@ -647,8 +654,7 @@ def _build_exact_symbol_site_clause(
 ) -> str:
     """SQL fragment matching exact ``(symbol, writer_file)`` pairs."""
     values = " OR ".join(
-        f"({symbol_col} = '{symbol}' AND {file_col} = '{writer_file}')"
-        for symbol, writer_file in sites
+        f"({symbol_col} = '{symbol}' AND {file_col} = '{writer_file}')" for symbol, writer_file in sites
     )
     return f"({values})"
 
@@ -711,9 +717,7 @@ def _build_archival_gatekeeper_clause(symbol_col: str) -> str:
     ``mv_write_sovereignty_paths`` because the gatekeeper IS the canonical L5
     file-system authority (analog to UWG for L4 state). 2026-04-28 W2.1 finding.
     """
-    frags = " OR ".join(
-        f"{symbol_col} LIKE '%{f}%'" for f in _ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS
-    )
+    frags = " OR ".join(f"{symbol_col} LIKE '%{f}%'" for f in _ARCHIVAL_GATEKEEPER_SYMBOL_FRAGMENTS)
     return f"({frags})"
 
 
@@ -732,6 +736,7 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
         conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")  # 64MB cache for MV queries
     conn.execute("PRAGMA temp_store = MEMORY")
+    materialize_receipt_ast_sites(conn)
     cur = conn.cursor()
 
     # Performance-critical composite indexes for all materialized view phases.
@@ -1060,6 +1065,38 @@ def materialize_phase_a(sqlite_path: Path, *, conn: sqlite3.Connection | None = 
           -- artifacts. These symbols are intentionally NOT excluded globally;
           -- only the released artifact-producing call sites are non-durable.
           AND NOT {_build_exact_symbol_site_clause("e.symbol", "src.resolved_path", _NON_DURABLE_ARTIFACT_WRITE_SITES)}
+          -- D0.1 certification recovery: c03_graph_kpi_health emits one
+          -- explicit operator receipt. Exempt it only while there is exactly
+          -- one resolved AST call site. Source AST authority includes column
+          -- offsets, so two calls on one physical line still fail closed.
+          AND NOT (
+              src.resolved_path = 'apps_rg/fact_inventory/c03_graph_kpi_health.py'
+              AND e.symbol = 'output.write_text'
+              AND COALESCE(e.source_file, '') = src.resolved_path
+              AND COALESCE(e.line_no, 0) > 0
+              AND EXISTS (
+                  SELECT 1
+                  FROM t_exact_receipt_ast_sites exact_site
+                  WHERE exact_site.resolved_path = src.resolved_path
+                    AND exact_site.symbol = e.symbol
+                    AND exact_site.line_no = e.line_no
+                    AND exact_site.site_count = 1
+              )
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM edges receipt_edge
+                  JOIN nodes receipt_src ON receipt_src.id = receipt_edge.src_id
+                  WHERE receipt_edge.relation_type IN ('writes_to', 'writes_through')
+                    AND receipt_src.resolved_path = src.resolved_path
+                    AND receipt_edge.symbol = e.symbol
+                    AND (
+                        receipt_edge.source_file IS NULL
+                        OR receipt_edge.line_no IS NULL
+                        OR receipt_edge.source_file <> e.source_file
+                        OR receipt_edge.line_no <> e.line_no
+                    )
+              )
+          )
           -- 2026-07-09 P0 debt burndown W16: site-scoped scanner helper
           -- false positives that read, route, or log in memory rather than
           -- writing durable state.

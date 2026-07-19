@@ -23,23 +23,26 @@ Design notes:
 from __future__ import annotations
 
 import atexit
+import hashlib
 import json
+import os
 import sys
+import tempfile
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from time import monotonic
-from collections.abc import Callable
 from typing import Any, Literal, TypeVar
 
 GateStatus = Literal[
-    "invoked",           # started — no terminal status yet
-    "pass",              # exit code 0 / validation ok
-    "fail",              # non-zero exit / validation error
-    "deferred_fail",     # failure deferred via --continue-on-p0 or deferred_failures
-    "timed_out",         # subprocess.TimeoutExpired
-    "missing_script",    # script file not found (hard_fail in certification)
-    "skipped",           # intentionally disabled (e.g., --no-<gate>-check flag)
+    "invoked",  # started — no terminal status yet
+    "pass",  # exit code 0 / validation ok
+    "fail",  # non-zero exit / validation error
+    "deferred_fail",  # failure deferred via --continue-on-p0 or deferred_failures
+    "timed_out",  # subprocess.TimeoutExpired
+    "missing_script",  # script file not found (hard_fail in certification)
+    "skipped",  # intentionally disabled (e.g., --no-<gate>-check flag)
 ]
 
 CertificationStatus = Literal["clean", "failed", "diagnostic_only"]
@@ -47,6 +50,79 @@ CertificationStatus = Literal["clean", "failed", "diagnostic_only"]
 
 def _utcnow_iso() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+    """Atomically replace one JSON document without leaving partial output."""
+    temp_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(payload, handle, indent=2)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+            temp_path = Path(handle.name)
+        temp_path.replace(path)
+    except (OSError, TypeError, ValueError):
+        if temp_path is not None:
+            try:
+                temp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+        raise
+
+
+def sqlite_snapshot_sidecars(sqlite_path: Path) -> tuple[Path, ...]:
+    """Return SQLite sidecars that sit outside the main-file digest authority."""
+    path = Path(sqlite_path)
+    candidates = (
+        Path(str(path) + "-wal"),
+        Path(str(path) + "-shm"),
+        Path(str(path) + "-journal"),
+    )
+    return tuple(candidate for candidate in candidates if candidate.exists())
+
+
+def seal_sqlite_snapshot(sqlite_path: Path) -> None:
+    """Checkpoint a producer-owned SQLite file and reject unsealed sidecars."""
+    import sqlite3
+
+    path = Path(sqlite_path).resolve()
+    if not path.is_file():
+        raise ValueError(f"SQLite snapshot is missing: {path}")
+    try:
+        con = sqlite3.connect(str(path), timeout=30)
+    except sqlite3.Error as exc:
+        raise ValueError(f"SQLite snapshot could not be opened for sealing: {path}: {exc}") from exc
+    try:
+        quick_check = con.execute("PRAGMA quick_check").fetchone()
+        if not quick_check or str(quick_check[0]).lower() != "ok":
+            raise ValueError(f"SQLite snapshot quick_check failed: {path}: {quick_check!r}")
+        checkpoint = con.execute("PRAGMA wal_checkpoint(TRUNCATE)").fetchone()
+        if checkpoint and int(checkpoint[0]) != 0:
+            raise ValueError(f"SQLite WAL checkpoint remained busy: {path}: {checkpoint!r}")
+        mode_row = con.execute("PRAGMA journal_mode=DELETE").fetchone()
+        mode = str(mode_row[0]).lower() if mode_row else ""
+        if mode != "delete":
+            raise ValueError(f"SQLite snapshot did not leave WAL mode: {path}: {mode!r}")
+        con.commit()
+    except sqlite3.Error as exc:
+        raise ValueError(f"SQLite snapshot sealing failed: {path}: {exc}") from exc
+    finally:
+        con.close()
+
+    sidecars = sqlite_snapshot_sidecars(path)
+    if sidecars:
+        raise ValueError(
+            "SQLite snapshot has unsealed sidecars: " + ", ".join(str(sidecar) for sidecar in sidecars)
+        )
 
 
 @dataclass
@@ -91,7 +167,9 @@ class GateManifestRecorder:
         recorder.finalize(sqlite_path=..., generation_exit_code=...)
     """
 
-    def __init__(self, out_dir: Path, ts: str, generator_entrypoint: str = "tools/generate/generate_full_adg.py") -> None:
+    def __init__(
+        self, out_dir: Path, ts: str, generator_entrypoint: str = "tools/generate/generate_full_adg.py"
+    ) -> None:
         self._out_dir = Path(out_dir)
         self._ts = ts
         self._entrypoint = generator_entrypoint
@@ -241,11 +319,21 @@ class GateManifestRecorder:
         self._sqlite_path = Path(sqlite_path) if sqlite_path else None
 
         # Classify certification_status.
-        had_failure = any(
-            r.status in ("fail", "timed_out", "missing_script") for r in self._records
-        )
+        had_failure = any(r.status in ("fail", "timed_out", "missing_script") for r in self._records)
         had_deferred = any(r.status == "deferred_fail" for r in self._records)
-        if generation_exit_code != 0 or had_failure:
+        runtime_proof_unreadable = runtime_proof_status == "snapshot_unreadable"
+        snapshot_authority_incomplete = (
+            self._sqlite_path is None
+            or bool(sqlite_snapshot_sidecars(self._sqlite_path))
+            or not commit_sha
+            or not repo_state_hash
+        )
+        if (
+            generation_exit_code != 0
+            or had_failure
+            or runtime_proof_unreadable
+            or snapshot_authority_incomplete
+        ):
             status: CertificationStatus = "failed"
         elif had_deferred:
             status = "failed"  # deferred fail still breaks certification
@@ -304,19 +392,31 @@ class GateManifestRecorder:
 
         gate_manifest_path = self._out_dir / f"adg_gate_invocation_manifest_{self._ts}.json"
         try:
-            gate_manifest_path.write_text(
-                json.dumps(asdict(manifest), indent=2) + "\n", encoding="utf-8"
-            )
+            _atomic_write_json(gate_manifest_path, asdict(manifest))
         except OSError as e:
             if not best_effort:
                 raise
             print(f"[gate_manifest] WARN failed to write gate manifest: {e}", file=sys.stderr)
 
         # Generation manifest — snapshot handoff contract
+        snapshot_sha256: str | None = None
+        if sqlite_path is not None and not sqlite_snapshot_sidecars(sqlite_path):
+            try:
+                digest = hashlib.sha256()
+                with sqlite_path.open("rb") as handle:
+                    for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                        digest.update(chunk)
+                snapshot_sha256 = digest.hexdigest()
+            except OSError:
+                # Preserve the manifest with an explicit unverifiable digest.
+                # The audit wrapper rejects it for certification.
+                snapshot_sha256 = None
+
         gen_manifest = {
             "timestamp": _utcnow_iso(),
             "sqlite_path": str(sqlite_path) if sqlite_path else None,
             "snapshot_path": str(sqlite_path) if sqlite_path else None,
+            "snapshot_sha256": snapshot_sha256,
             "commit_sha": commit_sha,
             "repo_state_hash": repo_state_hash,
             "generation_exit_code": generation_exit_code,
@@ -330,13 +430,11 @@ class GateManifestRecorder:
         }
         gen_manifest_path = self._out_dir / f"adg_generation_manifest_{self._ts}.json"
         try:
-            gen_manifest_path.write_text(
-                json.dumps(gen_manifest, indent=2) + "\n", encoding="utf-8"
-            )
+            _atomic_write_json(gen_manifest_path, gen_manifest)
             # Latest-pointer for local dev (CI MUST NOT rely on this — wrapper
             # resolves the timestamped file by mtime + timestamp validation).
             latest = self._out_dir / "adg_generation_manifest_latest.json"
-            latest.write_text(json.dumps(gen_manifest, indent=2) + "\n", encoding="utf-8")
+            _atomic_write_json(latest, gen_manifest)
         except OSError as e:
             if not best_effort:
                 raise
@@ -440,18 +538,29 @@ def runtime_proof_from_sqlite(sqlite_path: Path) -> tuple[str, int]:
     """Classify runtime-proof status for a snapshot.
 
     Returns ``(status, attested_edge_count)`` with status ∈
-    ``{attested, view_present_zero_attested, view_absent}``.
+    ``{attested, view_present_zero_attested, view_absent, snapshot_unreadable}``.
+
+    The exact snapshot is opened through SQLite's read-only immutable URI and
+    ``query_only`` guard. A missing, locked, corrupt, or otherwise unreadable
+    snapshot is distinct from a valid snapshot that simply lacks the view.
     """
     import sqlite3
 
+    if sqlite_snapshot_sidecars(sqlite_path):
+        return "snapshot_unreadable", 0
     try:
-        con = sqlite3.connect(str(sqlite_path))
-    except sqlite3.Error:
-        return "view_absent", 0
+        snapshot_uri = Path(sqlite_path).resolve().as_uri() + "?mode=ro&immutable=1"
+        con = sqlite3.connect(snapshot_uri, uri=True)
+    except (OSError, ValueError, sqlite3.Error):
+        return "snapshot_unreadable", 0
     try:
-        row = con.execute(
-            "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name='v_runtime_proof'"
-        ).fetchone()
+        try:
+            con.execute("PRAGMA query_only = ON")
+            row = con.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') AND name='v_runtime_proof'"
+            ).fetchone()
+        except sqlite3.Error:
+            return "snapshot_unreadable", 0
         if row is None:
             return "view_absent", 0
         try:
@@ -459,9 +568,12 @@ def runtime_proof_from_sqlite(sqlite_path: Path) -> tuple[str, int]:
                 "SELECT COUNT(*) FROM v_runtime_proof WHERE attesting_trace_count >= 1"
             ).fetchone()[0]
         except sqlite3.Error:
-            return "view_present_zero_attested", 0
+            return "snapshot_unreadable", 0
         if attested and attested > 0:
             return "attested", int(attested)
         return "view_present_zero_attested", 0
     finally:
-        con.close()
+        try:
+            con.close()
+        except sqlite3.Error:
+            pass

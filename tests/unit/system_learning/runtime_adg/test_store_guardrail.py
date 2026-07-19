@@ -16,6 +16,7 @@ from agentic_core.L6_system_learning.snapshot import (
     create_runtime_adg_snapshot,
 )
 from agentic_core.L6_system_learning.store import FileBackedRuntimeADGStore
+from agentic_core.L6_system_learning.stores.version_store import FileBackedVersionStore
 
 
 def _make_node(node_id: str = "n1", name: str = "test.span") -> RuntimeADGNode:
@@ -186,3 +187,107 @@ class TestStaleEmptyKeyCleanup:
         store = FileBackedRuntimeADGStore(base_dir=base)
         assert "trace-a" not in store._trace_index
         assert store._trace_index["trace-b"] == "v_ok"
+
+
+class TestConcurrentIndexMerge:
+    def test_preinitialized_runtime_writer_preserves_external_trace_bindings(
+        self,
+        store: FileBackedRuntimeADGStore,
+    ) -> None:
+        external = {
+            "external-snapshot": "v_1111111111111111",
+            "external-trace": "v_1111111111111111",
+        }
+        store._trace_index_path.write_text(
+            json.dumps(external, sort_keys=True),
+            encoding="utf-8",
+        )
+
+        snapshot = _make_snapshot(trace_id="local-trace")
+        version_id = store.persist(snapshot)
+
+        observed = json.loads(store._trace_index_path.read_text(encoding="utf-8"))
+        assert observed.items() >= external.items()
+        assert observed["local-trace"] == version_id
+        assert observed[snapshot.snapshot_id] == version_id
+
+    def test_preinitialized_version_writer_preserves_recovered_index(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        _stub_bridge(monkeypatch)
+        base_dir = tmp_path / "runtime_adg"
+        stale_writer = FileBackedVersionStore(base_dir)
+        recovered = {"v_" + "1" * 16: "1" * 64}
+        (base_dir / "_index.json").write_text(
+            json.dumps(recovered, sort_keys=True),
+            encoding="utf-8",
+        )
+
+        snapshot = _make_snapshot(trace_id="local-version")
+        version_id = stale_writer.commit_change_package(snapshot)
+
+        observed = json.loads((base_dir / "_index.json").read_text(encoding="utf-8"))
+        assert observed.items() >= recovered.items()
+        assert observed[version_id] == snapshot.snapshot_hash
+
+    def test_version_reader_cannot_reset_writer_before_save(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        _stub_bridge(monkeypatch)
+        writer = FileBackedVersionStore(tmp_path)
+        first = _make_snapshot(trace_id="first-version")
+        first_version = writer.commit_change_package(first)
+        original_save = writer._save_index
+
+        def _save_after_reader_refresh(index: dict[str, str]) -> None:
+            assert first_version in writer.list_versions()
+            original_save(index)
+
+        monkeypatch.setattr(writer, "_save_index", _save_after_reader_refresh)
+        second = create_runtime_adg_snapshot(
+            trace_id="second-version",
+            mission="reader-writer-race",
+            started_at_utc=2,
+            ended_at_utc=3,
+            nodes=(_make_node(node_id="second-version"),),
+            edges=(),
+        )
+        second_version = writer.commit_change_package(second)
+
+        observed = json.loads((tmp_path / "_index.json").read_text(encoding="utf-8"))
+        assert observed[first_version] == first.snapshot_hash
+        assert observed[second_version] == second.snapshot_hash
+
+    def test_trace_reader_cannot_reset_writer_before_save(
+        self,
+        store: FileBackedRuntimeADGStore,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        first = _make_snapshot(trace_id="first-trace")
+        first_version = store.persist(first)
+        original_save = store._save_trace_index
+
+        def _save_after_reader_refresh(index: dict[str, str]) -> None:
+            assert store.get_version_id_for_trace("first-trace") == first_version
+            original_save(index)
+
+        monkeypatch.setattr(store, "_save_trace_index", _save_after_reader_refresh)
+        second = create_runtime_adg_snapshot(
+            trace_id="second-trace",
+            mission="trace-reader-writer-race",
+            started_at_utc=4,
+            ended_at_utc=5,
+            nodes=(_make_node(node_id="second-trace"),),
+            edges=(),
+        )
+        second_version = store.persist(second)
+
+        observed = json.loads(store._trace_index_path.read_text(encoding="utf-8"))
+        assert observed["first-trace"] == first_version
+        assert observed[first.snapshot_id] == first_version
+        assert observed["second-trace"] == second_version
+        assert observed[second.snapshot_id] == second_version
