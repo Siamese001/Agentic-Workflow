@@ -5,21 +5,40 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import pytest
+
+from apps_rg.fact_inventory import c03_graph_kpi_health as health_module
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import canonical_node_type
 from apps_rg.fact_inventory.c03_graph_kpi_health import (
     build_c03_graph_health_receipt,
-    compute_operational_cohort_digest,
     load_health_policy,
     main,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    PRODUCER_REGISTRY_VERSION as OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    SCHEMA_VERSION as OPERATIONAL_EVIDENCE_SCHEMA_VERSION,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    OperationalTrustContext,
+    compute_envelope_integrity,
+)
+from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    compute_sqlite_graph_digest,
+    compute_sqlite_schema_digest,
 )
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     collect_canonical_graph_issues,
 )
 
 GENERATED_AT = "2026-07-18T16:00:00Z"
+
+
 def _canonical_payload() -> dict[str, Any]:
     graph_nodes = [
         {
@@ -131,32 +150,90 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
         """
         CREATE TABLE graph_nodes (
             node_id TEXT PRIMARY KEY,
-            node_type TEXT NOT NULL
+            node_type TEXT NOT NULL,
+            label TEXT NOT NULL DEFAULT '',
+            description TEXT NOT NULL DEFAULT '',
+            activation_status TEXT NOT NULL DEFAULT '',
+            support_level TEXT NOT NULL DEFAULT '',
+            confidence TEXT NOT NULL DEFAULT '',
+            external_eligible INTEGER NOT NULL DEFAULT 0,
+            source_authority TEXT NOT NULL DEFAULT 'fixture',
+            created_at TEXT NOT NULL DEFAULT '2026-07-18T16:00:00Z',
+            updated_at TEXT NOT NULL DEFAULT '2026-07-18T16:00:00Z'
         );
         CREATE TABLE graph_edges (
             edge_id TEXT PRIMARY KEY,
             source_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             target_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
-            edge_type TEXT NOT NULL
+            edge_family TEXT NOT NULL DEFAULT '',
+            edge_type TEXT NOT NULL,
+            weight REAL NOT NULL DEFAULT 1.0,
+            confidence TEXT NOT NULL DEFAULT '',
+            directional INTEGER NOT NULL DEFAULT 1,
+            evidence_status TEXT NOT NULL DEFAULT '',
+            section_fit TEXT NOT NULL DEFAULT '',
+            source_authority TEXT NOT NULL DEFAULT 'fixture',
+            rationale TEXT NOT NULL DEFAULT '',
+            projection_behavior TEXT NOT NULL DEFAULT '',
+            external_claim_policy TEXT NOT NULL DEFAULT '',
+            validation_status TEXT NOT NULL DEFAULT '',
+            edge_note TEXT NOT NULL DEFAULT '',
+            operator_note TEXT NOT NULL DEFAULT '',
+            business_story TEXT NOT NULL DEFAULT '',
+            technical_story TEXT NOT NULL DEFAULT ''
         );
         CREATE TABLE skill_fact_links (
             skill_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             fact_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
+            support_level TEXT NOT NULL DEFAULT '',
+            claim_eligibility INTEGER NOT NULL DEFAULT 0,
+            source_trace TEXT NOT NULL DEFAULT '',
+            archive_trace TEXT NOT NULL DEFAULT '',
+            human_confirmed INTEGER NOT NULL DEFAULT 0,
+            external_eligible INTEGER NOT NULL DEFAULT 0,
             PRIMARY KEY (skill_id, fact_id)
         );
         CREATE TABLE section_eligibility (
             node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             section_id TEXT NOT NULL,
+            allowed INTEGER NOT NULL DEFAULT 0,
+            claim_policy TEXT NOT NULL DEFAULT '',
+            reason TEXT NOT NULL DEFAULT '',
+            blocked_reason TEXT NOT NULL DEFAULT '',
             PRIMARY KEY (node_id, section_id)
+        );
+        CREATE TABLE role_family_projection (
+            role_family_id TEXT PRIMARY KEY,
+            projection_role_family_key TEXT NOT NULL,
+            track_weight_profile TEXT NOT NULL DEFAULT '{}',
+            taxonomy_source TEXT NOT NULL DEFAULT '',
+            targeting_keywords TEXT NOT NULL DEFAULT '[]',
+            proof_policy_note TEXT NOT NULL DEFAULT ''
         );
         CREATE TABLE c03_skill_selection_features (
             skill_id TEXT PRIMARY KEY REFERENCES graph_nodes(node_id),
-            metric_bucket TEXT NOT NULL
+            pillar TEXT NOT NULL DEFAULT '',
+            subpillar TEXT NOT NULL DEFAULT '',
+            domain_id TEXT NOT NULL DEFAULT '',
+            career_track_id TEXT NOT NULL DEFAULT '',
+            skill_family TEXT NOT NULL DEFAULT '',
+            metric_bucket TEXT NOT NULL,
+            role_family_weights TEXT NOT NULL DEFAULT '{}',
+            allowed_sections TEXT NOT NULL DEFAULT '[]',
+            source_fact_count INTEGER NOT NULL DEFAULT 0,
+            confidence TEXT NOT NULL DEFAULT '',
+            activation_status TEXT NOT NULL DEFAULT '',
+            support_level TEXT NOT NULL DEFAULT '',
+            external_eligible INTEGER NOT NULL DEFAULT 0,
+            source_authority TEXT NOT NULL DEFAULT 'fixture',
+            source_trace TEXT NOT NULL DEFAULT '[]',
+            updated_at TEXT NOT NULL DEFAULT '2026-07-18T16:00:00Z'
         );
         CREATE TABLE c03_role_family_skill_weights (
             skill_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             role_family_key TEXT NOT NULL,
             weight REAL NOT NULL,
+            source TEXT NOT NULL DEFAULT 'fixture',
             PRIMARY KEY (skill_id, role_family_key)
         );
         CREATE TABLE graph_paths (
@@ -164,16 +241,28 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
             start_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             end_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             path_depth INTEGER NOT NULL,
+            path_signature TEXT NOT NULL DEFAULT '',
             node_path_json TEXT NOT NULL,
             edge_path_json TEXT NOT NULL,
-            edge_types_json TEXT NOT NULL
+            edge_types_json TEXT NOT NULL,
+            proof_fact_ids_json TEXT NOT NULL DEFAULT '[]',
+            metric_ids_json TEXT NOT NULL DEFAULT '[]',
+            section_ids_json TEXT NOT NULL DEFAULT '[]',
+            path_score REAL NOT NULL DEFAULT 0.0,
+            novelty_score REAL NOT NULL DEFAULT 0.0,
+            proof_strength_score REAL NOT NULL DEFAULT 0.0,
+            created_at TEXT NOT NULL DEFAULT '2026-07-18T16:00:00Z'
         );
         CREATE TABLE graph_sibling_links (
             node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             sibling_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
-            shared_parent_node_id TEXT NOT NULL,
+            sibling_reason TEXT NOT NULL DEFAULT '',
+            shared_parent_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
             shared_edge_type TEXT NOT NULL,
-            PRIMARY KEY (node_id, sibling_node_id)
+            sibling_score REAL NOT NULL DEFAULT 0.0,
+            PRIMARY KEY (
+                node_id,sibling_node_id,shared_parent_node_id,shared_edge_type
+            )
         );
         CREATE TABLE graph_neighborhoods (
             center_node_id TEXT NOT NULL REFERENCES graph_nodes(node_id),
@@ -181,7 +270,20 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
             distance INTEGER NOT NULL,
             connecting_path_json TEXT NOT NULL,
             edge_types_json TEXT NOT NULL,
+            relationship_summary TEXT NOT NULL DEFAULT '',
+            neighbor_score REAL NOT NULL DEFAULT 0.0,
             PRIMARY KEY (center_node_id, neighbor_node_id, distance)
+        );
+        CREATE TABLE section_evidence_budget (
+            section_id TEXT NOT NULL,
+            role_family_key TEXT NOT NULL,
+            max_metric_reuse INTEGER NOT NULL DEFAULT 1,
+            max_fact_family_reuse INTEGER NOT NULL DEFAULT 2,
+            required_node_types_json TEXT NOT NULL DEFAULT '[]',
+            preferred_edge_types_json TEXT NOT NULL DEFAULT '[]',
+            forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]',
+            preferred_metric_families_json TEXT NOT NULL DEFAULT '[]',
+            PRIMARY KEY (section_id, role_family_key)
         );
         CREATE TABLE graph_metadata (
             graph_version TEXT PRIMARY KEY,
@@ -193,7 +295,21 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
         SELECT edge_id,
                target_node_id AS source_node_id,
                source_node_id AS target_node_id,
-               edge_type || '_reverse' AS edge_type
+               edge_type || '_reverse' AS edge_type,
+               edge_family,
+               weight,
+               confidence,
+               evidence_status,
+               section_fit,
+               source_authority,
+               rationale,
+               projection_behavior,
+               external_claim_policy,
+               validation_status,
+               edge_note,
+               operator_note,
+               business_story,
+               technical_story
         FROM graph_edges;
         """
     )
@@ -289,6 +405,8 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
         "node_count_sqlite": len(nodes),
         "edge_count_sqlite": len(edges),
     }
+    summary["sqlite_graph_digest"] = compute_sqlite_graph_digest(conn)
+    summary["sqlite_schema_digest"] = compute_sqlite_schema_digest(conn)
     conn.execute(
         "INSERT INTO graph_metadata VALUES(?,?,?,?)",
         (
@@ -303,10 +421,11 @@ def _write_sqlite(path: Path, payload: dict[str, Any], *, ledger_hash: str | Non
 
 
 def _operational_evidence() -> dict[str, Any]:
-    evidence = {
+    return {
         "schema_version": "apps_rg.c03_graph_health_operational_evidence.v1",
         "authority_status": "VERIFIED",
         "cohort_id": "fixture-frozen-cohort",
+        "cohort_digest": "d" * 64,
         "decision_safe_regression": {"passed": 3, "total": 3},
         "source_currentness": {"current": 3, "total": 3},
         "source_freshness": {"fresh": 3, "total": 3},
@@ -315,7 +434,38 @@ def _operational_evidence() -> dict[str, Any]:
         "p0_sla": {"within_sla": 2, "total": 2},
         "p1_sla": {"within_sla": 2, "total": 2},
     }
-    evidence["cohort_digest"] = compute_operational_cohort_digest(evidence)
+
+
+def _untrusted_v2_operational_evidence() -> dict[str, Any]:
+    return _v2_operational_evidence(
+        candidate_commit_sha="a" * 40,
+        canonical_graph_sha256="b" * 64,
+        health_policy_sha256="c" * 64,
+        health_run_id="fixture-health-run",
+    )
+
+
+def _v2_operational_evidence(
+    *,
+    candidate_commit_sha: str,
+    canonical_graph_sha256: str,
+    health_policy_sha256: str,
+    health_run_id: str,
+) -> dict[str, Any]:
+    evidence: dict[str, Any] = {
+        "schema_version": OPERATIONAL_EVIDENCE_SCHEMA_VERSION,
+        "envelope_id": "fixture-operational-envelope",
+        "producer_registry_version": "apps_rg.c03_graph_operational_producer_registry.v1",
+        "assembled_at_utc": GENERATED_AT,
+        "subject": {
+            "candidate_commit_sha": candidate_commit_sha,
+            "canonical_graph_sha256": canonical_graph_sha256,
+            "health_policy_sha256": health_policy_sha256,
+            "health_run_id": health_run_id,
+        },
+        "bindings": {},
+    }
+    evidence["integrity_sha256"] = compute_envelope_integrity(evidence)
     return evidence
 
 
@@ -353,9 +503,29 @@ def test_receipt_is_deterministic_and_does_not_mutate_inputs(tmp_path: Path) -> 
     )
 
     assert first == second
-    assert first["control_plane_status"] == "PASS"
+    assert first["control_plane_status"] == "UNKNOWN"
     assert first["graph_data_readiness"] == "PASS"
-    assert first["overall_status"] == "PASS"
+    assert first["overall_status"] == "UNKNOWN"
+    assert len(first["metrics"]) == 39
+    assert first["status_counts"] == {"PASS": 32, "UNKNOWN": 7}
+    canonical_signatures = _metric(
+        first,
+        "canonical_projected_edge_signature_integrity",
+    )
+    sqlite_signatures = _metric(
+        first,
+        "sqlite_projected_edge_signature_integrity",
+    )
+    assert (
+        canonical_signatures["status"],
+        canonical_signatures["numerator"],
+        canonical_signatures["denominator"],
+    ) == ("PASS", 6, 6)
+    assert (
+        sqlite_signatures["status"],
+        sqlite_signatures["numerator"],
+        sqlite_signatures["denominator"],
+    ) == ("PASS", 6, 6)
     sibling = _metric(first, "sibling_integrity")
     assert sibling["status"] == "PASS"
     assert sibling["numerator"] == 6
@@ -367,13 +537,11 @@ def test_receipt_is_deterministic_and_does_not_mutate_inputs(tmp_path: Path) -> 
     assert not list(tmp_path.glob("graph.sqlite-*"))
 
 
-def test_operational_cohort_digest_is_recomputed_from_normalized_evidence(
+def test_legacy_self_attested_operational_evidence_is_rejected(
     tmp_path: Path,
 ) -> None:
     canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
     evidence = _operational_evidence()
-    original_digest = evidence["cohort_digest"]
-    evidence["decision_safe_regression"]["passed"] = 2
 
     receipt = build_c03_graph_health_receipt(
         canonical_path=canonical_path,
@@ -383,17 +551,67 @@ def test_operational_cohort_digest_is_recomputed_from_normalized_evidence(
     )
 
     metric = _metric(receipt, "decision_safe_regression")
-    assert original_digest != compute_operational_cohort_digest(evidence)
     assert metric["status"] == "UNKNOWN"
-    assert metric["unknown_reason"] == "operational_evidence_cohort_digest_mismatch"
+    assert metric["unknown_reason"] == "legacy_or_unsupported_operational_evidence_schema"
 
 
-def test_operational_cohort_digest_normalizes_failure_locator_order() -> None:
-    evidence = _operational_evidence()
-    evidence["p0_sla"]["failure_locators"] = [{"id": "b"}, {"id": "a"}]
-    first = compute_operational_cohort_digest(evidence)
-    evidence["p0_sla"]["failure_locators"].reverse()
-    assert compute_operational_cohort_digest(evidence) == first
+def test_v2_operational_evidence_without_out_of_band_trust_is_unknown(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_untrusted_v2_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "decision_safe_regression")
+    assert metric["status"] == "UNKNOWN"
+    assert metric["unknown_reason"] == "operational_trust_context_not_supplied"
+
+
+def test_v2_envelope_is_verified_only_after_binding_to_actual_health_inputs(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, payload = _fixture_paths(tmp_path)
+    candidate_commit_sha = "a" * 40
+    health_run_id = "fixture-health-run"
+    canonical_graph_sha256 = _canonical_digest(payload)
+    health_policy_sha256 = _canonical_digest(load_health_policy())
+    evidence = _v2_operational_evidence(
+        candidate_commit_sha=candidate_commit_sha,
+        canonical_graph_sha256=canonical_graph_sha256,
+        health_policy_sha256=health_policy_sha256,
+        health_run_id=health_run_id,
+    )
+    trust_context = OperationalTrustContext(
+        artifact_roots={},
+        authority_anchors={},
+        expected_candidate_commit_sha=candidate_commit_sha,
+        expected_canonical_graph_sha256=canonical_graph_sha256,
+        expected_health_policy_sha256=health_policy_sha256,
+        expected_health_run_id=health_run_id,
+        observed_at_utc=datetime(2026, 7, 18, 17, 0, tzinfo=timezone.utc),
+    )
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=evidence,
+        operational_trust_context=trust_context,
+        candidate_commit_sha=candidate_commit_sha,
+        run_id=health_run_id,
+    )
+
+    metric = _metric(receipt, "decision_safe_regression")
+    assert metric["status"] == "UNKNOWN"
+    assert metric["unknown_reason"] == "binding_missing"
+    assert metric["details"]["envelope_schema_valid"] is True
+    assert metric["details"]["envelope_integrity_valid"] is True
+    assert metric["details"]["envelope_subject_valid"] is True
+    assert receipt["versions"]["operational_trust_context_supplied"] is True
 
 
 def test_missing_sqlite_blocks_without_creating_or_materializing_it(tmp_path: Path) -> None:
@@ -442,7 +660,6 @@ def test_unavailable_authority_dimensions_are_unknown_never_pass(tmp_path: Path)
     assert receipt["overall_status"] == "UNKNOWN"
 
     unverified = _operational_evidence()
-    unverified["authority_status"] = "UNVERIFIED"
     unverified_receipt = build_c03_graph_health_receipt(
         canonical_path=canonical_path,
         sqlite_path=sqlite_path,
@@ -462,14 +679,11 @@ def test_zero_denominator_is_unknown_not_pass(tmp_path: Path) -> None:
     sqlite_path.unlink()
     _write_sqlite(sqlite_path, payload)
 
-    evidence = _operational_evidence()
-    evidence["p0_sla"] = {"within_sla": 0, "total": 0}
-    evidence["cohort_digest"] = compute_operational_cohort_digest(evidence)
     receipt = build_c03_graph_health_receipt(
         canonical_path=canonical_path,
         sqlite_path=sqlite_path,
         generated_at=GENERATED_AT,
-        operational_evidence=evidence,
+        operational_evidence=_operational_evidence(),
     )
 
     metric = _metric(receipt, "claim_evidence_completeness")
@@ -523,9 +737,7 @@ def test_projection_row_tampering_blocks_even_when_ledger_hash_is_unchanged(
     canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
     conn = sqlite3.connect(sqlite_path)
     ledger_hash_before = conn.execute("SELECT ledger_hash FROM graph_metadata").fetchone()[0]
-    conn.execute(
-        "UPDATE graph_edges SET edge_type='tampered_edge_type' WHERE edge_id='edge_skill_fact_1'"
-    )
+    conn.execute("UPDATE graph_edges SET edge_type='tampered_edge_type' WHERE edge_id='edge_skill_fact_1'")
     conn.commit()
     assert conn.execute("SELECT ledger_hash FROM graph_metadata").fetchone()[0] == ledger_hash_before
     conn.close()
@@ -539,10 +751,230 @@ def test_projection_row_tampering_blocks_even_when_ledger_hash_is_unchanged(
 
     metric = _metric(receipt, "canonical_sqlite_digest_match")
     assert metric["status"] == "BLOCK"
-    assert metric["failure_count"] == 1
+    assert metric["failure_count"] == 2
     assert any(
         row.get("binding") == "canonical_projection_semantic_digest"
         for row in metric["sample_failure_locators"]
+    )
+    assert any(
+        row.get("binding") == "sqlite_projection_logical_digest" for row in metric["sample_failure_locators"]
+    )
+
+
+def test_canonical_signature_metric_reports_exact_wrong_endpoint_types(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, payload = _fixture_paths(tmp_path)
+    next(row for row in payload["graph_nodes"] if row["node_id"] == "skill_1")["node_type"] = "metric"
+    _write_canonical(canonical_path, payload)
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "canonical_projected_edge_signature_integrity")
+    assert metric["status"] == "MIGRATION_REQUIRED"
+    assert metric["numerator"] == 4
+    assert metric["denominator"] == 6
+    assert metric["failure_count"] == 2
+    assert {
+        (
+            row["edge_id"],
+            row["edge_type"],
+            row["source_type"],
+            row["target_type"],
+        )
+        for row in metric["sample_failure_locators"]
+    } == {
+        ("edge_domain_skill_1", "capability_domain_contains_skill", "capability_domain", "metric"),
+        ("edge_skill_fact_1", "skill_supported_by_fact", "metric", "fact"),
+    }
+
+
+def test_sqlite_signature_metric_reports_exact_wrong_endpoint_types(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute("UPDATE graph_nodes SET node_type='metric' WHERE node_id='skill_1'")
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "sqlite_projected_edge_signature_integrity")
+    assert metric["status"] == "MIGRATION_REQUIRED"
+    assert metric["numerator"] == 4
+    assert metric["denominator"] == 6
+    assert metric["failure_count"] == 2
+    assert {
+        (
+            row["edge_id"],
+            row["edge_type"],
+            row["source_type"],
+            row["target_type"],
+        )
+        for row in metric["sample_failure_locators"]
+    } == {
+        ("edge_domain_skill_1", "capability_domain_contains_skill", "capability_domain", "metric"),
+        ("edge_skill_fact_1", "skill_supported_by_fact", "metric", "fact"),
+    }
+
+
+@pytest.mark.parametrize(
+    ("canonical_raw_type", "wrong_projected_type"),
+    (("metric", "metric_bucket"), ("metric_bucket", "metric_outcome")),
+)
+def test_semantic_digest_distinguishes_metric_type_family_members(
+    tmp_path: Path,
+    canonical_raw_type: str,
+    wrong_projected_type: str,
+) -> None:
+    payload = _canonical_payload()
+    payload["graph_nodes"].append(
+        {
+            "node_id": "semantic_metric_node",
+            "node_type": canonical_raw_type,
+            "label": "Semantic metric node",
+            "source_refs": ["source://metric/semantic"],
+            "support_level": "DIRECT_FROM_RESUME_ARCHIVE",
+            "visibility_rule": "role_family_match",
+            "external_claim_policy": "derived_supported_with_fact",
+        }
+    )
+    payload["graph_metadata"]["node_count"] = len(payload["graph_nodes"])
+    canonical_path = tmp_path / "canonical.json"
+    sqlite_path = tmp_path / "graph.sqlite"
+    _write_canonical(canonical_path, payload)
+    _write_sqlite(sqlite_path, payload)
+
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        "UPDATE graph_nodes SET node_type=? WHERE node_id='semantic_metric_node'",
+        (wrong_projected_type,),
+    )
+    raw_summary = conn.execute("SELECT graph_count_summary FROM graph_metadata").fetchone()[0]
+    summary = json.loads(raw_summary)
+    summary["sqlite_graph_digest"] = compute_sqlite_graph_digest(conn)
+    conn.execute(
+        "UPDATE graph_metadata SET graph_count_summary=?",
+        (json.dumps(summary, sort_keys=True),),
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "canonical_sqlite_digest_match")
+    assert metric["status"] == "BLOCK"
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["binding"] == ("canonical_projection_semantic_digest")
+    assert (
+        receipt["digests"]["canonical_graph_semantic_sha256"]
+        != receipt["digests"]["sqlite_projection_canonical_semantic_sha256"]
+    )
+
+
+def test_same_count_authority_tampering_blocks_on_full_projection_digest(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        "UPDATE skill_fact_links SET claim_eligibility=1 WHERE skill_id='skill_1' AND fact_id='fact_shared'"
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "canonical_sqlite_digest_match")
+    assert metric["status"] == "BLOCK"
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["binding"] == ("sqlite_projection_logical_digest")
+    assert (
+        receipt["digests"]["canonical_graph_semantic_sha256"]
+        == receipt["digests"]["sqlite_projection_canonical_semantic_sha256"]
+    )
+    assert (
+        receipt["digests"]["sqlite_projection_logical_stored_sha256"]
+        != receipt["digests"]["sqlite_projection_logical_recomputed_sha256"]
+    )
+
+
+def test_ranking_table_tampering_is_bound_by_full_projection_digest(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        "UPDATE section_eligibility SET reason='tampered-ranking-policy' "
+        "WHERE node_id='skill_1' AND section_id='competencies'"
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "canonical_sqlite_digest_match")
+    assert metric["status"] == "BLOCK"
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["binding"] == ("sqlite_projection_logical_digest")
+
+
+def test_same_column_view_definition_drift_is_bound_by_schema_digest(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    original_sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='view' AND name='graph_edges_reverse'"
+    ).fetchone()[0]
+    original_columns = tuple(row[1] for row in conn.execute("PRAGMA table_info(graph_edges_reverse)"))
+    conn.execute("DROP VIEW graph_edges_reverse")
+    conn.execute(f"{original_sql} WHERE 1 = 1")
+    drifted_columns = tuple(row[1] for row in conn.execute("PRAGMA table_info(graph_edges_reverse)"))
+    assert drifted_columns == original_columns
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+
+    metric = _metric(receipt, "canonical_sqlite_digest_match")
+    assert metric["status"] == "BLOCK"
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["binding"] == ("sqlite_projection_schema_digest")
+    assert (
+        receipt["digests"]["sqlite_projection_schema_stored_sha256"]
+        != receipt["digests"]["sqlite_projection_schema_recomputed_sha256"]
     )
 
 
@@ -552,10 +984,7 @@ def test_locking_aware_reader_observes_committed_wal_state(tmp_path: Path) -> No
     try:
         assert writer.execute("PRAGMA journal_mode=WAL").fetchone()[0].lower() == "wal"
         writer.execute("PRAGMA wal_autocheckpoint=0")
-        writer.execute(
-            "UPDATE graph_edges SET edge_type='tampered_in_wal' "
-            "WHERE edge_id='edge_skill_fact_1'"
-        )
+        writer.execute("UPDATE graph_edges SET edge_type='tampered_in_wal' WHERE edge_id='edge_skill_fact_1'")
         writer.commit()
         sidecars_before = sorted(path.name for path in tmp_path.glob(f"{sqlite_path.name}-*"))
 
@@ -570,6 +999,50 @@ def test_locking_aware_reader_observes_committed_wal_state(tmp_path: Path) -> No
         assert _metric(receipt, "sqlite_read_purity")["status"] == "PASS"
         assert receipt["digests"]["sqlite_sidecars_before"] == sidecars_before
         assert receipt["digests"]["sqlite_sidecars_after"] == sidecars_before
+    finally:
+        writer.close()
+
+
+def test_health_metrics_remain_bound_to_one_wal_snapshot(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    writer = sqlite3.connect(sqlite_path)
+    try:
+        assert writer.execute("PRAGMA journal_mode=WAL").fetchone()[0].lower() == "wal"
+        writer.execute("PRAGMA wal_autocheckpoint=0")
+        real_digest = health_module.compute_sqlite_graph_digest
+        committed = False
+
+        def _commit_after_snapshot(conn: sqlite3.Connection) -> str:
+            nonlocal committed
+            if not committed:
+                writer.execute(
+                    "UPDATE graph_nodes SET label='committed-after-health-snapshot' WHERE node_id='skill_1'"
+                )
+                writer.commit()
+                committed = True
+            return real_digest(conn)
+
+        monkeypatch.setattr(
+            health_module,
+            "compute_sqlite_graph_digest",
+            _commit_after_snapshot,
+        )
+
+        receipt = build_c03_graph_health_receipt(
+            canonical_path=canonical_path,
+            sqlite_path=sqlite_path,
+            generated_at=GENERATED_AT,
+        )
+
+        assert committed is True
+        assert _metric(receipt, "canonical_sqlite_digest_match")["status"] == "PASS"
+        assert (
+            writer.execute("SELECT label FROM graph_nodes WHERE node_id='skill_1'").fetchone()[0]
+            == "committed-after-health-snapshot"
+        )
     finally:
         writer.close()
 
@@ -634,6 +1107,56 @@ def test_required_empty_sibling_and_neighborhood_materializations_fail(
     assert neighborhood["status"] == "FAIL"
     assert neighborhood["failure_count"] > 0
     assert receipt["graph_data_readiness"] == "NOT_READY"
+
+
+def test_path_integrity_fails_when_one_required_direct_path_is_truncated(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute("DELETE FROM graph_paths WHERE path_id='path_edge_domain_skill_1'")
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+    metric = _metric(receipt, "path_integrity")
+
+    assert metric["status"] == "MIGRATION_REQUIRED"
+    assert (metric["numerator"], metric["denominator"]) == (5, 6)
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["reasons"] == ["expected_direct_path_missing"]
+
+
+def test_neighborhood_integrity_fails_when_one_required_direct_row_is_truncated(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        "DELETE FROM graph_neighborhoods "
+        "WHERE center_node_id='domain_platform' AND neighbor_node_id='skill_1' "
+        "AND distance=1"
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+    metric = _metric(receipt, "neighborhood_integrity")
+
+    assert metric["status"] == "FAIL"
+    assert (metric["numerator"], metric["denominator"]) == (11, 12)
+    assert metric["failure_count"] == 1
+    assert metric["sample_failure_locators"][0]["reasons"] == ["expected_direct_neighborhood_missing"]
 
 
 def test_sibling_integrity_fails_when_a_reciprocal_pair_is_partially_truncated(
@@ -761,6 +1284,120 @@ def test_explicit_endpoint_closure_is_diagnostic_when_registered_derivations_are
     assert policy["metrics"]["registered_endpoint_closure"]["required"] is True
 
 
+@pytest.mark.parametrize(
+    ("field", "expected"),
+    [
+        ("operational_evidence_schema_version", OPERATIONAL_EVIDENCE_SCHEMA_VERSION),
+        ("operational_producer_registry_version", OPERATIONAL_PRODUCER_REGISTRY_VERSION),
+    ],
+)
+def test_health_policy_rejects_operational_contract_drift(
+    tmp_path: Path,
+    field: str,
+    expected: str,
+) -> None:
+    policy = load_health_policy()
+    assert policy[field] == expected
+    policy[field] = f"{expected}.stale"
+    policy_path = tmp_path / "policy.json"
+    policy_path.write_text(json.dumps(policy), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="operational"):
+        load_health_policy(policy_path)
+
+
+def _write_policy(tmp_path: Path, policy: dict[str, Any]) -> Path:
+    policy_path = tmp_path / "policy.json"
+    policy_path.write_text(json.dumps(policy), encoding="utf-8")
+    return policy_path
+
+
+def test_health_policy_rejects_policy_version_drift(tmp_path: Path) -> None:
+    policy = load_health_policy()
+    policy["policy_version"] = f"{policy['policy_version']}.stale"
+
+    with pytest.raises(ValueError, match="policy version"):
+        load_health_policy(_write_policy(tmp_path, policy))
+
+
+@pytest.mark.parametrize("registry_drift", ["missing", "extra"])
+def test_health_policy_rejects_exact_metric_registry_drift(
+    tmp_path: Path,
+    registry_drift: str,
+) -> None:
+    policy = load_health_policy()
+    if registry_drift == "missing":
+        policy["metrics"].pop("path_integrity")
+    else:
+        policy["metrics"]["unregistered_metric"] = dict(policy["metrics"]["path_integrity"])
+
+    with pytest.raises(ValueError, match="metric registry drift"):
+        load_health_policy(_write_policy(tmp_path, policy))
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("plane", "other_plane", "plane"),
+        ("operator", ">", "operator"),
+        ("target", float("nan"), "target"),
+        ("failure_status", "PASS", "failure_status"),
+        ("required", 1, "required"),
+    ],
+    ids=("plane", "operator", "nonfinite-target", "failure-status", "required-type"),
+)
+def test_health_policy_rejects_malformed_metric_specs(
+    tmp_path: Path,
+    field: str,
+    value: Any,
+    message: str,
+) -> None:
+    policy = load_health_policy()
+    policy["metrics"]["path_integrity"][field] = value
+
+    with pytest.raises(ValueError, match=message):
+        load_health_policy(_write_policy(tmp_path, policy))
+
+
+def test_health_policy_rejects_ignored_metric_spec_fields(tmp_path: Path) -> None:
+    policy = load_health_policy()
+    policy["metrics"]["path_integrity"]["ignored_override"] = True
+
+    with pytest.raises(ValueError, match="fields drift"):
+        load_health_policy(_write_policy(tmp_path, policy))
+
+
+def test_noncanonical_operational_evidence_fails_closed(tmp_path: Path) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    cyclic_evidence: dict[str, Any] = {}
+    cyclic_evidence["self"] = cyclic_evidence
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        operational_evidence=cyclic_evidence,
+        generated_at=GENERATED_AT,
+    )
+
+    operational_metrics = [
+        _metric(receipt, metric_id)
+        for metric_id in (
+            "decision_safe_regression",
+            "source_currentness",
+            "source_freshness",
+            "hitl_approval_coverage",
+            "write_audit_coverage",
+            "p0_sla_compliance",
+            "p1_sla_compliance",
+        )
+    ]
+    assert {row["status"] for row in operational_metrics} == {"UNKNOWN"}
+    assert {row["unknown_reason"] for row in operational_metrics} == {
+        "operational_evidence_not_canonical_json"
+    }
+    assert receipt["digests"]["operational_evidence_sha256"] is None
+
+
 def test_current_canonical_missing_source_refs_are_measured_not_filled() -> None:
     repo_root = Path(__file__).resolve().parents[4]
     canonical_path = repo_root / "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
@@ -805,12 +1442,15 @@ def test_cli_prints_by_default_and_writes_only_for_explicit_output(
         GENERATED_AT,
     ]
 
-    assert main(args) == 0
+    assert main(args) == 2
     printed = json.loads(capsys.readouterr().out)
-    assert printed["overall_status"] == "PASS"
+    assert printed["overall_status"] == "UNKNOWN"
+    assert _metric(printed, "decision_safe_regression")["unknown_reason"] == (
+        "legacy_or_unsupported_operational_evidence_schema"
+    )
     assert not output_path.exists()
 
-    assert main([*args, "--output", str(output_path)]) == 0
+    assert main([*args, "--output", str(output_path)]) == 2
     written = json.loads(output_path.read_text(encoding="utf-8"))
-    assert written["overall_status"] == "PASS"
+    assert written["overall_status"] == "UNKNOWN"
     assert json.loads(capsys.readouterr().out) == written

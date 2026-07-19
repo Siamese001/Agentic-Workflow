@@ -21,8 +21,9 @@ import sqlite3
 from pathlib import Path
 
 from tools.generate.infra_wiring_views import materialize_receipt_ast_sites
-from tools.generate.materialized_views.sqlite_helpers import connect_sqlite_for_mv as _connect_sqlite
-
+from tools.generate.materialized_views.sqlite_helpers import (
+    connect_sqlite_for_mv as _connect_sqlite,
+)
 
 _PHASE_A_TABLES: tuple[str, ...] = (
     "mv_critical_path_segments",
@@ -508,6 +509,10 @@ _NON_DURABLE_ARTIFACT_HELPER_SITES = (
     ("compute_replay_hash", "agentic_core/L2_execution/types/vllm_replay_validator_types.py"),
     ("get_write_gateway", "agentic_core/L2_execution/enforcement/write_governor_mixin.py"),
     ("self.log_event", "apps_shared/utils/security_config_util.py"),
+    # These O_EXCL calls create ephemeral coordination lock files; they do not
+    # mutate durable application state.
+    ("os.open", "agentic_core/L6_system_learning/stores/index_file_lock.py"),
+    ("os.open", "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py"),
 )
 
 # Path fragments identifying NON-DURABLE WRITE TARGETS — writes to these locations

@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 import apps_rg.fact_inventory.apply_graphdb_capability_sqlite_hardening as applicator_module
+import apps_rg.fact_inventory.augmented_skills_graph_sqlite as graph_sqlite_module
 from apps_rg.fact_inventory.apply_graphdb_capability_sqlite_hardening import (
     apply_graphdb_capability_sqlite_hardening,
 )
@@ -58,7 +59,7 @@ def _create_source_db(db_path: Path, *, orphan_edge: bool = False) -> None:
             (
                 ("skill_a", "skill", "Skill A"),
                 ("fact_a", "fact", "Fact A"),
-                ("metric_a", "metric_outcome", "Metric A"),
+                ("metric_a", "metric", "Metric A"),
             ),
         )
         target = "missing_node" if orphan_edge else "fact_a"
@@ -77,6 +78,21 @@ def _create_source_db(db_path: Path, *, orphan_edge: bool = False) -> None:
 
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _refresh_generated_projection_counts(conn: sqlite3.Connection) -> None:
+    summary = json.loads(conn.execute("SELECT graph_count_summary FROM graph_metadata").fetchone()[0])
+    for key, table_name in (
+        ("graph_path_count", "graph_paths"),
+        ("graph_neighborhood_count", "graph_neighborhoods"),
+        ("graph_sibling_link_count", "graph_sibling_links"),
+    ):
+        summary[key] = int(conn.execute(f"SELECT COUNT(*) FROM {table_name}").fetchone()[0])
+    conn.execute(
+        "UPDATE graph_metadata SET graph_count_summary=?",
+        (json.dumps(summary, sort_keys=True),),
+    )
+    conn.commit()
 
 
 def test_fresh_capability_schema_enforces_safe_row_constraints() -> None:
@@ -131,12 +147,8 @@ def test_fresh_materializer_schema_declares_expected_foreign_keys() -> None:
                 ("fact_id", "graph_nodes", "node_id"),
             },
             "section_eligibility": {("node_id", "graph_nodes", "node_id")},
-            "c03_skill_selection_features": {
-                ("skill_id", "graph_nodes", "node_id")
-            },
-            "c03_role_family_skill_weights": {
-                ("skill_id", "graph_nodes", "node_id")
-            },
+            "c03_skill_selection_features": {("skill_id", "graph_nodes", "node_id")},
+            "c03_role_family_skill_weights": {("skill_id", "graph_nodes", "node_id")},
             "graph_paths": {
                 ("start_node_id", "graph_nodes", "node_id"),
                 ("end_node_id", "graph_nodes", "node_id"),
@@ -148,6 +160,7 @@ def test_fresh_materializer_schema_declares_expected_foreign_keys() -> None:
             "graph_sibling_links": {
                 ("node_id", "graph_nodes", "node_id"),
                 ("sibling_node_id", "graph_nodes", "node_id"),
+                ("shared_parent_node_id", "graph_nodes", "node_id"),
             },
         }
         for table, expected_mappings in expected.items():
@@ -160,7 +173,88 @@ def test_fresh_materializer_schema_declares_expected_foreign_keys() -> None:
         conn.close()
 
 
-def test_legacy_schema_cannot_be_stamped_v3_and_applicator_rebuilds_it(
+def test_fresh_materializer_schema_uses_context_preserving_sibling_primary_key() -> None:
+    conn = sqlite3.connect(":memory:")
+    try:
+        for ddl in DDL_STATEMENTS:
+            conn.execute(ddl)
+        primary_key = tuple(
+            str(row[1])
+            for row in sorted(
+                conn.execute("PRAGMA table_info(graph_sibling_links)"),
+                key=lambda row: int(row[5]) if int(row[5]) else 999,
+            )
+            if int(row[5])
+        )
+        assert primary_key == (
+            "node_id",
+            "sibling_node_id",
+            "shared_parent_node_id",
+            "shared_edge_type",
+        )
+        assert (
+            tuple(str(row[2]) for row in conn.execute("PRAGMA index_info(idx_sibling_context_lookup)"))
+            == primary_key
+        )
+    finally:
+        conn.close()
+
+
+def test_graph_health_policy_requires_sibling_parent_foreign_key() -> None:
+    policy = json.loads(
+        (Path(__file__).resolve().parents[4] / "apps_rg/config/c03_graph_health_policy.v2.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert policy["policy_version"] == "c03_graph_health_policy.v4.producer_bound_operational_evidence"
+    assert {
+        "table": "graph_sibling_links",
+        "from": "shared_parent_node_id",
+        "to_table": "graph_nodes",
+        "to": "node_id",
+    } in policy["required_foreign_keys"]
+
+
+def test_require_schema_rejects_legacy_two_column_sibling_primary_key() -> None:
+    conn = sqlite3.connect(":memory:")
+    conn.execute("PRAGMA foreign_keys=ON")
+    for ddl in DDL_STATEMENTS[:3]:
+        conn.execute(ddl)
+    conn.commit()
+    try:
+        ensure_graphdb_capability_schema(conn)
+        conn.execute("DROP TABLE graph_sibling_links")
+        conn.execute(
+            """
+            CREATE TABLE graph_sibling_links (
+                node_id TEXT NOT NULL,
+                sibling_node_id TEXT NOT NULL,
+                sibling_reason TEXT NOT NULL DEFAULT '',
+                shared_parent_node_id TEXT NOT NULL DEFAULT '',
+                shared_edge_type TEXT NOT NULL DEFAULT '',
+                sibling_score REAL NOT NULL DEFAULT 0.0,
+                PRIMARY KEY (node_id, sibling_node_id),
+                CHECK (node_id <> sibling_node_id),
+                FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id),
+                FOREIGN KEY (sibling_node_id) REFERENCES graph_nodes(node_id)
+            )
+            """
+        )
+        conn.execute("CREATE INDEX idx_sibling_node ON graph_sibling_links(node_id)")
+        conn.execute("CREATE INDEX idx_sibling_peer ON graph_sibling_links(sibling_node_id)")
+        conn.execute(
+            "CREATE INDEX idx_sibling_node_score ON graph_sibling_links(node_id, sibling_score DESC)"
+        )
+        conn.commit()
+
+        with pytest.raises(ValueError, match="graph_sibling_links primary key mismatch"):
+            require_graphdb_capability_schema(conn)
+    finally:
+        conn.close()
+
+
+def test_legacy_schema_cannot_be_stamped_as_current_and_applicator_rebuilds_it(
     tmp_path: Path,
 ) -> None:
     db_path = tmp_path / "legacy.sqlite"
@@ -170,10 +264,7 @@ def test_legacy_schema_cannot_be_stamped_v3_and_applicator_rebuilds_it(
         with pytest.raises(ValueError, match="explicit atomic applicator"):
             ensure_graphdb_capability_schema(conn)
         assert "graph_paths" not in {
-            str(row[0])
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )
+            str(row[0]) for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
         }
     finally:
         conn.close()
@@ -200,13 +291,8 @@ def test_legacy_schema_cannot_be_stamped_v3_and_applicator_rebuilds_it(
             ("source_node_id", "graph_nodes", "node_id"),
             ("target_node_id", "graph_nodes", "node_id"),
         }
-        summary = json.loads(
-            conn.execute("SELECT graph_count_summary FROM graph_metadata").fetchone()[0]
-        )
-        assert (
-            summary["c03_sqlite_materializer_code_version"]
-            == C03_SQLITE_MATERIALIZER_CODE_VERSION
-        )
+        summary = json.loads(conn.execute("SELECT graph_count_summary FROM graph_metadata").fetchone()[0])
+        assert summary["c03_sqlite_materializer_code_version"] == C03_SQLITE_MATERIALIZER_CODE_VERSION
         assert summary["graph_index_schema_version"] == GRAPH_INDEX_SCHEMA_VERSION
     finally:
         conn.close()
@@ -267,6 +353,117 @@ def test_validator_rejects_cross_row_corruption(tmp_path: Path) -> None:
         )
 
 
+def test_validator_rejects_missing_direct_edge_path_with_refreshed_count(
+    tmp_path: Path,
+) -> None:
+    db_path = tmp_path / "graph.sqlite"
+    _create_source_db(db_path)
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute(
+            "INSERT INTO graph_edges(edge_id,source_node_id,target_node_id,edge_type) "
+            "VALUES ('edge_b','skill_a','metric_a','skill_can_surface_metric')"
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    apply_graphdb_capability_sqlite_hardening(repo_root=tmp_path, db_path=db_path)
+
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute(
+            "DELETE FROM graph_paths WHERE path_id=("
+            "SELECT path_id FROM graph_paths WHERE path_depth=1 LIMIT 1)"
+        )
+        _refresh_generated_projection_counts(conn)
+    finally:
+        conn.close()
+
+    with pytest.raises(
+        ValueError,
+        match="graph_edge_depth1_path_identity_mismatches=1",
+    ):
+        validate_graph_sqlite_path_index(repo_root=tmp_path, db_path=db_path)
+
+
+def test_validator_rejects_missing_direct_neighborhood_with_refreshed_count(
+    tmp_path: Path,
+) -> None:
+    db_path = tmp_path / "graph.sqlite"
+    _create_source_db(db_path)
+    apply_graphdb_capability_sqlite_hardening(repo_root=tmp_path, db_path=db_path)
+
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.execute(
+            "DELETE FROM graph_neighborhoods WHERE rowid=("
+            "SELECT rowid FROM graph_neighborhoods WHERE distance=1 LIMIT 1)"
+        )
+        _refresh_generated_projection_counts(conn)
+    finally:
+        conn.close()
+
+    with pytest.raises(
+        ValueError,
+        match="graph_edge_distance1_neighborhood_mismatches=1",
+    ):
+        validate_graph_sqlite_path_index(repo_root=tmp_path, db_path=db_path)
+
+
+def test_validator_rejects_missing_reciprocal_sibling_context_set(
+    tmp_path: Path,
+) -> None:
+    db_path = tmp_path / "graph.sqlite"
+    _create_source_db(db_path)
+    conn = sqlite3.connect(db_path)
+    try:
+        conn.executemany(
+            "INSERT INTO graph_nodes(node_id,node_type,label) VALUES (?,?,?)",
+            (
+                ("parent_a", "capability_domain", "Parent A"),
+                ("skill_b", "skill", "Skill B"),
+            ),
+        )
+        conn.executemany(
+            "INSERT INTO graph_edges(edge_id,source_node_id,target_node_id,edge_type) VALUES (?,?,?,?)",
+            (
+                (
+                    "edge_parent_skill",
+                    "parent_a",
+                    "skill_a",
+                    "capability_domain_contains_skill",
+                ),
+                (
+                    "edge_parent_skill_b",
+                    "parent_a",
+                    "skill_b",
+                    "capability_domain_contains_skill",
+                ),
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+    apply_graphdb_capability_sqlite_hardening(repo_root=tmp_path, db_path=db_path)
+
+    conn = sqlite3.connect(db_path)
+    try:
+        deleted = conn.execute(
+            "DELETE FROM graph_sibling_links WHERE shared_parent_node_id='parent_a' "
+            "AND shared_edge_type='capability_domain_contains_skill'"
+        ).rowcount
+        assert deleted == 2
+        _refresh_generated_projection_counts(conn)
+    finally:
+        conn.close()
+
+    with pytest.raises(
+        ValueError,
+        match="graph_sibling_context_set_mismatches=2",
+    ):
+        validate_graph_sqlite_path_index(repo_root=tmp_path, db_path=db_path)
+
+
 def test_validator_rejects_malformed_json_projection_data(tmp_path: Path) -> None:
     db_path = tmp_path / "graph.sqlite"
     _create_source_db(db_path)
@@ -305,14 +502,14 @@ def test_validator_rejects_path_edge_continuity_corruption(tmp_path: Path) -> No
             """
             INSERT INTO graph_edges (
                 edge_id,source_node_id,target_node_id,edge_type
-            ) VALUES ('edge_b','fact_a','metric_a','fact_has_metric_outcome')
+            ) VALUES ('edge_b','skill_a','metric_a','skill_can_surface_metric')
             """
         )
         conn.execute(
             """
             UPDATE graph_paths
             SET edge_path_json='["edge_b"]',
-                edge_types_json='["fact_has_metric_outcome"]'
+                edge_types_json='["skill_can_surface_metric"]'
             WHERE path_depth=1
             """
         )
@@ -340,9 +537,7 @@ def test_validator_rejects_neighborhood_hop_corruption(tmp_path: Path) -> None:
     finally:
         conn.close()
 
-    with pytest.raises(
-        ValueError, match="graph_neighborhood_hop_continuity_mismatches"
-    ):
+    with pytest.raises(ValueError, match="graph_neighborhood_hop_continuity_mismatches"):
         validate_graph_sqlite_path_index(repo_root=tmp_path, db_path=db_path)
 
 
@@ -415,17 +610,150 @@ def test_atomic_applicator_cas_rejects_committed_concurrent_write(
 
     conn = sqlite3.connect(db_path)
     try:
-        assert conn.execute(
-            "SELECT COUNT(*) FROM graph_nodes WHERE node_id='concurrent_node'"
-        ).fetchone()[0] == 1
+        assert (
+            conn.execute("SELECT COUNT(*) FROM graph_nodes WHERE node_id='concurrent_node'").fetchone()[0]
+            == 1
+        )
         assert "graph_paths" not in {
-            str(row[0])
-            for row in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )
+            str(row[0]) for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
         }
     finally:
         conn.close()
+
+
+def test_isolated_temp_writer_refuses_canonical_target(tmp_path: Path) -> None:
+    db_path = tmp_path / "graph.sqlite"
+
+    with pytest.raises(RuntimeError, match="unique sibling temp path.*refuses"):
+        graph_sqlite_module._open_isolated_temp_graph_sqlite(
+            temp_path=db_path,
+            canonical_target=db_path,
+        )
+
+    assert not db_path.exists()
+
+
+def test_applicator_writes_only_sibling_temp_before_atomic_replace(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db_path = tmp_path / "graph.sqlite"
+    _create_source_db(db_path)
+    events: list[tuple[str, Path, Path]] = []
+    original_open = applicator_module._open_isolated_temp_graph_sqlite
+    original_replace = applicator_module._replace_sqlite_projection_if_unchanged
+
+    def record_open(
+        *,
+        temp_path: Path,
+        canonical_target: Path,
+    ) -> sqlite3.Connection:
+        events.append(("open", temp_path, canonical_target))
+        conn = original_open(
+            temp_path=temp_path,
+            canonical_target=canonical_target,
+        )
+        assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        return conn
+
+    def record_replace(
+        *,
+        target: Path,
+        replacement: Path,
+        expected_digest: str | None,
+    ) -> None:
+        events.append(("replace", replacement, target))
+        original_replace(
+            target=target,
+            replacement=replacement,
+            expected_digest=expected_digest,
+        )
+
+    monkeypatch.setattr(
+        applicator_module,
+        "_open_isolated_temp_graph_sqlite",
+        record_open,
+    )
+    monkeypatch.setattr(
+        applicator_module,
+        "_replace_sqlite_projection_if_unchanged",
+        record_replace,
+    )
+
+    apply_graphdb_capability_sqlite_hardening(repo_root=tmp_path, db_path=db_path)
+
+    assert [event[0] for event in events] == ["open", "open", "replace"]
+    opened_temp_paths: list[Path] = []
+    for _kind, temp_path, canonical_target in events[:2]:
+        assert canonical_target == db_path
+        assert temp_path != db_path
+        assert temp_path.parent == db_path.parent
+        assert temp_path.name.startswith(f".{db_path.name}.")
+        assert temp_path.name.endswith(".tmp")
+        opened_temp_paths.append(temp_path)
+    assert len(set(opened_temp_paths)) == 2
+    assert events[2][1:] == (opened_temp_paths[1], db_path)
+
+
+def test_materializer_writes_only_sibling_temp_before_atomic_replace(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db_path = tmp_path / "graph.sqlite"
+    events: list[tuple[str, Path, Path]] = []
+    original_open = graph_sqlite_module._open_isolated_temp_graph_sqlite
+    original_replace = graph_sqlite_module._replace_sqlite_projection_if_unchanged
+
+    def record_open(
+        *,
+        temp_path: Path,
+        canonical_target: Path,
+    ) -> sqlite3.Connection:
+        events.append(("open", temp_path, canonical_target))
+        conn = original_open(
+            temp_path=temp_path,
+            canonical_target=canonical_target,
+        )
+        assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+        return conn
+
+    def record_replace(
+        *,
+        target: Path,
+        replacement: Path,
+        expected_digest: str | None,
+    ) -> None:
+        events.append(("replace", replacement, target))
+        original_replace(
+            target=target,
+            replacement=replacement,
+            expected_digest=expected_digest,
+        )
+
+    monkeypatch.setattr(
+        graph_sqlite_module,
+        "_open_isolated_temp_graph_sqlite",
+        record_open,
+    )
+    monkeypatch.setattr(
+        graph_sqlite_module,
+        "_replace_sqlite_projection_if_unchanged",
+        record_replace,
+    )
+
+    materialize_augmented_skills_graph_sqlite(
+        repo_root=Path(__file__).resolve().parents[4],
+        db_path=db_path,
+    )
+
+    assert [event[0] for event in events] == ["open", "replace"]
+    _kind, temp_path, canonical_target = events[0]
+    assert canonical_target == db_path
+    assert temp_path != db_path
+    assert temp_path.parent == db_path.parent
+    assert temp_path.name.startswith(f".{db_path.name}.")
+    assert temp_path.name.endswith(".tmp")
+    assert events[1][1:] == (temp_path, db_path)
 
 
 def test_atomic_applicator_preserves_original_database_when_validation_fails(
@@ -441,10 +769,7 @@ def test_atomic_applicator_preserves_original_database_when_validation_fails(
     assert _sha256(db_path) == before
     conn = sqlite3.connect(db_path)
     try:
-        tables = {
-            row[0]
-            for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        }
+        tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         assert "graph_paths" not in tables
     finally:
         conn.close()
@@ -483,6 +808,7 @@ def test_sibling_materialization_receipt_reports_persisted_rows(tmp_path: Path) 
             """,
             (
                 ("parent_a", "capability_domain", "Parent A"),
+                ("parent_b", "career_epoch", "Parent B"),
                 ("skill_b", "skill", "Skill B"),
             ),
         )
@@ -491,17 +817,30 @@ def test_sibling_materialization_receipt_reports_persisted_rows(tmp_path: Path) 
             (
                 ("edge_parent_a", "parent_a", "skill_a", "contains"),
                 ("edge_parent_b", "parent_a", "skill_b", "contains"),
-                ("edge_parent_a_alt", "parent_a", "skill_a", "supports"),
-                ("edge_parent_b_alt", "parent_a", "skill_b", "supports"),
+                ("edge_parent_a_alt", "parent_b", "skill_a", "supports"),
+                ("edge_parent_b_alt", "parent_b", "skill_b", "supports"),
             ),
         )
         conn.commit()
         receipt = build_graph_sibling_links(conn)
-        persisted = int(
-            conn.execute("SELECT COUNT(*) FROM graph_sibling_links").fetchone()[0]
-        )
+        persisted = int(conn.execute("SELECT COUNT(*) FROM graph_sibling_links").fetchone()[0])
+        contexts = {
+            tuple(row)
+            for row in conn.execute(
+                """
+                SELECT node_id,sibling_node_id,shared_parent_node_id,shared_edge_type
+                FROM graph_sibling_links
+                """
+            )
+        }
     finally:
         conn.close()
 
-    assert persisted == 2
+    assert persisted == 4
     assert receipt["graph_sibling_links_materialized"] == persisted
+    assert contexts == {
+        ("skill_a", "skill_b", "parent_a", "contains"),
+        ("skill_b", "skill_a", "parent_a", "contains"),
+        ("skill_a", "skill_b", "parent_b", "supports"),
+        ("skill_b", "skill_a", "parent_b", "supports"),
+    }

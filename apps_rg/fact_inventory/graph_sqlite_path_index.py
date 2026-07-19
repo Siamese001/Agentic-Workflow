@@ -17,6 +17,7 @@ It is safe to run repeatedly. Generated tables are rebuilt with DELETE/INSERT;
 source tables such as graph_nodes, graph_edges, and skill_fact_links are never
 truncated by this module.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -28,7 +29,8 @@ from typing import TYPE_CHECKING, Any, Iterable
 if TYPE_CHECKING:
     from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 
-GRAPH_INDEX_SCHEMA_VERSION = "apps_rg.graph_sqlite_path_index.v3.assertion_hardened"
+GRAPH_INDEX_CAPABILITY_VERSION = "apps_rg.graph_index_capability.v1.direct_only"
+GRAPH_INDEX_SCHEMA_VERSION = "apps_rg.graph_sqlite_path_index.v6.direct_only_lossless_typed_digest"
 
 EDGE_METADATA_COLUMNS: tuple[tuple[str, str], ...] = (
     ("rationale", "TEXT NOT NULL DEFAULT ''"),
@@ -48,9 +50,18 @@ DEFAULT_SECTION_BUDGETS: tuple[dict[str, Any], ...] = (
         "max_metric_reuse": 1,
         "max_fact_family_reuse": 2,
         "required_node_types": ["skill", "fact", "metric_outcome"],
-        "preferred_edge_types": ["role_family_weights_pillar", "skill_supported_by_fact", "fact_has_metric_outcome"],
+        "preferred_edge_types": [
+            "role_family_weights_pillar",
+            "skill_supported_by_fact",
+            "fact_has_metric_outcome",
+        ],
         "forbidden_metric_ids": [],
-        "preferred_metric_families": ["revenue_growth", "risk_governance", "platform_scale", "adoption_enablement"],
+        "preferred_metric_families": [
+            "revenue_growth",
+            "risk_governance",
+            "platform_scale",
+            "adoption_enablement",
+        ],
     },
     {
         "section_id": "competencies",
@@ -68,7 +79,11 @@ DEFAULT_SECTION_BUDGETS: tuple[dict[str, Any], ...] = (
         "max_metric_reuse": 1,
         "max_fact_family_reuse": 2,
         "required_node_types": ["skill", "fact", "metric_outcome"],
-        "preferred_edge_types": ["skill_supported_by_fact", "employment_hosts_fact", "fact_has_metric_outcome"],
+        "preferred_edge_types": [
+            "skill_supported_by_fact",
+            "employment_hosts_fact",
+            "fact_has_metric_outcome",
+        ],
         "forbidden_metric_ids": [],
         "preferred_metric_families": ["cost_efficiency", "revenue_growth", "delivery_velocity"],
     },
@@ -78,7 +93,11 @@ DEFAULT_SECTION_BUDGETS: tuple[dict[str, Any], ...] = (
         "max_metric_reuse": 1,
         "max_fact_family_reuse": 2,
         "required_node_types": ["skill", "fact"],
-        "preferred_edge_types": ["role_family_weights_pillar", "employment_hosts_fact", "skill_supported_by_fact"],
+        "preferred_edge_types": [
+            "role_family_weights_pillar",
+            "employment_hosts_fact",
+            "skill_supported_by_fact",
+        ],
         "forbidden_metric_ids": [],
         "preferred_metric_families": ["revenue_growth", "adoption_enablement", "partner_gtm"],
     },
@@ -88,7 +107,11 @@ DEFAULT_SECTION_BUDGETS: tuple[dict[str, Any], ...] = (
         "max_metric_reuse": 1,
         "max_fact_family_reuse": 2,
         "required_node_types": ["skill", "fact", "metric_outcome"],
-        "preferred_edge_types": ["capability_domain_contains_skill", "skill_supported_by_fact", "fact_has_metric_outcome"],
+        "preferred_edge_types": [
+            "capability_domain_contains_skill",
+            "skill_supported_by_fact",
+            "fact_has_metric_outcome",
+        ],
         "forbidden_metric_ids": [],
         "preferred_metric_families": ["platform_scale", "risk_governance", "model_quality"],
     },
@@ -134,15 +157,19 @@ GRAPHDB_CAPABILITY_DDL: tuple[str, ...] = (
         shared_parent_node_id TEXT NOT NULL DEFAULT '',
         shared_edge_type TEXT NOT NULL DEFAULT '',
         sibling_score REAL NOT NULL DEFAULT 0.0,
-        PRIMARY KEY (node_id, sibling_node_id),
+        PRIMARY KEY (
+            node_id, sibling_node_id, shared_parent_node_id, shared_edge_type
+        ),
         CHECK (node_id <> sibling_node_id),
         FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id),
-        FOREIGN KEY (sibling_node_id) REFERENCES graph_nodes(node_id)
+        FOREIGN KEY (sibling_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (shared_parent_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     "CREATE INDEX IF NOT EXISTS idx_sibling_node ON graph_sibling_links(node_id)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_peer ON graph_sibling_links(sibling_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_node_score ON graph_sibling_links(node_id, sibling_score DESC)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_context_lookup ON graph_sibling_links(node_id, sibling_node_id, shared_parent_node_id, shared_edge_type)",
     """
     CREATE TABLE IF NOT EXISTS graph_neighborhoods (
         center_node_id TEXT NOT NULL,
@@ -311,6 +338,7 @@ GRAPHDB_CAPABILITY_INDEXES = frozenset(
         "idx_sibling_node",
         "idx_sibling_peer",
         "idx_sibling_node_score",
+        "idx_sibling_context_lookup",
         "idx_neighborhood_center",
         "idx_neighborhood_neighbor",
         "idx_neighborhood_distance",
@@ -351,6 +379,7 @@ REQUIRED_FOREIGN_KEYS: dict[str, frozenset[tuple[str, str, str]]] = {
         {
             ("node_id", "graph_nodes", "node_id"),
             ("sibling_node_id", "graph_nodes", "node_id"),
+            ("shared_parent_node_id", "graph_nodes", "node_id"),
         }
     ),
     "graph_neighborhoods": frozenset(
@@ -358,6 +387,15 @@ REQUIRED_FOREIGN_KEYS: dict[str, frozenset[tuple[str, str, str]]] = {
             ("center_node_id", "graph_nodes", "node_id"),
             ("neighbor_node_id", "graph_nodes", "node_id"),
         }
+    ),
+}
+
+REQUIRED_PRIMARY_KEYS: dict[str, tuple[str, ...]] = {
+    "graph_sibling_links": (
+        "node_id",
+        "sibling_node_id",
+        "shared_parent_node_id",
+        "shared_edge_type",
     ),
 }
 
@@ -393,6 +431,15 @@ REQUIRED_INDEX_DEFINITIONS: dict[str, tuple[tuple[str, ...], bool]] = {
     "uq_graph_edges_src_tgt_type": (("source_node_id", "target_node_id", "edge_type"), True),
     "idx_graph_paths_end_depth_score": (("end_node_id", "path_depth", "path_score"), False),
     "idx_sibling_node_score": (("node_id", "sibling_score"), False),
+    "idx_sibling_context_lookup": (
+        (
+            "node_id",
+            "sibling_node_id",
+            "shared_parent_node_id",
+            "shared_edge_type",
+        ),
+        False,
+    ),
     "idx_neighborhood_center_distance_score": (("center_node_id", "distance", "neighbor_score"), False),
 }
 
@@ -419,9 +466,12 @@ GRAPHDB_REVERSE_VIEW_COLUMNS = frozenset(
     }
 )
 
+METRIC_NODE_TYPES = frozenset({"metric", "metric_bucket", "metric_outcome"})
 HIGH_VALUE_NODE_TYPES = frozenset(
-    {"role_family", "career_track", "pillar", "skill", "fact", "metric_outcome", "section"}
+    {"role_family", "career_track", "pillar", "skill", "fact", "section", *METRIC_NODE_TYPES}
 )
+SIBLING_NODE_TYPES = frozenset({"skill", "fact", *METRIC_NODE_TYPES})
+SKILL_FACT_EVIDENCE_NODE_TYPES = frozenset({"fact", "locked_bullet", "employment", "certification"})
 
 
 def _utc_now() -> str:
@@ -476,27 +526,6 @@ def _node_type_map(conn: sqlite3.Connection) -> dict[str, str]:
     }
 
 
-def _eligible_node_ids(conn: sqlite3.Connection) -> set[str]:
-    if not table_exists(conn, "graph_nodes"):
-        return set()
-    cols = table_columns(conn, "graph_nodes")
-    if {"node_id", "activation_status", "support_level"}.issubset(cols):
-        blocked_statuses = ("DRAFT", "INTERNAL_ONLY", "DO_NOT_PROMOTE", "BLOCKED")
-        blocked_support = ("INTERNAL_ONLY", "REPO_EVIDENCE_PORTFOLIO", "TARGETING_ONLY", "STYLE_ONLY", "BLOCKED")
-        return {
-            str(r[0])
-            for r in conn.execute(
-                """
-                SELECT node_id FROM graph_nodes
-                WHERE COALESCE(activation_status,'') NOT IN (?,?,?,?)
-                  AND COALESCE(support_level,'') NOT IN (?,?,?,?,?)
-                """,
-                (*blocked_statuses, *blocked_support),
-            ).fetchall()
-        }
-    return {str(r[0]) for r in conn.execute("SELECT node_id FROM graph_nodes")}
-
-
 def _normalized_schema_sql(conn: sqlite3.Connection, object_name: str) -> str:
     row = conn.execute(
         "SELECT sql FROM sqlite_master WHERE name = ? LIMIT 1",
@@ -505,18 +534,21 @@ def _normalized_schema_sql(conn: sqlite3.Connection, object_name: str) -> str:
     return "" if not row or not row[0] else "".join(str(row[0]).lower().split())
 
 
-def _foreign_key_mappings(
-    conn: sqlite3.Connection, table_name: str
-) -> frozenset[tuple[str, str, str]]:
+def _foreign_key_mappings(conn: sqlite3.Connection, table_name: str) -> frozenset[tuple[str, str, str]]:
     return frozenset(
         (str(row[3]), str(row[2]), str(row[4]))
         for row in conn.execute(f"PRAGMA foreign_key_list({table_name})")
     )
 
 
-def _index_definition(
-    conn: sqlite3.Connection, index_name: str
-) -> tuple[tuple[str, ...], bool] | None:
+def _primary_key_columns(conn: sqlite3.Connection, table_name: str) -> tuple[str, ...]:
+    keyed_columns = [
+        (int(row[5]), str(row[1])) for row in conn.execute(f"PRAGMA table_info({table_name})") if int(row[5])
+    ]
+    return tuple(column for _position, column in sorted(keyed_columns))
+
+
+def _index_definition(conn: sqlite3.Connection, index_name: str) -> tuple[tuple[str, ...], bool] | None:
     index_rows = conn.execute("PRAGMA index_list(graph_edges)").fetchall()
     table_row = conn.execute(
         "SELECT tbl_name FROM sqlite_master WHERE type='index' AND name=?",
@@ -531,10 +563,7 @@ def _index_definition(
         (bool(row[2]) for row in index_rows if str(row[1]) == index_name),
         False,
     )
-    columns = tuple(
-        str(row[2])
-        for row in conn.execute(f"PRAGMA index_info({index_name})").fetchall()
-    )
+    columns = tuple(str(row[2]) for row in conn.execute(f"PRAGMA index_info({index_name})").fetchall())
     return columns, unique
 
 
@@ -560,13 +589,20 @@ def _schema_assertion_issues(
             missing_fks = sorted(expected_fks - actual_fks)
             if missing_fks:
                 issues.append(f"{table_name} missing foreign keys: {missing_fks!r}")
+        expected_primary_key = REQUIRED_PRIMARY_KEYS.get(table_name)
+        if expected_primary_key:
+            actual_primary_key = _primary_key_columns(conn, table_name)
+            if actual_primary_key != expected_primary_key:
+                issues.append(
+                    f"{table_name} primary key mismatch: "
+                    f"expected={expected_primary_key!r} actual={actual_primary_key!r}"
+                )
     if include_capability_tables:
         for index_name, expected in REQUIRED_INDEX_DEFINITIONS.items():
             actual = _index_definition(conn, index_name)
             if actual != expected:
                 issues.append(
-                    f"index definition mismatch: {index_name} "
-                    f"expected={expected!r} actual={actual!r}"
+                    f"index definition mismatch: {index_name} expected={expected!r} actual={actual!r}"
                 )
     return issues
 
@@ -614,26 +650,154 @@ _GRAPH_DIGEST_COLUMNS: dict[str, tuple[str, ...]] = {
         "human_confirmed",
         "external_eligible",
     ),
+    "section_eligibility": (
+        "node_id",
+        "section_id",
+        "allowed",
+        "claim_policy",
+        "reason",
+        "blocked_reason",
+    ),
+    "role_family_projection": (
+        "role_family_id",
+        "projection_role_family_key",
+        "track_weight_profile",
+        "taxonomy_source",
+        "targeting_keywords",
+        "proof_policy_note",
+    ),
+    "c03_skill_selection_features": (
+        "skill_id",
+        "pillar",
+        "subpillar",
+        "domain_id",
+        "career_track_id",
+        "skill_family",
+        "metric_bucket",
+        "role_family_weights",
+        "allowed_sections",
+        "source_fact_count",
+        "confidence",
+        "activation_status",
+        "support_level",
+        "external_eligible",
+        "source_authority",
+        "source_trace",
+    ),
+    "c03_role_family_skill_weights": (
+        "skill_id",
+        "role_family_key",
+        "weight",
+        "source",
+    ),
+    "graph_paths": (
+        "path_id",
+        "start_node_id",
+        "end_node_id",
+        "path_depth",
+        "path_signature",
+        "node_path_json",
+        "edge_path_json",
+        "edge_types_json",
+        "proof_fact_ids_json",
+        "metric_ids_json",
+        "section_ids_json",
+        "path_score",
+        "novelty_score",
+        "proof_strength_score",
+    ),
+    "graph_neighborhoods": (
+        "center_node_id",
+        "neighbor_node_id",
+        "distance",
+        "connecting_path_json",
+        "edge_types_json",
+        "relationship_summary",
+        "neighbor_score",
+    ),
+    "graph_sibling_links": (
+        "node_id",
+        "sibling_node_id",
+        "sibling_reason",
+        "shared_parent_node_id",
+        "shared_edge_type",
+        "sibling_score",
+    ),
+    "section_evidence_budget": (
+        "section_id",
+        "role_family_key",
+        "max_metric_reuse",
+        "max_fact_family_reuse",
+        "required_node_types_json",
+        "preferred_edge_types_json",
+        "forbidden_metric_ids_json",
+        "preferred_metric_families_json",
+    ),
 }
 
 
+def _canonical_sqlite_digest_value(value: Any) -> dict[str, str | None]:
+    """Encode SQLite storage classes without Python cross-type comparisons."""
+    if value is None:
+        return {"type": "null", "value": None}
+    if isinstance(value, bool):
+        return {"type": "integer", "value": "1" if value else "0"}
+    if isinstance(value, int):
+        return {"type": "integer", "value": str(value)}
+    if isinstance(value, float):
+        return {"type": "real", "value": value.hex()}
+    if isinstance(value, str):
+        return {"type": "text", "value": value}
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        return {"type": "blob", "value": bytes(value).hex()}
+    raise ValueError(f"unsupported SQLite value type: {type(value).__name__}")
+
+
 def compute_sqlite_graph_digest(conn: sqlite3.Connection) -> str:
-    """Digest the canonical logical graph rows, excluding volatile timestamps."""
-    payload: dict[str, list[list[Any]]] = {}
+    """Digest immutable and ranking-relevant rows, excluding runtime memory."""
+    payload: dict[str, list[list[dict[str, str | None]]]] = {}
     for table_name, columns in _GRAPH_DIGEST_COLUMNS.items():
         if _schema_object_type(conn, table_name) != "table":
             raise ValueError(f"cannot digest missing graph table: {table_name}")
         missing = set(columns) - table_columns(conn, table_name)
         if missing:
-            raise ValueError(
-                f"cannot digest {table_name}; missing columns: {sorted(missing)!r}"
-            )
-        order_columns = columns[:2] if table_name == "skill_fact_links" else columns[:1]
-        rows = conn.execute(
-            f"SELECT {','.join(columns)} FROM {table_name} "
-            f"ORDER BY {','.join(order_columns)}"
-        ).fetchall()
-        payload[table_name] = [list(row) for row in rows]
+            raise ValueError(f"cannot digest {table_name}; missing columns: {sorted(missing)!r}")
+        rows = conn.execute(f"SELECT {','.join(columns)} FROM {table_name}").fetchall()
+        canonical_rows: list[list[dict[str, str | None]]] = []
+        for row in rows:
+            canonical_row: list[dict[str, str | None]] = []
+            for column_name, value in zip(columns, row, strict=True):
+                try:
+                    canonical_row.append(_canonical_sqlite_digest_value(value))
+                except ValueError as exc:
+                    raise ValueError(
+                        f"cannot digest unsupported SQLite value: table={table_name} column={column_name}"
+                    ) from exc
+            canonical_rows.append(canonical_row)
+        payload[table_name] = sorted(canonical_rows, key=_json)
+    return _digest(_json(payload))
+
+
+def compute_sqlite_schema_digest(conn: sqlite3.Connection) -> str:
+    """Digest every user-defined table, index, view, and trigger definition."""
+    rows = conn.execute(
+        """
+        SELECT type,name,tbl_name,COALESCE(sql,'')
+        FROM sqlite_master
+        WHERE type IN ('table','index','view','trigger')
+          AND name NOT LIKE 'sqlite_%'
+        ORDER BY type,name,tbl_name
+        """
+    ).fetchall()
+    payload = [
+        {
+            "type": str(object_type),
+            "name": str(name),
+            "table_name": str(table_name),
+            "sql": " ".join(str(sql or "").split()),
+        }
+        for object_type, name, table_name, sql in rows
+    ]
     return _digest(_json(payload))
 
 
@@ -647,13 +811,10 @@ def require_graphdb_capability_schema(conn: sqlite3.Connection) -> dict[str, Any
         issues.append("missing table: graph_edges")
     else:
         missing_edge_columns = sorted(
-            {column for column, _ddl in EDGE_METADATA_COLUMNS}
-            - table_columns(conn, "graph_edges")
+            {column for column, _ddl in EDGE_METADATA_COLUMNS} - table_columns(conn, "graph_edges")
         )
         if missing_edge_columns:
-            issues.append(
-                "graph_edges missing columns: " + ",".join(missing_edge_columns)
-            )
+            issues.append("graph_edges missing columns: " + ",".join(missing_edge_columns))
 
     present_tables: list[str] = []
     for table_name, required_columns in GRAPHDB_CAPABILITY_TABLE_COLUMNS.items():
@@ -663,9 +824,7 @@ def require_graphdb_capability_schema(conn: sqlite3.Connection) -> dict[str, Any
         present_tables.append(table_name)
         missing_columns = sorted(required_columns - table_columns(conn, table_name))
         if missing_columns:
-            issues.append(
-                f"{table_name} missing columns: " + ",".join(missing_columns)
-            )
+            issues.append(f"{table_name} missing columns: " + ",".join(missing_columns))
 
     reverse_view_exists = _schema_object_type(conn, "graph_edges_reverse") == "view"
     if not reverse_view_exists:
@@ -675,23 +834,15 @@ def require_graphdb_capability_schema(conn: sqlite3.Connection) -> dict[str, Any
             GRAPHDB_REVERSE_VIEW_COLUMNS - table_columns(conn, "graph_edges_reverse")
         )
         if missing_reverse_columns:
-            issues.append(
-                "graph_edges_reverse missing columns: "
-                + ",".join(missing_reverse_columns)
-            )
+            issues.append("graph_edges_reverse missing columns: " + ",".join(missing_reverse_columns))
 
     present_indexes = {
-        str(row[0])
-        for row in conn.execute(
-            "SELECT name FROM sqlite_master WHERE type='index'"
-        ).fetchall()
+        str(row[0]) for row in conn.execute("SELECT name FROM sqlite_master WHERE type='index'").fetchall()
     }
     missing_indexes = sorted(GRAPHDB_CAPABILITY_INDEXES - present_indexes)
     if missing_indexes:
         issues.append("missing indexes: " + ",".join(missing_indexes))
-    issues.extend(
-        _schema_assertion_issues(conn, include_capability_tables=True)
-    )
+    issues.extend(_schema_assertion_issues(conn, include_capability_tables=True))
 
     if issues:
         raise ValueError("graphDB capability schema incomplete: " + "; ".join(issues))
@@ -710,13 +861,10 @@ def ensure_graphdb_capability_schema(conn: sqlite3.Connection) -> dict[str, Any]
     conn.execute("PRAGMA foreign_keys=ON")
     if int(conn.execute("PRAGMA foreign_keys").fetchone()[0]) != 1:
         raise RuntimeError("SQLite foreign key enforcement could not be enabled for schema writes")
-    source_schema_issues = _schema_assertion_issues(
-        conn, include_capability_tables=False
-    )
+    source_schema_issues = _schema_assertion_issues(conn, include_capability_tables=False)
     if source_schema_issues:
         raise ValueError(
-            "legacy graph schema requires the explicit atomic applicator: "
-            + "; ".join(source_schema_issues)
+            "legacy graph schema requires the explicit atomic applicator: " + "; ".join(source_schema_issues)
         )
     added_columns: list[str] = []
     if table_exists(conn, "graph_edges"):
@@ -744,6 +892,10 @@ def validate_graphdb_capability_integrity(
     require_graphdb_capability_schema(conn)
     integrity_rows = [str(row[0]) for row in conn.execute("PRAGMA integrity_check")]
     foreign_key_rows = [tuple(row) for row in conn.execute("PRAGMA foreign_key_check")]
+    evidence_node_types_sql = ",".join(
+        f"'{node_type}'" for node_type in sorted(SKILL_FACT_EVIDENCE_NODE_TYPES)
+    )
+    sibling_node_types_sql = ",".join(f"'{node_type}'" for node_type in sorted(SIBLING_NODE_TYPES))
     checks = {
         "duplicate_graph_edge_triples": """
             SELECT COUNT(*) FROM (
@@ -763,11 +915,13 @@ def validate_graphdb_capability_integrity(
             SELECT COUNT(*) FROM graph_edges
             WHERE weight < 0.0 OR weight > 1.0
         """,
-        "broken_skill_fact_links": """
+        "broken_skill_fact_links": f"""
             SELECT COUNT(*) FROM skill_fact_links l
             LEFT JOIN graph_nodes s ON s.node_id = l.skill_id
             LEFT JOIN graph_nodes f ON f.node_id = l.fact_id
-            WHERE s.node_id IS NULL OR s.node_type <> 'skill' OR f.node_id IS NULL
+            WHERE s.node_id IS NULL OR s.node_type <> 'skill'
+               OR f.node_id IS NULL
+               OR f.node_type NOT IN ({evidence_node_types_sql})
         """,
         "broken_graph_paths": """
             SELECT COUNT(*) FROM graph_paths p
@@ -841,6 +995,27 @@ def validate_graphdb_capability_integrity(
                 '$[' || j.key || ']'
             )
         """,
+        "graph_edge_depth1_path_identity_mismatches": """
+            SELECT COUNT(*) FROM (
+                SELECT e.edge_id
+                FROM graph_edges e
+                LEFT JOIN graph_paths p
+                  ON p.path_depth = 1
+                 AND p.start_node_id = e.source_node_id
+                 AND p.end_node_id = e.target_node_id
+                 AND json_array_length(
+                     CASE WHEN json_valid(p.edge_path_json)
+                          THEN p.edge_path_json ELSE '[]' END
+                 ) = 1
+                 AND json_extract(
+                     CASE WHEN json_valid(p.edge_path_json)
+                          THEN p.edge_path_json ELSE '[]' END,
+                     '$[0]'
+                 ) IS e.edge_id
+                GROUP BY e.edge_id
+                HAVING COUNT(p.path_id) <> 1
+            )
+        """,
         "broken_graph_sibling_links": """
             SELECT COUNT(*) FROM graph_sibling_links g
             LEFT JOIN graph_nodes n ON n.node_id = g.node_id
@@ -853,8 +1028,10 @@ def validate_graphdb_capability_integrity(
         "nonreciprocal_graph_sibling_links": """
             SELECT COUNT(*) FROM graph_sibling_links g
             LEFT JOIN graph_sibling_links r
-              ON r.node_id = g.sibling_node_id
+             ON r.node_id = g.sibling_node_id
              AND r.sibling_node_id = g.node_id
+             AND r.shared_parent_node_id = g.shared_parent_node_id
+             AND r.shared_edge_type = g.shared_edge_type
             WHERE r.node_id IS NULL
         """,
         "broken_graph_sibling_parent_edges": """
@@ -869,6 +1046,50 @@ def validate_graphdb_capability_integrity(
              AND s.edge_type = g.shared_edge_type
             WHERE g.shared_parent_node_id <> ''
               AND (n.edge_id IS NULL OR s.edge_id IS NULL)
+        """,
+        "graph_sibling_context_set_mismatches": f"""
+            WITH sanctioned_children AS (
+                SELECT e.source_node_id AS parent_node_id,
+                       e.edge_type,
+                       e.target_node_id AS child_node_id
+                FROM graph_edges e
+                JOIN graph_nodes n ON n.node_id = e.target_node_id
+                WHERE n.node_type IN ({sibling_node_types_sql})
+            ),
+            expected AS (
+                SELECT a.child_node_id AS node_id,
+                       b.child_node_id AS sibling_node_id,
+                       a.parent_node_id AS shared_parent_node_id,
+                       a.edge_type AS shared_edge_type
+                FROM sanctioned_children a
+                JOIN sanctioned_children b
+                  ON b.parent_node_id = a.parent_node_id
+                 AND b.edge_type = a.edge_type
+                 AND b.child_node_id <> a.child_node_id
+            )
+            SELECT
+                (SELECT COUNT(*) FROM (
+                    SELECT e.node_id, e.sibling_node_id,
+                           e.shared_parent_node_id, e.shared_edge_type
+                    FROM expected e
+                    LEFT JOIN graph_sibling_links g
+                      ON g.node_id = e.node_id
+                     AND g.sibling_node_id = e.sibling_node_id
+                     AND g.shared_parent_node_id = e.shared_parent_node_id
+                     AND g.shared_edge_type = e.shared_edge_type
+                    GROUP BY e.node_id, e.sibling_node_id,
+                             e.shared_parent_node_id, e.shared_edge_type
+                    HAVING COUNT(g.rowid) <> 1
+                ))
+                +
+                (SELECT COUNT(*)
+                 FROM graph_sibling_links g
+                 LEFT JOIN expected e
+                   ON e.node_id = g.node_id
+                  AND e.sibling_node_id = g.sibling_node_id
+                  AND e.shared_parent_node_id = g.shared_parent_node_id
+                  AND e.shared_edge_type = g.shared_edge_type
+                 WHERE e.node_id IS NULL)
         """,
         "broken_graph_neighborhoods": """
             SELECT COUNT(*) FROM graph_neighborhoods g
@@ -933,6 +1154,27 @@ def validate_graphdb_capability_integrity(
                     )
                     AND e.edge_type || '_reverse' IS j.value
                 )
+            )
+        """,
+        "graph_edge_distance1_neighborhood_mismatches": """
+            WITH expected(center_node_id, neighbor_node_id) AS (
+                SELECT source_node_id, target_node_id
+                FROM graph_edges
+                WHERE source_node_id <> target_node_id
+                UNION
+                SELECT target_node_id, source_node_id
+                FROM graph_edges
+                WHERE source_node_id <> target_node_id
+            )
+            SELECT COUNT(*) FROM (
+                SELECT e.center_node_id, e.neighbor_node_id
+                FROM expected e
+                LEFT JOIN graph_neighborhoods g
+                  ON g.center_node_id = e.center_node_id
+                 AND g.neighbor_node_id = e.neighbor_node_id
+                 AND g.distance = 1
+                GROUP BY e.center_node_id, e.neighbor_node_id
+                HAVING COUNT(g.rowid) <> 1
             )
         """,
         "reverse_view_multiset_mismatches": """
@@ -1008,14 +1250,20 @@ def validate_graphdb_capability_integrity(
             WHERE usage_count < 1 OR TRIM(run_id) = ''
                OR TRIM(resume_section) = '' OR TRIM(metric_id) = ''
         """,
-        "broken_resume_metric_usage_refs": """
+        "broken_resume_metric_usage_refs": f"""
             SELECT COUNT(*) FROM resume_metric_usage u
-            LEFT JOIN graph_nodes m ON m.node_id = u.metric_id
             LEFT JOIN graph_nodes f ON f.node_id = u.fact_id
             LEFT JOIN graph_nodes s ON s.node_id = u.skill_id
-            WHERE m.node_id IS NULL
-               OR (u.fact_id <> '' AND f.node_id IS NULL)
-               OR (u.skill_id <> '' AND s.node_id IS NULL)
+            WHERE (
+                u.fact_id <> ''
+                AND (
+                    f.node_id IS NULL
+                    OR f.node_type NOT IN ({evidence_node_types_sql})
+                )
+            ) OR (
+                u.skill_id <> ''
+                AND (s.node_id IS NULL OR s.node_type <> 'skill')
+            )
         """,
         "broken_graph_selection_rejection_refs": """
             SELECT COUNT(*) FROM graph_selection_rejections r
@@ -1048,29 +1296,41 @@ def validate_graphdb_capability_integrity(
             LEFT JOIN graph_nodes n ON n.node_id = w.skill_id
             WHERE n.node_id IS NULL OR n.node_type <> 'skill'
         """
-    cross_row_counts = {
-        name: int(conn.execute(sql).fetchone()[0]) for name, sql in checks.items()
-    }
+    cross_row_counts = {name: int(conn.execute(sql).fetchone()[0]) for name, sql in checks.items()}
+    from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+        projected_graph_edge_signature_report,
+    )
+
+    projected_signature_report = projected_graph_edge_signature_report(
+        node_types_by_id=_node_type_map(conn),
+        edge_rows=_edge_tuples(conn),
+    )
     errors: list[str] = []
     if integrity_rows != ["ok"]:
         errors.append("integrity_check=" + ",".join(integrity_rows))
     if foreign_key_rows:
         errors.append(f"foreign_key_check={len(foreign_key_rows)}")
-    errors.extend(
-        f"{name}={count}" for name, count in cross_row_counts.items() if count
-    )
+    errors.extend(f"{name}={count}" for name, count in cross_row_counts.items() if count)
+    if projected_signature_report["failure_count"]:
+        errors.append(
+            "projected_edge_signature_mismatches="
+            f"{projected_signature_report['failure_count']} sample="
+            f"{_json(projected_signature_report['failure_locators'][:12])}"
+        )
     if not table_exists(conn, "graph_metadata"):
         errors.append("graph_metadata_missing=1")
     else:
         metadata_rows = conn.execute(
-            "SELECT ledger_hash, graph_count_summary FROM graph_metadata"
+            "SELECT ledger_hash, graph_count_summary, authority_status FROM graph_metadata"
         ).fetchall()
         if len(metadata_rows) != 1:
             errors.append(f"graph_metadata_row_count={len(metadata_rows)}")
         if metadata_rows:
-            ledger_hash, raw_summary = metadata_rows[0]
+            ledger_hash, raw_summary, authority_status = metadata_rows[0]
             if not str(ledger_hash or "").strip():
                 errors.append("graph_metadata_ledger_hash_empty=1")
+            if authority_status != "augmented_skills_graph_authoritative":
+                errors.append(f"graph_metadata_authority_status_mismatch={authority_status!r}")
             try:
                 metadata_summary = json.loads(raw_summary or "{}")
             except (TypeError, json.JSONDecodeError):
@@ -1079,10 +1339,7 @@ def validate_graphdb_capability_integrity(
                 if not isinstance(metadata_summary, dict):
                     errors.append("graph_metadata_summary_not_object=1")
                 else:
-                    if (
-                        metadata_summary.get("graph_index_schema_version")
-                        != GRAPH_INDEX_SCHEMA_VERSION
-                    ):
+                    if metadata_summary.get("graph_index_schema_version") != GRAPH_INDEX_SCHEMA_VERSION:
                         errors.append("graph_metadata_schema_version_mismatch=1")
                     if expected_materializer_version and (
                         metadata_summary.get("c03_sqlite_materializer_code_version")
@@ -1096,11 +1353,11 @@ def validate_graphdb_capability_integrity(
                     except ValueError:
                         errors.append("graph_metadata_sqlite_digest_unavailable=1")
                     else:
-                        if (
-                            metadata_summary.get("sqlite_graph_digest")
-                            != sqlite_graph_digest
-                        ):
+                        if metadata_summary.get("sqlite_graph_digest") != sqlite_graph_digest:
                             errors.append("graph_metadata_sqlite_digest_mismatch=1")
+                    sqlite_schema_digest = compute_sqlite_schema_digest(conn)
+                    if metadata_summary.get("sqlite_schema_digest") != sqlite_schema_digest:
+                        errors.append("graph_metadata_sqlite_schema_digest_mismatch=1")
                     expected_counts = {
                         "node_count_sqlite": int(
                             conn.execute("SELECT COUNT(*) FROM graph_nodes").fetchone()[0]
@@ -1137,6 +1394,7 @@ def validate_graphdb_capability_integrity(
         "integrity_check": integrity_rows,
         "foreign_key_check": [],
         "cross_row_counts": cross_row_counts,
+        "projected_edge_signature_integrity": projected_signature_report,
     }
 
 
@@ -1158,20 +1416,20 @@ def build_reverse_edge_view(conn: sqlite3.Connection) -> None:
             target_node_id AS source_node_id,
             source_node_id AS target_node_id,
             edge_type || '_reverse' AS edge_type,
-            {col('edge_family')},
-            {col('weight', '1.0')},
-            {col('confidence')},
-            {col('evidence_status')},
-            {col('section_fit')},
-            {col('source_authority', "'augmented_skills_graph'")},
-            {col('rationale')},
-            {col('projection_behavior')},
-            {col('external_claim_policy')},
-            {col('validation_status')},
-            {col('edge_note')},
-            {col('operator_note')},
-            {col('business_story')},
-            {col('technical_story')}
+            {col("edge_family")},
+            {col("weight", "1.0")},
+            {col("confidence")},
+            {col("evidence_status")},
+            {col("section_fit")},
+            {col("source_authority", "'augmented_skills_graph'")},
+            {col("rationale")},
+            {col("projection_behavior")},
+            {col("external_claim_policy")},
+            {col("validation_status")},
+            {col("edge_note")},
+            {col("operator_note")},
+            {col("business_story")},
+            {col("technical_story")}
         FROM graph_edges
         """
     )
@@ -1238,12 +1496,10 @@ def build_graph_index_rows(
             continue
         edge_id = str(edge.get("edge_id") or _digest(f"{src}->{tgt}")[:16])
         edge_type = str(edge.get("edge_type") or "")
-        facts = [node_id for node_id in (src, tgt) if node_types.get(node_id) == "fact" or node_id.startswith("fact_")]
-        metrics = [
-            node_id
-            for node_id in (src, tgt)
-            if node_types.get(node_id) == "metric_outcome" or node_id.startswith("metric_")
+        facts = [
+            node_id for node_id in (src, tgt) if node_types.get(node_id) in SKILL_FACT_EVIDENCE_NODE_TYPES
         ]
+        metrics = [node_id for node_id in (src, tgt) if node_types.get(node_id) in METRIC_NODE_TYPES]
         sections = [
             node_id
             for node_id in (src, tgt)
@@ -1279,11 +1535,11 @@ def build_graph_index_rows(
         src = str(edge.get("source_node_id") or "")
         tgt = str(edge.get("target_node_id") or "")
         edge_type = str(edge.get("edge_type") or "")
-        if src and tgt and tgt in nodes and node_types.get(tgt) == "skill":
+        if src and tgt and tgt in nodes and node_types.get(tgt) in SIBLING_NODE_TYPES:
             children_by_parent[(src, edge_type)].append(tgt)
 
     graph_sibling_links: list[dict[str, Any]] = []
-    sibling_keys: set[tuple[str, str]] = set()
+    sibling_keys: set[tuple[str, str, str, str]] = set()
     for (parent, edge_type), children in sorted(children_by_parent.items()):
         unique = sorted(set(children))
         if len(unique) < 2:
@@ -1292,7 +1548,7 @@ def build_graph_index_rows(
             for sibling_node_id in unique:
                 if node_id == sibling_node_id:
                     continue
-                key = (node_id, sibling_node_id)
+                key = (node_id, sibling_node_id, parent, edge_type)
                 if key in sibling_keys:
                     continue
                 sibling_keys.add(key)
@@ -1333,7 +1589,9 @@ def build_graph_index_rows(
                     "connecting_path_json": _json([center, neighbor]),
                     "edge_types_json": _json([edge_type]),
                     "relationship_summary": f"1_hop:{edge_type}",
-                    "neighbor_score": round(1.0 + (0.5 if node_types.get(neighbor) in HIGH_VALUE_NODE_TYPES else 0.0), 6),
+                    "neighbor_score": round(
+                        1.0 + (0.5 if node_types.get(neighbor) in HIGH_VALUE_NODE_TYPES else 0.0), 6
+                    ),
                 }
             )
 
@@ -1377,7 +1635,7 @@ def materialize_graph_path_index(
     max_depth: int = 4,
     max_paths: int = 20000,
 ) -> dict[str, Any]:
-    """Precompute high-value directed paths up to max_depth."""
+    """Precompute one direct identity per edge plus deeper high-value paths."""
     ensure_graphdb_capability_schema(conn)
     node_types = _node_type_map(conn)
     edges = _edge_tuples(conn)
@@ -1392,9 +1650,38 @@ def materialize_graph_path_index(
     if not seed_nodes:
         seed_nodes = sorted(adjacency)[:1000]
 
-    conn.execute("DELETE FROM graph_paths")
-    created = 0
     now = _utc_now()
+    direct_paths = build_graph_index_rows(
+        node_rows=({"node_id": node_id, "node_type": node_type} for node_id, node_type in node_types.items()),
+        edge_rows=edges,
+        section_rows=(),
+        role_family_projection_rows=(),
+        created_at=now,
+    )["graph_paths"]
+    if len(direct_paths) > max_paths:
+        raise ValueError(
+            "max_paths cannot preserve one direct graph path per edge: "
+            f"required={len(direct_paths)} configured={max_paths}"
+        )
+
+    conn.execute("DELETE FROM graph_paths")
+    conn.executemany(
+        """
+        INSERT INTO graph_paths (
+            path_id, start_node_id, end_node_id, path_depth, path_signature,
+            node_path_json, edge_path_json, edge_types_json, proof_fact_ids_json,
+            metric_ids_json, section_ids_json, path_score, novelty_score,
+            proof_strength_score, created_at
+        ) VALUES (
+            :path_id, :start_node_id, :end_node_id, :path_depth, :path_signature,
+            :node_path_json, :edge_path_json, :edge_types_json,
+            :proof_fact_ids_json, :metric_ids_json, :section_ids_json,
+            :path_score, :novelty_score, :proof_strength_score, :created_at
+        )
+        """,
+        direct_paths,
+    )
+    created = len(direct_paths)
     for start in sorted(seed_nodes):
         queue: deque[tuple[str, list[str], list[dict[str, Any]]]] = deque()
         queue.append((start, [start], []))
@@ -1411,13 +1698,17 @@ def materialize_graph_path_index(
                 depth = len(new_edges)
                 end_type = node_types.get(nxt, "")
                 edge_types = [str(e.get("edge_type") or "") for e in new_edges]
-                facts = [n for n in new_nodes if node_types.get(n) == "fact" or n.startswith("fact_") or n.startswith("node_fact:")]
-                metrics = [n for n in new_nodes if node_types.get(n) == "metric_outcome" or n.startswith("metric_")]
-                sections = [n for n in new_nodes if node_types.get(n) == "section" or n.startswith("section_")]
-                high_value = bool(facts or metrics or sections or end_type in {"skill", "fact", "metric_outcome", "section"})
-                if high_value and depth >= 1:
+                facts = [n for n in new_nodes if node_types.get(n) in SKILL_FACT_EVIDENCE_NODE_TYPES]
+                metrics = [n for n in new_nodes if node_types.get(n) in METRIC_NODE_TYPES]
+                sections = [
+                    n for n in new_nodes if node_types.get(n) == "section" or n.startswith("section_")
+                ]
+                high_value = bool(facts or metrics or sections or end_type in HIGH_VALUE_NODE_TYPES)
+                if high_value and depth >= 2:
                     sig = "->".join(new_nodes)
-                    path_id = f"path:{_digest(sig)[:24]}"
+                    edge_ids = [str(e.get("edge_id") or "") for e in new_edges]
+                    path_identity = f"{sig}|{'|'.join(edge_ids)}"
+                    path_id = f"path:{_digest(path_identity)[:24]}"
                     proof_score = min(1.0, 0.25 * len(facts) + 0.20 * len(metrics) + 0.15 * len(sections))
                     novelty_score = 1.0 / max(1, len(metrics) + len(facts))
                     path_score = round(proof_score + novelty_score + (1.0 / (1 + depth)), 6)
@@ -1437,7 +1728,7 @@ def materialize_graph_path_index(
                             depth,
                             sig,
                             _json(new_nodes),
-                            _json([e.get("edge_id", "") for e in new_edges]),
+                            _json(edge_ids),
                             _json(edge_types),
                             _json(facts),
                             _json(metrics),
@@ -1461,7 +1752,6 @@ def build_graph_sibling_links(conn: sqlite3.Connection) -> dict[str, Any]:
     """Build skill/metric/fact sibling links from shared parents."""
     ensure_graphdb_capability_schema(conn)
     node_types = _node_type_map(conn)
-    eligible = _eligible_node_ids(conn)
     edges = _edge_tuples(conn)
     children_by_parent: dict[tuple[str, str], list[str]] = defaultdict(list)
     for edge in edges:
@@ -1470,14 +1760,12 @@ def build_graph_sibling_links(conn: sqlite3.Connection) -> dict[str, Any]:
         et = str(edge.get("edge_type") or "")
         if not src or not tgt:
             continue
-        if node_types.get(tgt) in {"skill", "fact", "metric_outcome"} or tgt.startswith(("skill_", "fact_", "metric_")):
-            if eligible and tgt not in eligible and node_types.get(tgt) == "skill":
-                continue
+        if node_types.get(tgt) in SIBLING_NODE_TYPES:
             children_by_parent[(src, et)].append(tgt)
 
     conn.execute("DELETE FROM graph_sibling_links")
     inserted = 0
-    for (parent, et), children in children_by_parent.items():
+    for (parent, et), children in sorted(children_by_parent.items()):
         unique = sorted(set(children))
         if len(unique) < 2:
             continue
@@ -1490,7 +1778,7 @@ def build_graph_sibling_links(conn: sqlite3.Connection) -> dict[str, Any]:
                     score += 0.5
                 conn.execute(
                     """
-                    INSERT OR REPLACE INTO graph_sibling_links (
+                    INSERT INTO graph_sibling_links (
                         node_id, sibling_node_id, sibling_reason, shared_parent_node_id,
                         shared_edge_type, sibling_score
                     ) VALUES (?, ?, ?, ?, ?, ?)
@@ -1516,19 +1804,27 @@ def build_graph_neighborhoods(
     max_distance: int = 3,
     max_centers: int = 1500,
 ) -> dict[str, Any]:
-    """Build undirected N-hop neighborhoods for high-value nodes."""
+    """Build undirected N-hop neighborhoods for every graph endpoint."""
     ensure_graphdb_capability_schema(conn)
     node_types = _node_type_map(conn)
     edges = _edge_tuples(conn)
     adjacency: dict[str, list[tuple[str, str, str]]] = defaultdict(list)
     for e in edges:
-        src, tgt, et, eid = str(e.get("source_node_id") or ""), str(e.get("target_node_id") or ""), str(e.get("edge_type") or ""), str(e.get("edge_id") or "")
+        src, tgt, et, eid = (
+            str(e.get("source_node_id") or ""),
+            str(e.get("target_node_id") or ""),
+            str(e.get("edge_type") or ""),
+            str(e.get("edge_id") or ""),
+        )
         if src and tgt:
             adjacency[src].append((tgt, et, eid))
             adjacency[tgt].append((src, et + "_reverse", eid))
-    centers = [n for n, t in node_types.items() if t in HIGH_VALUE_NODE_TYPES][:max_centers]
-    if not centers:
-        centers = sorted(adjacency)[:max_centers]
+    centers = sorted(adjacency)
+    if len(centers) > max_centers:
+        raise ValueError(
+            "max_centers cannot preserve direct neighborhoods for every endpoint: "
+            f"required={len(centers)} configured={max_centers}"
+        )
     conn.execute("DELETE FROM graph_neighborhoods")
     inserted = 0
     for center in centers:
@@ -1572,12 +1868,96 @@ def build_graph_neighborhoods(
 
 
 def materialize_graphdb_capability_indexes(conn: sqlite3.Connection) -> dict[str, Any]:
-    """Run all additive graphDB-like SQLite index builders."""
-    out = {"schema": ensure_graphdb_capability_schema(conn)}
-    out["paths"] = materialize_graph_path_index(conn)
-    out["siblings"] = build_graph_sibling_links(conn)
-    out["neighborhoods"] = build_graph_neighborhoods(conn)
-    return out
+    """Materialize the versioned direct-only capability used by fresh builds.
+
+    The canonical materializer calls :func:`build_graph_index_rows` before its
+    SQLite file exists. Atomic hardening calls this function over the copied
+    logical projection. Both therefore use the same direct-edge path,
+    neighborhood, and sibling derivation instead of retaining historical
+    depth-four/distance-three rows.
+    """
+    schema = ensure_graphdb_capability_schema(conn)
+    node_rows = [
+        {"node_id": str(node_id), "node_type": str(node_type)}
+        for node_id, node_type in conn.execute("SELECT node_id,node_type FROM graph_nodes ORDER BY node_id")
+    ]
+    edge_rows = sorted(
+        _edge_tuples(conn),
+        key=lambda row: (
+            str(row.get("source_node_id") or ""),
+            str(row.get("target_node_id") or ""),
+            str(row.get("edge_type") or ""),
+            str(row.get("edge_id") or ""),
+        ),
+    )
+    rows = build_graph_index_rows(
+        node_rows=node_rows,
+        edge_rows=edge_rows,
+        section_rows=(),
+        role_family_projection_rows=(),
+        created_at=_utc_now(),
+    )
+
+    conn.execute("DELETE FROM graph_paths")
+    conn.execute("DELETE FROM graph_neighborhoods")
+    conn.execute("DELETE FROM graph_sibling_links")
+    conn.executemany(
+        """
+        INSERT INTO graph_paths (
+            path_id, start_node_id, end_node_id, path_depth, path_signature,
+            node_path_json, edge_path_json, edge_types_json, proof_fact_ids_json,
+            metric_ids_json, section_ids_json, path_score, novelty_score,
+            proof_strength_score, created_at
+        ) VALUES (
+            :path_id, :start_node_id, :end_node_id, :path_depth, :path_signature,
+            :node_path_json, :edge_path_json, :edge_types_json,
+            :proof_fact_ids_json, :metric_ids_json, :section_ids_json,
+            :path_score, :novelty_score, :proof_strength_score, :created_at
+        )
+        """,
+        rows["graph_paths"],
+    )
+    conn.executemany(
+        """
+        INSERT INTO graph_neighborhoods (
+            center_node_id, neighbor_node_id, distance, connecting_path_json,
+            edge_types_json, relationship_summary, neighbor_score
+        ) VALUES (
+            :center_node_id, :neighbor_node_id, :distance, :connecting_path_json,
+            :edge_types_json, :relationship_summary, :neighbor_score
+        )
+        """,
+        rows["graph_neighborhoods"],
+    )
+    conn.executemany(
+        """
+        INSERT INTO graph_sibling_links (
+            node_id, sibling_node_id, sibling_reason, shared_parent_node_id,
+            shared_edge_type, sibling_score
+        ) VALUES (
+            :node_id, :sibling_node_id, :sibling_reason, :shared_parent_node_id,
+            :shared_edge_type, :sibling_score
+        )
+        """,
+        rows["graph_sibling_links"],
+    )
+    conn.commit()
+    return {
+        "schema": schema,
+        "graph_index_capability_version": GRAPH_INDEX_CAPABILITY_VERSION,
+        "index_mode": "direct_only",
+        "paths": {
+            "graph_paths_materialized": len(rows["graph_paths"]),
+            "max_depth": 1,
+        },
+        "siblings": {
+            "graph_sibling_links_materialized": len(rows["graph_sibling_links"]),
+        },
+        "neighborhoods": {
+            "graph_neighborhoods_materialized": len(rows["graph_neighborhoods"]),
+            "max_distance": 1,
+        },
+    }
 
 
 def record_resume_metric_usage(
@@ -1602,7 +1982,17 @@ def record_resume_metric_usage(
         ON CONFLICT(run_id, resume_section, metric_id)
         DO UPDATE SET usage_count = usage_count + excluded.usage_count
         """,
-        (run_id, resume_section, metric_id, metric_value, fact_id, skill_id, role_family_key, int(usage_count), _utc_now()),
+        (
+            run_id,
+            resume_section,
+            metric_id,
+            metric_value,
+            fact_id,
+            skill_id,
+            role_family_key,
+            int(usage_count),
+            _utc_now(),
+        ),
     )
     conn.commit()
 
@@ -1698,8 +2088,17 @@ def query_reverse_metric_paths(
     ]
 
 
-def query_sibling_alternatives(conn: sqlite3.Connection, *, node_id: str, limit: int = 25) -> list[dict[str, Any]]:
+def query_sibling_alternatives(
+    conn: sqlite3.Connection, *, node_id: str, limit: int = 25
+) -> list[dict[str, Any]]:
     require_graphdb_capability_schema(conn)
+    from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+        BLOCKED_SUPPORT_LEVELS,
+        NON_PROMOTE_ACTIVATION,
+    )
+
+    blocked_activation_placeholders = ",".join("?" for _ in NON_PROMOTE_ACTIVATION)
+    blocked_support_placeholders = ",".join("?" for _ in BLOCKED_SUPPORT_LEVELS)
     return [
         {
             "node_id": node_id,
@@ -1709,18 +2108,53 @@ def query_sibling_alternatives(conn: sqlite3.Connection, *, node_id: str, limit:
             "shared_parent_node_id": r[3],
             "shared_edge_type": r[4],
             "sibling_score": r[5],
+            "shared_context_count": r[6],
         }
         for r in conn.execute(
-            """
-            SELECT s.sibling_node_id, COALESCE(n.label, ''), s.sibling_reason,
-                   s.shared_parent_node_id, s.shared_edge_type, s.sibling_score
-            FROM graph_sibling_links s
-            LEFT JOIN graph_nodes n ON n.node_id = s.sibling_node_id
-            WHERE s.node_id = ?
-            ORDER BY s.sibling_score DESC, s.sibling_node_id
+            f"""
+            WITH ranked_siblings AS (
+                SELECT
+                    s.sibling_node_id,
+                    COALESCE(n.label, '') AS sibling_label,
+                    s.sibling_reason,
+                    s.shared_parent_node_id,
+                    s.shared_edge_type,
+                    s.sibling_score,
+                    COUNT(*) OVER (
+                        PARTITION BY s.node_id, s.sibling_node_id
+                    ) AS shared_context_count,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY s.node_id, s.sibling_node_id
+                        ORDER BY s.sibling_score DESC,
+                                 s.shared_parent_node_id,
+                                 s.shared_edge_type,
+                                 s.sibling_reason
+                    ) AS context_rank
+                FROM graph_sibling_links s
+                JOIN graph_nodes n ON n.node_id = s.sibling_node_id
+                WHERE s.node_id = ?
+                  AND n.external_eligible = 1
+                  AND COALESCE(n.activation_status, '') NOT IN (
+                      {blocked_activation_placeholders}
+                  )
+                  AND COALESCE(n.support_level, '') NOT IN (
+                      {blocked_support_placeholders}
+                  )
+            )
+            SELECT sibling_node_id, sibling_label, sibling_reason,
+                   shared_parent_node_id, shared_edge_type, sibling_score,
+                   shared_context_count
+            FROM ranked_siblings
+            WHERE context_rank = 1
+            ORDER BY sibling_score DESC, sibling_node_id
             LIMIT ?
             """,
-            (node_id, limit),
+            (
+                node_id,
+                *sorted(NON_PROMOTE_ACTIVATION),
+                *sorted(BLOCKED_SUPPORT_LEVELS),
+                limit,
+            ),
         )
     ]
 
@@ -1763,27 +2197,31 @@ def query_best_metric_candidates(
     *,
     role_family_key: str = "",
     section_id: str = "executive_summary",
+    run_id: str = "",
     limit: int = 25,
 ) -> list[dict[str, Any]]:
-    """Return metric candidates prioritized by novelty and path/proof score."""
+    """Return metric candidates using only the current run's novelty state."""
     require_graphdb_capability_schema(conn)
     budget = query_section_evidence_budget(conn, section_id=section_id, role_family_key=role_family_key) or {}
     forbidden = set(budget.get("forbidden_metric_ids") or [])
+    metric_type_placeholders = ",".join("?" for _ in METRIC_NODE_TYPES)
+    effective_run_id = str(run_id or "") or "__NO_CURRENT_RUN__"
     rows = conn.execute(
-        """
+        f"""
         SELECT p.end_node_id, COALESCE(n.label, p.end_node_id), p.start_node_id,
                p.path_signature, p.path_score, p.novelty_score, p.proof_strength_score,
                COALESCE(SUM(u.usage_count), 0) AS prior_usage
         FROM graph_paths p
         LEFT JOIN graph_nodes n ON n.node_id = p.end_node_id
-        LEFT JOIN resume_metric_usage u ON u.metric_id = p.end_node_id
-        WHERE (n.node_type = 'metric_outcome' OR p.end_node_id LIKE 'metric_%')
+        LEFT JOIN resume_metric_usage u
+          ON u.metric_id = p.end_node_id AND u.run_id = ?
+        WHERE n.node_type IN ({metric_type_placeholders})
         GROUP BY p.end_node_id, n.label, p.start_node_id, p.path_signature,
                  p.path_score, p.novelty_score, p.proof_strength_score
         ORDER BY prior_usage ASC, p.proof_strength_score DESC, p.novelty_score DESC, p.path_score DESC
         LIMIT ?
         """,
-        (max(limit * 2, limit),),
+        (effective_run_id, *sorted(METRIC_NODE_TYPES), max(limit * 2, limit)),
     ).fetchall()
     out = []
     for r in rows:
@@ -1807,9 +2245,15 @@ def query_best_metric_candidates(
 
 
 __all__ = [
+    "GRAPH_INDEX_CAPABILITY_VERSION",
     "GRAPH_INDEX_SCHEMA_VERSION",
+    "METRIC_NODE_TYPES",
+    "SIBLING_NODE_TYPES",
+    "SKILL_FACT_EVIDENCE_NODE_TYPES",
     "EDGE_METADATA_COLUMNS",
     "build_graph_index_rows",
+    "compute_sqlite_graph_digest",
+    "compute_sqlite_schema_digest",
     "ensure_graphdb_capability_schema",
     "require_graphdb_capability_schema",
     "validate_graphdb_capability_integrity",

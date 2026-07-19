@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import re
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -21,6 +22,22 @@ from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     canonical_node_type,
     open_graph_sqlite,
+    project_registered_graph_node_type,
+    projected_graph_edge_signature_report,
+    projected_registered_graph_edge_signatures,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    METRIC_IDS as OPERATIONAL_METRIC_IDS,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    PRODUCER_REGISTRY_VERSION as OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    SCHEMA_VERSION as OPERATIONAL_EVIDENCE_SCHEMA_VERSION,
+)
+from apps_rg.fact_inventory.c03_graph_operational_evidence import (
+    OperationalTrustContext,
+    verify_operational_evidence_envelope,
 )
 from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
     POLICY_VERSION as METRIC_HETEROGENEITY_POLICY_VERSION,
@@ -28,19 +45,26 @@ from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
 from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
     metric_bucket_for_row,
 )
+from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    SIBLING_NODE_TYPES,
+    compute_sqlite_graph_digest,
+    compute_sqlite_schema_digest,
+)
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     derive_registered_graph_endpoint_types,
     graph_node_requires_source_refs,
 )
 
-SCHEMA_VERSION = "apps_rg.c03_graph_kpi_health_receipt.v1"
-BUILDER_VERSION = "c03_graph_kpi_health_builder.v1"
-CANONICAL_CHECK_VERSION = "c03_graph_canonical_health_checks.v1"
-SQLITE_CHECK_VERSION = "c03_graph_sqlite_health_checks.v1"
+SCHEMA_VERSION = "apps_rg.c03_graph_kpi_health_receipt.v2"
+BUILDER_VERSION = "c03_graph_kpi_health_builder.v4.producer_bound_operational_evidence"
+CANONICAL_CHECK_VERSION = "c03_graph_canonical_health_checks.v2"
+SQLITE_CHECK_VERSION = "c03_graph_sqlite_health_checks.v3"
+POLICY_SCHEMA_VERSION = "apps_rg.c03_graph_health_policy.v2"
+POLICY_VERSION = "c03_graph_health_policy.v4.producer_bound_operational_evidence"
 
 DEFAULT_CANONICAL_REL = Path("apps_rg/fact_inventory/master_skills_arsenal_ledger.json")
 DEFAULT_SQLITE_REL = Path("artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite")
-DEFAULT_POLICY_REL = Path("apps_rg/config/c03_graph_health_policy.v1.json")
+DEFAULT_POLICY_REL = Path("apps_rg/config/c03_graph_health_policy.v2.json")
 
 STATUS_PRECEDENCE = {
     "PASS": 0,
@@ -51,17 +75,54 @@ STATUS_PRECEDENCE = {
 }
 
 _IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
-OPERATIONAL_METRIC_BINDINGS: tuple[tuple[str, str, str], ...] = (
-    ("decision_safe_regression", "decision_safe_regression", "passed"),
-    ("source_currentness", "source_currentness", "current"),
-    ("source_freshness", "source_freshness", "fresh"),
-    ("hitl_approval_coverage", "hitl_approval", "approved"),
-    ("write_audit_coverage", "write_audit", "audited"),
-    ("p0_sla_compliance", "p0_sla", "within_sla"),
-    ("p1_sla_compliance", "p1_sla", "within_sla"),
+CONTROL_PLANE_METRIC_IDS = (
+    "canonical_artifact_available",
+    "sqlite_artifact_available",
+    "sqlite_read_purity",
+    "canonical_sqlite_digest_match",
+    "canonical_metadata_node_count_parity",
+    "canonical_metadata_edge_count_parity",
+    "sqlite_projection_node_count_parity",
+    "sqlite_projection_edge_count_parity",
+    "sqlite_foreign_key_coverage",
+    "sqlite_foreign_key_integrity",
+    "reverse_view_parity",
+    "decision_safe_regression",
+    "source_currentness",
+    "source_freshness",
+    "hitl_approval_coverage",
+    "write_audit_coverage",
+    "p0_sla_compliance",
+    "p1_sla_compliance",
 )
+GRAPH_DATA_METRIC_IDS = (
+    "orphan_edge_rate",
+    "duplicate_node_id_rate",
+    "duplicate_edge_id_rate",
+    "duplicate_logical_edge_rate",
+    "identity_collision_rate",
+    "explicit_endpoint_closure",
+    "registered_endpoint_closure",
+    "canonical_projected_edge_signature_integrity",
+    "sqlite_projected_edge_signature_integrity",
+    "claim_evidence_completeness",
+    "skill_row_node_coverage",
+    "skill_source_metadata_completeness",
+    "graph_node_source_ref_completeness",
+    "temporal_completeness",
+    "rare_edge_type_rate",
+    "path_integrity",
+    "sibling_integrity",
+    "neighborhood_integrity",
+    "metric_bucket_concentration",
+    "domain_coverage",
+    "epoch_coverage",
+)
+EXPECTED_METRIC_IDS = CONTROL_PLANE_METRIC_IDS + GRAPH_DATA_METRIC_IDS
+_METRIC_SPEC_FIELDS = frozenset({"plane", "operator", "target", "failure_status", "required"})
+_ALLOWED_OPERATORS = frozenset({">=", "<=", "=="})
+_ALLOWED_FAILURE_STATUSES = frozenset({"BLOCK", "FAIL", "MIGRATION_REQUIRED"})
 
 
 def _repo_root() -> Path:
@@ -91,11 +152,7 @@ def _sha256_file(path: Path) -> str:
 def _sqlite_sidecar_names(path: Path) -> tuple[str, ...]:
     """Return the exact SQLite sidecar set without opening or creating files."""
     return tuple(
-        sorted(
-            candidate.name
-            for candidate in path.parent.glob(f"{path.name}-*")
-            if candidate.is_file()
-        )
+        sorted(candidate.name for candidate in path.parent.glob(f"{path.name}-*") if candidate.is_file())
     )
 
 
@@ -105,37 +162,6 @@ def _canonical_json(value: Any) -> str:
 
 def _payload_digest(value: Any) -> str:
     return _sha256_bytes(_canonical_json(value).encode("utf-8"))
-
-
-def _normalized_operational_cohort(evidence: Mapping[str, Any]) -> dict[str, Any]:
-    metrics: dict[str, Any] = {}
-    for _metric_id, evidence_key, numerator_key in OPERATIONAL_METRIC_BINDINGS:
-        row = evidence.get(evidence_key)
-        if not isinstance(row, Mapping):
-            metrics[evidence_key] = None
-            continue
-        failure_locators = row.get("failure_locators")
-        normalized_failures = (
-            sorted(failure_locators, key=_canonical_json)
-            if isinstance(failure_locators, list)
-            else None
-        )
-        metrics[evidence_key] = {
-            numerator_key: _valid_count(row.get(numerator_key)),
-            "total": _valid_count(row.get("total")),
-            "failure_locators": normalized_failures,
-        }
-    return {
-        "schema_version": _string(evidence.get("schema_version")),
-        "authority_status": _string(evidence.get("authority_status")),
-        "cohort_id": _string(evidence.get("cohort_id")),
-        "metrics": metrics,
-    }
-
-
-def compute_operational_cohort_digest(evidence: Mapping[str, Any]) -> str:
-    """Return the SHA-256 bound to normalized operational cohort evidence fields."""
-    return _payload_digest(_normalized_operational_cohort(evidence))
 
 
 def _load_json_object(path: Path) -> tuple[dict[str, Any] | None, str | None]:
@@ -148,15 +174,65 @@ def _load_json_object(path: Path) -> tuple[dict[str, Any] | None, str | None]:
     return raw, None
 
 
+def _validate_policy_metrics(metrics: Any) -> None:
+    if not isinstance(metrics, dict) or not metrics:
+        raise ValueError("graph health policy metrics must be a non-empty object")
+    expected = set(EXPECTED_METRIC_IDS)
+    observed = set(metrics)
+    missing = sorted(expected - observed)
+    extra = sorted(observed - expected)
+    if missing or extra:
+        raise ValueError(f"graph health policy metric registry drift: missing={missing}, extra={extra}")
+
+    control_plane = set(CONTROL_PLANE_METRIC_IDS)
+    for metric_id in EXPECTED_METRIC_IDS:
+        spec = metrics[metric_id]
+        if not isinstance(spec, dict):
+            raise ValueError(f"graph health policy metric {metric_id!r} must be an object")
+        fields = set(spec)
+        if fields != _METRIC_SPEC_FIELDS:
+            raise ValueError(
+                f"graph health policy metric {metric_id!r} fields drift: "
+                f"missing={sorted(_METRIC_SPEC_FIELDS - fields)}, "
+                f"extra={sorted(fields - _METRIC_SPEC_FIELDS)}"
+            )
+        expected_plane = "control_plane" if metric_id in control_plane else "graph_data"
+        if spec["plane"] != expected_plane:
+            raise ValueError(f"graph health policy metric {metric_id!r} plane must be {expected_plane!r}")
+        if spec["operator"] not in _ALLOWED_OPERATORS:
+            raise ValueError(f"graph health policy metric {metric_id!r} has unsupported operator")
+        target = spec["target"]
+        if (
+            isinstance(target, bool)
+            or not isinstance(target, (int, float))
+            or not math.isfinite(float(target))
+            or not 0.0 <= float(target) <= 1.0
+        ):
+            raise ValueError(f"graph health policy metric {metric_id!r} target must be finite in [0, 1]")
+        if spec["failure_status"] not in _ALLOWED_FAILURE_STATUSES:
+            raise ValueError(f"graph health policy metric {metric_id!r} has unsupported failure_status")
+        if not isinstance(spec["required"], bool):
+            raise ValueError(f"graph health policy metric {metric_id!r} required must be boolean")
+
+
 def load_health_policy(path: Path | None = None) -> dict[str, Any]:
     policy_path = path or default_policy_path()
     policy, error = _load_json_object(policy_path)
     if policy is None:
         raise ValueError(f"invalid graph health policy {policy_path}: {error}")
-    if policy.get("schema_version") != "apps_rg.c03_graph_health_policy.v1":
+    if policy.get("schema_version") != POLICY_SCHEMA_VERSION:
         raise ValueError(f"unsupported graph health policy schema: {policy.get('schema_version')}")
-    if not isinstance(policy.get("metrics"), dict) or not policy["metrics"]:
-        raise ValueError("graph health policy metrics must be a non-empty object")
+    if policy.get("policy_version") != POLICY_VERSION:
+        raise ValueError(f"unsupported graph health policy version: {policy.get('policy_version')}")
+    if policy.get("operational_evidence_schema_version") != OPERATIONAL_EVIDENCE_SCHEMA_VERSION:
+        raise ValueError(
+            "graph health policy operational evidence schema does not match the code-owned contract"
+        )
+    if policy.get("operational_producer_registry_version") != OPERATIONAL_PRODUCER_REGISTRY_VERSION:
+        raise ValueError(
+            "graph health policy operational producer registry does not match the code-owned contract"
+        )
+    _validate_policy_metrics(policy.get("metrics"))
     return policy
 
 
@@ -403,6 +479,34 @@ def _registered_endpoint_ids(
     return set(explicit_ids) | set(derive_registered_graph_endpoint_types(payload))
 
 
+def _canonical_projected_endpoint_types(
+    payload: Mapping[str, Any],
+) -> dict[str, str]:
+    raw_types = {
+        _string(row.get("node_id")): _string(row.get("node_type"))
+        for row in _as_rows(payload.get("graph_nodes"))
+        if _string(row.get("node_id"))
+    }
+    for endpoint_id, raw_type in derive_registered_graph_endpoint_types(payload).items():
+        raw_types.setdefault(endpoint_id, raw_type)
+    projected: dict[str, str] = {}
+    for endpoint_id, raw_type in raw_types.items():
+        try:
+            projected[endpoint_id] = project_registered_graph_node_type(raw_type)
+        except ValueError:
+            projected[endpoint_id] = f"<unregistered:{raw_type or 'blank'}>"
+    return projected
+
+
+def _edge_signature_metric_details(report: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "edge_count": report["edge_count"],
+        "registered_edge_count": report["registered_edge_count"],
+        "unregistered_edge_count": report["unregistered_edge_count"],
+        "normalized_registered_edge_type_count": len(projected_registered_graph_edge_signatures()),
+    }
+
+
 def _canonical_metrics(
     payload: Mapping[str, Any],
     policy: Mapping[str, Any],
@@ -541,6 +645,20 @@ def _canonical_metrics(
         failure_locators=registered_failures,
         details={"registered_endpoint_count": len(registered_ids)},
     )
+    canonical_signature_report = projected_graph_edge_signature_report(
+        node_types_by_id=_canonical_projected_endpoint_types(payload),
+        edge_rows=edges,
+    )
+    collector.add(
+        "canonical_projected_edge_signature_integrity",
+        canonical_signature_report["valid_edge_count"],
+        canonical_signature_report["edge_count"],
+        "canonical edges admitted by a type authority with a valid projected endpoint signature",
+        "all canonical graph_edge rows",
+        failure_count=canonical_signature_report["failure_count"],
+        failure_locators=canonical_signature_report["failure_locators"],
+        details=_edge_signature_metric_details(canonical_signature_report),
+    )
     collector.add(
         "orphan_edge_rate",
         len(orphan_edges),
@@ -575,9 +693,7 @@ def _canonical_metrics(
     graph_fact_bindings: dict[str, set[str]] = defaultdict(set)
     for edge in edges:
         if _string(edge.get("edge_type")) == "skill_supported_by_fact":
-            graph_fact_bindings[_string(edge.get("source_node_id"))].add(
-                _string(edge.get("target_node_id"))
-            )
+            graph_fact_bindings[_string(edge.get("source_node_id"))].add(_string(edge.get("target_node_id")))
     claim_evidence_complete: list[dict[str, Any]] = []
     claim_evidence_failures: list[dict[str, Any]] = []
     for row in skills:
@@ -594,7 +710,9 @@ def _canonical_metrics(
                     "declared_fact_ids": sorted(declared_fact_ids),
                     "bound_graph_fact_ids": sorted(bound_fact_ids),
                     "missing_graph_fact_bindings": missing_bindings,
-                    "reason": "declared_fact_ids_missing" if not declared_fact_ids else "graph_binding_missing",
+                    "reason": "declared_fact_ids_missing"
+                    if not declared_fact_ids
+                    else "graph_binding_missing",
                 }
             )
     collector.add(
@@ -885,9 +1003,7 @@ def _sqlite_canonical_graph_semantic_payload(
                 "target_node_id": _string(row[2]),
                 "edge_type": _string(row[3]),
             }
-            for row in conn.execute(
-                "SELECT edge_id,source_node_id,target_node_id,edge_type FROM graph_edges"
-            )
+            for row in conn.execute("SELECT edge_id,source_node_id,target_node_id,edge_type FROM graph_edges")
             if _string(row[0]) in canonical_edge_ids
         ],
         key=_canonical_json,
@@ -943,7 +1059,16 @@ def _path_integrity_metric(
         """
     ).fetchall()
     edge_map = {row["edge_id"]: row for row in edges}
-    valid = 0
+    expected_direct_paths = {
+        (
+            edge["source_node_id"],
+            edge["target_node_id"],
+            edge["edge_id"],
+            edge["edge_type"],
+        )
+        for edge in edges
+    }
+    valid_direct_counts: Counter[tuple[str, str, str, str]] = Counter()
     failures: list[dict[str, Any]] = []
     for raw in rows:
         path_id, start, end, depth_raw, nodes_raw, edge_ids_raw, edge_types_raw = raw
@@ -973,32 +1098,70 @@ def _path_integrity_metric(
                         or edge["edge_type"] != _string(edge_types[index])
                     ):
                         reasons.append(f"edge_continuity_mismatch:{edge_id}")
+        direct_identity: tuple[str, str, str, str] | None = None
+        if (
+            depth == 1
+            and nodes is not None
+            and edge_ids is not None
+            and edge_types is not None
+            and len(nodes) == 2
+            and len(edge_ids) == 1
+            and len(edge_types) == 1
+        ):
+            direct_identity = (
+                _string(start),
+                _string(end),
+                _string(edge_ids[0]),
+                _string(edge_types[0]),
+            )
+            if direct_identity not in expected_direct_paths:
+                reasons.append("unexpected_direct_path")
         if reasons:
             failures.append({"path_id": _string(path_id), "reasons": sorted(set(reasons))})
-        else:
-            valid += 1
-    if not rows and edges:
-        return _metric(
-            policy,
-            metric_id,
-            numerator=0,
-            denominator=0,
-            numerator_semantics="valid generated graph_paths rows",
-            denominator_semantics="all generated graph_paths rows; graph_edges being nonempty requires paths",
-            cohort=cohort,
-            failure_count=len(edges),
-            failure_locators=[{"table": "graph_paths", "reason": "empty_with_nonempty_graph_edges"}],
-            status_override=str(policy["metrics"][metric_id]["failure_status"]),
-        )
+        elif direct_identity is not None:
+            valid_direct_counts[direct_identity] += 1
+    for identity in sorted(expected_direct_paths):
+        occurrences = valid_direct_counts[identity]
+        if occurrences == 0:
+            failures.append(
+                {
+                    "start_node_id": identity[0],
+                    "end_node_id": identity[1],
+                    "edge_id": identity[2],
+                    "edge_type": identity[3],
+                    "reasons": ["expected_direct_path_missing"],
+                }
+            )
+        elif occurrences > 1:
+            failures.append(
+                {
+                    "start_node_id": identity[0],
+                    "end_node_id": identity[1],
+                    "edge_id": identity[2],
+                    "edge_type": identity[3],
+                    "occurrences": occurrences,
+                    "reasons": ["duplicate_direct_path"],
+                }
+            )
+    valid_expected = sum(1 for identity in expected_direct_paths if valid_direct_counts[identity] == 1)
     return _metric(
         policy,
         metric_id,
-        numerator=valid,
-        denominator=len(rows),
-        numerator_semantics="graph_paths rows with coherent JSON, depth, endpoints, and edge continuity",
-        denominator_semantics="all generated graph_paths rows in the SQLite projection",
+        numerator=valid_expected,
+        denominator=len(expected_direct_paths),
+        numerator_semantics=(
+            "graph-derived direct paths materialized exactly once with coherent JSON, "
+            "depth, endpoints, and edge continuity"
+        ),
+        denominator_semantics="all direct paths derived from graph_edges",
         cohort=cohort,
+        failure_count=len(failures),
         failure_locators=failures,
+        status_override=(str(policy["metrics"][metric_id]["failure_status"]) if failures else None),
+        details={
+            "expected_direct_path_count": len(expected_direct_paths),
+            "materialized_row_count": len(rows),
+        },
     )
 
 
@@ -1026,17 +1189,38 @@ def _sibling_integrity_metric(
             cohort=cohort,
             denominator_semantics="all generated graph_sibling_links rows",
         )
+    if not _table_exists(conn, "graph_nodes", kind="table") or not {
+        "node_id",
+        "node_type",
+    }.issubset(_table_columns(conn, "graph_nodes")):
+        return _unknown_metric(
+            policy,
+            metric_id,
+            reason="graph_nodes_schema_incomplete_for_sibling_cohort",
+            cohort=cohort,
+            denominator_semantics=(
+                "all generated graph_sibling_links rows for sanctioned sibling node types"
+            ),
+        )
     rows = conn.execute(
         """
         SELECT node_id,sibling_node_id,shared_parent_node_id,shared_edge_type
         FROM graph_sibling_links ORDER BY node_id,sibling_node_id
         """
     ).fetchall()
+    sibling_node_type_parameters = tuple(sorted(SIBLING_NODE_TYPES))
+    sibling_node_type_placeholders = ",".join("?" for _ in sibling_node_type_parameters)
+    sibling_node_ids = {
+        _string(row[0])
+        for row in conn.execute(
+            f"SELECT node_id FROM graph_nodes WHERE node_type IN ({sibling_node_type_placeholders})",
+            sibling_node_type_parameters,
+        )
+    }
     children_by_parent: dict[tuple[str, str], set[str]] = defaultdict(set)
     for edge in edges:
-        children_by_parent[(edge["source_node_id"], edge["edge_type"])].add(
-            edge["target_node_id"]
-        )
+        if edge["target_node_id"] in sibling_node_ids:
+            children_by_parent[(edge["source_node_id"], edge["edge_type"])].add(edge["target_node_id"])
     expected_siblings = {
         (node_id, sibling_id, parent_id, edge_type)
         for (parent_id, edge_type), children in children_by_parent.items()
@@ -1088,9 +1272,7 @@ def _sibling_integrity_metric(
             failures.append(failure)
         else:
             valid_expected += 1
-    for node, sibling, parent, edge_kind in sorted(
-        expected_siblings - materialized_siblings
-    ):
+    for node, sibling, parent, edge_kind in sorted(expected_siblings - materialized_siblings):
         failures.append(
             {
                 "node_id": node,
@@ -1109,19 +1291,19 @@ def _sibling_integrity_metric(
             "graph-derived sibling relationships materialized exactly once with reciprocal and "
             "shared-parent integrity"
         ),
-        denominator_semantics="all directed sibling relationships derived from shared graph parent edges",
+        denominator_semantics=(
+            "all directed sibling relationships derived from shared graph parent edges whose "
+            "targets are sanctioned sibling node types"
+        ),
         cohort=cohort,
         failure_count=len(failures),
         failure_locators=failures,
-        status_override=(
-            str(policy["metrics"][metric_id]["failure_status"])
-            if failures
-            else None
-        ),
+        status_override=(str(policy["metrics"][metric_id]["failure_status"]) if failures else None),
         details={
             "expected_relationship_count": len(expected_siblings),
             "materialized_distinct_relationship_count": len(materialized_siblings),
             "materialized_row_count": len(rows),
+            "sibling_node_types": sorted(SIBLING_NODE_TYPES),
         },
     )
 
@@ -1162,36 +1344,15 @@ def _neighborhood_integrity_metric(
         FROM graph_neighborhoods ORDER BY center_node_id,neighbor_node_id,distance
         """
     ).fetchall()
-    expected_direct_neighborhoods = {
-        (edge["source_node_id"], edge["target_node_id"], 1) for edge in edges
-    }
+    expected_direct_neighborhoods = {(edge["source_node_id"], edge["target_node_id"], 1) for edge in edges}
     expected_direct_neighborhoods.update(
         (edge["target_node_id"], edge["source_node_id"], 1) for edge in edges
     )
-    if not rows and expected_direct_neighborhoods:
-        return _metric(
-            policy,
-            metric_id,
-            numerator=0,
-            denominator=len(expected_direct_neighborhoods),
-            numerator_semantics="materialized direct neighborhoods matching graph edges",
-            denominator_semantics="all forward and reverse direct neighborhoods derived from graph edges",
-            cohort=cohort,
-            failure_count=len(expected_direct_neighborhoods),
-            failure_locators=[
-                {
-                    "table": "graph_neighborhoods",
-                    "reason": "empty_with_required_direct_neighborhoods",
-                    "expected_row_count": len(expected_direct_neighborhoods),
-                }
-            ],
-            status_override=str(policy["metrics"][metric_id]["failure_status"]),
-        )
     adjacency = {(row["source_node_id"], row["target_node_id"], row["edge_type"]) for row in edges}
     adjacency.update(
         (row["target_node_id"], row["source_node_id"], f"{row['edge_type']}_reverse") for row in edges
     )
-    valid = 0
+    valid_direct_counts: Counter[tuple[str, str, int]] = Counter()
     failures: list[dict[str, Any]] = []
     for center_raw, neighbor_raw, distance_raw, path_raw, edge_types_raw in rows:
         center = _string(center_raw)
@@ -1215,19 +1376,63 @@ def _neighborhood_integrity_metric(
                 for index, edge_type in enumerate(edge_types):
                     if (_string(path[index]), _string(path[index + 1]), _string(edge_type)) not in adjacency:
                         reasons.append(f"edge_continuity_mismatch:{index}")
+        direct_identity = (center, neighbor, 1) if distance == 1 else None
+        if direct_identity is not None and direct_identity not in expected_direct_neighborhoods:
+            reasons.append("unexpected_direct_neighborhood")
         if reasons:
-            failures.append({"center_node_id": center, "neighbor_node_id": neighbor, "reasons": reasons})
-        else:
-            valid += 1
+            failures.append(
+                {
+                    "center_node_id": center,
+                    "neighbor_node_id": neighbor,
+                    "distance": distance,
+                    "reasons": sorted(set(reasons)),
+                }
+            )
+        elif direct_identity is not None:
+            valid_direct_counts[direct_identity] += 1
+    for center, neighbor, distance in sorted(expected_direct_neighborhoods):
+        identity = (center, neighbor, distance)
+        occurrences = valid_direct_counts[identity]
+        if occurrences == 0:
+            failures.append(
+                {
+                    "center_node_id": center,
+                    "neighbor_node_id": neighbor,
+                    "distance": distance,
+                    "reasons": ["expected_direct_neighborhood_missing"],
+                }
+            )
+        elif occurrences > 1:
+            failures.append(
+                {
+                    "center_node_id": center,
+                    "neighbor_node_id": neighbor,
+                    "distance": distance,
+                    "occurrences": occurrences,
+                    "reasons": ["duplicate_direct_neighborhood"],
+                }
+            )
+    valid_expected = sum(
+        1 for identity in expected_direct_neighborhoods if valid_direct_counts[identity] == 1
+    )
     return _metric(
         policy,
         metric_id,
-        numerator=valid,
-        denominator=len(rows),
-        numerator_semantics="neighborhood rows with coherent distance, endpoint path, and edge continuity",
-        denominator_semantics="all generated graph_neighborhoods rows in the SQLite projection",
+        numerator=valid_expected,
+        denominator=len(expected_direct_neighborhoods),
+        numerator_semantics=(
+            "graph-derived direct neighborhoods materialized exactly once with coherent distance, "
+            "endpoint path, and edge continuity"
+        ),
+        denominator_semantics="all forward and reverse direct neighborhoods derived from graph edges",
         cohort=cohort,
+        failure_count=len(failures),
         failure_locators=failures,
+        status_override=(str(policy["metrics"][metric_id]["failure_status"]) if failures else None),
+        details={
+            "expected_direct_neighborhood_count": len(expected_direct_neighborhoods),
+            "materialized_row_count": len(rows),
+        },
     )
 
 
@@ -1258,10 +1463,22 @@ def _sqlite_metrics(
     ledger_hash = _string(metadata.get("ledger_hash"))
     canonical_semantic_digest: str | None = None
     projection_semantic_digest: str | None = None
+    stored_projection_logical_digest = _string(summary.get("sqlite_graph_digest")).lower()
+    stored_projection_schema_digest = _string(summary.get("sqlite_schema_digest")).lower()
+    projection_logical_digest: str | None = None
+    projection_logical_digest_error: str | None = None
+    projection_schema_digest: str | None = None
+    projection_schema_digest_error: str | None = None
+    try:
+        projection_logical_digest = compute_sqlite_graph_digest(conn)
+    except (sqlite3.DatabaseError, ValueError) as exc:
+        projection_logical_digest_error = str(exc)
+    try:
+        projection_schema_digest = compute_sqlite_schema_digest(conn)
+    except sqlite3.DatabaseError as exc:
+        projection_schema_digest_error = str(exc)
     if canonical_payload is not None:
-        canonical_semantic_digest = _payload_digest(
-            _canonical_graph_semantic_payload(canonical_payload)
-        )
+        canonical_semantic_digest = _payload_digest(_canonical_graph_semantic_payload(canonical_payload))
         projected_semantics = _sqlite_canonical_graph_semantic_payload(conn, canonical_payload)
         if projected_semantics is not None:
             projection_semantic_digest = _payload_digest(projected_semantics)
@@ -1274,8 +1491,17 @@ def _sqlite_metrics(
     else:
         ledger_digest_match = int(bool(ledger_hash) and ledger_hash == canonical_payload_digest)
         semantic_digest_match = int(
-            projection_semantic_digest is not None
-            and projection_semantic_digest == canonical_semantic_digest
+            projection_semantic_digest is not None and projection_semantic_digest == canonical_semantic_digest
+        )
+        projection_logical_digest_match = int(
+            bool(stored_projection_logical_digest)
+            and projection_logical_digest is not None
+            and projection_logical_digest == stored_projection_logical_digest
+        )
+        projection_schema_digest_match = int(
+            bool(stored_projection_schema_digest)
+            and projection_schema_digest is not None
+            and projection_schema_digest == stored_projection_schema_digest
         )
         binding_failures: list[dict[str, Any]] = []
         if not ledger_digest_match:
@@ -1294,12 +1520,38 @@ def _sqlite_metrics(
                     "sqlite_projection_semantic_sha256": projection_semantic_digest,
                 }
             )
+        if not projection_logical_digest_match:
+            binding_failures.append(
+                {
+                    "binding": "sqlite_projection_logical_digest",
+                    "stored_sqlite_graph_sha256": stored_projection_logical_digest or None,
+                    "recomputed_sqlite_graph_sha256": projection_logical_digest,
+                    "recompute_error": projection_logical_digest_error,
+                }
+            )
+        if not projection_schema_digest_match:
+            binding_failures.append(
+                {
+                    "binding": "sqlite_projection_schema_digest",
+                    "stored_sqlite_schema_sha256": stored_projection_schema_digest or None,
+                    "recomputed_sqlite_schema_sha256": projection_schema_digest,
+                    "recompute_error": projection_schema_digest_error,
+                }
+            )
         collector.add(
             "canonical_sqlite_digest_match",
-            ledger_digest_match + semantic_digest_match,
-            2,
-            "matching canonical ledger-hash binding and canonical-row semantic digest binding",
-            "two required canonical-to-SQLite authority bindings",
+            (
+                ledger_digest_match
+                + semantic_digest_match
+                + projection_logical_digest_match
+                + projection_schema_digest_match
+            ),
+            4,
+            (
+                "matching canonical ledger-hash, canonical-row semantic digest, and SQLite "
+                "logical-row and schema-object digest bindings"
+            ),
+            "four required canonical-to-SQLite authority bindings",
             failure_count=len(binding_failures),
             failure_locators=binding_failures,
         )
@@ -1399,6 +1651,44 @@ def _sqlite_metrics(
         )
 
     edges = _load_sqlite_edges(conn)
+    if (
+        edges is None
+        or not _table_exists(conn, "graph_nodes", kind="table")
+        or not {"node_id", "node_type"}.issubset(_table_columns(conn, "graph_nodes"))
+    ):
+        metrics.append(
+            _unknown_metric(
+                policy,
+                "sqlite_projected_edge_signature_integrity",
+                reason="graph_nodes_or_graph_edges_schema_incomplete_for_typed_signatures",
+                cohort=cohort,
+                denominator_semantics="all SQLite graph_edges rows",
+            )
+        )
+    else:
+        sqlite_signature_report = projected_graph_edge_signature_report(
+            node_types_by_id={
+                _string(row[0]): _string(row[1])
+                for row in conn.execute("SELECT node_id,node_type FROM graph_nodes")
+            },
+            edge_rows=edges,
+        )
+        metrics.append(
+            _metric(
+                policy,
+                "sqlite_projected_edge_signature_integrity",
+                numerator=sqlite_signature_report["valid_edge_count"],
+                denominator=sqlite_signature_report["edge_count"],
+                numerator_semantics=(
+                    "SQLite edges admitted by a type authority with a valid projected endpoint signature"
+                ),
+                denominator_semantics="all SQLite graph_edges rows",
+                cohort=cohort,
+                failure_count=sqlite_signature_report["failure_count"],
+                failure_locators=sqlite_signature_report["failure_locators"],
+                details=_edge_signature_metric_details(sqlite_signature_report),
+            )
+        )
     if edges is None or not _table_exists(conn, "graph_edges_reverse", kind="view"):
         metrics.append(
             _unknown_metric(
@@ -1468,6 +1758,12 @@ def _sqlite_metrics(
         "canonical_graph_semantic_sha256": canonical_semantic_digest,
         "sqlite_projection_canonical_semantic_sha256": projection_semantic_digest,
         "sqlite_projection_ledger_sha256": ledger_hash or None,
+        "sqlite_projection_logical_stored_sha256": stored_projection_logical_digest or None,
+        "sqlite_projection_logical_recomputed_sha256": projection_logical_digest,
+        "sqlite_projection_logical_recompute_error": projection_logical_digest_error,
+        "sqlite_projection_schema_stored_sha256": stored_projection_schema_digest or None,
+        "sqlite_projection_schema_recomputed_sha256": projection_schema_digest,
+        "sqlite_projection_schema_recompute_error": projection_schema_digest_error,
     }
     return metrics, versions, digests
 
@@ -1475,13 +1771,18 @@ def _sqlite_metrics(
 def _operational_metrics(
     evidence: Mapping[str, Any] | None,
     policy: Mapping[str, Any],
+    *,
+    trust_context: OperationalTrustContext | None,
+    candidate_commit_sha: str | None,
+    canonical_graph_sha256: str | None,
+    health_policy_sha256: str,
+    health_run_id: str | None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any]]:
-    mapping = OPERATIONAL_METRIC_BINDINGS
     unknown_cohort = _cohort(
         kind="frozen_policy_cohort",
         cohort_id="unsupported",
         digest=None,
-        definition="No digest-bound operational authority cohort was supplied.",
+        definition=("No producer-bound operational authority cohort was independently verified."),
     )
     if evidence is None:
         return (
@@ -1491,92 +1792,140 @@ def _operational_metrics(
                     metric_id,
                     reason="authoritative_operational_evidence_not_supplied",
                     cohort=unknown_cohort,
-                    denominator_semantics=f"digest-bound total from operational evidence field {evidence_key}",
+                    denominator_semantics=(
+                        "producer-derived total from an out-of-band pinned operational cohort"
+                    ),
                 )
-                for metric_id, evidence_key, _numerator_key in mapping
+                for metric_id in OPERATIONAL_METRIC_IDS
             ],
-            {"operational_evidence_schema_version": None},
-            {"operational_evidence_sha256": None},
+            {
+                "operational_evidence_schema_version": None,
+                "operational_producer_registry_version": OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+                "operational_trust_context_supplied": False,
+            },
+            {
+                "operational_evidence_sha256": None,
+                "operational_evidence_integrity_sha256": None,
+            },
         )
-    cohort_id = _string(evidence.get("cohort_id"))
-    cohort_digest = _string(evidence.get("cohort_digest")).lower()
-    evidence_digest = _payload_digest(evidence)
-    accepted_schemas = set(_nonempty_strings(policy.get("operational_evidence_schema_versions")))
-    required_authority = _string(policy.get("required_operational_authority_status"))
-    invalid_reason: str | None = None
-    if _string(evidence.get("schema_version")) not in accepted_schemas:
-        invalid_reason = "operational_evidence_schema_not_authorized"
-    elif _string(evidence.get("authority_status")) != required_authority:
-        invalid_reason = "operational_evidence_authority_not_verified"
-    elif not cohort_id or not _SHA256.fullmatch(cohort_digest):
-        invalid_reason = "operational_evidence_missing_valid_cohort_id_or_sha256"
-    elif cohort_digest != compute_operational_cohort_digest(evidence):
-        invalid_reason = "operational_evidence_cohort_digest_mismatch"
-    if invalid_reason:
+
+    try:
+        evidence_digest = _payload_digest(evidence)
+    except (TypeError, ValueError, OverflowError, RecursionError):
         return (
             [
                 _unknown_metric(
                     policy,
                     metric_id,
-                    reason=invalid_reason,
+                    reason="operational_evidence_not_canonical_json",
                     cohort=unknown_cohort,
-                    denominator_semantics=f"digest-bound total from operational evidence field {evidence_key}",
+                    denominator_semantics=(
+                        "producer-derived total from an out-of-band pinned operational cohort"
+                    ),
                 )
-                for metric_id, evidence_key, _numerator_key in mapping
+                for metric_id in OPERATIONAL_METRIC_IDS
             ],
-            {"operational_evidence_schema_version": evidence.get("schema_version")},
-            {"operational_evidence_sha256": evidence_digest},
+            {
+                "operational_evidence_schema_version": None,
+                "operational_producer_registry_version": OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+                "operational_trust_context_supplied": trust_context is not None,
+            },
+            {
+                "operational_evidence_sha256": None,
+                "operational_evidence_integrity_sha256": None,
+            },
         )
-    cohort = _cohort(
+    evidence_schema = _string(evidence.get("schema_version")) or None
+    claimed_integrity = _string(evidence.get("integrity_sha256")).lower() or None
+    envelope_cohort = _cohort(
         kind="frozen_policy_cohort",
-        cohort_id=cohort_id,
-        digest=cohort_digest,
-        definition="Authority cohort frozen by the supplied operational evidence receipt.",
+        cohort_id=(
+            f"operational-envelope:{_string(evidence.get('envelope_id'))}"
+            if _string(evidence.get("envelope_id"))
+            else "operational-envelope:unsupported"
+        ),
+        digest=claimed_integrity,
+        definition=(
+            "Reference-only operational envelope; authority requires independent trust pins "
+            "and a code-owned producer verifier."
+        ),
+    )
+
+    preflight_reason: str | None = None
+    if evidence_schema != OPERATIONAL_EVIDENCE_SCHEMA_VERSION:
+        preflight_reason = "legacy_or_unsupported_operational_evidence_schema"
+    elif trust_context is None:
+        preflight_reason = "operational_trust_context_not_supplied"
+    elif candidate_commit_sha != trust_context.expected_candidate_commit_sha:
+        preflight_reason = "operational_candidate_commit_binding_mismatch"
+    elif canonical_graph_sha256 != trust_context.expected_canonical_graph_sha256:
+        preflight_reason = "operational_canonical_graph_binding_mismatch"
+    elif health_policy_sha256 != trust_context.expected_health_policy_sha256:
+        preflight_reason = "operational_health_policy_binding_mismatch"
+    elif health_run_id != trust_context.expected_health_run_id:
+        preflight_reason = "operational_health_run_binding_mismatch"
+
+    if preflight_reason is not None:
+        return (
+            [
+                _unknown_metric(
+                    policy,
+                    metric_id,
+                    reason=preflight_reason,
+                    cohort=envelope_cohort,
+                    denominator_semantics=(
+                        "producer-derived total from an out-of-band pinned operational cohort"
+                    ),
+                )
+                for metric_id in OPERATIONAL_METRIC_IDS
+            ],
+            {
+                "operational_evidence_schema_version": evidence_schema,
+                "operational_producer_registry_version": OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+                "operational_trust_context_supplied": trust_context is not None,
+            },
+            {
+                "operational_evidence_sha256": evidence_digest,
+                "operational_evidence_integrity_sha256": claimed_integrity,
+            },
+        )
+
+    assert trust_context is not None
+    verification = verify_operational_evidence_envelope(
+        evidence,
+        context=trust_context,
     )
     metrics: list[dict[str, Any]] = []
-    for metric_id, evidence_key, numerator_key in mapping:
-        row = evidence.get(evidence_key)
-        if not isinstance(row, dict):
-            metrics.append(
-                _unknown_metric(
-                    policy,
-                    metric_id,
-                    reason=f"operational_evidence.{evidence_key}_missing",
-                    cohort=cohort,
-                    denominator_semantics=f"frozen operational_evidence.{evidence_key}.total cohort",
-                )
-            )
-            continue
-        numerator = _valid_count(row.get(numerator_key))
-        denominator = _valid_count(row.get("total"))
-        if numerator is None or denominator is None or numerator > denominator:
-            metrics.append(
-                _unknown_metric(
-                    policy,
-                    metric_id,
-                    reason=f"operational_evidence.{evidence_key}_counts_invalid",
-                    cohort=cohort,
-                    denominator_semantics=f"frozen operational_evidence.{evidence_key}.total cohort",
-                )
-            )
-            continue
-        metrics.append(
-            _metric(
-                policy,
-                metric_id,
-                numerator=numerator,
-                denominator=denominator,
-                numerator_semantics=f"operational_evidence.{evidence_key}.{numerator_key}",
-                denominator_semantics=f"frozen operational_evidence.{evidence_key}.total cohort",
-                cohort=cohort,
-                failure_count=denominator - numerator,
-                failure_locators=row.get("failure_locators") or [],
-            )
+    for result in verification.metrics:
+        reasons = result.reason_codes
+        if result.status == "SUPPORTED":
+            reasons = ("producer_measurement_adapter_not_available",)
+        row = _unknown_metric(
+            policy,
+            result.metric_id,
+            reason=";".join(reasons) or "operational_producer_not_authoritative",
+            cohort=envelope_cohort,
+            denominator_semantics=("producer-derived total from an out-of-band pinned operational cohort"),
         )
+        row["details"] = {
+            "producer_id": result.producer_id,
+            "verified_artifact_sha256s": list(result.verified_artifact_sha256s),
+            "envelope_schema_valid": verification.schema_valid,
+            "envelope_integrity_valid": verification.integrity_valid,
+            "envelope_subject_valid": verification.subject_valid,
+        }
+        metrics.append(row)
     return (
         metrics,
-        {"operational_evidence_schema_version": evidence.get("schema_version")},
-        {"operational_evidence_sha256": evidence_digest},
+        {
+            "operational_evidence_schema_version": evidence_schema,
+            "operational_producer_registry_version": OPERATIONAL_PRODUCER_REGISTRY_VERSION,
+            "operational_trust_context_supplied": True,
+        },
+        {
+            "operational_evidence_sha256": evidence_digest,
+            "operational_evidence_integrity_sha256": claimed_integrity,
+        },
     )
 
 
@@ -1586,6 +1935,8 @@ def build_c03_graph_health_receipt(
     sqlite_path: Path | None = None,
     policy_path: Path | None = None,
     operational_evidence: Mapping[str, Any] | None = None,
+    operational_trust_context: OperationalTrustContext | None = None,
+    candidate_commit_sha: str | None = None,
     generated_at: str | None = None,
     run_id: str | None = None,
 ) -> dict[str, Any]:
@@ -1596,6 +1947,10 @@ def build_c03_graph_health_receipt(
     selected_policy_path = (policy_path or (root / DEFAULT_POLICY_REL)).resolve()
     policy = load_health_policy(selected_policy_path)
     timestamp = generated_at or _utc_now()
+    normalized_candidate_commit_sha = _string(candidate_commit_sha).lower() or None
+    requested_run_id = run_id or (
+        operational_trust_context.expected_health_run_id if operational_trust_context is not None else None
+    )
 
     metrics_by_id: dict[str, dict[str, Any]] = {}
     versions: dict[str, Any] = {
@@ -1604,6 +1959,7 @@ def build_c03_graph_health_receipt(
         "sqlite_check_version": SQLITE_CHECK_VERSION,
         "policy_version": policy.get("policy_version"),
         "metric_heterogeneity_policy_version": METRIC_HETEROGENEITY_POLICY_VERSION,
+        "candidate_commit_sha": normalized_candidate_commit_sha,
     }
     digests: dict[str, Any] = {
         "policy_sha256": _payload_digest(policy),
@@ -1690,6 +2046,7 @@ def build_c03_graph_health_receipt(
             conn = open_graph_sqlite(db_path=sqlite_db, read_only=True)
             try:
                 conn.execute("PRAGMA query_only=ON")
+                conn.execute("BEGIN")
                 sqlite_metrics, sqlite_versions, sqlite_digests = _sqlite_metrics(
                     conn,
                     policy,
@@ -1701,7 +2058,7 @@ def build_c03_graph_health_receipt(
                 digests.update(sqlite_digests)
             finally:
                 conn.close()
-        except (OSError, sqlite3.Error, ValueError) as exc:
+        except (OSError, sqlite3.Error, TypeError, ValueError) as exc:
             sqlite_error = f"{type(exc).__name__}: {exc}"
         try:
             sqlite_digest_after = _sha256_file(sqlite_db)
@@ -1740,17 +2097,14 @@ def build_c03_graph_health_receipt(
         )
     else:
         unchanged = int(
-            sqlite_digest_before == sqlite_digest_after
-            and sqlite_sidecars_before == sqlite_sidecars_after
+            sqlite_digest_before == sqlite_digest_after and sqlite_sidecars_before == sqlite_sidecars_after
         )
         metrics_by_id["sqlite_read_purity"] = _metric(
             policy,
             "sqlite_read_purity",
             numerator=unchanged,
             denominator=1,
-            numerator_semantics=(
-                "unchanged SQLite file SHA-256 and sidecar set after all health queries"
-            ),
+            numerator_semantics=("unchanged SQLite file SHA-256 and sidecar set after all health queries"),
             denominator_semantics="one before/after SQLite file-and-sidecar comparison",
             cohort=sqlite_cohort,
             failure_count=1 - unchanged,
@@ -1773,6 +2127,11 @@ def build_c03_graph_health_receipt(
     operational_metrics, operational_versions, operational_digests = _operational_metrics(
         operational_evidence,
         policy,
+        trust_context=operational_trust_context,
+        candidate_commit_sha=normalized_candidate_commit_sha,
+        canonical_graph_sha256=canonical_digest,
+        health_policy_sha256=str(digests["policy_sha256"]),
+        health_run_id=requested_run_id,
     )
     versions.update(operational_versions)
     digests.update(operational_digests)
@@ -1810,7 +2169,7 @@ def build_c03_graph_health_receipt(
         for row in metrics
         if row["status"] == "UNKNOWN"
     ]
-    derived_run_id = run_id or (
+    derived_run_id = requested_run_id or (
         "c03-graph-health-"
         + _sha256_bytes(
             _canonical_json(
@@ -1838,7 +2197,8 @@ def build_c03_graph_health_receipt(
         "digests": digests,
         "denominator_contract": {
             "frozen_policy_cohort": (
-                "Versioned targets, required FK signatures, and digest-bound operational evidence cohorts."
+                "Versioned targets, required FK signatures, and independently pinned "
+                "producer-bound operational evidence cohorts."
             ),
             "observed_operational_graph": (
                 "Canonical and SQLite rows actually present in the supplied file and semantic digests."
@@ -1864,6 +2224,10 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output", type=Path, help="write receipt only when this path is explicit")
     parser.add_argument("--generated-at", help="inject a UTC timestamp for deterministic replay")
     parser.add_argument("--run-id", help="inject a run identifier for deterministic replay")
+    parser.add_argument(
+        "--candidate-commit-sha",
+        help="bind the receipt to an exact candidate commit",
+    )
     return parser.parse_args(argv)
 
 
@@ -1882,6 +2246,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         sqlite_path=args.sqlite,
         policy_path=args.policy,
         operational_evidence=evidence,
+        candidate_commit_sha=args.candidate_commit_sha,
         generated_at=args.generated_at,
         run_id=args.run_id,
     )

@@ -40,14 +40,17 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 
 ## Context (SCQA)
 
-- **Situation** — Candidate commit `a587a578c9ff0589d6f8cecb4b50b3bc91145493` hardens the canonical
-  JSON-to-SQLite projection, runtime read purity, graph invariants, and a 37-metric NEE-inspired health
-  receipt. Its exact-head CI is green; focused and broad suites passed 137 and 369 tests respectively.
+- **Situation** — The current working candidate extends
+  `codex-apps-rg-graphdb-hardening@496b140673100c458fbfe06f4592eede069876c0` with lossless canonical
+  JSON-to-SQLite projection, producer-bound operational-evidence admission, same-snapshot runtime reads,
+  full schema/ranking digests, and a 39-metric NEE-inspired health receipt. The resulting implementation
+  commit and closeout receipt must still be pinned after the working tree is clean.
 - **Complication** — Engineering integrity is stronger than data readiness. Current health is
   `control_plane_status=UNKNOWN`, `graph_data_readiness=NOT_READY`, and `overall_status=NOT_READY`.
   The checked-in graph lacks 75 graph-bound skill proofs, 84 required node source references, four skill
-  graph nodes, and 19 domain/epoch bindings. Seven operational dimensions are `UNKNOWN`. A fresh ADG audit
-  also found repository-wide P0/write-sovereignty blockers and did not produce a certified snapshot pointer.
+  graph nodes, and 19 domain/epoch bindings. Seven operational dimensions remain `UNKNOWN` because no
+  complete authoritative producer exists for them. A fresh ADG audit also found inherited repository P0
+  layer/certification blockers and did not produce a certified snapshot pointer.
 - **Question** — How do we close the real provenance and certification gaps, and should C0.3 add a unique
   embedding for graph records?
 - **Answer** — Close source authority and decision readiness first. Do **not** add production graph
@@ -66,9 +69,9 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 |------|-----------|-------|-------------|-------------|--------|------------------|
 | D0 | D0.1, D0.2, D0.3, D0.4 | Repair the three ADG P0 gate classes, runtime index concurrency, and runtime-proof/certification finalization | ~42K | User authorized repo-wide expansion with `Expand` on 2026-07-18 | 🟨 IN PROGRESS | Fresh exact-SHA audit has zero blocking P0 rows, lossless concurrent index publication, attested runtime proof, complete manifests, and a digest-verified certified pointer |
 | W0 | W0.1, W0.2, W0.3 | Restore structural proof, pin cohorts, and emit exact recovery registers | ~24K | D0 is merged into the feature candidate | ⏸ BLOCKED ON D0 | Certified ADG is callable; every current KPI failure has an exact locator, owner class, and disposition |
-| W1 | W1.1, W1.2, W1.3, W1.4 | Close measurement blind spots, then execute reviewed source recovery and canonical assertion closure | ~56K | Authoritative source material and human review are available | 🔲 TODO | Every invariant has a typed denominator/locator; 254/254 skill assertions are graph-bound or explicitly non-retrieval-eligible; no evidence is fabricated |
-| W2 | W2.1, W2.2, W2.3 | Unify canonical/SQLite semantics, rebuild projections, and certify graph-data KPIs | ~44K | W1 source decisions are digest-bound and approved | 🔲 TODO | `graph_data_readiness=PASS`; typed edges, node types, path capability, same-snapshot reads, and structural zero-defect invariants are green |
-| W3 | W3.1, W3.2, W3.3 | Replace seven `UNKNOWN` control-plane metrics with producer-bound evidence | ~34K | Real operational sources exist for every required dimension | 🔲 TODO | `control_plane_status=PASS` without self-attestation or synthetic authority |
+| W1 | W1.1, W1.2, W1.3, W1.4 | Close measurement blind spots, then execute reviewed source recovery and canonical assertion closure | ~56K | Authoritative source material and human review are available | 🟨 PARTIAL / BLOCKED ON SOURCE AUTHORITY | Every invariant has a typed denominator/locator; 254/254 skill assertions are graph-bound or explicitly non-retrieval-eligible; no evidence is fabricated |
+| W2 | W2.1, W2.2, W2.3 | Unify canonical/SQLite semantics, rebuild projections, and certify graph-data KPIs | ~44K | W1 source decisions are digest-bound and approved | 🟨 STRUCTURAL WORK DONE / DATA BLOCKED | `graph_data_readiness=PASS`; typed edges, node types, path capability, same-snapshot reads, and structural zero-defect invariants are green |
+| W3 | W3.1, W3.2, W3.3 | Replace seven `UNKNOWN` control-plane metrics with producer-bound evidence | ~34K | Real operational sources exist for every required dimension | 🟨 CONTRACT DONE / PRODUCERS BLOCKED | `control_plane_status=PASS` without self-attestation or synthetic authority |
 | W4 | W4.1, W4.2, W4.3 | Determine whether embeddings add measurable retrieval value | ~38K | W2 and W3 pass; frozen labeled queries and two reviewers are available | 🔲 TODO | A digest-bound `QUALIFIED_GO` or `NO_EMBEDDING_PROMOTION` decision is produced |
 | W5 | W5.1, W5.2, W5.3 | Conditional evidence-bearing skill-assertion embedding projection | ~36K | Runs only if W4 returns `QUALIFIED_GO` | 🔲 TODO | One active vector per eligible skill assertion; zero stale, leaked, or authority-bypassing results |
 | W6 | W6.1, W6.2, W6.3 | Full apps_rg certification, PR merge, and exact main convergence | ~42K | User supplies exact run inputs; every preceding mandatory gate passes | 🔲 TODO | Fresh 11/11 run, valid DOCX and receipts, merged PR, and exact local/origin ancestry |
@@ -84,16 +87,16 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 | W0.1 | Restore certified ADG pointer and active-session health | ⏸ BLOCKED ON D0 |
 | W0.2 | Pin candidate SHA, graph digests, and frozen KPI denominators | 🔲 TODO |
 | W0.3 | Emit source, coverage, operational, and ADG dependency registers | 🔲 TODO |
-| W1.1 | Close KPI/validator measurement blind spots | 🔲 TODO |
-| W1.2 | Review and authorize exact source recovery | 🔲 TODO |
-| W1.3 | Close missing skill-node, domain, and epoch mappings | 🔲 TODO |
-| W1.4 | Close claim-evidence and required source-reference gaps | 🔲 TODO |
-| W2.1 | Revalidate canonical closed-world assertions | 🔲 TODO |
-| W2.2 | Rebuild and validate SQLite v3 projection | 🔲 TODO |
-| W2.3 | Produce graph-data PASS receipt and negative controls | 🔲 TODO |
-| W3.1 | Define operational-evidence producer and cohort contract | 🔲 TODO |
-| W3.2 | Bind all seven operational metrics to real evidence | 🔲 TODO |
-| W3.3 | Prove control-plane rollup and read/write purity | 🔲 TODO |
+| W1.1 | Close KPI/validator measurement blind spots | DONE |
+| W1.2 | Review and authorize exact source recovery | ⏸ BLOCKED ON AUTHORITY |
+| W1.3 | Close missing skill-node, domain, and epoch mappings | ⏸ BLOCKED ON W1.2 |
+| W1.4 | Close claim-evidence and required source-reference gaps | ⏸ BLOCKED ON W1.2 |
+| W2.1 | Revalidate canonical closed-world assertions | DONE |
+| W2.2 | Rebuild and validate SQLite v3 projection | DONE |
+| W2.3 | Produce graph-data PASS receipt and negative controls | ⏸ BLOCKED ON W1 DATA |
+| W3.1 | Define operational-evidence producer and cohort contract | DONE |
+| W3.2 | Bind all seven operational metrics to real evidence | ⏸ BLOCKED ON MISSING PRODUCERS |
+| W3.3 | Prove control-plane rollup and read/write purity | 🟨 FAIL-CLOSED CONTROLS DONE; PASS BLOCKED |
 | W4.1 | Freeze route-balanced queries, qrels, and baseline arms | 🔲 TODO |
 | W4.2 | Benchmark exact, fact-vector, dense, and hybrid candidate retrieval | 🔲 TODO |
 | W4.3 | Issue embedding promotion/no-promotion decision | 🔲 TODO |
@@ -112,19 +115,19 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 
 | Surface | Current candidate evidence | Disposition |
 |---|---|---|
-| Candidate branch | `codex-apps-rg-graphdb-hardening@a587a578c9ff0589d6f8cecb4b50b3bc91145493`; PR #565 | Continue the same objective/branch; no new wave PR |
-| Regression proof | 137 focused tests and 369 broad apps_rg graph/runtime tests passed; exact-head GitHub checks passed | Preserve as the minimum branch regression floor |
-| Live health | 37 KPIs currently resolve to 23 `PASS`, 7 `FAIL`, and 7 `UNKNOWN` | Treat structural health, data readiness, and operational evidence as separate release dimensions |
+| Candidate branch | `codex-apps-rg-graphdb-hardening` based on `496b140673100c458fbfe06f4592eede069876c0`; PR #565 | Bind the new implementation and receipt commits before promotion; no new wave PR |
+| Regression proof | The final broad fact-inventory/runtime cohort contains 493 passing tests and two documented Windows platform skips; 62 tool/debug tests and four infrastructure/scanner tests also pass. Focused adversarial cohorts are included in the broad total; final clean-head results are recorded in the closeout receipt | Preserve the 493-test broad cohort plus 66 tool/infrastructure tests as the minimum branch regression floor |
+| Live health | 39 KPIs resolve to 25 `PASS`, 7 `FAIL`, and 7 `UNKNOWN`; `control_plane_status=UNKNOWN`, `graph_data_readiness=NOT_READY`, `overall_status=NOT_READY` | Treat structural health, data readiness, and operational evidence as separate release dimensions |
 | Canonical graph | 371 graph nodes, 1,908 canonical edges, 254 canonical skill rows; projected SQLite has 774 nodes and 2,364 edges | JSON remains authority; generated stores remain projections |
-| Structural closure | Registered endpoints 3,816/3,816; orphan edges 0/1,908; FK 13/13; reverse/path/sibling/neighborhood integrity PASS | Do not rewrite a green structural substrate to mask data gaps |
+| Structural closure | Registered endpoints 3,816/3,816; canonical signatures 1,908/1,908; SQLite signatures 2,364/2,364; digest bindings 4/4; FK 14/14; 2,364 paths, 4,710 neighborhoods, and 15,590 sibling rows reconcile exactly | Do not rewrite a green structural substrate to mask data gaps |
 | Claim evidence | 179/254 complete; nine skills declare no facts and 66 have incomplete graph bindings | Source-authority remediation, not an embedding problem |
 | Skill-node parity | 250/254; missing `skill_meddpicc_sales_qualification`, `skill_cpq_deal_velocity_automation`, `skill_saas_arr_ltv_cac_metrics`, `skill_nps_customer_health_scoring` | Add only from approved canonical rows and exact mappings |
 | Required node sources | 117/201 complete; 84 required nodes lack source references | Resolve through source recovery or explicit non-eligibility; never synthesize citations |
 | Domain and epoch | Row fields are 235/254 complete for each, but actual graph edges cover only 217/254 domains and 198/254 epochs | Measure field and edge completeness separately; close exact mappings from approved taxonomy authority |
-| Edge semantics | 25/32 observed edge types lack canonical semantics and three edge types are singletons | Establish one typed edge-semantics/signature registry and adjudicate rare types before declaring graph health |
-| Projection semantics | Endpoint existence is checked, but edge-to-node signatures are not; canonical `metric`/`metric_bucket` collapse to `metric_outcome`; base and applicator path capabilities differ | Make projection lossless and capability-versioned before certifying semantic parity |
-| Read/admission hardening | Runtime verifies, closes, and reopens the DB; same-count semantic tamper and reopen races are not excluded; admission covers 5/8 relevant tables and 10/13 expected FK signatures | Add same-snapshot reads, semantic digests, and complete admission manifests |
-| Operational metrics | `decision_safe_regression`, `source_currentness`, `source_freshness`, `hitl_approval_coverage`, `write_audit_coverage`, `p0_sla_compliance`, and `p1_sla_compliance` are `UNKNOWN` | Bind to real producer artifacts or remain blocked |
+| Edge semantics | A closed typed-signature registry validates 1,908/1,908 canonical and 2,364/2,364 projected edges; three canonical edge types remain singletons | Preserve the closed-world registry and adjudicate rare source data before declaring graph-data readiness |
+| Projection semantics | Canonical `metric` (22) and `metric_bucket` (16) remain distinct while 92 derived `metric_outcome` nodes are explicit; base and applicator produce the same path/neighborhood/sibling capability | Keep the projection lossless and capability-versioned |
+| Read/admission hardening | Runtime validation and selection share one read-only transaction; expansion requires context and selection receipts to agree on canonical, logical, schema, run-scope, and run-usage bindings. Public writable opens reject; the immutable ranking digest covers every ranking input and a separate schema digest covers every user-defined schema object | Keep all reads snapshot-pinned and all materialization behind the explicit atomic applicator |
+| Operational metrics | A strict refs-only v2 envelope recomputes producer digests, subject/run/policy/graph bindings, replay state, integrity, and out-of-band anchors. No complete approved producer currently exists for any of the seven dimensions, so all remain `UNKNOWN` | Add genuine measurement adapters and authoritative artifacts; arbitrary JSON, status labels, and self-declared hashes cannot promote a metric |
 | Existing embeddings | apps_rg already defines local `BAAI/bge-m3`, 1,024-dimensional, precomputed Chroma `fact_vectors`, keyed by canonical fact ID and explicitly non-authoritative | Reuse the governed model contract; keep the optional skill projection separate from fact vectors and graph v3 |
 | NEE comparison | NEE embeds deterministic evidence-bearing assertions, not naked nodes/edges; its latest available model qualification failed Recall@20 at 0.375 against a 0.90 floor | Adopt assertion/document governance, not the failed performance claim |
 | Closeout receipt | The committed receipt names pre-feature HEAD `e46d8d37`, records `dirty_after=true`, and ends `execution.status=PARTIAL` | Replace with an exact-candidate-SHA clean run receipt; do not use it as certification evidence |
@@ -189,6 +192,13 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 
 The gap counts overlap and field/edge denominators differ. W0 must emit exact row locators and set
 intersections; it must not sum headline counts into a false count of independent records.
+
+Current disposition: G11 and the projection/runtime mechanics in G12 are implemented with adversarial
+controls; final clean-head verification is still required. G06 is partially closed at the evidence-contract
+layer but remains blocked for all seven measurements because genuine producers do not exist. G02-G05 remain
+source-authority work, G01/G07 remain inherited certification dependencies, and G08-G10/G13 remain later
+qualification, product, and closeout gates. None of those remaining gaps authorizes semantic data fabrication
+or production embeddings.
 
 ---
 
@@ -302,7 +312,7 @@ graph/fact-vector architecture. A no-go result is a successful decision, not an 
   - `apps_rg/fact_inventory/master_skills_arsenal_ledger.json`
   - `apps_rg/fact_inventory/master_skills_arsenal_ledger.py`
   - `apps_rg/fact_inventory/c03_graph_kpi_health.py`
-  - `apps_rg/config/c03_graph_health_policy.v1.json`
+  - `apps_rg/config/c03_graph_health_policy.v2.json`
 - Projection/readiness, only when required by a proven contract:
   - `apps_rg/fact_inventory/augmented_skills_graph_sqlite.py`
   - `apps_rg/runtime/c0/c03_sqlite_graph_selection.py`
@@ -513,16 +523,23 @@ CHECKPOINT: A
 ## Wave 1 — Source Authority and Canonical Assertion Closure
 
 WAVE_ID: W1
-WAVE_STATUS: TODO
+WAVE_STATUS: IN_PROGRESS
 WAVE_COMPLETE: NO
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: B
 
 **Phases**:
-- **W1.1** — KPI/validator measurement closure | ~12K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.2** — Reviewed source recovery decisions | ~16K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.3** — Skill node/domain/epoch closure | ~12K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W1.4** — Claim-evidence/source-ref closure | ~16K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W1.1** — KPI/validator measurement closure | ~12K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W1.2** — Reviewed source recovery decisions | ~16K tokens | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO
+- **W1.3** — Skill node/domain/epoch closure | ~12K tokens | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO
+- **W1.4** — Claim-evidence/source-ref closure | ~16K tokens | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO
+
+**Implemented evidence**:
+
+- KPI receipt v2 now separates field, edge, source, typed-signature, path, neighborhood, sibling, schema,
+  and projection-digest cohorts with exact denominators and bounded failure locators.
+- No canonical source row was invented or promoted. W1.2-W1.4 remain blocked on reviewed authority for
+  the 75 claim-proof, 84 source-reference, four skill-node, and 19 domain/epoch gaps.
 
 **Execution**:
 
@@ -561,15 +578,29 @@ CHECKPOINT: B
 ## Wave 2 — Canonical and SQLite Graph-Data Certification
 
 WAVE_ID: W2
-WAVE_STATUS: TODO
+WAVE_STATUS: IN_PROGRESS
 WAVE_COMPLETE: NO
 AUTHORIZATION_STATUS: NOT_REQUIRED
 CHECKPOINT: C
 
 **Phases**:
-- **W2.1** — Canonical closed-world validation | ~10K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.2** — SQLite v3 rebuild and read-purity proof | ~12K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W2.3** — Graph-data KPI certification | ~10K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W2.1** — Canonical closed-world validation | ~10K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.2** — SQLite v3 rebuild and read-purity proof | ~12K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W2.3** — Graph-data KPI certification | ~10K tokens | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO
+
+**Implemented evidence**:
+
+- The closed type/signature registry admits 1,908/1,908 canonical and 2,364/2,364 projected edges.
+  Canonical `metric`, `metric_bucket`, and derived `metric_outcome` identities are lossless.
+- Runtime/health reads pin one read-only transaction. Logical ranking inputs, full schema, canonical ledger,
+  authority status, paths, neighborhoods, siblings, and run-scoped ranking state are bound into admission or
+  receipt digests; expansion rejects mixed context/selection snapshots, prior-run metric usage cannot affect
+  current-run novelty, and public writable opens fail closed.
+- Fresh materialization and the explicit atomic hardener use one direct-path/direct-neighborhood capability
+  and are required to produce the same logical digest. The hardener snapshots the source through SQLite
+  backup, rebuilds immutable authority from canonical JSON, exact-compares nonvolatile authority tables,
+  and uses digest CAS for replacement; local metadata re-signing cannot hide node/edge tamper. W2.3 remains
+  blocked only by governed W1 data gaps and the rare-edge policy cohort, not by projection mechanics.
 
 **Execution**:
 
@@ -605,15 +636,32 @@ CHECKPOINT: C
 ## Wave 3 — Operational Control-Plane Evidence
 
 WAVE_ID: W3
-WAVE_STATUS: TODO
+WAVE_STATUS: IN_PROGRESS
 WAVE_COMPLETE: NO
 AUTHORIZATION_STATUS: REQUIRED
 CHECKPOINT: D
 
 **Phases**:
-- **W3.1** — Producer/cohort evidence schema | ~12K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W3.2** — Seven required operational measurements | ~14K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
-- **W3.3** — Rollup, purity, and adversarial verification | ~8K tokens | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **W3.1** — Producer/cohort evidence schema | ~12K tokens | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **W3.2** — Seven required operational measurements | ~14K tokens | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO
+- **W3.3** — Rollup, purity, and adversarial verification | ~8K tokens | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO
+
+**Implemented evidence**:
+
+- The refs-only v2 envelope is strict-schema, subject/registry/producer/cohort/replay bound, verifies one
+  bounded artifact byte snapshot, and requires an independently supplied authority anchor before artifact
+  I/O. Artifact admission opens once, verifies containment and open-handle identity before and after the
+  bounded read, preserves subsecond timestamps, and rejects link swaps or concurrent replacement. Legacy
+  `VERIFIED`, arbitrary counts, self-declared hashes, path escapes, replay, transplant, schema drift,
+  oversized artifacts, and noncanonical payloads remain `UNKNOWN`.
+- The producer registry intentionally activates no metric: repository inspection found no complete frozen
+  before/after decision comparator, source lifecycle clock/window, HITL cohort join, exhaustive write cohort,
+  or P0/P1 ownership and lifecycle event producer. W3.2 therefore remains blocked rather than self-attested.
+- KPI policy v2 is a closed 39-metric contract: exact registry membership, plane, operator, finite target,
+  required flag, and allowed status are validated before evaluation. Metric-outcome ingestion also rejects
+  malformed roots, registries, bundle bindings, and section-eligibility cohorts instead of skipping them.
+- The decisive C0.3 ratchet watches policy v2 and directly selects the operational-evidence, hardener, and
+  metric-outcome adversarial modules so candidate-head CI cannot omit these controls.
 
 **Execution**:
 
@@ -817,17 +865,17 @@ Recovery boundaries:
 
 | # | Definition of Done | Verification | Status |
 |---|---|---|---|
-| 1 | Certified ADG pointer, digest, materializations, P-views, and active transport are green | `adg_health`, status, P-view, fan-in/out, semantic-edge receipts | TODO |
-| 2 | Versioned KPI contracts expose field and edge denominators, typed locators, and every observed edge semantic before governed data changes | adversarial KPI fixtures + exact gap register | TODO |
-| 3 | Required graph source, claim evidence, skill-node, domain-field/edge, and epoch-field/edge cohorts reach frozen targets without fabrication | candidate-bound `c03_graph_kpi_health` receipt | TODO |
-| 4 | Canonical/SQLite types, edge signatures, admission manifests, and path capability remain lossless/zero-defect; reads verify and select from one pure snapshot | validators, tamper/race negatives, file/sidecar hashes | TODO |
-| 5 | All seven operational dimensions are measured from real producer artifacts and `control_plane_status=PASS` | operational evidence envelope + adversarial tests | TODO |
-| 6 | Embedding necessity is closed by `QUALIFIED_GO` or `NO_EMBEDDING_PROMOTION`; no production vector surface exists without GO | frozen four-arm decision receipt | TODO |
+| 1 | Certified ADG pointer, digest, materializations, P-views, and active transport are green | `adg_health`, status, P-view, fan-in/out, semantic-edge receipts | BLOCKED: INHERITED CERTIFICATION DEPENDENCY |
+| 2 | Versioned KPI contracts expose field and edge denominators, typed locators, and every observed edge semantic before governed data changes | adversarial KPI fixtures + exact gap register | DONE |
+| 3 | Required graph source, claim evidence, skill-node, domain-field/edge, and epoch-field/edge cohorts reach frozen targets without fabrication | candidate-bound `c03_graph_kpi_health` receipt | BLOCKED: REVIEWED SOURCE AUTHORITY ABSENT |
+| 4 | Canonical/SQLite types, edge signatures, admission manifests, and path capability remain lossless/zero-defect; reads verify and select from one pure snapshot | validators, tamper/race negatives, file/sidecar hashes | DONE |
+| 5 | All seven operational dimensions are measured from real producer artifacts and `control_plane_status=PASS` | operational evidence envelope + adversarial tests | PARTIAL: CONTRACT DONE; PRODUCERS ABSENT |
+| 6 | Embedding necessity is closed by `QUALIFIED_GO` or `NO_EMBEDDING_PROMOTION`; no production vector surface exists without GO | frozen four-arm decision receipt | DEFERRED: NO PRODUCTION EMBEDDINGS NOW |
 | 7 | If GO, exactly one immutable exact-vector SQLite row exists per eligible `C03SkillAssertionDocumentV1`, with zero stale/leaked/unauthorized rows | corpus/generation metadata, readiness, mutation and leakage tests | TODO |
 | 8 | Candidate retrieval cannot add evidence or bypass canonical graph authority; disabling the optional vector route preserves the exact contract | runtime integration and negative-control tests | TODO |
-| 9 | Focused, broad apps_rg, contract, boundary, security, mutation, static, live KPI, and exact-head CI checks pass with an exact-SHA clean run receipt | command receipts, validated run receipt, and GitHub checks | TODO |
+| 9 | Focused, broad apps_rg, contract, boundary, security, mutation, static, live KPI, and exact-head CI checks pass with an exact-SHA clean run receipt | command receipts, validated run receipt, and GitHub checks | IN PROGRESS |
 | 10 | Official W6 is PASS and a fresh user-input-owned run completes all eleven REAL_LLM/X3_ALLOW lanes, X3D_ALLOW_FINISH, release PASS, mandatory artifacts, and an inspected non-empty DOCX | W6 receipt, mandatory run output, renderer, DOCX inspection | TODO |
-| 11 | PR #565 is merged without squash and local/main/origin converge with exact branch-tip ancestry | PR/merge state, closeout JSON, SHA and merge-base checks | TODO |
+| 11 | PR #565 is merged without squash and local/main/origin converge with exact branch-tip ancestry | PR/merge state, closeout JSON, SHA and merge-base checks | BLOCKED BY HEALTH/ADG/PRODUCT GATES |
 
 ---
 

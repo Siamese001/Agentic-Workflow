@@ -4,6 +4,7 @@ The JSON graph remains canonical. SQLite is a deterministic projection used to
 enumerate direct skill/fact paths. Every bounded direct candidate receives a
 pre-target authority decision and a terminal selected/rejected decision.
 """
+
 from __future__ import annotations
 
 import json
@@ -11,12 +12,11 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
-from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
-    load_graph_metadata_row,
-    open_graph_sqlite,
-)
 from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import POLICY_VERSION
+from apps_rg.runtime.c0.c03_errors import C03GraphProjectionUnavailableError
 from apps_rg.runtime.c0.c03_resume_graph_contracts import (
+    BLOCKED_ACTIVATION_STATUSES,
+    BLOCKED_SUPPORT_LEVELS,
     TraversalRecorder,
     build_candidate_decision,
     build_candidate_receipt,
@@ -25,7 +25,7 @@ from apps_rg.runtime.c0.c03_resume_graph_contracts import (
 )
 
 DEFAULT_MAX_SKILLS_PER_FACT = 6
-SCHEMA_VERSION = "c03_sqlite_graph_selection_v2"
+SCHEMA_VERSION = "c03_sqlite_graph_selection_v4"
 SELECTION_POLICY = "sqlite_authority_first_exhaustive_candidates_v2"
 
 
@@ -34,9 +34,7 @@ class C03GraphSelectionError(RuntimeError):
 
 
 def _confidence_rank(value: str) -> int:
-    return {"HIGH": 3, "MEDIUM": 2, "LOW": 1, "BLOCKED": 0}.get(
-        str(value or "").upper(), 0
-    )
+    return {"HIGH": 3, "MEDIUM": 2, "LOW": 1, "BLOCKED": 0}.get(str(value or "").upper(), 0)
 
 
 def _safe_json_object(value: Any) -> dict[str, Any]:
@@ -123,22 +121,16 @@ def _row_dict(row: tuple[Any, ...]) -> dict[str, Any]:
 
 def _query_candidates(
     *,
-    repo_root: Path,
-    db_path: Path,
+    conn: Any,
     section_id: str,
     fact_ids: list[str],
     role_family_key: str,
     run_id: str,
-) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     placeholders = ",".join("?" for _ in fact_ids)
-    conn = open_graph_sqlite(repo_root=repo_root, db_path=db_path)
-    try:
-        meta = load_graph_metadata_row(conn)
-        section_budget = _query_section_budget(
-            conn, section_id=section_id, role_family_key=role_family_key
-        )
-        rows = conn.execute(
-            f"""
+    section_budget = _query_section_budget(conn, section_id=section_id, role_family_key=role_family_key)
+    rows = conn.execute(
+        f"""
             SELECT
                 l.fact_id,
                 l.skill_id,
@@ -195,11 +187,9 @@ def _query_candidates(
             WHERE l.fact_id IN ({placeholders})
             ORDER BY l.fact_id, l.skill_id
             """,
-            (run_id or "__NO_CURRENT_RUN__", section_id, *fact_ids),
-        ).fetchall()
-    finally:
-        conn.close()
-    return meta, section_budget, [_row_dict(row) for row in rows]
+        (run_id or "__NO_CURRENT_RUN__", section_id, *fact_ids),
+    ).fetchall()
+    return section_budget, [_row_dict(row) for row in rows]
 
 
 def _proof_strength_raw(candidate: dict[str, Any]) -> float:
@@ -276,8 +266,7 @@ def _rank_fact_candidates(
             else 0.0
         )
         candidate["base_score"] = round(
-            float(candidate["proof_strength_raw"])
-            + float(candidate["target_alignment_score"]),
+            float(candidate["proof_strength_raw"]) + float(candidate["target_alignment_score"]),
             6,
         )
         if not authority["authority_pass"]:
@@ -298,21 +287,18 @@ def _rank_fact_candidates(
             family = str(candidate.get("skill_family") or "unclassified")
             fact_id = str(candidate.get("fact_id") or "")
             budget = dict(candidate.get("section_budget") or {})
-            max_metric_reuse = int(budget.get("max_metric_reuse") if budget.get("max_metric_reuse") is not None else 1)
+            max_metric_reuse = int(
+                budget.get("max_metric_reuse") if budget.get("max_metric_reuse") is not None else 1
+            )
             current_run_usage = int(candidate.get("prior_metric_usage") or 0)
             penalties = {
                 "repeated_metric_penalty": metric_counts[bucket] * 1.25,
                 "repeated_skill_family_penalty": family_counts[family] * 0.75,
                 "repeated_fact_penalty": fact_counts[fact_id] * 0.25,
-                "prior_metric_usage_penalty": max(
-                    0, current_run_usage - max_metric_reuse + 1
-                )
-                * 1.5,
+                "prior_metric_usage_penalty": max(0, current_run_usage - max_metric_reuse + 1) * 1.5,
             }
             item = dict(candidate)
-            item["penalties"] = {
-                key: round(value, 6) for key, value in penalties.items() if value
-            }
+            item["penalties"] = {key: round(value, 6) for key, value in penalties.items() if value}
             item["score"] = round(
                 float(candidate.get("base_score") or 0.0) - sum(penalties.values()),
                 6,
@@ -344,8 +330,7 @@ def _rank_fact_candidates(
 
 def _query_sibling_alternatives(
     *,
-    repo_root: Path,
-    db_path: Path,
+    conn: Any,
     selected_skill_ids: list[str],
     limit_per_skill: int = 5,
 ) -> dict[str, list[dict[str, Any]]]:
@@ -353,23 +338,54 @@ def _query_sibling_alternatives(
     if not skill_ids:
         return {}
     placeholders = ",".join("?" for _ in skill_ids)
-    conn = open_graph_sqlite(repo_root=repo_root, db_path=db_path)
-    try:
-        rows = conn.execute(
-            f"""
-            SELECT sib.node_id, sib.sibling_node_id, n.label, sib.sibling_reason,
-                   sib.shared_parent_node_id, sib.shared_edge_type, sib.sibling_score
-            FROM graph_sibling_links sib
-            JOIN graph_nodes n
-              ON n.node_id = sib.sibling_node_id AND n.node_type = 'skill'
-            WHERE sib.node_id IN ({placeholders})
-              AND n.external_eligible = 1
-            ORDER BY sib.node_id, sib.sibling_score DESC, sib.sibling_node_id
+    blocked_activation_placeholders = ",".join("?" for _ in BLOCKED_ACTIVATION_STATUSES)
+    blocked_support_placeholders = ",".join("?" for _ in BLOCKED_SUPPORT_LEVELS)
+    rows = conn.execute(
+        f"""
+            WITH ranked_siblings AS (
+                SELECT
+                    sib.node_id,
+                    sib.sibling_node_id,
+                    n.label,
+                    sib.sibling_reason,
+                    sib.shared_parent_node_id,
+                    sib.shared_edge_type,
+                    sib.sibling_score,
+                    COUNT(*) OVER (
+                        PARTITION BY sib.node_id, sib.sibling_node_id
+                    ) AS shared_context_count,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY sib.node_id, sib.sibling_node_id
+                        ORDER BY sib.sibling_score DESC,
+                                 sib.shared_parent_node_id,
+                                 sib.shared_edge_type,
+                                 sib.sibling_reason
+                    ) AS context_rank
+                FROM graph_sibling_links sib
+                JOIN graph_nodes n
+                  ON n.node_id = sib.sibling_node_id AND n.node_type = 'skill'
+                WHERE sib.node_id IN ({placeholders})
+                  AND n.external_eligible = 1
+                  AND COALESCE(n.activation_status, '') NOT IN (
+                      {blocked_activation_placeholders}
+                  )
+                  AND COALESCE(n.support_level, '') NOT IN (
+                      {blocked_support_placeholders}
+                  )
+            )
+            SELECT node_id, sibling_node_id, label, sibling_reason,
+                   shared_parent_node_id, shared_edge_type, sibling_score,
+                   shared_context_count
+            FROM ranked_siblings
+            WHERE context_rank = 1
+            ORDER BY node_id, sibling_score DESC, sibling_node_id
             """,
-            tuple(skill_ids),
-        ).fetchall()
-    finally:
-        conn.close()
+        (
+            *skill_ids,
+            *sorted(BLOCKED_ACTIVATION_STATUSES),
+            *sorted(BLOCKED_SUPPORT_LEVELS),
+        ),
+    ).fetchall()
     out: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         source = str(row[0] or "")
@@ -383,6 +399,7 @@ def _query_sibling_alternatives(
                 "shared_parent_node_id": str(row[4] or ""),
                 "shared_edge_type": str(row[5] or ""),
                 "sibling_score": float(row[6] or 0.0),
+                "shared_context_count": int(row[7] or 0),
             }
         )
     return dict(out)
@@ -413,7 +430,10 @@ def _decision_rows(
                     target_alignment_score=float(candidate.get("target_alignment_score") or 0.0),
                     ranking_score=float(candidate.get("score") or 0.0),
                     path_signature=str(candidate.get("path_signature") or ""),
-                    extra={"metric_bucket": candidate.get("metric_bucket"), "skill_family": candidate.get("skill_family")},
+                    extra={
+                        "metric_bucket": candidate.get("metric_bucket"),
+                        "skill_family": candidate.get("skill_family"),
+                    },
                 )
             )
         for candidate in rejected_by_fact.get(fact_id, []):
@@ -444,6 +464,68 @@ def _decision_rows(
             )
     rows.sort(key=lambda row: str(row.get("candidate_path_id") or ""))
     return rows
+
+
+def _rank_candidate_frontier(
+    *,
+    candidates: list[dict[str, Any]],
+    section_budget: dict[str, Any],
+    fact_order: list[str],
+    section_id: str,
+    role_family_key: str,
+    pillar_hints: list[str] | tuple[str, ...],
+    max_skills_per_fact: int,
+) -> dict[str, Any]:
+    """Rank one validated snapshot's candidate frontier without additional reads."""
+    for candidate in candidates:
+        candidate["section_budget"] = section_budget
+
+    by_fact: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for candidate in candidates:
+        by_fact[str(candidate.get("fact_id") or "")].append(candidate)
+
+    metric_counts: Counter[str] = Counter()
+    family_counts: Counter[str] = Counter()
+    fact_counts: Counter[str] = Counter()
+    selected_skill_ids: set[str] = set()
+    selected_by_fact: dict[str, list[dict[str, Any]]] = {}
+    rejected_by_fact: dict[str, list[dict[str, Any]]] = {}
+    for fact_id in fact_order:
+        selected, rejected = _rank_fact_candidates(
+            by_fact.get(fact_id, []),
+            section_id=section_id,
+            role_family_key=role_family_key,
+            pillar_hints={str(value) for value in pillar_hints if str(value).strip()},
+            max_skills_per_fact=max(
+                1,
+                int(max_skills_per_fact or DEFAULT_MAX_SKILLS_PER_FACT),
+            ),
+            metric_counts=metric_counts,
+            family_counts=family_counts,
+            fact_counts=fact_counts,
+            selected_skill_ids=selected_skill_ids,
+        )
+        selected_by_fact[fact_id] = selected
+        rejected_by_fact[fact_id] = rejected
+
+    missing_fact_frontier_ids = [fact_id for fact_id in fact_order if not by_fact.get(fact_id)]
+    selected_flat = [candidate for rows in selected_by_fact.values() for candidate in rows]
+    rejected_flat = [candidate for rows in rejected_by_fact.values() for candidate in rows]
+    decisions = _decision_rows(
+        section_id=section_id,
+        selected_by_fact=selected_by_fact,
+        rejected_by_fact=rejected_by_fact,
+    )
+    return {
+        "metric_counts": metric_counts,
+        "family_counts": family_counts,
+        "selected_by_fact": selected_by_fact,
+        "rejected_by_fact": rejected_by_fact,
+        "missing_fact_frontier_ids": missing_fact_frontier_ids,
+        "selected_flat": selected_flat,
+        "rejected_flat": rejected_flat,
+        "decisions": decisions,
+    }
 
 
 def select_c03_sqlite_graph_candidates(
@@ -477,6 +559,7 @@ def select_c03_sqlite_graph_candidates(
             "selected_skill_count": 0,
             "rejected_sibling_skill_count": 0,
             "sibling_alternative_count": 0,
+            "sibling_alternative_context_count": 0,
             "prior_metric_usage_penalty_count": 0,
             "penalty_count": 0,
             "graph_source": "augmented_skills_graph_sqlite",
@@ -486,54 +569,67 @@ def select_c03_sqlite_graph_candidates(
 
     root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[3]
     # Lazy import prevents the historical materializer -> core package -> L0 ->
-    # selector -> context circular import while preserving one public helper.
-    from apps_rg.runtime.c03_graph_sqlite_context import require_c03_graph_sqlite
-
-    path = require_c03_graph_sqlite(root, Path(db_path) if db_path else None)
-    meta, section_budget, candidates = _query_candidates(
-        repo_root=root,
-        db_path=path,
-        section_id=str(section_id or ""),
-        fact_ids=fact_order,
-        role_family_key=str(role_family_key or ""),
-        run_id=str(run_id or ""),
+    # selector -> context circular import while preserving one snapshot helper.
+    from apps_rg.runtime.c03_graph_sqlite_context import (
+        _open_c03_graph_sqlite_read_snapshot,
+        _resume_metric_usage_ranking_input_digest,
     )
-    for candidate in candidates:
-        candidate["section_budget"] = section_budget
 
-    by_fact: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for candidate in candidates:
-        by_fact[str(candidate.get("fact_id") or "")].append(candidate)
-
-    metric_counts: Counter[str] = Counter()
-    family_counts: Counter[str] = Counter()
-    fact_counts: Counter[str] = Counter()
-    selected_skill_ids: set[str] = set()
-    selected_by_fact: dict[str, list[dict[str, Any]]] = {}
-    rejected_by_fact: dict[str, list[dict[str, Any]]] = {}
-    for fact_id in fact_order:
-        selected, rejected = _rank_fact_candidates(
-            by_fact.get(fact_id, []),
-            section_id=str(section_id or ""),
-            role_family_key=str(role_family_key or ""),
-            pillar_hints={str(value) for value in pillar_hints if str(value).strip()},
-            max_skills_per_fact=max(1, int(max_skills_per_fact or DEFAULT_MAX_SKILLS_PER_FACT)),
-            metric_counts=metric_counts,
-            family_counts=family_counts,
-            fact_counts=fact_counts,
-            selected_skill_ids=selected_skill_ids,
+    section_value = str(section_id or "")
+    role_family_value = str(role_family_key or "")
+    path, conn, meta = _open_c03_graph_sqlite_read_snapshot(
+        root,
+        Path(db_path) if db_path else None,
+    )
+    try:
+        run_id_scope = str(run_id or "")
+        ranking_input_digest = _resume_metric_usage_ranking_input_digest(
+            conn,
+            run_id=run_id_scope,
         )
-        selected_by_fact[fact_id] = selected
-        rejected_by_fact[fact_id] = rejected
+        section_budget, candidates = _query_candidates(
+            conn=conn,
+            section_id=section_value,
+            fact_ids=fact_order,
+            role_family_key=role_family_value,
+            run_id=str(run_id or ""),
+        )
+        frontier = _rank_candidate_frontier(
+            candidates=candidates,
+            section_budget=section_budget,
+            fact_order=fact_order,
+            section_id=section_value,
+            role_family_key=role_family_value,
+            pillar_hints=pillar_hints,
+            max_skills_per_fact=max_skills_per_fact,
+        )
+        sibling_alternatives_by_skill = _query_sibling_alternatives(
+            conn=conn,
+            selected_skill_ids=[
+                str(candidate.get("skill_id") or "") for candidate in frontier["selected_flat"]
+            ],
+        )
+    except C03GraphProjectionUnavailableError:
+        raise
+    except Exception as exc:  # guardian: translate all post-validation SQLite adapter failures.
+        raise C03GraphProjectionUnavailableError(
+            f"C0.3 graph SQLite selection query failed at {path}: {type(exc).__name__}: {exc}"
+        ) from exc
+    finally:
+        conn.close()
 
-    missing_fact_frontier_ids = [fact_id for fact_id in fact_order if not by_fact.get(fact_id)]
-    selected_flat = [candidate for rows in selected_by_fact.values() for candidate in rows]
-    rejected_flat = [candidate for rows in rejected_by_fact.values() for candidate in rows]
-    decisions = _decision_rows(
-        section_id=str(section_id or ""),
-        selected_by_fact=selected_by_fact,
-        rejected_by_fact=rejected_by_fact,
-    )
+    metric_counts = frontier["metric_counts"]
+    family_counts = frontier["family_counts"]
+    selected_by_fact = frontier["selected_by_fact"]
+    rejected_by_fact = frontier["rejected_by_fact"]
+    missing_fact_frontier_ids = frontier["missing_fact_frontier_ids"]
+    selected_flat = frontier["selected_flat"]
+    rejected_flat = frontier["rejected_flat"]
+    decisions = frontier["decisions"]
+    for candidate in selected_flat:
+        candidate["sibling_alternatives"] = sibling_alternatives_by_skill.get(
+            str(candidate.get("skill_id") or ""), []
+        )
 
     recorder = TraversalRecorder(section_id=str(section_id or ""), max_hop_depth=1)
     for decision in decisions:
@@ -574,21 +670,9 @@ def select_c03_sqlite_graph_candidates(
     traversal_receipt["frontier_complete"] = not missing_fact_frontier_ids
     traversal_receipt["pass"] = bool(traversal_receipt["pass"] and not missing_fact_frontier_ids)
     traversal_receipt["candidate_conservation"]["pass"] = traversal_receipt["pass"]
-    candidate_receipt = build_candidate_receipt(
-        section_id=str(section_id or ""), decisions=decisions
-    )
+    candidate_receipt = build_candidate_receipt(section_id=str(section_id or ""), decisions=decisions)
     candidate_receipt["missing_fact_frontier_ids"] = missing_fact_frontier_ids
     candidate_receipt["frontier_complete"] = not missing_fact_frontier_ids
-
-    sibling_alternatives_by_skill = _query_sibling_alternatives(
-        repo_root=root,
-        db_path=path,
-        selected_skill_ids=[str(candidate.get("skill_id") or "") for candidate in selected_flat],
-    )
-    for candidate in selected_flat:
-        candidate["sibling_alternatives"] = sibling_alternatives_by_skill.get(
-            str(candidate.get("skill_id") or ""), []
-        )
 
     rejection_receipts = [
         {
@@ -622,8 +706,7 @@ def select_c03_sqlite_graph_candidates(
         "authority_decisions_digest": stable_digest(authority_rows),
     }
     candidate_conservation_pass = bool(
-        candidate_receipt["candidate_conservation_pass"]
-        and len(decisions) == len(candidates)
+        candidate_receipt["candidate_conservation_pass"] and len(decisions) == len(candidates)
     )
     return {
         "schema_version": SCHEMA_VERSION,
@@ -632,14 +715,22 @@ def select_c03_sqlite_graph_candidates(
         "sqlite_db_path": str(path),
         "graph_version": meta.get("graph_version"),
         "graph_hash": meta.get("ledger_hash"),
+        "canonical_ledger_hash": meta.get("ledger_hash"),
+        "sqlite_logical_digest": meta.get("validated_sqlite_logical_digest"),
+        "sqlite_schema_digest": meta.get("validated_sqlite_schema_digest"),
+        "resume_metric_usage_ranking_input_digest": ranking_input_digest,
+        "ranking_input_run_id_scope": run_id_scope,
         "metric_policy_version": POLICY_VERSION,
-        "run_id_scope": str(run_id or ""),
+        "run_id_scope": run_id_scope,
         "current_run_usage_only": True,
         "max_skills_per_fact": max_skills_per_fact,
         "source_authority_contract": {
             "schema_version": "c03_source_authority_contract_v1",
             "authority_source": "augmented_skills_graph",
             "graph_digest": meta.get("ledger_hash"),
+            "sqlite_logical_digest": meta.get("validated_sqlite_logical_digest"),
+            "sqlite_schema_digest": meta.get("validated_sqlite_schema_digest"),
+            "resume_metric_usage_ranking_input_digest": ranking_input_digest,
             "authority_evaluated_before_targeting": True,
             "targeting_inputs_are_non_authority": True,
             "missing_ranked_frontier_fails_closed": True,
@@ -662,6 +753,11 @@ def select_c03_sqlite_graph_candidates(
         "selected_skill_count": len(selected_flat),
         "rejected_sibling_skill_count": len(rejected_flat),
         "sibling_alternative_count": sum(len(values) for values in sibling_alternatives_by_skill.values()),
+        "sibling_alternative_context_count": sum(
+            int(alternative.get("shared_context_count") or 0)
+            for alternatives in sibling_alternatives_by_skill.values()
+            for alternative in alternatives
+        ),
         "prior_metric_usage_penalty_count": sum(
             1
             for candidate in selected_flat

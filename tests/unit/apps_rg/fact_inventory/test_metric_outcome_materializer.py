@@ -7,8 +7,10 @@ W2.0 invariants:
 - Resolver fails closed on unresolved metric IDs (returns None, caller must handle)
 - linked_metric_outcome_ids in role_episode_bundles must resolve to graph nodes after W2.0
 """
+
 from __future__ import annotations
 
+# apps-test-model: APP CONTRACT
 import json
 import sqlite3
 from pathlib import Path
@@ -21,6 +23,7 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
 )
 from apps_rg.fact_inventory.metric_outcome_materializer import (
+    METRIC_OUTCOME_EDGE_SIGNATURES,
     METRIC_OUTCOME_EDGE_TYPES,
     discover_role_episode_bundle_files,
     load_metric_outcome_rows_from_bundles,
@@ -53,6 +56,12 @@ def test_metric_outcome_edge_types_disjoint_from_existing_taxonomy() -> None:
     # All 3 new edge types share the ``metric_outcome_`` prefix.
     for edge_type in METRIC_OUTCOME_EDGE_TYPES:
         assert edge_type.startswith("metric_outcome_"), edge_type
+    assert set(METRIC_OUTCOME_EDGE_SIGNATURES) == set(METRIC_OUTCOME_EDGE_TYPES)
+    assert METRIC_OUTCOME_EDGE_SIGNATURES == {
+        "metric_outcome_anchors_bundle": frozenset({("metric_outcome", "graph_ref")}),
+        "metric_outcome_section_eligible": frozenset({("metric_outcome", "graph_ref")}),
+        "metric_outcome_bound_to_employer": frozenset({("metric_outcome", "employment")}),
+    }
 
 
 def test_discover_role_episode_bundle_files(repo_root: Path) -> None:
@@ -74,13 +83,105 @@ def test_load_metric_outcome_rows_from_bundles_yields_unique_metric_ids(
     rows = load_metric_outcome_rows_from_bundles(repo_root)
     assert rows, "expected at least one metric_outcome to be discovered"
     # All metric IDs must be unique (load function raises on duplicates).
-    assert len(rows) == len({mid for mid in rows})
+    assert len(rows) == len(set(rows))
     # Spot check: each row has the canonical shape from bundle JSON.
     sample_id = next(iter(rows))
     sample = rows[sample_id]
     assert isinstance(sample.get("metric_outcome_id") or sample_id, str)
     assert "metric_type" in sample
     assert "bundle_bindings" in sample
+
+
+def _write_bundle_fixture(tmp_path: Path, payload: object) -> Path:
+    inventory = tmp_path / "apps_rg/fact_inventory"
+    inventory.mkdir(parents=True)
+    (inventory / "test_role_episode_bundles.json").write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+    return tmp_path
+
+
+@pytest.mark.parametrize(
+    ("payload", "message"),
+    [
+        ([], "root must be a JSON object"),
+        ({"metric_outcome_nodes": []}, "metric_outcome_nodes must be a JSON object"),
+        (
+            {"metric_outcome_nodes": {"metric_test": "not-an-object"}},
+            "must be a JSON object",
+        ),
+        (
+            {"metric_outcome_nodes": {"": {"bundle_bindings": [], "section_eligibility": []}}},
+            "blank or non-string metric ID",
+        ),
+    ],
+)
+def test_metric_outcome_registry_shapes_fail_closed(
+    tmp_path: Path,
+    payload: object,
+    message: str,
+) -> None:
+    repo = _write_bundle_fixture(tmp_path, payload)
+
+    with pytest.raises(ValueError, match=message):
+        load_metric_outcome_rows_from_bundles(repo)
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("bundle_bindings", "reb_character_iteration", "must be a JSON list"),
+        ("bundle_bindings", ["reb_valid", ""], "non-empty strings"),
+        ("bundle_bindings", ["reb_duplicate", "reb_duplicate"], "duplicate IDs"),
+        ("section_eligibility", "executive_summary", "must be a JSON list"),
+        ("section_eligibility", ["executive_summary", 7], "non-empty strings"),
+    ],
+)
+def test_metric_outcome_binding_shapes_fail_closed(
+    tmp_path: Path,
+    field: str,
+    value: object,
+    message: str,
+) -> None:
+    metric = {
+        "metric_outcome_id": "metric_test",
+        "bundle_bindings": ["reb_test"],
+        "section_eligibility": ["executive_summary"],
+    }
+    metric[field] = value
+    repo = _write_bundle_fixture(
+        tmp_path,
+        {"metric_outcome_nodes": {"metric_test": metric}},
+    )
+
+    with pytest.raises(ValueError, match=message):
+        load_metric_outcome_rows_from_bundles(repo)
+
+
+def test_metric_outcome_declared_id_and_employer_shapes_fail_closed(
+    tmp_path: Path,
+) -> None:
+    base_metric = {
+        "metric_outcome_id": "metric_other",
+        "bundle_bindings": [],
+        "section_eligibility": [],
+    }
+    repo = _write_bundle_fixture(
+        tmp_path,
+        {"metric_outcome_nodes": {"metric_test": base_metric}},
+    )
+    with pytest.raises(ValueError, match="registry key"):
+        load_metric_outcome_rows_from_bundles(repo)
+
+    base_metric["metric_outcome_id"] = "metric_test"
+    base_metric["employer_node_id"] = {"unexpected": "object"}
+    (repo / "apps_rg/fact_inventory/test_role_episode_bundles.json").write_text(
+        json.dumps({"metric_outcome_nodes": {"metric_test": base_metric}}),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="employer_node_id must be a string"):
+        load_metric_outcome_rows_from_bundles(repo)
 
 
 def test_metric_outcome_node_rows_use_metric_outcome_type(repo_root: Path) -> None:
@@ -114,28 +215,20 @@ def test_metric_outcome_edges_emit_only_canonical_edge_types(repo_root: Path) ->
     assert "metric_outcome_section_eligible" in edge_types
 
 
-def test_metric_outcome_materialization_writes_graph_nodes(
-    repo_root: Path, tmp_path: Path
-) -> None:
+def test_metric_outcome_materialization_writes_graph_nodes(repo_root: Path, tmp_path: Path) -> None:
     """W2.0 end-to-end: full materialization writes metric_outcome rows into the SQLite."""
     db_path = tmp_path / "augmented_skills_graph_w20_test.sqlite"
-    summary = materialize_augmented_skills_graph_sqlite(
-        repo_root=repo_root, db_path=db_path
-    )
+    summary = materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=db_path)
     assert db_path.is_file()
     # Open and confirm metric_outcome rows are present.
     conn = sqlite3.connect(str(db_path))
     try:
-        cur = conn.execute(
-            "SELECT COUNT(*) FROM graph_nodes WHERE node_type = 'metric_outcome'"
-        )
+        cur = conn.execute("SELECT COUNT(*) FROM graph_nodes WHERE node_type = 'metric_outcome'")
         n_metric_outcomes = int(cur.fetchone()[0])
         assert n_metric_outcomes > 0, "expected at least one metric_outcome row"
 
         # Sanity: a known EY metric ID resolves through the W2.0 resolver.
-        row = resolve_metric_outcome_graph_node(
-            conn, "metric_ey_audit_control_automation_workflows_count"
-        )
+        row = resolve_metric_outcome_graph_node(conn, "metric_ey_audit_control_automation_workflows_count")
         assert row is not None
         assert row["node_type"] == "metric_outcome"
         assert row["activation_status"] == "APPROVED_GRAPH_SSOT"
@@ -148,18 +241,14 @@ def test_metric_outcome_materialization_writes_graph_nodes(
     assert summary["edge_count_sqlite"] > 0
 
 
-def test_metric_outcome_resolver_unresolved_id_fails_closed(
-    repo_root: Path, tmp_path: Path
-) -> None:
+def test_metric_outcome_resolver_unresolved_id_fails_closed(repo_root: Path, tmp_path: Path) -> None:
     """W2.0 No Silent Fallback: an unresolved metric ID returns None (caller fails closed)."""
     db_path = tmp_path / "augmented_skills_graph_w20_test_unresolved.sqlite"
     materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=db_path)
     conn = sqlite3.connect(str(db_path))
     try:
         # Fake metric ID that does not exist in any bundle JSON.
-        row = resolve_metric_outcome_graph_node(
-            conn, "metric_does_not_exist_anywhere_0000"
-        )
+        row = resolve_metric_outcome_graph_node(conn, "metric_does_not_exist_anywhere_0000")
         assert row is None
         # Empty string: same fail-closed.
         assert resolve_metric_outcome_graph_node(conn, "") is None

@@ -1,12 +1,10 @@
 {
-  "schema_version": "apps_rg.c03_graph_health_policy.v1",
-  "policy_version": "c03_graph_health_policy.v1",
+  "schema_version": "apps_rg.c03_graph_health_policy.v2",
+  "policy_version": "c03_graph_health_policy.v4.producer_bound_operational_evidence",
   "sample_limit": 12,
   "rare_edge_type_min_count": 2,
-  "operational_evidence_schema_versions": [
-    "apps_rg.c03_graph_health_operational_evidence.v1"
-  ],
-  "required_operational_authority_status": "VERIFIED",
+  "operational_evidence_schema_version": "apps_rg.c03_graph_health_operational_evidence.v2",
+  "operational_producer_registry_version": "apps_rg.c03_graph_operational_producer_registry.v1",
   "temporal_node_types": [
     "employment"
   ],
@@ -75,6 +73,12 @@
     {
       "table": "graph_sibling_links",
       "from": "sibling_node_id",
+      "to_table": "graph_nodes",
+      "to": "node_id"
+    },
+    {
+      "table": "graph_sibling_links",
+      "from": "shared_parent_node_id",
       "to_table": "graph_nodes",
       "to": "node_id"
     },
@@ -261,6 +265,20 @@
       "required": false
     },
     "registered_endpoint_closure": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "canonical_projected_edge_signature_integrity": {
+      "plane": "graph_data",
+      "operator": ">=",
+      "target": 1.0,
+      "failure_status": "MIGRATION_REQUIRED",
+      "required": true
+    },
+    "sqlite_projected_edge_signature_integrity": {
       "plane": "graph_data",
       "operator": ">=",
       "target": 1.0,

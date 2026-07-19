@@ -1,14 +1,23 @@
-"""W1-W3 contracts for apps_rg C0.3 resume graph hardening."""
+"""apps-test-model: APP CONTRACT.
+
+W1-W3 contracts for apps_rg C0.3 resume graph hardening.
+"""
+
 from __future__ import annotations
 
 import inspect
+import json
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
+)
+from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    compute_sqlite_graph_digest,
 )
 from apps_rg.runtime.c0.c03_graph_expansion import (
     C03GraphSelectionError,
@@ -105,9 +114,7 @@ def test_canonical_plan_rejects_selected_candidate_without_authority() -> None:
         "section_id": "competencies",
         "source_authority_contract": {"targeting_inputs_are_non_authority": True},
         "graph_candidate_decision_ledger": [row],
-        "graph_candidate_receipt": build_candidate_receipt(
-            section_id="competencies", decisions=[row]
-        ),
+        "graph_candidate_receipt": build_candidate_receipt(section_id="competencies", decisions=[row]),
         "graph_traversal_receipt": recorder.build_receipt(decisions=[row]),
     }
     failures = validate_canonical_section_plan(plan)
@@ -149,11 +156,7 @@ def test_role_selector_emits_exhaustive_replayable_traversal() -> None:
     assert traversal["authority_event_count"] >= len(decisions)
     assert len({row["candidate_path_id"] for row in decisions}) == len(decisions)
     assert all(row["decision"] in {"selected", "rejected"} for row in decisions)
-    assert all(
-        row["authority_pass"] is True
-        for row in decisions
-        if row["decision"] == "selected"
-    )
+    assert all(row["authority_pass"] is True for row in decisions if row["decision"] == "selected")
     leaf_rows = [row for row in decisions if row["candidate_type"] == "leaf_skill"]
     assert len(leaf_rows) > len(plan["selected_skill_ids"])
     assert any(row["decision"] == "rejected" for row in leaf_rows)
@@ -205,6 +208,7 @@ def test_selected_graph_plan_directly_binds_c02_atom() -> None:
         ],
         repo_root=REPO,
         selected_graph_plan=plan,
+        run_id="receipt-scope-w1-w3",
     )
     binding = c03["bindings"][0]
     assert binding["graph_support_strength"] == "DIRECT"
@@ -215,6 +219,73 @@ def test_selected_graph_plan_directly_binds_c02_atom() -> None:
     assert c03["label_tag_proof_fallback_used"] is False
     assert c03["graph_candidate_receipt"]["candidate_conservation_pass"] is True
     assert c03["graph_traversal_receipt"]["pass"] is True
+    sqlite_receipt = c03["sqlite_selection_receipt"]
+    assert sqlite_receipt["run_id_scope"] == "receipt-scope-w1-w3"
+
+
+def test_sqlite_selection_receipt_binds_run_and_projection_digests() -> None:
+    c03 = expand_c03_graph_bindings(
+        section_id="executive_summary",
+        atoms=[
+            {
+                "fact_id": "fact_engineering_platform_001",
+                "proof_status": "proof_eligible",
+                "source_span_ref": "ledger:fact_engineering_platform_001",
+                "skill_tags": [],
+                "metric_refs": [],
+                "career_phase_refs": [],
+            }
+        ],
+        repo_root=REPO,
+        run_id="receipt-scope-projection",
+    )
+
+    sqlite_receipt = c03["sqlite_selection_receipt"]
+    assert sqlite_receipt["run_id_scope"] == "receipt-scope-projection"
+    assert sqlite_receipt["ranking_input_run_id_scope"] == "receipt-scope-projection"
+    assert sqlite_receipt["canonical_ledger_hash"] == sqlite_receipt["graph_hash"]
+    assert len(sqlite_receipt["sqlite_logical_digest"]) == 64
+    assert len(sqlite_receipt["sqlite_schema_digest"]) == 64
+    assert len(sqlite_receipt["resume_metric_usage_ranking_input_digest"]) == 64
+
+
+def test_graph_expansion_rejects_mixed_sqlite_snapshot_receipts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from apps_rg.runtime.c0 import c03_sqlite_graph_selection as selection_module
+
+    real_select = selection_module.select_c03_sqlite_graph_candidates
+
+    def drifted_select(**kwargs: Any) -> dict[str, Any]:
+        result = real_select(**kwargs)
+        result["sqlite_logical_digest"] = "0" * 64
+        return result
+
+    monkeypatch.setattr(
+        selection_module,
+        "select_c03_sqlite_graph_candidates",
+        drifted_select,
+    )
+
+    with pytest.raises(
+        C03GraphSelectionError,
+        match="sqlite_snapshot_receipt_mismatch:sqlite_logical_digest",
+    ):
+        expand_c03_graph_bindings(
+            section_id="executive_summary",
+            atoms=[
+                {
+                    "fact_id": "fact_engineering_platform_001",
+                    "proof_status": "proof_eligible",
+                    "source_span_ref": "ledger:fact_engineering_platform_001",
+                    "skill_tags": [],
+                    "metric_refs": [],
+                    "career_phase_refs": [],
+                }
+            ],
+            repo_root=REPO,
+            run_id="mixed-snapshot-test",
+        )
 
 
 def test_missing_claim_eligible_frontier_does_not_become_proof() -> None:
@@ -283,6 +354,13 @@ def test_sqlite_authority_gate_rejects_explicit_section_block(tmp_path: Path) ->
             """,
             (skill_id, "executive_summary"),
         )
+        raw_summary = conn.execute("SELECT graph_count_summary FROM graph_metadata").fetchone()[0]
+        summary = json.loads(raw_summary)
+        summary["sqlite_graph_digest"] = compute_sqlite_graph_digest(conn)
+        conn.execute(
+            "UPDATE graph_metadata SET graph_count_summary = ?",
+            (json.dumps(summary, sort_keys=True),),
+        )
         conn.commit()
     finally:
         conn.close()
@@ -297,11 +375,7 @@ def test_sqlite_authority_gate_rejects_explicit_section_block(tmp_path: Path) ->
         max_skills_per_fact=3,
     )
     assert skill_id not in {row["skill_id"] for row in out["selected_candidates"]}
-    blocked = [
-        row
-        for row in out["candidate_decision_ledger"]
-        if row["candidate_id"] == skill_id
-    ]
+    blocked = [row for row in out["candidate_decision_ledger"] if row["candidate_id"] == skill_id]
     assert blocked
     assert blocked[0]["decision"] == "rejected"
     assert blocked[0]["authority_pass"] is False

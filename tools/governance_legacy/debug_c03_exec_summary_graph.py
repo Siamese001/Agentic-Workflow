@@ -1,9 +1,11 @@
 """One-off debug: C0.3 skills graph SQLite usage for exec_summary run."""
+
 from __future__ import annotations
 
-import json
-import sqlite3
 from pathlib import Path
+
+from agentic_core.L4_state.adapters.sqlite3_adapter import Connection, Row
+from apps_rg.fact_inventory.augmented_skills_graph_sqlite import open_graph_sqlite
 
 REPO = Path(__file__).resolve().parents[2]
 DB = REPO / "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite"
@@ -75,9 +77,15 @@ BOUND_SKILLS = sorted(
 )
 
 
+def _open_debug_connection(*, db_path: Path = DB) -> Connection:
+    """Open this legacy diagnostic through the governed read-only graph adapter."""
+    conn = open_graph_sqlite(repo_root=REPO, db_path=db_path, read_only=True)
+    conn.row_factory = Row
+    return conn
+
+
 def main() -> None:
-    conn = sqlite3.connect(DB)
-    conn.row_factory = sqlite3.Row
+    conn = _open_debug_connection()
     cur = conn.cursor()
 
     meta = cur.execute(
@@ -123,10 +131,7 @@ def main() -> None:
     sk_ph = ",".join("?" * len(BOUND_SKILLS))
 
     edge_types = [
-        r[0]
-        for r in cur.execute(
-            "SELECT DISTINCT edge_type FROM graph_edges ORDER BY 1 LIMIT 30"
-        ).fetchall()
+        r[0] for r in cur.execute("SELECT DISTINCT edge_type FROM graph_edges ORDER BY 1 LIMIT 30").fetchall()
     ]
     print("\n=== distinct edge_type (sample) ===", edge_types)
 
