@@ -1,0 +1,153 @@
+{
+  "wave_id": "S0",
+  "status": "PASS",
+  "completion_marker": "SR0_SOURCE_CONTRACTS_PASS",
+  "authority_origin": "USER_SUPPLIED_EXECUTION_DIRECTIVE",
+  "source_baseline": {
+    "commit": "fc7039821148151e08459f8473cc8428df39bc8b",
+    "tree": "8e3fa68878aef4224f781335850a9eab7ff2c6c9"
+  },
+  "implementation_baseline": {
+    "commit": "aefcad36d2681761729349700749234a129d3c44",
+    "tree": "64b273e45a10e84bf75077b16196d7e8e688e195"
+  },
+  "commits": [
+    {
+      "sha": "b259d0d36db8c5092a6cd29931978ec790d41804",
+      "subject": "test(apps-rg): specify source snapshot contracts"
+    },
+    {
+      "sha": "aefcad36d2681761729349700749234a129d3c44",
+      "subject": "feat(apps-rg): bind immutable source snapshots"
+    }
+  ],
+  "contracts": {
+    "IngestionSnapshotLoaderV1": {
+      "status": "PASS",
+      "artifact_classification": "OFFLINE_DERIVED_ARTIFACT",
+      "runtime_read_only": true,
+      "implicit_rebuild_removed": true,
+      "exact_payload_bytes_preserved": true,
+      "publication_staged_immutable_atomic": true,
+      "active_pointer_published_last": true
+    },
+    "ActiveConfigSnapshotProviderV1": {
+      "status": "PASS",
+      "exact_declared_component_bytes_bound": true,
+      "component_sha256_bound": true,
+      "ordered_manifest_canonicalized_once": true,
+      "configuration_digest_bound_once": true,
+      "load_once_per_provider_instance": true,
+      "hashes_perform_reads": false
+    }
+  },
+  "production_files": [
+    {
+      "path": "agentic_core/L0_routing/config/active_config_snapshot.py",
+      "sha256": "a23f09c6d357df4441093f5a52f4c4df0113a57416d734c22cb09c39eb98a606"
+    },
+    {
+      "path": "agentic_core/L0_routing/enforcement/execution_gateway.py",
+      "sha256": "b7bff637a6ad39c227eb338479aeb647bd61ddf65a90c0b8657efd6a531c96f1"
+    },
+    {
+      "path": "agentic_core/L0_routing/reasoning/escalation_router.py",
+      "sha256": "2a9b6b399a005a0be1b2c2e4bd504c9f65d564129cdcc8deec63922dc603ad76"
+    },
+    {
+      "path": "agentic_core/L0_routing/reasoning/timeshift_router.py",
+      "sha256": "cb38cd7d68c30a67c0c68ae9ebc5d479fc6122201be2c2fb91e795330c1267f4"
+    },
+    {
+      "path": "agentic_core/L0_routing/types/determinism_types.py",
+      "sha256": "e615d584181aa6b24b9dad2995d2a55801407e96385af97412d77512692c2412"
+    },
+    {
+      "path": "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "sha256": "e9745e5c60a4ae7ae03a01b15e2b1e76a34c6ce9ad910786df12a02b472965dc"
+    },
+    {
+      "path": "agentic_core/L2_execution/config/ingestion_snapshot.py",
+      "sha256": "03b0af24c9ea6ee31146a57663b83a274162bc073d36e092100de701a8512534"
+    },
+    {
+      "path": "agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+      "sha256": "2c8753a1db1d53636c8019a09f238c1864b4ac38d05f01702c3727282cc519bc"
+    },
+    {
+      "path": "ops_scripts/apps_rg/package_source_snapshots.py",
+      "sha256": "125905e3248b636ea5a3f23f7f7fade58a7461936887b178e77433e9b2ceab4d"
+    }
+  ],
+  "verification": {
+    "test_first_red": {
+      "status": "EXPECTED_FAIL",
+      "result": "5 collection errors for the two absent contract modules"
+    },
+    "focused_contract_suite": {
+      "status": "PASS",
+      "collected": 46,
+      "executed": 46,
+      "passed": 46,
+      "failed": 0,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "direct_consumer_suite": {
+      "status": "PASS",
+      "collected": 74,
+      "executed": 74,
+      "passed": 74,
+      "failed": 0,
+      "skipped": 0,
+      "xfailed": 0
+    },
+    "broader_gateway_inventory": {
+      "status": "BASELINE_HARNESS_FAILURES_OUTSIDE_S0_DIFF",
+      "collected": 101,
+      "passed": 93,
+      "failed": 8,
+      "failed_file": "tests/agentic_core/L0_routing/enforcement/test_execution_gateway.py",
+      "classification": "MIGRATION",
+      "rationale": "The unchanged test patches absent module-level symbols and asserts log-only behavior in methods not changed by S0. S0-specific gateway tests pass."
+    },
+    "ruff_f401_i": "PASS",
+    "compileall": "PASS",
+    "apps_rg_import_gate": "PASS",
+    "scoped_plan_format_gate": "PASS_0_FINDINGS",
+    "global_structure_policy_gate": {
+      "status": "BASELINE_FAIL_3",
+      "findings": [
+        "FORBIDDEN root dir: .playwright-mcp/",
+        "UNKNOWN root dir: .zero_loss_backups/",
+        "FORBIDDEN dir exists: .playwright-mcp/"
+      ],
+      "s0_paths_implicated": 0
+    },
+    "legacy_missing_import_reference_count": 0,
+    "new_dangling_import_count": 0,
+    "global_dangling_import_gate": "BASELINE_FAIL_297",
+    "global_core_boundary_gate": "BASELINE_FAIL_623",
+    "layer_gravity_gate": "NOT_RUN_DIRECTIVE_FORBIDS_GRAPH_DEPENDENCY"
+  },
+  "side_effect_contract": {
+    "runtime_source_write_calls": 0,
+    "runtime_network_calls": 0,
+    "runtime_provider_calls": 0,
+    "runtime_redis_calls": 0,
+    "runtime_graph_calls": 0,
+    "runtime_subprocess_calls": 0,
+    "repository_root_fallbacks": 0
+  },
+  "scope": {
+    "graph_changes": 0,
+    "assertion_changes": 0,
+    "embedding_changes": 0,
+    "target_created": false,
+    "push_performed": false,
+    "pull_request_created": false,
+    "merge_performed": false,
+    "source_refreeze_complete": false
+  },
+  "next_wave": "S1"
+}
