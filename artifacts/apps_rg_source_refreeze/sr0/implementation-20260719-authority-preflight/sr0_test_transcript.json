@@ -1,0 +1,13 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "status": "NOT_RUN_BLOCKED",
+  "test_framework_runs": [],
+  "static_evidence_commands": [
+    "rg --files <source-worktree> -g manifest_hash_validator.py",
+    "rg -n -C 4 get_active_configs|REQUIRED_HASH_FIELDS|hashes|canonical|json agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+    "rg -n -C 4 load_latest_ingested_chunks|rebuild_from_ingestion|sovereign_local_index|cache agentic_core/L2_execution/config/hybrid_retriever_config.py"
+  ],
+  "static_evidence_exit_code": 0,
+  "tests_not_run_reason": "The directive forbids inventing either contract when the named authority preflight is blocked.",
+  "production_source_test_files_created": 0
+}

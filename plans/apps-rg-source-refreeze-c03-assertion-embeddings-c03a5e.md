@@ -26,9 +26,9 @@ Repair the two frozen source defects first, then gate C0.3 authority, assertion-
 ## Plan State Markers
 
 FORMAT_VERSION: simplified-plan-format-v1
-PLAN_STATUS: IN_PROGRESS
+PLAN_STATUS: BLOCKED
 CURRENT_WAVE: SR0
-BLOCKED_WAVE: NONE
+BLOCKED_WAVE: SR0
 LAST_COMPLETED_WAVE: NONE
 LAST_UPDATED: 2026-07-19
 STARTING_BRANCH: origin/main
@@ -40,9 +40,10 @@ ADG_POLICY: DEPRECATED_AND_FORBIDDEN
 STANDALONE_TARGET: ABSENT
 STANDALONE_WORKTREE_DEPENDENCY: FORBIDDEN
 PARENT_STANDALONE_BLOCKER: W1D_SOURCE_REFREEZE_REQUIRED
-BLOCKER: NONE
-SR0A_STATUS: CONTRACT_AUTHORITY_APPROVED
-SR0B_STATUS: CONTRACT_AUTHORITY_APPROVED
+BLOCKER: SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED
+SECONDARY_BLOCKER: SR0B_CANONICALIZATION_AUTHORITY_REQUIRED
+SR0A_STATUS: BLOCKED_ON_PRODUCER_AUTHORITY
+SR0B_STATUS: BLOCKED_ON_CANONICALIZATION_AUTHORITY
 SR0H_STATUS: PASS
 SR0_IMPLEMENTATION_AUTHORIZED: true
 SR0A_IMPLEMENTATION_AUTHORIZED: true
@@ -79,7 +80,7 @@ MERGE_AUTHORIZED: false
 
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |------|-----------|-------|-------------|-------------|--------|------------------|
-| W1 | SR0A, SR0B | Repair source ingestion and active-config contracts | ~18K | SR0 implementation authority is explicit | IN PROGRESS | Contract repairs, guarded proof, and local commits complete |
+| W1 | SR0A, SR0B | Repair source ingestion and active-config contracts | ~18K | Product and canonicalization authority are both required | BLOCKED | Authority preflight resolved without an invented implementation |
 | W2 | SR1 | Lock canonical C0.3 graph authority/data | ~12K | Separate authorization required after SR0 | TODO | Graph readiness, exact parity, and zero unknown authority |
 | W3 | SR2 | Lock atomic skill-assertion corpus | ~12K | SR1 graph lock is stable | TODO | Atomicity, corpus lock, and no unknown assertion authority |
 | W4 | SR3 | Lock operational control plane | ~8K | Genuine producer evidence exists | TODO | Control-plane PASS with no UNKNOWN normalization |
@@ -91,8 +92,8 @@ MERGE_AUTHORIZED: false
 
 | Phase | Title | Status |
 |-------|-------|--------|
-| SR0A | Ingestion loader contract evidence and repair | IN PROGRESS -- implementation authorized |
-| SR0B | Immutable active-config snapshot provider | IN PROGRESS -- implementation authorized |
+| SR0A | Ingestion loader contract evidence and repair | BLOCKED -- producer/payload authority required |
+| SR0B | Immutable active-config snapshot provider | BLOCKED -- canonicalization authority required |
 | SR1 | C0.3 graph authority/data lock | TODO — separate authorization |
 | SR2 | Atomic skill-assertion corpus lock | TODO — separate authorization |
 | SR3 | Operational control-plane lock | TODO — separate authorization |
@@ -114,7 +115,7 @@ MERGE_AUTHORIZED: false
 ## Wave 1 — SR0 Source Contract Repair
 
 WAVE_ID: SR0H_SOURCE_CONTRACT_AUTHORITY_DECISION
-WAVE_STATUS: IN_PROGRESS
+WAVE_STATUS: BLOCKED
 WAVE_COMPLETE: NO
 AUTHORIZATION_STATUS: DECISION_DRAFTING_ONLY
 CHECKPOINT: SR0H
@@ -124,8 +125,8 @@ CHECKPOINT: SR0H
 **Current evidence**: `artifacts/apps_rg_source_refreeze/sr0/contract-authority-assessment-20260719/sr0_contract_authority_assessment.json` remains `CONTRACT_AUTHORITY_ABSENT`, and its tests remain `DIAGNOSTIC_EVIDENCE`. The Architecture Owner has approved option A for both newly approved architecture contracts in the SR0H ADRs and receipt. Implementation must stop at any named SR0 authority, scope, boundary, side-effect, or integration blocker.
 
 **Phases**:
-- **SR0A** — Establish and repair the canonical ingestion loader/cache contract | PHASE_STATUS: IN PROGRESS | PHASE_COMPLETE: NO | implementation authorized
-- **SR0B** — Establish and repair the immutable active-configuration snapshot provider | PHASE_STATUS: IN PROGRESS | PHASE_COMPLETE: NO | implementation authorized
+- **SR0A** — Establish and repair the canonical ingestion loader/cache contract | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO | `SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED`
+- **SR0B** — Establish and repair the immutable active-configuration snapshot provider | PHASE_STATUS: BLOCKED | PHASE_COMPLETE: NO | `SR0B_CANONICALIZATION_AUTHORITY_REQUIRED`
 
 **Acceptance**:
 - `SR0A_INGESTION_LOADER_CONTRACT_PASS`
@@ -137,6 +138,8 @@ CHECKPOINT: SR0H
 - `SR0_SOURCE_DEFECTS_REPAIRED_PASS`
 
 **SR0H approval gate**: `SR0A_CONTRACT_AUTHORITY_APPROVED` and `SR0B_CONTRACT_AUTHORITY_APPROVED` are bound by the Architecture Owner decision; `SR0H_SOURCE_CONTRACT_AUTHORITY_PASS` is recorded. SR0 implementation now has separate local authority and must stop before push, PR, merge, refreeze, graph, assertion, embedding, or target work.
+
+**SR0 implementation preflight (2026-07-19)**: the approved contracts did not supply the missing source-specific producer/payload transformation or a deterministic canonicalization utility actively used by manifest integrity. The only qualifying SR0A evidence is the consumer in `agentic_core/L2_execution/config/hybrid_retriever_config.py`; it is insufficient to determine chunk provenance, cache inputs, or an offline payload transformation. `agentic_core/L2_execution/enforcement/manifest_hash_validator.py` imports the missing provider and consumes `hashes()` without canonicalization. No source implementation, contract schema, protocol, or test was created. Evidence is recorded under `artifacts/apps_rg_source_refreeze/sr0/implementation-20260719-authority-preflight/`.
 
 **Supersession record**: This plan supersedes only the conditional embedding-policy decision in `apps-rg-c03-graph-health-embedding-closure-b8d4f1`; it preserves the completed C0.3 graph-runtime hardening baseline. Mandatory future policy remains one vector per eligible atomic skill assertion, and no embedding promotion is not success.
 

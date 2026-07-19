@@ -1,0 +1,19 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "status": "BLOCKED",
+  "contracts": [
+    {
+      "name": "IngestionSnapshotLoaderV1",
+      "consumer": "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "compatibility_proven": false,
+      "blocker": "SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED"
+    },
+    {
+      "name": "ActiveConfigSnapshotProviderV1",
+      "consumer": "agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+      "compatibility_proven": false,
+      "blocker": "SR0B_CANONICALIZATION_AUTHORITY_REQUIRED"
+    }
+  ],
+  "unsupported_fallbacks_created": false
+}

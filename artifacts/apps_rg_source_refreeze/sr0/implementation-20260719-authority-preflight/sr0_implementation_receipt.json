@@ -1,0 +1,59 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "decision_status": "BLOCKED",
+  "frozen_source_sha": "fc7039821148151e08459f8473cc8428df39bc8b",
+  "frozen_source_tree": "8e3fa68878aef4224f781335850a9eab7ff2c6c9",
+  "authority_binding_commit": "69b25112861941d489f200a4be643870f40d74d6",
+  "authority_binding_receipt": {
+    "path": "artifacts/apps_rg_source_refreeze/sr0h/contract_authority_receipt.json",
+    "sha256": "e367ea017431394a5d24ce29e25d30dbe7d061e90ba3e2cf236738d276741819"
+  },
+  "prior_diagnostic_evidence": {
+    "path": "artifacts/apps_rg_standalone/w1/source-defect-adjudication-w1d-0020/source_defect_evidence_index.json",
+    "sha256": "78dfedbfc0d1c2320b82fbfc9a2dc723f4bf46e4d13e1019a06d19690ae17d96"
+  },
+  "source_evidence": {
+    "ingestion_consumer": {
+      "path": "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "sha256": "61d10455b969d3fd18909a4ad44acedd23bb97d873b14b513b34a10d8c74f010"
+    },
+    "manifest_integrity_consumer": {
+      "path": "agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+      "sha256": "a7a3dc99df34197f060e87ec20d1c93be12146528a51aded0897dee369d4bf0c"
+    }
+  },
+  "blockers": [
+    "SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED",
+    "SR0B_CANONICALIZATION_AUTHORITY_REQUIRED"
+  ],
+  "implementation_results": {
+    "IngestionSnapshotLoaderV1": "NOT_IMPLEMENTED_BLOCKED",
+    "ActiveConfigSnapshotProviderV1": "NOT_IMPLEMENTED_BLOCKED"
+  },
+  "artifact_digests": {
+    "sr0_change_inventory.json": "a67de8b417839f03256f00be239320bc16677ed7c0c4908dbfd58504155a1ebc",
+    "sr0_compatibility_matrix.json": "8e444766ab7fc66b06c8f0f869cc3a9bce12a123a8932325d7b38bab4758814c",
+    "sr0_side_effect_guard_receipt.json": "fc0d355bc52aa6d4d5f41d091eaefa39f0c60496de6770792197550cd75b782d",
+    "sr0_test_transcript.json": "c4faa08320cb94ef6d61ea630352b344c01ecdb13f334e2a01cd58f8524d3b45",
+    "sr0a_offline_build_receipt.json": "06d159297848163673d13231e05e0457699ab15a91be4cb4df2355db4e8c8754",
+    "sr0a_runtime_read_purity_receipt.json": "3e3b236c17b70b8b286d662e716e24a18dbe6ee2a4b823b3b0ab22f1c4aa477a",
+    "sr0b_manifest_integrity_receipt.json": "91e9db28add73a2c9216d80dcc9ca890d3faac9178756cb335e3de1a2b7096b5",
+    "sr0b_provider_read_purity_receipt.json": "0290a3c1e6a7cf56884b76c791a6651682af10ce18669fecd7a2c18b8060aed2"
+  },
+  "production_source_change_count": 0,
+  "contract_schema_or_protocol_change_count": 0,
+  "test_change_count": 0,
+  "graph_change_count": 0,
+  "assertion_change_count": 0,
+  "embedding_change_count": 0,
+  "target_exists": false,
+  "push_performed": false,
+  "pull_request_created": false,
+  "merge_performed": false,
+  "source_refreeze_complete": false,
+  "success_markers_emitted": [],
+  "blocker_markers_emitted": [
+    "SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED",
+    "SR0B_CANONICALIZATION_AUTHORITY_REQUIRED"
+  ]
+}

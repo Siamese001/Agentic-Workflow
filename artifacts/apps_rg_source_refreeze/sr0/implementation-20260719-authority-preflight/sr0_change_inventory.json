@@ -1,0 +1,14 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "authority_binding_commit": "69b25112861941d489f200a4be643870f40d74d6",
+  "authority_binding_commit_subject": "docs(apps-rg): bind SR0 source contract authority",
+  "production_source_change_count": 0,
+  "production_source_changes": [],
+  "contract_schema_or_protocol_change_count": 0,
+  "test_change_count": 0,
+  "graph_change_count": 0,
+  "assertion_change_count": 0,
+  "embedding_change_count": 0,
+  "target_created": false,
+  "scope_result": "BLOCKED_BEFORE_SOURCE_IMPLEMENTATION"
+}

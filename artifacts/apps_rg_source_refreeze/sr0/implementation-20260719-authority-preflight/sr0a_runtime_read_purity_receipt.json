@@ -1,0 +1,12 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "contract": "IngestionSnapshotLoaderV1",
+  "status": "NOT_RUN_BLOCKED",
+  "blocker": "SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED",
+  "reason": "No authoritative ingestion producer or payload transformation exists; no loader was implemented.",
+  "runtime_loader_invoked": false,
+  "provider_calls": 0,
+  "network_attempts": 0,
+  "filesystem_writes": 0,
+  "result": "No read-purity claim is made before producer authority is supplied."
+}

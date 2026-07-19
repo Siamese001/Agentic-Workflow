@@ -1,0 +1,18 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "contract": "ActiveConfigSnapshotProviderV1",
+  "status": "BLOCKED",
+  "blocker": "SR0B_CANONICALIZATION_AUTHORITY_REQUIRED",
+  "manifest_integrity_source": "agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+  "missing_import": "agentic_core.L4_state.config.versioned_configs.get_active_configs",
+  "required_hash_fields": [
+    "policy_hash",
+    "routing_hash",
+    "model_hash",
+    "budget_hash"
+  ],
+  "active_canonicalization_utility": null,
+  "active_canonicalization_evidence": false,
+  "provider_implemented": false,
+  "result": "No manifest-integrity compatibility claim is made before canonicalization authority is supplied."
+}
