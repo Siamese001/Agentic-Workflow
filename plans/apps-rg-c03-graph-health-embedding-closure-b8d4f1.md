@@ -79,8 +79,8 @@ STOP_CONDITION: the bounded D0 repair fails to produce a certified ADG, or revie
 |-------|-------|--------|
 | D0.1 | Correct write-sovereignty and UWG view classification | DONE |
 | D0.2 | Harden fail-fast manifest finalization and runtime-proof recovery | DONE |
-| D0.3 | Merge the ADG repair branch into main and consume it on the feature branch | 🟨 IN PROGRESS |
-| D0.4 | Remove the real apps_rg direct-SQLite violation and certify the exact feature SHA | 🔲 TODO |
+| D0.3 | Merge the ADG repair branch into main and consume it on the feature branch | DONE |
+| D0.4 | Remove the real apps_rg direct-SQLite violation and certify the exact feature SHA | 🟨 IN PROGRESS |
 | W0.1 | Restore certified ADG pointer and active-session health | ⏸ BLOCKED ON D0 |
 | W0.2 | Pin candidate SHA, graph digests, and frozen KPI denominators | 🔲 TODO |
 | W0.3 | Emit source, coverage, operational, and ADG dependency registers | 🔲 TODO |
@@ -426,8 +426,8 @@ CHECKPOINT: D0
 
 - **D0.1** — Test-first graph-view classification repair | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
 - **D0.2** — Test-first manifest/runtime-index recovery | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
-- **D0.3** — Repair branch verification, commit, PR/merge, and feature-branch consumption | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO
-- **D0.4** — Test-first apps_rg adapter repair and exact-SHA certification | PHASE_STATUS: TODO | PHASE_COMPLETE: NO
+- **D0.3** — Repair branch verification, commit, PR/merge, and feature-branch consumption | PHASE_STATUS: DONE | PHASE_COMPLETE: YES
+- **D0.4** — Test-first apps_rg adapter repair and exact-SHA certification | PHASE_STATUS: IN_PROGRESS | PHASE_COMPLETE: NO
 
 **Execution**:
 

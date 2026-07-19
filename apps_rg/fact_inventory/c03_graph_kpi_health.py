@@ -12,14 +12,16 @@ import argparse
 import hashlib
 import json
 import re
-import sqlite3
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
-from urllib.parse import quote
 
-from apps_rg.fact_inventory.augmented_skills_graph_sqlite import canonical_node_type
+from agentic_core.L4_state.adapters import sqlite3_adapter as sqlite3
+from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+    canonical_node_type,
+    open_graph_sqlite,
+)
 from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
     POLICY_VERSION as METRIC_HETEROGENEITY_POLICY_VERSION,
 )
@@ -1658,12 +1660,7 @@ def build_c03_graph_health_receipt(
             sqlite_sidecars_before = _sqlite_sidecar_names(sqlite_db)
             digests["sqlite_file_sha256_before"] = sqlite_digest_before
             digests["sqlite_sidecars_before"] = list(sqlite_sidecars_before)
-            uri_path = quote(sqlite_db.as_posix(), safe="/:")
-            conn = sqlite3.connect(
-                f"file:{uri_path}?mode=ro",
-                uri=True,
-                timeout=5,
-            )
+            conn = open_graph_sqlite(db_path=sqlite_db, read_only=True)
             try:
                 conn.execute("PRAGMA query_only=ON")
                 sqlite_metrics, sqlite_versions, sqlite_digests = _sqlite_metrics(
