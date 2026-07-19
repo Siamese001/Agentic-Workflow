@@ -1,0 +1,219 @@
+{
+  "schema_version": "apps_rg.source_refreeze.s1_implementation_receipt.v1",
+  "wave_id": "S1",
+  "status": "PASS",
+  "generated_at": "2026-07-19T19:56:12.9065161-04:00",
+  "source": {
+    "branch": "codex-apps-rg-source-refreeze",
+    "starting_commit": "a9cf0f86fd395e72bfd3cba9a3863dcee984d6e5",
+    "implementation_commit": "716168da9413edf17df658f8a9bc8251c4be6f72",
+    "implementation_tree": "2213f28d835c1b7094add47b30f56e343923cdae",
+    "source_refreeze_complete": false
+  },
+  "graph_authority": {
+    "canonical_graph": {
+      "path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+      "file_sha256": "f47d73a9555158b0553e22301ab5883efb96eb348cdfd82f39e056f99fa2624e",
+      "canonical_sha256": "d622c689984798ae7aa0dba83a0ab3571996c92b7ffc2f94f5d52bc67568a739",
+      "skill_count": 254,
+      "explicit_node_count": 375,
+      "canonical_edge_count": 2114,
+      "eligible_assertion_count": 198,
+      "explicit_non_retrieval_count": 56
+    },
+    "sqlite_projection": {
+      "path": "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite",
+      "file_sha256": "c45d7e4cb2ae0a69804cfe37c2d4d8af35979971a35a43ada8f6aba955b79ca3",
+      "size": 21454848,
+      "materializer_version": "c03_sqlite_materializer.v20260718.lossless_types_signatures_full_digest",
+      "materialized_node_count": 785,
+      "materialized_edge_count": 2570,
+      "duplicate_triple_count": 0,
+      "orphan_edge_count": 0,
+      "validation_status": "PASS",
+      "validation_issues": []
+    },
+    "health": {
+      "graph_data_readiness": "PASS",
+      "failed_graph_check_count": 0,
+      "control_plane_status": "UNKNOWN",
+      "overall_status": "UNKNOWN",
+      "absent_operational_producer_count": 7,
+      "interpretation": "Operational evidence remains independently UNKNOWN and is not relabeled as graph proof."
+    },
+    "zero_duplicate_active_identities": true,
+    "zero_unknown_required_authority_fields": true,
+    "runtime_graph_mutation": false
+  },
+  "assertion_corpus": {
+    "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_skill_assertions.efd9e01bf82df9324c9b5485bf93b7f5595e9260c60f848a4b1241411a9c2ca6.json",
+    "corpus_sha256": "efd9e01bf82df9324c9b5485bf93b7f5595e9260c60f848a4b1241411a9c2ca6",
+    "file_sha256": "f48d1ce54e06f2f88f1629572942782cffcaebd4034dac9c9813fe7805b1eb70",
+    "assertion_count": 198,
+    "exclusion_count": 56,
+    "one_vector_per_eligible_atomic_assertion": true,
+    "alias_or_context_duplication": false
+  },
+  "source_inputs": {
+    "candidate_fact_ledger": {
+      "path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+      "file_sha256": "3aecaa0c2dcd942ac8e6c5070957704dd27a088a11ce1678e2be039104718284",
+      "canonical_sha256": "8d51311d531d3adbeda76e89540372c40e084d1069e5aa708b012fb10a9a44c7"
+    },
+    "base_resume": {
+      "path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+      "file_sha256": "6b1afafd4cfd3dd6484d9fa72534670a4a7dd82cd936c64b9ec3b721a29541af",
+      "canonical_sha256": "33aec18cd70c68af14008655045cfa013d367892e1a9a8f605cd42e851761a89"
+    },
+    "wave0_gtm_jd_sha256": "60253f43b78b401699118b8e21c74c3de171e1e885287633f9f8b28f4f9da0ff",
+    "wave0_gtm_brief_sha256": "96f57d6f8448adcc30ce3639a1805bfcfe5bf3c2bd072e56af0d4cb4553c3595",
+    "git_exact_byte_bindings_match": true
+  },
+  "embedding_generation": {
+    "generation_manifest": {
+      "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_skill_embedding_manifest.json",
+      "manifest_sha256": "9c9cd463d552b730034cb317872a3adba29c7a15c79d181ca4e5938495c4c485",
+      "file_sha256": "d4782283b4723d8793e7641ac7a24fb3a5ebde54a878c7cc97f6dc516d3e2189"
+    },
+    "model": {
+      "model_id": "BAAI/bge-m3",
+      "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+      "artifact_sha256": "38ccc2e093252ab0416eee16837c75c641f055b4f3def12091fba8ed94e2b263",
+      "manifest_file_sha256": "058b33e06bf78cf6fc456848e91e64a8c62661ff8beea6fb9aafc85f78bf1170",
+      "dimension": 1024,
+      "normalization": "l2"
+    },
+    "projection": {
+      "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_skill_embeddings.68dc2043a5f7296259ec0de5878de4930093d4f30e602dd4adb96d6aa3e6c6e6.sqlite",
+      "generation_sha256": "68dc2043a5f7296259ec0de5878de4930093d4f30e602dd4adb96d6aa3e6c6e6",
+      "file_sha256": "2d4fdce4a0a3dca99ca0c8c24bc186cf560114f9dec065c446e9c65510c3698e",
+      "vector_count": 198,
+      "dimension": 1024,
+      "read_only_query_hash_unchanged": true
+    },
+    "runtime_proof": {
+      "device": "cuda:0",
+      "torch_version": "2.12.0.dev20260228+cu128",
+      "cuda_available": true,
+      "cuda_device_name": "NVIDIA GeForce RTX 5090",
+      "fallback_used": false,
+      "network_used": false
+    }
+  },
+  "qualification": {
+    "query_qrels": {
+      "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_embedding_query_qrels.08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85.json",
+      "sha256": "08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85",
+      "file_sha256": "2505e89d3675dadf73aab3183ec9021eda2ffa349a5f03e03c8e8b051deedc61",
+      "query_count": 7,
+      "relevance_judgment_count": 37
+    },
+    "thresholds": {
+      "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_embedding_qualification_thresholds.3bfda1a9eb216292781e081d7154e01d65f2b5c3f0bc9611963a02ce07c8a49f.json",
+      "sha256": "3bfda1a9eb216292781e081d7154e01d65f2b5c3f0bc9611963a02ce07c8a49f",
+      "file_sha256": "6b59b2de62d240db0d9ec6cb0d0f24e6e7b55307464bef89fcb302442f3f1cda",
+      "retrieval_k": 100,
+      "hybrid_macro_recall_at_k_min": 0.9,
+      "hybrid_micro_recall_at_k_min": 0.9
+    },
+    "report": {
+      "path": "artifacts/apps_rg/c03/graph_skill_embeddings/graph_embedding_qualification.d10426272e04e63230877ec4ba7ffb92fab2e17c3f33ddf780b2a8aaa530380a.json",
+      "sha256": "d10426272e04e63230877ec4ba7ffb92fab2e17c3f33ddf780b2a8aaa530380a",
+      "file_sha256": "27e9d8b6715b61d3d597c352d2180ce81f16508dc04817877f6dd0b88a8be130",
+      "status": "PASS"
+    },
+    "metrics": {
+      "exact_macro_recall_at_100": 1.0,
+      "exact_micro_recall_at_100": 1.0,
+      "fact_vector_macro_recall_at_100": 0.7480519480519481,
+      "fact_vector_micro_recall_at_100": 0.7027027027027027,
+      "dense_macro_recall_at_100": 0.8917748917748918,
+      "dense_micro_recall_at_100": 0.918918918918919,
+      "hybrid_macro_recall_at_100": 0.9393939393939394,
+      "hybrid_micro_recall_at_100": 0.9459459459459459,
+      "authority_eligibility_accuracy": 1.0,
+      "exact_path_accuracy": 1.0,
+      "assertion_vector_parity": 1.0,
+      "stale_candidate_count": 0,
+      "orphan_candidate_count": 0,
+      "unauthorized_candidate_count": 0,
+      "authority_bypass_count": 0
+    },
+    "thresholds_lowered_after_run": false,
+    "qrels_used_as_ranking_features": false
+  },
+  "tests": {
+    "unique_focused_pytest_count": 118,
+    "unique_focused_pytest_failures": 0,
+    "runs": [
+      {
+        "scope": "new graph, corpus, projection, and qualification contracts",
+        "result": "14 passed in 0.67s"
+      },
+      {
+        "scope": "canonical ledger, graph health, zero-loss, and granularity regressions",
+        "result": "94 passed in 3.20s"
+      },
+      {
+        "scope": "materialized SQLite parity and selection invariants",
+        "result": "5 passed in 7.30s"
+      },
+      {
+        "scope": "SQLite schema and corruption constraints",
+        "result": "5 passed in 0.29s"
+      },
+      {
+        "scope": "Ruff on all changed Python",
+        "result": "PASS"
+      },
+      {
+        "scope": "compileall on new production and CLI modules",
+        "result": "PASS"
+      }
+    ],
+    "bounded_no_result_runs": [
+      "Combined materializer and constraint files exceeded the 30-second subprocess boundary.",
+      "The complete materializer file exceeded the 30-second subprocess boundary; focused parity tests passed."
+    ]
+  },
+  "production_source_change_inventory": [
+    ".gitattributes",
+    "apps_rg/config/c03_graph_health_policy.v2.json",
+    "apps_rg/evals/c03_graph_embedding_qualification.py",
+    "apps_rg/fact_inventory/c03_graph_authority_reconciliation.py",
+    "apps_rg/fact_inventory/c03_graph_kpi_health.py",
+    "apps_rg/fact_inventory/c03_skill_assertion_corpus.py",
+    "apps_rg/fact_inventory/c03_skill_embedding_builder.py",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "apps_rg/fact_inventory/master_skills_arsenal_ledger.py",
+    "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+    "apps_rg/runtime/graph_skill_embedding_projection.py",
+    "ops_scripts/apps_rg/build_c03_graph_skill_embeddings.py",
+    "ops_scripts/apps_rg/qualify_c03_graph_skill_embeddings.py",
+    "ops_scripts/apps_rg/reconcile_c03_graph_authority.py"
+  ],
+  "scope_guards": {
+    "adg_invoked": false,
+    "qwen_or_vllm_invoked": false,
+    "live_provider_invoked": false,
+    "network_model_download": false,
+    "target_path": "C:/Git/apps_rg",
+    "target_state": "ABSENT",
+    "target_created": false,
+    "push_performed": false,
+    "pull_request_opened": false,
+    "merge_performed": false
+  },
+  "completion_markers": [
+    "C03_GRAPH_DATA_READY",
+    "C03_ASSERTION_CORPUS_PASS",
+    "GRAPH_EMBEDDINGS_QUALIFIED",
+    "GRAPH_SKILL_EMBEDDING_PARITY_PASS"
+  ],
+  "next_wave": "S2",
+  "unresolved_risks": [
+    "The independent operational control-plane panel remains UNKNOWN until S2 produces current-run evidence.",
+    "Source certification, approved merge, and exact main refreeze are still required before target creation."
+  ],
+  "receipt_sha256": "8c4c9aae5a18ba34efd84e2de9f44717527b5742b7fa410418eaed093310e4ef"
+}

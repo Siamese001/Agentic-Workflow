@@ -18,22 +18,22 @@ Finish the source Apps RG product, certify one exact source baseline, and then c
 
 FORMAT_VERSION: simplified-plan-format-v1
 PLAN_STATUS: IN_PROGRESS
-CURRENT_WAVE: S1
+CURRENT_WAVE: S2
 BLOCKED_WAVE: NONE
-LAST_COMPLETED_WAVE: S0
+LAST_COMPLETED_WAVE: S1
 LAST_UPDATED: 2026-07-19
 STARTING_BRANCH: origin/main
 STARTING_COMMIT: fc7039821148151e08459f8473cc8428df39bc8b
 STARTING_TREE: 8e3fa68878aef4224f781335850a9eab7ff2c6c9
 SOURCE_BRANCH: codex-apps-rg-source-refreeze
-SOURCE_HEAD: aefcad36d2681761729349700749234a129d3c44
-SOURCE_TREE: 64b273e45a10e84bf75077b16196d7e8e688e195
+SOURCE_HEAD: 716168da9413edf17df658f8a9bc8251c4be6f72
+SOURCE_TREE: 2213f28d835c1b7094add47b30f56e343923cdae
 SOURCE_REFREEZE_COMPLETE: false
 STANDALONE_TARGET: ABSENT
 BLOCKER: NONE
 S0_STATUS: PASS
-S1_STATUS: READY
-S2_STATUS: NOT_STARTED
+S1_STATUS: PASS
+S2_STATUS: READY
 T1_STATUS: NOT_STARTED
 T2_STATUS: NOT_STARTED
 SOURCE_IMPLEMENTATION_AUTHORIZED: true
@@ -68,8 +68,8 @@ Repository-format `W#` aliases are execution ordinals only; the directive wave I
 | Wave | Phase IDs | Focus | Est. Tokens | Assumptions | Status | Success Criteria |
 |---|---|---|---|---|---|---|
 | W1 | S0 | Source ingestion and active-config contracts | Bounded | Approved fixed contracts | PASS | `artifacts/apps_rg_source_refreeze/s0/implementation-20260719-fixed-contracts/sr0_implementation_receipt.json` |
-| W2 | S1 | Canonical graph quality, atomic assertions, BGE-M3 qualification and projection | Bounded | S0 PASS | READY | Required S1 markers pass without lowered thresholds |
-| W3 | S2 | Embedding-enabled source 11-lane certification and source refreeze | Bounded | S1 PASS | NOT STARTED | Exact source refreeze follows required source certification |
+| W2 | S1 | Canonical graph quality, atomic assertions, BGE-M3 qualification and projection | Bounded | S0 PASS | PASS | `artifacts/apps_rg_source_refreeze/s1/graph-assertion-embeddings-20260719/s1_implementation_receipt.json` |
+| W3 | S2 | Embedding-enabled source 11-lane certification and source refreeze | Bounded | S1 PASS | READY | Exact source refreeze follows required source certification |
 | W4 | T1 | Create compact standalone repository and port certified product | Bounded | Approved source merge and exact refreeze | NOT STARTED | Certified product is ported without source or legacy-spine dependency |
 | W5 | T2 | Standalone serial, cache, wheel, independence, and DAG certification | Bounded | T1 parity PASS | NOT STARTED | Standalone product passes all required certification markers |
 
@@ -78,8 +78,8 @@ Repository-format `W#` aliases are execution ordinals only; the directive wave I
 | Phase | Required outcome | Status |
 |---|---|---|
 | S0 | `SR0_SOURCE_CONTRACTS_PASS` | PASS |
-| S1 | Graph data, assertion corpus, BGE-M3 qualification, vector parity | READY |
-| S2 | Source serial 11/11, Apps Eval/L5, root X3/UWG, product certification | NOT STARTED |
+| S1 | Graph data, assertion corpus, BGE-M3 qualification, vector parity | PASS |
+| S2 | Source serial 11/11, Apps Eval/L5, root X3/UWG, product certification | READY |
 | T1 | Standalone creation and exact graph/assertion/vector parity | NOT STARTED |
 | T2 | Standalone serial/DAG E2E, cache/patch, promotion, wheel, independence | NOT STARTED |
 
@@ -105,7 +105,7 @@ Completion marker: `SR0_SOURCE_CONTRACTS_PASS`
 
 ## Wave S1 - Graph And Assertion Embeddings
 
-Status: READY
+Status: PASS
 
 Required outcomes:
 
@@ -125,9 +125,19 @@ Completion markers:
 
 Failure marker: `GRAPH_EMBEDDING_QUALIFICATION_FAILED`
 
+Implementation commits:
+
+- `3755f5e17c` - executable graph, assertion, and projection contracts.
+- `0a86105c2c` - executable qualification contract.
+- `dd0d9fa46c` - canonical graph and assertion-authority closure.
+- `f6fff16401` - pinned BGE-M3 projection and qualification artifacts.
+- `716168da94` - exact-byte Git preservation for all digest-bound inputs.
+
+Receipt: `artifacts/apps_rg_source_refreeze/s1/graph-assertion-embeddings-20260719/s1_implementation_receipt.json`
+
 ## Wave S2 - Source Certification And Refreeze
 
-Status: NOT STARTED
+Status: READY
 
 Run the mandatory embedding-enabled serial lane order:
 
@@ -192,8 +202,8 @@ Completion markers:
 |---|---|---|
 | DoD-1 | Both source snapshot contracts are implemented and deterministic | PASS |
 | DoD-2 | Runtime snapshot reads have zero writes, network, provider, graph, Redis, or subprocess side effects | PASS |
-| DoD-3 | Canonical graph data is ready with exact canonical/SQLite parity | TODO |
-| DoD-4 | Every eligible atomic assertion has exactly one qualified BGE-M3 vector | TODO |
+| DoD-3 | Canonical graph data is ready with exact canonical/SQLite parity | PASS |
+| DoD-4 | Every eligible atomic assertion has exactly one qualified BGE-M3 vector | PASS |
 | DoD-5 | Source Apps RG passes embedding-enabled serial 11/11 certification | TODO |
 | DoD-6 | Approved source changes are merged and one exact source commit/tree is frozen | TODO |
 | DoD-7 | Compact standalone repository has zero source-repository dependency | TODO |
