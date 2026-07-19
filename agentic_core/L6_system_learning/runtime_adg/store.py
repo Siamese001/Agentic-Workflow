@@ -11,25 +11,30 @@ from __future__ import annotations
 
 import json
 import logging
-import tempfile
 from pathlib import Path
 
+from tqdm import tqdm
+
 from agentic_core.L0_routing.config.path_constants import L4_APPROVED_FOLDERS, get_validated_project_root
+from agentic_core.L6_system_learning.stores.index_file_lock import (
+    atomic_write_json_mapping,
+    runtime_adg_index_lock,
+)
+from agentic_core.L6_system_learning.stores.version_store import (
+    FileBackedVersionStore,
+    InMemoryVersionStore,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+
 from .snapshot import (
     RuntimeADGEdge,
     RuntimeADGNode,
     RuntimeADGSnapshot,
     create_runtime_adg_snapshot,
 )
-from agentic_core.L6_system_learning.stores.version_store import (
-    FileBackedVersionStore,
-    InMemoryVersionStore,
-)
-from tqdm import tqdm
 
 emit_determinism_digest("runtime_adg_store", "runtime_adg_store_digest")
 record_execution_trace("runtime_adg_store", "runtime_adg_store_trace")
@@ -122,14 +127,29 @@ class FileBackedRuntimeADGStore:
         except (OSError, RuntimeError, TypeError, ValueError) as exc:
             raise ValueError(f"L4 compliance validation failed for {self._base_dir}: {exc}") from exc
 
-    def _load_trace_index(self) -> dict[str, str]:
+    def _load_trace_index(self, *, fail_closed: bool = False) -> dict[str, str]:
         if self._trace_index_path.exists():
             try:
                 raw_any = json.loads(self._trace_index_path.read_text(encoding="utf-8"))
                 if not isinstance(raw_any, dict):
+                    if fail_closed:
+                        raise ValueError(
+                            f"malformed runtime ADG trace index {self._trace_index_path}: expected an object"
+                        )
                     return {}
-                raw: dict[str, str] = {str(k): str(v) for k, v in raw_any.items()}
+                if not all(isinstance(k, str) and isinstance(v, str) for k, v in raw_any.items()):
+                    if fail_closed:
+                        raise ValueError(
+                            f"malformed runtime ADG trace index {self._trace_index_path}: "
+                            "keys and values must be strings"
+                        )
+                    return {}
+                raw: dict[str, str] = dict(raw_any)
             except (json.JSONDecodeError, OSError) as exc:
+                if fail_closed:
+                    raise ValueError(
+                        f"malformed runtime ADG trace index {self._trace_index_path}: {exc}"
+                    ) from exc
                 logger.warning(
                     "Failed to load runtime ADG trace index %s: %s",
                     self._trace_index_path,
@@ -148,19 +168,8 @@ class FileBackedRuntimeADGStore:
             return cleaned
         return {}
 
-    def _save_trace_index(self) -> None:
-        self._trace_index_path.parent.mkdir(parents=True, exist_ok=True)
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            dir=self._trace_index_path.parent,
-            prefix=self._trace_index_path.name + ".",
-            suffix=".tmp",
-            delete=False,
-        ) as handle:
-            json.dump(self._trace_index, handle, indent=2, sort_keys=True)
-            tmp_name = handle.name
-        Path(tmp_name).replace(self._trace_index_path)
+    def _save_trace_index(self, index: dict[str, str]) -> None:
+        atomic_write_json_mapping(self._trace_index_path, index)
 
     def persist(
         self,
@@ -197,25 +206,31 @@ class FileBackedRuntimeADGStore:
 
         version_id = self._version_store.commit_change_package(snapshot)
 
-        # Unconditional index update. Only skip genuinely-empty keys to avoid
-        # reintroducing the stale-""-key pathology this guardrail was built to kill.
-        dirty = False
-        if snapshot.trace_id:
-            if self._trace_index.get(snapshot.trace_id) != version_id:
-                self._trace_index[snapshot.trace_id] = version_id
-                dirty = True
-        if snapshot.snapshot_id:
-            if self._trace_index.get(snapshot.snapshot_id) != version_id:
-                self._trace_index[snapshot.snapshot_id] = version_id
-                dirty = True
-        if dirty:
-            self._save_trace_index()
+        # Merge under the same lock used by recovery tooling. A store may have
+        # been initialized before another writer recovered or extended the
+        # index, so its cached mapping is never publication authority.
+        with runtime_adg_index_lock(self._base_dir):
+            current_index = self._load_trace_index(fail_closed=True)
+            updated_index = dict(current_index)
+            dirty = False
+            if snapshot.trace_id:
+                if updated_index.get(snapshot.trace_id) != version_id:
+                    updated_index[snapshot.trace_id] = version_id
+                    dirty = True
+            if snapshot.snapshot_id:
+                if updated_index.get(snapshot.snapshot_id) != version_id:
+                    updated_index[snapshot.snapshot_id] = version_id
+                    dirty = True
+            if dirty:
+                self._save_trace_index(updated_index)
+            self._trace_index = updated_index
         return version_id
 
     def get_by_version(self, version_id: str) -> bytes | None:
         return self._version_store.get(version_id)
 
     def get_version_id_for_trace(self, trace_id: str) -> str | None:
+        self._trace_index = self._load_trace_index()
         return self._trace_index.get(trace_id)
 
     def load_snapshot(self, version_id: str) -> RuntimeADGSnapshot | None:

@@ -1,0 +1,146 @@
+{
+  "schema_version": "codex-run-receipt/v1",
+  "run_id": "apps-rg-c03-adg-certification-repair-b8d4f1-20260719T021145Z",
+  "generated_at": "2026-07-19T02:11:45Z",
+  "repo": {
+    "root": "C:\\Git\\Agentic-Workflow-FRESH",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+    "branch": "codex-adg-certification-repair",
+    "head": "e46d8d37b26f8c3a100c857bc19b09f3fb49f13b",
+    "dirty_before": false,
+    "dirty_after": true
+  },
+  "scope": {
+    "request": "Restore certifiable ADG snapshot, receipt, handoff, and runtime-index evidence required before apps_rg C0.3 graph-health and embedding closure.",
+    "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+    "files_changed": [
+      ".github/workflows/adg-hardening-contracts.yml",
+      "agentic_core/L6_system_learning/runtime_adg/store.py",
+      "agentic_core/L6_system_learning/stores/index_file_lock.py",
+      "agentic_core/L6_system_learning/stores/version_store.py",
+      "artifacts/codex/run_receipts/apps-rg-c03-adg-certification-repair-b8d4f1-20260719T021145Z.json",
+      "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "artifacts/governance/boundary_receipts/20260719_apps-rg-c03-runtime-index-synchronization-b8d4f1.json",
+      "artifacts/governance/core_addition_author_gate/apps-rg-c03-graph-health-embedding-closure-b8d4f1.json",
+      "artifacts/governance/session_state.json",
+      "plans/apps-rg-c03-graph-health-embedding-closure-b8d4f1.md",
+      "tests/unit/system_learning/runtime_adg/test_index_file_lock.py",
+      "tests/unit/system_learning/runtime_adg/test_store_guardrail.py",
+      "tests/unit/tools/generate/test_gate_manifest_validation_recording.py",
+      "tests/unit/tools/generate/test_generate_full_adg_failfast.py",
+      "tests/unit/tools/generate/test_infra_wiring_views.py",
+      "tests/unit/tools/generate/test_materialized_views_phase_a.py",
+      "tests/unit/tools/runtime_adg/test_backfill_trace_index.py",
+      "tests/unit/tools_adg/test_run_full_adg_audit.py",
+      "tools/adg/run_full_adg_audit.py",
+      "tools/generate/_gate_manifest.py",
+      "tools/generate/generate_full_adg.py",
+      "tools/generate/infra_wiring_views.py",
+      "tools/generate/materialized_views/phase_a_path_authority.py",
+      "tools/runtime_adg/backfill_trace_index.py"
+    ]
+  },
+  "execution": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": "python -m pytest tests/unit/tools/generate/test_generate_full_adg_failfast.py tests/unit/tools/generate/test_gate_manifest_validation_recording.py tests/unit/tools/generate/test_infra_wiring_views.py tests/unit/tools/generate/test_materialized_views_phase_a.py tests/unit/tools_adg/test_run_full_adg_audit.py tests/unit/tools/runtime_adg/test_backfill_trace_index.py tests/unit/system_learning/runtime_adg/test_index_file_lock.py tests/unit/system_learning/runtime_adg/test_store_guardrail.py tests/unit/ops_scripts/ci/test_infra_wiring_scan.py::TestScanDirectory::test_apps_rg_p0_infra_consumers_use_sanctioned_adapters -p no:xdist -p no:testmon -q --timeout=120",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m pytest tests/unit/tools/runtime_adg/test_backfill_trace_index.py tests/unit/system_learning/runtime_adg/test_index_file_lock.py tests/unit/system_learning/runtime_adg/test_store_guardrail.py tests/unit/tools_adg/test_run_full_adg_audit.py::test_exact_generation_manifest_must_be_newer_than_wrapper_spawn -p no:xdist -p no:testmon -q --timeout=120",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_plan_format_compliance.py --strict --paths plans/apps-rg-c03-graph-health-embedding-closure-b8d4f1.md",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_agentic_core_addition.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python ops_scripts/ci/check_adg_metric_registry.py; python ops_scripts/ci/check_adg_writer_authority.py",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python -m ruff check agentic_core/L6_system_learning/stores/index_file_lock.py agentic_core/L6_system_learning/stores/version_store.py agentic_core/L6_system_learning/runtime_adg/store.py tools/adg/run_full_adg_audit.py tools/runtime_adg/backfill_trace_index.py --select F401,I,S",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      },
+      {
+        "command": "python scripts/governance/verify_codex_run_receipt.py artifacts/codex/run_receipts/apps-rg-c03-adg-certification-repair-b8d4f1-20260719T021145Z.json",
+        "cwd": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-adg-certification-repair",
+        "exit_code": 0,
+        "status": "PASS"
+      }
+    ],
+    "fallbacks": [
+      {
+        "route": "GitKraken MCP and gk CLI",
+        "reason": "GitKraken MCP was unavailable and the gk CLI was not usable in this Windows session.",
+        "substitute": "Bounded raw git and gh commands with exact-head checks, match-head merge protection, exact origin/main ancestry proof, and the mandatory codex_main_closeout apply/check chain."
+      }
+    ]
+  },
+  "verification": {
+    "checks": [
+      {
+        "name": "final serial ADG repair cohort",
+        "status": "PASS",
+        "evidence": "488 passed with 2 pre-existing Pydantic deprecation warnings in 245.64 seconds."
+      },
+      {
+        "name": "Windows runtime-index and provenance cohort",
+        "status": "PASS",
+        "evidence": "56 passed in 13.95 seconds; race tests signal only after an actual failed OS lock acquisition, and the nanosecond manifest-freshness regression runs on Windows."
+      },
+      {
+        "name": "manifest freshness defect regression",
+        "status": "PASS",
+        "evidence": "An earlier noncanonical overlapping run exposed float timestamp rounding that could accept a pre-spawn manifest. Integer time_ns/st_mtime_ns comparison fixed it; the final serial cohort and Windows job both passed."
+      },
+      {
+        "name": "core addition author gate",
+        "status": "PASS",
+        "evidence": "GOV-3 PASS: 3 changed core paths scanned, 0 findings, 0 receipt errors; all six proof refs bind SHA-256 ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5."
+      },
+      {
+        "name": "strict plan validation",
+        "status": "PASS",
+        "evidence": "0 FAIL, 0 ERROR, 0 WARN; D0.1 and D0.2 are DONE and D0.3 is IN_PROGRESS."
+      },
+      {
+        "name": "Codex run receipt schema",
+        "status": "PASS",
+        "evidence": "verify_codex_run_receipt.py accepted this task-specific codex-run-receipt/v1 document."
+      },
+      {
+        "name": "boundary, compile, lint, YAML, and ADG contracts",
+        "status": "PASS",
+        "evidence": "Boundary receipt allowed generic infrastructure; production modules compiled; scoped F401/I/S passed; workflow YAML parsed with both jobs; metric registry validated 9 contracts; SQLite writer authority passed."
+      },
+      {
+        "name": "unchanged static-baseline comparison",
+        "status": "PASS",
+        "evidence": "Changed core paths passed scoped static checks; the unrelated apps_rg l0_binding classification failure was reproduced unchanged on origin/main."
+      },
+      {
+        "name": "certified graph dependency",
+        "status": "PASS",
+        "evidence": "This D0 repair is the prerequisite for regeneration. Layer-gravity cannot execute until the repaired branch produces the certified snapshot; changed imports remain same-layer L6 and passed boundary scans."
+      }
+    ]
+  }
+}

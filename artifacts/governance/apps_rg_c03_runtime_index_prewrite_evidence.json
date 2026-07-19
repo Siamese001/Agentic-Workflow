@@ -1,0 +1,52 @@
+{
+  "artifact_type": "CoreAdditionProofBundle",
+  "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+  "generated_at": "2026-07-19T02:11:45Z",
+  "classification": "GENERIC_INFRASTRUCTURE",
+  "changed_paths": [
+    "agentic_core/L6_system_learning/stores/index_file_lock.py",
+    "agentic_core/L6_system_learning/stores/version_store.py",
+    "agentic_core/L6_system_learning/runtime_adg/store.py"
+  ],
+  "authority": {
+    "user_authorization": "The user authorized the expanded repository dependency lane with Expand and directed implementation, testing, commit, PR, and publication.",
+    "scope": "Generic L6 file-backed index synchronization only; no app identity, semantic policy, threshold, route, provider, or Exit behavior.",
+    "reason": "Independent adversarial review proved repair-only compare-and-swap could not prevent stale preinitialized writers or same-instance readers from erasing recovered or concurrent bindings."
+  },
+  "design_invariants": [
+    "Version and trace index writers share one bounded cross-process OS lock with recovery tooling.",
+    "Every durable writer reloads and validates the current mapping and persists an operation-local merged mapping under the lock.",
+    "Canonical index paths remain present during atomic replacement; recovery never renames them into a missing-path claim window.",
+    "Process exit releases the persistent sidecar lock without stale-file cleanup or split-lock recreation.",
+    "The mechanism is app-neutral and remains inside L6 system-learning storage."
+  ],
+  "verification": {
+    "integrated_adg_repair_workflow": "PASS: 488 passed, 2 pre-existing Pydantic deprecation warnings, 245.64 seconds in the final serial exact-CI cohort.",
+    "windows_runtime_index_job": "PASS: 56 passed, 13.95 seconds using the exact windows-latest command, including the nanosecond manifest-freshness regression.",
+    "independent_backfill_review": "PASS: no remaining functional/actionable defects after adversarial review.",
+    "independent_proof_review": "PASS: pointer-envelope binding, receipt/generation status policy, malformed-row rejection, and diagnostic-only publication were independently re-audited; all findings are closed with dedicated regressions.",
+    "core_static_scoped": "PASS: 4 passed; one unrelated apps_rg binding-classification baseline test deselected after proving it also fails unchanged origin/main.",
+    "no_app_literal_scan": "PASS: zero forbidden app literals across all three changed core paths.",
+    "ruff_core": "PASS: F401, I, and S checks on all three changed core paths.",
+    "compileall": "PASS: all changed production Python modules compile.",
+    "plan_format": "PASS: 0 FAIL, 0 ERROR, 0 WARN in strict mode.",
+    "adg_contracts": "PASS: metric registry has 9 valid contracts; SQLite writer authority passed."
+  },
+  "negative_controls": [
+    "Two preinitialized spawned version writers preserve both mappings.",
+    "A live version writer waits behind version-index recovery and merges the complete recovered map.",
+    "A live runtime writer waits behind trace recovery and preserves recovered plus new trace/snapshot bindings.",
+    "Same-instance readers cannot reset operation-local writer maps before save.",
+    "Lock contention times out, non-finite timeouts are rejected, and crash/process exit releases the lock.",
+    "Archive mismatch preflight with a missing version index causes no version or trace publication.",
+    "Ambiguous trace authority remains unresolved and is receipted without fabricated binding.",
+    "Trace-less snapshots retain recoverable snapshot-ID aliases.",
+    "Integer nanosecond freshness comparison rejects pre-spawn generation manifests without float-rounding authorization on Windows."
+  ],
+  "known_baseline_constraints": [
+    "The full no-app-specific-literals test has one unrelated unchanged origin/main failure for apps_rg/runtime/bindings/l0_binding.py classification.",
+    "The ADG layer-gravity ratchet cannot run in this repair worktree until D0 restores a certified snapshot; changed imports are same-layer L6 and pass F401/I plus static boundary scans.",
+    "Cooperative locking requires long-running processes on old code to be quiesced or restarted before production recovery."
+  ],
+  "verdict": "PASS"
+}

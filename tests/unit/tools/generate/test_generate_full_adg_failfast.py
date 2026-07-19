@@ -5,12 +5,13 @@ Tests the robustness of ADG generation by verifying that fail-fast
 conditions correctly abort generation when critical conditions are not met.
 """
 
+import ast
+import hashlib
+import json
 import sqlite3
 import sys
-import json
-import ast
-from types import SimpleNamespace
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
@@ -424,6 +425,196 @@ class TestSealedOutputBundleWiring:
         assert call_names.count("emit_mandatory_adg_burndown_report") == 0
         assert call_names.count("emit_bcg_gate_adapter") == 0
         assert 'print_terminal=os.environ.get("ADG_SUPPRESS_TERMINAL_SUMMARY") != "1"' in source
+
+
+class TestGenerationManifestFinalization:
+    """Regression coverage for complete same-run provenance on every exit path."""
+
+    def test_git_provenance_fallback_is_bounded_and_timeout_safe(self, monkeypatch):
+        from tools.generate import generate_full_adg as generator
+
+        check_output = Mock(
+            side_effect=generator._subprocess.TimeoutExpired(
+                cmd=["git", "rev-parse", "HEAD"],
+                timeout=30,
+            )
+        )
+        monkeypatch.setattr(generator._subprocess, "check_output", check_output)
+
+        assert generator._git_rev_parse("HEAD") == ""
+        check_output.assert_called_once_with(
+            ["git", "rev-parse", "HEAD"],
+            cwd=generator.ROOT,
+            text=True,
+            stderr=generator._subprocess.DEVNULL,
+            timeout=30,
+        )
+
+    @staticmethod
+    def _snapshot(
+        path: Path,
+        *,
+        attested: int = 0,
+        registry_edges: int = 2,
+        commit_sha: str | None = None,
+        repo_state_hash: str | None = None,
+    ) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        con = sqlite3.connect(str(path))
+        try:
+            con.execute("CREATE TABLE edges (id INTEGER PRIMARY KEY, bucket TEXT)")
+            for edge_id in range(registry_edges):
+                con.execute(
+                    "INSERT INTO edges(id, bucket) VALUES (?, 'registry')",
+                    (edge_id + 1,),
+                )
+            con.execute(
+                "CREATE TABLE v_runtime_proof (static_edge_id INTEGER, attesting_trace_count INTEGER)"
+            )
+            for edge_id in range(attested):
+                con.execute(
+                    "INSERT INTO v_runtime_proof(static_edge_id, attesting_trace_count) VALUES (?, 1)",
+                    (edge_id + 1,),
+                )
+            if commit_sha is not None or repo_state_hash is not None:
+                con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+                con.executemany(
+                    "INSERT INTO meta(key, value) VALUES (?, ?)",
+                    [
+                        ("commit_sha", commit_sha),
+                        ("repo_state_hash", repo_state_hash),
+                    ],
+                )
+            con.commit()
+        finally:
+            con.close()
+        return path
+
+    def test_normal_finalization_records_snapshot_and_repo_metadata(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.generate import generate_full_adg as generator
+        from tools.generate._gate_manifest import GateManifestRecorder
+
+        run_id = "07182026_2000"
+        artifacts = tmp_path / "artifacts" / "adg"
+        snapshot = self._snapshot(
+            artifacts / f"adg_indexed_{run_id}.sqlite",
+            attested=0,
+            registry_edges=2,
+            commit_sha="snapshot-commit",
+            repo_state_hash="snapshot-tree-hash",
+        )
+        recorder = GateManifestRecorder(artifacts, run_id)
+        monkeypatch.setattr(
+            generator,
+            "_git_rev_parse",
+            lambda *args: "moving-head" if args == ("HEAD",) else "moving-tree-hash",
+        )
+
+        manifest_path = generator._finalize_generation_manifest(
+            recorder=recorder,
+            adg_artifacts_dir=artifacts,
+            run_id=run_id,
+            sqlite_path=snapshot,
+            generation_exit_code=0,
+            p0_status="pass",
+        )
+
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        assert payload["sqlite_path"] == str(snapshot)
+        assert payload["snapshot_path"] == str(snapshot)
+        assert payload["snapshot_sha256"] == hashlib.sha256(snapshot.read_bytes()).hexdigest()
+        assert payload["commit_sha"] == "snapshot-commit"
+        assert payload["repo_state_hash"] == "snapshot-tree-hash"
+        assert payload["registry_bucket_edge_count"] == 2
+        assert payload["runtime_proof_status"] == "view_present_zero_attested"
+        assert payload["runtime_attested_edge_count"] == 0
+
+    def test_guarded_system_exit_finalizes_manifest_before_propagating(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.generate import generate_full_adg as generator
+
+        run_id = "07182026_2001"
+        artifacts = tmp_path / "artifacts" / "adg"
+        snapshot = artifacts / f"adg_indexed_{run_id}.sqlite"
+        monkeypatch.setattr(generator, "ROOT", tmp_path)
+        monkeypatch.setenv("ADG_RUN_ID", run_id)
+        monkeypatch.setattr(sys, "argv", ["generate_full_adg.py", "--no-zip", "--no-reports"])
+        monkeypatch.setattr(
+            generator,
+            "_git_rev_parse",
+            lambda *args: "guarded-commit" if args == ("HEAD",) else "guarded-tree",
+        )
+        monkeypatch.setattr(generator, "_seal_early_failure_terminal", Mock())
+
+        def _fail_after_snapshot() -> None:
+            self._snapshot(snapshot, attested=1, registry_edges=3)
+            raise SystemExit(17)
+
+        monkeypatch.setattr(generator, "_check_mcp_config_drift", _fail_after_snapshot)
+
+        with pytest.raises(SystemExit) as exc_info:
+            generator.main()
+
+        assert exc_info.value.code == 17
+        manifest_path = artifacts / f"adg_generation_manifest_{run_id}.json"
+        gate_manifest_path = artifacts / f"adg_gate_invocation_manifest_{run_id}.json"
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        gate_payload = json.loads(gate_manifest_path.read_text(encoding="utf-8"))
+        assert payload["generation_exit_code"] == 17
+        assert payload["p0_status"] == "fail"
+        assert payload["snapshot_path"] == str(snapshot)
+        assert payload["snapshot_sha256"] == hashlib.sha256(snapshot.read_bytes()).hexdigest()
+        assert payload["commit_sha"] is None
+        assert payload["repo_state_hash"] is None
+        assert payload["certification_status"] == "failed"
+        assert payload["registry_bucket_edge_count"] == 3
+        assert payload["runtime_proof_status"] == "attested"
+        assert payload["runtime_attested_edge_count"] == 1
+        assert any(
+            row["name"] == "mcp_config_drift" and row["status"] == "fail"
+            for row in gate_payload["failed_gates"]
+        )
+
+    def test_missing_snapshot_provenance_never_falls_back_to_live_git(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        from tools.generate import generate_full_adg as generator
+        from tools.generate._gate_manifest import GateManifestRecorder
+
+        run_id = "07182026_2002"
+        artifacts = tmp_path / "artifacts" / "adg"
+        snapshot = self._snapshot(
+            artifacts / f"adg_indexed_{run_id}.sqlite",
+            attested=1,
+            registry_edges=2,
+        )
+        recorder = GateManifestRecorder(artifacts, run_id)
+        live_git = Mock(side_effect=AssertionError("live Git must not supply snapshot provenance"))
+        monkeypatch.setattr(generator, "_git_rev_parse", live_git)
+
+        manifest_path = generator._finalize_generation_manifest(
+            recorder=recorder,
+            adg_artifacts_dir=artifacts,
+            run_id=run_id,
+            sqlite_path=snapshot,
+            generation_exit_code=0,
+            p0_status="pass",
+        )
+
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        assert payload["commit_sha"] is None
+        assert payload["repo_state_hash"] is None
+        assert payload["certification_status"] == "failed"
+        live_git.assert_not_called()
 
 
 class TestDispatcherResultsPathResolution:

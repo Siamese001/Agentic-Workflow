@@ -546,9 +546,100 @@ def _git_rev_parse(*args: str) -> str:
             cwd=ROOT,
             text=True,
             stderr=_subprocess.DEVNULL,
+            timeout=30,
         ).strip()
-    except (_subprocess.CalledProcessError, FileNotFoundError, OSError):
+    except (
+        _subprocess.CalledProcessError,
+        _subprocess.TimeoutExpired,
+        FileNotFoundError,
+        OSError,
+    ):
         return ""
+
+
+def _registry_bucket_edge_count(sqlite_path: Path) -> int:
+    """Count registry-bucket edges without granting write access to the snapshot."""
+    import sqlite3
+
+    try:
+        con = sqlite3.connect(sqlite_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+    except sqlite3.Error:
+        return 0
+    try:
+        columns = {str(row[1]) for row in con.execute("PRAGMA table_info(edges)").fetchall()}
+        if "bucket" not in columns:
+            return 0
+        row = con.execute("SELECT COUNT(*) FROM edges WHERE bucket = 'registry'").fetchone()
+        return int(row[0]) if row is not None else 0
+    except sqlite3.Error:
+        return 0
+    finally:
+        con.close()
+
+
+def _snapshot_provenance(sqlite_path: Path) -> tuple[str | None, str | None]:
+    """Read the scan provenance embedded in the exact immutable snapshot."""
+    import sqlite3
+
+    try:
+        con = sqlite3.connect(sqlite_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+    except sqlite3.Error:
+        return None, None
+    try:
+        rows = con.execute(
+            "SELECT key, value FROM meta WHERE key IN ('commit_sha', 'repo_state_hash')"
+        ).fetchall()
+        metadata = {str(key): str(value) for key, value in rows if value}
+        return metadata.get("commit_sha"), metadata.get("repo_state_hash")
+    except sqlite3.Error:
+        return None, None
+    finally:
+        con.close()
+
+
+def _finalize_generation_manifest(
+    *,
+    recorder: Any,
+    adg_artifacts_dir: Path,
+    run_id: str,
+    sqlite_path: Path | None,
+    generation_exit_code: int,
+    p0_status: str,
+) -> Path:
+    """Finalize complete same-run metadata for both normal and guarded exits."""
+    from tools.generate._gate_manifest import (  # noqa: PLC0415
+        runtime_proof_from_sqlite,
+        seal_sqlite_snapshot,
+    )
+
+    snapshot = Path(sqlite_path) if sqlite_path is not None and Path(sqlite_path).is_file() else None
+    if snapshot is not None:
+        try:
+            seal_sqlite_snapshot(snapshot)
+        except (OSError, TypeError, ValueError) as exc:
+            recorder.record_validation_gate(
+                "snapshot_seal",
+                status="fail",
+                message=str(exc),
+            )
+            snapshot = None
+    runtime_status, runtime_count = (
+        runtime_proof_from_sqlite(snapshot) if snapshot is not None else ("snapshot_unreadable", 0)
+    )
+    registry_count = _registry_bucket_edge_count(snapshot) if snapshot is not None else 0
+    snapshot_commit, snapshot_tree = _snapshot_provenance(snapshot) if snapshot is not None else (None, None)
+    recorder.finalize(
+        sqlite_path=snapshot,
+        generation_exit_code=generation_exit_code,
+        runtime_proof_status=runtime_status,
+        runtime_attested_edge_count=runtime_count,
+        registry_bucket_edge_count=registry_count,
+        commit_sha=snapshot_commit,
+        repo_state_hash=snapshot_tree,
+        p0_status=p0_status,
+    )
+
+    return adg_artifacts_dir / f"adg_generation_manifest_{run_id}.json"
 
 
 from agentic_core.adg.analysis.CanonicalSnapshot import (  # noqa: E402
@@ -2517,7 +2608,6 @@ def main() -> None:
     # call site reads the module-level singleton via current_recorder().
     from tools.generate._gate_manifest import (  # noqa: PLC0415
         GateManifestRecorder,
-        runtime_proof_from_sqlite,
         set_current_recorder,
     )
 
@@ -2562,6 +2652,25 @@ def main() -> None:
         )
 
     def _seal_guarded_failure(stage: str, exit_code: int, detail: str) -> None:
+        sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
+        try:
+            _finalize_generation_manifest(
+                recorder=_recorder,
+                adg_artifacts_dir=adg_artifacts_dir,
+                run_id=ts,
+                sqlite_path=sqlite_candidate if sqlite_candidate.is_file() else None,
+                generation_exit_code=exit_code,
+                p0_status="fail",
+            )
+        except (
+            OSError,
+            TypeError,
+            ValueError,
+        ) as manifest_exc:
+            print(
+                f"[ADG] ERROR: guarded manifest finalization failed: {manifest_exc}",
+                file=sys.stderr,
+            )
         if os.environ.get("ADG_DEFER_OUTPUT_BUNDLE_TO_WRAPPER") == "1":
             print(
                 f"[ADG] deferred output-bundle seal to audit wrapper after {stage}: {detail}",
@@ -2777,12 +2886,6 @@ def main() -> None:
         publish_candidate: bool = True,
     ) -> int:
         sqlite_candidate = adg_artifacts_dir / f"adg_indexed_{ts}.sqlite"
-        rt_status, rt_count = ("view_absent", 0)
-        try:
-            if sqlite_candidate.exists():
-                rt_status, rt_count = runtime_proof_from_sqlite(sqlite_candidate)
-        except Exception:  # noqa: BLE001 — manifest emit must never crash main()
-            pass
         # ADR-081 plane 2: quick manifest before manifest finalize (certification only).
         if (
             run_plane2
@@ -2807,11 +2910,12 @@ def main() -> None:
             if _p2_rc != 0 and gen_rc == 0:
                 gen_rc = _p2_rc
         try:
-            _recorder.finalize(
-                sqlite_path=sqlite_candidate if sqlite_candidate.exists() else None,
+            _finalize_generation_manifest(
+                recorder=_recorder,
+                adg_artifacts_dir=adg_artifacts_dir,
+                run_id=ts,
+                sqlite_path=sqlite_candidate if sqlite_candidate.is_file() else None,
                 generation_exit_code=gen_rc,
-                runtime_proof_status=rt_status,
-                runtime_attested_edge_count=rt_count,
                 p0_status=p0_status,
             )
         except Exception as _e:  # noqa: BLE001

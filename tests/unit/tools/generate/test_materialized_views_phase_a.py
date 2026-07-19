@@ -7,12 +7,25 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, Edge
+from tools.generate import infra_wiring_views as infra_wiring
+from tools.generate.infra_wiring_views import materialize_infra_views
 from tools.generate.materialized_views.phase_a_path_authority import (
     _NON_DURABLE_ARTIFACT_HELPER_SITES,
     _NON_DURABLE_ARTIFACT_WRITE_SITES,
     _PHASE_A_TABLES,
     materialize_phase_a,
 )
+
+
+def _write_receipt_source(repo_root: Path, calls_by_line: dict[int, str]) -> None:
+    path = repo_root / "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    last_line = max(calls_by_line)
+    lines = ["# filler"] * last_line
+    for line_no, source in calls_by_line.items():
+        lines[line_no - 1] = source
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -50,8 +63,8 @@ def _create_minimal_db(tmp_path: Path, commit_sha: str = "abc123") -> Path:
             dst_id        INTEGER NOT NULL,
             relation_type TEXT NOT NULL,
             edge_kind     TEXT NOT NULL DEFAULT 'direct',
-            source_file   TEXT NOT NULL DEFAULT '',
-            line_no       INTEGER NOT NULL DEFAULT 0,
+            source_file   TEXT DEFAULT '',
+            line_no       INTEGER DEFAULT 0,
             symbol        TEXT NOT NULL DEFAULT '',
             semantic_type TEXT DEFAULT NULL,
             confidence    REAL DEFAULT 1.0,
@@ -153,8 +166,8 @@ def _edge(
     src: int,
     dst: int,
     rel: str,
-    source_file: str = "file.py",
-    line_no: int = 1,
+    source_file: str | None = "file.py",
+    line_no: int | None = 1,
     edge_kind: str = "direct",
     symbol: str = "",
     dynamic_resolution: str | None = None,
@@ -164,6 +177,64 @@ def _edge(
         "VALUES (?,?,?,?,?,?,?,?)",
         (src, dst, rel, edge_kind, source_file, line_no, symbol, dynamic_resolution),
     )
+
+
+def _persist_scanned_edges(db: Path, edges: list[Edge]) -> None:
+    """Persist scanner output without hand-authoring edge identity or call-site fields."""
+    names = sorted({name for edge in edges for name in (edge.from_name, edge.to_name)})
+    node_ids = {name: node_id for node_id, name in enumerate(names, start=1)}
+    conn = sqlite3.connect(str(db))
+    for name, node_id in node_ids.items():
+        if name.startswith("ADG::Module::"):
+            resolved_path = name.removeprefix("ADG::Module::")
+            _node(conn, node_id, name, "L_APP", resolved_path)
+        else:
+            symbol = name.removeprefix("ADG::Symbol::")
+            identity_kind = "external_module" if symbol == "sqlite3" else "external_symbol"
+            _node(
+                conn,
+                node_id,
+                name,
+                "external",
+                symbol,
+                entity_type="external",
+                identity_kind=identity_kind,
+            )
+    conn.executemany(
+        """
+        INSERT INTO edges(
+            src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol,
+            semantic_type, confidence, source_span_start, source_span_end,
+            source_span_line, source_span_column, target_span_start, target_span_end,
+            target_span_line, target_span_column, dynamic_resolution
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        """,
+        [
+            (
+                node_ids[edge.from_name],
+                node_ids[edge.to_name],
+                edge.relation_type,
+                edge.edge_kind,
+                edge.source_file,
+                edge.line_no,
+                edge.symbol,
+                edge.semantic_type,
+                edge.confidence,
+                edge.source_span_start,
+                edge.source_span_end,
+                edge.source_span_line,
+                edge.source_span_column,
+                edge.target_span_start,
+                edge.target_span_end,
+                edge.target_span_line,
+                edge.target_span_column,
+                edge.dynamic_resolution,
+            )
+            for edge in edges
+        ],
+    )
+    conn.commit()
+    conn.close()
 
 
 # ---------------------------------------------------------------------------
@@ -324,13 +395,82 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
         row = conn.execute(
-            "SELECT is_uwg_routed, severity FROM mv_write_sovereignty_paths "
-            "WHERE writer_file LIKE '%healer%'"
+            "SELECT is_uwg_routed, severity FROM mv_write_sovereignty_paths WHERE writer_file LIKE '%healer%'"
         ).fetchone()
         conn.close()
         assert row is not None
         assert row[0] == 1, "_wg.write_text MUST be UWG-routed (symbol-based detection)"
         assert row[1] == "ok", "is_uwg_routed=1 implies severity=ok, not warning"
+
+    @pytest.mark.parametrize(
+        ("write_statement", "remove_source", "expected_flagged"),
+        [
+            pytest.param("output.write_text('receipt')", False, False, id="exact-one-site"),
+            pytest.param(
+                "output.write_text('first'); output.write_text('second')",
+                False,
+                True,
+                id="same-line-two-sites",
+            ),
+            pytest.param("output.write_text('receipt')", True, True, id="missing-source"),
+        ],
+    )
+    def test_graph_health_receipt_authority_uses_real_scanner_edges_end_to_end(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        write_statement: str,
+        remove_source: bool,
+        expected_flagged: bool,
+    ) -> None:
+        """Scanner output and both SQL consumers agree on exact source authority."""
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        source_path = tmp_path / receipt_path
+        source_path.parent.mkdir(parents=True, exist_ok=True)
+        source_path.write_text(
+            f"import sqlite3\nfrom pathlib import Path\noutput = Path('receipt.json')\n{write_statement}\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+
+        scan = ADGStaticScanner(repo_root=tmp_path).scan_files([receipt_path])
+        receipt_edges = [
+            edge
+            for edge in scan.edges
+            if edge.relation_type == "writes_to"
+            and edge.source_file == receipt_path
+            and edge.symbol == "output.write_text"
+        ]
+        # scan_files currently deduplicates identical same-line edges. Persisting
+        # this real output proves the source AST, rather than synthetic ADG rows,
+        # supplies the missing column-level multiplicity authority.
+        assert len(receipt_edges) == 1
+
+        db = _create_minimal_db(tmp_path)
+        _persist_scanned_edges(db, scan.edges)
+        if remove_source:
+            source_path.unlink()
+
+        materialize_infra_views(db)
+        conn = sqlite3.connect(str(db))
+        infra_rows = conn.execute(
+            "SELECT write_line FROM v_p0_write_bypass_uwg "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        phase_a_rows = conn.execute(
+            "SELECT write_line FROM mv_write_sovereignty_paths "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert bool(infra_rows) is expected_flagged
+        assert bool(phase_a_rows) is expected_flagged
 
     def test_write_sovereignty_excludes_non_durable_targets(self, tmp_path: Path) -> None:
         """Writes from runtime/prove_requirements/, proof/, outputs/, and reports/
@@ -356,16 +496,255 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for path in non_durable_paths:
             assert path not in flagged, (
-                f"non-durable write target {path!r} MUST be excluded "
-                f"from mv_write_sovereignty_paths"
+                f"non-durable write target {path!r} MUST be excluded from mv_write_sovereignty_paths"
             )
+
+    def test_graph_health_receipt_exclusion_is_exact_and_preserves_warning_inventory(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Both receipt edges are non-durable without hiding adjacent writes."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(tmp_path, {1: "output.write_text('receipt')"})
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        counterexample_path = "apps_rg/fact_inventory/other_health_writer.py"
+        _node(conn, 1, "receipt_writer", "L_APP", receipt_path)
+        _node(conn, 2, "warning_writer", "L_APP", counterexample_path)
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        conn.execute(
+            "INSERT INTO t_infra_importers(resolved_path) VALUES (?)",
+            (receipt_path,),
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_through",
+            source_file=receipt_path,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            symbol="path.write_text",
+        )
+        _edge(
+            conn,
+            2,
+            99,
+            "writes_to",
+            source_file=counterexample_path,
+            symbol="output.write_text",
+        )
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT writer_file, write_symbol, severity "
+            "FROM mv_write_sovereignty_paths ORDER BY writer_file, write_symbol"
+        ).fetchall()
+        conn.close()
+
+        assert rows == [
+            (receipt_path, "path.write_text", "critical"),
+            (counterexample_path, "output.write_text", "warning"),
+        ]
+
+    def test_graph_health_second_receipt_site_fails_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Two receipt lines are ambiguous even when one has dual edge kinds."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(
+            tmp_path,
+            {
+                100: "output.write_text('first')",
+                101: "output.write_text('second')",
+            },
+        )
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _node(conn, 1, "receipt_writer", "L_APP", receipt_path)
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        conn.execute(
+            "INSERT INTO t_infra_importers(resolved_path) VALUES (?)",
+            (receipt_path,),
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_through",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            line_no=101,
+            symbol="output.write_text",
+        )
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_line, severity FROM mv_write_sovereignty_paths "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100, "critical"), (100, "critical"), (101, "critical")]
+
+    def test_graph_health_two_same_line_ast_calls_fail_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """AST column multiplicity defeats line-only edge deduplication."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(
+            tmp_path,
+            {100: "output.write_text('first'); output.write_text('second')"},
+        )
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _node(conn, 1, "receipt_writer", "L_APP", receipt_path)
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        conn.execute(
+            "INSERT INTO t_infra_importers(resolved_path) VALUES (?)",
+            (receipt_path,),
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_through",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_line, severity FROM mv_write_sovereignty_paths "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100, "critical"), (100, "critical")]
+
+    def test_graph_health_unresolved_receipt_peer_fails_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A NULL site identity invalidates the receipt exemption."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(tmp_path, {100: "output.write_text('receipt')"})
+        db = _create_minimal_db(tmp_path)
+        conn = sqlite3.connect(str(db))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _node(conn, 1, "receipt_writer", "L_APP", receipt_path)
+        _node(conn, 99, "target", "L4", "agentic_core/L4_state/store.py")
+        conn.execute(
+            "INSERT INTO t_infra_importers(resolved_path) VALUES (?)",
+            (receipt_path,),
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_through",
+            source_file=receipt_path,
+            line_no=100,
+            symbol="output.write_text",
+        )
+        _edge(
+            conn,
+            1,
+            99,
+            "writes_to",
+            source_file=None,
+            line_no=None,
+            symbol="output.write_text",
+        )
+        conn.commit()
+        conn.close()
+
+        materialize_phase_a(db)
+        conn = sqlite3.connect(str(db))
+        rows = conn.execute(
+            "SELECT write_line, severity FROM mv_write_sovereignty_paths "
+            "WHERE writer_file = ? AND write_symbol = ? "
+            "ORDER BY write_line IS NULL, write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100, "critical"), (100, "critical"), (None, "critical")]
 
     def test_write_sovereignty_excludes_nested_tests_and_scripts(self, tmp_path: Path) -> None:
         """Files under any */tests/* or */scripts/* path are EXCLUDED.
@@ -422,9 +801,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for path in canonical_writers:
@@ -458,9 +835,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol, _path in gatekeeper_symbols:
@@ -478,18 +853,12 @@ class TestPhaseAAuthority:
         2026-04-29 W5.3 Author-Gate (architecture_choice, conf=0.84).
         """
         bridge_writes = [
-            ("save_decision_memo",
-             "apps_underwriting_ai/integrations/storage_adapter.py"),
-            ("save_audit_trace",
-             "apps_underwriting_ai/services/some_service.py"),
-            ("provenance_write",
-             "apps_shared/enforcement/ProvenancetrackerStrategy.py"),
-            ("auto_persist",
-             "agentic_core/L6_observability/utils/engines/auto_persistence_adapter.py"),
-            ("curate_save",
-             "system_learning/adapters/golden_curation_adapter.py"),
-            ("util_write",
-             "agentic_core/some_path/some_adapter_util.py"),
+            ("save_decision_memo", "apps_underwriting_ai/integrations/storage_adapter.py"),
+            ("save_audit_trace", "apps_underwriting_ai/services/some_service.py"),
+            ("provenance_write", "apps_shared/enforcement/ProvenancetrackerStrategy.py"),
+            ("auto_persist", "agentic_core/L6_observability/utils/engines/auto_persistence_adapter.py"),
+            ("curate_save", "system_learning/adapters/golden_curation_adapter.py"),
+            ("util_write", "agentic_core/some_path/some_adapter_util.py"),
         ]
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
@@ -501,9 +870,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged_files = {r[0] for r in rows}
         for _symbol, path in bridge_writes:
@@ -530,17 +897,12 @@ class TestPhaseAAuthority:
         """
         self_authority_writes = [
             # W5.2 — L0 Sovereign Core integrity attestation
-            ("cls.GOLDEN_SEAL_FILE.write_text",
-             "agentic_core/L0_routing/utils/core_integrity_util.py"),
-            ("self.GOLDEN_SEAL_FILE.write_text",
-             "agentic_core/L0_routing/utils/core_integrity_util.py"),
-            ("write_text",
-             "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            ("cls.GOLDEN_SEAL_FILE.write_text", "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            ("self.GOLDEN_SEAL_FILE.write_text", "agentic_core/L0_routing/utils/core_integrity_util.py"),
+            ("write_text", "agentic_core/L0_routing/utils/core_integrity_util.py"),
             # W5.4 — L5 Safety self-validator/healer
-            ("self.memory_file.write_text",
-             "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
-            ("Path(path).write_text",
-             "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
+            ("self.memory_file.write_text", "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
+            ("Path(path).write_text", "agentic_core/L5_safety/validators/dependencygraph_validator.py"),
         ]
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
@@ -553,9 +915,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged_files = {r[0] for r in rows}
         for _symbol, path in self_authority_writes:
@@ -587,9 +947,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol, _path in run_symbols:
@@ -627,18 +985,14 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
 
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol in false_positive_symbols:
             assert symbol not in flagged, f"{symbol!r} is not a durable write"
         assert "path.write_text" in flagged
 
-    def test_write_sovereignty_excludes_non_durable_artifact_writer_symbols(
-        self, tmp_path: Path
-    ) -> None:
+    def test_write_sovereignty_excludes_non_durable_artifact_writer_symbols(self, tmp_path: Path) -> None:
         """Generated report/proof artifact writes are not durable state writes.
 
         These exact symbols come from the 07082026_2319 P0 backlog. The MV must
@@ -713,20 +1067,14 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
 
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol in artifact_writer_symbols:
-            assert symbol not in flagged, (
-                f"{symbol!r} is report/proof output, not durable state"
-            )
+            assert symbol not in flagged, f"{symbol!r} is report/proof output, not durable state"
         assert "path.write_text" in flagged
 
-    def test_write_sovereignty_excludes_non_durable_artifact_helper_symbols(
-        self, tmp_path: Path
-    ) -> None:
+    def test_write_sovereignty_excludes_non_durable_artifact_helper_symbols(self, tmp_path: Path) -> None:
         """Factory/process scanner hits are not durable write paths."""
         helper_symbols = [
             "TraceFeatureRecord.from_bundle",
@@ -760,18 +1108,14 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
 
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol in helper_symbols:
             assert symbol not in flagged, f"{symbol!r} is a scanner false positive"
         assert "path.write_text" in flagged
 
-    def test_write_sovereignty_excludes_non_durable_artifact_writer_sites(
-        self, tmp_path: Path
-    ) -> None:
+    def test_write_sovereignty_excludes_non_durable_artifact_writer_sites(self, tmp_path: Path) -> None:
         """Site-scoped artifact exclusions do not hide same-symbol writes elsewhere."""
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
@@ -808,9 +1152,7 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
 
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {(symbol, writer_file) for symbol, writer_file in rows}
         for symbol, writer_file in _NON_DURABLE_ARTIFACT_WRITE_SITES:
@@ -823,9 +1165,7 @@ class TestPhaseAAuthority:
         ) in flagged
         assert ("path.write_text", "agentic_core/L2_execution/utils/real_writer.py") in flagged
 
-    def test_write_sovereignty_excludes_non_durable_artifact_helper_sites(
-        self, tmp_path: Path
-    ) -> None:
+    def test_write_sovereignty_excludes_non_durable_artifact_helper_sites(self, tmp_path: Path) -> None:
         """Site-scoped helper exclusions leave same-symbol writes elsewhere visible."""
         db = _create_minimal_db(tmp_path)
         conn = sqlite3.connect(str(db))
@@ -862,9 +1202,7 @@ class TestPhaseAAuthority:
         materialize_phase_a(db)
 
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol, writer_file FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {(symbol, writer_file) for symbol, writer_file in rows}
         for symbol, writer_file in _NON_DURABLE_ARTIFACT_HELPER_SITES:
@@ -877,9 +1215,7 @@ class TestPhaseAAuthority:
         ) in flagged
         assert ("path.write_text", "agentic_core/L2_execution/utils/real_writer.py") in flagged
 
-    def test_write_sovereignty_excludes_pascalcase_class_instantiation(
-        self, tmp_path: Path
-    ) -> None:
+    def test_write_sovereignty_excludes_pascalcase_class_instantiation(self, tmp_path: Path) -> None:
         """`writes_through` edges with a single PascalCase identifier (no dot)
         are class instantiations of governance dataclass types — NOT writes.
 
@@ -936,9 +1272,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         flagged = {r[0] for r in rows}
         for symbol, _path in excluded_pascalcase:
@@ -972,9 +1306,7 @@ class TestPhaseAAuthority:
         conn.close()
         materialize_phase_a(db)
         conn = sqlite3.connect(str(db))
-        rows = conn.execute(
-            "SELECT write_symbol, is_uwg_routed FROM mv_write_sovereignty_paths"
-        ).fetchall()
+        rows = conn.execute("SELECT write_symbol, is_uwg_routed FROM mv_write_sovereignty_paths").fetchall()
         conn.close()
         # Every variant must come back is_uwg_routed=1
         for symbol, _path in variants:

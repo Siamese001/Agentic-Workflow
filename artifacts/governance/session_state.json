@@ -1,9 +1,9 @@
 {
   "active_plan": {
-    "plan_id": "issue-550-apps-research-rg-e2e-hardening",
+    "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
     "plan_type": "platform_core_change",
     "touches_agentic_core": true,
     "core_addition_author_gate_required": true,
-    "author_gate_receipt_ref": "artifacts/governance/issue_550_core_addition_author_gate_receipt.json"
+    "author_gate_receipt_ref": "artifacts/governance/core_addition_author_gate/apps-rg-c03-graph-health-embedding-closure-b8d4f1.json"
   }
 }
