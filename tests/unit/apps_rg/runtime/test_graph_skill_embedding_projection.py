@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from apps_rg.fact_inventory.c03_skill_assertion_corpus import canonical_sha256
 from apps_rg.runtime.graph_skill_embedding_projection import (
     GraphSkillEmbeddingContractError,
     GraphSkillEmbeddingIndex,
@@ -136,9 +137,15 @@ def test_rehydration_fails_closed_on_stale_or_unauthorized_assertion() -> None:
             }
         ]
     }
-    graph["skill_rows"][0]["_assertion_skill_row_sha256"] = corpus["assertions"][0][
-        "skill_row_sha256"
-    ]
+    assertion = corpus["assertions"][0]
+    assertion["skill_row_sha256"] = canonical_sha256(graph["skill_rows"][0])
+    unsigned_assertion = dict(assertion)
+    unsigned_assertion.pop("assertion_document_sha256")
+    assertion["assertion_document_sha256"] = canonical_sha256(unsigned_assertion)
+    corpus["source_digests"]["graph_sha256"] = canonical_sha256(graph)
+    unsigned_corpus = dict(corpus)
+    unsigned_corpus.pop("corpus_sha256")
+    corpus["corpus_sha256"] = canonical_sha256(unsigned_corpus)
 
     hydrated = rehydrate_assertion_candidates(
         [{"assertion_id": "skill_a", "similarity": 1.0}],
@@ -162,4 +169,3 @@ def test_rehydration_fails_closed_on_stale_or_unauthorized_assertion() -> None:
             graph_payload=graph,
             section_id="competencies",
         )
-

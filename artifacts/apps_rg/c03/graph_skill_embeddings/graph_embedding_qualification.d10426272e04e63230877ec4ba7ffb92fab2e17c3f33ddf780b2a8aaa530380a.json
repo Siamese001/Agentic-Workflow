@@ -1,0 +1,517 @@
+{
+  "schema_version": "apps_rg.c03_graph_embedding_qualification.v1",
+  "status": "PASS",
+  "query_qrel_sha256": "08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85",
+  "corpus_sha256": "efd9e01bf82df9324c9b5485bf93b7f5595e9260c60f848a4b1241411a9c2ca6",
+  "graph_sha256": "d622c689984798ae7aa0dba83a0ab3571996c92b7ffc2f94f5d52bc67568a739",
+  "thresholds": {
+    "retrieval_k": 100,
+    "rrf_rank_constant": 60,
+    "exact_macro_recall_at_k_min": 0.75,
+    "exact_micro_recall_at_k_min": 0.75,
+    "fact_vector_macro_recall_at_k_min": 0.65,
+    "fact_vector_micro_recall_at_k_min": 0.65,
+    "dense_macro_recall_at_k_min": 0.85,
+    "dense_micro_recall_at_k_min": 0.9,
+    "hybrid_macro_recall_at_k_min": 0.9,
+    "hybrid_micro_recall_at_k_min": 0.9,
+    "authority_eligibility_accuracy_min": 1.0,
+    "exact_path_accuracy_min": 1.0,
+    "assertion_vector_parity_min": 1.0,
+    "stale_candidate_count_max": 0,
+    "orphan_candidate_count_max": 0,
+    "unauthorized_candidate_count_max": 0,
+    "authority_bypass_count_max": 0
+  },
+  "thresholds_sha256": "ffa0464349b91b98aee2a064e6ddfb0c9b381dccff6cd467fd4c52ab3798f386",
+  "retrieval_metrics": {
+    "exact": {
+      "k": 100,
+      "query_count": 7,
+      "relevance_judgment_count": 37,
+      "hit_count": 37,
+      "macro_recall_at_k": 1.0,
+      "micro_recall_at_k": 1.0
+    },
+    "fact_vector": {
+      "k": 100,
+      "query_count": 7,
+      "relevance_judgment_count": 37,
+      "hit_count": 26,
+      "macro_recall_at_k": 0.7480519480519481,
+      "micro_recall_at_k": 0.7027027027027027
+    },
+    "dense": {
+      "k": 100,
+      "query_count": 7,
+      "relevance_judgment_count": 37,
+      "hit_count": 34,
+      "macro_recall_at_k": 0.8917748917748918,
+      "micro_recall_at_k": 0.918918918918919
+    },
+    "hybrid": {
+      "k": 100,
+      "query_count": 7,
+      "relevance_judgment_count": 37,
+      "hit_count": 35,
+      "macro_recall_at_k": 0.9393939393939394,
+      "micro_recall_at_k": 0.9459459459459459
+    }
+  },
+  "structural_metrics": {
+    "authority_eligibility_accuracy": 1.0,
+    "exact_path_accuracy": 1.0,
+    "assertion_vector_parity": 1.0,
+    "stale_candidate_count": 0,
+    "orphan_candidate_count": 0,
+    "unauthorized_candidate_count": 0,
+    "authority_bypass_count": 0
+  },
+  "per_query": {
+    "exact": [
+      {
+        "query_id": "ai_data_platform_professional_services",
+        "relevant_count": 11,
+        "hit_count": 11,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_ai_platform_commercialization",
+          "skill_commercial_board_level_stakeholder_alignment",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_demoable_accelerator",
+          "skill_p2_tech_reference_architecture",
+          "skill_p2_tech_reusable_accelerators",
+          "skill_revops_usage_based_subscription_forecasting",
+          "skill_sr_insurtech_cto_it_enablement",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "aig_carrier_agentic",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_insurtech_legacy_cloud_modernization",
+          "skill_sr_insurtech_regulated_insurer_controls"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "anthropic_partner_applied_ai",
+        "relevant_count": 4,
+        "hit_count": 4,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_sr_w12_hyperscaler_alliance_co_sell",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "brown_brokerage_it",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_tech_aws_modernization_patterns"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "citi_banking_platform_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_banking_ai_governance_controls",
+          "skill_sr_basel_ccar_lineage_regulatory"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "gtm_presales_baseline",
+        "relevant_count": 10,
+        "hit_count": 10,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_commercial_validation_pilots",
+          "skill_p2_gtm_discovery_qualification",
+          "skill_p2_gtm_enterprise_deal_support",
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_gtm_solution_mapping",
+          "skill_p2_gtm_stakeholder_alignment",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_reference_architecture"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "lincoln_insurer_it_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_sr_cloud_data_platform_engineering",
+          "skill_sr_enterprise_portfolio_data_governance",
+          "skill_sr_insurtech_cto_it_enablement"
+        ],
+        "missing": []
+      }
+    ],
+    "fact_vector": [
+      {
+        "query_id": "ai_data_platform_professional_services",
+        "relevant_count": 11,
+        "hit_count": 7,
+        "recall_at_k": 0.6363636363636364,
+        "hits": [
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_demoable_accelerator",
+          "skill_p2_tech_reference_architecture",
+          "skill_p2_tech_reusable_accelerators",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": [
+          "skill_ai_platform_commercialization",
+          "skill_commercial_board_level_stakeholder_alignment",
+          "skill_revops_usage_based_subscription_forecasting",
+          "skill_sr_insurtech_cto_it_enablement"
+        ]
+      },
+      {
+        "query_id": "aig_carrier_agentic",
+        "relevant_count": 3,
+        "hit_count": 2,
+        "recall_at_k": 0.6666666666666666,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_insurtech_legacy_cloud_modernization"
+        ],
+        "missing": [
+          "skill_sr_insurtech_regulated_insurer_controls"
+        ]
+      },
+      {
+        "query_id": "anthropic_partner_applied_ai",
+        "relevant_count": 4,
+        "hit_count": 4,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_sr_w12_hyperscaler_alliance_co_sell",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "brown_brokerage_it",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_tech_aws_modernization_patterns"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "citi_banking_platform_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_banking_ai_governance_controls",
+          "skill_sr_basel_ccar_lineage_regulatory"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "gtm_presales_baseline",
+        "relevant_count": 10,
+        "hit_count": 6,
+        "recall_at_k": 0.6,
+        "hits": [
+          "skill_p2_gtm_commercial_validation_pilots",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_gtm_solution_mapping",
+          "skill_p2_gtm_stakeholder_alignment",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_reference_architecture"
+        ],
+        "missing": [
+          "skill_p2_gtm_discovery_qualification",
+          "skill_p2_gtm_enterprise_deal_support",
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_presales_delivery_handoff"
+        ]
+      },
+      {
+        "query_id": "lincoln_insurer_it_ai",
+        "relevant_count": 3,
+        "hit_count": 1,
+        "recall_at_k": 0.3333333333333333,
+        "hits": [
+          "skill_sr_cloud_data_platform_engineering"
+        ],
+        "missing": [
+          "skill_sr_enterprise_portfolio_data_governance",
+          "skill_sr_insurtech_cto_it_enablement"
+        ]
+      }
+    ],
+    "dense": [
+      {
+        "query_id": "ai_data_platform_professional_services",
+        "relevant_count": 11,
+        "hit_count": 10,
+        "recall_at_k": 0.9090909090909091,
+        "hits": [
+          "skill_ai_platform_commercialization",
+          "skill_commercial_board_level_stakeholder_alignment",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_demoable_accelerator",
+          "skill_p2_tech_reference_architecture",
+          "skill_p2_tech_reusable_accelerators",
+          "skill_revops_usage_based_subscription_forecasting",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": [
+          "skill_sr_insurtech_cto_it_enablement"
+        ]
+      },
+      {
+        "query_id": "aig_carrier_agentic",
+        "relevant_count": 3,
+        "hit_count": 1,
+        "recall_at_k": 0.3333333333333333,
+        "hits": [
+          "skill_governed_agentic_systems_architecture"
+        ],
+        "missing": [
+          "skill_sr_insurtech_legacy_cloud_modernization",
+          "skill_sr_insurtech_regulated_insurer_controls"
+        ]
+      },
+      {
+        "query_id": "anthropic_partner_applied_ai",
+        "relevant_count": 4,
+        "hit_count": 4,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_sr_w12_hyperscaler_alliance_co_sell",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "brown_brokerage_it",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_tech_aws_modernization_patterns"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "citi_banking_platform_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_banking_ai_governance_controls",
+          "skill_sr_basel_ccar_lineage_regulatory"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "gtm_presales_baseline",
+        "relevant_count": 10,
+        "hit_count": 10,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_commercial_validation_pilots",
+          "skill_p2_gtm_discovery_qualification",
+          "skill_p2_gtm_enterprise_deal_support",
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_gtm_solution_mapping",
+          "skill_p2_gtm_stakeholder_alignment",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_reference_architecture"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "lincoln_insurer_it_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_sr_cloud_data_platform_engineering",
+          "skill_sr_enterprise_portfolio_data_governance",
+          "skill_sr_insurtech_cto_it_enablement"
+        ],
+        "missing": []
+      }
+    ],
+    "hybrid": [
+      {
+        "query_id": "ai_data_platform_professional_services",
+        "relevant_count": 11,
+        "hit_count": 10,
+        "recall_at_k": 0.9090909090909091,
+        "hits": [
+          "skill_ai_platform_commercialization",
+          "skill_commercial_board_level_stakeholder_alignment",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_demoable_accelerator",
+          "skill_p2_tech_reference_architecture",
+          "skill_p2_tech_reusable_accelerators",
+          "skill_revops_usage_based_subscription_forecasting",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": [
+          "skill_sr_insurtech_cto_it_enablement"
+        ]
+      },
+      {
+        "query_id": "aig_carrier_agentic",
+        "relevant_count": 3,
+        "hit_count": 2,
+        "recall_at_k": 0.6666666666666666,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_insurtech_legacy_cloud_modernization"
+        ],
+        "missing": [
+          "skill_sr_insurtech_regulated_insurer_controls"
+        ]
+      },
+      {
+        "query_id": "anthropic_partner_applied_ai",
+        "relevant_count": 4,
+        "hit_count": 4,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_sr_w12_hyperscaler_alliance_co_sell",
+          "skill_sr_w12_industry_reference_architecture",
+          "skill_sr_w12_joint_ai_solution_development"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "brown_brokerage_it",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_tech_aws_modernization_patterns"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "citi_banking_platform_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_governed_agentic_systems_architecture",
+          "skill_sr_banking_ai_governance_controls",
+          "skill_sr_basel_ccar_lineage_regulatory"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "gtm_presales_baseline",
+        "relevant_count": 10,
+        "hit_count": 10,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_p2_gtm_commercial_validation_pilots",
+          "skill_p2_gtm_discovery_qualification",
+          "skill_p2_gtm_enterprise_deal_support",
+          "skill_p2_gtm_executive_buyer_alignment",
+          "skill_p2_gtm_joint_vendor_roadmaps",
+          "skill_p2_gtm_presales_delivery_handoff",
+          "skill_p2_gtm_solution_mapping",
+          "skill_p2_gtm_stakeholder_alignment",
+          "skill_p2_tech_aws_modernization_patterns",
+          "skill_p2_tech_reference_architecture"
+        ],
+        "missing": []
+      },
+      {
+        "query_id": "lincoln_insurer_it_ai",
+        "relevant_count": 3,
+        "hit_count": 3,
+        "recall_at_k": 1.0,
+        "hits": [
+          "skill_sr_cloud_data_platform_engineering",
+          "skill_sr_enterprise_portfolio_data_governance",
+          "skill_sr_insurtech_cto_it_enablement"
+        ],
+        "missing": []
+      }
+    ]
+  },
+  "projection_issues": [],
+  "failures": [],
+  "embedding_generation_manifest_sha256": "9c9cd463d552b730034cb317872a3adba29c7a15c79d181ca4e5938495c4c485",
+  "projection": {
+    "generation_sha256": "68dc2043a5f7296259ec0de5878de4930093d4f30e602dd4adb96d6aa3e6c6e6",
+    "sqlite_sha256_before": "2d4fdce4a0a3dca99ca0c8c24bc186cf560114f9dec065c446e9c65510c3698e",
+    "sqlite_sha256_after": "2d4fdce4a0a3dca99ca0c8c24bc186cf560114f9dec065c446e9c65510c3698e",
+    "read_only": true,
+    "vector_count": 198,
+    "dimension": 1024
+  },
+  "model": {
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "artifact_sha256": "38ccc2e093252ab0416eee16837c75c641f055b4f3def12091fba8ed94e2b263"
+  },
+  "runtime_proof": {
+    "device": "cuda:0",
+    "torch_version": "2.12.0.dev20260228+cu128",
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce RTX 5090",
+    "fallback_used": false,
+    "vector_count": 7,
+    "dimension": 1024
+  },
+  "network_used": false,
+  "fallback_used": false,
+  "completion_marker": "GRAPH_EMBEDDINGS_QUALIFIED",
+  "qualification_sha256": "d10426272e04e63230877ec4ba7ffb92fab2e17c3f33ddf780b2a8aaa530380a"
+}

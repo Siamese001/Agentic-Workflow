@@ -1,0 +1,53 @@
+{
+  "schema_version": "apps_rg.graph_skill_embedding_generation_manifest.v1",
+  "graph": {
+    "path": "apps_rg/fact_inventory/master_skills_arsenal_ledger.json",
+    "file_sha256": "f47d73a9555158b0553e22301ab5883efb96eb348cdfd82f39e056f99fa2624e",
+    "canonical_sha256": "d622c689984798ae7aa0dba83a0ab3571996c92b7ffc2f94f5d52bc67568a739"
+  },
+  "candidate_fact_ledger": {
+    "path": "artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json",
+    "file_sha256": "3aecaa0c2dcd942ac8e6c5070957704dd27a088a11ce1678e2be039104718284",
+    "canonical_sha256": "8d51311d531d3adbeda76e89540372c40e084d1069e5aa708b012fb10a9a44c7"
+  },
+  "base_resume": {
+    "path": "apps_rg/resume/base/amit_ayer_base_resume_v1.json",
+    "file_sha256": "6b1afafd4cfd3dd6484d9fa72534670a4a7dd82cd936c64b9ec3b721a29541af",
+    "canonical_sha256": "33aec18cd70c68af14008655045cfa013d367892e1a9a8f605cd42e851761a89"
+  },
+  "assertion_corpus": {
+    "path": "graph_skill_assertions.efd9e01bf82df9324c9b5485bf93b7f5595e9260c60f848a4b1241411a9c2ca6.json",
+    "corpus_sha256": "efd9e01bf82df9324c9b5485bf93b7f5595e9260c60f848a4b1241411a9c2ca6",
+    "file_sha256": "f48d1ce54e06f2f88f1629572942782cffcaebd4034dac9c9813fe7805b1eb70",
+    "assertion_count": 198,
+    "exclusion_count": 56
+  },
+  "model": {
+    "path": "bge_m3_model_manifest.38ccc2e093252ab0416eee16837c75c641f055b4f3def12091fba8ed94e2b263.json",
+    "model_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "artifact_sha256": "38ccc2e093252ab0416eee16837c75c641f055b4f3def12091fba8ed94e2b263",
+    "manifest_file_sha256": "058b33e06bf78cf6fc456848e91e64a8c62661ff8beea6fb9aafc85f78bf1170",
+    "dimension": 1024
+  },
+  "projection": {
+    "path": "graph_skill_embeddings.68dc2043a5f7296259ec0de5878de4930093d4f30e602dd4adb96d6aa3e6c6e6.sqlite",
+    "schema_version": "apps_rg.graph_skill_embedding_projection.v1",
+    "generation_sha256": "68dc2043a5f7296259ec0de5878de4930093d4f30e602dd4adb96d6aa3e6c6e6",
+    "sqlite_sha256": "2d4fdce4a0a3dca99ca0c8c24bc186cf560114f9dec065c446e9c65510c3698e",
+    "vector_count": 198,
+    "dimension": 1024
+  },
+  "runtime_proof": {
+    "device": "cuda:0",
+    "torch_version": "2.12.0.dev20260228+cu128",
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce RTX 5090",
+    "fallback_used": false,
+    "vector_count": 198,
+    "dimension": 1024
+  },
+  "network_used": false,
+  "fallback_used": false,
+  "manifest_sha256": "9c9cd463d552b730034cb317872a3adba29c7a15c79d181ca4e5938495c4c485"
+}

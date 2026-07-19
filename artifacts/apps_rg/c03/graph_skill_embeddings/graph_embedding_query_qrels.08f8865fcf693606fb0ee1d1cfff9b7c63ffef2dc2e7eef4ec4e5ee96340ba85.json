@@ -1,0 +1,338 @@
+{
+  "schema_version": "apps_rg.c03_graph_embedding_query_qrels.v1",
+  "fixture_manifest": {
+    "path": "docs/reports/apps_rg/fixtures/senior_roles/senior_role_fixture_manifest.json",
+    "size": 18377,
+    "sha256": "379a675a0fd254d2fbe1ca46c19280a49f0fe1f2c5aad74660080d42affa0258"
+  },
+  "query_count": 7,
+  "relevance_judgment_count": 37,
+  "queries": [
+    {
+      "query_id": "ai_data_platform_professional_services",
+      "label": "AI/data platform professional services leadership",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_jd.txt",
+        "size": 1280,
+        "sha256": "e47bbb5f7e277a8e0419c2ae8a2a16924c72a246e55022cd11a83fb73f919985"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/ai_data_platform_professional_services_brief.txt",
+        "size": 853,
+        "sha256": "1a5cf2ed1a5f0ce834e04124e092310a9e25b4b845963571862bf20e803041b1"
+      },
+      "query_text": "VP Global Professional Services — AI and enterprise data platform (generalized archetype).\n\nRequired emphasis:\n- Post-sales professional services leadership for AI/data platform implementations\n- Customer onboarding, implementation delivery, and value realization programs\n- Services-led growth: retention, expansion, and executive sponsor / trusted advisor motions\n- Alignment across services, sales, customer success, product, and support functions\n- Repeatable service offerings, implementation methodologies, tools, and frameworks\n- Project delivery governance and customer satisfaction outcomes\n- Partner services strategy tied to hyperscaler and ISV ecosystems where evidenced\n- Enterprise data platform, cloud, observability, and compliance-aware modernization\n- Revenue forecasting, cost discipline, and commercial operating model literacy (directional)\n\nDe-emphasize:\n- Pure technical pre-sales pursuit ownership (discovery/qualification-only GTM)\n- Pure customer success function ownership without source facts\n- Formal VP Professional Services title claim, full services P&L, utilization/margin ownership\n- Product roadmap ownership and external product-feedback loops without confirmation\n\nTargeting note: JD shapes traversal only — not proof.\nOperator brief (W13/W14):\n\nArchetype: post-sales AI/data platform professional services — not GTM-only, not CS-only.\n\nSurface where evidence-backed:\n- Unify Solution Accelerator delivery, platform commercialization, client go-lives\n- P2 presales-to-delivery handoff (pursuit → implementation boundary)\n- Executive stakeholder alignment and joint vendor/partner roadmaps\n- Cloud/data platform and reusable implementation accelerators\n\nBlock unless human-confirmed or HIGH source:\n- VP Global Professional Services title as employment claim\n- Services P&L, utilization optimization, margin ownership\n- Customer success function ownership; NRR/CS metrics as ownership\n- Product roadmap / product feedback loops external\n\nRegression example (not company target): EDB-style VP Global Professional Services for AI/data platform services.\n",
+      "query_text_sha256": "e6eab803138254da91b180357451279478e8250a87ddf976a7117f14c7dd3f38",
+      "role_family_ids": [
+        "CONSULTING_DELIVERY_LEADERSHIP",
+        "DATA_ANALYTICS_LEADERSHIP",
+        "ENGINEERING_PLATFORM",
+        "EXECUTIVE_LEADERSHIP",
+        "PARTNERSHIPS_GTM"
+      ],
+      "pillar_ids": [
+        "pillar_agentic_ai_platforms",
+        "pillar_applied_ai_partner_architecture",
+        "pillar_cloud_data_aws",
+        "pillar_enterprise_portfolio_governance",
+        "pillar_executive_leadership",
+        "pillar_gtm_presales_motion",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_revenue_commercialization",
+        "pillar_revenue_operations",
+        "pillar_technical_presales_accelerators"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.15,
+        "track_data_tech_cloud_ml": 0.5,
+        "track_genai_agentic": 0.35
+      },
+      "priority_sections": [
+        "competencies",
+        "executive_summary",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "relevant_assertion_ids": [
+        "skill_ai_platform_commercialization",
+        "skill_commercial_board_level_stakeholder_alignment",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_demoable_accelerator",
+        "skill_p2_tech_reference_architecture",
+        "skill_p2_tech_reusable_accelerators",
+        "skill_revops_usage_based_subscription_forecasting",
+        "skill_sr_insurtech_cto_it_enablement",
+        "skill_sr_w12_industry_reference_architecture",
+        "skill_sr_w12_joint_ai_solution_development"
+      ],
+      "excluded_assertion_ids": [
+        "skill_customer_nrr_predictive_analytics_20pct",
+        "skill_customer_satisfaction_nps_25pct",
+        "skill_partner_partner_engineering",
+        "skill_partner_product_feedback_loops"
+      ]
+    },
+    {
+      "query_id": "aig_carrier_agentic",
+      "label": "AIG-style insurance agentic transformation",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/aig_carrier_agentic_jd.txt",
+        "size": 448,
+        "sha256": "e586fe0ed98f73548fcca6aea4e5bfe20e377324f07cfac984dfa375da4251c5"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/aig_carrier_agentic_brief.txt",
+        "size": 166,
+        "sha256": "a45f7c9ee8ab51bdc684588c32e5f1912806e40770a2d7e80c335af8f27ca833"
+      },
+      "query_text": "Global Head of Agentic AI Transformation — insurance carrier.\n\nRequired emphasis:\n- Carrier-scale agentic AI transformation and governed production adoption\n- Actuarial and risk-aware AI programs with regulatory alignment\n- Underwriting, claims, and policy-admin modernization narratives (directional only)\n- Executive steering and measurable transformation outcomes\n\nDe-emphasize: pure GTM-only pursuits without carrier domain context.\nOperator brief: Target reads as global carrier transformation leader. Stress actuarial forward rank and agentic pillars. Do not claim underwriting/claims ownership.\n",
+      "query_text_sha256": "09562b6339d28cc15c29ea7263f8f82684c07b27e6f089bab6798d343d271bba",
+      "role_family_ids": [
+        "INSURANCE_CARRIER_TRANSFORMATION"
+      ],
+      "pillar_ids": [
+        "pillar_actuarial_foundation",
+        "pillar_agentic_ai_platforms",
+        "pillar_insurance_carrier_transformation",
+        "pillar_regulatory_governance"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.25,
+        "track_genai_agentic": 0.4
+      },
+      "priority_sections": [
+        "competencies",
+        "executive_summary",
+        "unify_narrative"
+      ],
+      "relevant_assertion_ids": [
+        "skill_governed_agentic_systems_architecture",
+        "skill_sr_insurtech_legacy_cloud_modernization",
+        "skill_sr_insurtech_regulated_insurer_controls"
+      ],
+      "excluded_assertion_ids": [
+        "skill_p2_gtm_discovery_qualification"
+      ]
+    },
+    {
+      "query_id": "anthropic_partner_applied_ai",
+      "label": "Anthropic-style partner applied AI architecture",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/anthropic_partner_applied_ai_jd.txt",
+        "size": 459,
+        "sha256": "90b35e98f2dbe8240e4c501f0200c9855961e4d619bab8e6a5b62fcb16a96847"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/anthropic_partner_applied_ai_brief.txt",
+        "size": 126,
+        "sha256": "090069c256e676592a299f525afed9b6eac740749c23e12498cba32988ff3cd1"
+      },
+      "query_text": "Manager, Applied AI Architecture & Partnerships.\n\nRequired emphasis:\n- Applied AI solution architecture with hyperscaler and ISV partner motions\n- Joint AI solution development and industry reference architectures\n- Co-sell and alliance strategy where evidence-backed (AWS/Databricks-class)\n- Technical presales accelerators and customer adoption derisking\n\nDe-emphasize: Snowflake/GCP exclusivity; marketplace listing; partner engineering external.\nOperator brief: Partner rank above default genai-only. Partner engineering and product feedback loops remain DO_NOT_PROMOTE.\n",
+      "query_text_sha256": "b5d9d3759a8da82af8712f1065025e2c8d668465307be2bc29d67dc29650d3c0",
+      "role_family_ids": [
+        "HYPERSCALER_MARKETPLACE_GTM",
+        "PARTNER_APPLIED_AI_ARCHITECTURE"
+      ],
+      "pillar_ids": [
+        "pillar_applied_ai_partner_architecture",
+        "pillar_hyperscaler_marketplace_partner_gtm",
+        "pillar_partner_gtm_alliances",
+        "pillar_presales_solutioning"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.03,
+        "track_data_tech_cloud_ml": 0.7,
+        "track_genai_agentic": 0.27
+      },
+      "priority_sections": [
+        "competencies",
+        "ibm_bullets",
+        "unify_narrative"
+      ],
+      "relevant_assertion_ids": [
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_sr_w12_hyperscaler_alliance_co_sell",
+        "skill_sr_w12_industry_reference_architecture",
+        "skill_sr_w12_joint_ai_solution_development"
+      ],
+      "excluded_assertion_ids": [
+        "skill_partner_partner_engineering",
+        "skill_partner_product_feedback_loops"
+      ]
+    },
+    {
+      "query_id": "brown_brokerage_it",
+      "label": "Brown & Brown-style insurance brokerage IT strategy",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/brown_brokerage_it_jd.txt",
+        "size": 350,
+        "sha256": "1abda9edff87d60f25263f94ab4108eef9b8566160315abe49e820f5f3e484a0"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/brown_brokerage_it_brief.txt",
+        "size": 140,
+        "sha256": "3ab9f82a2e863fdd4484d03f2ba6ef32b47dec6fabbc8d3a40ca4c593be2f83d"
+      },
+      "query_text": "SVP IT Strategy & Innovation — insurance brokerage.\n\nRequired emphasis:\n- Brokerage distribution technology, interoperability, and integration ecosystems\n- GTM-aligned innovation with executive buyer alignment\n- Cloud modernization for brokerage workflows — not carrier underwriting\n\nDe-emphasize: carrier underwriting/claims narratives.\nOperator brief: Brokerage fixture must not conflate with carrier transformation. Brokerage pillar deferred — use interoperability + GTM.\n",
+      "query_text_sha256": "b96f3545d1b7cd0a882cf74c85a4c8537f72dedc974795b077aac03a51e4b86b",
+      "role_family_ids": [
+        "INSURANCE_BROKERAGE_IT_INNOVATION"
+      ],
+      "pillar_ids": [
+        "pillar_cloud_data_aws",
+        "pillar_gtm_presales_motion",
+        "pillar_interoperability_integration_ecosystem"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.1,
+        "track_data_tech_cloud_ml": 0.5,
+        "track_genai_agentic": 0.4
+      },
+      "priority_sections": [
+        "competencies",
+        "unify_bullets"
+      ],
+      "relevant_assertion_ids": [
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_tech_aws_modernization_patterns"
+      ],
+      "excluded_assertion_ids": [
+        "skill_sr_insurance_systems_resilience_internal"
+      ]
+    },
+    {
+      "query_id": "citi_banking_platform_ai",
+      "label": "Citi-style banking AI platform / responsible AI",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/citi_banking_platform_ai_jd.txt",
+        "size": 383,
+        "sha256": "0e743f5f0e631ca2e42cf234b4549c8e73f9c6a299da3eaf35d8567735c3888e"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/citi_banking_platform_ai_brief.txt",
+        "size": 132,
+        "sha256": "14fd86764369eee665848032879296de4802df5a1e902fb3296697f1453c8638"
+      },
+      "query_text": "MD Head of AI, Platform & Data Services — banking.\n\nRequired emphasis:\n- Responsible AI, model risk, and auditability for regulated banking platforms\n- Basel/CCAR-aligned governance and data lineage for AI systems\n- Platform and data services leadership with traceable HIGH governance facts\n\nDe-emphasize: payments, liquidity, trade, fraud product ownership without facts.\nOperator brief: Banking responsible-AI pillar must rank with regulatory skills; agentic runtime gates must not swamp competencies.\n",
+      "query_text_sha256": "6ef64ea4edcb1954fbfc4d5e3f7be0bc16e3ef09a708ffa8ccd957ab661b887f",
+      "role_family_ids": [
+        "BANKING_PLATFORM_AI",
+        "REGULATED_AI_GOVERNANCE"
+      ],
+      "pillar_ids": [
+        "pillar_agentic_ai_platforms",
+        "pillar_banking_platform_responsible_ai",
+        "pillar_regulatory_governance"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.35,
+        "track_data_tech_cloud_ml": 0.3,
+        "track_genai_agentic": 0.35
+      },
+      "priority_sections": [
+        "competencies",
+        "executive_summary",
+        "unify_bullets"
+      ],
+      "relevant_assertion_ids": [
+        "skill_governed_agentic_systems_architecture",
+        "skill_sr_banking_ai_governance_controls",
+        "skill_sr_basel_ccar_lineage_regulatory"
+      ],
+      "excluded_assertion_ids": []
+    },
+    {
+      "query_id": "gtm_presales_baseline",
+      "label": "GTM/pre-sales baseline",
+      "jd": {
+        "path": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_jd.txt",
+        "size": 991,
+        "sha256": "60253f43b78b401699118b8e21c74c3de171e1e885287633f9f8b28f4f9da0ff"
+      },
+      "brief": {
+        "path": "artifacts/apps_rg/fixtures/gtm_presales_targeting/exec_summary_gtm_presales_brief.txt",
+        "size": 632,
+        "sha256": "96f57d6f8448adcc30ce3639a1805bfcfe5bf3c2bd072e56af0d4cb4553c3595"
+      },
+      "query_text": "SVP Technical Pre-Sales and Enterprise Solution Architecture — agentic AI, cloud, and data platforms.\n\nRequired emphasis:\n- Technical pre-sales and enterprise solution architecture for complex pursuits\n- Go-to-market support: discovery, qualification, solution mapping, stakeholder alignment\n- Executive buyer alignment and commercial validation pilots\n- Pre-sales to delivery handoff and joint vendor / hyperscaler roadmaps\n- Enterprise deal support and measurable ROI from pilot engagements\n- Cloud and AWS modernization patterns, migration and modernization sales motions\n- DevOps pipeline and CI/CD blueprinting for customer modernization programs\n- Reference architectures and industry solution patterns\n- Demoable solution accelerators and reusable implementation accelerators\n- Partnership alliances, co-sell, channel GTM, and cloud vendor solution roadmaps\n\nDe-emphasize: pure internal-only engineering narratives without customer-facing solutioning or GTM context.\nTargeting: SVP Technical Pre-Sales, Enterprise Cloud & AI Solutions at Unify Consulting.\n\nBriefing priorities:\n- Lead with technical pre-sales, GTM motion support, and enterprise pursuit architecture\n- Foreground cloud/AWS modernization, reference architectures, DevOps pipeline blueprints, and reusable accelerators\n- Include executive buyer alignment, pilot-based commercial validation, and pre-sales-to-delivery handoff where evidenced\n- Partnership and alliance co-sell language is welcome when tied to archived facts\n- Do not invent airline clients, $100M engagement ownership, or technical sizing models without proof\n",
+      "query_text_sha256": "68c95b7c9f92c2faa1602193dc87daea3d28a6c5fb7a02df75b5f38dc7eceb5e",
+      "role_family_ids": [
+        "PARTNERSHIPS_GTM"
+      ],
+      "pillar_ids": [
+        "pillar_gtm_presales_motion",
+        "pillar_technical_presales_accelerators"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.1,
+        "track_data_tech_cloud_ml": 0.25,
+        "track_genai_agentic": 0.65
+      },
+      "priority_sections": [
+        "competencies",
+        "unify_bullets",
+        "unify_narrative"
+      ],
+      "relevant_assertion_ids": [
+        "skill_p2_gtm_commercial_validation_pilots",
+        "skill_p2_gtm_discovery_qualification",
+        "skill_p2_gtm_enterprise_deal_support",
+        "skill_p2_gtm_executive_buyer_alignment",
+        "skill_p2_gtm_joint_vendor_roadmaps",
+        "skill_p2_gtm_presales_delivery_handoff",
+        "skill_p2_gtm_solution_mapping",
+        "skill_p2_gtm_stakeholder_alignment",
+        "skill_p2_tech_aws_modernization_patterns",
+        "skill_p2_tech_reference_architecture"
+      ],
+      "excluded_assertion_ids": [
+        "skill_p2_tech_estimation_sizing_directional"
+      ]
+    },
+    {
+      "query_id": "lincoln_insurer_it_ai",
+      "label": "Lincoln-style insurer IT strategy / AI enablement",
+      "jd": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_jd.txt",
+        "size": 435,
+        "sha256": "145f993b07f210d9bd501d6953f49766578722582e4a2b85d0341d8194ea122c"
+      },
+      "brief": {
+        "path": "docs/reports/apps_rg/fixtures/senior_roles/lincoln_insurer_it_ai_brief.txt",
+        "size": 130,
+        "sha256": "960951a805a2dbc70e14d040be37d9ca1d6e01bc5bdf223de3d1c0ecdbbf4aca"
+      },
+      "query_text": "SVP IT Strategy & AI Enablement — insurer.\n\nRequired emphasis:\n- Enterprise IT strategy, portfolio governance, and AI enablement\n- Cloud/data platform modernization for regulated insurer environments\n- Reference architecture and delivery governance across business units\n- FSA/actuarial credibility without burying credentials in early-career only\n\nDe-emphasize: generic agentic executive with no IT-strategy pillar signal.\nOperator brief: Elevate insurer IT-enablement and portfolio governance pillars. FSA must appear outside early_career-only lanes.\n",
+      "query_text_sha256": "b3973673d7fad2a57d1d79d4c0c2ea659f6a771dca5f3cba061186b4c9e846b9",
+      "role_family_ids": [
+        "INSURER_IT_AI_ENABLEMENT"
+      ],
+      "pillar_ids": [
+        "pillar_actuarial_foundation",
+        "pillar_cloud_data_aws",
+        "pillar_enterprise_portfolio_governance",
+        "pillar_insurer_it_strategy_ai_enablement"
+      ],
+      "track_weights": {
+        "track_actuarial_risk_derivatives": 0.2,
+        "track_data_tech_cloud_ml": 0.45,
+        "track_genai_agentic": 0.35
+      },
+      "priority_sections": [
+        "competencies",
+        "executive_summary",
+        "ibm_narrative"
+      ],
+      "relevant_assertion_ids": [
+        "skill_sr_cloud_data_platform_engineering",
+        "skill_sr_enterprise_portfolio_data_governance",
+        "skill_sr_insurtech_cto_it_enablement"
+      ],
+      "excluded_assertion_ids": []
+    }
+  ],
+  "query_qrel_sha256": "08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85"
+}
