@@ -27,14 +27,15 @@ row, or ``None`` if the metric ID has no graph row — in which case the caller
 MUST fail closed with ``MISSING_GRAPH_PATH`` or
 ``BLOCKED_METRIC_OUTCOME_UNRESOLVED`` per the plan's No Silent Fallback Rule.
 """
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
 from typing import Any
 
-#: Edge types introduced by W2.0. New edge_types (net-additive) — they do not
-#: collide with existing taxonomy and are not yet consulted by validators.
+#: Edge types introduced by W2.0. They do not collide with the canonical
+#: ledger taxonomy and are admitted through the projected signature authority.
 METRIC_OUTCOME_EDGE_TYPES: frozenset[str] = frozenset(
     {
         "metric_outcome_anchors_bundle",
@@ -43,8 +44,36 @@ METRIC_OUTCOME_EDGE_TYPES: frozenset[str] = frozenset(
     }
 )
 
+#: Projected endpoint-type authority for the edges emitted by this module.
+#: These signatures are app-owned because the edges derive from role-episode
+#: bundle materialization rather than the canonical ledger edge registry.
+METRIC_OUTCOME_EDGE_SIGNATURES: dict[str, frozenset[tuple[str, str]]] = {
+    "metric_outcome_anchors_bundle": frozenset({("metric_outcome", "graph_ref")}),
+    "metric_outcome_section_eligible": frozenset({("metric_outcome", "graph_ref")}),
+    "metric_outcome_bound_to_employer": frozenset({("metric_outcome", "employment")}),
+}
+
 #: Glob pattern for per-employer role_episode_bundle JSON files.
 ROLE_EPISODE_BUNDLE_GLOB: str = "*_role_episode_bundles.json"
+
+
+def _required_unique_string_list(
+    metric: dict[str, Any],
+    *,
+    field: str,
+    locator: str,
+) -> list[str]:
+    value = metric.get(field)
+    if not isinstance(value, list):
+        raise ValueError(f"metric_outcome_materializer: {locator}.{field} must be a JSON list")
+    if any(not isinstance(item, str) or not item.strip() for item in value):
+        raise ValueError(
+            f"metric_outcome_materializer: {locator}.{field} must contain only non-empty strings"
+        )
+    normalized = [item.strip() for item in value]
+    if len(normalized) != len(set(normalized)):
+        raise ValueError(f"metric_outcome_materializer: {locator}.{field} contains duplicate IDs")
+    return normalized
 
 
 def discover_role_episode_bundle_files(repo_root: Path) -> list[Path]:
@@ -55,9 +84,7 @@ def discover_role_episode_bundle_files(repo_root: Path) -> list[Path]:
     return sorted(base.glob(ROLE_EPISODE_BUNDLE_GLOB))
 
 
-def _metric_outcome_to_node_row(
-    metric_id: str, metric: dict[str, Any], *, ts: str
-) -> dict[str, Any]:
+def _metric_outcome_to_node_row(metric_id: str, metric: dict[str, Any], *, ts: str) -> dict[str, Any]:
     """Map a metric_outcome dict (from bundle JSON) to a graph_nodes row.
 
     ``approval_status`` from the bundle ('APPROVED_GRAPH_SSOT', etc.) maps to
@@ -65,9 +92,7 @@ def _metric_outcome_to_node_row(
     (filtered by node_type) keep their semantics within the metric_outcome surface.
     """
     label = (
-        str(metric.get("metric") or "").strip()
-        or str(metric.get("claim_text") or "").strip()
-        or metric_id
+        str(metric.get("metric") or "").strip() or str(metric.get("claim_text") or "").strip() or metric_id
     )
     description = str(metric.get("claim_text") or "").strip()
     approval = str(metric.get("approval_status") or "").strip()
@@ -95,10 +120,9 @@ def _metric_outcome_to_edge_rows(
 ) -> list[dict[str, Any]]:
     """Emit edges from a metric_outcome to its bundle bindings, sections, employer.
 
-    Edges are emitted only when the target node ID is already present in
-    ``known_node_ids`` (the materialized graph nodes). Unresolved targets are
-    silently skipped at materialization time — the resolver enforces
-    fail-closed downstream so consumers see ``MISSING_GRAPH_PATH``.
+    Bundle and section tokens are emitted as graph references; the caller
+    hydrates those endpoints and enforces ``METRIC_OUTCOME_EDGE_SIGNATURES``.
+    Employer edges remain conditional on an already-materialized employer.
     """
     edges: list[dict[str, Any]] = []
     employer_node_id = str(metric.get("employer_node_id") or "").strip()
@@ -109,13 +133,8 @@ def _metric_outcome_to_edge_rows(
         bid = str(bundle_id or "").strip()
         if not bid:
             continue
-        # Bundles use reb_* IDs; not currently materialized as graph nodes in
-        # W2.0 (they live in role_episode_bundle JSON, not master_skills_arsenal_ledger).
-        # Edge is still emitted with bundle_id as target — endpoint hydration will
-        # NOT auto-create the node since reb_* is not in known_node_ids; the edge
-        # row therefore intentionally points at a not-yet-materialized target. W2.2
-        # will introduce a role_episode_bundle node type if needed; for W2.0 the
-        # edge is informational only and validators do not read it yet.
+        # Bundles use reb_* IDs and remain typed graph_ref endpoints because
+        # role-episode bundles are not first-class canonical graph nodes.
         edges.append(
             {
                 "edge_id": f"edge_metric_outcome_anchors_bundle__{metric_id}__{bid}",
@@ -188,17 +207,29 @@ def load_metric_outcome_rows_from_bundles(repo_root: Path) -> dict[str, dict[str
         try:
             payload = json.loads(path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
-            raise ValueError(
-                f"metric_outcome_materializer: failed to read {path.name}: {exc}"
-            ) from exc
-        employer_node_id = str(payload.get("employer_node_id") or "").strip()
-        nodes = payload.get("metric_outcome_nodes") or {}
+            raise ValueError(f"metric_outcome_materializer: failed to read {path.name}: {exc}") from exc
+        if not isinstance(payload, dict):
+            raise ValueError(f"metric_outcome_materializer: {path.name} root must be a JSON object")
+        raw_employer_node_id = payload.get("employer_node_id")
+        if raw_employer_node_id is not None and not isinstance(raw_employer_node_id, str):
+            raise ValueError(f"metric_outcome_materializer: {path.name}.employer_node_id must be a string")
+        employer_node_id = str(raw_employer_node_id or "").strip()
+        nodes = payload.get("metric_outcome_nodes")
         if not isinstance(nodes, dict):
-            continue
+            raise ValueError(
+                f"metric_outcome_materializer: {path.name}.metric_outcome_nodes must be a JSON object"
+            )
         for metric_id, metric in nodes.items():
-            mid = str(metric_id or "").strip()
-            if not mid or not isinstance(metric, dict):
-                continue
+            if not isinstance(metric_id, str) or not metric_id.strip():
+                raise ValueError(
+                    f"metric_outcome_materializer: {path.name} contains a blank or non-string metric ID"
+                )
+            mid = metric_id.strip()
+            if not isinstance(metric, dict):
+                raise ValueError(
+                    f"metric_outcome_materializer: {path.name}.metric_outcome_nodes[{mid!r}] "
+                    "must be a JSON object"
+                )
             if mid in out:
                 raise ValueError(
                     f"metric_outcome_materializer: duplicate metric_id {mid!r} "
@@ -206,6 +237,29 @@ def load_metric_outcome_rows_from_bundles(repo_root: Path) -> dict[str, dict[str
                     "metric IDs must be unique across role_episode_bundle files."
                 )
             merged = dict(metric)
+            declared_metric_id = merged.get("metric_outcome_id")
+            if declared_metric_id is not None and declared_metric_id != mid:
+                raise ValueError(
+                    f"metric_outcome_materializer: {path.name}.metric_outcome_nodes[{mid!r}] "
+                    "metric_outcome_id must match its registry key"
+                )
+            metric_employer_node_id = merged.get("employer_node_id")
+            if metric_employer_node_id is not None and not isinstance(metric_employer_node_id, str):
+                raise ValueError(
+                    f"metric_outcome_materializer: {path.name}.metric_outcome_nodes[{mid!r}] "
+                    "employer_node_id must be a string"
+                )
+            locator = f"{path.name}.metric_outcome_nodes[{mid!r}]"
+            merged["bundle_bindings"] = _required_unique_string_list(
+                merged,
+                field="bundle_bindings",
+                locator=locator,
+            )
+            merged["section_eligibility"] = _required_unique_string_list(
+                merged,
+                field="section_eligibility",
+                locator=locator,
+            )
             if employer_node_id and "employer_node_id" not in merged:
                 merged["employer_node_id"] = employer_node_id
             out[mid] = merged
@@ -232,15 +286,11 @@ def metric_outcome_node_and_edge_rows(
     edge_rows: list[dict[str, Any]] = []
     for mid, metric in rows.items():
         node_rows.append(_metric_outcome_to_node_row(mid, metric, ts=ts))
-        edge_rows.extend(
-            _metric_outcome_to_edge_rows(mid, metric, known_node_ids=known_node_ids)
-        )
+        edge_rows.extend(_metric_outcome_to_edge_rows(mid, metric, known_node_ids=known_node_ids))
     return node_rows, edge_rows
 
 
-def resolve_metric_outcome_graph_node(
-    conn: Any, metric_id: str
-) -> dict[str, Any] | None:
+def resolve_metric_outcome_graph_node(conn: Any, metric_id: str) -> dict[str, Any] | None:
     """Look up a materialized metric_outcome graph_node row.
 
     Returns the row dict if present, ``None`` if not materialized. Callers MUST
@@ -278,6 +328,7 @@ def resolve_metric_outcome_graph_node(
 
 
 __all__ = [
+    "METRIC_OUTCOME_EDGE_SIGNATURES",
     "METRIC_OUTCOME_EDGE_TYPES",
     "ROLE_EPISODE_BUNDLE_GLOB",
     "discover_role_episode_bundle_files",

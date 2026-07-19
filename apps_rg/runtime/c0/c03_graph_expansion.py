@@ -11,6 +11,7 @@ Broad fact-link loading and label/tag claim fallbacks are forbidden. An
 explicit tag-label diagnostic mode may emit adjacency context, but never claim
 support.
 """
+
 from __future__ import annotations
 
 from collections import Counter
@@ -36,10 +37,41 @@ C02Atom = dict[str, Any]
 BINDING_MODE_FACT_LINKS_FIRST = "fact_links_first"  # compatibility name; strict direct paths
 BINDING_MODE_SQLITE_RANKED_ONLY = "sqlite_ranked_only"
 BINDING_MODE_TAG_LABEL_ONLY = "tag_label_only"
+_SQLITE_SNAPSHOT_RECEIPT_FIELDS = (
+    "canonical_ledger_hash",
+    "sqlite_logical_digest",
+    "sqlite_schema_digest",
+    "resume_metric_usage_ranking_input_digest",
+    "ranking_input_run_id_scope",
+)
+_SQLITE_SNAPSHOT_REQUIRED_DIGEST_FIELDS = frozenset(_SQLITE_SNAPSHOT_RECEIPT_FIELDS[:-1])
 
 
 class C03GraphSelectionError(RuntimeError):
     """Required C0.3 direct graph selection could not be proven."""
+
+
+def _require_matching_sqlite_snapshot_receipts(
+    context_bundle: Mapping[str, Any],
+    selection: Mapping[str, Any],
+) -> None:
+    context_receipt = context_bundle.get("receipt")
+    if not isinstance(context_receipt, Mapping):
+        raise C03GraphSelectionError("sqlite_snapshot_receipt_missing:context")
+    missing = [
+        field
+        for field in _SQLITE_SNAPSHOT_REQUIRED_DIGEST_FIELDS
+        if not str(context_receipt.get(field) or "") or not str(selection.get(field) or "")
+    ]
+    if missing:
+        raise C03GraphSelectionError("sqlite_snapshot_receipt_missing:" + ",".join(sorted(missing)))
+    mismatched = [
+        field
+        for field in _SQLITE_SNAPSHOT_RECEIPT_FIELDS
+        if context_receipt.get(field) != selection.get(field)
+    ]
+    if mismatched:
+        raise C03GraphSelectionError("sqlite_snapshot_receipt_mismatch:" + ",".join(mismatched))
 
 
 def _index_skills(
@@ -169,9 +201,11 @@ def _selected_plan_graph_selection(
                     str(value) for value in row.get("allowed_sections") or [] if str(value).strip()
                 }
                 eligible = bool(row) and skill_row_eligible_for_external_claim(row)
-                source_refs = list(row.get("fact_id_links") or []) + list(
-                    row.get("source_snippets") or []
-                ) + linked_sources
+                source_refs = (
+                    list(row.get("fact_id_links") or [])
+                    + list(row.get("source_snippets") or [])
+                    + linked_sources
+                )
                 authority = evaluate_pretarget_authority(
                     candidate_id=skill_id,
                     candidate_type="leaf_skill",
@@ -286,10 +320,7 @@ def _selected_plan_graph_selection(
 
     # Preserve rejected alternatives from a canonical upstream traversal when
     # they belong to selected facts and are not already represented above.
-    represented = {
-        (str(row.get("root_id") or ""), str(row.get("candidate_id") or ""))
-        for row in decisions
-    }
+    represented = {(str(row.get("root_id") or ""), str(row.get("candidate_id") or "")) for row in decisions}
     covered = set(selected_by_fact)
     for raw in selected_graph_plan.get("graph_candidate_decision_ledger") or []:
         if not isinstance(raw, Mapping) or str(raw.get("candidate_type") or "") != "leaf_skill":
@@ -405,10 +436,7 @@ def _selected_plan_graph_selection(
     }
 
 
-
-def _bundle_root_graph_selection(
-    *, fact_ids: list[str], section_id: str, repo_root: Any
-) -> dict[str, Any]:
+def _bundle_root_graph_selection(*, fact_ids: list[str], section_id: str, repo_root: Any) -> dict[str, Any]:
     """Build direct candidates for role-episode roots present in C0.2 atoms."""
     wanted = {str(value).strip() for value in fact_ids if str(value).strip()}
     if not wanted or repo_root is None:
@@ -518,6 +546,7 @@ def _remap_sqlite_selection(
     )
     return out
 
+
 def _combine_component_receipts(
     *, section_id: str, components: list[dict[str, Any]]
 ) -> tuple[list[dict[str, Any]], dict[str, Any], dict[str, Any], dict[str, Any]]:
@@ -569,7 +598,9 @@ def _combine_component_receipts(
         "events_digest": stable_digest(events),
         "events": events,
         "visited_edges_count": sum(1 for event in events if event.get("event_type") == "edge_traversed"),
-        "authority_event_count": sum(1 for event in events if event.get("event_type") == "authority_evaluated"),
+        "authority_event_count": sum(
+            1 for event in events if event.get("event_type") == "authority_evaluated"
+        ),
         "candidate_conservation": {
             "candidate_count": len(decisions),
             "terminal_decision_count": terminal_count,
@@ -634,8 +665,7 @@ def _bind_atom(
             claim_support = bool(
                 atom.get("proof_status") == "proof_eligible"
                 and all(
-                    bool((candidate.get("authority") or {}).get("authority_pass"))
-                    for candidate in selected
+                    bool((candidate.get("authority") or {}).get("authority_pass")) for candidate in selected
                 )
                 and any(bool(candidate.get("claim_eligibility")) for candidate in selected)
             )
@@ -674,10 +704,7 @@ def _bind_atom(
         "broad_fact_link_fallback_used": False,
         "label_tag_proof_fallback_used": False,
         "selected_metric_buckets": sorted(
-            {
-                str(candidate.get("metric_bucket") or "general_business_outcome")
-                for candidate in selected
-            }
+            {str(candidate.get("metric_bucket") or "general_business_outcome") for candidate in selected}
         ),
         "rejected_sibling_skill_refs": [
             str(candidate.get("skill_id") or "")
@@ -689,12 +716,8 @@ def _bind_atom(
                 "skill_id": str(candidate.get("skill_id") or ""),
                 "reason": str(candidate.get("rejection_reason") or ""),
                 "failed_gate": str(candidate.get("failed_gate") or ""),
-                "metric_bucket": str(
-                    candidate.get("metric_bucket") or "general_business_outcome"
-                ),
-                "authority_reason_codes": list(
-                    (candidate.get("authority") or {}).get("reason_codes") or []
-                ),
+                "metric_bucket": str(candidate.get("metric_bucket") or "general_business_outcome"),
+                "authority_reason_codes": list((candidate.get("authority") or {}).get("reason_codes") or []),
             }
             for candidate in rejected
             if str(candidate.get("skill_id") or "")
@@ -706,12 +729,8 @@ def _bind_atom(
                 "base_score": candidate.get("base_score"),
                 "proof_strength_raw": candidate.get("proof_strength_raw"),
                 "target_alignment_score": candidate.get("target_alignment_score"),
-                "authority_pass": bool(
-                    (candidate.get("authority") or {}).get("authority_pass")
-                ),
-                "metric_bucket": str(
-                    candidate.get("metric_bucket") or "general_business_outcome"
-                ),
+                "authority_pass": bool((candidate.get("authority") or {}).get("authority_pass")),
+                "metric_bucket": str(candidate.get("metric_bucket") or "general_business_outcome"),
                 "skill_family": str(candidate.get("skill_family") or "unclassified"),
                 "path_signature": str(candidate.get("path_signature") or ""),
                 "prior_metric_usage": int(candidate.get("prior_metric_usage") or 0),
@@ -743,11 +762,13 @@ def expand_c03_graph_bindings(
         compress_binding_for_executive_summary,
         resolve_role_family_projection,
     )
+    from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
     from apps_rg.runtime.c0.c03_sqlite_graph_selection import (
         SCHEMA_VERSION as SQLITE_SELECTION_SCHEMA_VERSION,
+    )
+    from apps_rg.runtime.c0.c03_sqlite_graph_selection import (
         select_c03_sqlite_graph_candidates,
     )
-    from apps_rg.runtime.c0.c03_role_family import resolve_c0_pillar_hints
 
     fact_ids = [str(atom.get("fact_id") or "") for atom in atoms if atom.get("fact_id")]
     plan_selection = _selected_plan_graph_selection(
@@ -844,6 +865,7 @@ def expand_c03_graph_bindings(
             selected_fact_ids=sorted(query_to_surfaces),
             repo_root=repo_root,
             pillar_hint_ids=list(pillar_hints),
+            run_id=run_id,
         )
         inner = ctx.get("context") if isinstance(ctx.get("context"), dict) else ctx
         sqlite_selection = select_c03_sqlite_graph_candidates(
@@ -855,10 +877,9 @@ def expand_c03_graph_bindings(
             db_path=ctx.get("sqlite_db_path"),
             run_id=run_id,
         )
+        _require_matching_sqlite_snapshot_receipts(ctx, sqlite_selection)
         sqlite_selection["section_id"] = section_id
-        sqlite_selection = _remap_sqlite_selection(
-            sqlite_selection, query_to_surfaces=query_to_surfaces
-        )
+        sqlite_selection = _remap_sqlite_selection(sqlite_selection, query_to_surfaces=query_to_surfaces)
         for candidate in sqlite_selection.get("selected_candidates") or []:
             if isinstance(candidate, dict):
                 candidate["selection_source"] = "sqlite_ranked_skill_fact_links"
@@ -878,22 +899,18 @@ def expand_c03_graph_bindings(
         for fact_id, rows in (component.get("rejected_by_fact") or {}).items():
             rejected_by_fact.setdefault(str(fact_id), []).extend(list(rows))
 
-    decisions, candidate_receipt, traversal_receipt, authority_receipt = (
-        _combine_component_receipts(section_id=section_id, components=components)
+    decisions, candidate_receipt, traversal_receipt, authority_receipt = _combine_component_receipts(
+        section_id=section_id, components=components
     )
     proof_required_fact_ids = [
         str(atom.get("fact_id") or "")
         for atom in atoms
         if atom.get("proof_status") == "proof_eligible" and atom.get("fact_id")
     ]
-    missing_required = [
-        fact_id for fact_id in proof_required_fact_ids if not selected_by_fact.get(fact_id)
-    ]
+    missing_required = [fact_id for fact_id in proof_required_fact_ids if not selected_by_fact.get(fact_id)]
     conservation_pass = bool(candidate_receipt.get("candidate_conservation_pass"))
     boundary_pass = bool(authority_receipt.get("authority_before_targeting_pass", True))
-    component_pass = all(
-        bool(component.get("selection_contract_pass", True)) for component in components
-    )
+    component_pass = all(bool(component.get("selection_contract_pass", True)) for component in components)
     if strict_ranked_selection and (
         missing_required or not conservation_pass or not boundary_pass or not component_pass
     ):
@@ -906,9 +923,7 @@ def expand_c03_graph_bindings(
             reasons.append("authority_targeting_boundary_failed")
         if not component_pass:
             reasons.append("component_selection_contract_failed")
-        raise C03GraphSelectionError(
-            f"{section_id} C0.3 direct selection blocked: {'; '.join(reasons)}"
-        )
+        raise C03GraphSelectionError(f"{section_id} C0.3 direct selection blocked: {'; '.join(reasons)}")
 
     bindings = [
         _bind_atom(
@@ -940,21 +955,13 @@ def expand_c03_graph_bindings(
             for skill_id in binding.get("graph_node_refs") or []
         )
     )
-    direct = sum(
-        1
-        for binding in bindings
-        if binding.get("graph_support_strength") == GRAPH_STRENGTH_DIRECT
-    )
-    link_direct = sum(
-        1 for binding in bindings if binding.get("binding_source") == "skill_fact_links"
-    )
+    direct = sum(1 for binding in bindings if binding.get("graph_support_strength") == GRAPH_STRENGTH_DIRECT)
+    link_direct = sum(1 for binding in bindings if binding.get("binding_source") == "skill_fact_links")
     from apps_rg.runtime.c0.c0_section_authority import c03_skills_graph_receipt_flags
 
     flags = c03_skills_graph_receipt_flags(core_graph_rag_ran=False)
     ref_classes = aggregate_graph_ref_classes(bindings)
-    source_contracts = [
-        dict(component.get("source_authority_contract") or {}) for component in components
-    ]
+    source_contracts = [dict(component.get("source_authority_contract") or {}) for component in components]
     source_authority_contract = {
         "schema_version": "c03_source_authority_contract_v1",
         "authority_source": "augmented_skills_graph",
@@ -967,7 +974,11 @@ def expand_c03_graph_bindings(
     selected_flat = [row for rows in selected_by_fact.values() for row in rows]
     rejected_flat = [row for rows in rejected_by_fact.values() for row in rows]
     metric_bucket_counts = dict(
-        sorted(Counter(str(row.get("metric_bucket") or "general_business_outcome") for row in selected_flat).items())
+        sorted(
+            Counter(
+                str(row.get("metric_bucket") or "general_business_outcome") for row in selected_flat
+            ).items()
+        )
     )
     skill_family_counts = dict(
         sorted(Counter(str(row.get("skill_family") or "unclassified") for row in selected_flat).items())
@@ -1019,6 +1030,13 @@ def expand_c03_graph_bindings(
             "graph_source": sqlite_selection.get("graph_source"),
             "graph_version": sqlite_selection.get("graph_version"),
             "graph_hash": sqlite_selection.get("graph_hash"),
+            "canonical_ledger_hash": sqlite_selection.get("canonical_ledger_hash"),
+            "sqlite_logical_digest": sqlite_selection.get("sqlite_logical_digest"),
+            "sqlite_schema_digest": sqlite_selection.get("sqlite_schema_digest"),
+            "resume_metric_usage_ranking_input_digest": sqlite_selection.get(
+                "resume_metric_usage_ranking_input_digest"
+            ),
+            "ranking_input_run_id_scope": sqlite_selection.get("ranking_input_run_id_scope"),
             "metric_policy_version": sqlite_selection.get("metric_policy_version"),
             "run_id_scope": sqlite_selection.get("run_id_scope"),
             "current_run_usage_only": sqlite_selection.get("current_run_usage_only"),

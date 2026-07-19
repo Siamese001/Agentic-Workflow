@@ -3,6 +3,7 @@
 Lane-local retrieval for section graph binding — not canonical spine C0.3 traverse.
 Graph context is routing support only; claim proof remains fact/SRFS-bound.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -23,13 +24,128 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
 )
-from apps_rg.runtime.c0.c03_errors import RoleFamilyProjectionError
+from apps_rg.runtime.c0.c03_errors import (
+    C03GraphProjectionUnavailableError,
+    RoleFamilyProjectionError,
+)
 
 PROOF_CLASSIFICATION = "graph_context_routing_support_not_claim_proof"
+C03_GRAPH_SQLITE_AUTHORITY_STATUS = "augmented_skills_graph_authoritative"
+RANKING_INPUT_DIGEST_SCHEMA_VERSION = "c03_resume_metric_usage_ranking_input_v1"
 
 BRIDGE_EDGE_TYPES = frozenset(
     {"pillar_phase_bridge", "pillar_section_eligibility", "career_track_contains_pillar"}
 )
+
+_REQUIRED_PROJECTION_COLUMNS: dict[str, frozenset[str]] = {
+    "graph_metadata": frozenset(
+        {
+            "graph_version",
+            "materialized_from",
+            "materialized_at",
+            "ledger_hash",
+            "graph_count_summary",
+            "authority_status",
+        }
+    ),
+    "graph_nodes": frozenset(
+        {
+            "node_id",
+            "node_type",
+            "label",
+            "activation_status",
+            "support_level",
+            "confidence",
+            "external_eligible",
+        }
+    ),
+    "graph_edges": frozenset(
+        {
+            "edge_id",
+            "source_node_id",
+            "target_node_id",
+            "edge_family",
+            "edge_type",
+            "weight",
+            "section_fit",
+        }
+    ),
+    "skill_fact_links": frozenset(
+        {
+            "skill_id",
+            "fact_id",
+            "support_level",
+            "claim_eligibility",
+            "external_eligible",
+        }
+    ),
+    "section_eligibility": frozenset(
+        {"node_id", "section_id", "allowed", "claim_policy", "reason", "blocked_reason"}
+    ),
+    "role_family_projection": frozenset(
+        {
+            "role_family_id",
+            "projection_role_family_key",
+            "track_weight_profile",
+            "taxonomy_source",
+            "targeting_keywords",
+            "proof_policy_note",
+        }
+    ),
+    "c03_skill_selection_features": frozenset(
+        {
+            "skill_id",
+            "pillar",
+            "subpillar",
+            "domain_id",
+            "skill_family",
+            "metric_bucket",
+            "role_family_weights",
+            "source_fact_count",
+            "confidence",
+            "activation_status",
+            "support_level",
+            "external_eligible",
+            "source_trace",
+        }
+    ),
+    "c03_role_family_skill_weights": frozenset({"skill_id", "role_family_key", "weight", "source"}),
+    "v_partner_architecture_competency_candidates": frozenset(
+        {
+            "skill_id",
+            "role_family_key",
+            "weight",
+            "pillar",
+            "subpillar",
+            "domain_id",
+            "skill_family",
+            "metric_bucket",
+            "label",
+            "confidence",
+            "activation_status",
+            "support_level",
+            "external_eligible",
+            "fact_id",
+            "claim_eligibility",
+            "fact_external_eligible",
+            "competencies_allowed",
+        }
+    ),
+}
+
+_PROJECTION_POPULATION_COUNTS: dict[str, str] = {
+    "node_count_sqlite": "graph_nodes",
+    "edge_count_sqlite": "graph_edges",
+    "skill_fact_link_count": "skill_fact_links",
+    "section_eligibility_count": "section_eligibility",
+    "role_family_projection_count": "role_family_projection",
+    "c03_skill_selection_feature_count": "c03_skill_selection_features",
+    "c03_role_family_skill_weight_count": "c03_role_family_skill_weights",
+    "graph_path_count": "graph_paths",
+    "graph_neighborhood_count": "graph_neighborhoods",
+    "graph_sibling_link_count": "graph_sibling_links",
+    "section_evidence_budget_count": "section_evidence_budget",
+}
 
 
 def _repo_root() -> Path:
@@ -46,79 +162,224 @@ def _ledger_hash(repo_root: Path) -> str:
     return hashlib.sha256(material.encode("utf-8")).hexdigest()
 
 
-def _sqlite_projection_current(repo_root: Path, path: Path) -> bool:
-    try:
-        conn = open_graph_sqlite(repo_root=repo_root, db_path=path)
+def _projection_path(repo_root: Path, db_path: Path | None) -> Path:
+    return Path(db_path) if db_path is not None else default_graph_sqlite_path(repo_root)
+
+
+def _require_projection_columns(conn: sqlite3.Connection) -> None:
+    for object_name, required_columns in _REQUIRED_PROJECTION_COLUMNS.items():
+        missing_columns = sorted(required_columns - table_columns(conn, object_name))
+        if missing_columns:
+            raise ValueError(f"{object_name} missing columns: {','.join(missing_columns)}")
+
+
+def _require_projection_population_counts(
+    conn: sqlite3.Connection,
+    summary: dict[str, Any],
+) -> None:
+    issues: list[str] = []
+    for summary_key, table_name in _PROJECTION_POPULATION_COUNTS.items():
+        if summary_key not in summary:
+            issues.append(f"{table_name} population count unavailable: metadata key missing: {summary_key}")
+            continue
         try:
-            required_objects = {
-                ("table", "c03_skill_selection_features"),
-                ("table", "c03_role_family_skill_weights"),
-                ("table", "graph_paths"),
-                ("table", "graph_neighborhoods"),
-                ("table", "graph_sibling_links"),
-                ("table", "resume_metric_usage"),
-                ("table", "section_evidence_budget"),
-                ("table", "graph_selection_rejections"),
-                ("view", "graph_edges_reverse"),
-                ("view", "v_partner_architecture_competency_candidates"),
-            }
-            present = {
-                (str(row[0]), str(row[1]))
-                for row in conn.execute(
-                    """
-                    SELECT type, name FROM sqlite_master
-                    WHERE name IN (
-                      'c03_skill_selection_features',
-                      'c03_role_family_skill_weights',
-                      'graph_paths',
-                      'graph_neighborhoods',
-                      'graph_sibling_links',
-                      'resume_metric_usage',
-                      'section_evidence_budget',
-                      'graph_selection_rejections',
-                      'graph_edges_reverse',
-                      'v_partner_architecture_competency_candidates'
-                    )
-                    """
-                ).fetchall()
-            }
-            if not required_objects.issubset(present):
-                return False
-            meta = load_graph_metadata_row(conn)
-            summary = (
-                meta.get("graph_count_summary")
-                if isinstance(meta.get("graph_count_summary"), dict)
-                else {}
+            expected_count = int(summary[summary_key])
+        except (TypeError, ValueError):
+            issues.append(
+                f"{table_name} population count unavailable: metadata[{summary_key}]={summary[summary_key]!r}"
             )
-            if (
-                summary.get("c03_sqlite_materializer_code_version")
-                != C03_SQLITE_MATERIALIZER_CODE_VERSION
-            ):
-                return False
-            return str(meta.get("ledger_hash") or "") == _ledger_hash(repo_root)
-        finally:
+            continue
+        actual_count = int(conn.execute(f'SELECT COUNT(*) FROM "{table_name}"').fetchone()[0])
+        if actual_count != expected_count:
+            issues.append(
+                f"{table_name} population count mismatch: "
+                f"metadata[{summary_key}]={expected_count}, actual={actual_count}"
+            )
+    if issues:
+        raise ValueError("; ".join(issues))
+
+
+def _resume_metric_usage_ranking_input_digest(
+    conn: sqlite3.Connection,
+    *,
+    run_id: str,
+) -> str:
+    """Digest only the run-scoped usage values consumed by C0.3 ranking."""
+    effective_run_id = str(run_id or "") or "__NO_CURRENT_RUN__"
+    usage_rows = [
+        {
+            "fact_id": str(row[0] or ""),
+            "skill_id": str(row[1] or ""),
+            "usage_count": int(row[2] or 0),
+        }
+        for row in conn.execute(
+            """
+            SELECT fact_id, skill_id, SUM(usage_count) AS usage_count
+            FROM resume_metric_usage
+            WHERE run_id = ?
+            GROUP BY fact_id, skill_id
+            ORDER BY fact_id, skill_id
+            """,
+            (effective_run_id,),
+        ).fetchall()
+    ]
+    payload = {
+        "schema_version": RANKING_INPUT_DIGEST_SCHEMA_VERSION,
+        "effective_run_id": effective_run_id,
+        "usage_rows": usage_rows,
+    }
+    material = json.dumps(
+        payload,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(material.encode("utf-8")).hexdigest()
+
+
+def _validate_c03_graph_sqlite_connection(
+    conn: sqlite3.Connection,
+    *,
+    repo_root: Path,
+    db_path: Path,
+) -> dict[str, Any]:
+    """Validate one already-open C0.3 projection connection without mutating it."""
+    root = Path(repo_root)
+    path = Path(db_path)
+    try:
+        require_graphdb_capability_schema(conn)
+        required_objects = {
+            ("table", "graph_metadata"),
+            ("table", "graph_nodes"),
+            ("table", "graph_edges"),
+            ("table", "skill_fact_links"),
+            ("table", "section_eligibility"),
+            ("table", "role_family_projection"),
+            ("table", "c03_skill_selection_features"),
+            ("table", "c03_role_family_skill_weights"),
+            ("table", "graph_paths"),
+            ("table", "graph_neighborhoods"),
+            ("table", "graph_sibling_links"),
+            ("table", "resume_metric_usage"),
+            ("table", "section_evidence_budget"),
+            ("table", "graph_selection_rejections"),
+            ("view", "graph_edges_reverse"),
+            ("view", "v_partner_architecture_competency_candidates"),
+        }
+        object_names = tuple(sorted(name for _object_type, name in required_objects))
+        placeholders = ",".join("?" for _ in object_names)
+        present = {
+            (str(row[0]), str(row[1]))
+            for row in conn.execute(
+                f"SELECT type, name FROM sqlite_master WHERE name IN ({placeholders})",
+                object_names,
+            ).fetchall()
+        }
+        missing_objects = sorted(required_objects - present)
+        if missing_objects:
+            missing = ", ".join(f"{object_type}:{name}" for object_type, name in missing_objects)
+            raise ValueError(f"required projection objects missing: {missing}")
+        _require_projection_columns(conn)
+        meta = load_graph_metadata_row(conn)
+        authority_status = str(meta.get("authority_status") or "").strip()
+        if authority_status != C03_GRAPH_SQLITE_AUTHORITY_STATUS:
+            raise ValueError(
+                "graph_metadata authority_status is not trusted: "
+                f"{authority_status!r} != {C03_GRAPH_SQLITE_AUTHORITY_STATUS!r}"
+            )
+        summary = meta.get("graph_count_summary") if isinstance(meta.get("graph_count_summary"), dict) else {}
+        _require_projection_population_counts(conn, summary)
+        validate_graphdb_capability_integrity(
+            conn,
+            expected_materializer_version=C03_SQLITE_MATERIALIZER_CODE_VERSION,
+        )
+        validated_sqlite_logical_digest = compute_sqlite_graph_digest(conn)
+        validated_sqlite_schema_digest = compute_sqlite_schema_digest(conn)
+
+        actual_version = str(summary.get("c03_sqlite_materializer_code_version") or "")
+        if actual_version != C03_SQLITE_MATERIALIZER_CODE_VERSION:
+            raise ValueError(
+                "projection stale: materializer version "
+                f"{actual_version!r} != {C03_SQLITE_MATERIALIZER_CODE_VERSION!r}"
+            )
+        expected_hash = _ledger_hash(root)
+        actual_hash = str(meta.get("ledger_hash") or "")
+        if actual_hash != expected_hash:
+            raise ValueError("projection stale: ledger digest mismatch")
+        meta = dict(meta)
+        meta["validated_sqlite_logical_digest"] = validated_sqlite_logical_digest
+        meta["validated_sqlite_schema_digest"] = validated_sqlite_schema_digest
+    except C03GraphProjectionUnavailableError:
+        raise
+    except (OSError, RuntimeError, TypeError, ValueError, sqlite3.Error) as exc:
+        raise C03GraphProjectionUnavailableError(
+            f"C0.3 graph SQLite projection unavailable at {path}: {exc}"
+        ) from exc
+    return meta
+
+
+def _open_c03_graph_sqlite_read_snapshot(
+    repo_root: Path,
+    db_path: Path | None = None,
+) -> tuple[Path, sqlite3.Connection, dict[str, Any]]:
+    """Open, pin, and validate one read-only C0.3 SQLite snapshot."""
+    root = Path(repo_root)
+    path = _projection_path(root, db_path)
+    if not path.is_file():
+        raise C03GraphProjectionUnavailableError(
+            f"C0.3 graph SQLite projection unavailable; file missing: {path}"
+        )
+
+    conn: sqlite3.Connection | None = None
+    try:
+        conn = open_graph_sqlite(repo_root=root, db_path=path, read_only=True)
+        conn.execute("BEGIN")
+        meta = _validate_c03_graph_sqlite_connection(
+            conn,
+            repo_root=root,
+            db_path=path,
+        )
+    except C03GraphProjectionUnavailableError:
+        if conn is not None:
             conn.close()
-    except (OSError, ValueError, sqlite3.Error):
-        return False
+        raise
+    except (OSError, RuntimeError, TypeError, ValueError, sqlite3.Error) as exc:
+        if conn is not None:
+            conn.close()
+        raise C03GraphProjectionUnavailableError(
+            f"C0.3 graph SQLite projection unavailable at {path}: {exc}"
+        ) from exc
+    return path, conn, meta
 
 
-def _ensure_sqlite(repo_root: Path, db_path: Path | None) -> Path:
-    path = db_path or default_graph_sqlite_path(repo_root)
-    if not path.is_file() or not _sqlite_projection_current(repo_root, path):
-        materialize_augmented_skills_graph_sqlite(repo_root=repo_root, db_path=path)
+def require_c03_graph_sqlite(repo_root: Path, db_path: Path | None = None) -> Path:
+    """Verify and return an existing current C0.3 projection without mutating it."""
+    path, conn, _meta = _open_c03_graph_sqlite_read_snapshot(repo_root, db_path)
+    conn.close()
     return path
 
 
 def ensure_c03_graph_sqlite(repo_root: Path, db_path: Path | None = None) -> Path:
-    """Return a current generated SQLite projection for C0.3 runtime reads."""
-    return _ensure_sqlite(repo_root, db_path)
+    """Explicitly materialize a missing/stale C0.3 projection, then verify it."""
+    root = Path(repo_root)
+    path = _projection_path(root, db_path)
+    try:
+        return require_c03_graph_sqlite(root, path)
+    except C03GraphProjectionUnavailableError:
+        materialize_augmented_skills_graph_sqlite(repo_root=root, db_path=path)
+    return require_c03_graph_sqlite(root, path)
 
 
 from apps_rg.fact_inventory.graph_sqlite_path_index import (
+    compute_sqlite_graph_digest,
+    compute_sqlite_schema_digest,
     query_best_metric_candidates,
     query_reverse_metric_paths,
     query_section_evidence_budget,
     query_sibling_alternatives,
+    require_graphdb_capability_schema,
+    table_columns,
+    validate_graphdb_capability_integrity,
 )
 
 PARTNER_ARCHITECTURE_ROLE_KEYS: tuple[str, ...] = (
@@ -183,17 +444,23 @@ def assemble_c03_graph_sqlite_context(
     max_skills: int = 40,
     max_pillars: int = 20,
     pillar_hint_ids: list[str] | None = None,
+    run_id: str = "",
 ) -> dict[str, Any]:
     """Query SQLite graph for C0.3-style context bundle + inline receipt fields."""
     root = repo_root or _repo_root()
-    path = _ensure_sqlite(root, db_path)
+    # The execution boundary refreshes generated state; health/report readers stay pure.
+    path = ensure_c03_graph_sqlite(root, db_path)
     facts_in = sorted({str(x).strip() for x in (selected_fact_ids or []) if str(x).strip()})
     sec = str(section_id or "").strip() or "executive_summary"
     rf = str(role_family_key or "").strip() or "SVP_ENGINEERING_AI_PLATFORM"
 
-    conn = open_graph_sqlite(repo_root=root, db_path=path)
+    path, conn, meta = _open_c03_graph_sqlite_read_snapshot(root, path)
     try:
-        meta = load_graph_metadata_row(conn)
+        run_id_scope = str(run_id or "")
+        ranking_input_digest = _resume_metric_usage_ranking_input_digest(
+            conn,
+            run_id=run_id_scope,
+        )
         prof = conn.execute(
             """
             SELECT role_family_id, projection_role_family_key, track_weight_profile,
@@ -217,9 +484,13 @@ def assemble_c03_graph_sqlite_context(
             for item in targeting:
                 if isinstance(item, dict) and item.get("pillar_id"):
                     pillar_ids.append(str(item["pillar_id"]))
-                elif isinstance(item, str):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
+                elif isinstance(
+                    item, str
+                ):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
                     pillar_ids.append(item)
-        except json.JSONDecodeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
+        except (
+            json.JSONDecodeError
+        ):  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
         if not pillar_ids and pillar_hint_ids:
             pillar_ids = [str(p).strip() for p in pillar_hint_ids if str(p).strip()][:max_pillars]
@@ -260,8 +531,9 @@ def assemble_c03_graph_sqlite_context(
             (max_skills,),
         ).fetchall()
 
-        bridge_edges = conn.execute(
-            f"""
+        bridge_edges = (
+            conn.execute(
+                f"""
             SELECT edge_id, source_node_id, target_node_id, edge_family, edge_type, weight, section_fit
             FROM graph_edges
             WHERE edge_type IN ({",".join("?" * len(BRIDGE_EDGE_TYPES))})
@@ -272,20 +544,23 @@ def assemble_c03_graph_sqlite_context(
             ORDER BY edge_type, edge_id
             LIMIT 120
             """,
-            (
-                *BRIDGE_EDGE_TYPES,
-                *pillar_args,
-            ),
-        ).fetchall() if pillar_ids else conn.execute(
-            f"""
+                (
+                    *BRIDGE_EDGE_TYPES,
+                    *pillar_args,
+                ),
+            ).fetchall()
+            if pillar_ids
+            else conn.execute(
+                f"""
             SELECT edge_id, source_node_id, target_node_id, edge_family, edge_type, weight, section_fit
             FROM graph_edges
             WHERE edge_type IN ({",".join("?" * len(BRIDGE_EDGE_TYPES))})
             ORDER BY edge_type, edge_id
             LIMIT 120
             """,
-            tuple(BRIDGE_EDGE_TYPES),
-        ).fetchall()
+                tuple(BRIDGE_EDGE_TYPES),
+            ).fetchall()
+        )
 
         section_elig = conn.execute(
             """
@@ -347,8 +622,9 @@ def assemble_c03_graph_sqlite_context(
             )
             partner_architecture_sqlite_query_status = "AVAILABLE"
         except sqlite3.Error as exc:
-            partner_architecture_candidate_rows = []
-            partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
+            raise C03GraphProjectionUnavailableError(
+                f"C0.3 graph SQLite required partner view unavailable at {path}: {exc}"
+            ) from exc
         try:
             selected_skill_ids = [str(row[0] or "") for row in fact_links if str(row[0] or "")]
             reverse_targets = facts_in[:5] or selected_skill_ids[:5]
@@ -362,6 +638,7 @@ def assemble_c03_graph_sqlite_context(
                 conn,
                 section_id=sec,
                 role_family_key=rf,
+                run_id=run_id_scope,
                 limit=20,
             )
             section_evidence_budget = query_section_evidence_budget(
@@ -377,8 +654,9 @@ def assemble_c03_graph_sqlite_context(
                 )
                 partner_architecture_sqlite_query_status = "AVAILABLE"
             except sqlite3.Error as exc:
-                partner_architecture_candidate_rows = []
-                partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
+                raise C03GraphProjectionUnavailableError(
+                    f"C0.3 graph SQLite required partner view unavailable at {path}: {exc}"
+                ) from exc
             conn.row_factory = sqlite3.Row
             rejected_candidate_receipts = [
                 dict(row)
@@ -396,15 +674,9 @@ def assemble_c03_graph_sqlite_context(
                 ).fetchall()
             ]
         except sqlite3.Error as exc:
-            path_index_status = f"UNAVAILABLE:{type(exc).__name__}"
-            reverse_path_receipts = []
-            sibling_alternatives = []
-            metric_novelty_candidates = []
-            rejected_candidate_receipts = []
-            section_evidence_budget = None
-            if partner_architecture_sqlite_query_status != "AVAILABLE":
-                partner_architecture_candidate_rows = []
-                partner_architecture_sqlite_query_status = f"UNAVAILABLE:{type(exc).__name__}"
+            raise C03GraphProjectionUnavailableError(
+                f"C0.3 graph SQLite path index unavailable at {path}: {exc}"
+            ) from exc
     finally:
         conn.close()
 
@@ -433,11 +705,16 @@ def assemble_c03_graph_sqlite_context(
     ]
 
     receipt = {
-        "schema_version": "c03_graph_sqlite_context_receipt_v1",
+        "schema_version": "c03_graph_sqlite_context_receipt_v2",
         "generated_at_utc": _utc_now(),
         "sqlite_db_path": str(path),
         "graph_version": meta["graph_version"],
         "graph_hash": meta["ledger_hash"],
+        "canonical_ledger_hash": meta["ledger_hash"],
+        "sqlite_logical_digest": meta["validated_sqlite_logical_digest"],
+        "sqlite_schema_digest": meta["validated_sqlite_schema_digest"],
+        "resume_metric_usage_ranking_input_digest": ranking_input_digest,
+        "ranking_input_run_id_scope": run_id_scope,
         "query_inputs": {
             "role_family_key": rf,
             "section_id": sec,
@@ -550,9 +827,9 @@ def write_c03_graph_sqlite_context_receipt(
 
     payload = bundle.get("receipt") or bundle
     if out_path.exists() and run_id is None:
-        digest = hashlib.sha256(
-            json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
-        ).hexdigest()[:8]
+        digest = hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode("utf-8")).hexdigest()[
+            :8
+        ]
         out_path = out_dir / f"c03_graph_sqlite_context_{rid}_{digest}.json"
     _wg.write_text(
         out_path,
@@ -604,7 +881,12 @@ def enrich_c03_bound_with_sqlite_context(
             ),
         }
         return out
-    except (OSError, ValueError, FileNotFoundError) as exc:
+    except (
+        C03GraphProjectionUnavailableError,
+        OSError,
+        ValueError,
+        FileNotFoundError,
+    ) as exc:
         out = dict(c03_doc)
         out["c03_sqlite_attach_status"] = "DEGRADED"
         out["c03_sqlite_context_status"] = "UNAVAILABLE"
@@ -620,5 +902,6 @@ __all__ = [
     "ensure_c03_graph_sqlite",
     "enrich_c03_bound_with_sqlite_context",
     "query_partner_architecture_competency_candidates",
+    "require_c03_graph_sqlite",
     "write_c03_graph_sqlite_context_receipt",
 ]

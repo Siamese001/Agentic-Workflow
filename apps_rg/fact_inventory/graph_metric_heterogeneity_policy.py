@@ -6,14 +6,22 @@ canonical graph overwrite materializer and C0.3 traversal hardening.
 """
 from __future__ import annotations
 
-from collections import Counter, defaultdict
-from dataclasses import dataclass
+import re
+from collections import Counter
 from typing import Any, Iterable
 
-POLICY_VERSION = "c03_graph_metric_heterogeneity_policy_v1"
+POLICY_VERSION = "c03_graph_metric_heterogeneity_policy_v2"
 
 METRIC_BUCKETS: dict[str, tuple[str, ...]] = {
-    "revenue_growth": ("revenue", "arr", "renewal", "pipeline", "booking", "sales"),
+    "revenue_growth": (
+        "revenue",
+        "arr",
+        "renewal",
+        "sales pipeline",
+        "deal pipeline",
+        "booking",
+        "sales",
+    ),
     "cost_efficiency": ("cost", "savings", "efficiency", "latency", "cycle time", "automation"),
     "risk_governance": ("risk", "governance", "audit", "control", "compliance", "lineage"),
     "platform_scale": ("platform", "scale", "reuse", "throughput", "slo", "availability"),
@@ -38,7 +46,10 @@ def normalize_token(value: Any) -> str:
 def infer_metric_bucket(text: str, fallback: str = "general_business_outcome") -> str:
     haystack = normalize_token(text)
     for bucket, needles in METRIC_BUCKETS.items():
-        if any(n in haystack for n in needles):
+        if any(
+            re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", haystack)
+            for needle in needles
+        ):
             return bucket
     return fallback
 

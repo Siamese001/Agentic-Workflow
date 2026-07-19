@@ -1177,17 +1177,23 @@ class TestPhaseAAuthority:
         ):
             _node(conn, idx, f"helper_site{idx}", "L2", writer_file)
             _edge(conn, idx, target_node_id, "writes_to", symbol=symbol)
-        non_exempt_symbol = _NON_DURABLE_ARTIFACT_HELPER_SITES[0][0]
-        non_exempt_node_id = target_node_id + 1
-        real_writer_node_id = non_exempt_node_id + 1
-        _node(
-            conn,
-            non_exempt_node_id,
-            "same_symbol_real_writer",
-            "L2",
-            "agentic_core/L2_execution/utils/non_exempt_helper_site.py",
-        )
-        _edge(conn, non_exempt_node_id, target_node_id, "writes_to", symbol=non_exempt_symbol)
+        non_exempt_sites: list[tuple[str, str]] = []
+        for offset, (symbol, _writer_file) in enumerate(
+            _NON_DURABLE_ARTIFACT_HELPER_SITES,
+            start=1,
+        ):
+            non_exempt_node_id = target_node_id + offset
+            non_exempt_path = f"agentic_core/L2_execution/utils/non_exempt_helper_site_{offset}.py"
+            _node(
+                conn,
+                non_exempt_node_id,
+                f"same_symbol_real_writer_{offset}",
+                "L2",
+                non_exempt_path,
+            )
+            _edge(conn, non_exempt_node_id, target_node_id, "writes_to", symbol=symbol)
+            non_exempt_sites.append((symbol, non_exempt_path))
+        real_writer_node_id = target_node_id + len(non_exempt_sites) + 1
         _node(
             conn,
             real_writer_node_id,
@@ -1209,10 +1215,10 @@ class TestPhaseAAuthority:
             assert (symbol, writer_file) not in flagged, (
                 f"{symbol!r} in {writer_file!r} is a site-scoped false positive"
             )
-        assert (
-            non_exempt_symbol,
-            "agentic_core/L2_execution/utils/non_exempt_helper_site.py",
-        ) in flagged
+        for symbol, writer_file in non_exempt_sites:
+            assert (symbol, writer_file) in flagged, (
+                f"{symbol!r} outside its exact helper site must remain visible"
+            )
         assert ("path.write_text", "agentic_core/L2_execution/utils/real_writer.py") in flagged
 
     def test_write_sovereignty_excludes_pascalcase_class_instantiation(self, tmp_path: Path) -> None:

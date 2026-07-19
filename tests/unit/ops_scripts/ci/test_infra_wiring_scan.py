@@ -199,6 +199,7 @@ class TestScanDirectory:
     @pytest.mark.parametrize(
         "relative_path",
         [
+            "apps_rg/fact_inventory/c03_graph_kpi_health.py",
             "apps_rg/fact_inventory/graph_sqlite_path_index.py",
             "apps_rg/runtime/c03_graph_sqlite_context.py",
             "apps_rg/runtime/doctor.py",
@@ -217,15 +218,20 @@ class TestScanDirectory:
         baseline_path = root / "ops_scripts/ci/baselines/wiring_graph_reach_ratchet.json"
         baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
         latest_tighten = baseline["tighten_history"][-1]
-        latest_absorb = baseline["loosen_history"][-1]
+        matching_absorbs = [
+            entry
+            for entry in baseline["loosen_history"]
+            if "apps_research/integrations/search_retrieval.py" in entry["reason"]
+        ]
 
         assert baseline["count"] == latest_tighten["to"]
         assert latest_tighten["from"] >= latest_tighten["to"]
-        assert latest_absorb["from"] == 2788
-        assert latest_absorb["to"] == 2789
-        assert latest_absorb["raw_violation_count"] == 2789
-        assert latest_absorb["margin"] == 0
-        assert "apps_research/integrations/search_retrieval.py" in latest_absorb["reason"]
+        assert len(matching_absorbs) == 1
+        search_retrieval_absorb = matching_absorbs[0]
+        assert search_retrieval_absorb["from"] == 2788
+        assert search_retrieval_absorb["to"] == 2789
+        assert search_retrieval_absorb["raw_violation_count"] == 2789
+        assert search_retrieval_absorb["margin"] == 0
 
 
 # ---------------------------------------------------------------------------

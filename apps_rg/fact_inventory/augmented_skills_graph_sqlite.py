@@ -2,22 +2,26 @@
 
 Graph rows organize/rout capabilities — they are not claim proof. Facts remain proof substrate.
 """
+
 from __future__ import annotations
 
 import hashlib
 import json
 import os
 import sqlite3
+import tempfile
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable, Mapping
 
 from apps_rg.fact_inventory.augmented_skills_graph import (
     graph_version_from_payload,
     load_augmented_skills_graph,
 )
 from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
+    REGISTERED_GRAPH_EDGE_SIGNATURES,
+    derive_registered_graph_endpoint_types,
     skill_row_eligible_for_external_claim,
     validate_arsenal_ledger_shape,
 )
@@ -29,7 +33,7 @@ from apps_rg.fact_inventory.track_weighted_graph_expansion import (
 
 REPO_REL_DB = Path("artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite")
 C03_SQLITE_MATERIALIZER_CODE_VERSION = (
-    "c03_sqlite_materializer.v20260627.partner_section_eligibility_freshness"
+    "c03_sqlite_materializer.v20260718.lossless_types_signatures_full_digest"
 )
 
 CANONICAL_NODE_TYPES = frozenset(
@@ -50,6 +54,8 @@ CANONICAL_NODE_TYPES = frozenset(
         "policy",
         "policy_rule",
         "graph_ref",
+        "metric",
+        "metric_bucket",
         # W2.0 (typed-edge-role-facet-guardrails-a6f3d2): first-class metric_outcome
         # nodes materialized from role_episode_bundle metric_outcome_nodes dicts.
         "metric_outcome",
@@ -57,21 +63,126 @@ CANONICAL_NODE_TYPES = frozenset(
 )
 
 RAW_TO_CANONICAL_NODE_TYPE: dict[str, str] = {
-    "domain_pillar": "pillar",
-    "skill_row": "skill",
-    "career_track": "career_track",
-    "career_epoch": "career_epoch",
+    "atomic_proof_fact": "fact",
+    "bullet_fact": "locked_bullet",
     "capability_domain": "capability_domain",
-    "identity_north_star": "role_family",
+    "career_epoch": "career_epoch",
+    "career_track": "career_track",
+    "certification_evidence": "certification",
+    "domain_pillar": "pillar",
     "employment": "employment",
-    "locked_bullet": "locked_bullet",
-    "certification": "certification",
-    "section": "section",
-    "concept": "concept",
-    "repo_evidence": "repo_evidence",
+    "experience_evidence": "employment",
+    "external_claim_policy": "policy",
+    "identity_north_star": "role_family",
+    "metric": "metric",
+    "metric_bucket": "metric_bucket",
     "policy": "policy",
     "policy_rule": "policy_rule",
+    "repository_evidence": "repo_evidence",
+    "resume_section_projection": "section",
+    "skill": "skill",
+    "skill_row": "skill",
+    "source_concept": "concept",
+    "targeting_input": "graph_ref",
 }
+
+
+def project_registered_graph_node_type(raw_type: str) -> str:
+    """Project one registered canonical node type into the SQLite type system."""
+    normalized = str(raw_type or "").strip()
+    projected = RAW_TO_CANONICAL_NODE_TYPE.get(normalized)
+    if projected is None:
+        raise ValueError(f"unregistered canonical graph node type: {normalized or '<blank>'}")
+    return projected
+
+
+def projected_registered_graph_edge_signatures() -> dict[str, frozenset[tuple[str, str]]]:
+    """Return canonical-normalized plus app-derived projected signatures."""
+    from apps_rg.fact_inventory.metric_outcome_materializer import (
+        METRIC_OUTCOME_EDGE_SIGNATURES,
+    )
+
+    signatures = {
+        edge_type: frozenset(
+            (
+                project_registered_graph_node_type(source_type),
+                project_registered_graph_node_type(target_type),
+            )
+            for source_type, target_type in raw_signatures
+        )
+        for edge_type, raw_signatures in REGISTERED_GRAPH_EDGE_SIGNATURES.items()
+    }
+    overlap = set(signatures) & set(METRIC_OUTCOME_EDGE_SIGNATURES)
+    if overlap:
+        raise ValueError(f"metric-outcome edge signatures collide with canonical registry: {sorted(overlap)}")
+    signatures.update(METRIC_OUTCOME_EDGE_SIGNATURES)
+    return signatures
+
+
+def projected_graph_edge_signature_report(
+    *,
+    node_types_by_id: Mapping[str, str],
+    edge_rows: Iterable[Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Assert registered edges retain a valid normalized endpoint signature."""
+    projected_signatures = projected_registered_graph_edge_signatures()
+    edge_count = 0
+    registered_edge_count = 0
+    valid_edge_count = 0
+    unregistered_edge_count = 0
+    failures: list[dict[str, Any]] = []
+    for row in edge_rows:
+        edge_count += 1
+        edge_id = str(row.get("edge_id") or "").strip()
+        edge_type = str(row.get("edge_type") or "").strip()
+        source_node_id = str(row.get("source_node_id") or "").strip()
+        target_node_id = str(row.get("target_node_id") or "").strip()
+        source_type = str(node_types_by_id.get(source_node_id) or "").strip()
+        target_type = str(node_types_by_id.get(target_node_id) or "").strip()
+        allowed = projected_signatures.get(edge_type)
+        if allowed is None:
+            unregistered_edge_count += 1
+            failures.append(
+                {
+                    "edge_id": edge_id or "<blank-edge-id>",
+                    "edge_type": edge_type or "<blank-edge-type>",
+                    "source_node_id": source_node_id,
+                    "target_node_id": target_node_id,
+                    "source_type": source_type or "<missing>",
+                    "target_type": target_type or "<missing>",
+                    "allowed_projected_signatures": [],
+                    "reason": "edge_type_unregistered",
+                }
+            )
+            continue
+        registered_edge_count += 1
+        if source_type and target_type and (source_type, target_type) in allowed:
+            valid_edge_count += 1
+            continue
+        failures.append(
+            {
+                "edge_id": edge_id or "<blank-edge-id>",
+                "edge_type": edge_type,
+                "source_node_id": source_node_id,
+                "target_node_id": target_node_id,
+                "source_type": source_type or "<missing>",
+                "target_type": target_type or "<missing>",
+                "allowed_projected_signatures": [
+                    {"source_type": allowed_source, "target_type": allowed_target}
+                    for allowed_source, allowed_target in sorted(allowed)
+                ],
+                "reason": "projected_endpoint_signature_invalid",
+            }
+        )
+    return {
+        "edge_count": edge_count,
+        "registered_edge_count": registered_edge_count,
+        "valid_edge_count": valid_edge_count,
+        "failure_count": len(failures),
+        "unregistered_edge_count": unregistered_edge_count,
+        "failure_locators": failures,
+    }
+
 
 POLICY_EDGE_SOURCE_KEYS = frozenset(
     {
@@ -203,14 +314,14 @@ FORBIDDEN_PROMOTION_SKILL_SUBSTRINGS = (
 DDL_STATEMENTS: tuple[str, ...] = (
     """
     CREATE TABLE IF NOT EXISTS graph_nodes (
-        node_id TEXT PRIMARY KEY,
-        node_type TEXT NOT NULL,
-        label TEXT NOT NULL,
+        node_id TEXT PRIMARY KEY CHECK (TRIM(node_id) <> ''),
+        node_type TEXT NOT NULL CHECK (TRIM(node_type) <> ''),
+        label TEXT NOT NULL CHECK (TRIM(label) <> ''),
         description TEXT NOT NULL DEFAULT '',
         activation_status TEXT NOT NULL DEFAULT '',
         support_level TEXT NOT NULL DEFAULT '',
         confidence TEXT NOT NULL DEFAULT '',
-        external_eligible INTEGER NOT NULL DEFAULT 0,
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -218,14 +329,14 @@ DDL_STATEMENTS: tuple[str, ...] = (
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_edges (
-        edge_id TEXT PRIMARY KEY,
-        source_node_id TEXT NOT NULL,
-        target_node_id TEXT NOT NULL,
+        edge_id TEXT PRIMARY KEY CHECK (TRIM(edge_id) <> ''),
+        source_node_id TEXT NOT NULL CHECK (TRIM(source_node_id) <> ''),
+        target_node_id TEXT NOT NULL CHECK (TRIM(target_node_id) <> ''),
         edge_family TEXT NOT NULL DEFAULT '',
-        edge_type TEXT NOT NULL,
-        weight REAL NOT NULL DEFAULT 1.0,
+        edge_type TEXT NOT NULL CHECK (TRIM(edge_type) <> ''),
+        weight REAL NOT NULL DEFAULT 1.0 CHECK (weight >= 0.0 AND weight <= 1.0),
         confidence TEXT NOT NULL DEFAULT '',
-        directional INTEGER NOT NULL DEFAULT 1,
+        directional INTEGER NOT NULL DEFAULT 1 CHECK (directional IN (0, 1)),
         evidence_status TEXT NOT NULL DEFAULT '',
         section_fit TEXT NOT NULL DEFAULT '',
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
@@ -236,7 +347,9 @@ DDL_STATEMENTS: tuple[str, ...] = (
         edge_note TEXT NOT NULL DEFAULT '',
         operator_note TEXT NOT NULL DEFAULT '',
         business_story TEXT NOT NULL DEFAULT '',
-        technical_story TEXT NOT NULL DEFAULT ''
+        technical_story TEXT NOT NULL DEFAULT '',
+        FOREIGN KEY (source_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (target_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -244,23 +357,26 @@ DDL_STATEMENTS: tuple[str, ...] = (
         skill_id TEXT NOT NULL,
         fact_id TEXT NOT NULL,
         support_level TEXT NOT NULL DEFAULT '',
-        claim_eligibility INTEGER NOT NULL DEFAULT 0,
+        claim_eligibility INTEGER NOT NULL DEFAULT 0 CHECK (claim_eligibility IN (0, 1)),
         source_trace TEXT NOT NULL DEFAULT '',
         archive_trace TEXT NOT NULL DEFAULT '',
-        human_confirmed INTEGER NOT NULL DEFAULT 0,
-        external_eligible INTEGER NOT NULL DEFAULT 0,
-        PRIMARY KEY (skill_id, fact_id)
+        human_confirmed INTEGER NOT NULL DEFAULT 0 CHECK (human_confirmed IN (0, 1)),
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
+        PRIMARY KEY (skill_id, fact_id),
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (fact_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS section_eligibility (
         node_id TEXT NOT NULL,
         section_id TEXT NOT NULL,
-        allowed INTEGER NOT NULL DEFAULT 0,
+        allowed INTEGER NOT NULL DEFAULT 0 CHECK (allowed IN (0, 1)),
         claim_policy TEXT NOT NULL DEFAULT '',
         reason TEXT NOT NULL DEFAULT '',
         blocked_reason TEXT NOT NULL DEFAULT '',
-        PRIMARY KEY (node_id, section_id)
+        PRIMARY KEY (node_id, section_id),
+        FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -288,19 +404,21 @@ DDL_STATEMENTS: tuple[str, ...] = (
         confidence TEXT NOT NULL DEFAULT '',
         activation_status TEXT NOT NULL DEFAULT '',
         support_level TEXT NOT NULL DEFAULT '',
-        external_eligible INTEGER NOT NULL DEFAULT 0,
+        external_eligible INTEGER NOT NULL DEFAULT 0 CHECK (external_eligible IN (0, 1)),
         source_authority TEXT NOT NULL DEFAULT 'augmented_skills_graph',
         source_trace TEXT NOT NULL DEFAULT '[]',
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS c03_role_family_skill_weights (
         skill_id TEXT NOT NULL,
         role_family_key TEXT NOT NULL,
-        weight REAL NOT NULL DEFAULT 0.0,
+        weight REAL NOT NULL DEFAULT 0.0 CHECK (weight >= 0.0),
         source TEXT NOT NULL DEFAULT 'skill_row.role_family_weights',
-        PRIMARY KEY (skill_id, role_family_key)
+        PRIMARY KEY (skill_id, role_family_key),
+        FOREIGN KEY (skill_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -308,30 +426,43 @@ DDL_STATEMENTS: tuple[str, ...] = (
         path_id TEXT PRIMARY KEY,
         start_node_id TEXT NOT NULL,
         end_node_id TEXT NOT NULL,
-        path_depth INTEGER NOT NULL,
+        path_depth INTEGER NOT NULL CHECK (path_depth >= 1),
         path_signature TEXT NOT NULL,
-        node_path_json TEXT NOT NULL,
-        edge_path_json TEXT NOT NULL,
-        edge_types_json TEXT NOT NULL,
-        proof_fact_ids_json TEXT NOT NULL DEFAULT '[]',
-        metric_ids_json TEXT NOT NULL DEFAULT '[]',
-        section_ids_json TEXT NOT NULL DEFAULT '[]',
+        node_path_json TEXT NOT NULL
+            CHECK (json_valid(node_path_json) AND json_type(node_path_json) = 'array'),
+        edge_path_json TEXT NOT NULL
+            CHECK (json_valid(edge_path_json) AND json_type(edge_path_json) = 'array'),
+        edge_types_json TEXT NOT NULL
+            CHECK (json_valid(edge_types_json) AND json_type(edge_types_json) = 'array'),
+        proof_fact_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(proof_fact_ids_json) AND json_type(proof_fact_ids_json) = 'array'),
+        metric_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(metric_ids_json) AND json_type(metric_ids_json) = 'array'),
+        section_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(section_ids_json) AND json_type(section_ids_json) = 'array'),
         path_score REAL NOT NULL DEFAULT 0.0,
         novelty_score REAL NOT NULL DEFAULT 0.0,
         proof_strength_score REAL NOT NULL DEFAULT 0.0,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (start_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (end_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_neighborhoods (
         center_node_id TEXT NOT NULL,
         neighbor_node_id TEXT NOT NULL,
-        distance INTEGER NOT NULL,
-        connecting_path_json TEXT NOT NULL,
-        edge_types_json TEXT NOT NULL,
+        distance INTEGER NOT NULL CHECK (distance >= 1),
+        connecting_path_json TEXT NOT NULL
+            CHECK (json_valid(connecting_path_json) AND json_type(connecting_path_json) = 'array'),
+        edge_types_json TEXT NOT NULL
+            CHECK (json_valid(edge_types_json) AND json_type(edge_types_json) = 'array'),
         relationship_summary TEXT NOT NULL DEFAULT '',
         neighbor_score REAL NOT NULL DEFAULT 0.0,
-        PRIMARY KEY (center_node_id, neighbor_node_id, distance)
+        PRIMARY KEY (center_node_id, neighbor_node_id, distance),
+        CHECK (center_node_id <> neighbor_node_id),
+        FOREIGN KEY (center_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (neighbor_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
@@ -342,44 +473,54 @@ DDL_STATEMENTS: tuple[str, ...] = (
         shared_parent_node_id TEXT NOT NULL DEFAULT '',
         shared_edge_type TEXT NOT NULL DEFAULT '',
         sibling_score REAL NOT NULL DEFAULT 0.0,
-        PRIMARY KEY (node_id, sibling_node_id)
+        PRIMARY KEY (
+            node_id, sibling_node_id, shared_parent_node_id, shared_edge_type
+        ),
+        CHECK (node_id <> sibling_node_id),
+        FOREIGN KEY (node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (sibling_node_id) REFERENCES graph_nodes(node_id),
+        FOREIGN KEY (shared_parent_node_id) REFERENCES graph_nodes(node_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS resume_metric_usage (
-        run_id TEXT NOT NULL,
-        resume_section TEXT NOT NULL,
-        metric_id TEXT NOT NULL,
+        run_id TEXT NOT NULL CHECK (TRIM(run_id) <> ''),
+        resume_section TEXT NOT NULL CHECK (TRIM(resume_section) <> ''),
+        metric_id TEXT NOT NULL CHECK (TRIM(metric_id) <> ''),
         metric_value TEXT NOT NULL DEFAULT '',
         fact_id TEXT NOT NULL DEFAULT '',
         skill_id TEXT NOT NULL DEFAULT '',
         role_family_key TEXT NOT NULL DEFAULT '',
-        usage_count INTEGER NOT NULL DEFAULT 1,
+        usage_count INTEGER NOT NULL DEFAULT 1 CHECK (usage_count >= 1),
         created_at TEXT NOT NULL,
         PRIMARY KEY (run_id, resume_section, metric_id)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS section_evidence_budget (
-        section_id TEXT NOT NULL,
-        role_family_key TEXT NOT NULL,
-        max_metric_reuse INTEGER NOT NULL DEFAULT 1,
-        max_fact_family_reuse INTEGER NOT NULL DEFAULT 2,
-        required_node_types_json TEXT NOT NULL DEFAULT '[]',
-        preferred_edge_types_json TEXT NOT NULL DEFAULT '[]',
-        forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]',
-        preferred_metric_families_json TEXT NOT NULL DEFAULT '[]',
+        section_id TEXT NOT NULL CHECK (TRIM(section_id) <> ''),
+        role_family_key TEXT NOT NULL CHECK (TRIM(role_family_key) <> ''),
+        max_metric_reuse INTEGER NOT NULL DEFAULT 1 CHECK (max_metric_reuse >= 0),
+        max_fact_family_reuse INTEGER NOT NULL DEFAULT 2 CHECK (max_fact_family_reuse >= 0),
+        required_node_types_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(required_node_types_json) AND json_type(required_node_types_json) = 'array'),
+        preferred_edge_types_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(preferred_edge_types_json) AND json_type(preferred_edge_types_json) = 'array'),
+        forbidden_metric_ids_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(forbidden_metric_ids_json) AND json_type(forbidden_metric_ids_json) = 'array'),
+        preferred_metric_families_json TEXT NOT NULL DEFAULT '[]'
+            CHECK (json_valid(preferred_metric_families_json) AND json_type(preferred_metric_families_json) = 'array'),
         PRIMARY KEY (section_id, role_family_key)
     )
     """,
     """
     CREATE TABLE IF NOT EXISTS graph_selection_rejections (
-        run_id TEXT NOT NULL,
-        section_id TEXT NOT NULL,
-        candidate_node_id TEXT NOT NULL,
-        candidate_node_type TEXT NOT NULL,
-        rejected_reason TEXT NOT NULL,
-        rejected_at_stage TEXT NOT NULL,
+        run_id TEXT NOT NULL CHECK (TRIM(run_id) <> ''),
+        section_id TEXT NOT NULL CHECK (TRIM(section_id) <> ''),
+        candidate_node_id TEXT NOT NULL CHECK (TRIM(candidate_node_id) <> ''),
+        candidate_node_type TEXT NOT NULL CHECK (TRIM(candidate_node_type) <> ''),
+        rejected_reason TEXT NOT NULL CHECK (TRIM(rejected_reason) <> ''),
+        rejected_at_stage TEXT NOT NULL CHECK (TRIM(rejected_at_stage) <> ''),
         competing_selected_node_id TEXT NOT NULL DEFAULT '',
         path_signature TEXT NOT NULL DEFAULT '',
         created_at TEXT NOT NULL,
@@ -400,6 +541,8 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_type ON graph_edges(edge_type)",
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_src ON graph_edges(source_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_edges_tgt ON graph_edges(target_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_edges_src_type_tgt ON graph_edges(source_node_id, edge_type, target_node_id)",
+    "CREATE UNIQUE INDEX IF NOT EXISTS uq_graph_edges_src_tgt_type ON graph_edges(source_node_id, target_node_id, edge_type)",
     "CREATE INDEX IF NOT EXISTS idx_section_eligibility_section ON section_eligibility(section_id)",
     "CREATE INDEX IF NOT EXISTS idx_skill_fact_links_fact ON skill_fact_links(fact_id)",
     "CREATE INDEX IF NOT EXISTS idx_c03_skill_selection_metric ON c03_skill_selection_features(metric_bucket)",
@@ -410,14 +553,23 @@ DDL_STATEMENTS: tuple[str, ...] = (
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_start ON graph_paths(start_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_end ON graph_paths(end_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_graph_paths_depth ON graph_paths(path_depth)",
+    "CREATE INDEX IF NOT EXISTS idx_graph_paths_end_depth_score ON graph_paths(end_node_id, path_depth, path_score DESC)",
     "CREATE INDEX IF NOT EXISTS idx_neighborhood_center ON graph_neighborhoods(center_node_id)",
     "CREATE INDEX IF NOT EXISTS idx_neighborhood_neighbor ON graph_neighborhoods(neighbor_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_distance ON graph_neighborhoods(distance)",
+    "CREATE INDEX IF NOT EXISTS idx_neighborhood_center_distance_score ON graph_neighborhoods(center_node_id, distance, neighbor_score DESC)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_node ON graph_sibling_links(node_id)",
     "CREATE INDEX IF NOT EXISTS idx_sibling_peer ON graph_sibling_links(sibling_node_id)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_node_score ON graph_sibling_links(node_id, sibling_score DESC)",
+    "CREATE INDEX IF NOT EXISTS idx_sibling_context_lookup ON graph_sibling_links(node_id, sibling_node_id, shared_parent_node_id, shared_edge_type)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_metric ON resume_metric_usage(metric_id)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_section ON resume_metric_usage(resume_section)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_fact ON resume_metric_usage(fact_id)",
     "CREATE INDEX IF NOT EXISTS idx_metric_usage_skill ON resume_metric_usage(skill_id)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_role ON resume_metric_usage(role_family_key)",
+    "CREATE INDEX IF NOT EXISTS idx_metric_usage_metric_section ON resume_metric_usage(metric_id, resume_section)",
+    "CREATE INDEX IF NOT EXISTS idx_rejections_run_section ON graph_selection_rejections(run_id, section_id)",
+    "CREATE INDEX IF NOT EXISTS idx_rejections_candidate ON graph_selection_rejections(candidate_node_id)",
     """
     CREATE VIEW IF NOT EXISTS graph_edges_reverse AS
     SELECT
@@ -499,6 +651,113 @@ def _utc_now() -> str:
 def _sha256_hex(text: str | bytes) -> str:
     data = text.encode("utf-8") if isinstance(text, str) else text
     return hashlib.sha256(data).hexdigest()
+
+
+def _sqlite_sidecar_paths(path: Path) -> tuple[Path, ...]:
+    return tuple(Path(f"{path}{suffix}") for suffix in ("-journal", "-wal", "-shm"))
+
+
+def _new_sibling_temp_db_path(path: Path) -> Path:
+    descriptor, raw_path = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    os.close(descriptor)
+    return Path(raw_path)
+
+
+def _open_isolated_temp_graph_sqlite(
+    *,
+    temp_path: Path,
+    canonical_target: Path,
+) -> sqlite3.Connection:
+    """Open the private writer used only for an atomic sibling-temp build."""
+    resolved_temp = temp_path.resolve(strict=False)
+    resolved_target = canonical_target.resolve(strict=False)
+    is_unique_sibling = (
+        resolved_temp != resolved_target
+        and resolved_temp.parent == resolved_target.parent
+        and resolved_temp.name.startswith(f".{resolved_target.name}.")
+        and resolved_temp.name.endswith(".tmp")
+    )
+    if not is_unique_sibling:
+        raise RuntimeError(
+            "isolated graph SQLite writer requires a unique sibling temp path and "
+            f"refuses the canonical target: temp={temp_path}, target={canonical_target}"
+        )
+    conn = sqlite3.connect(str(temp_path), timeout=30)
+    try:
+        conn.execute("PRAGMA foreign_keys=ON")
+        if int(conn.execute("PRAGMA foreign_keys").fetchone()[0]) != 1:
+            raise RuntimeError("SQLite foreign key enforcement could not be enabled for isolated temp build")
+    except (sqlite3.Error, RuntimeError):
+        conn.close()
+        raise
+    return conn
+
+
+def _cleanup_temp_sqlite(path: Path) -> None:
+    for candidate in (path, *_sqlite_sidecar_paths(path)):
+        candidate.unlink(missing_ok=True)
+
+
+def _require_sidecar_free_atomic_target(path: Path) -> None:
+    present = [sidecar.name for sidecar in _sqlite_sidecar_paths(path) if sidecar.exists()]
+    if present:
+        raise RuntimeError(
+            "cannot atomically replace SQLite projection while sidecars exist: " + ",".join(present)
+        )
+
+
+def _sqlite_projection_digest(path: Path) -> str | None:
+    """Return a byte-exact projection digest for compare-and-swap replacement."""
+    if not path.exists():
+        return None
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _sqlite_maintenance_lock_path(path: Path) -> Path:
+    return path.with_name(f".{path.name}.maintenance.lock")
+
+
+def _acquire_sqlite_maintenance_lock(path: Path) -> Path:
+    """Acquire the projection maintenance lock using an atomic create."""
+    lock_path = _sqlite_maintenance_lock_path(path)
+    try:
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError as exc:
+        raise RuntimeError(f"SQLite projection maintenance is already active: {lock_path}") from exc
+    try:
+        os.write(descriptor, f"pid={os.getpid()}\n".encode("ascii"))
+    finally:
+        os.close(descriptor)
+    return lock_path
+
+
+def _release_sqlite_maintenance_lock(lock_path: Path) -> None:
+    lock_path.unlink(missing_ok=True)
+
+
+def _replace_sqlite_projection_if_unchanged(
+    *,
+    target: Path,
+    replacement: Path,
+    expected_digest: str | None,
+) -> None:
+    """CAS-replace a sidecar-free projection while its maintenance lock is held."""
+    _require_sidecar_free_atomic_target(target)
+    current_digest = _sqlite_projection_digest(target)
+    if current_digest != expected_digest:
+        raise RuntimeError(
+            "SQLite projection changed during maintenance; refusing atomic replace: "
+            f"expected={expected_digest!r}, current={current_digest!r}"
+        )
+    os.replace(replacement, target)
 
 
 def default_graph_sqlite_path(repo_root: Path | None = None) -> Path:
@@ -703,8 +962,7 @@ def skill_links_only_engineering_candidate_pending_confirm(
     if not all(fid in ENGINEERING_PLATFORM_CANDIDATE_FACT_IDS for fid in links):
         return False
     return all(
-        registry.get(fid, {}).get("promotion_status")
-        == "PROMOTION_READY_NEEDS_HUMAN_CONFIRM"
+        registry.get(fid, {}).get("promotion_status") == "PROMOTION_READY_NEEDS_HUMAN_CONFIRM"
         for fid in links
     )
 
@@ -731,9 +989,7 @@ def resolve_confidence_grade(
 ) -> dict[str, Any]:
     """Resolve effective grade with override guardrails and candidate-fact cap."""
     derived = derive_confidence_grade(row, has_fact_link=has_fact_link)
-    derived = cap_derived_grade_for_candidate_facts(
-        row, derived, candidate_registry=candidate_registry
-    )
+    derived = cap_derived_grade_for_candidate_facts(row, derived, candidate_registry=candidate_registry)
     preset = str(row.get("confidence_grade") or "").strip().upper()
     override_blocked_reason = ""
     effective = derived
@@ -745,9 +1001,7 @@ def resolve_confidence_grade(
                 effective = preset
             else:
                 effective = derived
-                override_blocked_reason = (
-                    "confidence_override_blocked_missing_human_confirmation"
-                )
+                override_blocked_reason = "confidence_override_blocked_missing_human_confirmation"
         else:
             # Stale lower presets must not suppress proof-derived grades.
             effective = derived
@@ -801,11 +1055,7 @@ def audit_candidate_fact_promotions(
     audits: list[dict[str, Any]] = []
     for fid in sorted(ENGINEERING_PLATFORM_CANDIDATE_FACT_IDS):
         meta = registry.get(fid, {})
-        linked = sorted(
-            sid
-            for sid, row in skill_rows.items()
-            if fid in (row.get("fact_id_links") or [])
-        )
+        linked = sorted(sid for sid, row in skill_rows.items() if fid in (row.get("fact_id_links") or []))
         audits.append(
             {
                 "candidate_fact_id": fid,
@@ -816,9 +1066,7 @@ def audit_candidate_fact_promotions(
                 "eligible_linked_skills": linked,
                 "promotion_decision": meta.get("promotion_status", "UNKNOWN"),
                 "PROMOTE_NOW": meta.get("promotion_status") == "PROMOTE_NOW",
-                "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": meta.get(
-                    "promotion_status"
-                )
+                "PROMOTION_READY_NEEDS_HUMAN_CONFIRM": meta.get("promotion_status")
                 == "PROMOTION_READY_NEEDS_HUMAN_CONFIRM",
             }
         )
@@ -839,9 +1087,7 @@ def classify_skill_archive_promotion(
     if has_valid_human_confirmed_archive_promotion(row):
         return "PROMOTE_NOW_HUMAN_CONFIRMED"
     if support in BLOCKED_SUPPORT_LEVELS or activation in NON_PROMOTE_ACTIVATION:
-        if support == "REPO_EVIDENCE_PORTFOLIO" or (
-            activation == "DRAFT" and not links
-        ):
+        if support == "REPO_EVIDENCE_PORTFOLIO" or (activation == "DRAFT" and not links):
             return "KEEP_BLOCKED_REPO_ONLY"
         return "KEEP_BLOCKED_REPO_ONLY"
     if sid == "skill_runtime_gate_mesh_design":
@@ -885,9 +1131,7 @@ def audit_theme_skill_promotion_decisions(
         out.append(
             {
                 "skill_id": sid,
-                "decision": classify_skill_archive_promotion(
-                    row, candidate_registry=registry
-                ),
+                "decision": classify_skill_archive_promotion(row, candidate_registry=registry),
                 "confidence_grade_derived": resolved["derived_grade"],
                 "confidence_grade_effective": resolved["effective_grade"],
                 "activation_status": row.get("activation_status"),
@@ -990,11 +1234,7 @@ def _rewire_skill_fact_edges(
             rewritten += 1
     for fid in fact_ids:
         eid = f"edge_skill_fact_{skill_id}_{fid}"
-        if any(
-            isinstance(e, dict)
-            and str(e.get("edge_id")) == eid
-            for e in edges
-        ):
+        if any(isinstance(e, dict) and str(e.get("edge_id")) == eid for e in edges):
             continue
         edges.append(
             {
@@ -1054,9 +1294,7 @@ def apply_operator_archive_promotions(
         row.pop("confidence_override_blocked_reason", None)
 
         registry = load_candidate_fact_promotion_registry()
-        resolved = resolve_confidence_grade(
-            row, has_fact_link=True, candidate_registry=registry
-        )
+        resolved = resolve_confidence_grade(row, has_fact_link=True, candidate_registry=registry)
         row["confidence_grade_derived"] = resolved["derived_grade"]
         row["confidence_grade"] = resolved["effective_grade"]
 
@@ -1108,9 +1346,7 @@ def collect_high_and_exec_summary_counts(
         if sid in FORBIDDEN_SKILL_NODE_IDS:
             continue
         has_link = bool(row.get("fact_id_links"))
-        grade = confidence_grade_for_skill_row(
-            row, has_fact_link=has_link, candidate_registry=registry
-        )
+        grade = confidence_grade_for_skill_row(row, has_fact_link=has_link, candidate_registry=registry)
         if grade == "HIGH":
             high_total += 1
             epoch = str(row.get("career_epoch") or "")
@@ -1308,16 +1544,10 @@ def collect_graph_counts(payload: dict[str, Any]) -> dict[str, Any]:
     edges = [e for e in payload.get("graph_edges") or [] if isinstance(e, dict)]
     skills = [r for r in payload.get("skill_rows") or [] if isinstance(r, dict)]
     pillars = sum(1 for n in nodes if str(n.get("node_type")) in ("pillar", "domain_pillar"))
-    active = sum(
-        1
-        for r in skills
-        if str(r.get("activation_status")) in EXTERNAL_ACTIVE_STATUSES
-    )
+    active = sum(1 for r in skills if str(r.get("activation_status")) in EXTERNAL_ACTIVE_STATUSES)
     draft = sum(1 for r in skills if str(r.get("activation_status")) == "DRAFT")
     bridges = sum(1 for e in edges if str(e.get("edge_type")) == "pillar_phase_bridge")
-    grade_dist = Counter(
-        str(r.get("confidence_grade") or derive_confidence_grade(r)).upper() for r in skills
-    )
+    grade_dist = Counter(str(r.get("confidence_grade") or derive_confidence_grade(r)).upper() for r in skills)
     return {
         "nodes": len(nodes),
         "edges": len(edges),
@@ -1431,18 +1661,17 @@ def materialize_augmented_skills_graph_sqlite(
 ) -> dict[str, Any]:
     """Build SQLite DB from augmented skills graph JSON. Returns materialization summary."""
     root = repo_root or _repo_root()
+    out_path = db_path or default_graph_sqlite_path(root)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    _require_sidecar_free_atomic_target(out_path)
     payload = graph or load_augmented_skills_graph(repo_root=root)
     validate_arsenal_ledger_shape(payload)
     src_path = json_source_path or (root / "apps_rg/fact_inventory/master_skills_arsenal_ledger.json")
-    ledger_hash = _sha256_hex(
-        json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-    )
+    ledger_hash = _sha256_hex(json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")))
     gver = graph_version_from_payload(payload)
     ts = _utc_now()
-    out_path = db_path or default_graph_sqlite_path(root)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-
     skill_rows_by_id = build_skill_rows_by_id(payload)
+    registered_endpoint_types = derive_registered_graph_endpoint_types(payload)
     candidate_registry = load_candidate_fact_promotion_registry(root)
 
     node_rows: dict[str, dict[str, Any]] = {}
@@ -1462,9 +1691,7 @@ def materialize_augmented_skills_graph_sqlite(
             "activation_status": str(raw.get("activation_status") or ""),
             "support_level": str(raw.get("support_level") or ""),
             "confidence": (
-                confidence_grade_for_skill_row(
-                    skill_row, candidate_registry=candidate_registry
-                )
+                confidence_grade_for_skill_row(skill_row, candidate_registry=candidate_registry)
                 if skill_row
                 else _confidence_from_node(raw, candidate_registry=candidate_registry)
             ),
@@ -1476,7 +1703,7 @@ def materialize_augmented_skills_graph_sqlite(
 
     _ensure_policy_nodes(node_rows, payload, ts=ts)
 
-    for profile_key in (payload.get("role_family_projection_profiles") or {}):
+    for profile_key in payload.get("role_family_projection_profiles") or {}:
         if profile_key in node_rows:
             continue
         node_rows[profile_key] = {
@@ -1514,9 +1741,14 @@ def materialize_augmented_skills_graph_sqlite(
             if not eid_s or eid_s in node_rows or eid_s in FORBIDDEN_SKILL_NODE_IDS:
                 return
             skill_row = skill_rows_by_id.get(eid_s)
+            registered_raw_type = registered_endpoint_types.get(eid_s)
+            if registered_raw_type == "__type_conflict__":
+                raise ValueError(
+                    f"registered graph endpoint has conflicting canonical types: endpoint_id={eid_s}"
+                )
             ntype = resolve_node_type(
                 eid_s,
-                "skill" if skill_row else infer_node_type_from_id(eid_s),
+                ("skill" if skill_row else registered_raw_type or infer_node_type_from_id(eid_s)),
             )
             node_rows[eid_s] = {
                 "node_id": eid_s,
@@ -1558,6 +1790,7 @@ def materialize_augmented_skills_graph_sqlite(
         }
         edge_row = edge_by_id[eid]
         et = edge_row["edge_type"]
+
         def _upsert_section(row: dict[str, Any]) -> None:
             key = (str(row["node_id"]), str(row["section_id"]))
             prior = section_by_key.get(key)
@@ -1602,7 +1835,9 @@ def materialize_augmented_skills_graph_sqlite(
                     "allowed": pillar_allowed,
                     "claim_policy": str(raw.get("external_claim_policy") or "internal_traversal_only"),
                     "reason": str(raw.get("rationale") or "pillar_section_eligibility"),
-                    "blocked_reason": "executive_summary_skills_high_only" if sec == "executive_summary" else "",
+                    "blocked_reason": "executive_summary_skills_high_only"
+                    if sec == "executive_summary"
+                    else "",
                 }
             )
         elif et in (
@@ -1657,8 +1892,7 @@ def materialize_augmented_skills_graph_sqlite(
                     "archive_trace": "",
                     "human_confirmed": (
                         1
-                        if row.get("user_confirmed")
-                        or has_valid_human_confirmed_archive_promotion(row)
+                        if row.get("user_confirmed") or has_valid_human_confirmed_archive_promotion(row)
                         else 0
                     ),
                     "external_eligible": 1 if claim_ok else 0,
@@ -1757,9 +1991,23 @@ def materialize_augmented_skills_graph_sqlite(
         row.setdefault("business_story", "")
         row.setdefault("technical_story", "")
 
+    projected_signature_report = projected_graph_edge_signature_report(
+        node_types_by_id={node_id: str(row.get("node_type") or "") for node_id, row in node_rows.items()},
+        edge_rows=edge_rows,
+    )
+    if projected_signature_report["failure_count"] or projected_signature_report["unregistered_edge_count"]:
+        raise ValueError(
+            "projected graph edge signature integrity failed: "
+            f"count={projected_signature_report['failure_count']} "
+            f"unregistered={projected_signature_report['unregistered_edge_count']} "
+            f"failures={projected_signature_report['failure_locators'][:12]}"
+        )
+
     section_rows = list(section_by_key.values())
     from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
         POLICY_VERSION as C03_METRIC_POLICY_VERSION,
+    )
+    from apps_rg.fact_inventory.graph_metric_heterogeneity_policy import (
         metric_bucket_for_row,
     )
 
@@ -1795,9 +2043,7 @@ def materialize_augmented_skills_graph_sqlite(
                 "career_track_id": str(row.get("career_track_id") or "").strip(),
                 "skill_family": family,
                 "metric_bucket": metric_bucket_for_row(row),
-                "role_family_weights": json.dumps(
-                    row.get("role_family_weights") or {}, sort_keys=True
-                ),
+                "role_family_weights": json.dumps(row.get("role_family_weights") or {}, sort_keys=True),
                 "allowed_sections": json.dumps(
                     sorted(set(allowed_sections_by_skill.get(sid) or row.get("allowed_sections") or []))
                 ),
@@ -1876,6 +2122,10 @@ def materialize_augmented_skills_graph_sqlite(
     from apps_rg.fact_inventory.graph_sqlite_path_index import (
         GRAPH_INDEX_SCHEMA_VERSION,
         build_graph_index_rows,
+        compute_sqlite_graph_digest,
+        compute_sqlite_schema_digest,
+        require_graphdb_capability_schema,
+        validate_graphdb_capability_integrity,
     )
 
     graph_index_rows = build_graph_index_rows(
@@ -1904,11 +2154,32 @@ def materialize_augmented_skills_graph_sqlite(
         "graph_neighborhood_count": len(graph_index_rows["graph_neighborhoods"]),
         "graph_sibling_link_count": len(graph_index_rows["graph_sibling_links"]),
         "section_evidence_budget_count": len(graph_index_rows["section_evidence_budget"]),
+        "projected_registered_edge_count": projected_signature_report["registered_edge_count"],
+        "projected_registered_edge_signature_valid_count": projected_signature_report["valid_edge_count"],
     }
 
-    if out_path.exists():
-        out_path.unlink()  # guardian: allow-missing-hitl-on-irreversible -- rebuild overwrites prior materialized sqlite artifact in reports path
-    conn = sqlite3.connect(str(out_path), timeout=30)
+    maintenance_lock = _acquire_sqlite_maintenance_lock(out_path)
+    expected_target_digest = _sqlite_projection_digest(out_path)
+    try:
+        _require_sidecar_free_atomic_target(out_path)
+    except (OSError, RuntimeError):
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
+    try:
+        temp_path = _new_sibling_temp_db_path(out_path)
+    except OSError:
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
+    build_succeeded = False
+    try:
+        conn = _open_isolated_temp_graph_sqlite(
+            temp_path=temp_path,
+            canonical_target=out_path,
+        )
+    except (OSError, RuntimeError, sqlite3.Error):
+        _cleanup_temp_sqlite(temp_path)
+        _release_sqlite_maintenance_lock(maintenance_lock)
+        raise
     try:
         for stmt in DDL_STATEMENTS:
             conn.execute(stmt)
@@ -2054,6 +2325,10 @@ def materialize_augmented_skills_graph_sqlite(
             """,
             graph_index_rows["section_evidence_budget"],
         )
+        summary["canonical_graph_digest"] = ledger_hash
+        summary["canonical_digest_kind"] = "canonical_payload_v1"
+        summary["sqlite_graph_digest"] = compute_sqlite_graph_digest(conn)
+        summary["sqlite_schema_digest"] = compute_sqlite_schema_digest(conn)
         conn.execute(
             """
             INSERT INTO graph_metadata (
@@ -2071,8 +2346,29 @@ def materialize_augmented_skills_graph_sqlite(
             ),
         )
         conn.commit()
+        require_graphdb_capability_schema(conn)
+        validate_graphdb_capability_integrity(
+            conn,
+            expected_materializer_version=C03_SQLITE_MATERIALIZER_CODE_VERSION,
+        )
+        build_succeeded = True
     finally:
         conn.close()
+        if not build_succeeded:
+            _cleanup_temp_sqlite(temp_path)
+            _release_sqlite_maintenance_lock(maintenance_lock)
+
+    try:
+        _replace_sqlite_projection_if_unchanged(
+            target=out_path,
+            replacement=temp_path,
+            expected_digest=expected_target_digest,
+        )
+    except (OSError, RuntimeError):
+        _cleanup_temp_sqlite(temp_path)
+        raise
+    finally:
+        _release_sqlite_maintenance_lock(maintenance_lock)
 
     return {
         "sqlite_db_path": str(out_path),
@@ -2109,10 +2405,25 @@ def open_graph_sqlite(
     read_only: bool = True,
 ) -> sqlite3.Connection:
     path = db_path or default_graph_sqlite_path(repo_root)
+    if not read_only:
+        raise RuntimeError(
+            "writable graph SQLite access is internal-only; use "
+            "materialize_augmented_skills_graph_sqlite(...) for an atomic rebuild or "
+            "apply_graphdb_capability_sqlite_hardening(...) for atomic capability hardening"
+        )
     if not path.is_file():
         raise FileNotFoundError(f"augmented skills graph sqlite missing: {path}")
-    uri = f"file:{path.as_posix()}?mode=ro" if read_only else f"file:{path.as_posix()}"
-    return sqlite3.connect(uri, uri=True, timeout=15)
+    uri = f"file:{path.as_posix()}?mode=ro"
+    conn = sqlite3.connect(
+        uri,
+        uri=True,
+        timeout=15,
+    )
+    conn.execute("PRAGMA query_only=ON")
+    if int(conn.execute("PRAGMA query_only").fetchone()[0]) != 1:
+        conn.close()
+        raise RuntimeError("SQLite query_only mode could not be enabled")
+    return conn
 
 
 def load_graph_metadata_row(conn: sqlite3.Connection) -> dict[str, Any]:
@@ -2151,21 +2462,36 @@ def validate_materialized_sqlite(
     if not path.is_file():
         return {"status": "FAIL", "reason": "sqlite_missing", "sqlite_db_path": str(path)}
 
+    from apps_rg.fact_inventory.graph_sqlite_path_index import (
+        SIBLING_NODE_TYPES,
+        SKILL_FACT_EVIDENCE_NODE_TYPES,
+    )
+
+    sibling_node_types_sql = ",".join(f"'{node_type}'" for node_type in sorted(SIBLING_NODE_TYPES))
+    evidence_node_types_sql = ",".join(
+        f"'{node_type}'" for node_type in sorted(SKILL_FACT_EVIDENCE_NODE_TYPES)
+    )
+
     gm = payload.get("graph_metadata") if isinstance(payload.get("graph_metadata"), dict) else {}
     expected_nodes = int(gm.get("node_count") or 0)
     expected_edges_meta = int(gm.get("edge_count") or 0)
-    expected_edges = len(
-        {
-            str(e.get("edge_id"))
-            for e in payload.get("graph_edges") or []
-            if isinstance(e, dict) and e.get("edge_id")
-        }
-    ) or expected_edges_meta
+    expected_edges = (
+        len(
+            {
+                str(e.get("edge_id"))
+                for e in payload.get("graph_edges") or []
+                if isinstance(e, dict) and e.get("edge_id")
+            }
+        )
+        or expected_edges_meta
+    )
 
     conn = open_graph_sqlite(repo_root=root, db_path=path)
     try:
         meta = load_graph_metadata_row(conn)
-        meta_summary = meta.get("graph_count_summary") if isinstance(meta.get("graph_count_summary"), dict) else {}
+        meta_summary = (
+            meta.get("graph_count_summary") if isinstance(meta.get("graph_count_summary"), dict) else {}
+        )
         expected_edges = int(meta_summary.get("edge_count_sqlite") or expected_edges)
         node_count = conn.execute("SELECT COUNT(*) FROM graph_nodes").fetchone()[0]
         edge_count = conn.execute("SELECT COUNT(*) FROM graph_edges").fetchone()[0]
@@ -2191,9 +2517,7 @@ def validate_materialized_sqlite(
             HAVING c > 1
             """
         ).fetchall()
-        node_type_eq_id = conn.execute(
-            "SELECT node_id FROM graph_nodes WHERE node_type = node_id"
-        ).fetchall()
+        node_type_eq_id = conn.execute("SELECT node_id FROM graph_nodes WHERE node_type = node_id").fetchall()
         bogus_skill_nodes = conn.execute(
             """
             SELECT node_id FROM graph_nodes
@@ -2277,11 +2601,13 @@ def validate_materialized_sqlite(
             """
         ).fetchall()
         broken_links = conn.execute(
-            """
+            f"""
             SELECT l.skill_id, l.fact_id FROM skill_fact_links l
             LEFT JOIN graph_nodes sk ON sk.node_id = l.skill_id
             LEFT JOIN graph_nodes fa ON fa.node_id = l.fact_id
-            WHERE sk.node_id IS NULL OR fa.node_id IS NULL
+            WHERE sk.node_id IS NULL OR sk.node_type <> 'skill'
+               OR fa.node_id IS NULL
+               OR fa.node_type NOT IN ({evidence_node_types_sql})
             """
         ).fetchall()
         broken_selection_features = conn.execute(
@@ -2313,32 +2639,28 @@ def validate_materialized_sqlite(
             """
         ).fetchall()
         broken_siblings = conn.execute(
-            """
+            f"""
             SELECT s.node_id, s.sibling_node_id FROM graph_sibling_links s
-            LEFT JOIN graph_nodes n ON n.node_id = s.node_id AND n.node_type = 'skill'
-            LEFT JOIN graph_nodes p ON p.node_id = s.sibling_node_id AND p.node_type = 'skill'
+            LEFT JOIN graph_nodes n
+              ON n.node_id = s.node_id
+             AND n.node_type IN ({sibling_node_types_sql})
+            LEFT JOIN graph_nodes p
+              ON p.node_id = s.sibling_node_id
+             AND p.node_type IN ({sibling_node_types_sql})
             WHERE n.node_id IS NULL OR p.node_id IS NULL
             """
         ).fetchall()
         skill_fact_count = conn.execute("SELECT COUNT(*) FROM skill_fact_links").fetchone()[0]
         section_elig_count = conn.execute("SELECT COUNT(*) FROM section_eligibility").fetchone()[0]
         rf_count = conn.execute("SELECT COUNT(*) FROM role_family_projection").fetchone()[0]
-        c03_feature_count = conn.execute(
-            "SELECT COUNT(*) FROM c03_skill_selection_features"
-        ).fetchone()[0]
-        c03_role_weight_count = conn.execute(
-            "SELECT COUNT(*) FROM c03_role_family_skill_weights"
-        ).fetchone()[0]
+        c03_feature_count = conn.execute("SELECT COUNT(*) FROM c03_skill_selection_features").fetchone()[0]
+        c03_role_weight_count = conn.execute("SELECT COUNT(*) FROM c03_role_family_skill_weights").fetchone()[
+            0
+        ]
         graph_path_count = conn.execute("SELECT COUNT(*) FROM graph_paths").fetchone()[0]
-        graph_neighborhood_count = conn.execute(
-            "SELECT COUNT(*) FROM graph_neighborhoods"
-        ).fetchone()[0]
-        graph_sibling_link_count = conn.execute(
-            "SELECT COUNT(*) FROM graph_sibling_links"
-        ).fetchone()[0]
-        section_budget_count = conn.execute(
-            "SELECT COUNT(*) FROM section_evidence_budget"
-        ).fetchone()[0]
+        graph_neighborhood_count = conn.execute("SELECT COUNT(*) FROM graph_neighborhoods").fetchone()[0]
+        graph_sibling_link_count = conn.execute("SELECT COUNT(*) FROM graph_sibling_links").fetchone()[0]
+        section_budget_count = conn.execute("SELECT COUNT(*) FROM section_evidence_budget").fetchone()[0]
     finally:
         conn.close()
 
@@ -2358,9 +2680,7 @@ def validate_materialized_sqlite(
     if blank_metric_buckets:
         issues.append(f"blank_c03_metric_buckets:{len(blank_metric_buckets)}")
     if validated_edges_missing_rationale:
-        issues.append(
-            f"validated_edges_missing_rationale:{len(validated_edges_missing_rationale)}"
-        )
+        issues.append(f"validated_edges_missing_rationale:{len(validated_edges_missing_rationale)}")
     if broken_paths:
         issues.append(f"broken_graph_paths:{len(broken_paths)}")
     if broken_siblings:
@@ -2391,9 +2711,7 @@ def validate_materialized_sqlite(
         "sqlite_db_path": str(path),
         "graph_version": meta["graph_version"],
         "graph_hash": meta["ledger_hash"],
-        "c03_sqlite_materializer_code_version": meta_summary.get(
-            "c03_sqlite_materializer_code_version"
-        ),
+        "c03_sqlite_materializer_code_version": meta_summary.get("c03_sqlite_materializer_code_version"),
         "node_count": node_count,
         "edge_count": edge_count,
         "expected_node_count_json": expected_nodes,
@@ -2434,9 +2752,9 @@ def validate_hardened_materialized_sqlite(
             "pillars": conn.execute(
                 "SELECT COUNT(*) FROM graph_nodes WHERE node_type IN ('pillar','capability_domain')"
             ).fetchone()[0],
-            "skills": conn.execute(
-                "SELECT COUNT(*) FROM graph_nodes WHERE node_type = 'skill'"
-            ).fetchone()[0],
+            "skills": conn.execute("SELECT COUNT(*) FROM graph_nodes WHERE node_type = 'skill'").fetchone()[
+                0
+            ],
             "active_skills": conn.execute(
                 """
                 SELECT COUNT(*) FROM graph_nodes
@@ -2547,15 +2865,12 @@ def validate_hardened_materialized_sqlite(
             has_fact_link=bool(row.get("fact_id_links")),
             candidate_registry=registry,
         )
-        derived = str(
-            row.get("confidence_grade_derived") or resolved["derived_grade"] or ""
-        ).upper()
+        derived = str(row.get("confidence_grade_derived") or resolved["derived_grade"] or "").upper()
         effective = str(row.get("confidence_grade") or resolved["effective_grade"] or "").upper()
         if (
             derived
             and effective
-            and CONFIDENCE_GRADE_RANK.get(effective, -1)
-            > CONFIDENCE_GRADE_RANK.get(derived, -1)
+            and CONFIDENCE_GRADE_RANK.get(effective, -1) > CONFIDENCE_GRADE_RANK.get(derived, -1)
             and not resolved["human_confirmed_archive_promotion"]
         ):
             override_violations.append(
@@ -2579,9 +2894,7 @@ def validate_hardened_materialized_sqlite(
     if high_without_fact_link:
         issues.append(f"high_skills_without_fact_links:{len(high_without_fact_link)}")
     if override_violations:
-        issues.append(
-            f"confidence_override_without_human_confirm:{len(override_violations)}"
-        )
+        issues.append(f"confidence_override_without_human_confirm:{len(override_violations)}")
 
     status = "PASS" if not issues else "FAIL"
     return {
@@ -2593,8 +2906,7 @@ def validate_hardened_materialized_sqlite(
             "violations_sample": override_violations[:10],
             "candidate_facts_do_not_auto_promote": True,
             "rule": (
-                "explicit confidence_grade above derived requires "
-                "human_confirmed_archive_promotion metadata"
+                "explicit confidence_grade above derived requires human_confirmed_archive_promotion metadata"
             ),
         },
         "forbidden_high_skill_promotions": forbidden_high,
@@ -2642,6 +2954,7 @@ __all__ = [
     "C03_SQLITE_MATERIALIZER_CODE_VERSION",
     "DDL_STATEMENTS",
     "CONFIDENCE_GRADES",
+    "RAW_TO_CANONICAL_NODE_TYPE",
     "ENGINEERING_PLATFORM_CANDIDATE_FACT_IDS",
     "OPERATOR_ARCHIVE_PROMOTION_BY_SKILL",
     "OPERATOR_CONFIRMED_ARCHIVE_FACT_IDS",
@@ -2663,6 +2976,9 @@ __all__ = [
     "materialize_augmented_skills_graph_sqlite",
     "open_graph_sqlite",
     "collect_graph_counts",
+    "project_registered_graph_node_type",
+    "projected_graph_edge_signature_report",
+    "projected_registered_graph_edge_signatures",
     "resolve_confidence_grade",
     "validate_hardened_materialized_sqlite",
     "validate_materialized_sqlite",

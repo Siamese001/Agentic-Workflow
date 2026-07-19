@@ -2,6 +2,7 @@
 
 SQLite materialization + C0.3 context assembly for augmented skills graph.
 """
+
 from __future__ import annotations
 
 import json
@@ -13,9 +14,11 @@ from pathlib import Path
 
 import pytest
 
+from apps_rg.fact_inventory import augmented_skills_graph_sqlite as graph_sqlite_module
 from apps_rg.fact_inventory.augmented_skills_graph import load_augmented_skills_graph
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     C03_SQLITE_MATERIALIZER_CODE_VERSION,
+    RAW_TO_CANONICAL_NODE_TYPE,
     apply_operator_archive_promotions,
     build_skill_rows_by_id,
     canonical_node_type,
@@ -24,21 +27,27 @@ from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
     derive_confidence_grade,
     has_valid_human_confirmed_archive_promotion,
     infer_node_type_from_id,
-    load_graph_metadata_row,
     load_augmented_skills_graph,
     load_candidate_fact_promotion_registry,
+    load_graph_metadata_row,
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
+    project_registered_graph_node_type,
     resolve_confidence_grade,
     validate_hardened_materialized_sqlite,
     validate_materialized_sqlite,
 )
+from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
+    REGISTERED_GRAPH_NODE_TYPES,
+)
+from apps_rg.runtime.c0.c03_errors import C03GraphProjectionUnavailableError
 from apps_rg.runtime.c03_graph_sqlite_context import (
     PROOF_CLASSIFICATION,
     assemble_c03_graph_sqlite_context,
     enrich_c03_bound_with_sqlite_context,
     ensure_c03_graph_sqlite,
     query_partner_architecture_competency_candidates,
+    require_c03_graph_sqlite,
 )
 
 REPO = Path(__file__).resolve().parents[4]
@@ -61,6 +70,17 @@ def test_canonical_node_type_mappings() -> None:
     assert infer_node_type_from_id("domain_agentic_systems_architecture") == "capability_domain"
 
 
+def test_every_registered_raw_node_type_has_an_explicit_lossless_projection() -> None:
+    assert set(RAW_TO_CANONICAL_NODE_TYPE) == set(REGISTERED_GRAPH_NODE_TYPES)
+    assert RAW_TO_CANONICAL_NODE_TYPE["metric"] == "metric"
+    assert RAW_TO_CANONICAL_NODE_TYPE["metric_bucket"] == "metric_bucket"
+    assert RAW_TO_CANONICAL_NODE_TYPE["experience_evidence"] == "employment"
+    assert RAW_TO_CANONICAL_NODE_TYPE["repository_evidence"] == "repo_evidence"
+    assert {
+        raw_type: project_registered_graph_node_type(raw_type) for raw_type in REGISTERED_GRAPH_NODE_TYPES
+    } == RAW_TO_CANONICAL_NODE_TYPE
+
+
 def test_confidence_override_blocked_without_human_confirmation() -> None:
     row = {
         "skill_id": "skill_governed_agentic_systems_architecture",
@@ -75,9 +95,7 @@ def test_confidence_override_blocked_without_human_confirmation() -> None:
     resolved = resolve_confidence_grade(row, has_fact_link=True, candidate_registry=registry)
     assert resolved["derived_grade"] == "MEDIUM"
     assert resolved["effective_grade"] == "MEDIUM"
-    assert resolved["override_blocked_reason"] == (
-        "confidence_override_blocked_missing_human_confirmation"
-    )
+    assert resolved["override_blocked_reason"] == ("confidence_override_blocked_missing_human_confirmation")
     assert not has_valid_human_confirmed_archive_promotion(row)
 
 
@@ -111,10 +129,7 @@ def test_governance_archive_facts_still_derive_high() -> None:
         "external_claim_policy": "atomic_fact_default_external_proof",
     }
     registry = load_candidate_fact_promotion_registry(repo_root=REPO)
-    assert (
-        confidence_grade_for_skill_row(row, has_fact_link=True, candidate_registry=registry)
-        == "HIGH"
-    )
+    assert confidence_grade_for_skill_row(row, has_fact_link=True, candidate_registry=registry) == "HIGH"
 
 
 def test_candidate_facts_do_not_auto_promote_to_high() -> None:
@@ -127,10 +142,7 @@ def test_candidate_facts_do_not_auto_promote_to_high() -> None:
         "external_claim_policy": "atomic_fact_default_external_proof",
     }
     registry = load_candidate_fact_promotion_registry(repo_root=REPO)
-    assert (
-        confidence_grade_for_skill_row(row, has_fact_link=True, candidate_registry=registry)
-        == "MEDIUM"
-    )
+    assert confidence_grade_for_skill_row(row, has_fact_link=True, candidate_registry=registry) == "MEDIUM"
 
 
 def test_operator_archive_promotion_yields_genai_high(tmp_path: Path) -> None:
@@ -153,9 +165,7 @@ def test_operator_archive_promotion_yields_genai_high(tmp_path: Path) -> None:
     after = collect_high_and_exec_summary_counts(payload, repo_root=REPO)
     assert len(after.get("track_genai_agentic_high_skills") or []) == 9
     assert after["high_skill_count"] == before["high_skill_count"] + 9
-    assert after["executive_summary_allowed_count"] == (
-        before["executive_summary_allowed_count"] + 9
-    )
+    assert after["executive_summary_allowed_count"] == (before["executive_summary_allowed_count"] + 9)
 
     row = build_skill_rows_by_id(payload)["skill_governed_agentic_systems_architecture"]
     assert row["confidence_grade"] == "HIGH"
@@ -297,13 +307,80 @@ def test_materializer_code_version_written_to_metadata(sqlite_db: Path) -> None:
     finally:
         conn.close()
     summary = meta["graph_count_summary"]
-    assert (
-        summary["c03_sqlite_materializer_code_version"]
-        == C03_SQLITE_MATERIALIZER_CODE_VERSION
-    )
+    assert summary["c03_sqlite_materializer_code_version"] == C03_SQLITE_MATERIALIZER_CODE_VERSION
 
     val = validate_materialized_sqlite(repo_root=REPO, db_path=sqlite_db)
     assert val["c03_sqlite_materializer_code_version"] == C03_SQLITE_MATERIALIZER_CODE_VERSION
+
+
+def test_real_projection_preserves_exact_metric_node_type_counts(sqlite_db: Path) -> None:
+    graph = load_augmented_skills_graph(repo_root=REPO)
+    canonical_counts = {
+        node_type: sum(1 for row in graph["graph_nodes"] if row.get("node_type") == node_type)
+        for node_type in ("metric", "metric_bucket")
+    }
+    conn = sqlite3.connect(sqlite_db)
+    try:
+        projected_counts = dict(
+            conn.execute(
+                "SELECT node_type,COUNT(*) FROM graph_nodes "
+                "WHERE node_type IN ('metric','metric_bucket','metric_outcome') "
+                "GROUP BY node_type"
+            ).fetchall()
+        )
+        endpoint_types = dict(
+            conn.execute(
+                "SELECT node_id,node_type FROM graph_nodes WHERE node_id IN "
+                "('fact_quant_hpc_003','section_executive_summary',"
+                "'atomic_fact_default_external_proof')"
+            ).fetchall()
+        )
+        summary = load_graph_metadata_row(conn)["graph_count_summary"]
+    finally:
+        conn.close()
+
+    assert canonical_counts == {"metric": 22, "metric_bucket": 16}
+    assert projected_counts == {
+        "metric": 22,
+        "metric_bucket": 16,
+        "metric_outcome": 92,
+    }
+    assert endpoint_types == {
+        "atomic_fact_default_external_proof": "policy",
+        "fact_quant_hpc_003": "fact",
+        "section_executive_summary": "section",
+    }
+    assert summary["projected_registered_edge_count"] == 2364
+    assert summary["projected_registered_edge_signature_valid_count"] == 2364
+
+
+def test_materializer_rejects_wrong_derived_endpoint_type_before_publish(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    db_path = tmp_path / "wrong_endpoint_type.sqlite"
+    original = graph_sqlite_module.derive_registered_graph_endpoint_types
+
+    def wrong_endpoint_type(payload: dict[str, object]) -> dict[str, str]:
+        endpoint_types = original(payload)
+        endpoint_types["fact_quant_hpc_003"] = "metric"
+        return endpoint_types
+
+    monkeypatch.setattr(
+        graph_sqlite_module,
+        "derive_registered_graph_endpoint_types",
+        wrong_endpoint_type,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "projected graph edge signature integrity failed: count=.*fact_quant_hpc_003.*target_type.*metric"
+        ),
+    ):
+        materialize_augmented_skills_graph_sqlite(repo_root=REPO, db_path=db_path)
+
+    assert not db_path.exists()
 
 
 def test_ensure_c03_graph_sqlite_rebuilds_stale_materializer_version(sqlite_db: Path) -> None:
@@ -460,7 +537,11 @@ def test_graph_path_index_tables_are_materialized(sqlite_db: Path) -> None:
     assert float(skill_fact_path[2]) > 0
     assert sibling is not None
     assert sibling[0].startswith("skill_")
-    assert sibling[1] in ("shared_fact", "shared_parent:capability_domain_contains_skill", "shared_parent:epoch_contains_skill")
+    assert sibling[1] in (
+        "shared_fact",
+        "shared_parent:capability_domain_contains_skill",
+        "shared_parent:epoch_contains_skill",
+    )
     assert sibling[2]
     assert neighborhood_count > 0
     assert budget is not None
@@ -521,6 +602,33 @@ def test_partner_architecture_competency_candidates_view(sqlite_db: Path) -> Non
     assert "skill_sr_w12_joint_ai_solution_development" in skill_ids
     assert len(skill_ids) >= 5
     assert forbidden_count == 0
+
+
+def test_runtime_admission_rejects_same_column_partner_view_definition_drift(
+    sqlite_db: Path,
+) -> None:
+    conn = sqlite3.connect(sqlite_db)
+    original_sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='view' "
+        "AND name='v_partner_architecture_competency_candidates'"
+    ).fetchone()[0]
+    original_columns = tuple(
+        row[1] for row in conn.execute("PRAGMA table_info(v_partner_architecture_competency_candidates)")
+    )
+    conn.execute("DROP VIEW v_partner_architecture_competency_candidates")
+    conn.execute(f"{original_sql} AND 1 = 1")
+    drifted_columns = tuple(
+        row[1] for row in conn.execute("PRAGMA table_info(v_partner_architecture_competency_candidates)")
+    )
+    assert drifted_columns == original_columns
+    conn.commit()
+    conn.close()
+
+    with pytest.raises(
+        C03GraphProjectionUnavailableError,
+        match="sqlite_schema_digest_mismatch",
+    ):
+        require_c03_graph_sqlite(REPO, sqlite_db)
 
 
 def test_sqlite_confidence_grade_not_support_level(sqlite_db: Path) -> None:
