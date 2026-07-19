@@ -376,7 +376,8 @@ def assemble_c03_graph_sqlite_context(
 ) -> dict[str, Any]:
     """Query SQLite graph for C0.3-style context bundle + inline receipt fields."""
     root = repo_root or _repo_root()
-    path = require_c03_graph_sqlite(root, db_path)
+    # The execution boundary refreshes generated state; health/report readers stay pure.
+    path = ensure_c03_graph_sqlite(root, db_path)
     facts_in = sorted({str(x).strip() for x in (selected_fact_ids or []) if str(x).strip()})
     sec = str(section_id or "").strip() or "executive_summary"
     rf = str(role_family_key or "").strip() or "SVP_ENGINEERING_AI_PLATFORM"

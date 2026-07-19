@@ -356,6 +356,11 @@ def test_receipt_is_deterministic_and_does_not_mutate_inputs(tmp_path: Path) -> 
     assert first["control_plane_status"] == "PASS"
     assert first["graph_data_readiness"] == "PASS"
     assert first["overall_status"] == "PASS"
+    sibling = _metric(first, "sibling_integrity")
+    assert sibling["status"] == "PASS"
+    assert sibling["numerator"] == 6
+    assert sibling["denominator"] == 6
+    assert sibling["failure_count"] == 0
     assert canonical_path.read_bytes() == before_canonical
     assert sqlite_path.read_bytes() == before_sqlite
     assert sorted(path.name for path in tmp_path.iterdir()) == before_names
@@ -629,6 +634,101 @@ def test_required_empty_sibling_and_neighborhood_materializations_fail(
     assert neighborhood["status"] == "FAIL"
     assert neighborhood["failure_count"] > 0
     assert receipt["graph_data_readiness"] == "NOT_READY"
+
+
+def test_sibling_integrity_fails_when_a_reciprocal_pair_is_partially_truncated(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        """
+        DELETE FROM graph_sibling_links
+        WHERE (node_id = ? AND sibling_node_id = ?)
+           OR (node_id = ? AND sibling_node_id = ?)
+        """,
+        ("skill_1", "skill_2", "skill_2", "skill_1"),
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+    sibling = _metric(receipt, "sibling_integrity")
+
+    assert sibling["status"] == "FAIL"
+    assert sibling["numerator"] == 4
+    assert sibling["denominator"] == 6
+    assert sibling["failure_count"] == 2
+    assert sibling["sample_failure_locators"] == [
+        {
+            "node_id": "skill_1",
+            "reasons": ["expected_sibling_missing"],
+            "shared_edge_type": "capability_domain_contains_skill",
+            "shared_parent_node_id": "domain_platform",
+            "sibling_node_id": "skill_2",
+        },
+        {
+            "node_id": "skill_2",
+            "reasons": ["expected_sibling_missing"],
+            "shared_edge_type": "capability_domain_contains_skill",
+            "shared_parent_node_id": "domain_platform",
+            "sibling_node_id": "skill_1",
+        },
+    ]
+
+
+def test_sibling_integrity_rejects_unexpected_rows_with_expected_set_denominator(
+    tmp_path: Path,
+) -> None:
+    canonical_path, sqlite_path, _payload = _fixture_paths(tmp_path)
+    conn = sqlite3.connect(sqlite_path)
+    conn.execute(
+        """
+        INSERT INTO graph_sibling_links(
+            node_id,sibling_node_id,shared_parent_node_id,shared_edge_type
+        ) VALUES(?,?,?,?)
+        """,
+        (
+            "skill_1",
+            "epoch_recent",
+            "domain_platform",
+            "capability_domain_contains_skill",
+        ),
+    )
+    conn.commit()
+    conn.close()
+
+    receipt = build_c03_graph_health_receipt(
+        canonical_path=canonical_path,
+        sqlite_path=sqlite_path,
+        generated_at=GENERATED_AT,
+        operational_evidence=_operational_evidence(),
+    )
+    sibling = _metric(receipt, "sibling_integrity")
+
+    assert sibling["status"] == "FAIL"
+    assert sibling["numerator"] == 6
+    assert sibling["denominator"] == 6
+    assert sibling["rate"] == 1.0
+    assert sibling["failure_count"] == 1
+    assert sibling["sample_failure_locators"] == [
+        {
+            "node_id": "skill_1",
+            "reasons": [
+                "reciprocal_link_missing",
+                "shared_parent_edges_missing",
+                "unexpected_sibling_row",
+            ],
+            "shared_edge_type": "capability_domain_contains_skill",
+            "shared_parent_node_id": "domain_platform",
+            "sibling_node_id": "epoch_recent",
+        }
+    ]
 
 
 def test_claim_evidence_requires_declared_fact_links_bound_by_graph_edges(

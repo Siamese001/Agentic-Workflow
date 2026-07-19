@@ -1,10 +1,11 @@
 """apps-test-model: APP CONTRACT.
 
-Runtime C0.3 graph reads must never create or repair the SQLite projection.
+Read-only C0.3 graph inspection stays pure; production assembly may refresh generated state.
 """
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import sqlite3
 from collections.abc import Callable
@@ -16,6 +17,7 @@ import pytest
 import apps_rg.runtime.c0.c03_sqlite_graph_selection as selection_module
 import apps_rg.runtime.c03_graph_sqlite_context as context_module
 from apps_rg.fact_inventory.augmented_skills_graph_sqlite import (
+    C03_SQLITE_MATERIALIZER_CODE_VERSION,
     materialize_augmented_skills_graph_sqlite,
     open_graph_sqlite,
 )
@@ -60,21 +62,11 @@ def sqlite_db(tmp_path: Path, materialized_template: Path) -> Path:
     return db_path
 
 
-def _runtime_readers(db_path: Path) -> list[tuple[str, Callable[[], Any]]]:
+def _read_only_runtime_readers(db_path: Path) -> list[tuple[str, Callable[[], Any]]]:
     return [
         (
             "require",
             lambda: require_c03_graph_sqlite(REPO, db_path),
-        ),
-        (
-            "assemble",
-            lambda: assemble_c03_graph_sqlite_context(
-                role_family_key=ROLE_FAMILY,
-                section_id="executive_summary",
-                selected_fact_ids=[FACT_ID],
-                repo_root=REPO,
-                db_path=db_path,
-            ),
         ),
         (
             "select",
@@ -92,7 +84,7 @@ def _runtime_readers(db_path: Path) -> list[tuple[str, Callable[[], Any]]]:
 def test_missing_runtime_projection_is_not_created(tmp_path: Path) -> None:
     db_path = tmp_path / "missing" / "c03_graph.sqlite"
 
-    for _reader_name, read in _runtime_readers(db_path):
+    for _reader_name, read in _read_only_runtime_readers(db_path):
         with pytest.raises(
             C03GraphProjectionUnavailableError,
             match="unavailable|missing",
@@ -111,6 +103,51 @@ def test_ensure_remains_the_explicit_projection_setup_writer(tmp_path: Path) -> 
     assert require_c03_graph_sqlite(REPO, db_path) == db_path
 
 
+def test_production_assembly_rebuilds_stale_materializer_version(
+    sqlite_db: Path,
+) -> None:
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        raw_summary = conn.execute(
+            "SELECT graph_count_summary FROM graph_metadata"
+        ).fetchone()[0]
+        summary = json.loads(str(raw_summary))
+        summary["c03_sqlite_materializer_code_version"] = "stale-materializer-version"
+        conn.execute(
+            "UPDATE graph_metadata SET graph_count_summary = ?",
+            (json.dumps(summary, sort_keys=True),),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+    bundle = assemble_c03_graph_sqlite_context(
+        role_family_key=ROLE_FAMILY,
+        section_id="executive_summary",
+        selected_fact_ids=[FACT_ID],
+        repo_root=REPO,
+        db_path=sqlite_db,
+    )
+
+    assert bundle["receipt"]["c03_integration_status"] == "SQLITE_CONTEXT_AVAILABLE"
+    conn = sqlite3.connect(str(sqlite_db))
+    try:
+        rebuilt_summary = json.loads(
+            str(
+                conn.execute(
+                    "SELECT graph_count_summary FROM graph_metadata"
+                ).fetchone()[0]
+            )
+        )
+    finally:
+        conn.close()
+    assert (
+        rebuilt_summary["c03_sqlite_materializer_code_version"]
+        == C03_SQLITE_MATERIALIZER_CODE_VERSION
+    )
+    assert require_c03_graph_sqlite(REPO, sqlite_db) == sqlite_db
+
+
 def test_stale_runtime_projection_preserves_database_bytes(sqlite_db: Path) -> None:
     conn = sqlite3.connect(str(sqlite_db))
     try:
@@ -120,7 +157,7 @@ def test_stale_runtime_projection_preserves_database_bytes(sqlite_db: Path) -> N
         conn.close()
     before = _projection_state(sqlite_db)
 
-    for _reader_name, read in _runtime_readers(sqlite_db):
+    for _reader_name, read in _read_only_runtime_readers(sqlite_db):
         with pytest.raises(C03GraphProjectionUnavailableError, match="stale"):
             read()
         assert _projection_state(sqlite_db) == before
@@ -153,7 +190,7 @@ def test_runtime_reads_reject_population_count_drift_without_mutation(
         conn.close()
     before = _projection_state(sqlite_db)
 
-    for _reader_name, read in _runtime_readers(sqlite_db):
+    for _reader_name, read in _read_only_runtime_readers(sqlite_db):
         with pytest.raises(
             C03GraphProjectionUnavailableError,
             match=f"{table_name} population count mismatch",
@@ -182,7 +219,7 @@ def test_malformed_role_family_projection_fails_typed_without_mutation(
         conn.close()
     before = _projection_state(sqlite_db)
 
-    for _reader_name, read in _runtime_readers(sqlite_db):
+    for _reader_name, read in _read_only_runtime_readers(sqlite_db):
         with pytest.raises(
             C03GraphProjectionUnavailableError,
             match="role_family_projection missing columns",

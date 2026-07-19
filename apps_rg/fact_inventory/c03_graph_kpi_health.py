@@ -1044,38 +1044,25 @@ def _sibling_integrity_metric(
         for sibling_id in children
         if node_id != sibling_id
     }
-    if not rows and expected_siblings:
-        return _metric(
-            policy,
-            metric_id,
-            numerator=0,
-            denominator=len(expected_siblings),
-            numerator_semantics="materialized sibling rows matching graph-derived sibling relationships",
-            denominator_semantics="all directed sibling relationships derived from shared graph parent edges",
-            cohort=cohort,
-            failure_count=len(expected_siblings),
-            failure_locators=[
-                {
-                    "table": "graph_sibling_links",
-                    "reason": "empty_with_required_sibling_relationships",
-                    "expected_row_count": len(expected_siblings),
-                }
-            ],
-            status_override=str(policy["metrics"][metric_id]["failure_status"]),
+    materialized_counts = Counter(
+        (
+            _string(row[0]),
+            _string(row[1]),
+            _string(row[2]),
+            _string(row[3]),
         )
-    pairs = {(_string(row[0]), _string(row[1])) for row in rows}
+        for row in rows
+    )
+    materialized_siblings = set(materialized_counts)
     edge_triples = {(row["source_node_id"], row["target_node_id"], row["edge_type"]) for row in edges}
-    valid = 0
+    valid_expected = 0
     failures: list[dict[str, Any]] = []
-    for node_id, sibling_id, parent_id, edge_type in rows:
-        node = _string(node_id)
-        sibling = _string(sibling_id)
-        parent = _string(parent_id)
-        edge_kind = _string(edge_type)
+    for node, sibling, parent, edge_kind in sorted(materialized_siblings):
+        relationship = (node, sibling, parent, edge_kind)
         reasons: list[str] = []
         if not node or not sibling or node == sibling:
             reasons.append("blank_or_self_sibling")
-        if (sibling, node) not in pairs:
+        if (sibling, node, parent, edge_kind) not in materialized_siblings:
             reasons.append("reciprocal_link_missing")
         if (
             not parent
@@ -1083,19 +1070,59 @@ def _sibling_integrity_metric(
             or (parent, sibling, edge_kind) not in edge_triples
         ):
             reasons.append("shared_parent_edges_missing")
+        if relationship not in expected_siblings:
+            reasons.append("unexpected_sibling_row")
+        occurrences = materialized_counts[relationship]
+        if occurrences > 1:
+            reasons.append("duplicate_sibling_row")
         if reasons:
-            failures.append({"node_id": node, "sibling_node_id": sibling, "reasons": reasons})
+            failure = {
+                "node_id": node,
+                "sibling_node_id": sibling,
+                "shared_parent_node_id": parent,
+                "shared_edge_type": edge_kind,
+                "reasons": sorted(set(reasons)),
+            }
+            if occurrences > 1:
+                failure["occurrences"] = occurrences
+            failures.append(failure)
         else:
-            valid += 1
+            valid_expected += 1
+    for node, sibling, parent, edge_kind in sorted(
+        expected_siblings - materialized_siblings
+    ):
+        failures.append(
+            {
+                "node_id": node,
+                "sibling_node_id": sibling,
+                "shared_parent_node_id": parent,
+                "shared_edge_type": edge_kind,
+                "reasons": ["expected_sibling_missing"],
+            }
+        )
     return _metric(
         policy,
         metric_id,
-        numerator=valid,
-        denominator=len(rows),
-        numerator_semantics="sibling rows that are non-self, reciprocal, and share the declared parent edges",
-        denominator_semantics="all generated graph_sibling_links rows in the SQLite projection",
+        numerator=valid_expected,
+        denominator=len(expected_siblings),
+        numerator_semantics=(
+            "graph-derived sibling relationships materialized exactly once with reciprocal and "
+            "shared-parent integrity"
+        ),
+        denominator_semantics="all directed sibling relationships derived from shared graph parent edges",
         cohort=cohort,
+        failure_count=len(failures),
         failure_locators=failures,
+        status_override=(
+            str(policy["metrics"][metric_id]["failure_status"])
+            if failures
+            else None
+        ),
+        details={
+            "expected_relationship_count": len(expected_siblings),
+            "materialized_distinct_relationship_count": len(materialized_siblings),
+            "materialized_row_count": len(rows),
+        },
     )
 
 
