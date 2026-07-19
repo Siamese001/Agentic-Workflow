@@ -1,0 +1,26 @@
+{
+  "receipt_version": "1.0",
+  "audit_id": "apps-rg-c03-runtime-index-synchronization-b8d4f1",
+  "timestamp": "2026-07-19T01:24:23Z",
+  "changed_files": [
+    "agentic_core/L6_system_learning/stores/index_file_lock.py",
+    "agentic_core/L6_system_learning/stores/version_store.py",
+    "agentic_core/L6_system_learning/runtime_adg/store.py"
+  ],
+  "classifications": {
+    "agentic_core/L6_system_learning/stores/index_file_lock.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_system_learning/stores/version_store.py": "GENERIC_INFRASTRUCTURE",
+    "agentic_core/L6_system_learning/runtime_adg/store.py": "GENERIC_INFRASTRUCTURE"
+  },
+  "outcome": "ALLOW_WITH_GENERIC_REFACTOR",
+  "forbidden_literals_found": [],
+  "receipts_verified": [
+    "artifacts/governance/core_addition_author_gate/apps-rg-c03-graph-health-embedding-closure-b8d4f1.json"
+  ],
+  "action_taken": "Added one generic same-layer L6 synchronization primitive and changed both file-backed writers to reload, validate, and atomically persist operation-local merged mappings under that lock.",
+  "next_steps": [
+    "Require both Linux ADG hardening and Windows runtime-index CI jobs before merge.",
+    "Quiesce or restart any long-running runtime-ADG writer still executing pre-repair code before version-index recovery.",
+    "Run the full certification audit and restore a certified ADG pointer before using structural graph claims."
+  ]
+}

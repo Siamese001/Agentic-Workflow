@@ -12,6 +12,14 @@ on:
       - ".codex/rules/adg-post-run-burndown.md"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
+      - "agentic_core/adg/contracts/**"
+      - "agentic_core/adg/extraction/**"
+      - "agentic_core/L6_system_learning/runtime_adg/**"
+      - "agentic_core/L6_system_learning/snapshot/**"
+      - "agentic_core/L6_system_learning/store.py"
+      - "agentic_core/L6_system_learning/stores/index_file_lock.py"
+      - "agentic_core/L6_system_learning/stores/version_store.py"
+      - "apps_rg/fact_inventory/c03_graph_kpi_health.py"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "ops_scripts/ci/check_adg_query_plans.py"
@@ -21,16 +29,21 @@ on:
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
       - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+      - "tests/unit/ops_scripts/ci/test_infra_wiring_scan.py"
       - "tests/unit/codex/test_adg_audit_automation_contract.py"
       - "tests/unit/tools/adg/**"
       - "tests/unit/tools_adg/test_run_full_adg_audit.py"
       - "tests/unit/tools/generate/**"
       - "tests/unit/tools/graphdb/**"
       - "tests/unit/tools/reports/**"
+      - "tests/unit/tools/runtime_adg/**"
+      - "tests/unit/system_learning/runtime_adg/test_index_file_lock.py"
+      - "tests/unit/system_learning/runtime_adg/test_store_guardrail.py"
       - "tools/adg/**"
       - "tools/generate/**"
       - "tools/graphdb/**"
       - "tools/reports/**"
+      - "tools/runtime_adg/**"
   push:
     branches: [main, master]
     paths:
@@ -42,6 +55,14 @@ on:
       - ".codex/rules/adg-post-run-burndown.md"
       - "agentic_core/adg/analysis/**"
       - "agentic_core/adg/artifact/**"
+      - "agentic_core/adg/contracts/**"
+      - "agentic_core/adg/extraction/**"
+      - "agentic_core/L6_system_learning/runtime_adg/**"
+      - "agentic_core/L6_system_learning/snapshot/**"
+      - "agentic_core/L6_system_learning/store.py"
+      - "agentic_core/L6_system_learning/stores/index_file_lock.py"
+      - "agentic_core/L6_system_learning/stores/version_store.py"
+      - "apps_rg/fact_inventory/c03_graph_kpi_health.py"
       - "ops_scripts/ci/adg_gates/**"
       - "ops_scripts/ci/check_adg_metric_registry.py"
       - "ops_scripts/ci/check_adg_query_plans.py"
@@ -51,16 +72,21 @@ on:
       - "tests/agentic_core/adg/artifact/test_sqlite_writer_contract.py"
       - "tests/unit/ops_scripts/ci/adg_gates/**"
       - "tests/unit/ops_scripts/ci/test_verify_adg_report_mece.py"
+      - "tests/unit/ops_scripts/ci/test_infra_wiring_scan.py"
       - "tests/unit/codex/test_adg_audit_automation_contract.py"
       - "tests/unit/tools/adg/**"
       - "tests/unit/tools_adg/test_run_full_adg_audit.py"
       - "tests/unit/tools/generate/**"
       - "tests/unit/tools/graphdb/**"
       - "tests/unit/tools/reports/**"
+      - "tests/unit/tools/runtime_adg/**"
+      - "tests/unit/system_learning/runtime_adg/test_index_file_lock.py"
+      - "tests/unit/system_learning/runtime_adg/test_store_guardrail.py"
       - "tools/adg/**"
       - "tools/generate/**"
       - "tools/graphdb/**"
       - "tools/reports/**"
+      - "tools/runtime_adg/**"
   workflow_dispatch:
 
 permissions:
@@ -119,6 +145,19 @@ jobs:
             tests/unit/tools/generate/test_sqlite_integrity_hardening.py \
             tests/unit/tools/graphdb/test_projection.py \
             -p no:xdist -p no:testmon -q --timeout=120
+      - name: Run ADG certification repair regressions
+        run: |
+          python -m pytest \
+            tests/unit/tools/generate/test_generate_full_adg_failfast.py \
+            tests/unit/tools/generate/test_gate_manifest_validation_recording.py \
+            tests/unit/tools/generate/test_infra_wiring_views.py \
+            tests/unit/tools/generate/test_materialized_views_phase_a.py \
+            tests/unit/tools_adg/test_run_full_adg_audit.py \
+            tests/unit/tools/runtime_adg/test_backfill_trace_index.py \
+            tests/unit/system_learning/runtime_adg/test_index_file_lock.py \
+            tests/unit/system_learning/runtime_adg/test_store_guardrail.py \
+            tests/unit/ops_scripts/ci/test_infra_wiring_scan.py::TestScanDirectory::test_apps_rg_p0_infra_consumers_use_sanctioned_adapters \
+            -p no:xdist -p no:testmon -q --timeout=120
       - name: Run sealed output static contracts
         run: |
           python -m pytest \
@@ -129,3 +168,16 @@ jobs:
             tests/unit/tools/generate/test_generate_full_adg_failfast.py \
             -k "one_sealed_terminal_bundle or one_snapshot_bound_bundle or SealedOutputBundleWiring or ReviewTemplateWiring or DeadCodeReportWiring" \
             -p no:xdist -p no:testmon -q --timeout=120
+
+  runtime-index-windows:
+    name: runtime-index-windows
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/python-setup
+        with:
+          python-version: "3.12"
+          install-mode: editable
+      - name: Run Windows runtime-index synchronization contracts
+        run: python -m pytest tests/unit/tools/runtime_adg/test_backfill_trace_index.py tests/unit/system_learning/runtime_adg/test_index_file_lock.py tests/unit/system_learning/runtime_adg/test_store_guardrail.py tests/unit/tools_adg/test_run_full_adg_audit.py::test_exact_generation_manifest_must_be_newer_than_wrapper_spawn -p no:xdist -p no:testmon -q --timeout=120

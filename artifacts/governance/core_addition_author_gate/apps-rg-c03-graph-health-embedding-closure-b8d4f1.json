@@ -1,0 +1,112 @@
+{
+  "receipt_type": "CoreAdditionAuthorGateReceipt",
+  "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+  "plan_type": "platform_core_change",
+  "changed_paths": [
+    "agentic_core/L6_system_learning/stores/index_file_lock.py",
+    "agentic_core/L6_system_learning/stores/version_store.py",
+    "agentic_core/L6_system_learning/runtime_adg/store.py"
+  ],
+  "decision": {
+    "verdict": "PASS",
+    "rationale": "The bounded generic L6 storage correction is verified: shared cross-process locking, operation-local reload/merge-on-write, and atomic replacement prevent stale process or same-instance reader races without introducing app-owned identity, meaning, thresholds, routes, providers, or Exit policy.",
+    "decided_at": "2026-07-19T02:11:45Z"
+  },
+  "tests": {
+    "spine_substrate_test": {
+      "result": "PASS",
+      "evidence": "The generic L6 version/runtime-ADG contracts and final 488-test integrated ADG repair workflow passed."
+    },
+    "any_app_capability_test": {
+      "result": "PASS",
+      "evidence": "The lock accepts only a base path and timeout; mapping writers operate on generic string identities without application branching."
+    },
+    "app_owned_meaning_test": {
+      "result": "PASS",
+      "evidence": "No application semantics moved into core; apps_rg remains a downstream consumer of generic storage."
+    },
+    "no_app_literal_test": {
+      "result": "PASS",
+      "evidence": "Exact scan across all three changed core paths found zero forbidden apps_* literals or app route/policy constants."
+    },
+    "plugin_test": {
+      "result": "PASS",
+      "evidence": "No plugin or new public provider surface was introduced; same-layer L6 imports passed F401/I and core static checks."
+    },
+    "negative_control_test": {
+      "result": "PASS",
+      "evidence": "Windows suite passed 56 tests covering spawned competing writers, observed live-writer contention against recovery, same-instance readers, timeout/crash release, manifest freshness, archive mismatch, ambiguous traces, and trace-less snapshot aliases."
+    },
+    "platform_approval_test": {
+      "result": "PASS",
+      "evidence": "The user explicitly authorized expansion with Expand and directed continued implementation, testing, commit, PR, and publication."
+    },
+    "boundary_preservation_test": {
+      "result": "PASS",
+      "evidence": "All three core paths classify as GENERIC_INFRASTRUCTURE; zero forbidden literals, scoped core-static 4/4, and ruff F401/I/S passed."
+    },
+    "contract_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Public store interfaces remain unchanged; exact Windows store/backfill/provenance cohort passed 56 tests and the integrated cohort passed 488 tests."
+    },
+    "runtime_proof_compatibility_test": {
+      "result": "PASS",
+      "evidence": "Digest/provenance/runtime proof, handoff status consistency, and fail-closed manifest tests are included in the final 488-test integrated PASS."
+    }
+  },
+  "artifacts": {
+    "no_app_literal_scan_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    },
+    "strict_scan_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    },
+    "negative_control_results_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    },
+    "plugin_proof_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    },
+    "boundary_scan_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    },
+    "contract_schema_scan_ref": {
+      "path": "artifacts/governance/apps_rg_c03_runtime_index_prewrite_evidence.json",
+      "digest": "sha256:ed070c7c7937473deccae4355fe95c5a9f75e4198c4aeada7f9eefca231fdca5",
+      "verdict": "PASS",
+      "plan_id": "apps-rg-c03-graph-health-embedding-closure-b8d4f1",
+      "freshness_ts": "2026-07-19T02:11:45Z",
+      "changed_paths_covered": true
+    }
+  },
+  "signature": {
+    "receipt_digest": "sha256:dc126f11ae807d5c88e92fdade8a488e9c39311256e2a0edecb49a64a92df216",
+    "signed_by": "codex",
+    "signed_at": "2026-07-19T02:11:45Z"
+  }
+}

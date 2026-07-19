@@ -23,6 +23,9 @@ from tools.adg import consume_adg_repair_handoff
 from tools.adg import run_full_adg_audit as wrapper
 from tools.generate._required_gates import required_gate_names
 
+SNAPSHOT_COMMIT_SHA = "a" * 40
+SNAPSHOT_REPO_STATE_HASH = "b" * 40
+
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -35,8 +38,10 @@ def temp_artifacts(tmp_path, monkeypatch):
     monkeypatch.setattr(wrapper, "HANDOFF_CONTRACT_PATH", tmp_path / "missing-automation.toml")
     wrapper.ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
 
+    import tools.adg.integration.enforcement_report as enforcement_mod
     import tools.reports.adg_burndown_report as burndown_mod
 
+    monkeypatch.setattr(enforcement_mod, "ARTIFACTS_ADG", wrapper.ARTIFACTS_ADG)
     monkeypatch.setattr(
         burndown_mod, "BURNDOWN_TABLE_DEFAULT", wrapper.ARTIFACTS_ADG / "adg_burndown_table.json"
     )
@@ -51,7 +56,14 @@ def temp_artifacts(tmp_path, monkeypatch):
     return tmp_path
 
 
-def _make_snapshot(path: Path, *, with_runtime_view: bool, attested: int) -> Path:
+def _make_snapshot(
+    path: Path,
+    *,
+    with_runtime_view: bool,
+    attested: int,
+    commit_sha: str = SNAPSHOT_COMMIT_SHA,
+    repo_state_hash: str = SNAPSHOT_REPO_STATE_HASH,
+) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(str(path))
     try:
@@ -60,6 +72,14 @@ def _make_snapshot(path: Path, *, with_runtime_view: bool, attested: int) -> Pat
         )
         con.execute(
             "CREATE TABLE edges (id INTEGER PRIMARY KEY, src_id INT, dst_id INT, relation_type TEXT, authority TEXT)"
+        )
+        con.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        con.executemany(
+            "INSERT INTO meta(key, value) VALUES (?, ?)",
+            (
+                ("commit_sha", commit_sha),
+                ("repo_state_hash", repo_state_hash),
+            ),
         )
         if with_runtime_view:
             con.execute("CREATE TABLE v_runtime_proof (static_edge_id INT, attesting_trace_count INT)")
@@ -103,12 +123,15 @@ def _write_manifests(
             }
             for name in sorted(required_gate_names())
         ]
+    manifest_failed = generation_exit_code != 0 or any(
+        gate.get("status") not in {"pass", "invoked"} for gate in gates
+    )
     gate_manifest = {
         "timestamp": "2026-01-01T00:00:00Z",
         "generator_entrypoint": "tools/generate/generate_full_adg.py",
         "sqlite_path": str(snapshot),
         "generation_exit_code": generation_exit_code,
-        "certification_status": "clean" if generation_exit_code == 0 else "failed",
+        "certification_status": "failed" if manifest_failed else "clean",
         "gates": gates,
         "unexpected_skips": [],
         "failed_gates": [],
@@ -121,8 +144,9 @@ def _write_manifests(
         "timestamp": "2026-01-01T00:00:01Z",
         "sqlite_path": str(snapshot),
         "snapshot_path": str(snapshot),
-        "commit_sha": None,
-        "repo_state_hash": None,
+        "snapshot_sha256": wrapper._sha256(snapshot),
+        "commit_sha": SNAPSHOT_COMMIT_SHA,
+        "repo_state_hash": SNAPSHOT_REPO_STATE_HASH,
         "generation_exit_code": generation_exit_code,
         "p0_status": "pass",
         "gate_manifest_path": str(gate_manifest_path),
@@ -130,7 +154,7 @@ def _write_manifests(
         "runtime_attested_edge_count": runtime_attested,
         "registry_bucket_edge_count": 0,
         "created_at_utc": "2026-01-01T00:00:01Z",
-        "certification_status": "clean" if generation_exit_code == 0 else "failed",
+        "certification_status": "failed" if manifest_failed else "clean",
     }
     gen_manifest_path = artifacts_dir / f"adg_generation_manifest_{ts}.json"
     gen_manifest_path.write_text(json.dumps(gen_manifest), encoding="utf-8")
@@ -190,8 +214,13 @@ def _write_handoff_inputs(
                 "timestamp": "2026-06-25T01:01:00Z",
                 "sqlite_path": snapshot_value,
                 "snapshot_path": snapshot_value,
+                "snapshot_sha256": wrapper._sha256(snap),
+                "commit_sha": SNAPSHOT_COMMIT_SHA,
+                "repo_state_hash": SNAPSHOT_REPO_STATE_HASH,
                 "gate_manifest_path": str(gate_manifest),
                 "runtime_proof_status": "attested",
+                "runtime_attested_edge_count": 1,
+                "certification_status": "failed" if gates else "clean",
             }
         ),
         encoding="utf-8",
@@ -361,6 +390,47 @@ def _write_valid_output_bundle_fixture(
     return bundle
 
 
+def _reseal_digest_bound_queue_and_gate_results(handoff: dict) -> None:
+    """Refresh fixture digests after an adversarial queue/results rewrite."""
+    artifacts = handoff["artifacts"]
+    gate_results = Path(artifacts["gate_results"]["path"])
+    action_queue = Path(artifacts["action_queue"]["path"])
+    gate_digest = wrapper._sha256(gate_results)
+
+    action_doc = json.loads(action_queue.read_text(encoding="utf-8"))
+    for row in action_doc.get("provenance", {}).get("inputs", []):
+        if isinstance(row, dict) and row.get("artifact_key") == "gate_results":
+            row["digest_sha256"] = gate_digest
+    action_queue.write_text(json.dumps(action_doc), encoding="utf-8")
+    action_digest = wrapper._sha256(action_queue)
+
+    bundle = Path(artifacts["output_bundle"]["path"])
+    bundle_doc = json.loads(bundle.read_text(encoding="utf-8"))
+    publication_row = next(
+        row for row in bundle_doc["artifacts"] if Path(row["path"]).name.startswith("adg_output_publication_")
+    )
+    publication = Path(publication_row["path"])
+    publication_doc = json.loads(publication.read_text(encoding="utf-8"))
+    next(row for row in publication_doc["artifacts"] if Path(row["path"]) == action_queue)["sha256"] = (
+        action_digest
+    )
+    publication.write_text(json.dumps(publication_doc), encoding="utf-8")
+    publication_digest = wrapper._sha256(publication)
+
+    bundle_doc["gate_results_sha256"] = gate_digest
+    for row in bundle_doc["artifacts"]:
+        row_path = Path(row["path"])
+        if row_path == action_queue:
+            row["sha256"] = action_digest
+        elif row_path == publication:
+            row["sha256"] = publication_digest
+    bundle.write_text(json.dumps(bundle_doc), encoding="utf-8")
+
+    artifacts["gate_results"] = wrapper._artifact_ref("gate_results", gate_results)
+    artifacts["action_queue"] = wrapper._artifact_ref("action_queue", action_queue)
+    artifacts["output_bundle"] = wrapper._artifact_ref("output_bundle", bundle)
+
+
 def _write_receipt(
     path: Path,
     *,
@@ -402,7 +472,7 @@ def _patch_generator(
     snapshot: Path | None = None,
     gate_kwargs: dict | None = None,
     runtime_proof_status: str = "attested",
-    runtime_attested: int = 5,
+    runtime_attested: int | None = None,
     dispatcher_gates: list[dict] | None = None,
     dispatcher_exit_code: int = 0,
 ) -> mock.Mock:
@@ -411,11 +481,16 @@ def _patch_generator(
     def _fake(extra_args, timeout_s, certification_mode):  # noqa: ARG001
         if writes_manifests and snapshot is not None:
             manifest_kwargs = gate_kwargs or {}
+            manifest_runtime_attested = runtime_attested
+            if manifest_runtime_attested is None:
+                from tools.generate._gate_manifest import runtime_proof_from_sqlite
+
+                _observed_status, manifest_runtime_attested = runtime_proof_from_sqlite(snapshot)
             _write_manifests(
                 wrapper.ARTIFACTS_ADG,
                 snapshot=snapshot,
                 runtime_proof_status=runtime_proof_status,
-                runtime_attested=runtime_attested,
+                runtime_attested=manifest_runtime_attested,
                 generation_exit_code=return_code,
                 **manifest_kwargs,
             )
@@ -515,13 +590,26 @@ def _patch_report(monkeypatch, *, return_code: int = 0) -> mock.Mock:
 # ---------------------------------------------------------------------------
 # Tests (plan §10 cases 1..18)
 # ---------------------------------------------------------------------------
+def test_temp_artifacts_redirects_enforcement_report_writer(temp_artifacts):
+    import tools.adg.integration.enforcement_report as enforcement_mod
+
+    report_path = enforcement_mod.write_enforcement_report(
+        {"certified_rollup": "CERTIFIED"},
+        ts="06292026_0000",
+    )
+
+    assert report_path.parent == wrapper.ARTIFACTS_ADG
+    assert report_path.is_relative_to(temp_artifacts)
+    assert (wrapper.ARTIFACTS_ADG / "adg_enforcement_report_latest.json").is_file()
+
+
 def test_exact_generation_manifest_must_be_newer_than_wrapper_spawn(
     temp_artifacts,
 ) -> None:
     run_id = "06292026_0101"
     stale = wrapper.ARTIFACTS_ADG / f"adg_generation_manifest_{run_id}.json"
     stale.write_text(json.dumps({"run_id": run_id}), encoding="utf-8")
-    wrapper_start = time.time()
+    wrapper_start = time.time_ns()
 
     assert (
         wrapper._find_generation_manifest(
@@ -1119,6 +1207,21 @@ def test_subprocess_calls_use_sys_executable_and_shell_false_and_timeout(temp_ar
     assert captured["kwargs"].get("timeout") == 30
 
 
+@pytest.mark.parametrize(
+    "malformed_row",
+    [
+        None,
+        {},
+        {"name": []},
+        {"name": "mcp_config_drift", "status": []},
+    ],
+)
+def test_cross_check_required_gates_rejects_malformed_nonempty_rows(malformed_row):
+    reasons = wrapper._cross_check_required_gates({"gates": [malformed_row]})
+
+    assert any("gate manifest row 0 malformed" in reason for reason in reasons)
+
+
 def test_no_hard_gate_failure_hidden_by_broad_exception(temp_artifacts, monkeypatch):
     """A failed required gate MUST surface in reasons; never silently discarded."""
     snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
@@ -1159,6 +1262,301 @@ def test_require_runtime_proof_fails_when_not_attested(temp_artifacts, monkeypat
     result = wrapper.run_audit(mode="certification", require_runtime_proof=True)
     assert result.certification_status == "failed"
     assert any("runtime_proof_status" in r for r in result.reasons)
+
+
+def test_runtime_proof_is_recomputed_from_snapshot_and_status_mismatch_blocks(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=0)
+    _patch_generator(
+        monkeypatch,
+        snapshot=snap,
+        runtime_proof_status="attested",
+        runtime_attested=5,
+    )
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification", require_runtime_proof=True)
+
+    assert result.runtime_proof_status == "view_present_zero_attested"
+    assert result.certification_status == "failed"
+    assert any(
+        "runtime proof manifest mismatch" in reason
+        and "declared status='attested' count=5" in reason
+        and "observed status='view_present_zero_attested' count=0" in reason
+        for reason in result.reasons
+    )
+
+
+def test_runtime_proof_attested_count_mismatch_blocks_even_when_status_matches(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=2)
+    _patch_generator(
+        monkeypatch,
+        snapshot=snap,
+        runtime_proof_status="attested",
+        runtime_attested=5,
+    )
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification", require_runtime_proof=True)
+
+    assert result.runtime_proof_status == "attested"
+    assert result.certification_status == "failed"
+    assert any(
+        "runtime proof manifest mismatch" in reason
+        and "declared status='attested' count=5" in reason
+        and "observed status='attested' count=2" in reason
+        for reason in result.reasons
+    )
+
+
+@pytest.mark.parametrize(
+    ("manifest_digest", "expected"),
+    [
+        (None, "missing or malformed"),
+        ("not-a-sha256", "missing or malformed"),
+        ("0" * 64, "does not match exact snapshot bytes"),
+    ],
+)
+def test_certification_blocks_missing_malformed_or_mismatched_snapshot_digest(
+    temp_artifacts,
+    monkeypatch,
+    manifest_digest,
+    expected,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    original_run_generator = _patch_generator(monkeypatch, snapshot=snap)
+
+    def _generate_then_tamper(*args, **kwargs):
+        result = original_run_generator.side_effect(*args, **kwargs)
+        manifest_path = wrapper.ARTIFACTS_ADG / "adg_generation_manifest_06292026_0101.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest_digest is None:
+            manifest.pop("snapshot_sha256", None)
+        else:
+            manifest["snapshot_sha256"] = manifest_digest
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        return result
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_generate_then_tamper))
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification")
+
+    assert result.certification_status == "failed"
+    assert result.process_exit_code == 1
+    assert result.artifact_status == "incomplete"
+    assert result.repair_handoff is not None
+    assert any("snapshot integrity:" in error for error in result.repair_handoff["validation_errors"])
+    assert any(
+        "generation manifest snapshot_sha256" in reason and expected in reason for reason in result.reasons
+    )
+
+
+def test_certification_detects_snapshot_tampering_after_manifest_write(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    original_run_generator = _patch_generator(monkeypatch, snapshot=snap)
+
+    def _generate_then_tamper(*args, **kwargs):
+        result = original_run_generator.side_effect(*args, **kwargs)
+        con = sqlite3.connect(snap)
+        try:
+            con.execute("CREATE TABLE post_manifest_tamper (value TEXT)")
+            con.commit()
+        finally:
+            con.close()
+        return result
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_generate_then_tamper))
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification")
+
+    assert result.certification_status == "failed"
+    assert result.artifact_status == "incomplete"
+    assert any(
+        "generation manifest snapshot_sha256 does not match exact snapshot bytes" in reason
+        for reason in result.reasons
+    )
+
+
+def test_certification_blocks_missing_snapshot_provenance_as_incomplete(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    original_run_generator = _patch_generator(monkeypatch, snapshot=snap)
+
+    def _generate_then_tamper(*args, **kwargs):
+        result = original_run_generator.side_effect(*args, **kwargs)
+        manifest_path = wrapper.ARTIFACTS_ADG / "adg_generation_manifest_06292026_0101.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["commit_sha"] = None
+        manifest["repo_state_hash"] = "moving-live-tree"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        return result
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_generate_then_tamper))
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification")
+
+    assert result.certification_status == "failed"
+    assert result.artifact_status == "incomplete"
+    assert any("commit_sha missing or malformed" in reason for reason in result.reasons)
+    assert any("repo_state_hash missing or malformed" in reason for reason in result.reasons)
+
+
+def test_certification_blocks_manifest_provenance_mismatch_with_snapshot_meta(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    original_run_generator = _patch_generator(monkeypatch, snapshot=snap)
+
+    def _generate_then_tamper(*args, **kwargs):
+        result = original_run_generator.side_effect(*args, **kwargs)
+        manifest_path = wrapper.ARTIFACTS_ADG / "adg_generation_manifest_06292026_0101.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["commit_sha"] = "c" * 40
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        return result
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_generate_then_tamper))
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="certification")
+
+    assert result.certification_status == "failed"
+    assert result.artifact_status == "incomplete"
+    assert any(
+        "generation manifest commit_sha differs from immutable snapshot meta" in reason
+        for reason in result.reasons
+    )
+
+
+def test_diagnostic_mode_blocks_snapshot_integrity_failure_before_handoff_publication(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    original_run_generator = _patch_generator(monkeypatch, snapshot=snap)
+
+    def _generate_then_tamper(*args, **kwargs):
+        result = original_run_generator.side_effect(*args, **kwargs)
+        manifest_path = wrapper.ARTIFACTS_ADG / "adg_generation_manifest_06292026_0101.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["snapshot_sha256"] = "0" * 64
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+        return result
+
+    monkeypatch.setattr(wrapper, "_run_generator", mock.Mock(side_effect=_generate_then_tamper))
+    _patch_report(monkeypatch)
+
+    result = wrapper.run_audit(mode="diagnostic")
+
+    assert result.certification_status == "diagnostic_only"
+    assert result.artifact_status == "incomplete"
+    assert result.process_exit_code == 1
+    assert wrapper._downstream_release_status(result) == "blocked"
+    assert any(
+        "generation manifest snapshot_sha256 does not match exact snapshot bytes" in reason
+        for reason in result.reasons
+    )
+
+
+def test_unreadable_runtime_proof_publishes_blocked_receipt(
+    temp_artifacts,
+    monkeypatch,
+):
+    snap = _make_snapshot(temp_artifacts / "snap.sqlite", with_runtime_view=True, attested=1)
+    _patch_generator(monkeypatch, snapshot=snap, runtime_attested=1)
+    _patch_report(monkeypatch)
+
+    import tools.generate._gate_manifest as gate_manifest_module
+
+    monkeypatch.setattr(
+        gate_manifest_module,
+        "runtime_proof_from_sqlite",
+        lambda _snapshot: ("snapshot_unreadable", 0),
+    )
+
+    result = wrapper.run_audit(mode="certification")
+
+    assert result.runtime_proof_status == "snapshot_unreadable"
+    assert result.certification_status == "failed"
+    assert result.process_exit_code == 1
+    assert result.artifact_status == "incomplete"
+    assert any("runtime proof snapshot unreadable" in reason for reason in result.reasons)
+    receipt = json.loads(wrapper.RECEIPT_PATH.read_text(encoding="utf-8"))
+    assert receipt["run_state"]["runtime_proof_status"] == "snapshot_unreadable"
+    assert receipt["artifact_status"] == "incomplete"
+    assert wrapper._downstream_release_status(result) == "blocked"
+    assert any("snapshot integrity:" in error for error in receipt["repair_handoff"]["validation_errors"])
+
+
+def test_plane2_manifest_append_failure_is_explicit_and_non_destructive(
+    tmp_path,
+    monkeypatch,
+):
+    from tools.generate import _gate_manifest as gate_manifest_module
+
+    manifest_path = tmp_path / "gate.json"
+    manifest_path.write_text('{"gates": []}\n', encoding="utf-8")
+    before = manifest_path.read_bytes()
+    monkeypatch.setattr(
+        gate_manifest_module,
+        "_atomic_write_json",
+        mock.Mock(side_effect=OSError("injected short-write guard")),
+    )
+
+    error = wrapper._append_manifest_gate_record(
+        manifest_path,
+        name="three_bucket_manifest_quick",
+        status="pass",
+        exit_code=0,
+        message="test",
+    )
+
+    assert error == "gate manifest atomic plane-2 append failed: injected short-write guard"
+    assert manifest_path.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    ("payload", "expected"),
+    [
+        ([], "JSON document must be an object"),
+        ({}, "gate manifest gates missing or malformed"),
+        ({"gates": None}, "gate manifest gates missing or malformed"),
+        ({"gates": {}}, "gate manifest gates missing or malformed"),
+    ],
+)
+def test_plane2_manifest_append_rejects_wrong_json_shapes_without_mutation(
+    tmp_path,
+    payload,
+    expected,
+):
+    manifest_path = tmp_path / "gate.json"
+    manifest_path.write_text(json.dumps(payload), encoding="utf-8")
+    before = manifest_path.read_bytes()
+
+    error = wrapper._append_manifest_gate_record(
+        manifest_path,
+        name="three_bucket_manifest_quick",
+        status="pass",
+        exit_code=0,
+        message="test",
+    )
+
+    assert error is not None and expected in error
+    assert manifest_path.read_bytes() == before
 
 
 def test_wrapper_writes_receipt(temp_artifacts, monkeypatch):
@@ -1506,6 +1904,138 @@ def test_repair_handoff_repair_ready_status_and_counts(temp_artifacts, monkeypat
     assert counts == handoff["counts"]
 
 
+def test_receipt_rejects_nested_handoff_status_mismatch(temp_artifacts, monkeypatch):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    assert status == "repair_ready"
+    handoff["status"] = "certified"
+    _write_receipt(receipt, artifact_status=status, handoff=handoff)
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any("artifact_status differs from repair_handoff.status" in error for error in errors)
+
+
+def test_receipt_recomputes_certified_status_for_clean_zero_blocker_run(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[],
+        certification_status="clean",
+        monkeypatch=monkeypatch,
+    )
+    assert status == "certified"
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    payload["artifact_status"] = "repair_ready"
+    payload["repair_handoff"]["status"] = "repair_ready"
+    receipt.write_text(json.dumps(payload), encoding="utf-8")
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any("inconsistent with certification_status and recomputed blockers" in error for error in errors)
+
+
+def test_receipt_cannot_relabel_clean_generation_as_failed_repair_ready(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[],
+        certification_status="clean",
+        monkeypatch=monkeypatch,
+    )
+    assert status == "certified"
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    payload["run_state"]["certification_status"] = "failed"
+    payload["artifact_status"] = "repair_ready"
+    payload["repair_handoff"]["status"] = "repair_ready"
+    receipt.write_text(json.dumps(payload), encoding="utf-8")
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any("receipt certification_status differs from generation_manifest" in error for error in errors)
+
+
+def test_receipt_allows_governed_clean_generation_to_diagnostic_only_transition(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, _handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[],
+        certification_status="clean",
+        monkeypatch=monkeypatch,
+    )
+    assert status == "certified"
+    payload = json.loads(receipt.read_text(encoding="utf-8"))
+    payload["run_state"]["certification_status"] = "diagnostic_only"
+    payload["artifact_status"] = "repair_ready"
+    payload["repair_handoff"]["status"] = "repair_ready"
+    receipt.write_text(json.dumps(payload), encoding="utf-8")
+
+    _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert counts["open_blocker_fix_count"] == 0
+    assert errors == []
+
+
+def test_receipt_recomputes_repair_ready_status_when_digest_bound_blockers_exist(
+    temp_artifacts,
+    monkeypatch,
+):
+    gen_manifest, gate_manifest, _snapshot = _write_handoff_inputs(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        final_exit_code=0,
+    )
+    generation = json.loads(gen_manifest.read_text(encoding="utf-8"))
+    generation["certification_status"] = "clean"
+    gen_manifest.write_text(json.dumps(generation), encoding="utf-8")
+    status, handoff, build_errors = wrapper._build_repair_handoff(
+        generation_manifest_path=gen_manifest,
+        gate_manifest_path=gate_manifest,
+        generation_manifest=generation,
+        certification_status="failed",
+        since_wall_start=time.time() - 1,
+    )
+    assert build_errors == []
+    assert status == "repair_ready"
+    handoff["status"] = "certified"
+    receipt = _write_receipt(
+        temp_artifacts / "receipt_blocker_status.json",
+        artifact_status="certified",
+        handoff=handoff,
+    )
+
+    _payload, counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert counts["open_blocker_fix_count"] == 1
+    assert any("inconsistent with certification_status and recomputed blockers" in error for error in errors)
+
+
+def test_failed_generation_status_does_not_invalidate_snapshot_authority(
+    temp_artifacts,
+    monkeypatch,
+):
+    gen_manifest, _gate_manifest, snapshot = _write_handoff_inputs(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+    )
+    manifest = json.loads(gen_manifest.read_text(encoding="utf-8"))
+
+    reasons = wrapper._generation_snapshot_provenance_reasons(manifest, snapshot)
+
+    assert manifest["certification_status"] == "failed"
+    assert reasons == []
+
+
 def test_repair_handoff_rejects_stale_recorded_counts(temp_artifacts, monkeypatch):
     gates = [
         _gate_result(
@@ -1631,6 +2161,62 @@ def test_repair_handoff_pointer_validates_exact_receipt(temp_artifacts, monkeypa
     assert '"ok": true' in captured.out
     assert '"dependency_status": "ready"' in captured.out
     assert '"handoff_pointer":' in captured.out
+
+
+def test_pointer_rejects_digest_valid_immutable_handoff_status_source_drift(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
+    immutable_handoff = Path(pointer_payload["handoff_path"])
+    handoff_payload = json.loads(immutable_handoff.read_text(encoding="utf-8"))
+    handoff_payload["artifact_status"] = "certified"
+    handoff_payload["artifact_status_source"] = "legacy"
+    immutable_handoff.write_text(json.dumps(handoff_payload, indent=2) + "\n", encoding="utf-8")
+    pointer_payload["handoff_sha256"] = wrapper._sha256(immutable_handoff)
+    pointer.write_text(json.dumps(pointer_payload, indent=2) + "\n", encoding="utf-8")
+
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert any("immutable handoff artifact_status differs from receipt" in error for error in errors)
+    assert any("immutable handoff artifact_status_source differs from receipt" in error for error in errors)
+
+
+def test_pointer_rejects_envelope_drift_from_exact_immutable_documents(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, _receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    wrapper._write_receipt(_wrapper_result_for_handoff(status=status, handoff=handoff))
+    pointer = wrapper.ARTIFACTS_ADG / "handoffs" / "adg_repair_handoff_latest.json"
+    pointer_payload = json.loads(pointer.read_text(encoding="utf-8"))
+    pointer_payload["artifact_status"] = "certified"
+    pointer_payload["downstream_release_status"] = "blocked"
+    pointer_payload["receipt_path"] = str(pointer.with_name("different_receipt.json"))
+    pointer_payload["receipt_sha256"] = "0" * 64
+    pointer.write_text(json.dumps(pointer_payload, indent=2) + "\n", encoding="utf-8")
+
+    _receipt, _counts, errors = wrapper.validate_repair_handoff_pointer(pointer)
+
+    assert any("pointer artifact_status differs from immutable handoff" in error for error in errors)
+    assert any(
+        "pointer downstream_release_status differs from immutable handoff" in error for error in errors
+    )
+    assert any("pointer receipt_path differs from immutable handoff" in error for error in errors)
+    assert any("pointer receipt_sha256 differs from immutable handoff" in error for error in errors)
 
 
 def test_receipt_rejects_process_exit_that_differs_from_output_bundle(
@@ -2268,6 +2854,125 @@ def test_repair_handoff_consumer_rejects_digest_mismatch(temp_artifacts, monkeyp
 
     _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
     assert any("sha256 mismatch" in error for error in errors)
+
+
+@pytest.mark.parametrize("artifact_key", ["action_queue", "gate_results"])
+def test_consumer_rejects_digest_valid_malformed_action_or_gate_rows_without_crashing(
+    temp_artifacts,
+    monkeypatch,
+    artifact_key,
+):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    artifact_path = Path(handoff["artifacts"][artifact_key]["path"])
+    document = json.loads(artifact_path.read_text(encoding="utf-8"))
+    row_key = "actions" if artifact_key == "action_queue" else "gates"
+    document[row_key] = [None]
+    artifact_path.write_text(json.dumps(document), encoding="utf-8")
+    _reseal_digest_bound_queue_and_gate_results(handoff)
+    _write_receipt(receipt, artifact_status=status, handoff=handoff)
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any(f"{artifact_key} {row_key} row 0 malformed" in error for error in errors)
+
+
+def test_consumer_revalidates_generation_manifest_snapshot_digest_authority(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    manifest_path = Path(handoff["artifacts"]["generation_manifest"]["path"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["snapshot_sha256"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    handoff["artifacts"]["generation_manifest"] = wrapper._artifact_ref(
+        "generation_manifest",
+        manifest_path,
+    )
+    _write_receipt(receipt, artifact_status=status, handoff=handoff)
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any(
+        "generation manifest snapshot_sha256 does not match exact snapshot bytes" in error for error in errors
+    )
+
+
+def test_consumer_revalidates_manifest_provenance_against_snapshot_meta(
+    temp_artifacts,
+    monkeypatch,
+):
+    status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    manifest_path = Path(handoff["artifacts"]["generation_manifest"]["path"])
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["repo_state_hash"] = "c" * 40
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    handoff["artifacts"]["generation_manifest"] = wrapper._artifact_ref(
+        "generation_manifest",
+        manifest_path,
+    )
+    _write_receipt(receipt, artifact_status=status, handoff=handoff)
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any(
+        "generation manifest repo_state_hash differs from immutable snapshot meta" in error
+        for error in errors
+    )
+
+
+def test_consumer_rejects_snapshot_sidecars_even_when_main_file_digest_matches(
+    temp_artifacts,
+    monkeypatch,
+):
+    _status, handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    snapshot_path = Path(handoff["artifacts"]["snapshot"]["path"])
+    Path(str(snapshot_path) + "-wal").write_bytes(b"unsealed-wal")
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any("SQLite snapshot sidecars present" in error for error in errors)
+    assert any("runtime proof snapshot unreadable" in error for error in errors)
+
+
+def test_consumer_rechecks_snapshot_readability(temp_artifacts, monkeypatch):
+    _status, _handoff, receipt = _build_test_handoff(
+        temp_artifacts,
+        gates=[_gate_result("10_infra_wiring")],
+        certification_status="failed",
+        monkeypatch=monkeypatch,
+    )
+    import tools.generate._gate_manifest as gate_manifest_module
+
+    monkeypatch.setattr(
+        gate_manifest_module,
+        "runtime_proof_from_sqlite",
+        lambda _snapshot: ("snapshot_unreadable", 0),
+    )
+
+    _payload, _counts, errors = wrapper.validate_repair_handoff_receipt(receipt)
+
+    assert any("runtime proof snapshot unreadable" in error for error in errors)
 
 
 def test_consumer_fails_closed_for_incomplete_receipt(temp_artifacts, monkeypatch, capsys):

@@ -5,11 +5,24 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+import pytest
+
+from tools.generate import infra_wiring_views as infra_wiring
 from tools.generate.infra_wiring_views import (
     _APPROVED_ADAPTER_PATHS,
     _PROCESS_BOUNDARY_ADAPTERS,
     materialize_infra_views,
 )
+
+
+def _write_receipt_source(repo_root: Path, calls_by_line: dict[int, str]) -> None:
+    path = repo_root / "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    last_line = max(calls_by_line)
+    lines = ["# filler"] * last_line
+    for line_no, source in calls_by_line.items():
+        lines[line_no - 1] = source
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def _create_test_db(tmp_path: Path) -> Path:
@@ -44,8 +57,8 @@ def _create_test_db(tmp_path: Path) -> Path:
             dst_id        INTEGER NOT NULL REFERENCES nodes(id),
             relation_type TEXT NOT NULL,
             edge_kind     TEXT NOT NULL,
-            source_file   TEXT NOT NULL,
-            line_no       INTEGER NOT NULL,
+            source_file   TEXT,
+            line_no       INTEGER,
             symbol        TEXT NOT NULL DEFAULT '',
             semantic_type TEXT DEFAULT '',
             confidence_score REAL DEFAULT 1.0,
@@ -82,8 +95,8 @@ def _insert_edge(
     src_id: int,
     dst_id: int,
     relation_type: str,
-    source_file: str,
-    line_no: int,
+    source_file: str | None,
+    line_no: int | None,
     symbol: str = "",
     edge_kind: str = "direct",
 ) -> None:
@@ -396,6 +409,10 @@ class TestP0ProviderBypass:
 class TestApprovedAdapterEnrollment:
     """Approved adapter paths excluded from zero-caller / not-on-spine violations."""
 
+    def test_augmented_skills_graph_sqlite_adapter_enrolled(self) -> None:
+        """C0.3 SQLite materialization is an app-owned canonical adapter."""
+        assert "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py" in _APPROVED_ADAPTER_PATHS
+
     def test_x1d_claude_judge_adapter_enrolled(self) -> None:
         """Regression f7ece2e937/34dcf683a2: apps_lic X1D judge adapter is sanctioned."""
         assert "apps_lic/engines/x1d_claude_judge_adapter.py" in _APPROVED_ADAPTER_PATHS
@@ -403,6 +420,248 @@ class TestApprovedAdapterEnrollment:
 
 class TestP0WriteBypassUWG:
     """Tests for v_p0_write_bypass_uwg."""
+
+    def test_augmented_skills_graph_sqlite_adapter_local_lock_is_not_bypass(self, tmp_path: Path) -> None:
+        """The canonical adapter may create its ephemeral maintenance lock."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        adapter_path = "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{adapter_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            adapter_path,
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Symbol::sqlite3",
+            "external",
+            "external",
+            "external_module",
+            "sqlite3",
+        )
+        _insert_edge(conn, 1, 2, "imports", adapter_path, 10, "sqlite3")
+        _insert_edge(conn, 1, 1, "writes_to", adapter_path, 42, "os.open")
+        conn.commit()
+        conn.close()
+
+        counts = materialize_infra_views(db_path)
+
+        assert counts["v_p0_write_bypass_uwg"] == 0
+
+    def test_c03_graph_health_receipt_exclusion_is_exact_and_relation_agnostic(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Only output.write_text at the graph-health receipt site is non-durable."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(tmp_path, {100: "output.write_text('receipt')"})
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        counterexample_path = "apps_rg/fact_inventory/other_health_writer.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{receipt_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            receipt_path,
+        )
+        _insert_node(
+            conn,
+            2,
+            f"ADG::Module::{counterexample_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            counterexample_path,
+        )
+        _insert_node(
+            conn,
+            3,
+            "ADG::Symbol::sqlite3",
+            "external",
+            "external",
+            "external_module",
+            "sqlite3",
+        )
+        _insert_edge(conn, 1, 3, "imports", receipt_path, 10, "sqlite3")
+        _insert_edge(conn, 2, 3, "imports", counterexample_path, 10, "sqlite3")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_through", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 101, "path.write_text")
+        _insert_edge(conn, 2, 2, "writes_to", counterexample_path, 102, "output.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_infra_views(db_path)
+        conn = sqlite3.connect(str(db_path))
+        rows = conn.execute(
+            "SELECT writer_file, write_symbol FROM v_p0_write_bypass_uwg ORDER BY writer_file, write_symbol"
+        ).fetchall()
+        conn.close()
+
+        assert rows == [
+            (receipt_path, "path.write_text"),
+            (counterexample_path, "output.write_text"),
+        ]
+
+    def test_c03_graph_health_second_receipt_site_fails_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A second output.write_text line makes every ambiguous site visible."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(
+            tmp_path,
+            {
+                100: "output.write_text('first')",
+                101: "output.write_text('second')",
+            },
+        )
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{receipt_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            receipt_path,
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Symbol::sqlite3",
+            "external",
+            "external",
+            "external_module",
+            "sqlite3",
+        )
+        _insert_edge(conn, 1, 2, "imports", receipt_path, 10, "sqlite3")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_through", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 101, "output.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_infra_views(db_path)
+        conn = sqlite3.connect(str(db_path))
+        rows = conn.execute(
+            "SELECT write_line FROM v_p0_write_bypass_uwg "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100,), (100,), (101,)]
+
+    def test_c03_graph_health_two_same_line_ast_calls_fail_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Source AST multiplicity defeats line-only ADG edge deduplication."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(
+            tmp_path,
+            {100: "output.write_text('first'); output.write_text('second')"},
+        )
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{receipt_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            receipt_path,
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Symbol::sqlite3",
+            "external",
+            "external",
+            "external_module",
+            "sqlite3",
+        )
+        _insert_edge(conn, 1, 2, "imports", receipt_path, 10, "sqlite3")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_through", receipt_path, 100, "output.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_infra_views(db_path)
+        conn = sqlite3.connect(str(db_path))
+        rows = conn.execute(
+            "SELECT write_line FROM v_p0_write_bypass_uwg "
+            "WHERE writer_file = ? AND write_symbol = ? ORDER BY write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100,), (100,)]
+
+    def test_c03_graph_health_unresolved_receipt_peer_fails_closed(
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """A NULL site identity defeats the exemption for every peer edge."""
+        monkeypatch.setattr(infra_wiring, "_REPO_ROOT", tmp_path)
+        _write_receipt_source(tmp_path, {100: "output.write_text('receipt')"})
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        receipt_path = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+        _insert_node(
+            conn,
+            1,
+            f"ADG::Module::{receipt_path}",
+            "module",
+            "L_APP",
+            "repo_module",
+            receipt_path,
+        )
+        _insert_node(
+            conn,
+            2,
+            "ADG::Symbol::sqlite3",
+            "external",
+            "external",
+            "external_module",
+            "sqlite3",
+        )
+        _insert_edge(conn, 1, 2, "imports", receipt_path, 10, "sqlite3")
+        _insert_edge(conn, 1, 1, "writes_to", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_through", receipt_path, 100, "output.write_text")
+        _insert_edge(conn, 1, 1, "writes_to", None, None, "output.write_text")
+        conn.commit()
+        conn.close()
+
+        materialize_infra_views(db_path)
+        conn = sqlite3.connect(str(db_path))
+        rows = conn.execute(
+            "SELECT write_line FROM v_p0_write_bypass_uwg "
+            "WHERE writer_file = ? AND write_symbol = ? "
+            "ORDER BY write_line IS NULL, write_line",
+            (receipt_path, "output.write_text"),
+        ).fetchall()
+        conn.close()
+
+        assert rows == [(100,), (100,), (None,)]
 
     def test_detects_direct_write_from_app(self, tmp_path: Path) -> None:
         """L_APP file writing directly should be flagged."""

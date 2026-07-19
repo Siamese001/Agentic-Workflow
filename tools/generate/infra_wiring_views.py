@@ -9,10 +9,16 @@ Called by generate_full_adg.py after artifact write and before Redis ingest.
 
 from __future__ import annotations
 
+import ast
 import shutil
 import sqlite3
 import tempfile
 from pathlib import Path
+
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_C03_RECEIPT_PATH = "apps_rg/fact_inventory/c03_graph_kpi_health.py"
+_C03_RECEIPT_SYMBOL = "output.write_text"
 
 
 def _validate_sqlite_path(sqlite_path: Path) -> Path:
@@ -22,6 +28,66 @@ def _validate_sqlite_path(sqlite_path: Path) -> Path:
     if not sqlite_path.is_file():
         raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
     return sqlite_path
+
+
+def _receipt_ast_sites(repo_root: Path) -> list[tuple[str, str, int, int, int]]:
+    """Return exact AST sites for the one operator-receipt write exemption.
+
+    Missing, unreadable, or invalid source produces no authority rows. Column
+    offsets distinguish multiple calls on one physical line even when the ADG
+    extractor currently records line numbers only.
+    """
+    source_path = repo_root / _C03_RECEIPT_PATH
+    try:
+        tree = ast.parse(source_path.read_text(encoding="utf-8"), filename=str(source_path))
+    except (OSError, SyntaxError, UnicodeError):
+        return []
+
+    sites: list[tuple[int, int]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "write_text"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "output"
+        ):
+            sites.append((node.lineno, node.col_offset))
+
+    site_count = len(sites)
+    return [
+        (_C03_RECEIPT_PATH, _C03_RECEIPT_SYMBOL, line_no, column_no, site_count)
+        for line_no, column_no in sorted(sites)
+    ]
+
+
+def materialize_receipt_ast_sites(
+    conn: sqlite3.Connection,
+    *,
+    repo_root: Path | None = None,
+) -> None:
+    """Materialize source-bound receipt sites for fail-closed SQL exemptions."""
+    conn.execute("DROP TABLE IF EXISTS t_exact_receipt_ast_sites")
+    conn.execute(
+        """
+        CREATE TABLE t_exact_receipt_ast_sites (
+            resolved_path TEXT NOT NULL,
+            symbol TEXT NOT NULL,
+            line_no INTEGER NOT NULL,
+            column_no INTEGER NOT NULL,
+            site_count INTEGER NOT NULL,
+            PRIMARY KEY (resolved_path, symbol, line_no, column_no)
+        )
+        """
+    )
+    rows = _receipt_ast_sites((repo_root or _REPO_ROOT).resolve())
+    if rows:
+        conn.executemany(
+            "INSERT INTO t_exact_receipt_ast_sites VALUES (?, ?, ?, ?, ?)",
+            rows,
+        )
 
 
 # Forbidden raw infra packages
@@ -92,6 +158,9 @@ _APPROVED_ADAPTER_PATHS = (
     # apps_rg Chroma seams (mirror _SANCTIONED_APP_DIRECT_INFRA — exclude from t_infra_importers)
     "apps_rg/runtime/chroma_precomputed_collection.py",
     "apps_rg/runtime/c0/c02_product_hybrid_retrieval.py",
+    # apps_rg C0.3 canonical SQLite materializer. Its maintenance lock is
+    # adapter-local and must not be classified as a direct-infra write bypass.
+    "apps_rg/fact_inventory/augmented_skills_graph_sqlite.py",
     # apps_lic W7 Claude X1D judge adapter — sanctioned anthropic SDK caller for Exit-layer judging
     "apps_lic/engines/x1d_claude_judge_adapter.py",
 )
@@ -367,6 +436,38 @@ WHERE e.relation_type IN ('writes_to', 'writes_through')
   AND n_src.layer IN ('L0', 'L1', 'L3', 'L_APP')
   AND e.symbol NOT LIKE '%_wg.write_text%'
   AND e.symbol NOT LIKE '%assert_no_persistent_write%'
+  -- apps_rg C0.3 graph-health output is an explicit operator receipt, not
+  -- durable application state. Exempt it only while the graph contains one
+  -- distinct, fully resolved AST call site. Source AST authority includes the
+  -- column offset, so two calls on one physical line still fail closed.
+  AND NOT (
+      n_src.resolved_path = 'apps_rg/fact_inventory/c03_graph_kpi_health.py'
+      AND e.symbol = 'output.write_text'
+      AND COALESCE(e.source_file, '') = n_src.resolved_path
+      AND COALESCE(e.line_no, 0) > 0
+      AND EXISTS (
+          SELECT 1
+          FROM t_exact_receipt_ast_sites exact_site
+          WHERE exact_site.resolved_path = n_src.resolved_path
+            AND exact_site.symbol = e.symbol
+            AND exact_site.line_no = e.line_no
+            AND exact_site.site_count = 1
+      )
+      AND NOT EXISTS (
+          SELECT 1
+          FROM edges receipt_edge
+          JOIN nodes receipt_src ON receipt_src.id = receipt_edge.src_id
+          WHERE receipt_edge.relation_type IN ('writes_to', 'writes_through')
+            AND receipt_src.resolved_path = n_src.resolved_path
+            AND receipt_edge.symbol = e.symbol
+            AND (
+                receipt_edge.source_file IS NULL
+                OR receipt_edge.line_no IS NULL
+                OR receipt_edge.source_file <> e.source_file
+                OR receipt_edge.line_no <> e.line_no
+            )
+      )
+  )
 """
 
 
@@ -756,11 +857,16 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         cursor.execute(
             "CREATE INDEX IF NOT EXISTS idx_t_infra_importers_path ON t_infra_importers(resolved_path)"
         )
+        materialize_receipt_ast_sites(conn)
 
         # Create all views with actual node names
         # P0 views
         sanctioned_app_clause = _build_sanctioned_app_clause()
-        cursor.execute(_VIEW_P0_APPS_DIRECT_INFRA.format(infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause))
+        cursor.execute(
+            _VIEW_P0_APPS_DIRECT_INFRA.format(
+                infra_adg_names=infra_in, sanctioned_app_paths=sanctioned_app_clause
+            )
+        )
         cursor.execute(_VIEW_P0_PROVIDER_BYPASS.format(provider_adg_names=provider_in))
         cursor.execute(_VIEW_P0_CORE_IMPORTS_APPS)
         cursor.execute(_VIEW_P0_WRITE_BYPASS_UWG.format(infra_adg_names=infra_in))
@@ -831,6 +937,7 @@ def _materialize_infra_views_mutating(work_db: Path) -> dict[str, int]:
         return counts
     finally:
         conn.close()
+
 
 def enrich_and_report(sqlite_path: Path) -> None:
     """Enrich ADG SQLite with infra views and print summary."""

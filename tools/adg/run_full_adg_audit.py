@@ -24,6 +24,8 @@ import shutil
 import subprocess
 import sys
 import time
+import uuid
+from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
@@ -92,7 +94,7 @@ class PublicationDocuments:
 
 
 def _find_generation_manifest(
-    since_monotonic_start: float,
+    since_wall_start_ns: int,
     *,
     expected_run_id: str | None = None,
 ) -> Path | None:
@@ -108,7 +110,10 @@ def _find_generation_manifest(
         # Unlike newest-file discovery, no clock-skew allowance is safe here:
         # accepting a pre-spawn same-minute manifest can adopt a prior run when
         # the child dies before it reaches its run-ID claim.
-        if not exact.is_file() or exact.stat().st_mtime < since_monotonic_start:
+        # Keep both sides integer-valued: float ``st_mtime`` can round an older
+        # Windows file timestamp above the immediately following ``time.time``
+        # sample and incorrectly authorize a pre-spawn manifest.
+        if not exact.is_file() or exact.stat().st_mtime_ns <= since_wall_start_ns:
             return None
         return exact
     candidates = sorted(
@@ -121,7 +126,7 @@ def _find_generation_manifest(
     newest = candidates[-1]
     # We accept any manifest produced during or after the wrapper-start
     # wall clock — with a 2s fudge for clock skew on shared CI runners.
-    if newest.stat().st_mtime + 2 < since_monotonic_start:
+    if newest.stat().st_mtime_ns + 2_000_000_000 < since_wall_start_ns:
         return None
     return newest
 
@@ -139,6 +144,141 @@ def _sha256(path: Path) -> str:
         for chunk in iter(lambda: fh.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
+
+
+def _generation_snapshot_digest_reason(
+    generation_manifest: dict[str, Any],
+    snapshot_path: Path | None,
+) -> str | None:
+    """Return a certification reason when exact snapshot integrity is unproven."""
+    declared = generation_manifest.get("snapshot_sha256")
+    if (
+        not isinstance(declared, str)
+        or len(declared) != 64
+        or any(character not in "0123456789abcdefABCDEF" for character in declared)
+    ):
+        return "generation manifest snapshot_sha256 missing or malformed"
+    if snapshot_path is None or not snapshot_path.is_file():
+        return "generation manifest snapshot_sha256 could not be verified: exact snapshot unavailable"
+    from tools.generate._gate_manifest import sqlite_snapshot_sidecars  # noqa: PLC0415
+
+    sidecars = sqlite_snapshot_sidecars(snapshot_path)
+    if sidecars:
+        return "SQLite snapshot sidecars present: " + ", ".join(str(path) for path in sidecars)
+    try:
+        observed = _sha256(snapshot_path)
+    except OSError as exc:
+        return f"generation manifest snapshot_sha256 could not be verified: {exc}"
+    if declared.lower() != observed:
+        return (
+            "generation manifest snapshot_sha256 does not match exact snapshot bytes: "
+            f"declared={declared.lower()} observed={observed}"
+        )
+    return None
+
+
+def _is_hex_authority(value: Any) -> bool:
+    return (
+        isinstance(value, str)
+        and len(value) in {40, 64}
+        and all(character in "0123456789abcdefABCDEF" for character in value)
+    )
+
+
+def _immutable_snapshot_provenance(
+    snapshot_path: Path | None,
+) -> tuple[dict[str, str], list[str]]:
+    """Read commit/tree authority from the exact sealed SQLite main file."""
+    import sqlite3
+
+    if snapshot_path is None or not snapshot_path.is_file():
+        return {}, ["immutable snapshot meta unavailable: exact snapshot unavailable"]
+
+    from tools.generate._gate_manifest import sqlite_snapshot_sidecars  # noqa: PLC0415
+
+    sidecars = sqlite_snapshot_sidecars(snapshot_path)
+    if sidecars:
+        return {}, ["SQLite snapshot sidecars present: " + ", ".join(str(path) for path in sidecars)]
+
+    try:
+        snapshot_uri = snapshot_path.resolve().as_uri() + "?mode=ro&immutable=1"
+        con = sqlite3.connect(snapshot_uri, uri=True)
+    except (OSError, ValueError, sqlite3.Error) as exc:
+        return {}, [f"immutable snapshot meta unreadable: {exc}"]
+    try:
+        con.execute("PRAGMA query_only = ON")
+        quick_check = con.execute("PRAGMA quick_check").fetchone()
+        if not quick_check or str(quick_check[0]).lower() != "ok":
+            return {}, [f"immutable snapshot quick_check failed: {quick_check!r}"]
+        rows = con.execute(
+            "SELECT key, value FROM meta WHERE key IN ('commit_sha', 'repo_state_hash')"
+        ).fetchall()
+    except sqlite3.Error as exc:
+        return {}, [f"immutable snapshot meta unreadable: {exc}"]
+    finally:
+        try:
+            con.close()
+        except sqlite3.Error:
+            pass
+    return {str(key): str(value) for key, value in rows}, []
+
+
+def _generation_snapshot_provenance_reasons(
+    generation_manifest: dict[str, Any],
+    snapshot_path: Path | None,
+) -> list[str]:
+    """Bind producer provenance claims to metadata inside the immutable snapshot."""
+    reasons: list[str] = []
+    metadata, metadata_errors = _immutable_snapshot_provenance(snapshot_path)
+    reasons.extend(metadata_errors)
+    for field in ("commit_sha", "repo_state_hash"):
+        declared = generation_manifest.get(field)
+        observed = metadata.get(field)
+        if not _is_hex_authority(declared):
+            reasons.append(f"generation manifest {field} missing or malformed")
+        if not _is_hex_authority(observed):
+            reasons.append(f"immutable snapshot meta {field} missing or malformed")
+        if (
+            _is_hex_authority(declared)
+            and _is_hex_authority(observed)
+            and declared.lower() != observed.lower()
+        ):
+            reasons.append(
+                f"generation manifest {field} differs from immutable snapshot meta: "
+                f"declared={declared.lower()} observed={observed.lower()}"
+            )
+    return reasons
+
+
+def _generation_snapshot_integrity_reasons(
+    generation_manifest: dict[str, Any],
+    snapshot_path: Path | None,
+) -> tuple[list[str], str, int]:
+    """Recompute every snapshot authority claim needed for safe publication."""
+    reasons: list[str] = []
+    digest_reason = _generation_snapshot_digest_reason(generation_manifest, snapshot_path)
+    if digest_reason is not None:
+        reasons.append(digest_reason)
+    reasons.extend(_generation_snapshot_provenance_reasons(generation_manifest, snapshot_path))
+
+    observed_status = "snapshot_unreadable"
+    observed_count = 0
+    if snapshot_path is not None and snapshot_path.is_file():
+        from tools.generate._gate_manifest import runtime_proof_from_sqlite  # noqa: PLC0415
+
+        observed_status, observed_count = runtime_proof_from_sqlite(snapshot_path)
+    if observed_status == "snapshot_unreadable":
+        reasons.append("runtime proof snapshot unreadable: exact snapshot could not be queried read-only")
+
+    declared_status = generation_manifest.get("runtime_proof_status", "view_absent")
+    declared_count = generation_manifest.get("runtime_attested_edge_count")
+    if declared_status != observed_status or declared_count != observed_count:
+        reasons.append(
+            "runtime proof manifest mismatch: "
+            f"declared status={declared_status!r} count={declared_count!r}, "
+            f"observed status={observed_status!r} count={observed_count}"
+        )
+    return list(dict.fromkeys(reasons)), observed_status, observed_count
 
 
 def _abs(path: Path) -> Path:
@@ -1139,6 +1279,69 @@ def _open_blocker_fix_count(action_queue: dict[str, Any]) -> int:
     return count
 
 
+def _expected_consumable_artifact_status(
+    certification_status: Any,
+    action_queue: dict[str, Any],
+) -> str | None:
+    """Recompute the only consumable handoff status from sealed evidence."""
+    if certification_status not in {"clean", "failed", "diagnostic_only"}:
+        return None
+    if certification_status == "clean" and _open_blocker_fix_count(action_queue) == 0:
+        return "certified"
+    return "repair_ready"
+
+
+def _receipt_certification_transition_allowed(
+    generation_status: str,
+    receipt_status: str | None,
+) -> bool:
+    """Permit equality plus the wrapper-owned clean-to-diagnostic transition."""
+    return receipt_status == generation_status or (
+        generation_status == "clean" and receipt_status == "diagnostic_only"
+    )
+
+
+def _digest_bound_handoff_shape_errors(
+    action_queue: dict[str, Any],
+    gate_results: dict[str, Any],
+) -> list[str]:
+    """Validate collection/row shapes before semantic handoff consumers run."""
+    errors: list[str] = []
+    actions = action_queue.get("actions")
+    if not isinstance(actions, list):
+        errors.append("action_queue actions missing or malformed: expected list")
+    else:
+        for index, row in enumerate(actions):
+            if not isinstance(row, dict):
+                errors.append(f"action_queue actions row {index} malformed: expected object")
+
+    summary = action_queue.get("summary")
+    if not isinstance(summary, dict):
+        errors.append("action_queue summary missing or malformed: expected object")
+    provenance = action_queue.get("provenance")
+    if not isinstance(provenance, dict):
+        errors.append("action_queue provenance missing or malformed: expected object")
+    else:
+        inputs = provenance.get("inputs")
+        if not isinstance(inputs, list):
+            errors.append("action_queue provenance inputs missing or malformed: expected list")
+        else:
+            for index, row in enumerate(inputs):
+                if not isinstance(row, dict):
+                    errors.append(f"action_queue provenance inputs row {index} malformed: expected object")
+
+    gates = gate_results.get("gates")
+    if not isinstance(gates, list):
+        errors.append("gate_results gates missing or malformed: expected list")
+    else:
+        for index, row in enumerate(gates):
+            if not isinstance(row, dict):
+                errors.append(f"gate_results gates row {index} malformed: expected object")
+            elif not isinstance(row.get("gate_id"), str) or not row.get("gate_id"):
+                errors.append(f"gate_results gates row {index} malformed: gate_id must be a non-empty string")
+    return errors
+
+
 def _repair_counts(action_queue: dict[str, Any], gate_results: dict[str, Any]) -> dict[str, int]:
     from tools.reports.gate_signal_catalog import display_verdict, display_verdict_sub  # noqa: PLC0415
 
@@ -1176,6 +1379,7 @@ def _build_repair_handoff(
     certification_status: str,
     since_wall_start: float,
     allow_unfinalized_output_bundle: bool = False,
+    integrity_errors: Sequence[str] = (),
 ) -> tuple[str, dict[str, Any], list[str]]:
     errors: list[str] = []
     artifacts: dict[str, dict[str, Any]] = {}
@@ -1191,6 +1395,11 @@ def _build_repair_handoff(
         since_wall_start=since_wall_start,
     )
     errors.extend(snapshot_recovery_errors)
+    fresh_integrity_errors, _runtime_status, _runtime_count = _generation_snapshot_integrity_reasons(
+        generation_manifest, snapshot_path
+    )
+    for reason in dict.fromkeys([*integrity_errors, *fresh_integrity_errors]):
+        errors.append(f"snapshot integrity: {reason}")
 
     required_paths: dict[str, Path | None] = {
         "generation_manifest": generation_manifest_path,
@@ -1349,10 +1558,15 @@ def _build_repair_handoff(
             action_queue = _load_json(action_queue_path)
             gate_results = _load_json(gate_results_path)
             counts = _repair_counts(action_queue, gate_results)
-            if not errors and certification_status == "clean" and _open_blocker_fix_count(action_queue) == 0:
-                artifact_status = "certified"
-            elif not errors:
-                artifact_status = "repair_ready"
+            if not errors:
+                expected_status = _expected_consumable_artifact_status(
+                    certification_status,
+                    action_queue,
+                )
+                if expected_status is None:
+                    errors.append(f"certification_status is not classifiable: {certification_status!r}")
+                else:
+                    artifact_status = expected_status
         except (OSError, json.JSONDecodeError, TypeError) as exc:
             errors.append(f"handoff artifact malformed during count: {exc}")
 
@@ -1402,15 +1616,23 @@ def validate_repair_handoff_receipt(
         errors.append("receipt sha256 mismatch with handoff pointer")
     if receipt.get("schema_version") != RECEIPT_SCHEMA_VERSION:
         errors.append("unsupported or missing schema_version")
-    if receipt.get("artifact_status") not in {"certified", "repair_ready"}:
-        errors.append(f"artifact_status not consumable: {receipt.get('artifact_status')!r}")
-    if receipt.get("artifact_status_source") != "direct":
+    receipt_artifact_status = receipt.get("artifact_status")
+    if receipt_artifact_status not in {"certified", "repair_ready"}:
+        errors.append(f"artifact_status not consumable: {receipt_artifact_status!r}")
+    receipt_artifact_source = receipt.get("artifact_status_source")
+    if receipt_artifact_source != "direct":
         errors.append("artifact_status_source must be direct")
     run_state = receipt.get("run_state")
+    receipt_certification_status: str | None = None
     if not isinstance(run_state, dict):
         errors.append("run_state missing or malformed")
         receipt_process_exit: int | None = None
     else:
+        raw_certification_status = run_state.get("certification_status")
+        if raw_certification_status not in {"clean", "failed", "diagnostic_only"}:
+            errors.append("run_state.certification_status missing or malformed")
+        else:
+            receipt_certification_status = raw_certification_status
         raw_process_exit = run_state.get("process_exit_code")
         receipt_process_exit = (
             raw_process_exit
@@ -1419,8 +1641,10 @@ def validate_repair_handoff_receipt(
         )
         if receipt_process_exit is None:
             errors.append("run_state.process_exit_code missing or malformed")
-    if receipt.get("artifact_status") == "certified" and receipt_process_exit != 0:
+    if receipt_artifact_status == "certified" and receipt_process_exit != 0:
         errors.append("certified receipt requires process_exit_code=0")
+    if receipt_artifact_status == "certified" and receipt_certification_status != "clean":
+        errors.append("certified receipt requires run_state.certification_status='clean'")
     receipt_run_id = receipt.get("adg_run_id")
     if expected_adg_run_id and receipt_run_id != expected_adg_run_id:
         errors.append(
@@ -1432,6 +1656,11 @@ def validate_repair_handoff_receipt(
     if not isinstance(handoff, dict):
         errors.append("repair_handoff missing or malformed")
         return receipt, counts, errors
+    handoff_status = handoff.get("status")
+    if handoff_status not in {"certified", "repair_ready"}:
+        errors.append(f"repair_handoff.status not consumable: {handoff_status!r}")
+    elif handoff_status != receipt_artifact_status:
+        errors.append("receipt artifact_status differs from repair_handoff.status")
     artifacts = handoff.get("artifacts")
     if not isinstance(artifacts, dict):
         errors.append("repair_handoff.artifacts missing or malformed")
@@ -1465,6 +1694,7 @@ def validate_repair_handoff_receipt(
             errors.append(f"{key} sha256 mismatch")
 
     counts_recomputed = False
+    action_queue_for_status: dict[str, Any] | None = None
     if all(
         key in resolved and resolved[key].is_file() for key in ("output_bundle", "snapshot", "gate_results")
     ):
@@ -1500,28 +1730,55 @@ def validate_repair_handoff_receipt(
         except (OSError, json.JSONDecodeError, TypeError) as exc:
             errors.append(f"handoff JSON artifact malformed: {exc}")
         else:
-            try:
-                from tools.reports.adg_action_queue import validate_action_queue  # noqa: PLC0415
+            shape_errors = _digest_bound_handoff_shape_errors(action_queue, gate_results)
+            errors.extend(shape_errors)
+            if not shape_errors:
+                action_validation_errors: list[str] = []
+                try:
+                    from tools.reports.adg_action_queue import validate_action_queue  # noqa: PLC0415
 
-                errors.extend(
-                    f"action_queue validation: {err}" for err in validate_action_queue(action_queue)
-                )
-            except ImportError as exc:
-                errors.append(f"action_queue validator unavailable: {exc}")
-            gate_digest = artifacts.get("gate_results", {}).get("sha256")
-            for item in action_queue.get("provenance", {}).get("inputs") or []:
-                if item.get("artifact_key") == "gate_results":
-                    if item.get("digest_sha256") != gate_digest:
-                        errors.append("action_queue provenance gate_results digest mismatch")
-                    break
-            else:
-                errors.append("action_queue missing gate_results provenance")
-            if "snapshot" in resolved and not _gate_results_matches_snapshot(
-                gate_results, resolved["snapshot"]
-            ):
-                errors.append("gate_results snapshot does not match handoff snapshot")
-            counts = _repair_counts(action_queue, gate_results)
-            counts_recomputed = True
+                    action_validation_errors = validate_action_queue(action_queue)
+                    errors.extend(f"action_queue validation: {err}" for err in action_validation_errors)
+                except ImportError as exc:
+                    action_validation_errors.append(str(exc))
+                    errors.append(f"action_queue validator unavailable: {exc}")
+                except (AttributeError, KeyError, TypeError, ValueError) as exc:
+                    action_validation_errors.append(str(exc))
+                    errors.append(f"action_queue validation failed closed: {exc}")
+
+                gate_digest = artifacts.get("gate_results", {}).get("sha256")
+                for item in action_queue["provenance"]["inputs"]:
+                    if item.get("artifact_key") == "gate_results":
+                        if item.get("digest_sha256") != gate_digest:
+                            errors.append("action_queue provenance gate_results digest mismatch")
+                        break
+                else:
+                    errors.append("action_queue missing gate_results provenance")
+                if "snapshot" in resolved and not _gate_results_matches_snapshot(
+                    gate_results, resolved["snapshot"]
+                ):
+                    errors.append("gate_results snapshot does not match handoff snapshot")
+                if not action_validation_errors:
+                    try:
+                        counts = _repair_counts(action_queue, gate_results)
+                    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+                        errors.append(f"digest-bound handoff count recomputation failed closed: {exc}")
+                    else:
+                        counts_recomputed = True
+                        action_queue_for_status = action_queue
+
+    if action_queue_for_status is not None and receipt_certification_status is not None:
+        expected_status = _expected_consumable_artifact_status(
+            receipt_certification_status,
+            action_queue_for_status,
+        )
+        blocker_count = _open_blocker_fix_count(action_queue_for_status)
+        if expected_status is not None and receipt_artifact_status != expected_status:
+            errors.append(
+                "receipt artifact_status inconsistent with certification_status and recomputed blockers: "
+                f"recorded={receipt_artifact_status!r} expected={expected_status!r} "
+                f"certification_status={receipt_certification_status!r} blockers={blocker_count}"
+            )
 
     recorded_counts = handoff.get("counts")
     if not isinstance(recorded_counts, dict):
@@ -1571,6 +1828,28 @@ def validate_repair_handoff_receipt(
                 gate_manifest_path,
             ):
                 errors.append("generation_manifest gate_manifest_path differs from repair_handoff")
+            snapshot_integrity_errors, observed_runtime_status, _observed_runtime_count = (
+                _generation_snapshot_integrity_reasons(generation_manifest, snapshot_path)
+            )
+            errors.extend(f"snapshot integrity: {reason}" for reason in snapshot_integrity_errors)
+            generation_status = generation_manifest.get("certification_status")
+            if generation_status not in {"clean", "failed", "diagnostic_only"}:
+                errors.append("generation_manifest certification_status missing or malformed")
+            else:
+                if not _receipt_certification_transition_allowed(
+                    generation_status,
+                    receipt_certification_status,
+                ):
+                    errors.append(
+                        "receipt certification_status differs from generation_manifest: "
+                        f"receipt={receipt_certification_status!r} generation={generation_status!r}"
+                    )
+                if receipt.get("artifact_status") == "certified" and generation_status != "clean":
+                    errors.append("certified receipt requires clean generation_manifest status")
+            if isinstance(run_state, dict) and (
+                run_state.get("runtime_proof_status") != observed_runtime_status
+            ):
+                errors.append("receipt runtime_proof_status differs from immutable snapshot observation")
 
     if handoff.get("validation_errors"):
         errors.append("producer recorded repair_handoff validation_errors")
@@ -1610,6 +1889,25 @@ def _resolve_handoff_pointer(pointer_path: Path) -> tuple[dict[str, Any] | None,
         errors.append("handoff document schema_version mismatch")
     if pointer.get("adg_run_id") != handoff_doc.get("adg_run_id"):
         errors.append("latest pointer adg_run_id differs from immutable handoff")
+    if pointer.get("artifact_status") != handoff_doc.get("artifact_status"):
+        errors.append("pointer artifact_status differs from immutable handoff")
+    if pointer.get("downstream_release_status") != handoff_doc.get("downstream_release_status"):
+        errors.append("pointer downstream_release_status differs from immutable handoff")
+    immutable_receipt = handoff_doc.get("receipt")
+    if not isinstance(immutable_receipt, dict):
+        errors.append("immutable handoff receipt ref missing or malformed")
+    else:
+        immutable_receipt_path = immutable_receipt.get("path")
+        pointer_receipt_path = pointer.get("receipt_path")
+        if not isinstance(immutable_receipt_path, str):
+            errors.append("immutable handoff receipt path missing or malformed")
+        elif not isinstance(pointer_receipt_path, str) or not _path_matches(
+            pointer_receipt_path,
+            _abs(Path(immutable_receipt_path)),
+        ):
+            errors.append("pointer receipt_path differs from immutable handoff")
+        if pointer.get("receipt_sha256") != immutable_receipt.get("sha256"):
+            errors.append("pointer receipt_sha256 differs from immutable handoff")
     return handoff_doc, errors
 
 
@@ -1653,8 +1951,20 @@ def validate_repair_handoff_pointer(
         expected_receipt_sha256=raw_receipt_digest,
     )
     errors.extend(receipt_errors)
-    if receipt and receipt.get("repair_handoff") != handoff_doc.get("repair_handoff"):
-        errors.append("receipt repair_handoff differs from immutable handoff")
+    if receipt:
+        if receipt.get("repair_handoff") != handoff_doc.get("repair_handoff"):
+            errors.append("receipt repair_handoff differs from immutable handoff")
+        if handoff_doc.get("artifact_status") != receipt.get("artifact_status"):
+            errors.append("immutable handoff artifact_status differs from receipt")
+        if handoff_doc.get("artifact_status_source") != receipt.get("artifact_status_source"):
+            errors.append("immutable handoff artifact_status_source differs from receipt")
+        if handoff_doc.get("artifact_status_source") != "direct":
+            errors.append("immutable handoff artifact_status_source must be direct")
+        nested_handoff = handoff_doc.get("repair_handoff")
+        if isinstance(nested_handoff, dict) and (
+            nested_handoff.get("status") != handoff_doc.get("artifact_status")
+        ):
+            errors.append("immutable handoff artifact_status differs from repair_handoff.status")
     return receipt, counts, sorted(set(errors))
 
 
@@ -1683,12 +1993,14 @@ def _append_manifest_gate_record(
     status: str,
     exit_code: int,
     message: str,
-) -> None:
+) -> str | None:
     try:
         data = _load_json(gate_manifest_path)
-    except (OSError, json.JSONDecodeError, TypeError):
-        return
-    gates = data.setdefault("gates", [])
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        return f"gate manifest reload failed before plane-2 append: {exc}"
+    gates = data.get("gates")
+    if not isinstance(gates, list):
+        return "gate manifest gates missing or malformed: expected list"
     gates.append(
         {
             "name": name,
@@ -1704,7 +2016,13 @@ def _append_manifest_gate_record(
             "message": message,
         }
     )
-    gate_manifest_path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    try:
+        from tools.generate._gate_manifest import _atomic_write_json  # noqa: PLC0415
+
+        _atomic_write_json(gate_manifest_path, data)
+    except (OSError, TypeError, ValueError) as exc:
+        return f"gate manifest atomic plane-2 append failed: {exc}"
+    return None
 
 
 def _run_certification_plane2(
@@ -1718,13 +2036,15 @@ def _run_certification_plane2(
     rc, _rollup = run_plane2_manifest_quick(sqlite_path=snapshot, suite="quick", strict=True)
     status = "pass" if rc == 0 else "fail"
     if gate_manifest_path and gate_manifest_path.is_file():
-        _append_manifest_gate_record(
+        append_error = _append_manifest_gate_record(
             gate_manifest_path,
             name="three_bucket_manifest_quick",
             status=status,
             exit_code=rc,
             message=f"suite=quick strict=1 exit={rc}",
         )
+        if append_error is not None:
+            reasons.append(append_error)
     if rc != 0:
         reasons.append(f"three_bucket_manifest_quick exit_code={rc}")
     return reasons
@@ -1735,8 +2055,36 @@ def _cross_check_required_gates(gate_manifest: dict[str, Any]) -> list[str]:
     from tools.generate._required_gates import required_gate_names
 
     required = required_gate_names()
-    recorded = {g["name"]: g for g in gate_manifest.get("gates", [])}
     reasons: list[str] = []
+    rows = gate_manifest.get("gates")
+    if not isinstance(rows, list):
+        return ["gate manifest gates missing or malformed: expected list"]
+    recorded: dict[str, dict[str, Any]] = {}
+    valid_statuses = {
+        "invoked",
+        "pass",
+        "fail",
+        "deferred_fail",
+        "timed_out",
+        "missing_script",
+        "skipped",
+    }
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            reasons.append(f"gate manifest row {index} malformed: expected object")
+            continue
+        name = row.get("name")
+        status = row.get("status")
+        if not isinstance(name, str) or not name:
+            reasons.append(f"gate manifest row {index} malformed: name must be a non-empty string")
+            continue
+        if not isinstance(status, str) or status not in valid_statuses:
+            reasons.append(f"gate manifest row {index} malformed: status={status!r}")
+            continue
+        if name in recorded:
+            reasons.append(f"gate manifest row {index} malformed: duplicate gate name {name!r}")
+            continue
+        recorded[name] = row
     for name in sorted(required):
         rec = recorded.get(name)
         if rec is None:
@@ -2223,7 +2571,9 @@ def _publish_blocked_latest_state(
     )
 
     blocked_run_id = result.adg_run_id or datetime.now(ZoneInfo("America/New_York")).strftime("%Y%m%d_%H%M%S")
-    blocked_document_id = blocked_run_id if result.adg_run_id else f"{blocked_run_id}_{time.time_ns()}"
+    blocked_document_id = (
+        blocked_run_id if result.adg_run_id else f"{blocked_run_id}_{time.time_ns()}_{uuid.uuid4().hex[:12]}"
+    )
     blocked_handoff = json.loads(json.dumps(result.repair_handoff or _default_incomplete_handoff()))
     blocked_handoff["status"] = "incomplete"
     validation_errors = blocked_handoff.setdefault("validation_errors", [])
@@ -2362,7 +2712,9 @@ def run_audit(
 
     global _LAST_GENERATOR_RUN_ID
     reasons: list[str] = []
-    wall_start = time.time()
+    integrity_reasons: list[str] = []
+    wall_start_ns = time.time_ns()
+    wall_start = wall_start_ns / 1_000_000_000
     started_at_utc = _utcnow_iso()
     ARTIFACTS_ADG.mkdir(parents=True, exist_ok=True)
     producer_artifacts = _handoff_producer_artifacts_adg()
@@ -2388,7 +2740,7 @@ def run_audit(
         None
         if gen_rc == RUN_ID_COLLISION_EXIT_CODE
         else _find_generation_manifest(
-            wall_start,
+            wall_start_ns,
             expected_run_id=_LAST_GENERATOR_RUN_ID,
         )
     )
@@ -2429,6 +2781,19 @@ def run_audit(
         snapshot_raw = str(snapshot_path_for_outputs)
     elif certification_mode:
         reasons.extend(snapshot_recovery_errors)
+
+    # A diagnostic run can publish a repair handoff too, so immutable snapshot
+    # authority is mode-independent. Gate verdicts remain ordinary run reasons;
+    # only digest, provenance, sidecar, and readability failures invalidate the
+    # handoff itself.
+    integrity_reasons, observed_runtime_status, _observed_runtime_count = (
+        _generation_snapshot_integrity_reasons(
+            generation_manifest,
+            snapshot_path_for_outputs,
+        )
+    )
+    runtime_proof_status = observed_runtime_status
+    reasons.extend(integrity_reasons)
 
     # Resolve the current dispatcher result for plane-3/enforcement without
     # sealing the output bundle yet. The wrapper must finish every producer
@@ -2631,6 +2996,7 @@ def run_audit(
         certification_status=status,
         since_wall_start=wall_start,
         allow_unfinalized_output_bundle=True,
+        integrity_errors=integrity_reasons,
     )
     predicted_exit_code = (
         0
@@ -2678,6 +3044,7 @@ def run_audit(
         generation_manifest=generation_manifest,
         certification_status=status,
         since_wall_start=wall_start,
+        integrity_errors=integrity_reasons,
     )
     adg_run_id = _derive_adg_run_stamp(
         generation_manifest,
