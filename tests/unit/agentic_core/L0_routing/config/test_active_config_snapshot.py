@@ -17,7 +17,6 @@ from agentic_core.L0_routing.config.active_config_snapshot import (
 )
 from ops_scripts.apps_rg.package_source_snapshots import publish_active_config_snapshot
 
-
 COMPONENT_BYTES = {
     "budget": b"budget-bytes\n",
     "model": b"model-bytes\x00\n",
@@ -46,6 +45,16 @@ def _publish(tmp_path: Path):
     return root, receipt
 
 
+def _rewrite_snapshot(root: Path, receipt, payload: bytes) -> None:
+    receipt.snapshot_path.write_bytes(payload)
+    pointer_path = root / "active.json"
+    pointer = json.loads(pointer_path.read_bytes())
+    pointer["snapshot_digest"] = hashlib.sha256(payload).hexdigest()
+    pointer_path.write_bytes(
+        json.dumps(pointer, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    )
+
+
 def test_build_is_deterministic_and_binds_exact_component_bytes() -> None:
     first, first_bytes = build_active_config_snapshot(
         dict(reversed(tuple(COMPONENT_BYTES.items()))),
@@ -69,14 +78,16 @@ def test_build_is_deterministic_and_binds_exact_component_bytes() -> None:
 
 def test_provider_loads_once_and_hashes_perform_no_reads(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     root, _ = _publish(tmp_path)
-    snapshot = ActiveConfigSnapshotProviderV1(
+    provider = ActiveConfigSnapshotProviderV1(
         snapshot_root=root,
         selected_profile_id="apps-rg-test",
         snapshot_boundary_id="run-001",
-    ).load()
+    )
+    snapshot = provider.load()
     expected = dict(snapshot.hashes())
 
     monkeypatch.setattr(Path, "read_bytes", lambda _self: (_ for _ in ()).throw(AssertionError("read")))
+    assert provider.load() is snapshot
     assert dict(snapshot.hashes()) == expected
 
 
@@ -131,8 +142,10 @@ def test_provider_fails_closed(
             payload["configuration_digest"] = "0" * 64
         elif mutation == "incomplete":
             payload["components"] = payload["components"][:-1]
-        receipt.snapshot_path.write_bytes(
-            json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+        _rewrite_snapshot(
+            root,
+            receipt,
+            json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8"),
         )
 
     with pytest.raises(ActiveConfigSnapshotError) as caught:
@@ -147,7 +160,7 @@ def test_provider_fails_closed(
 def test_provider_rejects_noncanonical_snapshot(tmp_path: Path) -> None:
     root, receipt = _publish(tmp_path)
     payload = json.loads(receipt.snapshot_path.read_bytes())
-    receipt.snapshot_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    _rewrite_snapshot(root, receipt, json.dumps(payload, indent=2).encode("utf-8"))
 
     with pytest.raises(ActiveConfigSnapshotError) as caught:
         ActiveConfigSnapshotProviderV1(
@@ -172,3 +185,42 @@ def test_post_load_environment_change_cannot_override_snapshot(
     monkeypatch.setenv("APPS_RG_PROFILE", "mutated")
     monkeypatch.setenv("APPS_RG_POLICY_HASH", "0" * 64)
     assert dict(snapshot.hashes()) == before
+
+
+def test_provider_rejects_boundary_mismatch(tmp_path: Path) -> None:
+    root, _ = _publish(tmp_path)
+    with pytest.raises(ActiveConfigSnapshotError) as caught:
+        ActiveConfigSnapshotProviderV1(
+            snapshot_root=root,
+            selected_profile_id="apps-rg-test",
+            snapshot_boundary_id="another-run",
+        ).load()
+    assert caught.value.reason is ActiveConfigFailureReason.ACTIVE_CONFIG_SOURCE_CHANGED
+
+
+def test_provider_rejects_pointer_drift_during_load(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root, _ = _publish(tmp_path)
+    pointer_path = root / "active.json"
+    original_read = Path.read_bytes
+    pointer_reads = 0
+
+    def _read_with_drift(path: Path) -> bytes:
+        nonlocal pointer_reads
+        payload = original_read(path)
+        if path == pointer_path:
+            pointer_reads += 1
+            if pointer_reads == 2:
+                return payload + b" "
+        return payload
+
+    monkeypatch.setattr(Path, "read_bytes", _read_with_drift)
+    with pytest.raises(ActiveConfigSnapshotError) as caught:
+        ActiveConfigSnapshotProviderV1(
+            snapshot_root=root,
+            selected_profile_id="apps-rg-test",
+            snapshot_boundary_id="run-001",
+        ).load()
+    assert caught.value.reason is ActiveConfigFailureReason.ACTIVE_CONFIG_DRIFT_DURING_OPERATION

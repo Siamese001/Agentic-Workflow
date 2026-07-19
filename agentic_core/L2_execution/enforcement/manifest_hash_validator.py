@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from agentic_core.L0_routing.config.active_config_snapshot import ActiveConfigSnapshotV1
 from agentic_core.runtime.contracts import lifecycle_trace_contract as trace_contract
 
 trace_contract.emit_replay_key("p0", "manifest_hash_validator")
@@ -89,27 +90,6 @@ trace_contract._emit_invokes_eval("p1", "manifest_hash_validator", "eval_call")
 trace_contract._emit_proposal_commits_routing("p1", "manifest_hash_validator", "routing_commit")
 
 
-def _get_active_configs():
-    import uuid as _uuid  # noqa: PLC0415
-
-    trace_contract._emit_snapshots_state(str(_uuid.uuid4()), "_get_active_configs", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    trace_contract._emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    trace_contract._emit_applies_guardrail(str(_uuid.uuid4()), "_get_active_configs", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
-    _trace_id = str(_uuid.uuid4())
-    trace_contract._emit_records_execution_trace(_trace_id, trace_contract.LayerSegment.L2_EXECUTION, "_get_active_configs")
-    from agentic_core.L4_state.config.versioned_configs import get_active_configs
-
-    return get_active_configs
-
-
 REQUIRED_HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
 
 
@@ -119,7 +99,10 @@ class ManifestHashError(Exception):
     pass
 
 
-def validate_manifest_hashes(manifest: Any) -> None:
+def validate_manifest_hashes(
+    manifest: Any,
+    active_config_snapshot: ActiveConfigSnapshotV1 | None,
+) -> None:
     """
     L2.0 gate: reject manifest if any required config hash is missing
     or does not match the L4 SSOT active config.
@@ -130,7 +113,9 @@ def validate_manifest_hashes(manifest: Any) -> None:
     Raises:
         ManifestHashError: on missing field or hash mismatch.
     """
-    active = _get_active_configs()().hashes()
+    if active_config_snapshot is None:
+        raise ManifestHashError("ACTIVE_CONFIG_MISSING")
+    active = active_config_snapshot.hashes()
     for field in REQUIRED_HASH_FIELDS:
         if isinstance(manifest, dict):
             value = manifest.get(field)
@@ -140,4 +125,4 @@ def validate_manifest_hashes(manifest: Any) -> None:
             raise ManifestHashError(f"Manifest missing required field: {field}")
         expected = active[field]
         if value != expected:
-            raise ManifestHashError(f"Hash mismatch for {field}: manifest={value!r} vs L4_SSOT={expected!r}")
+            raise ManifestHashError(f"Hash mismatch for {field}: manifest={value!r} vs active_snapshot={expected!r}")

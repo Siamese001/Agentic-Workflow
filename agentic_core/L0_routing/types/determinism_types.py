@@ -53,6 +53,10 @@ class SurgicalManifest:
     manifest_hash: str
     change_history: tuple[str, ...]
     provenance_chain: tuple[str, ...]
+    policy_hash: str | None = None
+    routing_hash: str | None = None
+    model_hash: str | None = None
+    budget_hash: str | None = None
 
     def __post_init__(self) -> None:
         if not re.match("^\\d+\\.\\d+\\.\\d+$", self.schema_version):

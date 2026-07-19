@@ -22,7 +22,6 @@ from ops_scripts.apps_rg.package_source_snapshots import (
     publish_ingestion_snapshot,
 )
 
-
 CANONICAL_PAYLOAD = b'{"chunks":[{"metadata":{"source":"fixture"},"text":"Exact payload text"}]}'
 
 
@@ -43,6 +42,7 @@ def _active_config(tmp_path: Path) -> Path:
 
 
 def _publish(tmp_path: Path):
+    tmp_path.mkdir(parents=True, exist_ok=True)
     payload_path = tmp_path / "payload.json"
     payload_path.write_bytes(CANONICAL_PAYLOAD)
     root = tmp_path / "ingestion"
@@ -145,7 +145,14 @@ def test_runtime_loader_rejects_missing_and_partial_publication(tmp_path: Path) 
 
 def test_runtime_loader_rejects_malformed_snapshot_and_stale_pointer(tmp_path: Path) -> None:
     root, receipt = _publish(tmp_path)
-    receipt.snapshot_path.write_bytes(b"not-json")
+    malformed = b"not-json"
+    receipt.snapshot_path.write_bytes(malformed)
+    pointer_path = root / "active.json"
+    pointer = json.loads(pointer_path.read_bytes())
+    pointer["snapshot_digest"] = hashlib.sha256(malformed).hexdigest()
+    pointer_path.write_bytes(
+        json.dumps(pointer, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
+    )
     with pytest.raises(IngestionSnapshotError) as caught:
         IngestionSnapshotLoaderV1().load(_request(root, receipt))
     assert caught.value.reason is IngestionSnapshotFailureReason.SNAPSHOT_MALFORMED
@@ -201,3 +208,71 @@ def test_offline_publish_is_deterministic_pointer_last_and_lock_guarded(
             selected_profile_id="apps-rg-test",
             snapshot_boundary_id="run-001",
         )
+
+
+def test_offline_publish_rechecks_payload_before_activation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ops_scripts.apps_rg.package_source_snapshots as packager
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    payload_path = tmp_path / "payload.json"
+    payload_path.write_bytes(CANONICAL_PAYLOAD)
+    config_root = _active_config(tmp_path)
+    original_read = packager._read_exact_bytes
+    payload_reads = 0
+
+    def _read_with_drift(path: Path) -> bytes:
+        nonlocal payload_reads
+        payload = original_read(path)
+        if Path(path) == payload_path:
+            payload_reads += 1
+            if payload_reads == 2:
+                return payload + b" "
+        return payload
+
+    monkeypatch.setattr(packager, "_read_exact_bytes", _read_with_drift)
+    output_root = tmp_path / "ingestion"
+    with pytest.raises(SnapshotPublicationError, match="payload changed"):
+        publish_ingestion_snapshot(
+            payload_path=payload_path,
+            output_root=output_root,
+            input_schema_version="chunks/v1",
+            active_config_root=config_root,
+            selected_profile_id="apps-rg-test",
+            snapshot_boundary_id="run-001",
+        )
+    assert not (output_root / "active.json").exists()
+
+
+def test_failed_pointer_publication_preserves_previous_active_generation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ops_scripts.apps_rg.package_source_snapshots as packager
+
+    root, _ = _publish(tmp_path)
+    pointer_path = root / "active.json"
+    previous_pointer = pointer_path.read_bytes()
+    payload_path = tmp_path / "payload.json"
+    payload_path.write_bytes(b'{"chunks":[{"metadata":{},"text":"second generation"}]}')
+    original_replace = packager.os.replace
+
+    def _fail_pointer_replace(source, destination):
+        if Path(destination) == pointer_path:
+            raise OSError("simulated pointer failure")
+        return original_replace(source, destination)
+
+    monkeypatch.setattr(packager.os, "replace", _fail_pointer_replace)
+    with pytest.raises(OSError, match="simulated pointer failure"):
+        publish_ingestion_snapshot(
+            payload_path=payload_path,
+            output_root=root,
+            input_schema_version="chunks/v1",
+            active_config_root=tmp_path / "active-config",
+            selected_profile_id="apps-rg-test",
+            snapshot_boundary_id="run-001",
+        )
+    assert pointer_path.read_bytes() == previous_pointer
+    assert not (root / ".publish.lock").exists()

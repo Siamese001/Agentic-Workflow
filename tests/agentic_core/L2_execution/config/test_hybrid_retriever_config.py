@@ -3,6 +3,7 @@
 Auto-generated speculative scaffold. Verify class/function names against actual
 module before extending these scaffolds with behavioral assertions.
 """
+
 from __future__ import annotations
 
 import importlib
@@ -10,12 +11,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L2_execution.config.ingestion_snapshot import IngestionLoadRequestV1, IngestionSnapshotError
+from agentic_core.L2_execution.config.ingestion_snapshot import (
+    IngestionLoadRequestV1,
+    IngestionSnapshotError,
+)
 from ops_scripts.apps_rg.package_source_snapshots import (
     publish_active_config_snapshot,
     publish_ingestion_snapshot,
 )
-
 
 MODULE_PATH = "agentic_core.L2_execution.config.hybrid_retriever_config"
 
@@ -39,20 +42,14 @@ def test_module_no_top_level_side_effects():
 @pytest.mark.parametrize("attr_kind", ["class", "function"])
 def test_module_exposes_callable(attr_kind):
     mod = importlib.import_module(MODULE_PATH)
-    has_callable = any(
-        callable(getattr(mod, n))
-        for n in dir(mod)
-        if not n.startswith("_")
-    )
+    has_callable = any(callable(getattr(mod, n)) for n in dir(mod) if not n.startswith("_"))
     assert has_callable, f"{MODULE_PATH} exposes no callable {attr_kind}"
 
 
 def test_module_layer_path_matches():
     mod = importlib.import_module(MODULE_PATH)
     file = getattr(mod, "__file__", "")
-    assert "agentic_core" in file.replace("\\", "/"), (
-        f"{MODULE_PATH} not under agentic_core: {file}"
-    )
+    assert "agentic_core" in file.replace("\\", "/"), f"{MODULE_PATH} not under agentic_core: {file}"
 
 
 class _VectorStore:
