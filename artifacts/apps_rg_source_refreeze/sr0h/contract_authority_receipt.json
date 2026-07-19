@@ -1,0 +1,97 @@
+{
+  "schema_version": "1.0",
+  "receipt_id": "sr0h-contract-authority-receipt-20260719",
+  "wave_id": "SR0H",
+  "decision_status": "APPROVED",
+  "frozen_source_sha": "fc7039821148151e08459f8473cc8428df39bc8b",
+  "frozen_source_tree": "8e3fa68878aef4224f781335850a9eab7ff2c6c9",
+  "w1d_blocker": "W1D_SOURCE_REFREEZE_REQUIRED",
+  "approving_authority": "Conversation principal — Architecture Owner",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "approval_channel": "architecture-owner decision supplied in project conversation",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "authority_type": "NEW_ARCHITECTURE_OWNER_DECISION",
+  "source_contract_origin": "NEWLY_APPROVED_ARCHITECTURE_CONTRACT",
+  "frozen_source_parity_claimed": false,
+  "source_implementation_authorized": false,
+  "graph_work_authorized": false,
+  "embedding_work_authorized": false,
+  "target_creation_authorized": false,
+  "adg_dependency": "absent",
+  "target_state": "absent",
+  "sr0a": {
+    "option": "SR0A_OPTION_A",
+    "contract": "IngestionSnapshotLoaderV1",
+    "artifact_classification": "OFFLINE_DERIVED_ARTIFACT",
+    "status": "APPROVED",
+    "adr_path": "docs/adr/ADR-SR0A-INGESTION-SNAPSHOT-AUTHORITY.md",
+    "adr_sha256": "a57cd08ed6b550e15c5910f8f2e0cb8f11eadd34361888f748cb97c75da489eb",
+    "option_matrix_path": "artifacts/apps_rg_source_refreeze/sr0h/sr0a_option_matrix.json",
+    "option_matrix_sha256": "d23dbeb7b1a1d8baa137dec244cd2afb6a4d7794ab5f8db118ed0eafc9107c7f"
+  },
+  "sr0b": {
+    "option": "SR0B_OPTION_A",
+    "contract": "ActiveConfigSnapshotProviderV1",
+    "status": "APPROVED",
+    "adr_path": "docs/adr/ADR-SR0B-ACTIVE-CONFIG-SNAPSHOT-AUTHORITY.md",
+    "adr_sha256": "d890a3a3e22cde5a77c2e78b1838f9e16271b089f00687e15a8f7bdb26688fb7",
+    "option_matrix_path": "artifacts/apps_rg_source_refreeze/sr0h/sr0b_option_matrix.json",
+    "option_matrix_sha256": "78c78ac6954749b1d1d57371467ced36d2161d3754e4d63fbac84aad31d79daf"
+  },
+  "canonical_decision_text": {
+    "path": "artifacts/apps_rg_source_refreeze/sr0h/canonical_approval_decision.txt",
+    "sha256": "4345e92ff546c52d51c111cf845c2275f4e9c3125b7929613b6c79d2f600af7e"
+  },
+  "supporting_artifacts": {
+    "decision_packet_path": "artifacts/apps_rg_source_refreeze/sr0h/contract_authority_decision_packet.json",
+    "decision_packet_sha256": "9afd1299a7ae0f030c7545a52111358d65574d6c21085614db3c55c6d5f1d5c9",
+    "prior_diagnostic_assessment_path": "artifacts/apps_rg_source_refreeze/sr0/contract-authority-assessment-20260719/sr0_contract_authority_assessment.json",
+    "prior_diagnostic_assessment_sha256": "df6c17ec01bc8c64c1050c628d4da900b0bcafeb675323a2ddb7e389d8372161",
+    "prior_diagnostic_evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+    "current_test_evidence_classification": "DIAGNOSTIC_EVIDENCE"
+  },
+  "contract_schema_digests": [
+    {
+      "path": "artifacts/apps_rg_source_refreeze/sr0h/schemas/ingestion_snapshot_loader_v1.proposed.schema.json",
+      "sha256": "b84a27ff139a3cd43d255f77774737844853ce30233d9862561b8592d15770c6",
+      "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT_DRAFT"
+    },
+    {
+      "path": "artifacts/apps_rg_source_refreeze/sr0h/schemas/active_config_snapshot_provider_v1.proposed.schema.json",
+      "sha256": "6582ac14ee9d634b5e10a5140525d1cc8d8c9ba2e533c268f9b0950b56960205",
+      "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT_DRAFT"
+    }
+  ],
+  "approval_binding_validation": {
+    "result": "PASS",
+    "checks": [
+      "Both ADRs bind APPROVED status, selected option, contract name, authority origin, and approval timestamp.",
+      "Receipt digest references match exact current ADR, option-matrix, schema, decision-text, decision-packet, and diagnostic-assessment bytes.",
+      "No approval placeholder remains in the ADRs, option matrices, decision packet, or receipt.",
+      "Recovered source evidence remains diagnostic and is not relabeled as contract proof."
+    ]
+  },
+  "proposed_test_inventory": {
+    "sr0a_count": 18,
+    "sr0b_count": 17,
+    "total_count": 35
+  },
+  "change_inventory": {
+    "production_source_change_count": 0,
+    "graph_change_count": 0,
+    "assertion_change_count": 0,
+    "embedding_change_count": 0,
+    "target_exists": false
+  },
+  "unresolved_risks": [
+    "A separate SR0 implementation directive is required before any production code, production schema, protocol, consumer integration, or test implementation.",
+    "The source remains frozen at the recorded SHA and tree; it is not refrozen by this approval binding.",
+    "Graph remediation, assertion-corpus work, embedding work, runtime traces, and standalone target creation remain unauthorized."
+  ],
+  "success_markers": [
+    "SR0A_CONTRACT_AUTHORITY_APPROVED",
+    "SR0B_CONTRACT_AUTHORITY_APPROVED",
+    "SR0H_SOURCE_CONTRACT_AUTHORITY_PASS",
+    "SR0_IMPLEMENTATION_AUTHORITY_REQUIRED"
+  ]
+}

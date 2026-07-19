@@ -1,0 +1,20 @@
+SR0H_APPROVAL_BINDING_V1
+authority_origin=USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION
+authority_type=NEW_ARCHITECTURE_OWNER_DECISION
+approving_authority=Conversation principal — Architecture Owner
+approval_timestamp=2026-07-19T16:57:20-04:00
+approval_channel=architecture-owner decision supplied in project conversation
+frozen_source_sha=fc7039821148151e08459f8473cc8428df39bc8b
+frozen_source_tree=8e3fa68878aef4224f781335850a9eab7ff2c6c9
+sr0a.option=SR0A_OPTION_A
+sr0a.contract=IngestionSnapshotLoaderV1
+sr0a.artifact_classification=OFFLINE_DERIVED_ARTIFACT
+sr0b.option=SR0B_OPTION_A
+sr0b.contract=ActiveConfigSnapshotProviderV1
+source_contract_origin=NEWLY_APPROVED_ARCHITECTURE_CONTRACT
+frozen_source_parity_claimed=false
+source_implementation_authorized=false
+graph_work_authorized=false
+embedding_work_authorized=false
+target_creation_authorized=false
+target_state=absent

@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "decision_id": "SR0B_ACTIVE_CONFIG_SNAPSHOT_AUTHORITY",
+  "decision_status": "APPROVED",
+  "evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+  "recovered_evidence": [
+    "The frozen manifest validator imports an absent active configuration provider before validating four manifest hash fields.",
+    "The frozen source does not define configuration authority, canonical bytes, digest construction, profile selection, freshness, or replay provenance.",
+    "The validator test is import-only and consumer tests replace the missing provider or validator; they are DIAGNOSTIC_EVIDENCE, not contract proof."
+  ],
+  "options": [
+    {
+      "option_id": "SR0B_OPTION_A",
+      "name": "Explicit immutable local configuration snapshot loaded once per run or manifest operation",
+      "recommendation": "APPROVED",
+      "authority_effect": "Binds one read-only, replayable snapshot before manifest construction.",
+      "benefits": [
+        "Prevents mutable or remote configuration reads during validation.",
+        "Supports deterministic digest binding and replay.",
+        "Permits environment only to select a declared profile before the snapshot boundary."
+      ],
+      "risks_or_required_approval": [
+        "The configuration authority root and profile rule must be approved.",
+        "The canonical serialization and complete digest set must be approved.",
+        "The failure taxonomy and freshness policy must be approved."
+      ]
+    },
+    {
+      "option_id": "SR0B_OPTION_B",
+      "name": "Mutable or remote active-configuration provider consulted during validation",
+      "recommendation": "NOT_RECOMMENDED",
+      "authority_effect": "Allows mutable or remote state to affect manifest validation.",
+      "rejection_reason": "Conflicts with a deterministic snapshot boundary and leaves replay/freshness authority unresolved."
+    },
+    {
+      "option_id": "SR0B_OPTION_C",
+      "name": "Remove active-configuration binding from manifest integrity",
+      "recommendation": "NOT_RECOMMENDED",
+      "authority_effect": "Eliminates configuration-bound integrity checks.",
+      "rejection_reason": "Not acceptable for a deterministic manifest-integrity path."
+    }
+  ],
+  "recommended_option": "SR0B_OPTION_A",
+  "approved_option": "SR0B_OPTION_A",
+  "approving_authority": "Conversation principal — Architecture Owner",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "approval_channel": "architecture-owner decision supplied in project conversation",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "proposed_contract": {
+    "name": "ActiveConfigSnapshotProviderV1",
+    "schema_path": "artifacts/apps_rg_source_refreeze/sr0h/schemas/active_config_snapshot_provider_v1.proposed.schema.json",
+    "runtime_policy": "READ_ONLY_FAIL_CLOSED",
+    "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT"
+  },
+  "proposed_test_inventory": [
+    "valid_snapshot",
+    "missing_bundle",
+    "malformed_bundle",
+    "unsupported_schema",
+    "noncanonical_serialization",
+    "profile_mismatch",
+    "source_changed_during_load",
+    "configuration_drift_during_manifest_construction",
+    "digest_mismatch",
+    "incomplete_digest_set",
+    "mutable_global_fallback_rejection",
+    "post_snapshot_environment_override_rejection",
+    "deterministic_replay",
+    "zero_writes",
+    "zero_provider_calls",
+    "zero_network_access",
+    "zero_agentic_workflow_path_dependency"
+  ]
+}

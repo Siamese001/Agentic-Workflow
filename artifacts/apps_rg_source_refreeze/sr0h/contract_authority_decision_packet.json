@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "packet_id": "sr0h-contract-authority-decision-packet-20260719",
+  "packet_status": "APPROVED_BOUND",
+  "approving_authority": "Conversation principal — Architecture Owner",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "approval_channel": "architecture-owner decision supplied in project conversation",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "source_contract_origin": "NEWLY_APPROVED_ARCHITECTURE_CONTRACT",
+  "frozen_source": {
+    "commit_sha": "fc7039821148151e08459f8473cc8428df39bc8b",
+    "tree_sha": "8e3fa68878aef4224f781335850a9eab7ff2c6c9"
+  },
+  "parent_blocker": "W1D_SOURCE_REFREEZE_REQUIRED",
+  "rollup_blocker": "SR0_SOURCE_CONTRACT_AUTHORITY_REQUIRED",
+  "defects": [
+    {
+      "defect_id": "W1-IMPORT-001",
+      "child_blocker": "SR0A_CONTRACT_AUTHORITY_REQUIRED",
+      "existing_evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+      "recommendation": "SR0A_OPTION_A",
+      "approval_status": "APPROVED"
+    },
+    {
+      "defect_id": "W1-IMPORT-002",
+      "child_blocker": "SR0B_CONTRACT_AUTHORITY_REQUIRED",
+      "existing_evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+      "recommendation": "SR0B_OPTION_A",
+      "approval_status": "APPROVED"
+    }
+  ],
+  "evidence_labels": {
+    "existing_sr0_assessment": "CONTRACT_AUTHORITY_ABSENT",
+    "current_tests": "DIAGNOSTIC_EVIDENCE",
+    "approved_contracts": "NEWLY_APPROVED_ARCHITECTURE_CONTRACT",
+    "approved_behavior": "ARCHITECTURE_OWNER_DECISION"
+  },
+  "adr_paths": [
+    "docs/adr/ADR-SR0A-INGESTION-SNAPSHOT-AUTHORITY.md",
+    "docs/adr/ADR-SR0B-ACTIVE-CONFIG-SNAPSHOT-AUTHORITY.md"
+  ],
+  "schema_paths": [
+    "artifacts/apps_rg_source_refreeze/sr0h/schemas/ingestion_snapshot_loader_v1.proposed.schema.json",
+    "artifacts/apps_rg_source_refreeze/sr0h/schemas/active_config_snapshot_provider_v1.proposed.schema.json"
+  ],
+  "authorized_actions_completed": [
+    "decision_drafting",
+    "adr_drafting",
+    "contract_schema_drafting",
+    "test_spec_drafting",
+    "negative_control_drafting",
+    "plan_and_receipt_update",
+    "non_mutating_evidence_indexing"
+  ],
+  "prohibited_actions_not_performed": [
+    "production_source_change",
+    "missing_module_creation",
+    "compatibility_shim",
+    "source_contract_implementation",
+    "graph_data_edit",
+    "assertion_corpus_edit",
+    "model_acquisition",
+    "vector_generation",
+    "embedding_publication",
+    "runtime_trace_continuation",
+    "target_repository_creation",
+    "push",
+    "pull_request",
+    "merge",
+    "source_refreeze"
+  ],
+  "final_marker": "SR0H_SOURCE_CONTRACT_AUTHORITY_PASS",
+  "next_authorization_marker": "SR0_IMPLEMENTATION_AUTHORITY_REQUIRED"
+}

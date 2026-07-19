@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:apps-rg:sr0h:active-config-snapshot-provider-v1:proposed",
+  "title": "ActiveConfigSnapshotProviderV1 proposed contract",
+  "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT_DRAFT",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/ActiveConfigSnapshotV1" },
+    { "$ref": "#/$defs/ActiveConfigFailureV1" }
+  ],
+  "$defs": {
+    "ActiveConfigRequestV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "configuration_root_or_bundle_reference",
+        "selected_profile_id",
+        "expected_configuration_schema_version",
+        "run_id",
+        "trace_id",
+        "snapshot_boundary_id"
+      ],
+      "properties": {
+        "configuration_root_or_bundle_reference": { "type": "string", "minLength": 1 },
+        "selected_profile_id": { "type": "string", "minLength": 1 },
+        "expected_configuration_schema_version": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "trace_id": { "type": "string", "minLength": 1 },
+        "snapshot_boundary_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "ActiveConfigSnapshotV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_id",
+        "schema_version",
+        "selected_profile_id",
+        "canonical_serialized_configuration",
+        "configuration_digest",
+        "policy_digest",
+        "section_registry_digest",
+        "provider_profile_digest_set",
+        "gate_profile_digest",
+        "judge_profile_digest",
+        "graph_policy_digest",
+        "prompt_profile_digest_set",
+        "source_reference",
+        "source_byte_digest",
+        "snapshot_boundary_id",
+        "immutable_validation_receipt"
+      ],
+      "properties": {
+        "snapshot_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "selected_profile_id": { "type": "string", "minLength": 1 },
+        "canonical_serialized_configuration": { "type": "string", "minLength": 1 },
+        "configuration_digest": { "type": "string", "minLength": 1 },
+        "policy_digest": { "type": "string", "minLength": 1 },
+        "section_registry_digest": { "type": "string", "minLength": 1 },
+        "provider_profile_digest_set": { "type": "object" },
+        "gate_profile_digest": { "type": "string", "minLength": 1 },
+        "judge_profile_digest": { "type": "string", "minLength": 1 },
+        "graph_policy_digest": { "type": "string", "minLength": 1 },
+        "prompt_profile_digest_set": { "type": "object" },
+        "source_reference": { "type": "string", "minLength": 1 },
+        "source_byte_digest": { "type": "string", "minLength": 1 },
+        "snapshot_boundary_id": { "type": "string", "minLength": 1 },
+        "immutable_validation_receipt": { "type": "object" }
+      }
+    },
+    "ActiveConfigFailureV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason_code"],
+      "properties": {
+        "reason_code": {
+          "type": "string",
+          "enum": [
+            "ACTIVE_CONFIG_MISSING",
+            "ACTIVE_CONFIG_MALFORMED",
+            "ACTIVE_CONFIG_VERSION_UNSUPPORTED",
+            "ACTIVE_CONFIG_NONCANONICAL",
+            "ACTIVE_CONFIG_DIGEST_MISMATCH",
+            "ACTIVE_CONFIG_PROFILE_MISMATCH",
+            "ACTIVE_CONFIG_SOURCE_CHANGED",
+            "ACTIVE_CONFIG_DRIFT_DURING_OPERATION",
+            "ACTIVE_CONFIG_INCOMPLETE",
+            "ACTIVE_CONFIG_UNKNOWN"
+          ]
+        }
+      }
+    }
+  }
+}
