@@ -1,0 +1,6 @@
+# Exact-byte C0.3 migration inputs and immutable generated artifacts.
+apps_rg/fact_inventory/master_skills_arsenal_ledger.json -text
+apps_rg/resume/base/amit_ayer_base_resume_v1.json -text
+artifacts/apps_rg/fact_inventory/master_candidate_skills_fact_ledger_20260518T1100Z.json -text
+artifacts/apps_rg/fixtures/gtm_presales_targeting/*.txt -text
+artifacts/apps_rg/c03/graph_skill_embeddings/** -text
