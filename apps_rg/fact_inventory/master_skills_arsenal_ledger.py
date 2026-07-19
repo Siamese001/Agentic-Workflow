@@ -242,7 +242,9 @@ REGISTERED_GRAPH_EDGE_SIGNATURES: dict[str, frozenset[tuple[str, str]]] = {
         {("employment", "skill"), ("employment", "skill_row")}
     ),
     "epoch_contains_pillar": frozenset({("career_epoch", "domain_pillar")}),
-    "epoch_contains_skill": frozenset({("career_epoch", "skill_row")}),
+    "epoch_contains_skill": frozenset(
+        {("career_epoch", "skill"), ("career_epoch", "skill_row")}
+    ),
     "identity_supported_by_epoch": frozenset({("identity_north_star", "career_epoch")}),
     "identity_supported_by_pillar": frozenset({("identity_north_star", "domain_pillar")}),
     "jd_briefing_targeting_only": frozenset({("targeting_input", "policy_rule")}),
@@ -276,6 +278,9 @@ REGISTERED_GRAPH_EDGE_SIGNATURES: dict[str, frozenset[tuple[str, str]]] = {
     "skill_supported_by_fact": frozenset(
         {
             ("skill", "atomic_proof_fact"),
+            ("skill", "bullet_fact"),
+            ("skill", "certification_evidence"),
+            ("skill", "experience_evidence"),
             ("skill_row", "atomic_proof_fact"),
             ("skill_row", "bullet_fact"),
             ("skill_row", "certification_evidence"),
@@ -347,6 +352,7 @@ def derive_registered_graph_endpoint_types(ledger: Mapping[str, Any]) -> dict[st
             if skill_id:
                 skill_rows_by_id[skill_id] = raw_row
             _register_endpoint_type(registry, raw_row.get("domain_id"), "capability_domain")
+            _register_endpoint_type(registry, raw_row.get("career_epoch"), "career_epoch")
             for fact_id in raw_row.get("fact_id_links") or []:
                 _register_fact_reference(registry, fact_id)
             for field in ("primary_fact_id", "source_ledger_ref"):

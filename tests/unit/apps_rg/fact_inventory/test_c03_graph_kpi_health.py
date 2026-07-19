@@ -1398,7 +1398,7 @@ def test_noncanonical_operational_evidence_fails_closed(tmp_path: Path) -> None:
     assert receipt["digests"]["operational_evidence_sha256"] is None
 
 
-def test_current_canonical_missing_source_refs_are_measured_not_filled() -> None:
+def test_current_canonical_reconciled_graph_data_is_ready() -> None:
     repo_root = Path(__file__).resolve().parents[4]
     canonical_path = repo_root / "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
     sqlite_path = repo_root / "artifacts/apps_rg/fact_inventory/augmented_skills_graph.sqlite"
@@ -1410,17 +1410,16 @@ def test_current_canonical_missing_source_refs_are_measured_not_filled() -> None
     metric = _metric(receipt, "graph_node_source_ref_completeness")
     skill_node_metric = _metric(receipt, "skill_row_node_coverage")
 
-    assert metric["denominator"] - metric["numerator"] == 84
-    assert metric["failure_count"] == 84
-    assert metric["status"] != "PASS"
-    assert (skill_node_metric["numerator"], skill_node_metric["denominator"]) == (250, 254)
-    assert {row["skill_id"] for row in skill_node_metric["sample_failure_locators"]} == {
-        "skill_cpq_deal_velocity_automation",
-        "skill_meddpicc_sales_qualification",
-        "skill_nps_customer_health_scoring",
-        "skill_saas_arr_ltv_cac_metrics",
-    }
-    assert skill_node_metric["status"] == "FAIL"
+    assert metric["numerator"] == metric["denominator"] == 198
+    assert metric["failure_count"] == 0
+    assert metric["status"] == "PASS"
+    assert (skill_node_metric["numerator"], skill_node_metric["denominator"]) == (254, 254)
+    assert skill_node_metric["sample_failure_locators"] == []
+    assert skill_node_metric["status"] == "PASS"
+    assert _metric(receipt, "claim_evidence_completeness")["rate"] == 1.0
+    assert _metric(receipt, "domain_coverage")["rate"] == 1.0
+    assert _metric(receipt, "epoch_coverage")["rate"] == 1.0
+    assert receipt["graph_data_readiness"] == "PASS"
 
 
 def test_cli_prints_by_default_and_writes_only_for_explicit_output(

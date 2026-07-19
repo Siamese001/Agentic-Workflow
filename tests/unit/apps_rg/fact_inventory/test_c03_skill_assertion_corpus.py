@@ -12,7 +12,6 @@ from apps_rg.fact_inventory.c03_skill_assertion_corpus import (
     validate_skill_assertion_corpus,
 )
 
-
 ROOT = Path(__file__).resolve().parents[4]
 
 

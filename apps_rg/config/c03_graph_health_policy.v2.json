@@ -3,6 +3,11 @@
   "policy_version": "c03_graph_health_policy.v4.producer_bound_operational_evidence",
   "sample_limit": 12,
   "rare_edge_type_min_count": 2,
+  "rare_edge_type_exemptions": [
+    "jd_briefing_targeting_only",
+    "section_blocks_pending_source_skill",
+    "section_blocks_skill_without_fact"
+  ],
   "operational_evidence_schema_version": "apps_rg.c03_graph_health_operational_evidence.v2",
   "operational_producer_registry_version": "apps_rg.c03_graph_operational_producer_registry.v1",
   "temporal_node_types": [

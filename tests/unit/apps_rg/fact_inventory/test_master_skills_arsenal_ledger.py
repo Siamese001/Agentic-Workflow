@@ -63,13 +63,11 @@ def _has_issue(issues: list[str], code: str) -> bool:
     return any(issue.startswith(f"{code}:") for issue in issues)
 
 
-def test_canonical_graph_issue_collector_exposes_current_provenance_gaps(ledger: dict) -> None:
+def test_canonical_graph_issue_collector_accepts_reconciled_authority(ledger: dict) -> None:
     issues = collect_canonical_graph_issues(ledger)
-    assert _has_issue(issues, "GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING")
-    assert not _has_issue(issues, "GRAPH_EDGE_ENDPOINT_UNREGISTERED")
-    assert not _has_issue(issues, "GRAPH_EDGE_SIGNATURE_INVALID")
-    assert ledger["graph_metadata"]["node_count"] == len(ledger["graph_nodes"]) == 371
-    assert ledger["graph_metadata"]["edge_count"] == len(ledger["graph_edges"]) == 1908
+    assert issues == []
+    assert ledger["graph_metadata"]["node_count"] == len(ledger["graph_nodes"]) == 375
+    assert ledger["graph_metadata"]["edge_count"] == len(ledger["graph_edges"]) == 2114
 
 
 def test_canonical_graph_issue_collector_rejects_duplicate_ids_and_logical_triples(
@@ -252,7 +250,7 @@ def test_required_source_refs_are_policy_aware(ledger: dict) -> None:
     )
     target = next(node for node in broken["graph_nodes"] if node["node_id"] == externally_claimable["node_id"])
     target["source_refs"] = []
-    assert current_missing == 84
+    assert current_missing == 0
     assert sum(
         graph_node_requires_source_refs(node) and not node.get("source_refs")
         for node in broken["graph_nodes"]

@@ -12,7 +12,6 @@ from apps_rg.fact_inventory.master_skills_arsenal_ledger import (
     collect_canonical_graph_issues,
 )
 
-
 ROOT = Path(__file__).resolve().parents[4]
 LEDGER_PATH = ROOT / "apps_rg/fact_inventory/master_skills_arsenal_ledger.json"
 
