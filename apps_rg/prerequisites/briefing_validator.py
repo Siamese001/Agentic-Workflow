@@ -165,6 +165,21 @@ def _canonical_json_bytes(payload: Any) -> bytes:
     ).encode("utf-8")
 
 
+def _directory_fsync_status() -> str:
+    return "UNSUPPORTED" if os.name == "nt" else "PASS"
+
+
+def _fsync_directory(path: Path) -> str:
+    if os.name == "nt":
+        return "UNSUPPORTED"
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+    return "PASS"
+
+
 def _path_within(path: Path, root: Path) -> bool:
     try:
         path.resolve().relative_to(root.resolve())
@@ -204,7 +219,7 @@ def _persist_consumer_receipt(
             incoming_comparable.pop("validated_at_utc", None)
             if existing_comparable == incoming_comparable:
                 return existing
-    temporary = root / f".{destination.name}.tmp-{uuid.uuid4().hex}"
+    temporary = root / f".v-{uuid.uuid4().hex[:24]}"
     payload = (
         json.dumps(receipt, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     ).encode("utf-8")
@@ -214,11 +229,9 @@ def _persist_consumer_receipt(
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, destination)
-        descriptor = os.open(root, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
-        try:
-            os.fsync(descriptor)
-        finally:
-            os.close(descriptor)
+        expected_fsync_status = _directory_fsync_status()
+        if _fsync_directory(root) != expected_fsync_status:
+            raise RuntimeError("consumer receipt directory fsync status changed")
     finally:
         if temporary.exists():
             temporary.unlink(missing_ok=True)
@@ -365,6 +378,9 @@ def _validate_v2_handoff(
             "committed_bundle_ref",
             "commit_marker_ref",
             "commit_marker_sha256",
+            "artifact_runs_root",
+            "final_bundle_digest",
+            "directory_fsync",
             "consumer_validation_receipt_name",
         },
     ):
@@ -378,14 +394,36 @@ def _validate_v2_handoff(
     committed_ref = Path(str(commit.get("committed_bundle_ref") or ""))
     if not committed_ref.is_absolute() or committed_ref.resolve() != root:
         failures.append("committed_bundle_ref_mismatch")
+    artifact_runs_root = Path(str(commit.get("artifact_runs_root") or ""))
+    if (
+        not artifact_runs_root.is_absolute()
+        or artifact_runs_root.resolve() != root.parent.resolve()
+    ):
+        failures.append("artifact_runs_root_mismatch")
+    directory_fsync = _as_mapping(commit.get("directory_fsync"))
+    if not _exact_keys(directory_fsync, {"platform", "stage", "root"}):
+        failures.append("directory_fsync_schema_keys_mismatch")
+    else:
+        producer_platform = str(directory_fsync.get("platform") or "")
+        expected_status = "UNSUPPORTED" if producer_platform == "nt" else "PASS"
+        if producer_platform not in {"nt", "posix"}:
+            failures.append("directory_fsync_platform_invalid")
+        if directory_fsync.get("stage") != expected_status:
+            failures.append("stage_directory_fsync_status_mismatch")
+        if directory_fsync.get("root") != expected_status:
+            failures.append("root_directory_fsync_status_mismatch")
     marker_ref = Path(str(commit.get("commit_marker_ref") or ""))
     if not marker_ref.is_absolute() or marker_ref.resolve() != root / "bundle_commit_manifest.json":
         failures.append("commit_marker_ref_mismatch")
     temporary_ref = Path(str(commit.get("temporary_bundle_ref") or ""))
+    temporary_name = temporary_ref.name
+    temporary_token = temporary_name.removeprefix(".s-")
     if (
         not temporary_ref.is_absolute()
         or temporary_ref.parent.resolve() != root.parent
-        or not temporary_ref.name.startswith(f".{root.name}.staging-")
+        or not temporary_name.startswith(".s-")
+        or len(temporary_token) != 24
+        or any(character not in "0123456789abcdef" for character in temporary_token)
     ):
         failures.append("temporary_bundle_ref_mismatch")
     elif temporary_ref.exists():
@@ -439,6 +477,8 @@ def _validate_v2_handoff(
     manifest_root_digest = _sha256_bytes(_canonical_json_bytes(rows))
     if manifest_root_digest != str(artifact_manifest.get("manifest_sha256") or ""):
         failures.append("artifact_manifest_sha256_mismatch")
+    if commit.get("final_bundle_digest") != manifest_root_digest:
+        failures.append("final_bundle_digest_mismatch")
     if marker.get("artifact_manifest_sha256") != manifest_root_digest:
         failures.append("commit_marker_artifact_manifest_mismatch")
     if _int_or_none(marker.get("artifact_count")) != len(rows):
@@ -820,6 +860,12 @@ def _validate_v2_handoff(
         "bundle_manifest_sha256": _sha256_bytes(manifest_bytes),
         "commit_marker_sha256": _sha256_bytes(marker_bytes),
         "artifact_validations": artifact_validations,
+        "artifact_runs_root": str(root.parent.resolve()),
+        "final_bundle_digest": manifest_root_digest,
+        "receipt_directory_fsync": {
+            "platform": os.name,
+            "status": _directory_fsync_status(),
+        },
         "status": "BLOCKED" if failures else "PASS",
         "failure_reasons": sorted(set(failures)),
         "validated_at_utc": observed_now.isoformat(),

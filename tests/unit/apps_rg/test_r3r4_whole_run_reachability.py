@@ -357,9 +357,9 @@ def test_research_hop_rejects_ready_result_without_producer_artifact(
     monkeypatch.setattr(
         orch,
         "_research_bridge",
-        lambda: MockAppsResearchBridge(
+        lambda *, artifact_runs_root: MockAppsResearchBridge(
             confidence_score=0.88,
-            artifact_runs_root=tmp_path / "apps_research_runs",
+            artifact_runs_root=artifact_runs_root,
         ),
     )
 
@@ -385,7 +385,7 @@ def test_research_hop_rejects_ready_result_without_producer_artifact(
     monkeypatch.setattr(
         orch,
         "_research_bridge",
-        lambda: object(),
+        lambda *, artifact_runs_root: object(),
     )
     route = SimpleNamespace(
         request_id="req-missing-artifact",
