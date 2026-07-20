@@ -192,19 +192,22 @@ def _candidate_identity(row: Mapping[str, Any], *, slot: _Slot) -> str:
     )[:24]
 
 
-def _candidate_score(row: Mapping[str, Any]) -> tuple[float, float, float, float, str]:
+def _candidate_score(
+    row: Mapping[str, Any],
+) -> tuple[float, float, float, float, float, str]:
     return (
         round(float(row.get("proof_strength_raw") or 0.0), 6),
         round(float(row.get("path_confidence_raw") or 0.0), 6),
         round(float(row.get("source_independence_score") or 0.0), 6),
         round(float(row.get("target_alignment_score") or 0.0), 6),
+        round(float(row.get("embedding_similarity") or 0.0), 9),
         str(row.get("candidate_id") or ""),
     )
 
 
 def _candidate_sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
-    proof, path, independence, target, candidate_id = _candidate_score(row)
-    return (-proof, -path, -independence, -target, candidate_id)
+    proof, path, independence, target, embedding, candidate_id = _candidate_score(row)
+    return (-proof, -path, -independence, -target, -embedding, candidate_id)
 
 
 def _selection_margin_receipt(
@@ -242,6 +245,7 @@ def _selection_margin_receipt(
         "path_confidence_raw",
         "source_independence_score",
         "target_alignment_score",
+        "embedding_similarity",
     )
     basis = "stable_candidate_id_tie"
     margin = 0.0
@@ -1003,6 +1007,94 @@ def _candidate_sets_from_section_plans(
     return out
 
 
+def _bind_embedding_candidates(
+    candidate_sets: Mapping[str, Sequence[Mapping[str, Any]]],
+    slot_specs: Sequence[Mapping[str, Any]],
+    skill_scores_by_section: Mapping[str, Mapping[str, float]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Narrow graph candidates to exact assertion eligibility before allocation."""
+    missing_sections = sorted(
+        set(ALL_CLAIM_BEARING_SECTIONS) - set(skill_scores_by_section)
+    )
+    if missing_sections:
+        raise ResumeGraphAllocationError(
+            "embedding candidate authority is incomplete",
+            receipt={
+                "schema_version": "resume_graph_allocation_failure_v1",
+                "unsatisfied_constraints": ["embedding_section_candidate_coverage"],
+                "missing_sections": missing_sections,
+            },
+        )
+    slot_section = {
+        str(row.get("slot_id") or ""): str(row.get("section_id") or "")
+        for row in slot_specs
+    }
+    narrowed: dict[str, list[dict[str, Any]]] = {}
+    for slot_id, raw_rows in candidate_sets.items():
+        section_id = slot_section.get(slot_id, "")
+        scores = skill_scores_by_section.get(section_id) or {}
+        rows: list[dict[str, Any]] = []
+        for raw in raw_rows:
+            skill_id = str(raw.get("skill_id") or "")
+            if skill_id not in scores:
+                continue
+            row = dict(raw)
+            row["embedding_similarity"] = round(float(scores[skill_id]), 9)
+            rows.append(row)
+        rows.sort(key=_candidate_sort_key)
+        if not rows:
+            raise ResumeGraphAllocationError(
+                f"{slot_id}: no graph candidates remain after assertion eligibility",
+                receipt={
+                    "schema_version": "resume_graph_allocation_failure_v1",
+                    "unsatisfied_constraints": ["embedding_candidate_intersection"],
+                    "slot_id": slot_id,
+                    "section_id": section_id,
+                },
+            )
+        narrowed[slot_id] = rows
+    return narrowed
+
+
+def _bind_assignment_embedding_scores(
+    plan: Mapping[str, Any],
+    skill_scores_by_section: Mapping[str, Mapping[str, float]],
+) -> dict[str, Any]:
+    out = dict(plan)
+    assignments: list[dict[str, Any]] = []
+    for raw in plan.get("assignments") or []:
+        if not isinstance(raw, Mapping):
+            continue
+        row = dict(raw)
+        section_id = str(row.get("section_id") or "")
+        skill_id = str(row.get("skill_id") or "")
+        scores = skill_scores_by_section.get(section_id) or {}
+        if skill_id not in scores:
+            raise ResumeGraphAllocationError(
+                f"{section_id}: allocated skill lacks an exact embedding candidate",
+                receipt={
+                    "schema_version": "resume_graph_allocation_failure_v1",
+                    "unsatisfied_constraints": ["embedding_assignment_coverage"],
+                    "section_id": section_id,
+                    "skill_id": skill_id,
+                },
+            )
+        row["embedding_similarity"] = round(float(scores[skill_id]), 9)
+        assignments.append(row)
+    out["assignments"] = assignments
+    out["embedding_candidate_authority"] = {
+        "schema_version": "resume_graph_embedding_candidate_authority_v1",
+        "section_candidate_counts": {
+            section_id: len(scores)
+            for section_id, scores in sorted(skill_scores_by_section.items())
+        },
+        "similarity_is_claim_authority": False,
+        "allocation_narrowing_only": True,
+        "pass": True,
+    }
+    return finalize_resume_graph_allocation_plan(out)
+
+
 def _append_derived_narrative_assignments(plan: Mapping[str, Any]) -> dict[str, Any]:
     out = dict(plan)
     assignments = [dict(row) for row in plan.get("assignments") or []]
@@ -1272,6 +1364,7 @@ def build_whole_resume_graph_allocation(
     jd_text: str = "",
     briefing_text: str = "",
     section_order: Sequence[str] | None = None,
+    embedding_skill_scores_by_section: Mapping[str, Mapping[str, float]] | None = None,
 ) -> dict[str, Any]:
     """Traverse all claim-bearing lanes, allocate once, and freeze section slices."""
     from apps_rg.runtime.c0.c03_resume_graph_contracts import ResumeGraphSelectionPolicyV2
@@ -1333,6 +1426,12 @@ def build_whole_resume_graph_allocation(
         section_budgets=section_budgets,
     )
     candidates = _candidate_sets_from_section_plans(section_plans, slot_specs)
+    if embedding_skill_scores_by_section is not None:
+        candidates = _bind_embedding_candidates(
+            candidates,
+            slot_specs,
+            embedding_skill_scores_by_section,
+        )
     plan = allocate_candidate_sets(
         candidate_sets=candidates,
         slot_specs=slot_specs,
@@ -1371,6 +1470,11 @@ def build_whole_resume_graph_allocation(
         for section_id, section_plan in sorted(section_plans.items())
     }
     plan = _append_derived_narrative_assignments(plan)
+    if embedding_skill_scores_by_section is not None:
+        plan = _bind_assignment_embedding_scores(
+            plan,
+            embedding_skill_scores_by_section,
+        )
     ledger = build_resume_graph_usage_ledger(plan)
     contracts = build_section_final_evidence_contracts(
         allocation_plan=plan,

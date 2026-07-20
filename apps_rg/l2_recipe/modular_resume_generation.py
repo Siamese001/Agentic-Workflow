@@ -10,8 +10,8 @@ See ``.codex/plans/apps-rg-r4-modular-section-migration-d4e8a1.md``.
 
 from __future__ import annotations
 
-import json
 import hashlib
+import json
 import os
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -24,7 +24,6 @@ from apps_rg.l2_recipe.modular_lane_adapter import (
     build_section_provider_call_record,
     phase1_jd_dispatch_refs,
     phase1_manual_brief_for_dispatch,
-    resolve_latest_lane_run_dir,
 )
 from apps_rg.l2_recipe.modular_lane_recipe_policy import summarize_modular_lane_recipe_policy
 from apps_rg.l2_recipe.modular_r4_generation_result import ModularR4GenerationResult
@@ -33,17 +32,17 @@ from apps_rg.l2_recipe.modular_rg_output_builder import (
     load_lane_l2_from_section_refs,
 )
 from apps_rg.l2_recipe.rg_output_jsonschema_validate import validate_rg_output_object
-from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
 from apps_rg.runtime.assembly.final_resume_manifest import FinalResumePaths
+from apps_rg.runtime.internal.final_resume_assembler import assemble_final_resume
+from apps_rg.runtime.internal.generated_lane_rollup import (
+    GENERATED_LANES,
+    build_modular_lane_rollup,
+)
 from apps_rg.runtime.internal.locked_copy_builder import build_locked_copy
 from apps_rg.runtime.orchestration.canonical_dispatch import run_canonical_apps_rg_from_cli_primitives
 from apps_rg.runtime.providers.anthropic_limit_preflight import (
     resolve_anthropic_limit_preflight_route,
     route_whole_run_provider_for_known_anthropic_limit,
-)
-from apps_rg.runtime.internal.generated_lane_rollup import (
-    GENERATED_LANES,
-    build_modular_lane_rollup,
 )
 from apps_rg.runtime.resume_resolution import load_lane_base_resume_json
 from apps_rg.runtime.run_bundle_index import repo_relative_posix
@@ -52,14 +51,16 @@ from apps_rg.runtime.runtime_proof_layout import (
     resolve_phase1_sections_root,
 )
 from apps_rg.runtime.section_cli_defaults import (
-    CLI_PROVIDER_RESOLUTION_CLI_OVERRIDE,
     resolve_cli_lane_provider_with_source,
     resolve_cli_x1d_judges,
 )
-from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_execution_plan import BULLET_LANES, NARRATIVE_LANES
+from apps_rg.runtime.section_judge_policy import REQUIRED_JUDGE_PROVIDER_KEYS
 from apps_rg.runtime.section_lane_temperature import default_temperature_for_section
-from apps_rg.runtime.sections_root_manifest import emit_sections_root_manifest, log_sections_manifest_write_failed
+from apps_rg.runtime.sections_root_manifest import (
+    emit_sections_root_manifest,
+    log_sections_manifest_write_failed,
+)
 from apps_rg.runtime.spine.section_x3_finalize import FINAL_MATERIALIZED_ACCEPTANCE_CONTRACT
 
 # Canonical lane modules as ``apps_rg.runtime.internal.lane_batch`` (single SSOT).
@@ -602,6 +603,9 @@ def run_modular_resume_generation(
     rg_output_merge_receipt_rel: str | None = None
     resume_graph_allocation_digest = ""
     resume_graph_allocation_refs: dict[str, str] = {}
+    graph_skill_embedding_required = False
+    graph_skill_embedding_allowlists_digest = ""
+    graph_skill_embedding_runtime_refs: dict[str, str] = {}
 
     if profile.phase1_invoke_real_lanes:
         sections_root = resolve_phase1_sections_root(art, modular_root)
@@ -632,6 +636,14 @@ def run_modular_resume_generation(
         tr = str(lane_targeting.target_title or "") if lane_targeting is not None else ""
         jd_ref, jd_txt = phase1_jd_dispatch_refs(lane_targeting)
         br_dispatch = phase1_manual_brief_for_dispatch(lane_targeting)
+        from apps_rg.runtime.c0.graph_skill_embedding_allocation import (
+            GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV,
+            build_lane_embedding_allowlists,
+            build_whole_resume_graph_embedding_candidates,
+            candidate_skill_scores_by_section,
+            graph_skill_embeddings_required,
+            write_graph_skill_embedding_runtime_bundle,
+        )
         from apps_rg.runtime.c0.resume_graph_allocation import (
             ALLOCATION_PLAN_ENV,
             ALLOCATION_USAGE_LEDGER_ENV,
@@ -640,11 +652,29 @@ def run_modular_resume_generation(
             write_whole_resume_graph_allocation_bundle,
         )
 
+        graph_skill_embedding_required = graph_skill_embeddings_required()
+        graph_skill_embedding_candidates: dict[str, Any] | None = None
+        graph_skill_embedding_scores: dict[str, dict[str, float]] | None = None
+        if graph_skill_embedding_required:
+            graph_skill_embedding_candidates = (
+                build_whole_resume_graph_embedding_candidates(
+                    repo_root=repo,
+                    target_company=tc or str(input_package.target_company or ""),
+                    target_role=tr or str(input_package.target_role or ""),
+                    jd_text=jd_txt or str(input_package.jd_text or ""),
+                    briefing_text=br_dispatch or str(input_package.briefing_text or ""),
+                )
+            )
+            graph_skill_embedding_scores = candidate_skill_scores_by_section(
+                graph_skill_embedding_candidates["candidates_by_section"]
+            )
+
         resume_graph_bundle = build_whole_resume_graph_allocation(
             repo_root=repo,
             target_role=tr or str(input_package.target_role or ""),
             jd_text=jd_txt or str(input_package.jd_text or ""),
             briefing_text=br_dispatch or str(input_package.briefing_text or ""),
+            embedding_skill_scores_by_section=graph_skill_embedding_scores,
         )
         resume_graph_allocation_refs = write_whole_resume_graph_allocation_bundle(
             resume_graph_bundle,
@@ -653,6 +683,56 @@ def run_modular_resume_generation(
         resume_graph_allocation_digest = str(
             resume_graph_bundle["allocation_plan"].get("allocation_plan_digest") or ""
         )
+        if graph_skill_embedding_candidates is not None:
+            lane_embedding_allowlists = build_lane_embedding_allowlists(
+                allocation_plan=resume_graph_bundle["allocation_plan"],
+                candidates_by_section=graph_skill_embedding_candidates[
+                    "candidates_by_section"
+                ],
+                authority_pins=graph_skill_embedding_candidates["authority"],
+            )
+            graph_skill_embedding_allowlists_digest = str(
+                lane_embedding_allowlists.get("allowlists_digest") or ""
+            )
+            graph_skill_embedding_runtime_refs = (
+                write_graph_skill_embedding_runtime_bundle(
+                    {
+                        "lane_allowlists": lane_embedding_allowlists,
+                        "runtime_receipt": {
+                            "schema_version": (
+                                "apps_rg.graph_skill_embedding_runtime_receipt.v1"
+                            ),
+                            "status": "PASS",
+                            "authority": graph_skill_embedding_candidates["authority"],
+                            "allocation_plan_digest": resume_graph_allocation_digest,
+                            "allowlists_digest": graph_skill_embedding_allowlists_digest,
+                            "query_receipts": graph_skill_embedding_candidates[
+                                "query_receipts"
+                            ],
+                            "runtime_proof": graph_skill_embedding_candidates[
+                                "runtime_proof"
+                            ],
+                            "projection_sha256_before": graph_skill_embedding_candidates[
+                                "projection_sha256_before"
+                            ],
+                            "projection_sha256_after": graph_skill_embedding_candidates[
+                                "projection_sha256_after"
+                            ],
+                            "candidate_payload_fields": [
+                                "assertion_id",
+                                "similarity",
+                            ],
+                            "similarity_is_claim_authority": False,
+                            "provider_call_attempted_before_preflight": False,
+                            "durable_graph_state_mutated": False,
+                            "network_used": False,
+                            "fallback_used": False,
+                            "pass": True,
+                        },
+                    },
+                    output_dir=modular_root / "graph_skill_embedding_allocation",
+                )
+            )
         # Per-lane composite-judge defaults preserve protected Claude-primary panels while keeping
         # bullet/narrative lanes compact. Resolving WITHOUT a section_id would force one global
         # panel onto every lane in whole-run mode, defeating the section policy. Resolve per-lane below.
@@ -688,6 +768,9 @@ def run_modular_resume_generation(
             ALLOCATION_PLAN_ENV: os.environ.get(ALLOCATION_PLAN_ENV),
             ALLOCATION_USAGE_LEDGER_ENV: os.environ.get(ALLOCATION_USAGE_LEDGER_ENV),
             SECTION_EVIDENCE_CONTRACTS_ENV: os.environ.get(SECTION_EVIDENCE_CONTRACTS_ENV),
+            GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV: os.environ.get(
+                GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV
+            ),
         }
         os.environ["APPS_RG_WHOLE_RUN_ENVELOPE"] = "1"
         os.environ["APPS_RG_CORRELATED_CLI_RUN"] = _rel_under_repo(art, repo)
@@ -696,17 +779,20 @@ def run_modular_resume_generation(
         os.environ[SECTION_EVIDENCE_CONTRACTS_ENV] = resume_graph_allocation_refs[
             "section_final_evidence_contracts"
         ]
+        if graph_skill_embedding_required:
+            os.environ[GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV] = (
+                graph_skill_embedding_runtime_refs["lane_allowlists"]
+            )
         try:
             from apps_rg.runtime.integrated_lane_evidence_packaging import (
                 emit_integrated_lane_pre_run_failure,
             )
-
+            from apps_rg.runtime.reasoning.employment_bullet_pool import REQUIRED_BULLET_IDS
+            from apps_rg.runtime.section_execution_plan import NARRATIVE_UPSTREAM_BULLET_LANE
             from apps_rg.runtime.validators.companion_bullet_finalization import (
                 PRE_RUN_UPSTREAM_NOT_FINALIZED_BLOCKER,
                 companion_accepted_in_modular_sections_root,
             )
-            from apps_rg.runtime.reasoning.employment_bullet_pool import REQUIRED_BULLET_IDS
-            from apps_rg.runtime.section_execution_plan import NARRATIVE_UPSTREAM_BULLET_LANE
 
             _narrative_upstream: dict[str, tuple[str, tuple[str, ...]]] = {
                 narrative: (upstream, tuple(REQUIRED_BULLET_IDS.get(upstream, ())))
@@ -715,7 +801,6 @@ def run_modular_resume_generation(
 
             from apps_rg.runtime.product_output_policy import (
                 PHASE1_PRIOR_LANE_FAILED_BLOCKER,
-                lane_run_dir_meets_product_bar,
                 phase1_dispatch_hard_failed,
                 product_fail_closed_runtime,
             )
@@ -950,6 +1035,11 @@ def run_modular_resume_generation(
                 },
                 "resume_graph_allocation_plan_digest": resume_graph_allocation_digest,
                 "resume_graph_allocation_refs": resume_graph_allocation_refs,
+                "graph_skill_embeddings_required": graph_skill_embedding_required,
+                "graph_skill_embedding_allowlists_digest": (
+                    graph_skill_embedding_allowlists_digest
+                ),
+                "graph_skill_embedding_runtime_refs": graph_skill_embedding_runtime_refs,
             }
             if lane_targeting is not None:
                 inv_extra["lane_argv_targeting"] = asdict(lane_targeting)
@@ -972,6 +1062,15 @@ def run_modular_resume_generation(
                 )
                 rollup_blob["resume_graph_allocation_refs"] = dict(
                     resume_graph_allocation_refs
+                )
+                rollup_blob["graph_skill_embeddings_required"] = (
+                    graph_skill_embedding_required
+                )
+                rollup_blob["graph_skill_embedding_allowlists_digest"] = (
+                    graph_skill_embedding_allowlists_digest
+                )
+                rollup_blob["graph_skill_embedding_runtime_refs"] = dict(
+                    graph_skill_embedding_runtime_refs
                 )
                 for lane in GENERATED_LANES:
                     row = rollup_blob["lanes"].get(lane)
@@ -1350,6 +1449,13 @@ def run_modular_resume_generation(
             "decisive_status": decisive,
             "pass_source": pass_source,
             "recipe_lane_policy": recipe_lane_policy,
+            "resume_graph_allocation_plan_digest": resume_graph_allocation_digest,
+            "resume_graph_allocation_refs": resume_graph_allocation_refs,
+            "graph_skill_embeddings_required": graph_skill_embedding_required,
+            "graph_skill_embedding_allowlists_digest": (
+                graph_skill_embedding_allowlists_digest
+            ),
+            "graph_skill_embedding_runtime_refs": graph_skill_embedding_runtime_refs,
         },
     )
 
