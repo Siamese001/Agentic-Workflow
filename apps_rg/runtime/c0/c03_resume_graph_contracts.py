@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections import Counter
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -633,10 +634,20 @@ def validate_canonical_section_plan(plan: Mapping[str, Any]) -> list[str]:
 
 def finalize_canonical_section_plan(plan: Mapping[str, Any]) -> dict[str, Any]:
     """Stamp one immutable canonical plan digest across nested receipts."""
-    out = dict(plan)
+    out = deepcopy(dict(plan))
     out["schema_version"] = CANONICAL_PLAN_SCHEMA_VERSION
-    payload = {key: value for key, value in out.items() if key not in {"plan_id", "plan_digest"}}
-    digest = stable_digest(payload)
+    out.pop("plan_id", None)
+    out.pop("plan_digest", None)
+    for row in out.get("graph_candidate_decision_ledger") or []:
+        if isinstance(row, dict):
+            row.pop("plan_id", None)
+            row.pop("plan_digest", None)
+    for key in ("graph_candidate_receipt", "graph_traversal_receipt"):
+        receipt = out.get(key)
+        if isinstance(receipt, dict):
+            receipt.pop("plan_id", None)
+            receipt.pop("plan_digest", None)
+    digest = stable_digest(out)
     section_id = str(out.get("section_id") or "")
     out["plan_digest"] = digest
     out["plan_id"] = f"{section_id}:{digest[:16]}"

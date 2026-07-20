@@ -506,6 +506,20 @@ def bind_final_claims_to_resume_graph_allocation(
     the active path is detected only by the immutable allocation digest and its
     section assignment slice on ``selected_fact_plan.json``.
     """
+    runtime_payload = _load_json(artifact_dir / "runtime_payload.json")
+    if isinstance(runtime_payload, Mapping) and runtime_payload.get(
+        "blocked_before_provider"
+    ) is True:
+        return {
+            "schema_version": GRAPH_CLAIM_BINDING_CONTRACT_SCHEMA,
+            "section_id": section_id,
+            "active": False,
+            "status": "NOT_APPLICABLE_PRE_PROVIDER_BLOCK",
+            "runtime_generation_status": str(
+                runtime_payload.get("runtime_generation_status") or ""
+            ),
+            "pass": True,
+        }
     context = _allocation_context(artifact_dir, section_id=section_id)
     if context is None:
         return {
