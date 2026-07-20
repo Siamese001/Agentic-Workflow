@@ -7,9 +7,9 @@ instance enables the ``json`` format.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
-import json
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -48,6 +48,10 @@ class RetrievedDoc:
     title: str
     snippet: str
     score: float
+
+
+class RetryableRetrievalTransportError(RuntimeError):
+    """SearXNG transport failed in a way that permits one bounded retry."""
 
 
 def _require_base_url() -> str:
@@ -199,7 +203,9 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
             ) from exc
         raise RuntimeError(f"SearXNG search failed with HTTP status {status_code}") from exc
     except (TimeoutError, OSError) as exc:
-        raise RuntimeError(f"SearXNG search request failed: {exc}") from exc
+        raise RetryableRetrievalTransportError(
+            f"SearXNG search request failed: {exc}"
+        ) from exc
     except (json.JSONDecodeError, ValueError) as exc:
         raise RuntimeError("SearXNG search response was not valid JSON") from exc
 
@@ -210,6 +216,7 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
 
 __all__ = [
     "RetrievedDoc",
+    "RetryableRetrievalTransportError",
     "apply_contextual_prefix",
     "retrieve",
     "retrieval_config_snapshot",
