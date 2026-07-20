@@ -21,6 +21,9 @@ def _sha256(data: bytes) -> str:
 
 
 def _fsync_dir(path: Path) -> None:
+    if os.name == "nt":
+        # Windows does not expose POSIX directory fsync through os.open/os.fsync.
+        return
     descriptor = os.open(path, os.O_RDONLY)
     try:
         os.fsync(descriptor)
@@ -76,7 +79,7 @@ def seal_mandatory_output_bundle(
             path = staging / rel
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
-            with path.open("rb") as handle:
+            with path.open("r+b") as handle:
                 os.fsync(handle.fileno())
             digests[rel.as_posix()] = _sha256(data)
             sizes[rel.as_posix()] = len(data)
@@ -129,7 +132,7 @@ def seal_mandatory_output_bundle(
         marker_bytes = json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8") + b"\n"
         marker_tmp = staging / MANDATORY_OUTPUT_COMMIT_MANIFEST
         marker_tmp.write_bytes(marker_bytes)
-        with marker_tmp.open("rb") as handle:
+        with marker_tmp.open("r+b") as handle:
             os.fsync(handle.fileno())
         os.replace(marker_tmp, root / MANDATORY_OUTPUT_COMMIT_MANIFEST)
         _fsync_dir(root)
