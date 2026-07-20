@@ -38,6 +38,7 @@ def _doc(*, snippet: str = "Grounded consulting evidence.") -> RetrievedDoc:
         title="Unify Consulting About",
         snippet=snippet,
         score=0.95,
+        engines=("bing",),
     )
 
 
@@ -172,6 +173,7 @@ def test_retrieval_receipt_records_grounded_family_evidence(
     assert row["grounded_character_count"] > 0
     assert row["accepted_documents"] == [
         {
+            "engines": ["bing"],
             "score": 0.95,
             "snippet": "Grounded consulting evidence.",
             "title": "Unify Consulting About",

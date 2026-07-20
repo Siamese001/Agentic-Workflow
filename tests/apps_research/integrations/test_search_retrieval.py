@@ -79,6 +79,7 @@ def test_retrieve_normalizes_searxng_results(monkeypatch):
                         "title": "A",
                         "content": "alpha",
                         "score": 0.7,
+                        "engines": ["bing", "mojeek", "bing"],
                     },
                     {
                         "url": "https://example.com/b",
@@ -100,7 +101,13 @@ def test_retrieve_normalizes_searxng_results(monkeypatch):
     assert captured["params"] == {"q": "Blend360 agentic AI", "format": "json"}
     assert captured["timeout"] == 7.0
     assert docs == [
-        RetrievedDoc(url="https://example.com/a", title="A", snippet="alpha", score=0.7),
+        RetrievedDoc(
+            url="https://example.com/a",
+            title="A",
+            snippet="alpha",
+            score=0.7,
+            engines=("bing", "mojeek"),
+        ),
         RetrievedDoc(url="https://example.com/b", title="B", snippet="beta", score=0.99),
     ]
 

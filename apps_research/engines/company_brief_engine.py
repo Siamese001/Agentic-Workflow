@@ -445,6 +445,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 "title": title,
                 "snippet": snippet,
                 "score": score,
+                "engines": list(getattr(document, "engines", ()) or ()),
             }
 
         def _exception_payload(

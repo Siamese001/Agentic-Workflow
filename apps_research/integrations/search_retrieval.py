@@ -48,6 +48,7 @@ class RetrievedDoc:
     title: str
     snippet: str
     score: float
+    engines: tuple[str, ...] = ()
 
 
 class RetryableRetrievalTransportError(RuntimeError):
@@ -130,6 +131,25 @@ def _coerce_score(hit: dict[str, Any], fallback: float) -> float:
         return fallback
 
 
+def _normalize_engines(hit: dict[str, Any]) -> tuple[str, ...]:
+    raw_engines = hit.get("engines")
+    if isinstance(raw_engines, str):
+        candidates = [raw_engines]
+    elif isinstance(raw_engines, (list, tuple, set)):
+        candidates = list(raw_engines)
+    else:
+        candidates = []
+    if not candidates and hit.get("engine"):
+        candidates = [hit["engine"]]
+    return tuple(
+        dict.fromkeys(
+            str(engine).strip()
+            for engine in candidates
+            if str(engine).strip()
+        )
+    )
+
+
 def _normalize_results(payload: Any, *, top_k: int) -> list[RetrievedDoc]:
     results = payload.get("results", []) if isinstance(payload, dict) else []
     docs: list[RetrievedDoc] = []
@@ -148,6 +168,7 @@ def _normalize_results(payload: Any, *, top_k: int) -> list[RetrievedDoc]:
                 title=title,
                 snippet=snippet,
                 score=_coerce_score(hit, fallback_score),
+                engines=_normalize_engines(hit),
             )
         )
         if len(docs) >= top_k:
