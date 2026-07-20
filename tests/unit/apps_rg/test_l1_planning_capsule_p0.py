@@ -16,8 +16,8 @@ import pytest
 from agentic_core.L0_routing.u0_intake_validator import AuthorityValidationReceipt
 from agentic_core.runtime.contracts.apps_rg_ingress_payload import ValidatedRequest
 from agentic_core.runtime.contracts.final_evidence_contract import (
-    FinalEvidenceContract,
     SUPPORT_STATUS_PASS,
+    FinalEvidenceContract,
 )
 from agentic_core.runtime.contracts.l1_plan_contract import L1PlanContract
 from apps_rg.runtime.bindings.c0_binding import C0EvidenceGapError
@@ -25,7 +25,6 @@ from apps_rg.runtime.bindings.c0_planned_binding import c0_retrieve_apps_rg_plan
 from apps_rg.runtime.bindings.l0_binding import l0_route_apps_rg
 from apps_rg.runtime.bindings.l0_route_evidence import L1PlanNotReadyError
 from apps_rg.runtime.bindings.l1_binding import l1_plan_apps_rg
-from apps_rg.runtime.bindings.pa_planned_binding import pa_compose_apps_rg_planned
 from apps_rg.runtime.bindings.l1_plan_evidence import build_validation_receipt_id
 from apps_rg.runtime.bindings.l1_planning_capsule import (
     PlanningCapsuleIntegrityError,
@@ -34,6 +33,7 @@ from apps_rg.runtime.bindings.l1_planning_capsule import (
     stable_capsule_digest,
     verify_apps_rg_l1_planning_capsule,
 )
+from apps_rg.runtime.bindings.pa_planned_binding import pa_compose_apps_rg_planned
 from apps_rg.runtime.bindings.u0_profile_manifest import (
     l1_planning_profile_digest,
     l1_planning_profile_ref,
@@ -63,7 +63,9 @@ def _app_payload(
     generation_mode: str = "strategic_tailor",
     target_role: str = "VP Engineering",
     job_description_text: str = "Lead AI platform strategy.",
+    job_description_ref: str = "",
     source_resume_text: str = "Built governed AI infrastructure.",
+    source_resume_ref: str = "",
     section_id: str = "",
 ) -> dict[str, Any]:
     task_spec: dict[str, Any] = {
@@ -81,7 +83,9 @@ def _app_payload(
         "target_role": target_role,
         "target_level": "EXECUTIVE",
         "job_description_text": job_description_text,
+        "job_description_ref": job_description_ref,
         "source_resume_text": source_resume_text,
+        "source_resume_ref": source_resume_ref,
         "generation_mode": generation_mode,
         "task_spec": task_spec,
         "query_spec": {
@@ -354,6 +358,25 @@ def test_blocking_ambiguity_sets_required_hitl_and_cannot_leave_l0(
         l0_route_apps_rg(plan)
     assert exc.value.receipt.gate_id == "G_L1_PLAN_READY"
     assert exc.value.receipt.verdict == "FAIL"
+
+
+def test_reference_backed_cli_inputs_satisfy_l1_presence_checks() -> None:
+    plan = l1_plan_apps_rg(
+        _validated(
+            job_description_text="",
+            job_description_ref="artifacts/run/job_description.txt",
+            source_resume_text="",
+            source_resume_ref="artifacts/run/source_resume.json",
+        )
+    )
+    capsule = plan.task_spec["apps_rg_planning_capsule"]
+    codes = {
+        entry["code"] for entry in capsule["ambiguity_register"]["entries"]
+    }
+
+    assert "JOB_DESCRIPTION_EMPTY" not in codes
+    assert "SOURCE_RESUME_EMPTY" not in codes
+    assert capsule["planning_status"] == "READY"
 
 
 def test_generate_scratch_does_not_block_only_because_source_resume_is_empty(
