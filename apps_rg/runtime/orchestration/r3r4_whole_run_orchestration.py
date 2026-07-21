@@ -1138,10 +1138,23 @@ def run_whole_run_with_route_governance(
         )
         failed["e2e_stage_ledger"] = str(stage_ledger.path)
         return failed
+    from apps_rg.runtime.spine.validated_request_contract import (
+        CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        write_validated_request_contract,
+    )
+
+    write_validated_request_contract(
+        art / CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        validated_request,
+        consumer_stage="section_lane_modular",
+    )
     stage_ledger.record(
         stage_id="U0",
         status="PASS",
-        output_refs={"u0_receipt": sr.FILENAME_U0_RECEIPT},
+        output_refs={
+            "u0_receipt": sr.FILENAME_U0_RECEIPT,
+            "validated_request": CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        },
     )
     l1_plan = l1_plan_apps_rg(validated_request)
     stage_ledger.record(
@@ -1234,7 +1247,15 @@ def run_whole_run_with_route_governance(
             "request_id": validated_request.request_id,
             "run_id": validated_request.run_id,
             "trace_id": validated_request.trace_id,
+            "trace_root": validated_request.trace_root,
+            "tenant_id": validated_request.tenant_id,
             "payload_digest": validated_request.payload_digest,
+            "authority_contract_id": (
+                validated_request.authority_validation_receipt.authority_contract_id
+            ),
+            "authority_receipt_digest": (
+                validated_request.authority_validation_receipt.authority_receipt_digest
+            ),
             "identity": dict(handoff_identity) if isinstance(handoff_identity, dict) else {},
         },
     )

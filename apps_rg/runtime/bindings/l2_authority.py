@@ -16,6 +16,11 @@ from apps_rg.runtime.bindings.l2_authority_contracts import (
     _tuple_strings,
     sha256_hex,
 )
+from apps_rg.runtime.bindings.u0_binding import (
+    APPS_RG_U0_AUTHORITY_CONTRACT_ID,
+    AppsRgU0AuthorityReceipt,
+    apps_rg_u0_authority_receipt_digest,
+)
 from apps_rg.runtime.providers.provider_aliases import (
     is_external_apps_rg_provider,
     normalize_apps_rg_provider_alias,
@@ -53,6 +58,75 @@ def _authority_receipt_passed(validated_request: Any) -> bool:
     )
     return any(value is True for value in observed) and not any(
         value is False for value in observed
+    )
+
+
+def _validate_u0_authority_receipt_binding(validated_request: Any) -> None:
+    """Require the exact identity- and digest-bound receipt emitted by Apps RG U0."""
+    receipt = getattr(validated_request, "authority_validation_receipt", None)
+    _require(
+        isinstance(receipt, AppsRgU0AuthorityReceipt),
+        "V0_U0_AUTHORITY_RECEIPT_MALFORMED",
+        "ValidatedRequest must carry the typed Apps RG U0 authority receipt",
+        "authority_validation_receipt",
+    )
+    _require(
+        receipt.validation_passed is True,
+        "V0_U0_AUTHORITY_RECEIPT_NOT_PASS",
+        "Apps RG U0 authority validation must be an explicit PASS",
+        "validation_passed",
+    )
+    _require(
+        receipt.authority_contract_id == APPS_RG_U0_AUTHORITY_CONTRACT_ID,
+        "V0_U0_AUTHORITY_RECEIPT_CONTRACT_MISMATCH",
+        "U0 authority receipt contract identity is invalid",
+        "authority_contract_id",
+    )
+    request_identity = {
+        "request_id": _string(getattr(validated_request, "request_id", "")),
+        "run_id": _string(getattr(validated_request, "run_id", "")),
+        "trace_id": _string(getattr(validated_request, "trace_id", "")),
+        "trace_root": _string(
+            getattr(validated_request, "trace_root", "")
+            or getattr(validated_request, "trace_id", "")
+        ),
+        "tenant_id": _string(getattr(validated_request, "tenant_id", "")),
+        "app_id": _string(getattr(validated_request, "app_id", "")),
+    }
+    receipt_identity = {
+        key: _string(getattr(receipt, key, "")) for key in request_identity
+    }
+    _require(
+        all(request_identity.values())
+        and all(receipt_identity.values())
+        and receipt_identity == request_identity,
+        "V0_U0_AUTHORITY_RECEIPT_IDENTITY_MISMATCH",
+        f"U0 authority receipt identity must match ValidatedRequest: {receipt_identity}",
+        "authority_validation_receipt",
+    )
+    request_digest = _string(getattr(validated_request, "payload_digest", ""))
+    _require(
+        bool(request_digest) and receipt.validated_input_digest == request_digest,
+        "V0_U0_AUTHORITY_RECEIPT_INPUT_DIGEST_MISMATCH",
+        "U0 authority receipt validated-input digest must match ValidatedRequest",
+        "validated_input_digest",
+    )
+    expected_receipt_digest = apps_rg_u0_authority_receipt_digest(receipt)
+    observed_receipt_digest = _string(receipt.authority_receipt_digest)
+    _require(
+        bool(observed_receipt_digest)
+        and hmac.compare_digest(observed_receipt_digest, expected_receipt_digest),
+        "V0_U0_AUTHORITY_RECEIPT_DIGEST_MISMATCH",
+        "U0 authority receipt digest does not verify",
+        "authority_receipt_digest",
+    )
+    _require(
+        bool(_string(receipt.validation_timestamp))
+        and bool(_string(receipt.validator_version))
+        and bool(receipt.forbidden_fields_checked),
+        "V0_U0_AUTHORITY_RECEIPT_MALFORMED",
+        "U0 authority receipt validation metadata is incomplete",
+        "authority_validation_receipt",
     )
 
 
@@ -225,12 +299,7 @@ def build_signed_execution_packet(
         route_digest,
         route_signature,
     )
-    _require(
-        _authority_receipt_passed(validated_request),
-        "V0_U0_AUTHORITY_RECEIPT_INVALID",
-        "ValidatedRequest must carry a passing U0 authority validation receipt",
-        "authority_validation_receipt",
-    )
+    _validate_u0_authority_receipt_binding(validated_request)
     request_proof = request_signature or _string(
         getattr(validated_request, "payload_digest", "")
     )
