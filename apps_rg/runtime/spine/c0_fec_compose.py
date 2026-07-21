@@ -13,13 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.runtime.proof_pool_resolver import SectionProofPool
-from apps_rg.runtime.spine.front_contracts import (
-    SectionFrontSpineBridge,
-    fixture_dev_bypass_active,
-)
 from apps_rg.runtime.section_spine_terminology import (
     CANONICAL_SPINE_CHAIN,
     section_lane_spine_classification,
+)
+from apps_rg.runtime.spine.front_contracts import (
+    SectionFrontSpineBridge,
+    fixture_dev_bypass_active,
 )
 
 FEC_BRIDGE_ARTIFACT = "final_evidence_contract.json"
@@ -119,6 +119,42 @@ class SectionFecBridge:
     product_visible: bool = True
     fixture_dev_only_bypass: bool = False
     non_product_certified: bool = False
+
+
+def _bind_allocation_authority_fields(
+    bridge: SectionFecBridge,
+    *,
+    pool: SectionProofPool,
+) -> SectionFecBridge:
+    metadata = pool.proof_pool_metadata
+    fields = {
+        key: metadata.get(key)
+        for key in (
+            "resume_graph_allocation_scope",
+            "resume_graph_allocation_plan_id",
+            "resume_graph_allocation_plan_digest",
+            "resume_graph_global_uniqueness_claimed",
+            "final_graph_evidence_contract_digest",
+        )
+        if metadata.get(key) is not None
+    }
+    if not fields:
+        return bridge
+    document = dict(bridge.bridge_doc)
+    for key, value in fields.items():
+        observed = document.get(key)
+        if observed is not None and observed != value:
+            raise SectionFecBridgePreconditionError(
+                f"{bridge.section_id}: conflicting {key} in final evidence contract"
+            )
+        document[key] = value
+    return SectionFecBridge(
+        section_id=bridge.section_id,
+        bridge_doc=document,
+        product_visible=bridge.product_visible,
+        fixture_dev_only_bypass=bridge.fixture_dev_only_bypass,
+        non_product_certified=bridge.non_product_certified,
+    )
 
 
 def fec_bridge_kill_switch_enabled() -> bool:
@@ -580,6 +616,7 @@ def wire_spine_c0_fec_for_section(
             front_spine=front_spine,
             pool=pool,
         )
+    bridge = _bind_allocation_authority_fields(bridge, pool=pool)
     from apps_rg.runtime.spine.section_c0_retrieve import (
         apply_spine_c03_overlay_to_bridge_doc,
         assert_no_stop_as_evidence_gap,
