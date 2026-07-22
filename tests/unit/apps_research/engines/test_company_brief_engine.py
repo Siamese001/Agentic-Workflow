@@ -156,6 +156,51 @@ class TestResolveJdContext:
 
 
 class TestCuratedTargetingFallback:
+    def test_targeting_handoff_blocks_weak_c0_gate(self, monkeypatch, engine):
+        monkeypatch.setenv("APPS_RESEARCH_RETRIEVAL_V2", "1")
+        monkeypatch.setattr(
+            engine,
+            "_run_research_v2",
+            lambda **_kwargs: {"company_basics": "grounded public evidence"},
+        )
+        monkeypatch.setattr(engine, "_load_jd_facets", lambda _anchor: [])
+        monkeypatch.setattr(
+            engine,
+            "_synthesize",
+            lambda **_kwargs: {
+                "targeting_brief_disposition": "SEALED",
+                "apps_rg_targeting_brief_markdown": "grounded targeting brief",
+                "apps_rg_targeting_brief_sidecar": {"handoff_eligible": True},
+            },
+        )
+        monkeypatch.setattr(
+            engine,
+            "_build_c0_bundle",
+            lambda **_kwargs: {"synthesis_guidance": {}},
+        )
+        monkeypatch.setattr(
+            engine,
+            "_evaluate_c0_pa_gate",
+            lambda **_kwargs: ("WEAK_WITH_CAVEATS", "role_context missing", ""),
+        )
+        monkeypatch.setattr(engine, "_assemble_brief", lambda **_kwargs: {})
+
+        brief = engine.execute(
+            {
+                "topic": "Unify Consulting",
+                "jd_context": {
+                    "company_name": "Unify Consulting",
+                    "job_title": "SVP Technical Pre-Sales",
+                },
+            }
+        )
+
+        assert brief["targeting_brief_disposition"] == "BLOCKED"
+        assert brief["targeting_brief_block_reason"] == (
+            "c0_support_gate=WEAK_WITH_CAVEATS"
+        )
+        assert "company_brief_text" not in brief
+
     def test_v2_research_returns_coverage_family_keys(self, monkeypatch, engine):
         from apps_research.integrations.search_retrieval import RetrievedDoc
 
@@ -169,6 +214,7 @@ class TestCuratedTargetingFallback:
                     title=f"doc-{len(calls)}",
                     snippet=f"snippet for {query}",
                     score=1.0,
+                    engines=("bing",),
                 )
             ]
 

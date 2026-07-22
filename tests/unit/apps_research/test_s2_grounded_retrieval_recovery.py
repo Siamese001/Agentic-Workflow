@@ -391,7 +391,7 @@ def test_receipt_contains_every_planned_unify_family(
     )
 
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert receipt["summary"]["planned_family_count"] == 9
+    assert receipt["summary"]["planned_family_count"] == 10
     assert [row["family"] for row in receipt["families"]] == [
         "company_basics",
         "partner_ecosystem",
@@ -402,5 +402,93 @@ def test_receipt_contains_every_planned_unify_family(
         "financials_and_growth",
         "recent_news_and_signals",
         "leadership_and_org",
+        "role_context",
     ]
+    role_row = receipt["families"][-1]
+    assert role_row["query"] == (
+        "Unify Consulting "
+        "SVP Technical Pre-Sales, Enterprise Cloud & AI Solutions "
+        "partnerships platform engineering sales gtm applied ai"
+    )
+    assert role_row["jd_boosted"] is True
     assert all(row["retrieval_attempt_status"] == "PASS" for row in receipt["families"])
+
+
+def test_role_context_rejects_documents_for_other_unify_entities(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    role_plan = QueryPlan(
+        family="role_context",
+        query=(
+            "Unify Consulting SVP Technical Pre-Sales, Enterprise Cloud & AI Solutions "
+            "partnerships platform engineering sales gtm applied ai"
+        ),
+        min_sources=1,
+        jd_boosted=True,
+    )
+    monkeypatch.setattr(
+        "apps_research.engines.query_decomposer.decompose_coverage_families",
+        lambda *_args, **_kwargs: [role_plan],
+    )
+    monkeypatch.setenv("SEARXNG_BASE_URL", "http://localhost:8080")
+    monkeypatch.setattr(
+        "apps_research.integrations.search_retrieval.retrieve",
+        lambda *_args, **_kwargs: [
+            RetrievedDoc(
+                url="https://www.ui.com/",
+                title="Ubiquiti - Rethinking IT",
+                snippet="UniFi enterprise networking products.",
+                score=0.99,
+                engines=("bing",),
+            ),
+            RetrievedDoc(
+                url="https://www.unifyconsulting.com/role",
+                title="Unify Consulting role",
+                snippet="Relevant role context without engine provenance.",
+                score=0.97,
+                engines=(),
+            ),
+            _doc(),
+        ],
+    )
+    monkeypatch.setattr(
+        "apps_research.integrations.reranker_adapter.rerank",
+        lambda _query, docs, *, cutoff: list(docs)[:cutoff],
+    )
+    receipt_path = tmp_path / "apps_research" / "retrieval_receipt.json"
+    (receipt_path.parent / "runs").mkdir(parents=True)
+
+    findings = CompanyBriefEngine()._run_research_v2(
+        topic="Unify Consulting",
+        depth_profile="COMPANY_BRIEF_STANDARD",
+        jd_context={"job_title": "SVP Technical Pre-Sales"},
+        retrieval_receipt_path=receipt_path,
+    )
+
+    row = json.loads(receipt_path.read_text(encoding="utf-8"))["families"][0]
+    assert findings["role_context"]
+    assert row["documents_before_rerank"] == 3
+    assert row["documents_identity_admissible"] == 1
+    assert row["accepted_documents"] == [
+        {
+            "engines": ["bing"],
+            "score": 0.95,
+            "snippet": "Grounded consulting evidence.",
+            "title": "Unify Consulting About",
+            "url": "https://www.unifyconsulting.com/about",
+        }
+    ]
+    assert row["snippets_rejected"] == [
+        {
+            "reason": "COMPANY_IDENTITY_MISMATCH",
+            "title": "Ubiquiti - Rethinking IT",
+            "url": "https://www.ui.com/",
+        },
+        {
+            "missing_fields": ["engines"],
+            "reason": "REQUIRED_EVIDENCE_FIELDS_MISSING",
+            "title": "Unify Consulting role",
+            "url": "https://www.unifyconsulting.com/role",
+        },
+    ]

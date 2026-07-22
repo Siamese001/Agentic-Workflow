@@ -298,7 +298,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         if targeting_disposition:
             targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
             targeting_sidecar = synthesized.get("apps_rg_targeting_brief_sidecar") or {}
-            gate_blocks = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
+            gate_blocks = str(gate_verdict).upper() != "PASS"
             if targeting_md and not gate_blocks and targeting_disposition == "SEALED":
                 brief["apps_rg_targeting_brief_text"] = targeting_md
                 brief["company_brief_text"] = targeting_md
@@ -401,6 +401,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         if jd_context:
             required_targeting_families = [
                 "company_basics",
+                "role_context",
                 "competitive_landscape",
                 "leadership_and_org",
                 "recent_news_and_signals",
@@ -459,9 +460,11 @@ class CompanyBriefEngine(BaseResearchEngine):
             }
 
         def _fetch(plan: QueryPlan) -> tuple[str, str, dict[str, Any]]:
+            search_queries = (plan.query, *plan.supplemental_queries)
             row: dict[str, Any] = {
                 "family": plan.family,
                 "query": plan.query,
+                "queries": list(search_queries),
                 "min_sources": plan.min_sources,
                 "jd_boosted": plan.jd_boosted,
                 "retrieval_endpoint": endpoint,
@@ -472,7 +475,9 @@ class CompanyBriefEngine(BaseResearchEngine):
                 },
                 "retrieval_attempt_status": "PENDING",
                 "attempts": [],
+                "query_receipts": [],
                 "documents_before_rerank": 0,
+                "documents_identity_admissible": 0,
                 "documents_after_rerank": 0,
                 "accepted_documents": [],
                 "snippets_rejected": [],
@@ -480,30 +485,107 @@ class CompanyBriefEngine(BaseResearchEngine):
                 "finding_digest": "",
             }
             docs: list[Any] = []
-            for attempt in (1, 2):
-                try:
-                    docs = retrieve(plan.query, top_k=10)
-                except RetryableRetrievalTransportError as exc:
-                    status = "RETRY" if attempt == 1 else "FAILED"
-                    row["attempts"].append(
-                        _exception_payload(attempt=attempt, status=status, exc=exc)
-                    )
-                    if attempt == 1:
-                        continue
-                    row["retrieval_attempt_status"] = "FAILED"
-                    return plan.family, "", row
-                except (RuntimeError, ValueError) as exc:
-                    row["attempts"].append(
-                        _exception_payload(attempt=attempt, status="FAILED", exc=exc)
-                    )
-                    row["retrieval_attempt_status"] = "FAILED"
-                    return plan.family, "", row
-                row["attempts"].append({"attempt": attempt, "status": "PASS"})
-                break
+            seen_docs: set[tuple[str, str, str, float]] = set()
+            retry_available = True
+            query_failed = False
+            for search_query in search_queries:
+                query_receipt: dict[str, Any] = {
+                    "query": search_query,
+                    "status": "PENDING",
+                    "attempts": [],
+                    "documents_returned": 0,
+                }
+                query_docs: list[Any] = []
+                attempt = 1
+                while True:
+                    try:
+                        query_docs = retrieve(search_query, top_k=10)
+                    except RetryableRetrievalTransportError as exc:
+                        status = "RETRY" if retry_available else "FAILED"
+                        payload = _exception_payload(
+                            attempt=attempt, status=status, exc=exc
+                        )
+                        row["attempts"].append(payload)
+                        query_receipt["attempts"].append(payload)
+                        if retry_available:
+                            retry_available = False
+                            attempt += 1
+                            continue
+                        query_receipt["status"] = "FAILED"
+                        query_failed = True
+                        break
+                    except (RuntimeError, ValueError) as exc:
+                        payload = _exception_payload(
+                            attempt=attempt, status="FAILED", exc=exc
+                        )
+                        row["attempts"].append(payload)
+                        query_receipt["attempts"].append(payload)
+                        query_receipt["status"] = "FAILED"
+                        query_failed = True
+                        break
+                    payload = {"attempt": attempt, "status": "PASS"}
+                    row["attempts"].append(payload)
+                    query_receipt["attempts"].append(payload)
+                    query_receipt["status"] = "PASS"
+                    query_receipt["documents_returned"] = len(query_docs)
+                    break
+                row["query_receipts"].append(query_receipt)
+                for document in query_docs:
+                    ref = _document_ref(document)
+                    if ref not in seen_docs:
+                        seen_docs.add(ref)
+                        docs.append(document)
 
             row["documents_before_rerank"] = len(docs)
             if not docs:
-                row["retrieval_attempt_status"] = "ZERO_DOCUMENTS"
+                row["retrieval_attempt_status"] = (
+                    "FAILED" if query_failed else "ZERO_DOCUMENTS"
+                )
+                return plan.family, "", row
+
+            if plan.family == "role_context":
+                identity = " ".join(topic.lower().split())
+                compact_identity = re.sub(r"[^a-z0-9]+", "", identity)
+                identity_docs: list[Any] = []
+                for document in docs:
+                    payload = _document_payload(document)
+                    missing_fields = [
+                        field
+                        for field in ("title", "url", "snippet")
+                        if not str(payload.get(field) or "").strip()
+                    ]
+                    if not payload["engines"]:
+                        missing_fields.append("engines")
+                    if missing_fields:
+                        row["snippets_rejected"].append(
+                            {
+                                "url": payload["url"],
+                                "title": payload["title"],
+                                "reason": "REQUIRED_EVIDENCE_FIELDS_MISSING",
+                                "missing_fields": missing_fields,
+                            }
+                        )
+                        continue
+                    haystack = " ".join(
+                        str(payload.get(field) or "")
+                        for field in ("title", "url", "snippet")
+                    ).lower()
+                    compact_haystack = re.sub(r"[^a-z0-9]+", "", haystack)
+                    if identity in haystack or compact_identity in compact_haystack:
+                        identity_docs.append(document)
+                    else:
+                        row["snippets_rejected"].append(
+                            {
+                                "url": payload["url"],
+                                "title": payload["title"],
+                                "reason": "COMPANY_IDENTITY_MISMATCH",
+                            }
+                        )
+                docs = identity_docs
+
+            row["documents_identity_admissible"] = len(docs)
+            if not docs:
+                row["retrieval_attempt_status"] = "NO_ADMISSIBLE_DOCUMENTS"
                 return plan.family, "", row
 
             try:
