@@ -1,0 +1,19 @@
+schema_version: apps_rg.grounding_binding_rubric.v1
+authority: advisory_future_runs_only
+runtime_authored_support_flags_are_proof: false
+missing_or_invalid_evidence_disposition: UNKNOWN
+material_claim_pass_requirements:
+  exact_evidence_locator: required
+  source_excerpt_digest: required
+  graph_path_binding: EXACT
+  entailment_grade: FULL
+  composite_component_grade: FULL
+  exact_bindings: [employer, role, date, metric, credential, scope, certainty]
+  scope_inflation: forbidden
+  certainty_inflation: forbidden
+gate_requirements:
+  unsupported_material_claim_count: 0
+  unknown_material_claim_count: 0
+  exact_path_accuracy: 1.0
+promotion_scope: future_runs_only
+existing_w6_authority: unchanged

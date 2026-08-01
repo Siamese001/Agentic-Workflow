@@ -1,4 +1,4 @@
-"""Exact human-review and adjudication binding helpers."""
+"""Exact factual, human-review, and adjudication binding helpers."""
 
 from __future__ import annotations
 
@@ -6,6 +6,61 @@ import hashlib
 from typing import Any, Mapping
 
 from apps_rg.evals.resume_graph.constants import _SHA256_RE
+from apps_rg.evals.resume_graph.models import EvaluationDataError
+
+BINDING_FIELDS = (
+    "employer",
+    "role",
+    "date",
+    "metric",
+    "credential",
+    "scope",
+    "certainty",
+)
+_BINDING_STATUSES = frozenset({"EXACT", "MISMATCH", "NOT_APPLICABLE", "UNKNOWN"})
+
+
+def binding_disposition(value: Any) -> tuple[str, str | None]:
+    """Return the fail-closed disposition and reason for one factual binding."""
+
+    if not isinstance(value, Mapping):
+        return "UNKNOWN", "BINDING_MISSING"
+    status = value.get("status")
+    if status not in _BINDING_STATUSES:
+        return "UNKNOWN", "BINDING_STATUS_INVALID"
+    if status == "UNKNOWN":
+        return "UNKNOWN", "BINDING_UNKNOWN"
+    if status == "MISMATCH":
+        return "FAIL", "BINDING_MISMATCH"
+    if status == "NOT_APPLICABLE":
+        return "NOT_APPLICABLE", None
+
+    expected = value.get("expected")
+    observed = value.get("observed")
+    if expected is None or observed is None:
+        return "UNKNOWN", "BINDING_VALUE_MISSING"
+    if expected != observed:
+        return "FAIL", "BINDING_VALUE_MISMATCH"
+    if value.get("inflation") is True:
+        return "FAIL", "BINDING_INFLATION"
+    return "PASS", None
+
+
+def exact_binding_accuracy(records: list[Mapping[str, Any]], field: str) -> float:
+    """Measure exactness over all applicable bindings for ``field``."""
+
+    if field not in BINDING_FIELDS:
+        raise EvaluationDataError(f"unknown binding field: {field}")
+    applicable = []
+    for record in records:
+        bindings = record.get("bindings")
+        value = bindings.get(field) if isinstance(bindings, Mapping) else None
+        disposition, _ = binding_disposition(value)
+        if disposition != "NOT_APPLICABLE":
+            applicable.append(disposition)
+    if not applicable:
+        raise EvaluationDataError(f"no applicable {field} bindings")
+    return sum(disposition == "PASS" for disposition in applicable) / len(applicable)
 
 
 def _receipt_ref(value: Any) -> str:

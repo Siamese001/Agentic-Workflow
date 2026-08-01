@@ -10,9 +10,9 @@ It keeps six evaluation questions independent:
 
 | Gate | Question | Current implementation state |
 | --- | --- | --- |
-| G1 - Retrieval | Did the graph retrieve the most relevant available evidence? | Implemented by the existing resume-graph evaluator and human labels. |
-| G2 - Binding | Was evidence bound to the correct employer, role, date, metric, credential, and graph path? | Partial; the existing evaluator covers path, entailment, metric binding, and target relevance. |
-| G3 - Grounding | Is every material generated claim supported by exact cited evidence? | Partial; the complete material-claim gate is a later wave. |
+| G1 - Retrieval | Did the graph retrieve the most relevant available evidence? | Active; legacy W6 metrics are preserved and the finite-universe API adds coverage, hard-negative, and slice results. |
+| G2 - Binding | Was evidence bound to the correct employer, role, date, metric, credential, and graph path? | Active; the claim-evidence API verifies seven exact binding dimensions and graph paths. |
+| G3 - Grounding | Is every material generated claim supported by exact cited evidence? | Active; the material-claim API recomputes support and fails closed on incomplete evidence. |
 | G4 - Output quality | Is the resume relevant, natural, concise, credible, ATS-compatible, and personalized? | Scaffold only; the existing section schemas do not constitute a completed benchmark. |
 | G5 - Robustness | Is behavior acceptable across stored runs and difficult evidence scenarios? | Not measured. |
 | G6 - Eval validity | Do the graders catch known defects without rejecting clean controls? | Not measured. |
@@ -63,3 +63,28 @@ Schemas:
   defines one named gate result.
 - [`schemas/evaluation_report.v2.schema.json`](schemas/evaluation_report.v2.schema.json)
   defines a complete, non-blended report over G1-G6.
+- [`schemas/claim_evidence_record.v1.schema.json`](schemas/claim_evidence_record.v1.schema.json)
+  freezes one material claim, exact locator, path, entailment, and factual
+  bindings. Additional runtime-authored support flags are rejected.
+- [`schemas/retrieval_universe.v1.schema.json`](schemas/retrieval_universe.v1.schema.json)
+  freezes one query and every candidate in its finite labelled universe.
+
+## Grounding, binding, and retrieval APIs
+
+`apps_rg.evals.resume_graph` exports the Wave 3 entry points:
+
+- `seal_claim_evidence_record` and `evaluate_claim_evidence` operate on one
+  claim-evidence record. `evaluate_binding_gate` and `evaluate_grounding_gate`
+  emit independent G2 and G3 dispositions over the same complete denominator.
+- `seal_retrieval_query` freezes the candidate denominator.
+  `evaluate_retrieval_query` preserves Recall and nDCG at 1, 3, 5, and 10,
+  adds coverage and hard-negative metrics, and never evaluates only emitted
+  Top-K. `evaluate_retrieval_gate` requires distinct calibration and holdout
+  sets and reports governed slices.
+
+The deterministic rubrics live in
+[`contracts/grounding_binding_rubric.v1.yaml`](contracts/grounding_binding_rubric.v1.yaml)
+and
+[`contracts/retrieval_coverage_rubric.v1.yaml`](contracts/retrieval_coverage_rubric.v1.yaml).
+They are future-run-only measurement rules; they do not promote thresholds or
+change W6 release authority.

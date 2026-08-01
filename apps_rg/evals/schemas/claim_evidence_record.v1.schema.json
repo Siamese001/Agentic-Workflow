@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agentic-workflow.local/apps_rg/claim_evidence_record.v1.schema.json",
+  "title": "Sealed material claim and exact evidence binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "claim_id",
+    "claim_text",
+    "materiality",
+    "source_id",
+    "exact_evidence_locator",
+    "locator_failure_reason",
+    "source_excerpt_digest",
+    "graph_path",
+    "path_binding",
+    "bindings",
+    "entailment_grade",
+    "support_disposition",
+    "components",
+    "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.claim_evidence_record.v1"},
+    "claim_id": {"type": "string", "minLength": 1},
+    "claim_text": {"type": "string", "minLength": 1},
+    "materiality": {"enum": ["MATERIAL", "NON_MATERIAL"]},
+    "source_id": {"type": ["string", "null"], "minLength": 1},
+    "exact_evidence_locator": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_ref", "start", "end"],
+          "properties": {
+            "artifact_ref": {"type": "string", "minLength": 1},
+            "start": {"type": "integer", "minimum": 0},
+            "end": {"type": "integer", "minimum": 0}
+          }
+        }
+      ]
+    },
+    "locator_failure_reason": {"type": ["string", "null"], "minLength": 1},
+    "source_excerpt_digest": {
+      "type": ["string", "null"],
+      "pattern": "^(?:sha256:)?[0-9a-f]{64}$"
+    },
+    "graph_path": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1
+    },
+    "path_binding": {"enum": ["EXACT", "MISMATCH", "UNKNOWN"]},
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["employer", "role", "date", "metric", "credential", "scope", "certainty"],
+      "properties": {
+        "employer": {"$ref": "#/$defs/binding"},
+        "role": {"$ref": "#/$defs/binding"},
+        "date": {"$ref": "#/$defs/binding"},
+        "metric": {"$ref": "#/$defs/binding"},
+        "credential": {"$ref": "#/$defs/binding"},
+        "scope": {"$ref": "#/$defs/binding"},
+        "certainty": {"$ref": "#/$defs/binding"}
+      }
+    },
+    "entailment_grade": {"enum": ["FULL", "PARTIAL", "NONE", "CONTRADICTED", "UNKNOWN"]},
+    "support_disposition": {"enum": ["SUPPORTED", "PARTIAL", "UNSUPPORTED", "UNKNOWN"]},
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component_id", "entailment_grade"],
+        "properties": {
+          "component_id": {"type": "string", "minLength": 1},
+          "entailment_grade": {"enum": ["FULL", "PARTIAL", "NONE", "CONTRADICTED", "UNKNOWN"]}
+        }
+      }
+    },
+    "record_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "expected", "observed", "inflation"],
+      "properties": {
+        "status": {"enum": ["EXACT", "MISMATCH", "NOT_APPLICABLE", "UNKNOWN"]},
+        "expected": {"type": ["string", "number", "boolean", "null"]},
+        "observed": {"type": ["string", "number", "boolean", "null"]},
+        "inflation": {"type": "boolean"}
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schema_version": "apps_rg.grounding_mutation_fixture.v1",
+  "base_record": {
+    "schema_version": "apps_rg.claim_evidence_record.v1",
+    "claim_id": "claim-productivity-20",
+    "claim_text": "At Acme, improved team productivity by 20 percent in 2024.",
+    "materiality": "MATERIAL",
+    "source_id": "resume-source-001",
+    "exact_evidence_locator": {
+      "artifact_ref": "artifact://resume/source-001",
+      "start": 120,
+      "end": 188
+    },
+    "locator_failure_reason": null,
+    "source_excerpt_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "graph_path": ["person:amit", "role:acme-director", "achievement:productivity-20"],
+    "path_binding": "EXACT",
+    "bindings": {
+      "employer": {"status": "EXACT", "expected": "Acme", "observed": "Acme", "inflation": false},
+      "role": {"status": "EXACT", "expected": "Director", "observed": "Director", "inflation": false},
+      "date": {"status": "EXACT", "expected": "2024", "observed": "2024", "inflation": false},
+      "metric": {"status": "EXACT", "expected": "20 percent", "observed": "20 percent", "inflation": false},
+      "credential": {"status": "NOT_APPLICABLE", "expected": null, "observed": null, "inflation": false},
+      "scope": {"status": "EXACT", "expected": "team", "observed": "team", "inflation": false},
+      "certainty": {"status": "EXACT", "expected": "achieved", "observed": "achieved", "inflation": false}
+    },
+    "entailment_grade": "FULL",
+    "support_disposition": "SUPPORTED",
+    "components": [
+      {"component_id": "employer-role-date", "entailment_grade": "FULL"},
+      {"component_id": "metric-scope", "entailment_grade": "FULL"}
+    ],
+    "record_digest": ""
+  },
+  "mutations": {
+    "wrong_employer": {
+      "path": ["bindings", "employer"],
+      "value": {"status": "MISMATCH", "expected": "Acme", "observed": "OtherCo", "inflation": false},
+      "expected_code": "EMPLOYER_BINDING_MISMATCH"
+    },
+    "wrong_role": {
+      "path": ["bindings", "role"],
+      "value": {"status": "MISMATCH", "expected": "Director", "observed": "Vice President", "inflation": false},
+      "expected_code": "ROLE_BINDING_MISMATCH"
+    },
+    "metric_20_to_30": {
+      "path": ["bindings", "metric"],
+      "value": {"status": "MISMATCH", "expected": "20 percent", "observed": "30 percent", "inflation": false},
+      "expected_code": "METRIC_BINDING_MISMATCH"
+    },
+    "planned_to_completed": {
+      "path": ["bindings", "certainty"],
+      "value": {"status": "EXACT", "expected": "completed", "observed": "completed", "inflation": true},
+      "expected_code": "CERTAINTY_BINDING_INFLATION"
+    },
+    "team_to_individual": {
+      "path": ["bindings", "scope"],
+      "value": {"status": "EXACT", "expected": "individual", "observed": "individual", "inflation": true},
+      "expected_code": "SCOPE_BINDING_INFLATION"
+    },
+    "approximate_to_exact": {
+      "path": ["bindings", "certainty"],
+      "value": {"status": "EXACT", "expected": "exact", "observed": "exact", "inflation": true},
+      "expected_code": "CERTAINTY_BINDING_INFLATION"
+    },
+    "unsupported_global_scope": {
+      "path": ["bindings", "scope"],
+      "value": {"status": "EXACT", "expected": "global", "observed": "global", "inflation": true},
+      "expected_code": "SCOPE_BINDING_INFLATION"
+    },
+    "unsupported_budget_or_team_size": {
+      "path": ["bindings", "scope"],
+      "value": {"status": "MISMATCH", "expected": "team", "observed": "team of 200 and budget of 5M", "inflation": true},
+      "expected_code": "SCOPE_BINDING_INFLATION"
+    },
+    "expired_credential_current": {
+      "path": ["bindings", "credential"],
+      "value": {"status": "MISMATCH", "expected": "expired", "observed": "current", "inflation": true},
+      "expected_code": "CREDENTIAL_BINDING_MISMATCH"
+    },
+    "unsupported_superlative": {
+      "path": ["bindings", "certainty"],
+      "value": {"status": "EXACT", "expected": "best in company", "observed": "best in company", "inflation": true},
+      "expected_code": "CERTAINTY_BINDING_INFLATION"
+    },
+    "unsupported_entailment": {
+      "path": ["entailment_grade"],
+      "value": "NONE",
+      "expected_code": "UNSUPPORTED_CLAIM"
+    }
+  }
+}

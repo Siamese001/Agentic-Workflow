@@ -1,0 +1,25 @@
+schema_version: apps_rg.retrieval_coverage_rubric.v1
+authority: advisory_future_runs_only
+candidate_denominator: full_finite_universe
+candidate_universe_authority: frozen_human_labelled_manifest_independent_of_emitted_ranking
+required_cutoffs: [1, 3, 5, 10]
+required_split_separation: [CALIBRATION, HOLDOUT]
+required_slices:
+  - target_profile
+  - section
+  - graph_lane
+  - employer
+  - evidence_type
+  - metric_bearing
+  - evidence_density
+  - candidate_pool_size
+  - split
+  - hard_negative_class
+gate_requirements:
+  relevant_evidence_coverage: 1.0
+  exact_path_accuracy: 1.0
+  critical_hard_negative_selected_count: 0
+  relevant_omitted_beyond_k: 0
+  top_k_redundancy_rate: 0.0
+promotion_scope: future_runs_only
+existing_w6_authority: unchanged

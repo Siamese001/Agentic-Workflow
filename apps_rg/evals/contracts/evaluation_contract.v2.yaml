@@ -79,11 +79,29 @@ gates:
       - {name: recall_at_3, definition: Relevant evidence recovered in the first three ranks, required: true}
       - {name: recall_at_5, definition: Relevant evidence recovered in the first five ranks, required: true}
       - {name: recall_at_10, definition: Relevant evidence recovered in the first ten ranks, required: true}
-      - {name: pooled_recall_at_k, definition: Recall over the full labelled candidate denominator, required: true}
-      - {name: ndcg_at_1_3_5_10, definition: Rank-sensitive graded relevance at governed cutoffs, required: true}
-      - {name: mean_reciprocal_rank, definition: Reciprocal rank of the first relevant candidate, required: true}
+      - {name: pooled_recall_at_1, definition: Pooled recall over the full labelled denominator at rank one, required: true}
+      - {name: pooled_recall_at_3, definition: Pooled recall over the full labelled denominator at rank three, required: true}
+      - {name: pooled_recall_at_5, definition: Pooled recall over the full labelled denominator at rank five, required: true}
+      - {name: pooled_recall_at_10, definition: Pooled recall over the full labelled denominator at rank ten, required: true}
+      - {name: ndcg_at_1, definition: Rank-sensitive graded relevance at rank one, required: true}
+      - {name: ndcg_at_3, definition: Rank-sensitive graded relevance at rank three, required: true}
+      - {name: ndcg_at_5, definition: Rank-sensitive graded relevance at rank five, required: true}
+      - {name: ndcg_at_10, definition: Rank-sensitive graded relevance at rank ten, required: true}
+      - {name: mrr, definition: Mean reciprocal rank of the first relevant candidate, required: true}
       - {name: exact_path_accuracy, definition: Selected evidence uses the authorized graph path, required: true}
       - {name: selection_margin, definition: Score separation between selected evidence and alternatives, required: false}
+      - {name: relevant_evidence_coverage, definition: Relevant evidence selected inside governed Top-K over the full relevant denominator, required: true}
+      - {name: jd_concept_coverage, definition: Labelled JD concepts covered by relevant selected evidence, required: true}
+      - {name: top_k_sufficiency, definition: Whether Top-K contains every labelled relevant candidate, required: true}
+      - {name: top_k_redundancy_rate, definition: Selected candidates that duplicate another graph-path identity, required: true}
+      - {name: unique_claim_coverage, definition: Unique relevant claim identities covered inside Top-K, required: true}
+      - {name: employer_diversity, definition: Relevant employer identities preserved inside Top-K where applicable, required: false}
+      - {name: metric_bearing_recall, definition: Relevant metric-bearing evidence recovered inside Top-K, required: true}
+      - {name: hard_negative_rejection_rate, definition: Labelled hard negatives kept outside Top-K, required: true}
+      - {name: wrong_role_top_k_rate, definition: Top-K candidates bound to the wrong role, required: true}
+      - {name: wrong_employer_top_k_rate, definition: Top-K candidates bound to the wrong employer, required: true}
+      - {name: near_duplicate_top_k_rate, definition: Top-K candidates labelled as duplicate graph paths, required: true}
+      - {name: relevant_omitted_beyond_k, definition: Relevant candidates ranked outside governed Top-K, required: true}
     threshold_authority:
       classification: conditionally_release_authoritative
       condition: Only the existing sealed official W6 human-review workflow may authorize governed retrieval thresholds.
@@ -96,7 +114,7 @@ gates:
     evaluation_question: Did the output attach evidence to the correct employer, role, date, metric, credential, and graph path?
     score_groups: [binding_accuracy]
     unit_of_analysis: One material claim and each exact factual binding asserted by that claim.
-    implementation_status: PARTIAL
+    implementation_status: ACTIVE
     required_evidence:
       - type: claim_identity
         requirement: Material claim identity and text are frozen.
@@ -112,6 +130,7 @@ gates:
       - {name: numeric_binding_accuracy, definition: Numeric value and unit are exact, required: true}
       - {name: credential_binding_accuracy, definition: Credential identity and validity are exact, required: true}
       - {name: scope_binding_accuracy, definition: Individual, team, regional, and global scope is exact, required: true}
+      - {name: certainty_binding_accuracy, definition: Achieved, planned, approximate, and exact certainty is preserved, required: true}
     threshold_authority:
       classification: conditionally_release_authoritative
       condition: A binding pass requires complete exact-binding evidence and any human review required by W6.
@@ -124,7 +143,7 @@ gates:
     evaluation_question: Is every material generated claim actually supported by the cited evidence?
     score_groups: [factual_grounding]
     unit_of_analysis: One material claim, including every component of a composite claim.
-    implementation_status: PARTIAL
+    implementation_status: ACTIVE
     required_evidence:
       - type: material_claim_inventory
         requirement: The complete generated-output claim denominator is frozen; runtime support flags are non-authoritative.
@@ -139,6 +158,13 @@ gates:
       - {name: scope_inflation_rate, definition: Material claims whose asserted scope exceeds evidence, required: true}
       - {name: certainty_inflation_rate, definition: Material claims stated more certainly than evidence permits, required: true}
       - {name: composite_claim_full_support_rate, definition: Composite claims for which every component is supported, required: true}
+      - {name: exact_path_accuracy, definition: Material claims use the exact authorized evidence path, required: true}
+      - {name: employer_binding_accuracy, definition: Employer identity is exact for material claims, required: true}
+      - {name: role_binding_accuracy, definition: Role identity is exact for material claims, required: true}
+      - {name: date_binding_accuracy, definition: Dates and intervals are exact for material claims, required: true}
+      - {name: numeric_binding_accuracy, definition: Numeric values and units are exact for material claims, required: true}
+      - {name: credential_binding_accuracy, definition: Credential identity and validity are exact for material claims, required: true}
+      - {name: scope_binding_accuracy, definition: Asserted scope matches evidence for material claims, required: true}
     threshold_authority:
       classification: release_authoritative
       condition: unsupported_material_claim_count must equal zero; missing required evidence is UNKNOWN or FAIL, never PASS.
