@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/apps_rg/repeatability/receipt.v1.schema.json",
+  "title": "Apps RG repeatability receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "gate_id", "score_groups", "evaluation_id", "source_run_set_digest", "scenario_registry_digest", "status", "metrics", "scenario_results", "failure_codes", "unknown_reasons", "authority", "record_digest"],
+  "properties": {
+    "schema_version": {"const": "apps_rg.repeatability_receipt.v1"},
+    "gate_id": {"const": "G5"},
+    "score_groups": {"const": ["runtime_repeatability"]},
+    "evaluation_id": {"type": ["string", "null"]},
+    "source_run_set_digest": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "scenario_registry_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "metrics": {"type": "object"},
+    "scenario_results": {"type": "array", "minItems": 11, "maxItems": 11},
+    "failure_codes": {"type": "array", "items": {"type": "string"}},
+    "unknown_reasons": {"type": "array", "items": {"type": "string"}},
+    "authority": {
+      "type": "object",
+      "required": ["measurement_scope", "runtime_invoked", "promotion_scope", "release_authorizing"],
+      "properties": {
+        "measurement_scope": {"const": "STORED_SEALED_RUNS_ONLY"},
+        "runtime_invoked": {"const": false},
+        "promotion_scope": {"const": "FUTURE_RUNS_ONLY"},
+        "release_authorizing": {"const": false}
+      }
+    },
+    "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,36 @@
+schema_version: apps_rg.critical_grader_cards.v1
+gate_id: G6
+graders:
+  - grader_id: G1_RETRIEVAL
+    clean_control: full finite labelled universe with all relevant evidence inside Top-K
+    controlled_defects: [critical hard negative promoted, relevant evidence outside Top-K]
+    unrelated_grader_isolation: retrieval ranking changes do not modify claim-evidence records
+  - grader_id: G1_SPLIT_LEAKAGE
+    clean_control: distinct calibration and holdout identities
+    controlled_defects: [calibration holdout query or candidate identity overlap]
+    unrelated_grader_isolation: split identity changes are dataset-governance only
+  - grader_id: G2_BINDING
+    clean_control: exact employer role date metric credential scope and certainty bindings
+    controlled_defects: [wrong employer, wrong role, wrong date, changed metric, scope inflation, certainty inflation, credential mismatch]
+    unrelated_grader_isolation: binding is graded before claim entailment
+  - grader_id: G3_GROUNDING
+    clean_control: fully entailed material claim with exact bindings
+    controlled_defects: [unsupported entailment]
+    unrelated_grader_isolation: entailment-only mutation leaves bindings unchanged
+  - grader_id: G3_PROVENANCE
+    clean_control: sealed source identity digest locator and exact graph path
+    controlled_defects: [source removed, sealed digest tampered, wrong graph path]
+    unrelated_grader_isolation: provenance validation precedes semantic grading
+thresholds:
+  critical_grounding_mutation_recall: 1.0
+  critical_provenance_mutation_recall: 1.0
+  clean_control_false_positive_rate_max: 0.05
+  required_gate_unknown_count: 0
+  holdout_leakage_incident_count: 0
+human_calibration:
+  agreement_metrics: [human_grader_agreement, judge_human_agreement, reviewer_agreement_rate, adjudication_overturn_rate]
+  status: NOT_MEASURED
+  threshold_freeze_requires_authorized_pilot: true
+authority:
+  release_authorizing: false
+  promotion_scope: future_runs_only

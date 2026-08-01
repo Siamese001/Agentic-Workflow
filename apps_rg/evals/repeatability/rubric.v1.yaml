@@ -1,0 +1,19 @@
+schema_version: apps_rg.repeatability_rubric.v1
+gate_id: G5
+measurement_scope: stored_sealed_runs_only
+minimum_independent_executions: 3
+independence_rule: execution_receipt_digest must be distinct; copied directories do not create independence
+comparison_rules:
+  evidence: compare retrieved candidate selected evidence and selected graph-path identities
+  claims: compare normalized material claim and section-decision identities, not exact prose
+  bindings: compare employer role date metric credential scope and certainty bindings
+  dispositions: compare claim grounding plus final generate escalate or abstain decisions
+  prose: report wording variation separately and never use exact prose equality as the semantic gate
+failure_rules:
+  - any critical grounding disposition divergence
+  - any final disposition divergence
+  - any mismatch from the scenario's predeclared expected disposition
+authority:
+  runtime_invocation_forbidden: true
+  release_authorizing: false
+  promotion_scope: future_runs_only

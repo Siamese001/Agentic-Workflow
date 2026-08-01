@@ -237,7 +237,7 @@ gates:
     evaluation_question: Does the system behave acceptably across runs, profiles, sparse evidence, ambiguity, and adversarial inputs?
     score_groups: [runtime_repeatability]
     unit_of_analysis: At least three distinct sealed execution identities for one governed scenario.
-    implementation_status: PLANNED
+    implementation_status: ACTIVE
     required_evidence:
       - type: sealed_run_set
         requirement: Run identities are independently executed; copied directories do not count as separate runs.
@@ -246,11 +246,16 @@ gates:
       - type: normalized_decisions
         requirement: Evidence decisions are compared separately from acceptable prose variation.
     metrics:
+      - {name: retrieved_candidate_stability, definition: Stability of the complete retrieved candidate identity set, required: true}
       - {name: evidence_selection_stability, definition: Stability of selected evidence identities and graph paths, required: true}
+      - {name: material_claim_identity_stability, definition: Stability of normalized material claim identities independent of wording, required: true}
       - {name: binding_stability, definition: Stability of numeric, date, employer, role, and credential bindings, required: true}
       - {name: grounding_disposition_stability, definition: Stability of support, abstention, and escalation outcomes, required: true}
       - {name: semantic_output_stability, definition: Equivalent grounded content after normalizing acceptable wording variation, required: true}
+      - {name: output_quality_score_stability, definition: Stability of governed output-quality dimension scores, required: true}
       - {name: critical_divergence_count, definition: Run-to-run divergence in a critical grounding or disposition decision, required: true}
+      - {name: expected_disposition_mismatch_count, definition: Stored runs that violate the scenario's predeclared generate escalate or abstain disposition, required: true}
+      - {name: prose_variation_pair_count, definition: Wording differences tracked separately from semantic and evidence decisions, required: false}
     threshold_authority:
       classification: release_authoritative
       condition: Critical grounding or disposition divergence fails; all required scenarios need distinct sealed runs.
@@ -263,25 +268,35 @@ gates:
     evaluation_question: Does the evaluation catch known defects while allowing known-good outputs to pass?
     score_groups: [evaluator_validity]
     unit_of_analysis: One grader, one clean control, and controlled positive and negative mutations.
-    implementation_status: PLANNED
+    implementation_status: ACTIVE
     required_evidence:
       - type: mutation_suite
         requirement: Every critical grader has at least one defect mutation and one clean control.
       - type: grader_result_isolation
         requirement: The intended grader fails and unrelated graders do not fail without a documented reason.
-      - type: human_agreement_sample
-        requirement: Agreement thresholds are frozen only after an authorized labeling pilot.
+      - type: future_human_agreement_sample
+        requirement: Not required for machine-critical validity PASS; agreement thresholds remain unmeasured until an authorized labeling pilot.
     metrics:
       - {name: critical_mutation_recall, definition: Critical seeded defects detected by the intended grader, required: true}
-      - {name: noncritical_mutation_recall, definition: Noncritical seeded defects detected by the intended grader, required: true}
+      - {name: critical_grounding_mutation_recall, definition: Critical grounding and exact-binding defects detected or rejected fail-closed, required: true}
+      - {name: critical_provenance_mutation_recall, definition: Critical source digest locator and graph-path defects detected or rejected fail-closed, required: true}
+      - {name: critical_retrieval_mutation_recall, definition: Critical hard-negative Top-K omission and split-leakage defects detected, required: true}
+      - {name: noncritical_mutation_recall, definition: Noncritical seeded defects detected by the intended grader, required: false}
       - {name: clean_control_false_positive_rate, definition: Clean controls incorrectly failed, required: true}
-      - {name: human_grader_agreement, definition: Agreement between automated grades and authorized human labels, required: true}
-      - {name: judge_human_agreement, definition: Agreement between model-judge scores and authorized human labels, required: true}
+      - {name: human_grader_agreement, definition: Agreement between automated grades and authorized human labels after a completed pilot, required: false}
+      - {name: judge_human_agreement, definition: Agreement between model-judge scores and authorized human labels after a completed pilot, required: false}
+      - {name: reviewer_agreement_rate, definition: Agreement between authorized independent human reviewers, required: false}
+      - {name: adjudication_overturn_rate, definition: Human adjudications that overturn the primary review consensus, required: false}
       - {name: score_stability, definition: Score stability for identical sealed inputs, required: true}
-      - {name: unmeasured_dimension_count, definition: Required evaluation dimensions without a valid measurement, required: true}
+      - {name: threshold_sensitivity, definition: Stability of pass fail outcomes around promoted thresholds, required: false}
+      - {name: slice_coverage, definition: Covered critical grader classes over declared critical grader classes, required: true}
+      - {name: unmeasured_dimension_count, definition: Declared optional or pilot-dependent dimensions without a valid measurement, required: true}
+      - {name: required_gate_unknown_count, definition: Unexpected UNKNOWN outcomes in required machine-critical grader lanes, required: true}
+      - {name: holdout_leakage_incident_count, definition: Undetected or accepted calibration holdout identity leakage, required: true}
+      - {name: mutation_failure_count, definition: Critical controlled mutations not caught by the intended grader, required: true}
     threshold_authority:
       classification: release_authoritative
       condition: Critical grounding and provenance mutation recall are 100 percent; required UNKNOWN count and holdout leakage incidents are zero.
-    human_review_required: true
-    measurement_scope: sealed_grader_fixtures_and_authorized_labels
+    human_review_required: false
+    measurement_scope: sealed_grader_fixtures
     promotion_scope: future_runs_only

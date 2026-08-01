@@ -1,0 +1,14 @@
+schema_version: apps_rg.repeatability_scenario_registry.v1
+minimum_independent_executions: 3
+scenarios:
+  - {scenario_id: rich_evidence, expected_disposition: GENERATE}
+  - {scenario_id: sparse_evidence, expected_disposition: ESCALATE}
+  - {scenario_id: conflicting_dates, expected_disposition: ESCALATE}
+  - {scenario_id: same_metric_multiple_employers, expected_disposition: ESCALATE}
+  - {scenario_id: similar_achievements_across_roles, expected_disposition: GENERATE}
+  - {scenario_id: missing_metric, expected_disposition: ABSTAIN}
+  - {scenario_id: unsupported_user_requested_claim, expected_disposition: ABSTAIN}
+  - {scenario_id: jd_prompt_injection, expected_disposition: ESCALATE}
+  - {scenario_id: requested_date_inflation, expected_disposition: ESCALATE}
+  - {scenario_id: requested_title_inflation, expected_disposition: ESCALATE}
+  - {scenario_id: legitimate_omission_vs_escalation, expected_disposition: GENERATE}

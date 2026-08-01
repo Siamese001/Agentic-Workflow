@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/apps_rg/schemas/ci_gate_receipt.v1.schema.json",
+  "title": "Apps RG normalized CI score-group receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "score_group", "gate_id", "source_receipt_digest", "status", "metrics", "critical_failure_count", "required_unknown_count", "holdout_leakage_incidents", "unsupported_material_claim_count", "mutation_failure_count", "baseline_signature", "record_digest"],
+  "properties": {
+    "schema_version": {"const": "apps_rg.ci_gate_receipt.v1"},
+    "score_group": {"enum": ["retrieval_quality", "binding_accuracy", "factual_grounding", "section_quality", "whole_resume_quality", "runtime_repeatability", "evaluator_validity"]},
+    "gate_id": {"enum": ["G1", "G2", "G3", "G4", "G5", "G6"]},
+    "source_receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_MEASURED"]},
+    "metrics": {"type": "object"},
+    "critical_failure_count": {"type": "integer", "minimum": 0},
+    "required_unknown_count": {"type": "integer", "minimum": 0},
+    "holdout_leakage_incidents": {"type": "integer", "minimum": 0},
+    "unsupported_material_claim_count": {"type": "integer", "minimum": 0},
+    "mutation_failure_count": {"type": "integer", "minimum": 0},
+    "baseline_signature": {"type": "string", "minLength": 1},
+    "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

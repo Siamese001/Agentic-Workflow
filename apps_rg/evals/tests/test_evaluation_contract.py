@@ -157,6 +157,18 @@ def test_contract_defines_six_independent_gates_and_seven_score_groups() -> None
     assert referenced_groups == set(SCORE_GROUPS)
 
 
+def test_g5_and_machine_critical_g6_are_active_without_inventing_human_pilot_data() -> None:
+    contract = _load_yaml(CONTRACT_PATH)
+    assert contract["gates"]["G5"]["implementation_status"] == "ACTIVE"
+    assert contract["gates"]["G6"]["implementation_status"] == "ACTIVE"
+    g6_metrics = {metric["name"]: metric for metric in contract["gates"]["G6"]["metrics"]}
+    assert g6_metrics["critical_grounding_mutation_recall"]["required"] is True
+    assert g6_metrics["critical_provenance_mutation_recall"]["required"] is True
+    assert g6_metrics["human_grader_agreement"]["required"] is False
+    assert g6_metrics["judge_human_agreement"]["required"] is False
+    assert contract["gates"]["G6"]["human_review_required"] is False
+
+
 def test_state_semantics_fail_closed_and_preserve_missing_distinctions() -> None:
     contract = _load_yaml(CONTRACT_PATH)
 

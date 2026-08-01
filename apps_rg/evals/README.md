@@ -14,8 +14,8 @@ It keeps six evaluation questions independent:
 | G2 - Binding | Was evidence bound to the correct employer, role, date, metric, credential, and graph path? | Active; the claim-evidence API verifies seven exact binding dimensions and graph paths. |
 | G3 - Grounding | Is every material generated claim supported by exact cited evidence? | Active; the material-claim API recomputes support and fails closed on incomplete evidence. |
 | G4 - Output quality | Is the resume relevant, natural, concise, credible, ATS-compatible, and personalized? | Active; five section lanes plus sealed whole-resume and six-pair W9 evaluation are implemented. |
-| G5 - Robustness | Is behavior acceptable across stored runs and difficult evidence scenarios? | Not measured. |
-| G6 - Eval validity | Do the graders catch known defects without rejecting clean controls? | Not measured. |
+| G5 - Robustness | Is behavior acceptable across stored runs and difficult evidence scenarios? | Active; eleven governed scenarios require at least three distinct sealed execution receipts and separate decision stability from prose variation. |
+| G6 - Eval validity | Do the graders catch known defects without rejecting clean controls? | Active for machine-critical G1/G2/G3 graders; authorized human/judge agreement remains explicitly unmeasured pending a real pilot. |
 
 ## Result semantics
 
@@ -54,8 +54,9 @@ This contract is declarative. It does not change the existing W6 authority,
 the six-pair W9 prerequisite contract, current-run release authority, or the
 future-run-only threshold-promotion rule. Model judges remain advisory until
 calibrated against authorized human review. The existing
-`resume_graph_evaluation.py`, `c03_ci_ratchet.py`, and `c03_w9_closeout.py`
-entry points retain their current behavior.
+`resume_graph_evaluation.py` and `c03_w9_closeout.py` entry points retain their
+current behavior. `c03_ci_ratchet.py` retains its legacy JUnit-only API and can
+additionally fail closed over seven normalized sealed score-group receipts.
 
 Schemas:
 
@@ -68,6 +69,9 @@ Schemas:
   bindings. Additional runtime-authored support flags are rejected.
 - [`schemas/retrieval_universe.v1.schema.json`](schemas/retrieval_universe.v1.schema.json)
   freezes one query and every candidate in its finite labelled universe.
+- [`schemas/ci_gate_receipt.v1.schema.json`](schemas/ci_gate_receipt.v1.schema.json)
+  defines the normalized sealed score-group boundary consumed by the CI
+  ratchet.
 
 ## Grounding, binding, and retrieval APIs
 
@@ -104,3 +108,34 @@ below.
 the three governed human no-worse decisions over exactly six blinded W9 pairs.
 Its sealed receipt feeds the existing `c03_w9_closeout.py` prerequisite checker;
 neither component launches the runtime or changes current-run release authority.
+
+## Stored-run robustness
+
+[`repeatability/`](repeatability/) implements G5 over already-completed sealed
+runs. It never launches Apps RG. The governed registry covers rich and sparse
+evidence, ambiguity, binding collisions, unsupported requests, prompt
+injection, inflation requests, and legitimate omission. At least three
+distinct execution identities and receipt digests are required per scenario;
+copying a run directory cannot satisfy independence. Evidence, bindings,
+grounding, dispositions, semantic section decisions, quality scores, and raw
+wording variation are reported separately. Any critical grounding or final
+disposition divergence fails.
+
+## Evaluator validity and CI ratchet
+
+[`meta_eval/`](meta_eval/) implements the machine-critical part of G6 by
+running the real G1/G2/G3 graders against clean controls and controlled defects.
+It covers hard-negative promotion, relevant evidence outside Top-K,
+calibration/holdout leakage, exact-binding mutations, unsupported entailment,
+source removal, digest tampering, and wrong graph paths. Critical grounding and
+provenance mutation recall must be 1.0 and clean-control false-positive rate
+must be at most 0.05. Human-grader, judge-human, reviewer, and adjudication
+agreement remain `null` until an authorized pilot; the receipt cannot freeze
+those thresholds or authorize release.
+
+The optional sealed-receipt mode in `c03_ci_ratchet.py` requires exactly the
+seven named score groups and validates each digest, status, baseline signature,
+and governed failure counter. Missing receipts, invalid digests, required
+`UNKNOWN`, critical regression, unsupported material claims, holdout leakage,
+mutation failures, and unexpected baseline signatures fail the ratchet. This
+is an evaluator-owned aggregation surface only; workflow files are unchanged.

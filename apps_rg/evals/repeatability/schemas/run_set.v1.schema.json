@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentic-workflow.local/apps_rg/repeatability/run_set.v1.schema.json",
+  "title": "Apps RG sealed repeatability run set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evaluation_id", "scenario_registry_digest", "scenarios", "bundle_digest"],
+  "properties": {
+    "schema_version": {"const": "apps_rg.repeatability_run_set.v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "scenario_registry_digest": {"$ref": "#/$defs/digest"},
+    "scenarios": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scenario_id", "runs"],
+        "properties": {
+          "scenario_id": {"type": "string", "minLength": 1},
+          "runs": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/run"}}
+        }
+      }
+    },
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stringArray": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version", "execution_id", "execution_receipt_digest", "independent_execution_attested",
+        "retrieved_candidate_ids", "selected_evidence_ids", "selected_graph_path_ids", "material_claim_ids",
+        "bindings", "section_decisions", "grounding_dispositions", "final_disposition",
+        "output_quality_scores", "output_text_by_section", "record_digest"
+      ],
+      "properties": {
+        "schema_version": {"const": "apps_rg.repeatability_run.v1"},
+        "execution_id": {"type": "string", "minLength": 1},
+        "execution_receipt_digest": {"$ref": "#/$defs/digest"},
+        "independent_execution_attested": {"const": true},
+        "retrieved_candidate_ids": {"$ref": "#/$defs/stringArray"},
+        "selected_evidence_ids": {"$ref": "#/$defs/stringArray"},
+        "selected_graph_path_ids": {"$ref": "#/$defs/stringArray"},
+        "material_claim_ids": {"$ref": "#/$defs/stringArray"},
+        "bindings": {"type": "object"},
+        "section_decisions": {"type": "object"},
+        "grounding_dispositions": {"type": "object"},
+        "final_disposition": {"enum": ["GENERATE", "ESCALATE", "ABSTAIN"]},
+        "output_quality_scores": {"type": "object", "additionalProperties": {"type": "number"}},
+        "output_text_by_section": {"type": "object", "additionalProperties": {"type": "string"}},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
