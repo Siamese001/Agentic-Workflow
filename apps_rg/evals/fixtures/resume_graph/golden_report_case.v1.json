@@ -1,0 +1,765 @@
+{
+  "expected_exports": [
+    "FAIL",
+    "INSUFFICIENT",
+    "PASS",
+    "UNKNOWN",
+    "EvaluationDataError",
+    "IsotonicModel",
+    "brier_score",
+    "build_sanitized_ci_receipt",
+    "canonical_digest",
+    "compute_row_content_digest",
+    "evaluate_file",
+    "evaluate_rows",
+    "expected_calibration_error",
+    "fit_isotonic_pav",
+    "load_jsonl",
+    "ndcg_at_k",
+    "recall_at_k",
+    "reciprocal_rank",
+    "report_digest_is_valid"
+  ],
+  "expected_report": {
+    "calibration": {
+      "active_threshold": null,
+      "apply_split": "proof_split:holdout",
+      "candidate_threshold": {
+        "precision": 1.0,
+        "predicted_positive_count": 1,
+        "recall": 1.0,
+        "selection_split": "proof_split:calibration",
+        "threshold": 0.9,
+        "true_positive_count": 1
+      },
+      "fit_row_count": 2,
+      "fit_sample_count": 2,
+      "fit_split": "proof_split:calibration",
+      "holdout_row_count": 2,
+      "holdout_sample_count": 2,
+      "method": "deterministic_isotonic_pav_v1",
+      "model": {
+        "method": "deterministic_isotonic_pav_v1",
+        "x_values": [
+          -0.2,
+          1.3
+        ],
+        "y_values": [
+          0.0,
+          1.0
+        ]
+      },
+      "status": "FIT_ON_CALIBRATION_APPLIED_TO_HOLDOUT"
+    },
+    "coverage": {
+      "authority_eligible_proof_holdout_identity_count": 2,
+      "metric_binding_holdout_count": 2,
+      "proof_calibration_identity_count": 2,
+      "proof_calibration_row_count": 2,
+      "proof_calibration_split_group_count": 2,
+      "proof_holdout_context_count": 2,
+      "proof_holdout_identity_count": 2,
+      "proof_holdout_row_count": 2,
+      "proof_holdout_split_group_count": 2,
+      "proof_sections_by_split": {
+        "calibration": [
+          "headline"
+        ],
+        "holdout": [
+          "headline"
+        ]
+      },
+      "proof_target_profiles_by_split": {
+        "calibration": [
+          "profile_a"
+        ],
+        "holdout": [
+          "profile_a"
+        ]
+      },
+      "proof_total_split_group_count": 4,
+      "retrieval_calibration_count": 2,
+      "retrieval_holdout_count": 2,
+      "retrieval_sections_by_split": {
+        "calibration": [
+          "headline"
+        ],
+        "holdout": [
+          "headline"
+        ]
+      },
+      "retrieval_target_profiles_by_split": {
+        "calibration": [
+          "profile_a"
+        ],
+        "holdout": [
+          "profile_a"
+        ]
+      },
+      "retrieval_total_count": 4,
+      "sections": [
+        "headline"
+      ],
+      "target_profiles": [
+        "profile_a"
+      ]
+    },
+    "current_run_mutated": false,
+    "dataset": {
+      "calibration_count": 2,
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_version": "v1",
+      "digest": "3121b20c0b46fd4818d1d8a620e0c63d16f21428e823b55f4a8810bbb09d6533",
+      "holdout_count": 2,
+      "sample_count": 4,
+      "source_ref": "fixture://golden"
+    },
+    "deterministic_digest": "1ecf1ee561da3e1df5cbcd02227e1066379741f1aef031bef421830eed9557b7",
+    "evaluation_gate_pass": true,
+    "evaluation_id": "apps_rg::resume_graph_evaluation::test",
+    "evaluation_mode": "ADVISORY_INTERNAL",
+    "evidence_chain": {
+      "completed_validation_digest": null,
+      "export_receipt_sha256": null,
+      "human_review_authority_receipt_sha256": null,
+      "packet_manifest_digest": null,
+      "packet_manifest_sha256": null,
+      "prelabel_packet_manifest_sha256": null
+    },
+    "future_release_candidate_summary": {
+      "activation_status": "UNPROMOTED",
+      "minimum_calibrated_confidence": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "scope": "canonical_visible_unique_proof_identities_at_or_above_candidate_threshold",
+      "support_count": 1
+    },
+    "future_run_only": true,
+    "gate_results": {
+      "authority_eligibility_accuracy_minimum": {
+        "direction": "minimum",
+        "metric": "authority_eligibility_accuracy",
+        "status": "PASS",
+        "threshold": 1.0,
+        "value": 1.0
+      },
+      "brier_maximum": {
+        "direction": "maximum",
+        "metric": "brier",
+        "status": "NOT_GATED",
+        "threshold": null,
+        "value": 0.0
+      },
+      "claim_entailment_accuracy_minimum": {
+        "direction": "minimum",
+        "metric": "claim_entailment_accuracy",
+        "status": "PASS",
+        "threshold": 0.5,
+        "value": 0.5
+      },
+      "ece_maximum": {
+        "direction": "maximum",
+        "metric": "ece",
+        "status": "PASS",
+        "threshold": 0.05,
+        "value": 0.0
+      },
+      "exact_path_accuracy_minimum": {
+        "direction": "minimum",
+        "metric": "exact_path_accuracy",
+        "status": "PASS",
+        "threshold": 1.0,
+        "value": 1.0
+      },
+      "metric_binding_accuracy_minimum": {
+        "direction": "minimum",
+        "metric": "metric_binding_accuracy",
+        "status": "PASS",
+        "threshold": 0.95,
+        "value": 1.0
+      },
+      "mrr_minimum": {
+        "direction": "minimum",
+        "metric": "mrr",
+        "status": "NOT_GATED",
+        "threshold": null,
+        "value": 1.0
+      },
+      "ndcg_at_k_minimum": {
+        "direction": "minimum",
+        "metric": "ndcg_at_k",
+        "status": "PASS",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "proof_confidence_candidate_floor_minimum": {
+        "direction": "minimum",
+        "metric": "proof_confidence_candidate_minimum",
+        "status": "PASS",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "proof_confidence_candidate_precision_minimum": {
+        "direction": "minimum",
+        "metric": "proof_confidence_candidate_precision",
+        "status": "PASS",
+        "threshold": 0.9,
+        "value": 1.0
+      },
+      "proof_confidence_candidate_support_minimum": {
+        "direction": "minimum",
+        "metric": "proof_confidence_candidate_support_count",
+        "status": "PASS",
+        "threshold": 1.0,
+        "value": 1
+      },
+      "recall_at_k_minimum": {
+        "direction": "minimum",
+        "metric": "recall_at_k",
+        "status": "PASS",
+        "threshold": 0.95,
+        "value": 1.0
+      }
+    },
+    "metrics": {
+      "authority_eligibility_accuracy": 1.0,
+      "brier": 0.0,
+      "claim_entailment_accuracy": 0.5,
+      "claim_entailment_labeled_positive_rate": 0.5,
+      "claim_entailment_mean_grade": 2.0,
+      "claim_entailment_precision": 1.0,
+      "claim_entailment_predicted_positive_rate": 0.5,
+      "claim_entailment_prediction_accuracy": 1.0,
+      "claim_entailment_recall": 1.0,
+      "ece": 0.0,
+      "exact_path_accuracy": 1.0,
+      "metric_binding_accuracy": 1.0,
+      "metric_binding_labeled_positive_rate": 1.0,
+      "metric_binding_precision": 1.0,
+      "metric_binding_predicted_positive_rate": 1.0,
+      "metric_binding_prediction_accuracy": 1.0,
+      "metric_binding_recall": 1.0,
+      "mrr": 1.0,
+      "ndcg_at_1": 1.0,
+      "ndcg_at_10": 1.0,
+      "ndcg_at_3": 1.0,
+      "ndcg_at_5": 1.0,
+      "ndcg_at_k": 1.0,
+      "pooled_recall_at_1": 1.0,
+      "pooled_recall_at_10": 1.0,
+      "pooled_recall_at_3": 1.0,
+      "pooled_recall_at_5": 1.0,
+      "proof_confidence_candidate_minimum": 1.0,
+      "proof_confidence_candidate_precision": 1.0,
+      "proof_confidence_candidate_recall": 1.0,
+      "proof_confidence_candidate_support_count": 1,
+      "recall_at_1": 1.0,
+      "recall_at_10": 1.0,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_k": 1.0,
+      "selection_margin_mean": 0.0,
+      "selection_margin_minimum": -0.25,
+      "target_relevance_mean_grade": 3.0
+    },
+    "official_evidence_chain_validated": false,
+    "per_sample_results": [
+      {
+        "authority_eligible": "PASS",
+        "candidate_threshold_prediction": false,
+        "exact_path": true,
+        "ndcg_at_k": 1.0,
+        "proof_confidence_calibrated": 0.0,
+        "proof_label": false,
+        "proof_score_raw": -0.2,
+        "proof_split": "holdout",
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "retrieval_metrics_by_k": {
+          "1": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "10": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "3": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "5": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          }
+        },
+        "retrieval_split": "holdout",
+        "sample_id": "holdout-negative",
+        "section_id": "headline",
+        "split": "holdout",
+        "target_profile_id": "profile_a",
+        "target_relevance_grade": 3
+      },
+      {
+        "authority_eligible": "PASS",
+        "candidate_threshold_prediction": true,
+        "exact_path": true,
+        "ndcg_at_k": 1.0,
+        "proof_confidence_calibrated": 1.0,
+        "proof_label": true,
+        "proof_score_raw": 1.3,
+        "proof_split": "holdout",
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "retrieval_metrics_by_k": {
+          "1": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "10": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "3": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "5": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          }
+        },
+        "retrieval_split": "holdout",
+        "sample_id": "holdout-positive",
+        "section_id": "headline",
+        "split": "holdout",
+        "target_profile_id": "profile_a",
+        "target_relevance_grade": 3
+      }
+    ],
+    "policy_activation_status": "UNPROMOTED",
+    "policy_version": "test_candidate_v1",
+    "profile_digest": "5fcd7bf7a8d8cbca155d791ed7ccbfe761bff5f2b5a5f485503ead50f9d60369",
+    "promotion_blockers": [
+      "candidate policy is UNPROMOTED",
+      "active proof-confidence threshold is unset",
+      "human approval is required before a future-run-only activation"
+    ],
+    "promotion_eligible": false,
+    "reasons": [
+      "EVALUATION_TARGETS_PASS; POLICY_REMAINS_UNPROMOTED"
+    ],
+    "retrieval_contract": {
+      "allocator_candidate_budget": 64,
+      "frontier_k": 2,
+      "gate_k": 10,
+      "k_values": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "maximum_selected_audit_extras": 1,
+      "recall_definition": "micro_pooled_top_k_relevant_hits_over_all_relevant_candidates_in_the_complete_bounded_finite_universe",
+      "release_aliases": {
+        "ndcg_at_k": "ndcg_at_10",
+        "recall_at_k": "pooled_recall_at_10"
+      },
+      "relevance_positive_floor": 2.0
+    },
+    "retrieval_sample_results": [
+      {
+        "ndcg_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "retrieval_metrics_by_k": {
+          "1": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "10": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "3": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "5": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          }
+        },
+        "retrieval_split": "holdout",
+        "sample_id": "holdout-negative",
+        "section_id": "headline",
+        "target_profile_id": "profile_a"
+      },
+      {
+        "ndcg_at_k": 1.0,
+        "recall_at_k": 1.0,
+        "reciprocal_rank": 1.0,
+        "retrieval_metrics_by_k": {
+          "1": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "10": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "3": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          },
+          "5": {
+            "ndcg": 1.0,
+            "recall": 1.0
+          }
+        },
+        "retrieval_split": "holdout",
+        "sample_id": "holdout-positive",
+        "section_id": "headline",
+        "target_profile_id": "profile_a"
+      }
+    ],
+    "schema_version": "apps_rg.resume_graph_w6_evaluation.v1",
+    "status": "PASS",
+    "target_alignment_authoritative": false,
+    "target_relevance_summary": {
+      "authoritative": false,
+      "grade_distribution": {
+        "0": 0,
+        "1": 0,
+        "2": 0,
+        "3": 2
+      },
+      "mean_grade": 3.0
+    },
+    "unknown_is_pass": false
+  },
+  "expected_signatures": {
+    "brier_score": "(probabilities: 'Sequence[float]', labels: 'Sequence[bool]') -> 'float'",
+    "build_sanitized_ci_receipt": "(report: 'Mapping[str, Any]', *, protected_full_report_sha256: 'str') -> 'dict[str, Any]'",
+    "canonical_digest": "(value: 'Any') -> 'str'",
+    "compute_row_content_digest": "(row: 'Mapping[str, Any]') -> 'str'",
+    "evaluate_file": "(dataset_path: 'Path', profile: 'Mapping[str, Any]', *, source_ref: 'str | None' = None, export_receipt_path: 'Path | None' = None, trusted_export_receipt_sha256: 'str | None' = None, trusted_prelabel_packet_manifest_sha256: 'str | None' = None, human_review_authority_receipt_path: 'Path | None' = None, trusted_human_review_authority_receipt_sha256: 'str | None' = None, packet_dir: 'Path | None' = None, labels_dir: 'Path | None' = None) -> 'dict[str, Any]'",
+    "evaluate_rows": "(rows: 'Sequence[Mapping[str, Any]]', profile: 'Mapping[str, Any]', *, source_ref: 'str' = 'memory', allow_internal_rows: 'bool' = False) -> 'dict[str, Any]'",
+    "expected_calibration_error": "(probabilities: 'Sequence[float]', labels: 'Sequence[bool]', *, n_bins: 'int' = 10) -> 'float'",
+    "fit_isotonic_pav": "(scores: 'Sequence[float]', labels: 'Sequence[bool]') -> 'IsotonicModel'",
+    "load_jsonl": "(path: 'Path') -> 'list[dict[str, Any]]'",
+    "ndcg_at_k": "(ranked_ids: 'Sequence[str]', relevance: 'Mapping[str, float]', k: 'int', *, ranks: 'Sequence[int] | None' = None) -> 'float'",
+    "recall_at_k": "(ranked_ids: 'Sequence[str]', relevance: 'Mapping[str, float]', k: 'int', *, positive_floor: 'float' = 1.0) -> 'float'",
+    "reciprocal_rank": "(ranked_ids: 'Sequence[str]', relevance: 'Mapping[str, float]', *, positive_floor: 'float' = 1.0, ranks: 'Sequence[int] | None' = None) -> 'float'",
+    "report_digest_is_valid": "(report: 'Mapping[str, Any]') -> 'bool'"
+  },
+  "profile": {
+    "app_id": "apps_rg",
+    "calibration": {
+      "activation_status": "UNPROMOTED",
+      "active_threshold": null,
+      "ece_bins": 10,
+      "future_run_only": true,
+      "method": "deterministic_isotonic_pav_v1",
+      "minimum_candidate_threshold": 0.9,
+      "minimum_predicted_positive_count": 1,
+      "threshold_precision_floor": 0.9
+    },
+    "dataset": {
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_path": "missing.jsonl",
+      "dataset_version": "v1",
+      "minimum_calibration_samples": 2,
+      "minimum_holdout_samples": 2,
+      "minimum_metric_binding_samples": 1,
+      "minimum_total_samples": 4,
+      "proof_split_policy_id": "c03-proof-binding-group-stratified-sha256-v2",
+      "require_adjudication_receipt": true,
+      "require_both_proof_labels_per_split": true,
+      "require_leakage_check_pass": true,
+      "require_two_reviewers": true,
+      "required_label_source": "human_semantic_review",
+      "required_sections": [
+        "headline"
+      ],
+      "required_target_profiles": [
+        "profile_a"
+      ],
+      "row_schema_version": "apps_rg.resume_graph_evaluation_row.v1"
+    },
+    "output": {
+      "artifact_path": "receipt.json",
+      "artifact_schema_version": "apps_rg.resume_graph_w6_evaluation.v1",
+      "ci_receipt_schema_version": "apps_rg.resume_graph_w6_ci_receipt.v1",
+      "protected_artifact_path": "protected-full-report.json"
+    },
+    "policy_version": "test_candidate_v1",
+    "profile_id": "apps_rg::resume_graph_evaluation::test",
+    "release_targets": {
+      "authority_eligibility_accuracy_minimum": 1.0,
+      "brier_maximum": null,
+      "claim_entailment_accuracy_minimum": 0.5,
+      "ece_maximum": 0.05,
+      "exact_path_accuracy_minimum": 1.0,
+      "metric_binding_accuracy_minimum": 0.95,
+      "mrr_minimum": null,
+      "ndcg_at_k_minimum": 0.9,
+      "proof_confidence_candidate_floor_minimum": 0.9,
+      "proof_confidence_candidate_precision_minimum": 0.9,
+      "proof_confidence_candidate_support_minimum": 1,
+      "recall_at_k_minimum": 0.95
+    },
+    "retrieval": {
+      "allocator_candidate_budget": 64,
+      "frontier_k": 2,
+      "gate_k": 10,
+      "k_values": [
+        1,
+        3,
+        5,
+        10
+      ],
+      "maximum_selected_audit_extras": 1,
+      "ndcg_gain": "exponential",
+      "primary_k": 10,
+      "recall_definition": "micro_pooled_top_k_relevant_hits_over_all_relevant_candidates_in_the_complete_bounded_finite_universe",
+      "relevance_grade_maximum": 3.0,
+      "relevance_grade_minimum": 0.0,
+      "relevance_positive_floor": 2.0
+    },
+    "schema_version": "apps_rg.resume_graph_evaluation_profile.v1",
+    "status": "candidate_unpromoted"
+  },
+  "rows": [
+    {
+      "adjudication_ref": "adjudication::calibration-negative",
+      "allocation_plan_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "authority_eligible": "PASS",
+      "claim_entailment_grade": 1,
+      "claim_entailment_label": false,
+      "claim_entailment_prediction": false,
+      "claim_unit_id": "claim::calibration-negative",
+      "content_digest": "295998c929d3a75248a3f453a6ff0c88f7552ad504a662db864e06478b89098c",
+      "created_at": "2026-07-13T12:00:00Z",
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_version": "v1",
+      "gold_path_ids": [
+        "root",
+        "skill::calibration-negative",
+        "fact::calibration-negative"
+      ],
+      "graph_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "label_policy": "human-proof-v1",
+      "label_source": "human_semantic_review",
+      "leakage_check_ref": "leakage::calibration-negative",
+      "leakage_check_status": "PASS",
+      "metric_applicable": true,
+      "metric_binding_disposition": "EXACT",
+      "metric_binding_label": true,
+      "metric_binding_prediction": true,
+      "path_accuracy_label": true,
+      "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "predicted_path_ids": [
+        "root",
+        "skill::calibration-negative",
+        "fact::calibration-negative"
+      ],
+      "proof_label": false,
+      "proof_score_raw": -0.2,
+      "ranked_candidate_ids": [
+        "candidate_relevant",
+        "candidate_other"
+      ],
+      "relevance_labels": {
+        "candidate_other": 0,
+        "candidate_relevant": 3
+      },
+      "representation_mode": "CANONICAL_VISIBLE",
+      "reviewer_refs": [
+        "review::calibration-negative::a",
+        "review::calibration-negative::b"
+      ],
+      "sample_id": "calibration-negative",
+      "schema_version": "apps_rg.resume_graph_evaluation_row.v1",
+      "section_id": "headline",
+      "selected_candidate_id": "candidate_relevant",
+      "selection_margin": -0.25,
+      "split": "calibration",
+      "target_profile_id": "profile_a",
+      "target_relevance_grade": 3
+    },
+    {
+      "adjudication_ref": "adjudication::calibration-positive",
+      "allocation_plan_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "authority_eligible": "PASS",
+      "claim_entailment_grade": 3,
+      "claim_entailment_label": true,
+      "claim_entailment_prediction": true,
+      "claim_unit_id": "claim::calibration-positive",
+      "content_digest": "9ed28528465878c50c6585107fbe998ad027cd2f251ae9c359ec0040ac2c9323",
+      "created_at": "2026-07-13T12:00:00Z",
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_version": "v1",
+      "gold_path_ids": [
+        "root",
+        "skill::calibration-positive",
+        "fact::calibration-positive"
+      ],
+      "graph_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "label_policy": "human-proof-v1",
+      "label_source": "human_semantic_review",
+      "leakage_check_ref": "leakage::calibration-positive",
+      "leakage_check_status": "PASS",
+      "metric_applicable": true,
+      "metric_binding_disposition": "EXACT",
+      "metric_binding_label": true,
+      "metric_binding_prediction": true,
+      "path_accuracy_label": true,
+      "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "predicted_path_ids": [
+        "root",
+        "skill::calibration-positive",
+        "fact::calibration-positive"
+      ],
+      "proof_label": true,
+      "proof_score_raw": 1.3,
+      "ranked_candidate_ids": [
+        "candidate_relevant",
+        "candidate_other"
+      ],
+      "relevance_labels": {
+        "candidate_other": 0,
+        "candidate_relevant": 3
+      },
+      "representation_mode": "CANONICAL_VISIBLE",
+      "reviewer_refs": [
+        "review::calibration-positive::a",
+        "review::calibration-positive::b"
+      ],
+      "sample_id": "calibration-positive",
+      "schema_version": "apps_rg.resume_graph_evaluation_row.v1",
+      "section_id": "headline",
+      "selected_candidate_id": "candidate_relevant",
+      "selection_margin": 0.25,
+      "split": "calibration",
+      "target_profile_id": "profile_a",
+      "target_relevance_grade": 3
+    },
+    {
+      "adjudication_ref": "adjudication::holdout-negative",
+      "allocation_plan_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "authority_eligible": "PASS",
+      "claim_entailment_grade": 1,
+      "claim_entailment_label": false,
+      "claim_entailment_prediction": false,
+      "claim_unit_id": "claim::holdout-negative",
+      "content_digest": "be8e861669799730f0ae591ad9d85bb50eaeef48eee7bac928fbc738e3182f38",
+      "created_at": "2026-07-13T12:00:00Z",
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_version": "v1",
+      "gold_path_ids": [
+        "root",
+        "skill::holdout-negative",
+        "fact::holdout-negative"
+      ],
+      "graph_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "label_policy": "human-proof-v1",
+      "label_source": "human_semantic_review",
+      "leakage_check_ref": "leakage::holdout-negative",
+      "leakage_check_status": "PASS",
+      "metric_applicable": true,
+      "metric_binding_disposition": "EXACT",
+      "metric_binding_label": true,
+      "metric_binding_prediction": true,
+      "path_accuracy_label": true,
+      "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "predicted_path_ids": [
+        "root",
+        "skill::holdout-negative",
+        "fact::holdout-negative"
+      ],
+      "proof_label": false,
+      "proof_score_raw": -0.2,
+      "ranked_candidate_ids": [
+        "candidate_relevant",
+        "candidate_other"
+      ],
+      "relevance_labels": {
+        "candidate_other": 0,
+        "candidate_relevant": 3
+      },
+      "representation_mode": "CANONICAL_VISIBLE",
+      "reviewer_refs": [
+        "review::holdout-negative::a",
+        "review::holdout-negative::b"
+      ],
+      "sample_id": "holdout-negative",
+      "schema_version": "apps_rg.resume_graph_evaluation_row.v1",
+      "section_id": "headline",
+      "selected_candidate_id": "candidate_relevant",
+      "selection_margin": -0.25,
+      "split": "holdout",
+      "target_profile_id": "profile_a",
+      "target_relevance_grade": 3
+    },
+    {
+      "adjudication_ref": "adjudication::holdout-positive",
+      "allocation_plan_digest": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "authority_eligible": "PASS",
+      "claim_entailment_grade": 3,
+      "claim_entailment_label": true,
+      "claim_entailment_prediction": true,
+      "claim_unit_id": "claim::holdout-positive",
+      "content_digest": "b58ab24b784513d994645954eb28d805ea007591123247122eaf2ab7f9f6b619",
+      "created_at": "2026-07-13T12:00:00Z",
+      "dataset_id": "apps_rg_c03_resume_graph_proof",
+      "dataset_version": "v1",
+      "gold_path_ids": [
+        "root",
+        "skill::holdout-positive",
+        "fact::holdout-positive"
+      ],
+      "graph_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "label_policy": "human-proof-v1",
+      "label_source": "human_semantic_review",
+      "leakage_check_ref": "leakage::holdout-positive",
+      "leakage_check_status": "PASS",
+      "metric_applicable": true,
+      "metric_binding_disposition": "EXACT",
+      "metric_binding_label": true,
+      "metric_binding_prediction": true,
+      "path_accuracy_label": true,
+      "policy_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "predicted_path_ids": [
+        "root",
+        "skill::holdout-positive",
+        "fact::holdout-positive"
+      ],
+      "proof_label": true,
+      "proof_score_raw": 1.3,
+      "ranked_candidate_ids": [
+        "candidate_relevant",
+        "candidate_other"
+      ],
+      "relevance_labels": {
+        "candidate_other": 0,
+        "candidate_relevant": 3
+      },
+      "representation_mode": "CANONICAL_VISIBLE",
+      "reviewer_refs": [
+        "review::holdout-positive::a",
+        "review::holdout-positive::b"
+      ],
+      "sample_id": "holdout-positive",
+      "schema_version": "apps_rg.resume_graph_evaluation_row.v1",
+      "section_id": "headline",
+      "selected_candidate_id": "candidate_relevant",
+      "selection_margin": 0.25,
+      "split": "holdout",
+      "target_profile_id": "profile_a",
+      "target_relevance_grade": 3
+    }
+  ],
+  "schema_version": "apps_rg.resume_graph_golden_case.v1",
+  "source_ref": "fixture://golden"
+}
