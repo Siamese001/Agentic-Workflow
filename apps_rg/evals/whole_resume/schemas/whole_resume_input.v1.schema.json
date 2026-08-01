@@ -1,0 +1,215 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.whole_resume_input.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "evaluation_id", "official_w6_status",
+    "generation_authorized", "human_review_evidence", "pairs", "bundle_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.whole_resume_input.v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "official_w6_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "generation_authorized": {"type": "boolean"},
+    "human_review_evidence": {"$ref": "#/$defs/human_review_evidence"},
+    "pairs": {"type": "array", "items": {"$ref": "#/$defs/pair"}},
+    "bundle_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "human_review_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "official_pass", "require_w9", "completed_validation_digest",
+        "authority_receipt_digest", "w9_review_bundle_digest", "record_digest"
+      ],
+      "properties": {
+        "status": {"enum": ["PASS", "PASS_TEST_ONLY", "FAIL", "UNKNOWN"]},
+        "official_pass": {"type": "boolean"},
+        "require_w9": {"type": "boolean"},
+        "completed_validation_digest": {"$ref": "#/$defs/digest"},
+        "authority_receipt_digest": {"$ref": "#/$defs/digest"},
+        "w9_review_bundle_digest": {"$ref": "#/$defs/digest"},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "target_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["jd_text", "jd_concepts", "relevant_achievement_ids"],
+      "properties": {
+        "jd_text": {"type": "string", "minLength": 1},
+        "jd_concepts": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["concept_id", "text"],
+            "properties": {
+              "concept_id": {"type": "string", "minLength": 1},
+              "text": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "relevant_achievement_ids": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "fact_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["key", "value", "critical"],
+      "properties": {
+        "key": {"type": "string", "minLength": 1},
+        "value": {"type": "string", "minLength": 1},
+        "critical": {"type": "boolean"}
+      }
+    },
+    "claim": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "claim_id", "section_id", "text", "material", "grounding_status",
+        "evidence_refs", "jd_concept_ids", "fact_bindings"
+      ],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "section_id": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "material": {"type": "boolean"},
+        "grounding_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "employment_id": {"type": ["string", "null"]},
+        "employer_id": {"type": ["string", "null"]},
+        "title_id": {"type": ["string", "null"]},
+        "achievement_id": {"type": ["string", "null"]},
+        "jd_concept_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "fact_bindings": {"type": "array", "items": {"$ref": "#/$defs/fact_binding"}}
+      }
+    },
+    "section": {
+      "type": "object", "additionalProperties": false,
+      "required": ["section_id", "text", "claims"],
+      "properties": {
+        "section_id": {"type": "string", "minLength": 1},
+        "text": {"type": "string", "minLength": 1},
+        "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}}
+      }
+    },
+    "employment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["employment_id", "employer_id", "title_id", "start_date", "end_date"],
+      "properties": {
+        "employment_id": {"type": "string", "minLength": 1},
+        "employer_id": {"type": "string", "minLength": 1},
+        "title_id": {"type": "string", "minLength": 1},
+        "start_date": {"type": "string", "format": "date"},
+        "end_date": {"type": ["string", "null"], "format": "date"}
+      }
+    },
+    "resume": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_id", "content", "sections", "employment"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "content": {"type": "string", "minLength": 1},
+        "sections": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/section"}},
+        "employment": {"type": "array", "items": {"$ref": "#/$defs/employment"}}
+      }
+    },
+    "dimensions": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "target_relevance", "claim_naturalness", "executive_readability",
+        "ats_keyword_coverage", "authenticity_factuality", "concision",
+        "hiring_manager_usefulness"
+      ],
+      "properties": {
+        "target_relevance": {"type": "integer", "minimum": 1, "maximum": 5},
+        "claim_naturalness": {"type": "integer", "minimum": 1, "maximum": 5},
+        "executive_readability": {"type": "integer", "minimum": 1, "maximum": 5},
+        "ats_keyword_coverage": {"type": "integer", "minimum": 1, "maximum": 5},
+        "authenticity_factuality": {"type": "integer", "minimum": 1, "maximum": 5},
+        "concision": {"type": "integer", "minimum": 1, "maximum": 5},
+        "hiring_manager_usefulness": {"type": "integer", "minimum": 1, "maximum": 5}
+      }
+    },
+    "labels": {
+      "type": "object", "additionalProperties": false,
+      "required": ["resume_a", "resume_b", "preference"],
+      "properties": {
+        "resume_a": {"$ref": "#/$defs/dimensions"},
+        "resume_b": {"$ref": "#/$defs/dimensions"},
+        "preference": {"enum": ["A", "B", "TIE"]}
+      }
+    },
+    "review": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "review_id", "reviewer_identity_ref", "qualification_ref",
+        "independent_review", "blinded_payload_digest", "rubric_digest",
+        "labels", "record_digest"
+      ],
+      "properties": {
+        "review_id": {"type": "string", "minLength": 1},
+        "reviewer_identity_ref": {"type": "string", "pattern": "^human-reviewer://"},
+        "qualification_ref": {"type": "string", "pattern": "^resume-coach://"},
+        "independent_review": {"const": true},
+        "blinded_payload_digest": {"$ref": "#/$defs/digest"},
+        "rubric_digest": {"$ref": "#/$defs/digest"},
+        "labels": {"$ref": "#/$defs/labels"},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "adjudication": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "adjudication_id", "status", "review_refs", "review_digests",
+        "final_labels", "record_digest"
+      ],
+      "properties": {
+        "adjudication_id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["CONSENSUS_ACCEPTED", "ADJUDICATED"]},
+        "review_refs": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+        "review_digests": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/digest"}},
+        "final_labels": {"$ref": "#/$defs/labels"},
+        "adjudicator_identity_ref": {"type": "string", "pattern": "^human-reviewer://"},
+        "qualification_ref": {"type": "string", "pattern": "^resume-coach://"},
+        "human_attestation": {"type": "boolean"},
+        "record_digest": {"$ref": "#/$defs/digest"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "ADJUDICATED"}}, "required": ["status"]},
+          "then": {
+            "required": ["adjudicator_identity_ref", "qualification_ref", "human_attestation"],
+            "properties": {"human_attestation": {"const": true}}
+          }
+        }
+      ]
+    },
+    "pair": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "pair_id", "target_profile_id", "variant_identity_hidden",
+        "candidate_variant", "target_context", "resume_a", "resume_b",
+        "rubric_id", "rubric_digest", "pair_payload_digest", "reviews", "adjudication"
+      ],
+      "properties": {
+        "pair_id": {"type": "string", "minLength": 1},
+        "target_profile_id": {"type": "string", "minLength": 1},
+        "variant_identity_hidden": {"const": true},
+        "candidate_variant": {"enum": ["A", "B"]},
+        "target_context": {"$ref": "#/$defs/target_context"},
+        "resume_a": {"$ref": "#/$defs/resume"},
+        "resume_b": {"$ref": "#/$defs/resume"},
+        "rubric_id": {"const": "apps_rg-whole-resume-quality-v1"},
+        "rubric_digest": {"$ref": "#/$defs/digest"},
+        "pair_payload_digest": {"$ref": "#/$defs/digest"},
+        "reviews": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/review"}},
+        "adjudication": {"$ref": "#/$defs/adjudication"}
+      }
+    }
+  }
+}

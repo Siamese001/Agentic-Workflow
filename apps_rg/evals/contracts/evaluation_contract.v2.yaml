@@ -177,7 +177,7 @@ gates:
     evaluation_question: Is the resume relevant, natural, concise, credible, ATS-compatible, and properly personalized?
     score_groups: [section_quality, whole_resume_quality]
     unit_of_analysis: One section and one complete resume, with absolute and blinded pairwise judgments kept distinct.
-    implementation_status: PARTIAL
+    implementation_status: ACTIVE
     required_evidence:
       - type: frozen_resume_output
         requirement: Candidate and baseline sections or resumes are immutable and blinded for pairwise review.
@@ -203,6 +203,28 @@ gates:
       - {name: candidate_preference_rate, definition: Authorized pairwise preference for candidate over baseline, required: true}
       - {name: no_worse_rate, definition: Pairwise reviews with no dimension materially worse than baseline, required: true}
       - {name: critical_cross_section_inconsistency_count, definition: Contradictory dates, roles, employers, or claims across sections, required: true}
+      - {name: material_claim_grounding_rate, definition: Material whole-resume claims with exact PASS grounding over all material claims, required: true}
+      - {name: chronology_inconsistency_count, definition: Employment rows with invalid or reversed chronology, required: true}
+      - {name: employer_title_inconsistency_count, definition: Material claims whose employer or title differs from the referenced employment identity, required: true}
+      - {name: duplicate_achievement_rate, definition: Repeated achievement identities beyond their first whole-resume use, required: true}
+      - {name: summary_experience_repetition_rate, definition: Exact normalized summary claims repeated in experience sections, required: true}
+      - {name: jd_concept_coverage, definition: Governed target concepts represented by material claims, required: true}
+      - {name: relevant_achievement_coverage, definition: Governed relevant achievements represented in the resume, required: true}
+      - {name: section_balance_score, definition: Smallest nonempty section word count divided by the largest, required: true}
+      - {name: resume_word_count, definition: Whole-resume word count across sealed sections, required: true}
+      - {name: claim_density_per_100_words, definition: Material claim count per one hundred resume words, required: true}
+      - {name: ats_structure_pass, definition: Required unique sections and an experience lane are present without tabular separators, required: true}
+      - {name: narrative_coherence, definition: Adjudicated executive readability for the candidate as the governed narrative-coherence proxy, required: true}
+      - {name: evidence_backed_personalization, definition: Covered target concepts supported by grounded cited claims, required: true}
+      - {name: jd_parroting_risk_count, definition: Material claims copying an eight-token target-description phrase, required: true}
+      - {name: unnatural_keyword_insertion_count, definition: Target concepts repeated more than twice within a section, required: true}
+      - {name: unsupported_leadership_inflation_count, definition: Ungrounded leadership language in material claims, required: true}
+      - {name: unsupported_scope_inflation_count, definition: Ungrounded scope language in material claims, required: true}
+      - {name: human_grounding_no_worse_rate, definition: W9 pairs whose adjudicated authenticity and factuality score is no worse for the candidate, required: true}
+      - {name: human_naturalness_no_worse_rate, definition: W9 pairs whose adjudicated claim naturalness score is no worse for the candidate, required: true}
+      - {name: human_relevance_no_worse_rate, definition: W9 pairs whose adjudicated target relevance score is no worse for the candidate, required: true}
+      - {name: material_defect_count, definition: Distinct deterministic or human no-worse defects across authorized W9 pairs, required: true}
+      - {name: reviewer_agreement_rate, definition: Exact agreement across blinded reviewer dimension scores and pair preference, required: true}
     threshold_authority:
       classification: conditionally_release_authoritative
       condition: Requires implemented lane coverage, no-worse human judgments, W6 PASS, and the existing six-pair W9 contract.

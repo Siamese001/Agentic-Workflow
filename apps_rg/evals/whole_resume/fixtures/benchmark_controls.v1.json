@@ -1,0 +1,28 @@
+{
+  "schema_version": "apps_rg.whole_resume_controls.v1",
+  "classification": "SYNTHETIC_TEST_ONLY",
+  "authorized_pair_count": 6,
+  "control_expectation": {
+    "status": "PASS",
+    "whole_resume_release_pass": true,
+    "material_defect_count": 0
+  },
+  "mutations": [
+    {"id": "material-grounding-fail", "expected_status": "FAIL", "failure_code": "MATERIAL_CLAIM_GROUNDING_NONPASS"},
+    {"id": "critical-fact-conflict", "expected_status": "FAIL", "failure_code": "CRITICAL_CROSS_SECTION_INCONSISTENCY"},
+    {"id": "chronology-reversal", "expected_status": "FAIL", "failure_code": "CHRONOLOGY_INCONSISTENCY"},
+    {"id": "employer-title-drift", "expected_status": "FAIL", "failure_code": "EMPLOYER_TITLE_INCONSISTENCY"},
+    {"id": "duplicate-achievement", "expected_status": "FAIL", "failure_code": "DUPLICATE_ACHIEVEMENT"},
+    {"id": "summary-experience-repetition", "expected_status": "FAIL", "failure_code": "SUMMARY_EXPERIENCE_REPETITION"},
+    {"id": "grounding-regression", "expected_status": "FAIL", "failure_code": "HUMAN_GROUNDING_REGRESSION"},
+    {"id": "naturalness-regression", "expected_status": "FAIL", "failure_code": "HUMAN_NATURALNESS_REGRESSION"},
+    {"id": "relevance-regression", "expected_status": "FAIL", "failure_code": "HUMAN_RELEVANCE_REGRESSION"},
+    {"id": "tampered-binding", "expected_status": "UNKNOWN", "failure_code": null}
+  ],
+  "authority": {
+    "production_labels": false,
+    "calibration_evidence": false,
+    "release_authority": false,
+    "current_run_mutation": false
+  }
+}

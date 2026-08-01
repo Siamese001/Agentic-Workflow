@@ -1,0 +1,40 @@
+schema_version: apps_rg.whole_resume_rubric.v1
+rubric_id: apps_rg-whole-resume-quality-v1
+scope: sealed_completed_artifacts
+pair_contract:
+  authorized_pair_count: 6
+  independent_qualified_resume_coaches_per_pair: 2
+  adjudications_per_pair: 1
+  variant_identity_visible_to_reviewers: false
+human_dimensions:
+  - target_relevance
+  - claim_naturalness
+  - executive_readability
+  - ats_keyword_coverage
+  - authenticity_factuality
+  - concision
+  - hiring_manager_usefulness
+release_requirements:
+  official_w6_status: PASS
+  material_claim_grounding_rate: 1.0
+  critical_cross_section_inconsistency_count: 0
+  chronology_inconsistency_count: 0
+  employer_title_inconsistency_count: 0
+  duplicate_achievement_rate: 0.0
+  summary_experience_repetition_rate: 0.0
+  ats_structure_pass: true
+  jd_parroting_risk_count: 0
+  unnatural_keyword_insertion_count: 0
+  unsupported_leadership_inflation_count: 0
+  unsupported_scope_inflation_count: 0
+  human_grounding_no_worse_rate: 1.0
+  human_naturalness_no_worse_rate: 1.0
+  human_relevance_no_worse_rate: 1.0
+authority:
+  completed_authorized_human_review_required: true
+  model_judges_allowed: false
+  current_run_release_authority_unchanged: true
+  receipt_release_authorizing_by_itself: false
+  feeds_w9_closeout: true
+  promotion_scope: future_runs_only
+  unknown_is_pass: false

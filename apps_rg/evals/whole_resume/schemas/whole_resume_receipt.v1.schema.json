@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "apps_rg.whole_resume_evaluation_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "evaluation_id", "input_bundle_digest", "pair_ids",
+    "pair_set_digest", "pair_count", "human_review_count", "adjudication_count",
+    "official_w6_status", "status", "whole_resume_release_pass", "metrics",
+    "pair_results", "authority", "failure_codes", "unknown_reasons", "record_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.whole_resume_evaluation_receipt.v1"},
+    "evaluation_id": {"type": "string", "minLength": 1},
+    "input_bundle_digest": {"type": "string"},
+    "human_review_evidence_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pair_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "pair_set_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "pair_count": {"type": "integer", "minimum": 0},
+    "human_review_count": {"type": "integer", "minimum": 0},
+    "adjudication_count": {"type": "integer", "minimum": 0},
+    "official_w6_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+    "whole_resume_release_pass": {"type": "boolean"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "material_claim_grounding_rate", "critical_cross_section_inconsistency_count",
+        "chronology_inconsistency_count", "employer_title_inconsistency_count",
+        "duplicate_achievement_rate", "summary_experience_repetition_rate",
+        "jd_concept_coverage", "relevant_achievement_coverage", "section_balance_score",
+        "resume_word_count", "claim_density_per_100_words", "ats_structure_pass",
+        "narrative_coherence", "evidence_backed_personalization",
+        "jd_parroting_risk_count", "unnatural_keyword_insertion_count",
+        "unsupported_leadership_inflation_count", "unsupported_scope_inflation_count",
+        "human_grounding_no_worse_rate", "human_naturalness_no_worse_rate",
+        "human_relevance_no_worse_rate", "candidate_preference_rate",
+        "material_defect_count", "reviewer_agreement_rate"
+      ],
+      "properties": {
+        "material_claim_grounding_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "critical_cross_section_inconsistency_count": {"type": ["integer", "null"], "minimum": 0},
+        "chronology_inconsistency_count": {"type": ["integer", "null"], "minimum": 0},
+        "employer_title_inconsistency_count": {"type": ["integer", "null"], "minimum": 0},
+        "duplicate_achievement_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "summary_experience_repetition_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "jd_concept_coverage": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "relevant_achievement_coverage": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "section_balance_score": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "resume_word_count": {"type": ["number", "null"], "minimum": 0},
+        "claim_density_per_100_words": {"type": ["number", "null"], "minimum": 0},
+        "ats_structure_pass": {"type": ["boolean", "null"]},
+        "narrative_coherence": {"type": ["number", "null"], "minimum": 1, "maximum": 5},
+        "evidence_backed_personalization": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "jd_parroting_risk_count": {"type": ["integer", "null"], "minimum": 0},
+        "unnatural_keyword_insertion_count": {"type": ["integer", "null"], "minimum": 0},
+        "unsupported_leadership_inflation_count": {"type": ["integer", "null"], "minimum": 0},
+        "unsupported_scope_inflation_count": {"type": ["integer", "null"], "minimum": 0},
+        "human_grounding_no_worse_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "human_naturalness_no_worse_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "human_relevance_no_worse_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "candidate_preference_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "material_defect_count": {"type": ["integer", "null"], "minimum": 0},
+        "reviewer_agreement_rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+      }
+    },
+    "pair_results": {"type": "array", "items": {"type": "object"}},
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "classification", "human_review_required", "human_review_satisfied",
+        "release_authorizing", "feeds_w9_closeout", "promotion_scope",
+        "current_run_authority_unchanged"
+      ],
+      "properties": {
+        "classification": {"const": "CONDITIONALLY_RELEASE_AUTHORITATIVE"},
+        "human_review_required": {"const": true},
+        "human_review_satisfied": {"type": "boolean"},
+        "release_authorizing": {"const": false},
+        "feeds_w9_closeout": {"const": true},
+        "promotion_scope": {"const": "future_runs_only"},
+        "current_run_authority_unchanged": {"const": true}
+      }
+    },
+    "failure_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "unknown_reasons": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "record_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "PASS"}}, "required": ["status"]},
+      "then": {
+        "properties": {
+          "whole_resume_release_pass": {"const": true},
+          "pair_count": {"const": 6},
+          "human_review_count": {"const": 12},
+          "adjudication_count": {"const": 6},
+          "official_w6_status": {"const": "PASS"},
+          "failure_codes": {"maxItems": 0},
+          "unknown_reasons": {"maxItems": 0}
+        },
+        "required": ["human_review_evidence_digest"]
+      },
+      "else": {"properties": {"whole_resume_release_pass": {"const": false}}}
+    }
+  ]
+}
