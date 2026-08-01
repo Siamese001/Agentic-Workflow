@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agentic-workflow.local/apps_rg/section_quality_input.v1.schema.json",
+  "title": "Sealed section-quality benchmark input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "benchmark_id", "lane_cases", "bundle_digest"],
+  "properties": {
+    "schema_version": {"const": "apps_rg.section_quality_input.v1"},
+    "benchmark_id": {"type": "string", "minLength": 1},
+    "lane_cases": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/lane_case"}},
+    "bundle_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "content", "content_digest", "grounding_status", "evidence_refs"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "content": {"type": ["string", "object", "array"]},
+        "content_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+        "grounding_status": {"enum": ["PASS", "FAIL", "UNKNOWN"]},
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "lane_case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id", "section_id", "mode", "split", "target_profile", "target_job_digest",
+        "prompt_digest", "section_contract_ref", "candidate", "baseline", "blinding"
+      ],
+      "properties": {
+        "case_id": {"type": "string", "minLength": 1},
+        "section_id": {
+          "enum": ["headline", "executive_summary", "competencies", "unify_bullets", "ibm_bullets"]
+        },
+        "mode": {"enum": ["ABSOLUTE", "PAIRWISE"]},
+        "split": {"enum": ["CALIBRATION", "HOLDOUT"]},
+        "target_profile": {"type": "string", "minLength": 1},
+        "target_job_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+        "prompt_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"},
+        "section_contract_ref": {"type": "string", "minLength": 1},
+        "candidate": {"$ref": "#/$defs/artifact"},
+        "baseline": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/artifact"}]},
+        "blinding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/blinding"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "ABSOLUTE"}}, "required": ["mode"]},
+          "then": {"properties": {"baseline": {"type": "null"}, "blinding": {"type": "null"}}}
+        },
+        {
+          "if": {"properties": {"mode": {"const": "PAIRWISE"}}, "required": ["mode"]},
+          "then": {
+            "properties": {
+              "baseline": {"$ref": "#/$defs/artifact"},
+              "blinding": {"$ref": "#/$defs/blinding"}
+            }
+          }
+        }
+      ]
+    },
+    "blinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_variant", "baseline_variant", "variant_identity_hidden", "blinding_digest"],
+      "properties": {
+        "candidate_variant": {"enum": ["VARIANT_A", "VARIANT_B"]},
+        "baseline_variant": {"enum": ["VARIANT_A", "VARIANT_B"]},
+        "variant_identity_hidden": {"const": true},
+        "blinding_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

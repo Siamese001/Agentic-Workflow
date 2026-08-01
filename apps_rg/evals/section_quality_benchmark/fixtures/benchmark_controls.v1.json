@@ -1,0 +1,88 @@
+{
+  "schema_version": "apps_rg.section_quality_control_fixture.v1",
+  "benchmark_id": "section-quality-control-v1",
+  "target_profile": "technology-executive",
+  "target_job_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "prompt_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "default_score": 4,
+  "default_preference": "TIE",
+  "cases": [
+    {
+      "case_id": "headline-absolute",
+      "section_id": "headline",
+      "mode": "ABSOLUTE",
+      "split": "CALIBRATION",
+      "candidate_content": "Technology Executive | Platform Transformation | Applied AI",
+      "baseline_content": null
+    },
+    {
+      "case_id": "executive-summary-absolute",
+      "section_id": "executive_summary",
+      "mode": "ABSOLUTE",
+      "split": "CALIBRATION",
+      "candidate_content": {
+        "text": "Technology executive leading evidence-backed platform modernization and applied AI programs."
+      },
+      "baseline_content": null
+    },
+    {
+      "case_id": "competencies-absolute",
+      "section_id": "competencies",
+      "mode": "ABSOLUTE",
+      "split": "HOLDOUT",
+      "candidate_content": {
+        "items": ["Platform Strategy", "Applied AI", "Operational Excellence"]
+      },
+      "baseline_content": null
+    },
+    {
+      "case_id": "unify-bullets-absolute",
+      "section_id": "unify_bullets",
+      "mode": "ABSOLUTE",
+      "split": "HOLDOUT",
+      "candidate_content": {
+        "bullets": ["Improved team productivity 20 percent through governed platform automation."]
+      },
+      "baseline_content": null
+    },
+    {
+      "case_id": "ibm-bullets-absolute",
+      "section_id": "ibm_bullets",
+      "mode": "ABSOLUTE",
+      "split": "HOLDOUT",
+      "candidate_content": {
+        "bullets": ["Led supported enterprise architecture programs across regulated client environments."]
+      },
+      "baseline_content": null
+    },
+    {
+      "case_id": "executive-summary-pairwise",
+      "section_id": "executive_summary",
+      "mode": "PAIRWISE",
+      "split": "HOLDOUT",
+      "candidate_content": {
+        "text": "Technology executive leading evidence-backed platform modernization and applied AI programs."
+      },
+      "baseline_content": {
+        "text": "Experienced technology leader with a broad background in transformation."
+      }
+    }
+  ],
+  "mutations": {
+    "low_evidence_fidelity": {
+      "dimension": "evidence_fidelity",
+      "score": 2,
+      "expected_code": "DIMENSION_BELOW_MINIMUM_EVIDENCE_FIDELITY"
+    },
+    "unsupported_language": {
+      "dimension": "unsupported_language_avoidance",
+      "score": 1,
+      "expected_code": "DIMENSION_BELOW_MINIMUM_UNSUPPORTED_LANGUAGE_AVOIDANCE"
+    },
+    "pairwise_critical_worse": {
+      "dimension": "evidence_fidelity",
+      "resolved_preference": "BASELINE",
+      "expected_code": "PAIRWISE_CRITICAL_DIMENSION_WORSE"
+    }
+  }
+}

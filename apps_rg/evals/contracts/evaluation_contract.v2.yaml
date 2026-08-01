@@ -177,7 +177,7 @@ gates:
     evaluation_question: Is the resume relevant, natural, concise, credible, ATS-compatible, and properly personalized?
     score_groups: [section_quality, whole_resume_quality]
     unit_of_analysis: One section and one complete resume, with absolute and blinded pairwise judgments kept distinct.
-    implementation_status: SCAFFOLD
+    implementation_status: PARTIAL
     required_evidence:
       - type: frozen_resume_output
         requirement: Candidate and baseline sections or resumes are immutable and blinded for pairwise review.
@@ -188,10 +188,20 @@ gates:
     metrics:
       - {name: target_job_relevance, definition: Usefulness for the target role without unsupported tailoring, required: true}
       - {name: evidence_fidelity, definition: Quality judgments do not override factual grounding, required: true}
+      - {name: achievement_prioritization, definition: Most relevant supported achievements receive appropriate emphasis, required: true}
       - {name: naturalness, definition: Professional and non-contrived resume voice, required: true}
+      - {name: professional_voice, definition: Credible role-appropriate professional resume voice, required: true}
       - {name: concision, definition: Information density without material omission or repetition, required: true}
+      - {name: specificity, definition: Concrete supported actions outcomes and scope rather than vague claims, required: true}
+      - {name: non_contrivance, definition: Avoidance of forced phrasing and implausible positioning, required: true}
       - {name: ats_compatibility, definition: Structural and keyword compatibility without stuffing, required: true}
+      - {name: keyword_use, definition: Natural use of relevant target concepts without stuffing, required: true}
+      - {name: jd_parroting_avoidance, definition: Job-description language is not copied without candidate evidence, required: true}
+      - {name: unsupported_language_avoidance, definition: Unsupported metrics credentials superlatives scope and certainty are absent, required: true}
+      - {name: repetition_avoidance, definition: Claims phrases and evidence are not needlessly repeated, required: true}
+      - {name: internal_coherence, definition: Claims chronology scope and emphasis remain mutually consistent within the section, required: true}
       - {name: candidate_preference_rate, definition: Authorized pairwise preference for candidate over baseline, required: true}
+      - {name: no_worse_rate, definition: Pairwise reviews with no dimension materially worse than baseline, required: true}
       - {name: critical_cross_section_inconsistency_count, definition: Contradictory dates, roles, employers, or claims across sections, required: true}
     threshold_authority:
       classification: conditionally_release_authoritative

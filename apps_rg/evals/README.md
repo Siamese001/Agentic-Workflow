@@ -13,7 +13,7 @@ It keeps six evaluation questions independent:
 | G1 - Retrieval | Did the graph retrieve the most relevant available evidence? | Active; legacy W6 metrics are preserved and the finite-universe API adds coverage, hard-negative, and slice results. |
 | G2 - Binding | Was evidence bound to the correct employer, role, date, metric, credential, and graph path? | Active; the claim-evidence API verifies seven exact binding dimensions and graph paths. |
 | G3 - Grounding | Is every material generated claim supported by exact cited evidence? | Active; the material-claim API recomputes support and fails closed on incomplete evidence. |
-| G4 - Output quality | Is the resume relevant, natural, concise, credible, ATS-compatible, and personalized? | Scaffold only; the existing section schemas do not constitute a completed benchmark. |
+| G4 - Output quality | Is the resume relevant, natural, concise, credible, ATS-compatible, and personalized? | Partial; the five-lane section benchmark is active, while whole-resume and W9 scoring remain unmeasured. |
 | G5 - Robustness | Is behavior acceptable across stored runs and difficult evidence scenarios? | Not measured. |
 | G6 - Eval validity | Do the graders catch known defects without rejecting clean controls? | Not measured. |
 
@@ -88,3 +88,11 @@ and
 [`contracts/retrieval_coverage_rubric.v1.yaml`](contracts/retrieval_coverage_rubric.v1.yaml).
 They are future-run-only measurement rules; they do not promote thresholds or
 change W6 release authority.
+
+## Section quality benchmark
+
+[`section_quality_benchmark/`](section_quality_benchmark/) provides the active
+five-lane offline G4 section evaluator. It consumes sealed artifacts and
+completed absolute or blinded pairwise reviews, keeps human and model-judge
+results separate, and emits no runtime or release authority. Whole-resume and
+W9 scoring remain outside this benchmark and are still unmeasured.

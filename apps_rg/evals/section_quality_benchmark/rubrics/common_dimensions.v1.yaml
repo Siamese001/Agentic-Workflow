@@ -1,0 +1,32 @@
+schema_version: apps_rg.section_quality_dimension_profile.v1
+profile_id: section-quality-common-v1
+score_scale: {minimum: 1, maximum: 5, higher_is_better: true}
+dimensions:
+  target_job_relevance:
+    definition: Prioritizes evidence useful for the target role without unsupported tailoring.
+  evidence_fidelity:
+    definition: Every material statement remains faithful to cited candidate evidence and grounding results.
+  achievement_prioritization:
+    definition: Leads with the most relevant and differentiating supported achievements.
+  naturalness:
+    definition: Reads as natural professional resume language rather than generated or mechanical prose.
+  professional_voice:
+    definition: Uses a credible, role-appropriate professional voice without title or leadership inflation.
+  concision:
+    definition: Preserves useful evidence with disciplined length and no avoidable filler.
+  specificity:
+    definition: Uses concrete supported nouns, actions, outcomes, and scope instead of vague claims.
+  non_contrivance:
+    definition: Avoids forced transitions, awkward keyword placement, and implausible positioning.
+  ats_compatibility:
+    definition: Uses parseable section structure and conventional resume language.
+  keyword_use:
+    definition: Incorporates relevant target concepts naturally without keyword stuffing.
+  jd_parroting_avoidance:
+    definition: Avoids copying job-description language without candidate evidence.
+  unsupported_language_avoidance:
+    definition: Avoids unsupported metrics, credentials, superlatives, scope, and certainty.
+  repetition_avoidance:
+    definition: Avoids redundant claims, phrases, and evidence within the section.
+  internal_coherence:
+    definition: Presents mutually consistent claims, chronology, scope, and emphasis within the section.

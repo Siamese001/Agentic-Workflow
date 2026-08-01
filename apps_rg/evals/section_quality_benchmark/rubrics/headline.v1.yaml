@@ -1,0 +1,31 @@
+schema_version: apps_rg.section_quality_rubric.v1
+rubric_id: headline-quality-v1
+version: 1
+section_ids: [headline]
+dimension_profile: common_dimensions.v1.yaml
+required_dimensions:
+  - target_job_relevance
+  - evidence_fidelity
+  - achievement_prioritization
+  - naturalness
+  - professional_voice
+  - concision
+  - specificity
+  - non_contrivance
+  - ats_compatibility
+  - keyword_use
+  - jd_parroting_avoidance
+  - unsupported_language_avoidance
+  - repetition_avoidance
+  - internal_coherence
+minimum_score: 3
+critical_dimensions: [evidence_fidelity, unsupported_language_avoidance, professional_voice]
+pairwise:
+  variant_identity_hidden_required: true
+  no_worse_required: true
+  candidate_or_tie_required_for_critical_dimensions: true
+authority:
+  model_judge: advisory
+  human_review: offline_measurement
+  release_authorizing: false
+  promotion_scope: future_runs_only

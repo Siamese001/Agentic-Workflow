@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agentic-workflow.local/apps_rg/section_quality_report.v1.schema.json",
+  "title": "Section-quality benchmark report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "benchmark_id", "status", "score_groups", "complete_lane_count",
+    "lane_results", "failure_codes", "unknown_reasons", "not_measured_reasons", "authority",
+    "report_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": "apps_rg.section_quality_report.v1"},
+    "benchmark_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_MEASURED"]},
+    "score_groups": {"const": ["section_quality"]},
+    "complete_lane_count": {"type": "integer", "minimum": 0, "maximum": 5},
+    "lane_results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["headline", "executive_summary", "competencies", "unify_bullets", "ibm_bullets"],
+      "properties": {
+        "headline": {"$ref": "#/$defs/lane_result"},
+        "executive_summary": {"$ref": "#/$defs/lane_result"},
+        "competencies": {"$ref": "#/$defs/lane_result"},
+        "unify_bullets": {"$ref": "#/$defs/lane_result"},
+        "ibm_bullets": {"$ref": "#/$defs/lane_result"}
+      }
+    },
+    "failure_codes": {"$ref": "#/$defs/reason_list"},
+    "unknown_reasons": {"$ref": "#/$defs/text_list"},
+    "not_measured_reasons": {"$ref": "#/$defs/text_list"},
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "classification", "human_reviews_present", "model_judge_results_advisory",
+        "model_judge_calibrated_against_humans",
+        "release_authorizing", "promotion_scope", "current_run_mutated"
+      ],
+      "properties": {
+        "classification": {"enum": ["HUMAN_REVIEW", "MODEL_JUDGE_ADVISORY", "UNMEASURED"]},
+        "human_reviews_present": {"type": "boolean"},
+        "model_judge_results_advisory": {"const": true},
+        "model_judge_calibrated_against_humans": {"const": false},
+        "release_authorizing": {"const": false},
+        "promotion_scope": {"const": "future_runs_only"},
+        "current_run_mutated": {"const": false}
+      }
+    },
+    "report_digest": {"type": "string", "pattern": "^(?:sha256:)?[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "reason_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[A-Z][A-Z0-9_]*$"}
+    },
+    "text_list": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "lane_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "section_id", "status", "case_count", "absolute_case_count", "pairwise_case_count",
+        "active_reviewer_class", "metrics", "reviewer_summaries", "failure_codes",
+        "unknown_reasons", "not_measured_reasons", "case_results"
+      ],
+      "properties": {
+        "section_id": {
+          "enum": ["headline", "executive_summary", "competencies", "unify_bullets", "ibm_bullets"]
+        },
+        "status": {"enum": ["PASS", "FAIL", "UNKNOWN", "NOT_MEASURED"]},
+        "case_count": {"type": "integer", "minimum": 0},
+        "absolute_case_count": {"type": "integer", "minimum": 0},
+        "pairwise_case_count": {"type": "integer", "minimum": 0},
+        "active_reviewer_class": {"enum": ["HUMAN", "MODEL_JUDGE", "NONE"]},
+        "metrics": {"type": "object", "additionalProperties": {"type": ["number", "null"]}},
+        "reviewer_summaries": {"type": "object"},
+        "failure_codes": {"$ref": "#/$defs/reason_list"},
+        "unknown_reasons": {"$ref": "#/$defs/text_list"},
+        "not_measured_reasons": {"$ref": "#/$defs/text_list"},
+        "case_results": {"type": "array", "items": {"type": "object"}}
+      }
+    }
+  }
+}

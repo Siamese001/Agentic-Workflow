@@ -1,10 +1,10 @@
-# Section quality benchmark (scaffold)
+# Section quality benchmark
 
-Offline evaluation harness for **generated** resume sections. **No scores are vendored in-repo.**
+This package evaluates completed, sealed Apps RG section artifacts and completed
+offline reviews. It does not generate resume content, invoke a judge, mutate the
+runtime, or authorize release.
 
-## Scope (initial)
-
-Lanes with JSON schema stubs in this directory:
+## Supported lanes
 
 - `headline`
 - `executive_summary`
@@ -12,20 +12,46 @@ Lanes with JSON schema stubs in this directory:
 - `unify_bullets`
 - `ibm_bullets`
 
-Add `unify_narrative` / `ibm_narrative` when you extend the benchmark runner.
+The original `*.schema.json` files in this directory remain compatibility
+scaffolds for historical W14 label rows. Runnable v1 contracts live under
+`schemas/`; governed scoring rules live under `rubrics/`.
 
-## Row model
+## Inputs and review authority
 
-Each evaluation row is **section-specific** (see `*.schema.json`). Common optional fields:
+The CLI consumes two independently sealed JSON files:
 
-- `run_id`, `section_id`, `prompt_hash`, `section_contract_id`, `model_label`
-- `human_notes` / `labeler_id` (empty in scaffold)
-- **No** `overall_score` or judge outputs required for the scaffold
+1. `apps_rg.section_quality_input.v1` freezes the five lane artifacts, target,
+   prompt, contract, grounding status, and absolute or pairwise mode.
+2. `apps_rg.section_quality_review.v1` binds every completed review to the exact
+   input-bundle, candidate, baseline, and rubric digests.
 
-## Rules
+Pairwise reviewers score opaque `VARIANT_A` and `VARIANT_B` identities. The
+sealed input privately binds those labels to candidate and baseline artifacts;
+unblinded pairwise inputs are rejected as `UNKNOWN`.
 
-- **X1D** outputs are **not** runtime release approvals.
-- **Human labels** calibrate judges **offline** only.
-- **L6** is future-run learning; **no current-run L6 mutation** in benchmark design.
+Each dimension score carries a reason and evidence references. Human and model
+judge results are aggregated separately. Human coverage is preferred when it is
+complete for a lane; otherwise complete model-only coverage remains explicitly
+`MODEL_JUDGE_ADVISORY`. Neither classification authorizes release or current-run
+mutation. This wave does not calibrate model judges against human labels, and
+the report records that fact explicitly.
 
-See `docs/reports/apps_rg_prompt_authority/W14_quality_benchmark.md`.
+## Run
+
+```text
+python -m apps_rg.evals.section_quality_benchmark \
+  --input sealed-section-input.json \
+  --reviews sealed-section-reviews.json \
+  --output section-quality-report.json
+```
+
+Exit codes are `0` for advisory `PASS`, `1` for `FAIL`, `2` for `UNKNOWN` or
+`NOT_MEASURED`, and `3` for file or JSON errors.
+
+All five lanes must be supplied for the report to pass. Missing lanes remain
+`NOT_MEASURED`; invalid or incomplete evidence is `UNKNOWN`; failed grounding
+cannot be overridden by high quality scores. Absolute scores and blinded
+pairwise preferences remain distinct, and no blended overall score is emitted.
+
+Synthetic scores under `fixtures/` are controlled test data only. They are not
+production benchmark labels, calibration evidence, or release authority.
