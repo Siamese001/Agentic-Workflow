@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agentic-workflow.local/apps_rg/evaluation_report.v2.schema.json",
+  "title": "Apps RG complete named-gate evaluation report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_version",
+    "evaluation_id",
+    "generated_at",
+    "artifact_set_digest",
+    "measurement_scope",
+    "gates",
+    "score_groups",
+    "release_authority",
+    "failure_codes"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "apps_rg.evaluation_report.v2"
+    },
+    "contract_version": {
+      "const": "apps_rg.evaluation_contract.v2"
+    },
+    "evaluation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "artifact_set_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "measurement_scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["G1", "G2", "G3", "G4", "G5", "G6"],
+      "properties": {
+        "G1": {"$ref": "#/$defs/g1"},
+        "G2": {"$ref": "#/$defs/g2"},
+        "G3": {"$ref": "#/$defs/g3"},
+        "G4": {"$ref": "#/$defs/g4"},
+        "G5": {"$ref": "#/$defs/g5"},
+        "G6": {"$ref": "#/$defs/g6"}
+      }
+    },
+    "score_groups": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "retrieval_quality",
+        "binding_accuracy",
+        "factual_grounding",
+        "section_quality",
+        "whole_resume_quality",
+        "runtime_repeatability",
+        "evaluator_validity"
+      ],
+      "properties": {
+        "retrieval_quality": {"$ref": "#/$defs/score_group"},
+        "binding_accuracy": {"$ref": "#/$defs/score_group"},
+        "factual_grounding": {"$ref": "#/$defs/score_group"},
+        "section_quality": {"$ref": "#/$defs/score_group"},
+        "whole_resume_quality": {"$ref": "#/$defs/score_group"},
+        "runtime_repeatability": {"$ref": "#/$defs/score_group"},
+        "evaluator_validity": {"$ref": "#/$defs/score_group"}
+      }
+    },
+    "release_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_run_authority_unchanged",
+        "threshold_promotion_scope",
+        "promotion_eligible",
+        "blocking_gate_ids"
+      ],
+      "properties": {
+        "current_run_authority_unchanged": {
+          "const": true
+        },
+        "threshold_promotion_scope": {
+          "const": "future_runs_only"
+        },
+        "promotion_eligible": {
+          "type": "boolean"
+        },
+        "blocking_gate_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["G1", "G2", "G3", "G4", "G5", "G6"]
+          }
+        }
+      }
+    },
+    "failure_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "release_authority": {
+            "properties": {
+              "promotion_eligible": {"const": true}
+            },
+            "required": ["promotion_eligible"]
+          }
+        },
+        "required": ["release_authority"]
+      },
+      "then": {
+        "properties": {
+          "gates": {
+            "properties": {
+              "G1": {"properties": {"status": {"const": "PASS"}}},
+              "G2": {"properties": {"status": {"const": "PASS"}}},
+              "G3": {"properties": {"status": {"const": "PASS"}}},
+              "G4": {"properties": {"status": {"const": "PASS"}}},
+              "G5": {"properties": {"status": {"const": "PASS"}}},
+              "G6": {"properties": {"status": {"const": "PASS"}}}
+            }
+          },
+          "release_authority": {
+            "properties": {
+              "blocking_gate_ids": {"maxItems": 0}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "gate_result_ref": {
+      "$ref": "https://schemas.agentic-workflow.local/apps_rg/evaluation_gate_result.v1.schema.json"
+    },
+    "g1": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G1"}}}
+      ]
+    },
+    "g2": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G2"}}}
+      ]
+    },
+    "g3": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G3"}}}
+      ]
+    },
+    "g4": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G4"}}}
+      ]
+    },
+    "g5": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G5"}}}
+      ]
+    },
+    "g6": {
+      "allOf": [
+        {"$ref": "#/$defs/gate_result_ref"},
+        {"properties": {"gate_id": {"const": "G6"}}}
+      ]
+    },
+    "score_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "metrics"],
+      "properties": {
+        "status": {
+          "enum": ["PASS", "FAIL", "UNKNOWN", "NOT_MEASURED"]
+        },
+        "metrics": {
+          "type": "object"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

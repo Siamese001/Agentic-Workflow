@@ -1,0 +1,229 @@
+schema_version: apps_rg.evaluation_contract.v2
+title: Apps RG evaluation measurement contract
+report_schema: ../schemas/evaluation_report.v2.schema.json
+gate_result_schema: ../schemas/evaluation_gate_result.v1.schema.json
+
+principles:
+  no_blended_overall_score: true
+  missing_evidence_is_pass: false
+  runtime_execution_or_mutation: forbidden
+  runtime_authored_support_flags_are_proof: false
+  full_candidate_denominator_required: true
+  calibration_and_holdout_separated: true
+
+state_semantics:
+  PASS:
+    meaning: All required evidence is present, valid, trusted, and satisfies the governed gate criteria.
+    release_authorizing_by_itself: false
+  FAIL:
+    meaning: Sufficient valid evidence exists and at least one governed gate criterion fails.
+    release_authorizing_by_itself: false
+  UNKNOWN:
+    meaning: The gate should be measurable, but required evidence is missing, invalid, untrusted, or insufficient.
+    release_authorizing_by_itself: false
+  NOT_MEASURED:
+    meaning: The gate is outside declared report coverage or has no implemented measurement lane.
+    release_authorizing_by_itself: false
+
+missing_evidence_disposition: UNKNOWN
+unimplemented_lane_disposition: NOT_MEASURED
+
+authority_invariants:
+  existing_w6_authority: unchanged
+  w9_authorized_pair_count: 6
+  current_run_release_authority: unchanged
+  threshold_promotion_scope: future_runs_only
+  model_judge_authority_before_human_calibration: advisory
+
+score_groups:
+  retrieval_quality:
+    question: Did the graph retrieve the most relevant available evidence?
+    gate_ids: [G1]
+  binding_accuracy:
+    question: Did the evaluator verify exact factual and graph bindings?
+    gate_ids: [G2]
+  factual_grounding:
+    question: Is every material generated claim supported by exact cited evidence?
+    gate_ids: [G3]
+  section_quality:
+    question: Do individual resume sections satisfy the governed quality rubrics?
+    gate_ids: [G4]
+  whole_resume_quality:
+    question: Does the complete resume work as a coherent, grounded product?
+    gate_ids: [G4]
+  runtime_repeatability:
+    question: Are evidence decisions and dispositions acceptably stable across sealed runs?
+    gate_ids: [G5]
+  evaluator_validity:
+    question: Do graders detect seeded defects while accepting clean controls?
+    gate_ids: [G6]
+
+gates:
+  G1:
+    name: Retrieval
+    evaluation_question: Did the graph retrieve the most relevant available evidence?
+    score_groups: [retrieval_quality]
+    unit_of_analysis: One frozen query and its full human-labelled candidate universe.
+    implementation_status: ACTIVE
+    required_evidence:
+      - type: frozen_query
+        requirement: Query identity, target profile, graph lane, and split are digest-bound.
+      - type: full_candidate_set
+        requirement: Every candidate available to the evaluated method is preserved, not only system-selected Top-K.
+      - type: authorized_human_labels
+        requirement: Relevance labels are blinded, split-bound, and sealed by the existing W6 authority chain.
+      - type: emitted_ranking
+        requirement: Ranked candidate identities and graph paths are frozen before evaluation.
+    metrics:
+      - {name: recall_at_1, definition: Relevant evidence recovered in the first rank, required: true}
+      - {name: recall_at_3, definition: Relevant evidence recovered in the first three ranks, required: true}
+      - {name: recall_at_5, definition: Relevant evidence recovered in the first five ranks, required: true}
+      - {name: recall_at_10, definition: Relevant evidence recovered in the first ten ranks, required: true}
+      - {name: pooled_recall_at_k, definition: Recall over the full labelled candidate denominator, required: true}
+      - {name: ndcg_at_1_3_5_10, definition: Rank-sensitive graded relevance at governed cutoffs, required: true}
+      - {name: mean_reciprocal_rank, definition: Reciprocal rank of the first relevant candidate, required: true}
+      - {name: exact_path_accuracy, definition: Selected evidence uses the authorized graph path, required: true}
+      - {name: selection_margin, definition: Score separation between selected evidence and alternatives, required: false}
+    threshold_authority:
+      classification: conditionally_release_authoritative
+      condition: Only the existing sealed official W6 human-review workflow may authorize governed retrieval thresholds.
+    human_review_required: true
+    measurement_scope: sealed_completed_artifacts
+    promotion_scope: future_runs_only
+
+  G2:
+    name: Binding
+    evaluation_question: Did the output attach evidence to the correct employer, role, date, metric, credential, and graph path?
+    score_groups: [binding_accuracy]
+    unit_of_analysis: One material claim and each exact factual binding asserted by that claim.
+    implementation_status: PARTIAL
+    required_evidence:
+      - type: claim_identity
+        requirement: Material claim identity and text are frozen.
+      - type: exact_evidence_locator
+        requirement: Source identity, excerpt digest, and exact graph path are provided.
+      - type: authorized_human_labels
+        requirement: Binding judgments come from the governed human-review lane when required.
+    metrics:
+      - {name: exact_path_accuracy, definition: Evidence is attached through the correct graph path, required: true}
+      - {name: employer_binding_accuracy, definition: Employer identity is exact, required: true}
+      - {name: role_binding_accuracy, definition: Role or title identity is exact, required: true}
+      - {name: date_binding_accuracy, definition: Date or interval is exact, required: true}
+      - {name: numeric_binding_accuracy, definition: Numeric value and unit are exact, required: true}
+      - {name: credential_binding_accuracy, definition: Credential identity and validity are exact, required: true}
+      - {name: scope_binding_accuracy, definition: Individual, team, regional, and global scope is exact, required: true}
+    threshold_authority:
+      classification: conditionally_release_authoritative
+      condition: A binding pass requires complete exact-binding evidence and any human review required by W6.
+    human_review_required: true
+    measurement_scope: sealed_completed_artifacts
+    promotion_scope: future_runs_only
+
+  G3:
+    name: Grounding
+    evaluation_question: Is every material generated claim actually supported by the cited evidence?
+    score_groups: [factual_grounding]
+    unit_of_analysis: One material claim, including every component of a composite claim.
+    implementation_status: PARTIAL
+    required_evidence:
+      - type: material_claim_inventory
+        requirement: The complete generated-output claim denominator is frozen; runtime support flags are non-authoritative.
+      - type: exact_evidence_locator
+        requirement: Each claim includes source identity, excerpt digest, graph path, and exact locator or an explicit failure reason.
+      - type: entailment_and_binding_judgment
+        requirement: Support, partial support, contradiction, scope, and certainty are evaluated independently.
+    metrics:
+      - {name: material_claim_support_rate, definition: Fully supported material claims divided by all material claims, required: true}
+      - {name: unsupported_material_claim_count, definition: Count of material claims without full support, required: true}
+      - {name: partial_support_count, definition: Count of material claims with only partial support, required: true}
+      - {name: scope_inflation_rate, definition: Material claims whose asserted scope exceeds evidence, required: true}
+      - {name: certainty_inflation_rate, definition: Material claims stated more certainly than evidence permits, required: true}
+      - {name: composite_claim_full_support_rate, definition: Composite claims for which every component is supported, required: true}
+    threshold_authority:
+      classification: release_authoritative
+      condition: unsupported_material_claim_count must equal zero; missing required evidence is UNKNOWN or FAIL, never PASS.
+    human_review_required: true
+    measurement_scope: sealed_completed_artifacts
+    promotion_scope: future_runs_only
+
+  G4:
+    name: Output quality
+    evaluation_question: Is the resume relevant, natural, concise, credible, ATS-compatible, and properly personalized?
+    score_groups: [section_quality, whole_resume_quality]
+    unit_of_analysis: One section and one complete resume, with absolute and blinded pairwise judgments kept distinct.
+    implementation_status: SCAFFOLD
+    required_evidence:
+      - type: frozen_resume_output
+        requirement: Candidate and baseline sections or resumes are immutable and blinded for pairwise review.
+      - type: governed_quality_rubric
+        requirement: Every scored lane has explicit criteria and an applicable schema.
+      - type: human_calibration
+        requirement: Model-judge results remain advisory until calibrated against completed authorized human reviews.
+    metrics:
+      - {name: target_job_relevance, definition: Usefulness for the target role without unsupported tailoring, required: true}
+      - {name: evidence_fidelity, definition: Quality judgments do not override factual grounding, required: true}
+      - {name: naturalness, definition: Professional and non-contrived resume voice, required: true}
+      - {name: concision, definition: Information density without material omission or repetition, required: true}
+      - {name: ats_compatibility, definition: Structural and keyword compatibility without stuffing, required: true}
+      - {name: candidate_preference_rate, definition: Authorized pairwise preference for candidate over baseline, required: true}
+      - {name: critical_cross_section_inconsistency_count, definition: Contradictory dates, roles, employers, or claims across sections, required: true}
+    threshold_authority:
+      classification: conditionally_release_authoritative
+      condition: Requires implemented lane coverage, no-worse human judgments, W6 PASS, and the existing six-pair W9 contract.
+    human_review_required: true
+    measurement_scope: sealed_completed_artifacts
+    promotion_scope: future_runs_only
+
+  G5:
+    name: Robustness
+    evaluation_question: Does the system behave acceptably across runs, profiles, sparse evidence, ambiguity, and adversarial inputs?
+    score_groups: [runtime_repeatability]
+    unit_of_analysis: At least three distinct sealed execution identities for one governed scenario.
+    implementation_status: PLANNED
+    required_evidence:
+      - type: sealed_run_set
+        requirement: Run identities are independently executed; copied directories do not count as separate runs.
+      - type: governed_scenario
+        requirement: Scenario class and expected abstention or escalation behavior are declared before comparison.
+      - type: normalized_decisions
+        requirement: Evidence decisions are compared separately from acceptable prose variation.
+    metrics:
+      - {name: evidence_selection_stability, definition: Stability of selected evidence identities and graph paths, required: true}
+      - {name: binding_stability, definition: Stability of numeric, date, employer, role, and credential bindings, required: true}
+      - {name: grounding_disposition_stability, definition: Stability of support, abstention, and escalation outcomes, required: true}
+      - {name: semantic_output_stability, definition: Equivalent grounded content after normalizing acceptable wording variation, required: true}
+      - {name: critical_divergence_count, definition: Run-to-run divergence in a critical grounding or disposition decision, required: true}
+    threshold_authority:
+      classification: release_authoritative
+      condition: Critical grounding or disposition divergence fails; all required scenarios need distinct sealed runs.
+    human_review_required: false
+    measurement_scope: multiple_sealed_completed_runs
+    promotion_scope: future_runs_only
+
+  G6:
+    name: Eval validity
+    evaluation_question: Does the evaluation catch known defects while allowing known-good outputs to pass?
+    score_groups: [evaluator_validity]
+    unit_of_analysis: One grader, one clean control, and controlled positive and negative mutations.
+    implementation_status: PLANNED
+    required_evidence:
+      - type: mutation_suite
+        requirement: Every critical grader has at least one defect mutation and one clean control.
+      - type: grader_result_isolation
+        requirement: The intended grader fails and unrelated graders do not fail without a documented reason.
+      - type: human_agreement_sample
+        requirement: Agreement thresholds are frozen only after an authorized labeling pilot.
+    metrics:
+      - {name: critical_mutation_recall, definition: Critical seeded defects detected by the intended grader, required: true}
+      - {name: noncritical_mutation_recall, definition: Noncritical seeded defects detected by the intended grader, required: true}
+      - {name: clean_control_false_positive_rate, definition: Clean controls incorrectly failed, required: true}
+      - {name: human_grader_agreement, definition: Agreement between automated grades and authorized human labels, required: true}
+      - {name: judge_human_agreement, definition: Agreement between model-judge scores and authorized human labels, required: true}
+      - {name: score_stability, definition: Score stability for identical sealed inputs, required: true}
+      - {name: unmeasured_dimension_count, definition: Required evaluation dimensions without a valid measurement, required: true}
+    threshold_authority:
+      classification: release_authoritative
+      condition: Critical grounding and provenance mutation recall are 100 percent; required UNKNOWN count and holdout leakage incidents are zero.
+    human_review_required: true
+    measurement_scope: sealed_grader_fixtures_and_authorized_labels
+    promotion_scope: future_runs_only
