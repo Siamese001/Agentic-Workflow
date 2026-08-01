@@ -35,8 +35,6 @@ REQUIRED_FILES = [
     ".codex/automations/on-demand-pr-main-publisher/automation.toml",
     ".codex/automations/on-demand-svp-documentation-refresh/automation.toml",
     ".codex/automations/adg-audit-and-burndown/automation.toml",
-    ".codex/automations/adg-p0-blocker-burndown/automation.toml",
-    ".codex/automations/adg-p1-ratchet-burndown/automation.toml",
     ".codex/automations/adg-bcg-p2-next-action/automation.toml",
     ".codex/automations/adg-p3-promotion-hygiene/automation.toml",
     ".codex/automations/svp-readme-documentation-refresh/automation.toml",

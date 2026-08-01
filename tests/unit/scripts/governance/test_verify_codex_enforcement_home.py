@@ -134,7 +134,7 @@ def _valid_root(tmp_path: Path) -> Path:
         "adg-p3-promotion-hygiene": _adg_p3_prompt(),
         "weekly-svp-readme-documentation-refresh": _svp_docs_prompt(),
     }
-    for automation_id in mod.AUTOMATION_IDS:
+    for automation_id in (*mod.AUTOMATION_IDS, *mod.OPTIONAL_ADG_AUTOMATION_IDS):
         _write(
             mod._automation_path(tmp_path, automation_id),
             _automation_toml(automation_id, prompt_by_id.get(automation_id, "placeholder prompt"), tmp_path),
@@ -161,7 +161,7 @@ def test_user_profile_automation_fails(tmp_path: Path) -> None:
     assert any(issue.code == "user_profile_enforcement_artifact" for issue in issues)
 
 
-def test_retired_automation_model_fails(tmp_path: Path) -> None:
+def test_optional_adg_automation_model_fails(tmp_path: Path) -> None:
     root = _valid_root(tmp_path / "repo")
     user_codex_home = tmp_path / "user-codex"
     automation = mod._automation_path(root, "adg-p1-ratchet-burndown")

@@ -121,6 +121,11 @@ def test_valid_primary_contract_passes(tmp_path: Path) -> None:
     assert mod.validate(_valid_root(tmp_path), repo_only=True) == []
 
 
+def test_p0_and_p1_automations_are_not_default_primary_requirements() -> None:
+    assert ".codex/automations/adg-p0-blocker-burndown/automation.toml" not in mod.REQUIRED_FILES
+    assert ".codex/automations/adg-p1-ratchet-burndown/automation.toml" not in mod.REQUIRED_FILES
+
+
 def test_parse_args_accepts_repo_only_flag() -> None:
     args = mod.parse_args(["--repo-only"])
 

@@ -28,11 +28,13 @@ AUTOMATION_IDS = (
     "on-demand-pr-main-publisher",
     "on-demand-apps-rg-anthropic-partnership-fresh-s2e",
     "weekly-adg-audit-and-burndown",
-    "adg-p0-blocker-burndown",
-    "adg-p1-ratchet-burndown",
     "adg-bcg-p2-next-action",
     "adg-p3-promotion-hygiene",
     "weekly-svp-readme-documentation-refresh",
+)
+OPTIONAL_ADG_AUTOMATION_IDS = (
+    "adg-p0-blocker-burndown",
+    "adg-p1-ratchet-burndown",
 )
 AUTOMATION_DIR_BY_ID = {
     "weekly-adg-audit-and-burndown": "adg-audit-and-burndown",
@@ -59,6 +61,7 @@ MANUAL_AUTOMATION_IDS = (
     "adg-p3-promotion-hygiene",
 )
 USER_PROFILE_REPO_AUTOMATION_IDS = AUTOMATION_IDS + (
+    *OPTIONAL_ADG_AUTOMATION_IDS,
     "on-demand-pr-main-publisher-2",
 )
 REPO_SKILL_IDS = ("agentic-workflow-governance", "agentic-workflow-verification")
@@ -750,7 +753,7 @@ def build_user_profile_projection(root: Path, automation_id: str) -> dict[str, A
 
 def iter_user_profile_projections(root: Path) -> list[dict[str, Any]]:
     projections: list[dict[str, Any]] = []
-    for automation_id in AUTOMATION_IDS:
+    for automation_id in (*AUTOMATION_IDS, *OPTIONAL_ADG_AUTOMATION_IDS):
         projection = build_user_profile_projection(root, automation_id)
         if projection is not None:
             projections.append(projection)
@@ -762,13 +765,18 @@ def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
         automation_id: _load_automation(root, automation_id)
         for automation_id in ADG_HANDOFF_CHAIN
     }
-    if any(data is None for data in loaded.values()):
+    available = {
+        automation_id: data
+        for automation_id, data in loaded.items()
+        if data is not None
+    }
+    if not available:
         return []
 
     issues: list[EnforcementHomeIssue] = []
     handoffs = {
         automation_id: data.get("handoff")  # type: ignore[union-attr]
-        for automation_id, data in loaded.items()
+        for automation_id, data in available.items()
     }
     if any(not isinstance(handoff, dict) for handoff in handoffs.values()):
         return issues
@@ -778,16 +786,21 @@ def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
     }
     if any(not isinstance(order, int) for order in orders.values()):
         return issues
+    expected_chain = tuple(
+        automation_id for automation_id in ADG_HANDOFF_CHAIN if automation_id in available
+    )
     observed_chain = tuple(sorted(orders, key=lambda item: orders[item]))
-    if observed_chain != ADG_HANDOFF_CHAIN:
+    if observed_chain != expected_chain:
         issues.append(
             EnforcementHomeIssue(
                 "adg_handoff_graph_order",
-                f"ADG handoff order expected {ADG_HANDOFF_CHAIN!r}, got {observed_chain!r}",
+                f"ADG handoff order expected {expected_chain!r}, got {observed_chain!r}",
             )
         )
 
     for source, target in ADG_DIRECT_HANDOFF_EDGES:
+        if source not in handoffs or target not in handoffs:
+            continue
         source_handoff = handoffs[source]
         target_handoff = handoffs[target]
         if target not in source_handoff.get("unblocks", []):
@@ -805,10 +818,10 @@ def _validate_adg_handoff_graph(root: Path) -> list[EnforcementHomeIssue]:
                 )
             )
 
-    for index, automation_id in enumerate(ADG_HANDOFF_CHAIN):
+    for index, automation_id in enumerate(expected_chain):
         if index == 0:
             continue
-        prior = list(ADG_HANDOFF_CHAIN[:index])
+        prior = list(expected_chain[:index])
         handoff = handoffs[automation_id]
         missing = [dependency for dependency in prior if dependency not in handoff.get("depends_on", [])]
         if missing:
@@ -1001,6 +1014,9 @@ def validate(root: Path = REPO_ROOT, user_codex_home: Path = DEFAULT_USER_CODEX_
 
     for automation_id in AUTOMATION_IDS:
         issues.extend(_validate_automation(root, automation_id))
+    for automation_id in OPTIONAL_ADG_AUTOMATION_IDS:
+        if _automation_path(root, automation_id).exists():
+            issues.extend(_validate_automation(root, automation_id))
     issues.extend(_validate_adg_handoff_graph(root))
 
     for skill_id in REPO_SKILL_IDS:

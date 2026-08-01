@@ -19,10 +19,10 @@ def test_p0_burndown_consumes_digest_bound_handoff_pointer() -> None:
     handoff = payload["handoff"]
     prompt = payload["prompt"]
 
-    pointer_path = "artifacts/adg/handoffs/adg_repair_handoff_latest.json"
+    pointer_path = r"C:\Git\Agentic-Workflow-FRESH\artifacts\adg\handoffs\adg_repair_handoff_latest.json"
     validator = (
         "python tools/adg/consume_adg_repair_handoff.py "
-        "--handoff-pointer artifacts/adg/handoffs/adg_repair_handoff_latest.json --json"
+        f"--handoff-pointer {pointer_path} --json"
     )
 
     assert handoff["handoff_pointer_path"] == pointer_path
