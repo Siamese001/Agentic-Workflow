@@ -10,6 +10,26 @@ Root `AGENTS.md` is the Codex-facing execution adapter. Codex is the primary loc
 
 **Layer separation:** Reasoning / Routing / Execution / Verification — no edits before plan approval.
 
+## Wave Refactoring Protocol
+
+Before performing refactoring work, read and follow:
+
+`docs/refactoring-wave-protocol.md`
+
+Required behavior:
+
+- Execute only the currently approved wave.
+- Make the smallest sufficient change.
+- Preserve behavior not explicitly targeted.
+- Do not perform unrelated cleanup or later-wave work.
+- Obtain human-in-the-loop approval before any material scope deviation.
+- Stop and raise a deviation request when the approved objective cannot be
+  completed safely without expanding scope.
+- Validate the wave before claiming completion.
+- Place optional findings in the subsequent-refactoring backlog.
+- Complete the core objective within no more than six waves.
+- Treat `docs/refactoring-wave-protocol.md` as the authoritative protocol.
+
 ## MCP Quick Reference
 
 > Stable IDs are the `mcpServers` keys in root `.mcp.json` (repo MCP SSOT). Live tool prefixes like `mcp0_`, `mcp1_`, and so on can shift when server order changes. Resolve the live prefix from the current tool list in-session.

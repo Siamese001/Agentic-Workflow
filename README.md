@@ -337,6 +337,7 @@ Registry status as of the committed docs snapshot:
 - **Rollout Closeout:** [`docs/architecture/ROLLOUT_CLOSEOUT.md`](docs/architecture/ROLLOUT_CLOSEOUT.md)
 - **Release Readiness:** [`docs/architecture/RELEASE_READINESS.md`](docs/architecture/RELEASE_READINESS.md)
 - **Governed-App Contract:** [`docs/architecture/governed-app-contract.md`](docs/architecture/governed-app-contract.md)
+- **Refactoring Wave Protocol:** [`docs/refactoring-wave-protocol.md`](docs/refactoring-wave-protocol.md)
 - **Architecture ADRs:** [`docs/architecture/adr/`](docs/architecture/adr/)
 - **Standards:** [`docs/STANDARDS.md`](docs/STANDARDS.md)
 
