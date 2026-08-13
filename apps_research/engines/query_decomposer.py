@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Literal
 
 from apps_research.types.jd_intent_coverage import (
+    EvidenceIntent,
     infer_evidence_intents,
     intent_ids,
     required_families_for_intents,
@@ -258,6 +259,7 @@ class QueryPlan:
     query: str
     min_sources: int
     jd_boosted: bool = False
+    supplemental_queries: tuple[str, ...] = ()
 
 
 def _jd_blob(jd_context: Dict[str, Any] | None) -> str:
@@ -280,6 +282,41 @@ def _ordered_unique(values: list[str]) -> list[str]:
         if value and value not in ordered:
             ordered.append(value)
     return ordered
+
+
+def _role_context_query(
+    topic: str,
+    jd_context: Dict[str, Any] | None,
+    intents: tuple[EvidenceIntent, ...],
+) -> tuple[str, tuple[str, ...]]:
+    """Build role-context retrieval from approved deterministic inputs only."""
+
+    context = jd_context or {}
+    nested = context.get("jd_context")
+    nested_role = nested.get("role") if isinstance(nested, dict) else ""
+    role = str(
+        context.get("job_title")
+        or context.get("role")
+        or nested_role
+        or ""
+    ).strip()
+    if not role:
+        query = _COVERAGE_FAMILY_CATALOG["role_context"]["query_template"].format(
+            topic=topic
+        )
+        return query, ()
+
+    role_synonyms = " ".join(
+        intent_id.replace("_", " ") for intent_id in intent_ids(intents)
+    )
+    primary = " ".join(part for part in (topic, role, role_synonyms) if part)
+    required_families = required_families_for_intents(intents)
+    if not required_families:
+        return primary, ()
+
+    expansion_cfg = _COVERAGE_FAMILY_CATALOG.get(required_families[0], {})
+    expansion = expansion_cfg.get("query_template", "").format(topic=topic).strip()
+    return primary, (expansion,) if expansion and expansion != primary else ()
 
 
 def decompose_coverage_families(
@@ -351,7 +388,15 @@ def decompose_coverage_families(
     plans: List[QueryPlan] = []
     for fam in base_families:
         cfg = _COVERAGE_FAMILY_CATALOG.get(fam, {})
-        query = cfg.get("query_template", "{topic} " + fam.replace("_", " ")).format(topic=stripped)
+        supplemental_queries: tuple[str, ...] = ()
+        if fam == "role_context":
+            query, supplemental_queries = _role_context_query(
+                stripped, jd_context, intents
+            )
+        else:
+            query = cfg.get(
+                "query_template", "{topic} " + fam.replace("_", " ")
+            ).format(topic=stripped)
         plans.append(QueryPlan(
             family=fam,
             query=query,
@@ -360,6 +405,7 @@ def decompose_coverage_families(
                 fam in {"role_context", "tech_stack_and_tools"}
                 or fam in intent_required_families
             ),
+            supplemental_queries=supplemental_queries,
         ))
     return plans
 

@@ -1,0 +1,22 @@
+{
+  "schema_version": "apps_rg.c03_graph_embedding_qualification_manifest.v1",
+  "status": "PASS",
+  "completion_marker": "GRAPH_EMBEDDINGS_QUALIFIED",
+  "query_qrels": {
+    "path": "graph_embedding_query_qrels.08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85.json",
+    "sha256": "08f8865fcf693606fb0ee1d1cfff9b7c63ffef2dc2e7eef4ec4e5ee96340ba85",
+    "file_sha256": "2505e89d3675dadf73aab3183ec9021eda2ffa349a5f03e03c8e8b051deedc61"
+  },
+  "thresholds": {
+    "path": "graph_embedding_qualification_thresholds.3bfda1a9eb216292781e081d7154e01d65f2b5c3f0bc9611963a02ce07c8a49f.json",
+    "sha256": "3bfda1a9eb216292781e081d7154e01d65f2b5c3f0bc9611963a02ce07c8a49f",
+    "file_sha256": "6b59b2de62d240db0d9ec6cb0d0f24e6e7b55307464bef89fcb302442f3f1cda"
+  },
+  "qualification": {
+    "path": "graph_embedding_qualification.d10426272e04e63230877ec4ba7ffb92fab2e17c3f33ddf780b2a8aaa530380a.json",
+    "sha256": "d10426272e04e63230877ec4ba7ffb92fab2e17c3f33ddf780b2a8aaa530380a",
+    "file_sha256": "27e9d8b6715b61d3d597c352d2180ce81f16508dc04817877f6dd0b88a8be130"
+  },
+  "embedding_generation_manifest_sha256": "9c9cd463d552b730034cb317872a3adba29c7a15c79d181ca4e5938495c4c485",
+  "manifest_sha256": "95d9f6231b9d610cf1c7a1d72abba22a62d91e0bddbb593a82fa331edb837409"
+}

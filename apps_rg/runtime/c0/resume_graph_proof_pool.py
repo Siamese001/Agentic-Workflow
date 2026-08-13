@@ -7,6 +7,11 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, Mapping
 
+from apps_rg.runtime.c0.graph_skill_embedding_allocation import (
+    GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV,
+    graph_skill_embeddings_required,
+    load_lane_embedding_allowlists,
+)
 from apps_rg.runtime.c0.resume_graph_allocation import (
     ALLOCATION_PLAN_ENV,
     SECTION_EVIDENCE_CONTRACTS_ENV,
@@ -53,6 +58,75 @@ def _active_whole_resume_inputs(
     return plan, contract
 
 
+def _active_embedding_binding(
+    section_id: str,
+    *,
+    allocation_plan: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, Any]] | None:
+    required = graph_skill_embeddings_required()
+    allowlists_ref = str(
+        os.environ.get(GRAPH_SKILL_EMBEDDING_ALLOWLISTS_ENV) or ""
+    ).strip()
+    if not required and not allowlists_ref:
+        return None
+    if not allowlists_ref:
+        raise ValueError(
+            f"{section_id}: mandatory graph skill embedding allowlists are unavailable"
+        )
+    payload = load_lane_embedding_allowlists(Path(allowlists_ref))
+    allocation_digest = str(allocation_plan.get("allocation_plan_digest") or "")
+    if str(payload.get("allocation_plan_digest") or "") != allocation_digest:
+        raise ValueError(
+            f"{section_id}: embedding allowlist allocation digest mismatch"
+        )
+    lanes = payload.get("lanes")
+    lane = lanes.get(section_id) if isinstance(lanes, Mapping) else None
+    if not isinstance(lane, Mapping) or lane.get("pass") is not True:
+        raise ValueError(f"{section_id}: embedding allowlist is missing or failed")
+    if str(lane.get("section_id") or "") != section_id:
+        raise ValueError(f"{section_id}: embedding allowlist section mismatch")
+    return payload, dict(lane)
+
+
+def _assert_embedding_allocation_parity(
+    section_id: str,
+    *,
+    sliced_plan: Mapping[str, Any],
+    lane_binding: Mapping[str, Any],
+) -> None:
+    allowlists = lane_binding.get("allowlists")
+    if not isinstance(allowlists, Mapping):
+        raise ValueError(f"{section_id}: embedding allowlist payload is malformed")
+
+    def values(rows: Any, key: str) -> set[str]:
+        return {
+            str(row.get(key) or "").strip()
+            for row in rows or []
+            if isinstance(row, Mapping) and str(row.get(key) or "").strip()
+        }
+
+    assignments = sliced_plan.get("allocation_assignments") or []
+    expected = {
+        "skill_ids": values(assignments, "skill_id"),
+        "fact_ids": values(assignments, "fact_id"),
+        "metric_ids": values(assignments, "metric_outcome_id"),
+    }
+    for key, expected_values in expected.items():
+        observed = {str(value) for value in allowlists.get(key) or []}
+        if observed != expected_values:
+            raise ValueError(f"{section_id}: embedding {key} allocation parity mismatch")
+    assertion_ids = {str(value) for value in allowlists.get("assertion_ids") or []}
+    bindings = [
+        row
+        for row in lane_binding.get("accepted_assertion_bindings") or []
+        if isinstance(row, Mapping)
+    ]
+    if not assertion_ids or assertion_ids != values(bindings, "assertion_id"):
+        raise ValueError(f"{section_id}: embedding assertion binding parity mismatch")
+    if values(bindings, "skill_id") != expected["skill_ids"]:
+        raise ValueError(f"{section_id}: embedding assertion/skill parity mismatch")
+
+
 def bind_proof_pool_to_resume_graph_allocation(pool: Any) -> Any:
     """Return a new frozen ``SectionProofPool`` narrowed to its allocation slice."""
     section_id = str(pool.section or "")
@@ -73,6 +147,19 @@ def bind_proof_pool_to_resume_graph_allocation(pool: Any) -> Any:
         final_evidence_contract=contract,
         section_id=section_id,
     )
+    embedding_active = _active_embedding_binding(
+        section_id,
+        allocation_plan=allocation_plan,
+    )
+    if embedding_active is not None:
+        embedding_payload, embedding_lane = embedding_active
+        _assert_embedding_allocation_parity(
+            section_id,
+            sliced_plan=sliced,
+            lane_binding=embedding_lane,
+        )
+    else:
+        embedding_payload, embedding_lane = {}, {}
     facts = [dict(row) for row in sliced.get("facts") or [] if isinstance(row, Mapping)]
     ordered, allowed = build_allowed_fact_ids_for_plan_facts(facts)
     bullet_rows = [plan_fact_to_employment_bullet_row(row) for row in facts]
@@ -93,8 +180,43 @@ def bind_proof_pool_to_resume_graph_allocation(pool: Any) -> Any:
                 contract.get("contract_digest") or ""
             ),
             "durable_graph_state_mutated": False,
+            "graph_skill_embeddings_required": graph_skill_embeddings_required(),
+            "graph_skill_embeddings_enabled": bool(embedding_lane),
         }
     )
+    if embedding_lane:
+        embedding_allowlists = dict(embedding_lane.get("allowlists") or {})
+        metadata.update(
+            {
+                "graph_skill_embedding_authority": dict(
+                    embedding_payload.get("authority") or {}
+                ),
+                "graph_skill_embedding_allowlists_digest": str(
+                    embedding_payload.get("allowlists_digest") or ""
+                ),
+                "graph_skill_embedding_lane_allowlist_digest": str(
+                    embedding_lane.get("lane_allowlist_digest") or ""
+                ),
+                "graph_skill_embedding_assertion_ids": list(
+                    embedding_allowlists.get("assertion_ids") or []
+                ),
+                "graph_skill_embedding_skill_ids": list(
+                    embedding_allowlists.get("skill_ids") or []
+                ),
+                "graph_skill_embedding_fact_ids": list(
+                    embedding_allowlists.get("fact_ids") or []
+                ),
+                "graph_skill_embedding_metric_ids": list(
+                    embedding_allowlists.get("metric_ids") or []
+                ),
+                "graph_skill_embedding_assertion_bindings": list(
+                    embedding_lane.get("accepted_assertion_bindings") or []
+                ),
+                "graph_skill_embedding_similarity_is_claim_authority": False,
+                "graph_skill_embedding_exact_rehydration_pass": True,
+                "graph_skill_embedding_allocation_intersection_pass": True,
+            }
+        )
     # ``slice_section_plan_for_allocation`` preserves the canonical source
     # plan digest while narrowing its fact rows.  Re-hashing the sliced
     # serialization creates a second, non-authoritative identity and breaks

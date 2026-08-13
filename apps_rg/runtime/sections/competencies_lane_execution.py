@@ -628,6 +628,50 @@ def run_competencies_lane_execution(
                 )
             # Injected anchor terms need claim_ledger rows so x2_all_terms_source_fact_ids holds.
             rebuild_claim_ledger_from_competencies(parsed, allowed_fact_ids)
+        selected_graph_plan = pp_meta.get("selected_graph_evidence_plan")
+        if isinstance(selected_graph_plan, dict) and selected_graph_plan.get(
+            "allocation_assignments"
+        ):
+            from apps_rg.runtime.c0.competencies_graph_authority import (
+                build_competencies_graph_authority_discrepancy_ledger,
+                reconcile_competencies_allocation_claim_units,
+            )
+
+            allocation_reconciliation = reconcile_competencies_allocation_claim_units(
+                parsed,
+                selected_plan=selected_graph_plan,
+                allowed_fact_ids=allowed_fact_ids,
+            )
+            discrepancy_ledger = build_competencies_graph_authority_discrepancy_ledger(
+                selected_plan=selected_graph_plan,
+                proof_pool_metadata=pp_meta,
+                parsed=parsed,
+                reconciliation_receipt=allocation_reconciliation,
+            )
+            write_json(
+                artifact_dir / "competencies_allocation_claim_reconciliation_receipt.json",
+                allocation_reconciliation,
+            )
+            write_json(
+                artifact_dir / "competencies_graph_authority_discrepancy_ledger.json",
+                discrepancy_ledger,
+            )
+            parsed["competencies_allocation_claim_reconciliation"] = {
+                "receipt_ref": _artifact_repo_rel(
+                    artifact_dir
+                    / "competencies_allocation_claim_reconciliation_receipt.json",
+                    REPO_ROOT,
+                ),
+                "receipt_digest": allocation_reconciliation["receipt_digest"],
+                "pass": allocation_reconciliation["pass"],
+            }
+            parsed["competencies_graph_authority_discrepancy_ledger"] = {
+                "ledger_ref": _artifact_repo_rel(
+                    artifact_dir / "competencies_graph_authority_discrepancy_ledger.json",
+                    REPO_ROOT,
+                ),
+                "ledger_digest": discrepancy_ledger["ledger_digest"],
+            }
         _post_finalize = json.dumps(parsed, sort_keys=True, separators=(",", ":"))
         if _post_finalize != _pre_finalize:
             record_deterministic_rewrite(

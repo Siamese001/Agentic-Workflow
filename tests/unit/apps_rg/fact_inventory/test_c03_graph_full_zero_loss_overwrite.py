@@ -119,10 +119,11 @@ def test_validation_hard_fails_when_overwrite_has_insufficient_heterogeneity():
         validate_c03_graph_hardening_payload(payload)
 
 
-def test_validation_reports_current_canonical_provenance_gaps():
+def test_validation_accepts_current_canonical_provenance():
     payload = json.loads(LEDGER_PATH.read_text(encoding="utf-8"))
-    with pytest.raises(ValueError, match="GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING"):
-        validate_c03_graph_hardening_payload(payload)
+    receipt = validate_c03_graph_hardening_payload(payload)
+    assert receipt["status"] == "PASS"
+    assert receipt.get("issues", []) == []
 
 
 def test_validation_passes_for_provenance_complete_canonical_fixture():
@@ -193,23 +194,15 @@ def test_hardening_validator_cli_is_stdout_only_unless_output_is_explicit(
     assert json.loads(output.read_text(encoding="utf-8"))["status"] == "PASS"
 
 
-def test_hardening_validator_cli_emits_structured_not_ready_receipt(
+def test_hardening_validator_cli_emits_structured_pass_receipt(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
     tmp_path: Path,
 ) -> None:
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(SystemExit) as exc_info:
-        validate_main(["--graph-path", str(LEDGER_PATH)])
-
-    assert exc_info.value.code == 2
+    validate_main(["--graph-path", str(LEDGER_PATH)])
     receipt = json.loads(capsys.readouterr().out)
-    assert receipt["status"] == "NOT_READY"
-    issue = next(
-        item
-        for item in receipt["issues"]
-        if item["code"] == "GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING"
-    )
-    assert issue["count"] == 84
+    assert receipt["status"] == "PASS"
+    assert receipt["issues"] == []
     assert not (tmp_path / "docs").exists()

@@ -15,35 +15,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,  # noqa: E402
-)
-
-
-def _get_routing_config_and_active():
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_snapshots_state(str(_uuid.uuid4()), "_get_routing_config_and_active", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_routing_config_and_active", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
-    _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "_get_routing_config_and_active")
-    from agentic_core.L4_state.config.versioned_configs import RoutingConfig, get_active_configs
-
-    return (RoutingConfig, get_active_configs)
-
 
 def _get_prior_detection_signal():
     from agentic_core.L4_state.types.detection_signal_store_types import get_prior_detection_signal
@@ -77,7 +48,7 @@ def evaluate_timeshift_routing(
     Args:
         execution_start_tick: The tick at which this execution started.
             Only signals committed BEFORE this tick are considered.
-        routing_config: Optional override; defaults to L4 SSOT RoutingConfig.
+        routing_config: Explicit immutable routing configuration for this run.
 
     Returns:
         TimeshiftRoutingDecision with mode and audit fields.
@@ -86,8 +57,7 @@ def evaluate_timeshift_routing(
     during this execution cycle cannot affect this decision.
     """
     if routing_config is None:
-        _, get_active_configs = _get_routing_config_and_active()
-        routing_config = get_active_configs().routing
+        raise ValueError("routing_config is required")
     threshold = routing_config.anomaly_routing_threshold
     prior = _get_prior_detection_signal()(execution_start_tick)
     if prior is not None and prior.anomaly_score >= threshold:

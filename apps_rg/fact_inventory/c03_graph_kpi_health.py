@@ -696,12 +696,28 @@ def _canonical_metrics(
             graph_fact_bindings[_string(edge.get("source_node_id"))].add(_string(edge.get("target_node_id")))
     claim_evidence_complete: list[dict[str, Any]] = []
     claim_evidence_failures: list[dict[str, Any]] = []
+    explicitly_ineligible = 0
     for row in skills:
         skill_id = _string(row.get("skill_id"))
         declared_fact_ids = set(_nonempty_strings(row.get("fact_id_links")))
         bound_fact_ids = graph_fact_bindings.get(skill_id, set())
         missing_bindings = sorted(declared_fact_ids - bound_fact_ids)
-        if declared_fact_ids and not missing_bindings:
+        retrieval_disposition = row.get("retrieval_eligible")
+        ineligibility_reason = _string(row.get("retrieval_ineligibility_reason"))
+        if retrieval_disposition is False and ineligibility_reason:
+            explicitly_ineligible += 1
+            claim_evidence_complete.append(row)
+        elif retrieval_disposition is False:
+            claim_evidence_failures.append(
+                {
+                    "skill_id": skill_id or "<blank-skill-id>",
+                    "declared_fact_ids": sorted(declared_fact_ids),
+                    "bound_graph_fact_ids": sorted(bound_fact_ids),
+                    "missing_graph_fact_bindings": missing_bindings,
+                    "reason": "non_retrieval_disposition_reason_missing",
+                }
+            )
+        elif declared_fact_ids and not missing_bindings:
             claim_evidence_complete.append(row)
         else:
             claim_evidence_failures.append(
@@ -719,10 +735,17 @@ def _canonical_metrics(
         "claim_evidence_completeness",
         len(claim_evidence_complete),
         len(skills),
-        "skill_rows whose declared fact_id_links are all bound by skill_supported_by_fact graph edges",
-        "all canonical skill_rows in the graph digest; source snippets are not graph fact bindings",
+        (
+            "skill_rows whose declared fact_id_links are all graph-bound, or whose explicit "
+            "non-retrieval disposition has a reason"
+        ),
+        (
+            "all canonical skill_rows in the graph digest; source snippets are not graph fact "
+            "bindings and cannot make a row retrieval-eligible"
+        ),
         failure_count=len(claim_evidence_failures),
         failure_locators=claim_evidence_failures,
+        details={"explicitly_non_retrieval_eligible": explicitly_ineligible},
     )
 
     provenance_nodes = [row for row in nodes if graph_node_requires_source_refs(row)]
@@ -812,7 +835,16 @@ def _canonical_metrics(
 
     edge_type_counts = Counter(_string(row.get("edge_type")) or "<blank-edge-type>" for row in edges)
     rare_minimum = int(policy.get("rare_edge_type_min_count") or 2)
-    rare_types = {edge_type: count for edge_type, count in edge_type_counts.items() if count < rare_minimum}
+    rare_exemptions = {
+        str(value).strip()
+        for value in policy.get("rare_edge_type_exemptions") or []
+        if str(value).strip()
+    }
+    rare_types = {
+        edge_type: count
+        for edge_type, count in edge_type_counts.items()
+        if count < rare_minimum and edge_type not in rare_exemptions
+    }
     rare_rows = sum(rare_types.values())
     collector.add(
         "rare_edge_type_rate",
@@ -824,7 +856,14 @@ def _canonical_metrics(
             {"edge_type": edge_type, "observed_count": count, "minimum_count": rare_minimum}
             for edge_type, count in rare_types.items()
         ),
-        details={"distinct_edge_type_count": len(edge_type_counts)},
+        details={
+            "distinct_edge_type_count": len(edge_type_counts),
+            "exempt_singleton_policy_edge_types": sorted(
+                edge_type
+                for edge_type, count in edge_type_counts.items()
+                if count < rare_minimum and edge_type in rare_exemptions
+            ),
+        },
     )
 
     bucket_counts = Counter(_string(metric_bucket_for_row(row)) or "<unclassified>" for row in skills)

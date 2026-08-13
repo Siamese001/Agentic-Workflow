@@ -136,19 +136,26 @@ def should_delegate_apps_research(
     return not apps_research_handoff_authorized(manual_brief, jd_ref=jd_ref)
 
 
-def _research_bridge() -> Any:
+def _research_bridge(*, artifact_runs_root: Path) -> Any:
     import importlib
 
+    output_root = Path(artifact_runs_root).resolve()
     if os.environ.get("APPS_RG_MOCK_RESEARCH", "").strip().lower() in (
         "1",
         "true",
         "yes",
     ):
         MockAppsResearchBridge = importlib.import_module("apps_rg.integrations.apps_research_bridge").MockAppsResearchBridge
-        return MockAppsResearchBridge(confidence_score=0.88)
+        return MockAppsResearchBridge(
+            confidence_score=0.88,
+            artifact_runs_root=output_root,
+        )
 
     AppsResearchBridge = importlib.import_module("apps_rg.integrations.apps_research_bridge").AppsResearchBridge
-    return AppsResearchBridge(capability_ref="apps_research.v1")
+    return AppsResearchBridge(
+        capability_ref="apps_research.v1",
+        artifact_runs_root=output_root,
+    )
 
 
 def _build_cli_ingress_envelope(
@@ -286,15 +293,21 @@ def _run_r3r4_research_hop(
         job_description_ref=job_description_ref,
         job_description_text=job_description_text,
     )
-    bridge = _research_bridge()
+    artifact_root = Path(artifact_dir).resolve()
+    artifact_runs_root = (artifact_root / "apps_research" / "runs").resolve()
+    artifact_runs_root.relative_to(artifact_root)
+    artifact_runs_root.mkdir(parents=True, exist_ok=True)
+    bridge = _research_bridge(artifact_runs_root=artifact_runs_root)
     _write_mock_elimination_proof(artifact_dir, bridge)
     sr.write_stage_receipt(
         artifact_dir / sr.FILENAME_ROUTE_PRE_RESEARCH,
         _route_contract_payload(route),
     )
+    request_receipt = dataclasses.asdict(req)
+    request_receipt["artifact_runs_root"] = str(artifact_runs_root)
     sr.write_stage_receipt(
         artifact_dir / sr.FILENAME_RESEARCH_BRIDGE_REQUEST,
-        dataclasses.asdict(req),
+        request_receipt,
     )
 
     outcome = dispatch_resume_research_briefing(req, bridge=bridge)
@@ -328,6 +341,7 @@ def _run_r3r4_research_hop(
                 "evidence_lineage": list(outcome.evidence_lineage),
                 "research_artifact_dir": outcome.research_artifact_dir,
                 "research_briefing_path": outcome.research_briefing_path,
+                "artifact_runs_root": str(producer_run_dir.parent.resolve()),
                 "apps_research_handoff_v2": outcome.apps_research_handoff_envelope,
             },
         )
@@ -1124,10 +1138,23 @@ def run_whole_run_with_route_governance(
         )
         failed["e2e_stage_ledger"] = str(stage_ledger.path)
         return failed
+    from apps_rg.runtime.spine.validated_request_contract import (
+        CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        write_validated_request_contract,
+    )
+
+    write_validated_request_contract(
+        art / CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        validated_request,
+        consumer_stage="section_lane_modular",
+    )
     stage_ledger.record(
         stage_id="U0",
         status="PASS",
-        output_refs={"u0_receipt": sr.FILENAME_U0_RECEIPT},
+        output_refs={
+            "u0_receipt": sr.FILENAME_U0_RECEIPT,
+            "validated_request": CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+        },
     )
     l1_plan = l1_plan_apps_rg(validated_request)
     stage_ledger.record(
@@ -1220,7 +1247,15 @@ def run_whole_run_with_route_governance(
             "request_id": validated_request.request_id,
             "run_id": validated_request.run_id,
             "trace_id": validated_request.trace_id,
+            "trace_root": validated_request.trace_root,
+            "tenant_id": validated_request.tenant_id,
             "payload_digest": validated_request.payload_digest,
+            "authority_contract_id": (
+                validated_request.authority_validation_receipt.authority_contract_id
+            ),
+            "authority_receipt_digest": (
+                validated_request.authority_validation_receipt.authority_receipt_digest
+            ),
             "identity": dict(handoff_identity) if isinstance(handoff_identity, dict) else {},
         },
     )

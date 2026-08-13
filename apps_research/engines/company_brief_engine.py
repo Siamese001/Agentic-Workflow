@@ -20,22 +20,22 @@ from pathlib import Path
 from typing import Any, Dict, Final, List, Optional
 
 from apps_research.engines.base_research_engine import BaseResearchEngine
-from apps_research.integrations.llm_client import create_openai_sync_client
 
 # W2 (apps-research-spine-deferred-followup-9c3e1a P2.2) — import catalog
 # and helpers from query_decomposer (L1 cognition layer). Re-export them
 # here so existing test imports from company_brief_engine continue to work
 # as a backward-compat shim.
 from apps_research.engines.query_decomposer import (  # noqa: F401
-    QueryPlan,
     _COVERAGE_FAMILY_CATALOG,
     _DEPTH_PARAM_MAP,
     _DEPTH_PROFILES,
     _PROFILE_REQUIRED_FAMILIES,
+    QueryPlan,
     _resolve_depth_profile,
-    describe_jd_retrieval_contract,
     decompose_coverage_families,
+    describe_jd_retrieval_contract,
 )
+from apps_research.integrations.llm_client import create_openai_sync_client
 from apps_research.types.jd_intent_coverage import (
     infer_evidence_intents,
     required_families_for_intents,
@@ -203,6 +203,7 @@ class CompanyBriefEngine(BaseResearchEngine):
                 topic=topic,
                 depth_profile=depth_profile,
                 jd_context=jd_context,
+                retrieval_receipt_path=self._resolve_retrieval_receipt_path(jd_context),
             )
         else:
             research_findings = self._run_research_adaptive(
@@ -297,7 +298,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         if targeting_disposition:
             targeting_md = str(synthesized.get("apps_rg_targeting_brief_markdown") or "").strip()
             targeting_sidecar = synthesized.get("apps_rg_targeting_brief_sidecar") or {}
-            gate_blocks = str(gate_verdict).upper() in {"FAIL", "EMPTY", "CONFLICTED"}
+            gate_blocks = str(gate_verdict).upper() != "PASS"
             if targeting_md and not gate_blocks and targeting_disposition == "SEALED":
                 brief["apps_rg_targeting_brief_text"] = targeting_md
                 brief["company_brief_text"] = targeting_md
@@ -366,6 +367,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         depth_profile: str | None = None,
         jd_context: Dict[str, Any] | None = None,
         depth: str | None = None,
+        retrieval_receipt_path: Path | None = None,
     ) -> Dict[str, str]:
         """V2 retrieval pipeline: plan coverage families -> retrieve -> rerank.
 
@@ -376,10 +378,12 @@ class CompanyBriefEngine(BaseResearchEngine):
         """
         import concurrent.futures
 
-        from apps_research.engines.query_decomposer import QueryPlan, decompose_coverage_families
+        from apps_research.engines.query_decomposer import decompose_coverage_families
         from apps_research.integrations.reranker_adapter import rerank
         from apps_research.integrations.search_retrieval import (
+            RetryableRetrievalTransportError,
             apply_contextual_prefix,
+            retrieval_config_snapshot,
             retrieve,
         )
 
@@ -397,6 +401,7 @@ class CompanyBriefEngine(BaseResearchEngine):
         if jd_context:
             required_targeting_families = [
                 "company_basics",
+                "role_context",
                 "competitive_landscape",
                 "leadership_and_org",
                 "recent_news_and_signals",
@@ -413,24 +418,217 @@ class CompanyBriefEngine(BaseResearchEngine):
             max_queries = max(max_queries, required_planned_count)
         plans = plans[:max_queries]
 
-        def _fetch(plan: QueryPlan) -> tuple[str, str]:
-            try:
-                docs = retrieve(plan.query, top_k=10)
-            except (RuntimeError, ValueError) as exc:
-                self.logger.info(
-                    "[CompanyBriefEngine v2] retrieve skipped for family=%s: %s",
-                    plan.family,
-                    exc,
+        config_snapshot = retrieval_config_snapshot(
+            query_families=[plan.family for plan in plans]
+        )
+        config_bytes = json.dumps(
+            config_snapshot,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        config_digest = "sha256:" + hashlib.sha256(config_bytes).hexdigest()
+        base_url_origin = str(config_snapshot.get("base_url_origin") or "").rstrip("/")
+        endpoint = f"{base_url_origin}/search" if base_url_origin else "UNCONFIGURED"
+
+        def _document_ref(document: Any) -> tuple[str, str, str, float]:
+            return (
+                str(getattr(document, "url", "") or ""),
+                str(getattr(document, "title", "") or ""),
+                str(getattr(document, "snippet", "") or ""),
+                float(getattr(document, "score", 0.0) or 0.0),
+            )
+
+        def _document_payload(document: Any) -> dict[str, Any]:
+            url, title, snippet, score = _document_ref(document)
+            return {
+                "url": url,
+                "title": title,
+                "snippet": snippet,
+                "score": score,
+                "engines": list(getattr(document, "engines", ()) or ()),
+            }
+
+        def _exception_payload(
+            *, attempt: int, status: str, exc: BaseException
+        ) -> dict[str, Any]:
+            return {
+                "attempt": attempt,
+                "status": status,
+                "exception_type": type(exc).__name__,
+                "exception_message": " ".join(str(exc).split()),
+            }
+
+        def _fetch(plan: QueryPlan) -> tuple[str, str, dict[str, Any]]:
+            search_queries = (plan.query, *plan.supplemental_queries)
+            row: dict[str, Any] = {
+                "family": plan.family,
+                "query": plan.query,
+                "queries": list(search_queries),
+                "min_sources": plan.min_sources,
+                "jd_boosted": plan.jd_boosted,
+                "retrieval_endpoint": endpoint,
+                "configuration_identity": {
+                    "provider": config_snapshot.get("provider"),
+                    "provider_profile": config_snapshot.get("provider_profile"),
+                    "digest": config_digest,
+                },
+                "retrieval_attempt_status": "PENDING",
+                "attempts": [],
+                "query_receipts": [],
+                "documents_before_rerank": 0,
+                "documents_identity_admissible": 0,
+                "documents_after_rerank": 0,
+                "accepted_documents": [],
+                "snippets_rejected": [],
+                "grounded_character_count": 0,
+                "finding_digest": "",
+            }
+            docs: list[Any] = []
+            seen_docs: set[tuple[str, str, str, float]] = set()
+            retry_available = True
+            query_failed = False
+            for search_query in search_queries:
+                query_receipt: dict[str, Any] = {
+                    "query": search_query,
+                    "status": "PENDING",
+                    "attempts": [],
+                    "documents_returned": 0,
+                }
+                query_docs: list[Any] = []
+                attempt = 1
+                while True:
+                    try:
+                        query_docs = retrieve(search_query, top_k=10)
+                    except RetryableRetrievalTransportError as exc:
+                        status = "RETRY" if retry_available else "FAILED"
+                        payload = _exception_payload(
+                            attempt=attempt, status=status, exc=exc
+                        )
+                        row["attempts"].append(payload)
+                        query_receipt["attempts"].append(payload)
+                        if retry_available:
+                            retry_available = False
+                            attempt += 1
+                            continue
+                        query_receipt["status"] = "FAILED"
+                        query_failed = True
+                        break
+                    except (RuntimeError, ValueError) as exc:
+                        payload = _exception_payload(
+                            attempt=attempt, status="FAILED", exc=exc
+                        )
+                        row["attempts"].append(payload)
+                        query_receipt["attempts"].append(payload)
+                        query_receipt["status"] = "FAILED"
+                        query_failed = True
+                        break
+                    payload = {"attempt": attempt, "status": "PASS"}
+                    row["attempts"].append(payload)
+                    query_receipt["attempts"].append(payload)
+                    query_receipt["status"] = "PASS"
+                    query_receipt["documents_returned"] = len(query_docs)
+                    break
+                row["query_receipts"].append(query_receipt)
+                for document in query_docs:
+                    ref = _document_ref(document)
+                    if ref not in seen_docs:
+                        seen_docs.add(ref)
+                        docs.append(document)
+
+            row["documents_before_rerank"] = len(docs)
+            if not docs:
+                row["retrieval_attempt_status"] = (
+                    "FAILED" if query_failed else "ZERO_DOCUMENTS"
                 )
-                return plan.family, ""
-            top = rerank(plan.query, docs, cutoff=5)
+                return plan.family, "", row
+
+            if plan.family == "role_context":
+                identity = " ".join(topic.lower().split())
+                compact_identity = re.sub(r"[^a-z0-9]+", "", identity)
+                identity_docs: list[Any] = []
+                for document in docs:
+                    payload = _document_payload(document)
+                    missing_fields = [
+                        field
+                        for field in ("title", "url", "snippet")
+                        if not str(payload.get(field) or "").strip()
+                    ]
+                    if not payload["engines"]:
+                        missing_fields.append("engines")
+                    if missing_fields:
+                        row["snippets_rejected"].append(
+                            {
+                                "url": payload["url"],
+                                "title": payload["title"],
+                                "reason": "REQUIRED_EVIDENCE_FIELDS_MISSING",
+                                "missing_fields": missing_fields,
+                            }
+                        )
+                        continue
+                    haystack = " ".join(
+                        str(payload.get(field) or "")
+                        for field in ("title", "url", "snippet")
+                    ).lower()
+                    compact_haystack = re.sub(r"[^a-z0-9]+", "", haystack)
+                    if identity in haystack or compact_identity in compact_haystack:
+                        identity_docs.append(document)
+                    else:
+                        row["snippets_rejected"].append(
+                            {
+                                "url": payload["url"],
+                                "title": payload["title"],
+                                "reason": "COMPANY_IDENTITY_MISMATCH",
+                            }
+                        )
+                docs = identity_docs
+
+            row["documents_identity_admissible"] = len(docs)
+            if not docs:
+                row["retrieval_attempt_status"] = "NO_ADMISSIBLE_DOCUMENTS"
+                return plan.family, "", row
+
+            try:
+                top = rerank(plan.query, docs, cutoff=5)
+            except (RuntimeError, ValueError) as exc:
+                row["retrieval_attempt_status"] = "RERANK_FAILED"
+                row["rerank_exception"] = _exception_payload(
+                    attempt=1,
+                    status="FAILED",
+                    exc=exc,
+                )
+                return plan.family, "", row
+
+            row["documents_after_rerank"] = len(top)
+            top_refs = {_document_ref(document) for document in top}
+            for document in docs:
+                if _document_ref(document) not in top_refs:
+                    row["snippets_rejected"].append(
+                        {
+                            "url": str(getattr(document, "url", "") or ""),
+                            "title": str(getattr(document, "title", "") or ""),
+                            "reason": "RERANK_DROPPED",
+                        }
+                    )
+            if not top:
+                row["retrieval_attempt_status"] = "RERANK_EMPTY"
+                return plan.family, "", row
+
             # Plan §P4.5 — wrap each chunk with Anthropic contextual prefix
             # so the downstream synthesizer sees the same template audit
             # grep uses (<document>/<chunk_context>).
             chunks: list[str] = []
             for d in top:
                 if not d.snippet:
+                    row["snippets_rejected"].append(
+                        {
+                            "url": str(d.url or ""),
+                            "title": str(d.title or ""),
+                            "reason": "EMPTY_SNIPPET",
+                        }
+                    )
                     continue
+                row["accepted_documents"].append(_document_payload(d))
                 chunk = f"- {d.title}: {d.snippet} ({d.url})"
                 if d.url:
                     chunk = f"{chunk}\n{d.url}"
@@ -442,18 +640,95 @@ class CompanyBriefEngine(BaseResearchEngine):
                     )
                 )
             blob = "\n\n".join(chunks)
-            return plan.family, blob
+            row["grounded_character_count"] = len(blob)
+            row["finding_digest"] = (
+                "sha256:" + hashlib.sha256(blob.encode("utf-8")).hexdigest()
+                if blob
+                else ""
+            )
+            row["retrieval_attempt_status"] = (
+                "PASS" if blob else "NO_ADMISSIBLE_SNIPPETS"
+            )
+            return plan.family, blob, row
 
         findings: Dict[str, str] = {plan.family: "" for plan in plans}
+        family_receipts: list[dict[str, Any]] = []
         max_workers = max(1, min(5, len(plans)))
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
-            for family, blob in pool.map(_fetch, plans):
+            for family, blob, family_receipt in pool.map(_fetch, plans):
                 findings[family] = blob
+                family_receipts.append(family_receipt)
+
+        grounded_family_count = sum(
+            1 for row in family_receipts if row["retrieval_attempt_status"] == "PASS"
+        )
+        receipt = {
+            "schema_version": "apps_research.retrieval_receipt.v1",
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "topic": topic,
+            "depth_profile": resolved_depth_profile,
+            "configuration": config_snapshot,
+            "configuration_digest": config_digest,
+            "families": family_receipts,
+            "summary": {
+                "status": "PASS" if grounded_family_count else "BLOCKED",
+                "planned_family_count": len(plans),
+                "grounded_family_count": grounded_family_count,
+                "grounded_source_count": sum(
+                    len(row["accepted_documents"]) for row in family_receipts
+                ),
+                "unexplained_failure_count": sum(
+                    1
+                    for row in family_receipts
+                    if row["retrieval_attempt_status"] == "PENDING"
+                ),
+            },
+        }
+        digest_payload = json.dumps(
+            receipt,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        receipt["receipt_digest"] = "sha256:" + hashlib.sha256(digest_payload).hexdigest()
+        if retrieval_receipt_path is not None:
+            self._write_retrieval_receipt(retrieval_receipt_path, receipt)
+
         if not any((blob or "").strip() for blob in findings.values()):
+            receipt_ref = str(retrieval_receipt_path) if retrieval_receipt_path else "not_configured"
             raise CompanyBriefUnavailableError(
-                f"{topic}: v2 research returned no grounded findings"
+                f"{topic}: v2 research returned no grounded findings; "
+                f"retrieval_receipt={receipt_ref}"
             )
         return findings
+
+    @staticmethod
+    def _resolve_retrieval_receipt_path(jd_context: Dict[str, Any]) -> Path | None:
+        raw_path = str(jd_context.get("_retrieval_receipt_path") or "").strip()
+        if not raw_path:
+            return None
+        path = Path(raw_path)
+        if not path.is_absolute():
+            raise CompanyBriefUnavailableError("retrieval receipt path must be absolute")
+        resolved = path.resolve()
+        runs_root = resolved.parent / "runs"
+        if resolved.name != "retrieval_receipt.json" or not runs_root.is_dir():
+            raise CompanyBriefUnavailableError(
+                "retrieval receipt path must be beside the existing Apps Research runs directory"
+            )
+        return resolved
+
+    @staticmethod
+    def _write_retrieval_receipt(path: Path, receipt: dict[str, Any]) -> None:
+        payload = json.dumps(
+            receipt,
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=True,
+        ).encode("utf-8") + b"\n"
+        temporary_path = path.with_name(path.name + ".tmp")
+        temporary_path.write_bytes(payload)
+        os.replace(temporary_path, path)
 
     def _run_research(self, *, topic: str, depth: str) -> Dict[str, str]:
         """Best-effort SearXNG research per facet.
@@ -506,11 +781,11 @@ class CompanyBriefEngine(BaseResearchEngine):
         jd_context), emits apps_rg targeting markdown per
         ``apps_rg_targeting_brief_v1.md``.
         """
-        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
-            consumer_brief_template_id,
-        )
         from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
             apps_rg_targeting_brief_enabled,
+        )
+        from apps_research.prompt_assembly.consumer_briefs import (  # noqa: PLC0415
+            consumer_brief_template_id,
         )
 
         consumer_template_id = consumer_brief_template_id(jd_context=jd_context)
@@ -656,6 +931,9 @@ class CompanyBriefEngine(BaseResearchEngine):
         identification. The JD is passed as relevance context only.
 
         """
+        from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
+            x2_judge_receipt_passes,
+        )
         from apps_research.prompt_assembly.apps_rg_targeting_brief import (  # noqa: PLC0415
             build_targeting_brief_prompt,
             extract_jd_text,
@@ -666,9 +944,6 @@ class CompanyBriefEngine(BaseResearchEngine):
             assess_targeting_brief_semantics,
             normalize_targeting_brief_text,
             seal_targeting_brief,
-        )
-        from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
-            x2_judge_receipt_passes,
         )
 
         company_name = str(jd_context.get("company_name") or "").strip() or topic
@@ -1017,15 +1292,15 @@ class CompanyBriefEngine(BaseResearchEngine):
         source_register: list[dict[str, Any]] | None = None,
     ) -> Dict[str, Any]:
         """Build the structured sidecar carried from apps_research to apps_rg."""
-        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
-            assess_targeting_brief_semantics,
-            validate_targeting_brief_text,
-        )
         from apps_research.integrations.apps_rg_handoff import (  # noqa: PLC0415
             APPS_RG_HANDOFF_GENERATION_PROVIDER,
             x2_judge_receipt_passes,
         )
         from apps_research.integrations.search_retrieval import retrieval_config_snapshot  # noqa: PLC0415
+        from apps_research.types.apps_rg_targeting_brief_contract import (  # noqa: PLC0415
+            assess_targeting_brief_semantics,
+            validate_targeting_brief_text,
+        )
 
         semantics = semantic_override or assess_targeting_brief_semantics(
             brief_text,

@@ -1,0 +1,22 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "contract": "IngestionSnapshotLoaderV1",
+  "status": "BLOCKED",
+  "blocker": "SR0A_INGESTION_PRODUCER_AUTHORITY_REQUIRED",
+  "required_minimum_independent_evidence_sources": 2,
+  "qualifying_evidence_sources_found": 1,
+  "qualifying_evidence_sources": [
+    "source consumer: agentic_core/L2_execution/config/hybrid_retriever_config.py"
+  ],
+  "missing_evidence": [
+    "valid snapshot schema",
+    "source-controlled fixture or replay fixture",
+    "executable producer",
+    "canonical build path",
+    "contract test"
+  ],
+  "consumer_observation": "The consumer expects opaque chunk dictionaries with text and rebuilds a BM25 cache, but does not define provenance, input selection, transformation, or publication semantics.",
+  "offline_builder_implemented": false,
+  "synthetic_or_pass_through_payload_created": false,
+  "result": "No offline build was attempted."
+}

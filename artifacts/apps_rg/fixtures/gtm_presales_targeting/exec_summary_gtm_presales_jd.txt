@@ -1,0 +1,15 @@
+SVP Technical Pre-Sales and Enterprise Solution Architecture — agentic AI, cloud, and data platforms.
+
+Required emphasis:
+- Technical pre-sales and enterprise solution architecture for complex pursuits
+- Go-to-market support: discovery, qualification, solution mapping, stakeholder alignment
+- Executive buyer alignment and commercial validation pilots
+- Pre-sales to delivery handoff and joint vendor / hyperscaler roadmaps
+- Enterprise deal support and measurable ROI from pilot engagements
+- Cloud and AWS modernization patterns, migration and modernization sales motions
+- DevOps pipeline and CI/CD blueprinting for customer modernization programs
+- Reference architectures and industry solution patterns
+- Demoable solution accelerators and reusable implementation accelerators
+- Partnership alliances, co-sell, channel GTM, and cloud vendor solution roadmaps
+
+De-emphasize: pure internal-only engineering narratives without customer-facing solutioning or GTM context.

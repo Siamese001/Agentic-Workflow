@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "decision_id": "SR0A_INGESTION_SNAPSHOT_AUTHORITY",
+  "decision_status": "APPROVED",
+  "evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+  "recovered_evidence": [
+    "The frozen source reads a local index cache when present and imports an absent ingestion loader on a cache miss.",
+    "No source-controlled ingestion producer, schema, version, digest, artifact classification, or durable-write authority exists.",
+    "The available retriever test is import-only and is DIAGNOSTIC_EVIDENCE, not contract proof."
+  ],
+  "options": [
+    {
+      "option_id": "SR0A_OPTION_A",
+      "name": "Read-only runtime loader plus explicit offline deterministic builder",
+      "recommendation": "APPROVED",
+      "authority_effect": "Runtime reads remain side-effect free; artifact generation is an explicit offline operation.",
+      "benefits": [
+        "Minimizes runtime authority.",
+        "Separates reads from derived-artifact generation.",
+        "Avoids hidden cache mutation.",
+        "Supports replay and standalone extraction.",
+        "Does not require Redis or legacy bootstrap dependencies."
+      ],
+      "risks_or_required_approval": [
+        "The artifact classification must be approved.",
+        "The canonical input and configuration authorities must be approved.",
+        "The builder publication authority must be approved before implementation."
+      ]
+    },
+    {
+      "option_id": "SR0A_OPTION_B",
+      "name": "Runtime loader may request a rebuild through a separately authorized mutation workflow",
+      "recommendation": "NOT_RECOMMENDED",
+      "authority_effect": "Introduces a runtime mutation boundary.",
+      "rejection_reason": "The frozen source does not establish the required mutation workflow, write authority, publication rules, or replay semantics."
+    },
+    {
+      "option_id": "SR0A_OPTION_C",
+      "name": "Exclude the ingestion-cache path from supported Apps RG behavior",
+      "recommendation": "NOT_RECOMMENDED",
+      "authority_effect": "Removes a conditionally reachable behavior from scope.",
+      "rejection_reason": "No approved supported-behavior disposition establishes that exclusion."
+    }
+  ],
+  "recommended_option": "SR0A_OPTION_A",
+  "approved_option": "SR0A_OPTION_A",
+  "approving_authority": "Conversation principal — Architecture Owner",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "approval_channel": "architecture-owner decision supplied in project conversation",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "proposed_contract": {
+    "name": "IngestionSnapshotLoaderV1",
+    "schema_path": "artifacts/apps_rg_source_refreeze/sr0h/schemas/ingestion_snapshot_loader_v1.proposed.schema.json",
+    "artifact_classification_recommendation": "OFFLINE_DERIVED_ARTIFACT",
+    "artifact_classification_approved": "OFFLINE_DERIVED_ARTIFACT",
+    "runtime_policy": "READ_ONLY_FAIL_CLOSED",
+    "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT"
+  },
+  "proposed_test_inventory": [
+    "valid_snapshot_hit",
+    "missing_snapshot",
+    "stale_snapshot",
+    "malformed_snapshot",
+    "wrong_input_digest",
+    "wrong_configuration_digest",
+    "wrong_schema_version",
+    "wrong_builder_version",
+    "partial_publication",
+    "source_drift_during_offline_build",
+    "deterministic_repeated_build",
+    "concurrent_builder_attempt",
+    "unauthorized_runtime_rebuild",
+    "zero_runtime_writes",
+    "zero_network_attempts",
+    "zero_provider_attempts",
+    "zero_source_mutation",
+    "zero_target_repository_dependency"
+  ]
+}

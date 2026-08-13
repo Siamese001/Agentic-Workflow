@@ -185,7 +185,7 @@ def test_granularity_validator_cli_is_stdout_only_unless_output_is_explicit(
     assert json.loads(output.read_text(encoding="utf-8"))["validation"] == "PASS"
 
 
-def test_granularity_validator_cli_emits_structured_not_ready_receipt(
+def test_granularity_validator_cli_emits_structured_pass_receipt(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
     tmp_path: Path,
@@ -195,16 +195,8 @@ def test_granularity_validator_cli_emits_structured_not_ready_receipt(
     ).resolve()
     monkeypatch.chdir(tmp_path)
 
-    with pytest.raises(SystemExit) as exc_info:
-        validate_main(["--graph-path", str(canonical_path)])
-
-    assert exc_info.value.code == 2
+    validate_main(["--graph-path", str(canonical_path)])
     receipt = json.loads(capsys.readouterr().out)
-    assert receipt["status"] == "NOT_READY"
-    issue = next(
-        item
-        for item in receipt["issues"]
-        if item["code"] == "GRAPH_NODE_REQUIRED_SOURCE_REFS_MISSING"
-    )
-    assert issue["count"] == 84
+    assert receipt["status"] == "PASS"
+    assert receipt["issues"] == []
     assert not (tmp_path / "docs").exists()

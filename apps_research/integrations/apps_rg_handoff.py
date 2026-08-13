@@ -128,6 +128,15 @@ def _sha256_bytes(payload: bytes) -> str:
     return "sha256:" + hashlib.sha256(payload).hexdigest()
 
 
+def _bundle_directory_name(*, root: Path, run_id: str) -> str:
+    """Compact a physical key only when the complete bundle would exceed MAX_PATH."""
+    longest_member = "apps_research_handoff_validation_receipt.json"
+    if len(str(root / run_id / longest_member)) < 260:
+        return run_id
+    digest = hashlib.sha256(run_id.encode("utf-8")).hexdigest()[:24]
+    return f"r-{digest}"
+
+
 def _canonical_json_bytes(payload: Any, *, pretty: bool = True) -> bytes:
     options: dict[str, Any] = {
         "ensure_ascii": False,
@@ -149,13 +158,20 @@ def _write_fsync(path: Path, payload: bytes) -> None:
         os.fsync(handle.fileno())
 
 
-def _fsync_directory(path: Path) -> None:
+def _directory_fsync_status() -> str:
+    return "UNSUPPORTED" if os.name == "nt" else "PASS"
+
+
+def _fsync_directory(path: Path) -> str:
+    if os.name == "nt":
+        return "UNSUPPORTED"
     flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
     descriptor = os.open(path, flags)
     try:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
+    return "PASS"
 
 
 def looks_like_stub_company_brief(text: str) -> bool:
@@ -823,7 +839,7 @@ def persist_apps_rg_targeting_brief_artifacts(
     if not safe_run_id:
         raise RuntimeError("apps_research targeting run_id cannot form an artifact path")
     root = (runs_root or _default_apps_research_runs_root()).resolve()
-    run_dir = root / safe_run_id
+    run_dir = root / _bundle_directory_name(root=root, run_id=safe_run_id)
     briefing_path = run_dir / "briefing.md"
     company_brief_path = run_dir / "company_brief.json"
     metadata_path = run_dir / "run_metadata.json"
@@ -892,7 +908,7 @@ def persist_apps_rg_targeting_brief_artifacts(
     root.mkdir(parents=True, exist_ok=True)
     if run_dir.exists():
         raise RuntimeError(f"apps_research committed run directory already exists: {run_dir}")
-    stage_dir = root / f".{safe_run_id}.staging-{uuid.uuid4().hex}"
+    stage_dir = root / f".s-{uuid.uuid4().hex[:24]}"
 
     artifact_payloads: dict[str, bytes] = {
         "job_description.raw.txt": raw_input_bytes,
@@ -936,6 +952,7 @@ def persist_apps_rg_targeting_brief_artifacts(
     artifact_manifest_sha = _sha256_bytes(
         _canonical_json_bytes(artifact_rows, pretty=False)
     )
+    directory_fsync_status = _directory_fsync_status()
     handoff_id = f"apps-research-rg:{run_id}"
     marker = {
         "schema_version": "apps_research.apps_rg_bundle_commit_manifest.v1",
@@ -1045,10 +1062,17 @@ def persist_apps_rg_targeting_brief_artifacts(
         },
         "commit_protocol": {
             "protocol": "write_fsync_atomic_rename_marker.v1",
+            "artifact_runs_root": str(root),
             "temporary_bundle_ref": str(stage_dir),
             "committed_bundle_ref": str(run_dir),
             "commit_marker_ref": str(commit_manifest_path),
             "commit_marker_sha256": _sha256_bytes(marker_bytes),
+            "final_bundle_digest": artifact_manifest_sha,
+            "directory_fsync": {
+                "platform": os.name,
+                "stage": directory_fsync_status,
+                "root": directory_fsync_status,
+            },
             "consumer_validation_receipt_name": "apps_research_handoff_validation_receipt.json",
         },
         "created_at_utc": emitted_at,
@@ -1062,9 +1086,11 @@ def persist_apps_rg_targeting_brief_artifacts(
         _write_fsync(stage_dir / handoff_v2_path.name, handoff_v2_bytes)
         # Commit marker is intentionally the final file written in staging.
         _write_fsync(stage_dir / commit_manifest_path.name, marker_bytes)
-        _fsync_directory(stage_dir)
+        if _fsync_directory(stage_dir) != directory_fsync_status:
+            raise RuntimeError("stage directory fsync status changed during publication")
         os.replace(stage_dir, run_dir)
-        _fsync_directory(root)
+        if _fsync_directory(root) != directory_fsync_status:
+            raise RuntimeError("root directory fsync status changed during publication")
     except BaseException:  # guardian: allow-broad-exception -- atomic publisher cleanup boundary; always re-raises
         if stage_dir.exists():
             shutil.rmtree(stage_dir, ignore_errors=True)

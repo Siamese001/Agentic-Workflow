@@ -6,7 +6,6 @@ import json
 import re
 from typing import Any
 
-
 _REF_BLOCK = {
     "selected_fact_plan_path": "selected_fact_plan.json",
     "text_claim_coverage_path": "text_claim_coverage.json",
@@ -43,7 +42,11 @@ def normalize_exec_summary_claim_row(row: Any) -> dict[str, Any]:
         ids = [str(x) for x in raw_ids]
     else:
         ids = [str(raw_ids)]
-    return {"claim_text": text, "source_fact_ids": ids}
+    normalized: dict[str, Any] = {"claim_text": text, "source_fact_ids": ids}
+    claim_unit_id = str(row.get("claim_unit_id") or "").strip()
+    if claim_unit_id:
+        normalized["claim_unit_id"] = claim_unit_id
+    return normalized
 
 
 def normalize_exec_summary_claim_ledger(rows: list[Any]) -> list[dict[str, Any]]:
@@ -59,13 +62,15 @@ def build_canonical_claim_ledger_v2_document(
     for i, row in enumerate(normalized_rows, start=1):
         ct = str(row.get("claim_text") or "")
         ids = list(row.get("source_fact_ids") or [])
-        claims.append(
-            {
-                "claim_id": make_lane_claim_id(claim_id_prefix, i, ct, ids),
-                "claim_text": ct,
-                "source_fact_ids": ids,
-            }
-        )
+        claim = {
+            "claim_id": make_lane_claim_id(claim_id_prefix, i, ct, ids),
+            "claim_text": ct,
+            "source_fact_ids": ids,
+        }
+        claim_unit_id = str(row.get("claim_unit_id") or "").strip()
+        if claim_unit_id:
+            claim["claim_unit_id"] = claim_unit_id
+        claims.append(claim)
     return {
         "schema": "canonical_claim_ledger_v2",
         "claims": claims,

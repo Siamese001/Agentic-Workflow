@@ -72,10 +72,10 @@ class FrozenDict(dict):
     update = _immutable
     __ior__ = _immutable
 
-    def __copy__(self) -> "FrozenDict":
+    def __copy__(self) -> FrozenDict:
         return self
 
-    def __deepcopy__(self, _memo: dict[int, Any]) -> "FrozenDict":
+    def __deepcopy__(self, _memo: dict[int, Any]) -> FrozenDict:
         return self
 
 
@@ -101,10 +101,10 @@ class FrozenList(list):
     reverse = _immutable
     sort = _immutable
 
-    def __copy__(self) -> "FrozenList":
+    def __copy__(self) -> FrozenList:
         return self
 
-    def __deepcopy__(self, _memo: dict[int, Any]) -> "FrozenList":
+    def __deepcopy__(self, _memo: dict[int, Any]) -> FrozenList:
         return self
 
 
@@ -770,6 +770,8 @@ def _field_value(app_payload: Mapping[str, Any], field: str) -> str:
             or app_payload.get("jd_text")
             or jd_payload.get("jd_text")
             or jd_payload.get("text")
+            or app_payload.get("job_description_ref")
+            or jd_payload.get("ref")
             or ""
         ).strip()
     if field == "source_resume_text":
@@ -783,6 +785,8 @@ def _field_value(app_payload: Mapping[str, Any], field: str) -> str:
             or app_payload.get("resume_text")
             or resume_payload.get("resume_text")
             or resume_payload.get("text")
+            or app_payload.get("source_resume_ref")
+            or resume_payload.get("ref")
             or ""
         ).strip()
     return str(app_payload.get(field) or "").strip()

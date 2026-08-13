@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections import Counter
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -80,10 +81,15 @@ def _claim_rows(artifact_dir: Path, l2: Mapping[str, Any]) -> list[dict[str, Any
     canonical = _load_json(artifact_dir / "canonical_claim_ledger_v2.json")
     canonical_rows = canonical.get("claims") if isinstance(canonical, Mapping) else []
     for index, row in enumerate(rows):
-        if not str(row.get("claim_id") or "").strip() and index < len(canonical_rows or []):
+        if index < len(canonical_rows or []):
             canonical_row = canonical_rows[index]
             if isinstance(canonical_row, Mapping):
-                row["claim_id"] = str(canonical_row.get("claim_id") or "")
+                if not str(row.get("claim_id") or "").strip():
+                    row["claim_id"] = str(canonical_row.get("claim_id") or "")
+                if not str(row.get("claim_unit_id") or "").strip():
+                    claim_unit_id = str(canonical_row.get("claim_unit_id") or "")
+                    if claim_unit_id:
+                        row["claim_unit_id"] = claim_unit_id
 
     bullets = [row for row in l2.get("bullets") or [] if isinstance(row, Mapping)]
     by_text = {
@@ -506,6 +512,20 @@ def bind_final_claims_to_resume_graph_allocation(
     the active path is detected only by the immutable allocation digest and its
     section assignment slice on ``selected_fact_plan.json``.
     """
+    runtime_payload = _load_json(artifact_dir / "runtime_payload.json")
+    if isinstance(runtime_payload, Mapping) and runtime_payload.get(
+        "blocked_before_provider"
+    ) is True:
+        return {
+            "schema_version": GRAPH_CLAIM_BINDING_CONTRACT_SCHEMA,
+            "section_id": section_id,
+            "active": False,
+            "status": "NOT_APPLICABLE_PRE_PROVIDER_BLOCK",
+            "runtime_generation_status": str(
+                runtime_payload.get("runtime_generation_status") or ""
+            ),
+            "pass": True,
+        }
     context = _allocation_context(artifact_dir, section_id=section_id)
     if context is None:
         return {
@@ -586,6 +606,39 @@ def bind_final_claims_to_resume_graph_allocation(
     allocated_claim_units = {
         str(row.get("claim_unit_id") or "") for row in assignments if row.get("claim_unit_id")
     }
+    explicit_consumption_counts = Counter(
+        str(claim.get("claim_unit_id") or "")
+        for claim in claims
+        if str(claim.get("claim_unit_id") or "") in allocated_claim_units
+    )
+    reconciliation_receipt = _load_json(
+        artifact_dir / "competencies_allocation_claim_reconciliation_receipt.json"
+    )
+    reconciliation_active = bool(explicit_consumption_counts) or (
+        isinstance(reconciliation_receipt, Mapping)
+        and reconciliation_receipt.get("schema_version")
+        == "competencies_allocation_claim_reconciliation_v1"
+    )
+    if section_id == "competencies" and reconciliation_active:
+        invalid_consumption_counts = {
+            claim_unit_id: int(explicit_consumption_counts.get(claim_unit_id, 0))
+            for claim_unit_id in sorted(allocated_claim_units)
+            if explicit_consumption_counts.get(claim_unit_id, 0) != 1
+        }
+        if invalid_consumption_counts:
+            failures.append(
+                "allocation_claim_unit_consumption_not_exactly_once:"
+                + ",".join(
+                    f"{claim_unit_id}={count}"
+                    for claim_unit_id, count in invalid_consumption_counts.items()
+                )
+            )
+        if isinstance(reconciliation_receipt, Mapping) and not bool(
+            reconciliation_receipt.get("pass")
+        ):
+            failures.append("competencies_allocation_claim_reconciliation_failed")
+    else:
+        invalid_consumption_counts = {}
     orphan_claim_units = sorted(allocated_claim_units - used_claim_units)
     if orphan_claim_units:
         failures.append("orphan_allocation_claim_units:" + ",".join(orphan_claim_units))
@@ -612,6 +665,11 @@ def bind_final_claims_to_resume_graph_allocation(
         "metric_exactness_pass": metric_exactness_pass,
         "allocated_claim_unit_count": len(allocated_claim_units),
         "bound_allocation_claim_unit_count": len(used_claim_units),
+        "allocation_claim_unit_consumption_counts": {
+            claim_unit_id: int(explicit_consumption_counts.get(claim_unit_id, 0))
+            for claim_unit_id in sorted(allocated_claim_units)
+        },
+        "allocation_claim_unit_consumption_exactly_once_pass": not invalid_consumption_counts,
         "orphan_allocation_claim_unit_ids": orphan_claim_units,
         "failure_reasons": sorted(set(failures)),
         "bindings": bindings,

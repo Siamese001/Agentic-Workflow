@@ -29,6 +29,17 @@ ALLOCATION_USAGE_LEDGER_ENV = "APPS_RG_RESUME_GRAPH_USAGE_LEDGER"
 SECTION_EVIDENCE_CONTRACTS_ENV = "APPS_RG_SECTION_FINAL_GRAPH_EVIDENCE_CONTRACTS"
 DEFAULT_MAX_CANDIDATES_PER_SLOT = 64
 
+_ALLOCATION_DIGEST_EXCLUDED_KEYS = frozenset(
+    {
+        "allocation_plan_id",
+        "allocation_plan_digest",
+        "prior_seal",
+        "prior_seals",
+        "downstream_receipt",
+        "downstream_receipts",
+    }
+)
+
 _WORD_RE = re.compile(r"[a-z0-9]+")
 _DIGIT_LETTER_RE = re.compile(r"(?<=\d)(?=[a-z])|(?<=[a-z])(?=\d)")
 _METRIC_EQUIVALENTS = {
@@ -192,19 +203,22 @@ def _candidate_identity(row: Mapping[str, Any], *, slot: _Slot) -> str:
     )[:24]
 
 
-def _candidate_score(row: Mapping[str, Any]) -> tuple[float, float, float, float, str]:
+def _candidate_score(
+    row: Mapping[str, Any],
+) -> tuple[float, float, float, float, float, str]:
     return (
         round(float(row.get("proof_strength_raw") or 0.0), 6),
         round(float(row.get("path_confidence_raw") or 0.0), 6),
         round(float(row.get("source_independence_score") or 0.0), 6),
         round(float(row.get("target_alignment_score") or 0.0), 6),
+        round(float(row.get("embedding_similarity") or 0.0), 9),
         str(row.get("candidate_id") or ""),
     )
 
 
 def _candidate_sort_key(row: Mapping[str, Any]) -> tuple[Any, ...]:
-    proof, path, independence, target, candidate_id = _candidate_score(row)
-    return (-proof, -path, -independence, -target, candidate_id)
+    proof, path, independence, target, embedding, candidate_id = _candidate_score(row)
+    return (-proof, -path, -independence, -target, -embedding, candidate_id)
 
 
 def _selection_margin_receipt(
@@ -242,6 +256,7 @@ def _selection_margin_receipt(
         "path_confidence_raw",
         "source_independence_score",
         "target_alignment_score",
+        "embedding_similarity",
     )
     basis = "stable_candidate_id_tie"
     margin = 0.0
@@ -410,12 +425,39 @@ def _validate_assignment_uniqueness(assignments: Sequence[Mapping[str, Any]]) ->
     }
 
 
+def _allocation_digest_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        return {
+            key: _allocation_digest_value(item)
+            for key, item in value.items()
+            if key not in _ALLOCATION_DIGEST_EXCLUDED_KEYS
+            and not (
+                key.startswith("prior_")
+                and key.endswith(("_seal", "_digest", "_receipt"))
+            )
+            and not (
+                key.startswith("downstream_")
+                and key.endswith(("_seal", "_digest", "_receipt"))
+            )
+        }
+    if isinstance(value, (list, tuple)):
+        return [_allocation_digest_value(item) for item in value]
+    return value
+
+
 def _plan_digest_payload(plan: Mapping[str, Any]) -> dict[str, Any]:
-    return {
-        key: value
-        for key, value in plan.items()
-        if key not in {"allocation_plan_id", "allocation_plan_digest"}
-    }
+    """Return the one canonical allocation digest domain.
+
+    Prior seals and downstream receipts may be nested by later consumers. They
+    are evidence about the allocation, not allocation inputs, so they cannot
+    change the immutable plan identity.
+    """
+
+    return _allocation_digest_value(plan)
+
+
+def canonical_allocation_digest(plan: Mapping[str, Any]) -> str:
+    return stable_digest(_plan_digest_payload(plan))
 
 
 def validate_resume_graph_allocation_plan(plan: Mapping[str, Any]) -> list[str]:
@@ -437,7 +479,7 @@ def validate_resume_graph_allocation_plan(plan: Mapping[str, Any]) -> list[str]:
         failures.append("resource_uniqueness")
     if plan.get("uniqueness_receipt") != uniqueness:
         failures.append("uniqueness_receipt")
-    expected_digest = stable_digest(_plan_digest_payload(plan))
+    expected_digest = canonical_allocation_digest(plan)
     if str(plan.get("allocation_plan_digest") or "") != expected_digest:
         failures.append("allocation_plan_digest")
     if str(plan.get("allocation_scope")) == SECTION_ONLY_SCOPE and plan.get(
@@ -464,7 +506,7 @@ def finalize_resume_graph_allocation_plan(plan: Mapping[str, Any]) -> dict[str, 
     )
     out["assignments"] = assignments
     out["uniqueness_receipt"] = _validate_assignment_uniqueness(assignments)
-    digest = stable_digest(_plan_digest_payload(out))
+    digest = canonical_allocation_digest(out)
     out["allocation_plan_digest"] = digest
     out["allocation_plan_id"] = f"resume_graph_allocation:{digest[:20]}"
     failures = validate_resume_graph_allocation_plan(out)
@@ -1003,6 +1045,94 @@ def _candidate_sets_from_section_plans(
     return out
 
 
+def _bind_embedding_candidates(
+    candidate_sets: Mapping[str, Sequence[Mapping[str, Any]]],
+    slot_specs: Sequence[Mapping[str, Any]],
+    skill_scores_by_section: Mapping[str, Mapping[str, float]],
+) -> dict[str, list[dict[str, Any]]]:
+    """Narrow graph candidates to exact assertion eligibility before allocation."""
+    missing_sections = sorted(
+        set(ALL_CLAIM_BEARING_SECTIONS) - set(skill_scores_by_section)
+    )
+    if missing_sections:
+        raise ResumeGraphAllocationError(
+            "embedding candidate authority is incomplete",
+            receipt={
+                "schema_version": "resume_graph_allocation_failure_v1",
+                "unsatisfied_constraints": ["embedding_section_candidate_coverage"],
+                "missing_sections": missing_sections,
+            },
+        )
+    slot_section = {
+        str(row.get("slot_id") or ""): str(row.get("section_id") or "")
+        for row in slot_specs
+    }
+    narrowed: dict[str, list[dict[str, Any]]] = {}
+    for slot_id, raw_rows in candidate_sets.items():
+        section_id = slot_section.get(slot_id, "")
+        scores = skill_scores_by_section.get(section_id) or {}
+        rows: list[dict[str, Any]] = []
+        for raw in raw_rows:
+            skill_id = str(raw.get("skill_id") or "")
+            if skill_id not in scores:
+                continue
+            row = dict(raw)
+            row["embedding_similarity"] = round(float(scores[skill_id]), 9)
+            rows.append(row)
+        rows.sort(key=_candidate_sort_key)
+        if not rows:
+            raise ResumeGraphAllocationError(
+                f"{slot_id}: no graph candidates remain after assertion eligibility",
+                receipt={
+                    "schema_version": "resume_graph_allocation_failure_v1",
+                    "unsatisfied_constraints": ["embedding_candidate_intersection"],
+                    "slot_id": slot_id,
+                    "section_id": section_id,
+                },
+            )
+        narrowed[slot_id] = rows
+    return narrowed
+
+
+def _bind_assignment_embedding_scores(
+    plan: Mapping[str, Any],
+    skill_scores_by_section: Mapping[str, Mapping[str, float]],
+) -> dict[str, Any]:
+    out = dict(plan)
+    assignments: list[dict[str, Any]] = []
+    for raw in plan.get("assignments") or []:
+        if not isinstance(raw, Mapping):
+            continue
+        row = dict(raw)
+        section_id = str(row.get("section_id") or "")
+        skill_id = str(row.get("skill_id") or "")
+        scores = skill_scores_by_section.get(section_id) or {}
+        if skill_id not in scores:
+            raise ResumeGraphAllocationError(
+                f"{section_id}: allocated skill lacks an exact embedding candidate",
+                receipt={
+                    "schema_version": "resume_graph_allocation_failure_v1",
+                    "unsatisfied_constraints": ["embedding_assignment_coverage"],
+                    "section_id": section_id,
+                    "skill_id": skill_id,
+                },
+            )
+        row["embedding_similarity"] = round(float(scores[skill_id]), 9)
+        assignments.append(row)
+    out["assignments"] = assignments
+    out["embedding_candidate_authority"] = {
+        "schema_version": "resume_graph_embedding_candidate_authority_v1",
+        "section_candidate_counts": {
+            section_id: len(scores)
+            for section_id, scores in sorted(skill_scores_by_section.items())
+        },
+        "similarity_is_claim_authority": False,
+        "allocation_narrowing_only": True,
+        "pass": True,
+    }
+    return finalize_resume_graph_allocation_plan(out)
+
+
 def _append_derived_narrative_assignments(plan: Mapping[str, Any]) -> dict[str, Any]:
     out = dict(plan)
     assignments = [dict(row) for row in plan.get("assignments") or []]
@@ -1147,6 +1277,29 @@ def slice_section_plan_for_allocation(
         if not root_id:
             raise ValueError(f"{section_id}: assignment missing root_id")
         by_root.setdefault(root_id, []).append(assignment)
+    preserve_root_authority = section_id == "competencies"
+    source_facts_by_root = {
+        str(row.get("role_episode_bundle_id") or row.get("fact_id") or ""): dict(row)
+        for row in section_plan.get("facts") or []
+        if isinstance(row, Mapping)
+        and preserve_root_authority
+        and str(row.get("role_episode_bundle_id") or row.get("fact_id") or "")
+    }
+    source_skills_by_root: dict[str, list[dict[str, Any]]] = {}
+    for raw in section_plan.get("selected_skills") or []:
+        if not isinstance(raw, Mapping):
+            continue
+        root_id = str(raw.get("role_episode_bundle_id") or "").strip()
+        if preserve_root_authority and root_id in by_root:
+            source_skills_by_root.setdefault(root_id, []).append(dict(raw))
+    source_metrics_by_root: dict[str, list[dict[str, Any]]] = {}
+    for raw in section_plan.get("selected_metrics_detail") or []:
+        if not isinstance(raw, Mapping):
+            continue
+        root_id = str(raw.get("role_episode_bundle_id") or "").strip()
+        if preserve_root_authority and root_id in by_root:
+            source_metrics_by_root.setdefault(root_id, []).append(dict(raw))
+
     facts: list[dict[str, Any]] = []
     selected_skills: list[dict[str, Any]] = []
     selected_metrics_detail: list[dict[str, Any]] = []
@@ -1154,57 +1307,117 @@ def slice_section_plan_for_allocation(
     allowed_ids: list[str] = []
     for root_id, rows in sorted(by_root.items()):
         rows.sort(key=lambda row: str(row.get("claim_unit_id") or ""))
-        skill_ids = _strings(row.get("skill_id") for row in rows)
-        metric_ids = _strings(row.get("metric_outcome_id") for row in rows)
-        source_fact_ids = _strings(row.get("fact_id") for row in rows)
-        metric_values = _strings(row.get("metric_text") for row in rows)
-        first = rows[0]
-        fact = {
-            "fact_id": root_id,
-            "candidate_fact_id": root_id,
-            "claim_text": str(first.get("root_claim_text") or root_id),
-            "role_episode_bundle_id": root_id,
-            "graph_evidence_type": "role_episode_bundle",
-            "employer_lane": str(first.get("employer_lane") or ""),
-            "source_employment": str(first.get("employer_lane") or ""),
-            "graph_skill_node_ids": skill_ids,
-            "metric_outcome_ids": metric_ids,
-            "selected_metric_ids": metric_ids,
-            "allowed_graph_evidence_ids": [
-                root_id,
-                *source_fact_ids,
-                *skill_ids,
-                *metric_ids,
-            ],
-            "linked_identity_fact_ids": source_fact_ids,
-            "linked_source_fact_ids": source_fact_ids,
-            "source_fact_ids": [root_id],
-            "confidence": "HIGH",
-            "support_level": "allocation_authority_pass",
-            "verification_status": "allocation_authority_pass",
-            "metric_values": metric_values,
-            "technologies": skill_ids,
-            "domain": str(first.get("root_claim_scope") or ""),
-            "allocation_claim_unit_ids": [
-                str(row.get("claim_unit_id") or "") for row in rows
-            ],
-            "allocation_plan_digest": allocation_digest,
+        root_skills = {
+            str(row.get("skill_id") or ""): dict(row)
+            for row in source_skills_by_root.get(root_id, [])
+            if str(row.get("skill_id") or "")
         }
+        root_metrics = {
+            str(row.get("metric_outcome_id") or ""): dict(row)
+            for row in source_metrics_by_root.get(root_id, [])
+            if str(row.get("metric_outcome_id") or "")
+        }
+        for assignment in rows:
+            skill_id = str(assignment.get("skill_id") or "")
+            if skill_id:
+                root_skills.setdefault(
+                    skill_id,
+                    {
+                        "skill_id": skill_id,
+                        "role_episode_bundle_id": root_id,
+                        "employer_lane": str(assignment.get("employer_lane") or ""),
+                        "proof_strength_raw": float(
+                            assignment.get("proof_strength_raw") or 0.0
+                        ),
+                        "target_alignment_score": float(
+                            assignment.get("target_alignment_score") or 0.0
+                        ),
+                    },
+                )
+                root_skills[skill_id]["claim_unit_id"] = str(
+                    assignment.get("claim_unit_id") or ""
+                )
+            metric_id = str(assignment.get("metric_outcome_id") or "")
+            if metric_id:
+                root_metrics.setdefault(
+                    metric_id,
+                    {
+                        "metric_outcome_id": metric_id,
+                        "role_episode_bundle_id": root_id,
+                        "employer_lane": str(assignment.get("employer_lane") or ""),
+                        "metric": str(assignment.get("metric_text") or ""),
+                        "metric_value": str(assignment.get("metric_value") or ""),
+                        "metric_unit": str(assignment.get("metric_unit") or ""),
+                        "normalized_metric_signature": str(
+                            assignment.get("normalized_metric_signature") or ""
+                        ),
+                    },
+                )
+                root_metrics[metric_id]["claim_unit_id"] = str(
+                    assignment.get("claim_unit_id") or ""
+                )
+        skill_ids = sorted(root_skills)
+        metric_ids = sorted(root_metrics)
+        source_fact_ids = _strings(row.get("fact_id") for row in rows)
+        metric_values = _strings(
+            row.get("metric") or row.get("metric_text")
+            for row in root_metrics.values()
+        )
+        first = rows[0]
+        fact = dict(source_facts_by_root.get(root_id) or {})
+        linked_identity_ids = _strings(
+            list(fact.get("linked_identity_fact_ids") or []) + source_fact_ids
+        )
+        linked_source_ids = _strings(
+            list(fact.get("linked_source_fact_ids") or []) + source_fact_ids
+        )
+        fact.update(
+            {
+                "fact_id": root_id,
+                "candidate_fact_id": root_id,
+                "claim_text": str(
+                    fact.get("claim_text") or first.get("root_claim_text") or root_id
+                ),
+                "role_episode_bundle_id": root_id,
+                "graph_evidence_type": "role_episode_bundle",
+                "employer_lane": str(
+                    fact.get("employer_lane") or first.get("employer_lane") or ""
+                ),
+                "source_employment": str(
+                    fact.get("source_employment")
+                    or fact.get("employer_lane")
+                    or first.get("employer_lane")
+                    or ""
+                ),
+                "graph_skill_node_ids": skill_ids,
+                "metric_outcome_ids": metric_ids,
+                "selected_metric_ids": metric_ids,
+                "allowed_graph_evidence_ids": _strings(
+                    list(fact.get("allowed_graph_evidence_ids") or [])
+                    + [root_id, *source_fact_ids, *skill_ids, *metric_ids]
+                ),
+                "linked_identity_fact_ids": linked_identity_ids,
+                "linked_source_fact_ids": linked_source_ids,
+                "source_fact_ids": [root_id],
+                "confidence": str(fact.get("confidence") or "HIGH"),
+                "support_level": "allocation_authority_pass",
+                "verification_status": "allocation_authority_pass",
+                "metric_values": metric_values,
+                "technologies": skill_ids,
+                "domain": str(fact.get("domain") or first.get("root_claim_scope") or ""),
+                "allocation_claim_unit_ids": [
+                    str(row.get("claim_unit_id") or "") for row in rows
+                ],
+                "allocation_plan_digest": allocation_digest,
+            }
+        )
         facts.append(fact)
         allowed_ids.extend(fact["allowed_graph_evidence_ids"])
+        selected_skills.extend(root_skills[skill_id] for skill_id in skill_ids)
+        selected_metrics_detail.extend(
+            root_metrics[metric_id] for metric_id in metric_ids
+        )
         for row in rows:
-            selected_skills.append(
-                {
-                    "skill_id": str(row.get("skill_id") or ""),
-                    "role_episode_bundle_id": root_id,
-                    "employer_lane": str(row.get("employer_lane") or ""),
-                    "proof_strength_raw": float(row.get("proof_strength_raw") or 0.0),
-                    "target_alignment_score": float(
-                        row.get("target_alignment_score") or 0.0
-                    ),
-                    "claim_unit_id": str(row.get("claim_unit_id") or ""),
-                }
-            )
             selected_edges.extend(
                 {
                     "edge_id": edge_id,
@@ -1214,22 +1427,26 @@ def slice_section_plan_for_allocation(
                 }
                 for edge_id in row.get("edge_ids") or []
             )
-            metric_id = str(row.get("metric_outcome_id") or "")
-            if metric_id:
-                selected_metrics_detail.append(
-                    {
-                        "metric_outcome_id": metric_id,
-                        "role_episode_bundle_id": root_id,
-                        "employer_lane": str(row.get("employer_lane") or ""),
-                        "metric": str(row.get("metric_text") or ""),
-                        "metric_value": str(row.get("metric_value") or ""),
-                        "metric_unit": str(row.get("metric_unit") or ""),
-                        "normalized_metric_signature": str(
-                            row.get("normalized_metric_signature") or ""
-                        ),
-                        "claim_unit_id": str(row.get("claim_unit_id") or ""),
-                    }
-                )
+        source_edge_keys = {
+            (
+                str(edge.get("source") or ""),
+                str(edge.get("edge_type") or ""),
+                str(edge.get("target") or ""),
+            )
+            for edge in section_plan.get("selected_edges") or []
+            if isinstance(edge, Mapping)
+            and preserve_root_authority
+            and str(edge.get("source") or "") == root_id
+            and str(edge.get("target") or "") in fact["allowed_graph_evidence_ids"]
+        }
+        selected_edges.extend(
+            {
+                "source": source,
+                "edge_type": edge_type,
+                "target": target,
+            }
+            for source, edge_type, target in sorted(source_edge_keys)
+        )
     out = dict(section_plan)
     out.pop("plan_id", None)
     out.pop("plan_digest", None)
@@ -1272,6 +1489,7 @@ def build_whole_resume_graph_allocation(
     jd_text: str = "",
     briefing_text: str = "",
     section_order: Sequence[str] | None = None,
+    embedding_skill_scores_by_section: Mapping[str, Mapping[str, float]] | None = None,
 ) -> dict[str, Any]:
     """Traverse all claim-bearing lanes, allocate once, and freeze section slices."""
     from apps_rg.runtime.c0.c03_resume_graph_contracts import ResumeGraphSelectionPolicyV2
@@ -1333,6 +1551,12 @@ def build_whole_resume_graph_allocation(
         section_budgets=section_budgets,
     )
     candidates = _candidate_sets_from_section_plans(section_plans, slot_specs)
+    if embedding_skill_scores_by_section is not None:
+        candidates = _bind_embedding_candidates(
+            candidates,
+            slot_specs,
+            embedding_skill_scores_by_section,
+        )
     plan = allocate_candidate_sets(
         candidate_sets=candidates,
         slot_specs=slot_specs,
@@ -1371,6 +1595,11 @@ def build_whole_resume_graph_allocation(
         for section_id, section_plan in sorted(section_plans.items())
     }
     plan = _append_derived_narrative_assignments(plan)
+    if embedding_skill_scores_by_section is not None:
+        plan = _bind_assignment_embedding_scores(
+            plan,
+            embedding_skill_scores_by_section,
+        )
     ledger = build_resume_graph_usage_ledger(plan)
     contracts = build_section_final_evidence_contracts(
         allocation_plan=plan,
@@ -1573,6 +1802,7 @@ __all__ = [
     "build_section_only_graph_allocation",
     "build_resume_graph_usage_ledger",
     "build_whole_resume_graph_allocation",
+    "canonical_allocation_digest",
     "extract_exact_metric_value_unit",
     "finalize_resume_graph_allocation_plan",
     "load_resume_graph_allocation_plan",

@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "assessment_id": "sr0-contract-authority-assessment-20260719",
+  "assessment_status": "BLOCKED",
+  "evidence_classification": "CONTRACT_AUTHORITY_ABSENT",
+  "test_evidence_classification": "DIAGNOSTIC_EVIDENCE",
+  "assessment_scope": "SR0 source-contract evidence only",
+  "frozen_source": {
+    "commit": "fc7039821148151e08459f8473cc8428df39bc8b",
+    "tree": "8e3fa68878aef4224f781335850a9eab7ff2c6c9",
+    "worktree": "C:\\Git\\Agentic-Workflow-FRESH-worktrees\\codex-apps-rg-source-refreeze",
+    "branch": "codex-apps-rg-source-refreeze"
+  },
+  "source_changes": {
+    "production_source_changes": [],
+    "graph_data_changes": [],
+    "assertion_corpus_changes": [],
+    "embedding_changes": [],
+    "target_repository_created": false
+  },
+  "sr0a": {
+    "status": "CONTRACT_AUTHORITY_UNAVAILABLE",
+    "required_marker": "SR0A_CONTRACT_AUTHORITY_REQUIRED",
+    "broken_import": {
+      "file": "agentic_core/L2_execution/config/hybrid_retriever_config.py",
+      "line": 242,
+      "expression": "ops_scripts.dev_tools.L0_routing_scripts.sovereign_ingestion_mission.load_latest_ingested_chunks",
+      "file_sha256": "61d10455b969d3fd18909a4ad44acedd23bb97d873b14b513b34a10d8c74f010"
+    },
+    "conditional_execution_path": [
+      "HybridRetriever.hybrid_search",
+      "HybridRetriever._ensure_index",
+      "HybridRetriever._load_or_rebuild_local_index",
+      "HybridRetriever.rebuild_from_ingestion"
+    ],
+    "known_cache_hit_behavior": "Reads agentic_core/L4_state/memory/.sovereign_local_index.json, expects a chunks field, rebuilds BM25, and catches only RuntimeError and ValueError.",
+    "missing_contract_evidence": [
+      "No source-controlled ingestion loader exists at the imported path.",
+      "No source-controlled producer schema, version, provenance, input digest, output digest, cache key, or durable-write authority defines a cache-miss rebuild.",
+      "No focused test exercises cache hit, cache miss, stale cache, malformed cache, concurrent rebuild, or publication failure."
+    ],
+    "test_evidence": {
+      "file": "tests/agentic_core/L2_execution/config/test_hybrid_retriever_config.py",
+      "file_sha256": "e91bdf067323ca347c4f764591fca98f6a9e6aa999ec6d49b658dbe1eae66539",
+      "coverage_characterization": "Import-only generated scaffold; no retrieval or rebuild behavior assertion."
+    }
+  },
+  "sr0b": {
+    "status": "CONTRACT_AUTHORITY_UNAVAILABLE",
+    "broken_import": {
+      "file": "agentic_core/L2_execution/enforcement/manifest_hash_validator.py",
+      "line": 29,
+      "expression": "agentic_core.L4_state.config.versioned_configs.get_active_configs",
+      "file_sha256": "a7a3dc99df34197f060e87ec20d1c93be12146528a51aded0897dee369d4bf0c"
+    },
+    "conditional_execution_path": [
+      "V15ExecutionGateway._validate_manifest",
+      "manifest hash fields present",
+      "validate_manifest_hashes",
+      "_get_active_configs"
+    ],
+    "required_hash_fields": [
+      "policy_hash",
+      "routing_hash",
+      "model_hash",
+      "budget_hash"
+    ],
+    "missing_contract_evidence": [
+      "agentic_core/L4_state/config/versioned_configs.py is absent.",
+      "agentic_core/L4_state/config has no package initializer and contains only chroma_paths.py and vllm_routing_predicates.py.",
+      "No source-controlled immutable snapshot identity, canonical bytes, digest construction, profile selection, freshness rule, provenance, or replay contract exists.",
+      "The available validator test is import-only; the gateway suite patches out _get_manifest_hash_validator; the retrieval consumer replaces get_active_configs with a mock."
+    ],
+    "test_evidence": {
+      "validator_scaffold": {
+        "file": "tests/agentic_core/L2_execution/enforcement/test_manifest_hash_validator.py",
+        "file_sha256": "5c98926934ba8cbd85cc5d2dd548c264eecb3b3b7642feb904ca703f4b1b5f92",
+        "coverage_characterization": "Import-only generated scaffold; no hash validation behavior assertion."
+      },
+      "missing_export_test": {
+        "file": "tests/unit/agentic_core/L0_routing/config/test_versioned_config.py",
+        "file_sha256": "f9f75b01d850cc9ca1cd0796e60838e7b216ca3cb7203a5306b9eee1de84d7e3",
+        "result": "All three assertions fail because versioned_config, VersionedConfig, and validate_versioned_config are absent from agentic_core."
+      }
+    }
+  },
+  "test_runs": [
+    {
+      "command": "python -m pytest -o addopts='' -p no:cacheprovider --basetemp artifacts/apps_rg_source_refreeze/sr0/pytest_tmp tests/agentic_core/L2_execution/config/test_hybrid_retriever_config.py tests/agentic_core/L2_execution/enforcement/test_manifest_hash_validator.py tests/unit/agentic_core/L0_routing/config/test_versioned_config.py",
+      "result": "3 failed, 12 passed in 0.47s",
+      "interpretation": "The two import-only scaffolds pass; the only versioned-config export contract fails."
+    },
+    {
+      "command": "python -m pytest -o addopts='' -p no:cacheprovider --basetemp artifacts/apps_rg_source_refreeze/sr0/pytest_gateway_tmp tests/agentic_core/L0_routing/enforcement/test_execution_gateway.py tests/unit/agentic_core/L3_orchestration/test_sovereign_retrieve_c0.py",
+      "result": "8 failed, 28 passed in 0.87s",
+      "interpretation": "The retrieval consumer passes with get_active_configs monkeypatched. The gateway suite contains stale patch targets and bypasses the manifest-hash validator in its covered paths."
+    }
+  ],
+  "decision": {
+    "source_repair_implemented": false,
+    "reason": "The frozen source does not independently determine either required contract. Implementing a replacement would invent ingestion provenance/cache semantics or configuration-hash authority.",
+    "next_authority_required": "Provide canonical, source-authoritative SR0A ingestion/cache behavior and SR0B immutable active-config snapshot semantics before any source repair."
+  }
+}

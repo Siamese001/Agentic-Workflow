@@ -8,14 +8,17 @@ from __future__ import annotations
 import hashlib
 import json
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
 __all__ = [
+    "APPS_RG_U0_AUTHORITY_CONTRACT_ID",
     "APPS_RG_U0_CERT_REF",
     "APPS_RG_TASK_CLASS",
+    "AppsRgU0AuthorityReceipt",
+    "apps_rg_u0_authority_receipt_digest",
     "u0_validate_apps_rg",
 ]
 
@@ -32,6 +35,7 @@ __all__.append("AppsRgU0RejectedError")
 
 APPS_RG_U0_CERT_REF: str = "u0-apps-rg-resume-generation-w2"
 APPS_RG_TASK_CLASS: str = "resume_generation"
+APPS_RG_U0_AUTHORITY_CONTRACT_ID: str = "apps_rg.u0.authority_validation.v1"
 
 
 def _canonical_payload_digest(payload: Mapping[str, Any]) -> str:
@@ -60,13 +64,63 @@ _DEFAULT_L5_GOVERNANCE_PROFILE_REF = "apps_rg/profiles/rg_l5_governance_profile.
 
 
 @dataclass(frozen=True, slots=True)
-class _AppsRgU0AuthorityReceipt:
-    """Receipt proving U0-style ingress inspection (apps_rg binding; not L0 import)."""
+class AppsRgU0AuthorityReceipt:
+    """Identity-bound receipt proving canonical Apps RG U0 ingress inspection."""
 
-    validation_timestamp: str
+    authority_contract_id: str = APPS_RG_U0_AUTHORITY_CONTRACT_ID
+    request_id: str = ""
+    run_id: str = ""
+    trace_id: str = ""
+    trace_root: str = ""
+    tenant_id: str = ""
+    app_id: str = "apps_rg"
+    validated_input_digest: str = ""
+    authority_receipt_digest: str = ""
+    validation_timestamp: str = ""
     validator_version: str = "W6.0"
     forbidden_fields_checked: tuple[str, ...] = field(default_factory=tuple)
     validation_passed: bool = True
+
+
+_AUTHORITY_RECEIPT_DIGEST_FIELDS: tuple[str, ...] = (
+    "authority_contract_id",
+    "request_id",
+    "run_id",
+    "trace_id",
+    "trace_root",
+    "tenant_id",
+    "app_id",
+    "validated_input_digest",
+    "validation_timestamp",
+    "validator_version",
+    "forbidden_fields_checked",
+    "validation_passed",
+)
+
+
+def apps_rg_u0_authority_receipt_digest(
+    receipt: AppsRgU0AuthorityReceipt | Mapping[str, Any],
+) -> str:
+    """Return the canonical digest over every receipt field except the digest itself."""
+
+    def _value(name: str) -> Any:
+        if isinstance(receipt, Mapping):
+            return receipt.get(name)
+        return getattr(receipt, name, None)
+
+    body = {name: _value(name) for name in _AUTHORITY_RECEIPT_DIGEST_FIELDS}
+    raw = json.dumps(
+        body,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(raw).hexdigest()
+
+
+# Compatibility for internal imports from pre-S2U0 tests and fixtures.
+_AppsRgU0AuthorityReceipt = AppsRgU0AuthorityReceipt
 
 
 def _ref_points_to_default_ssot(ref: str, default_path: Path) -> bool:
@@ -498,7 +552,14 @@ def u0_validate_apps_rg(
                 ).encode("utf-8")
             ).hexdigest()[:24]
             l5_str = f"l5:apps_rg:u0:{seed}"
-    receipt = _AppsRgU0AuthorityReceipt(
+    receipt = AppsRgU0AuthorityReceipt(
+        request_id=request_id,
+        run_id=run_id,
+        trace_id=trace_id,
+        trace_root=trace_root,
+        tenant_id=tenant_id,
+        app_id=str(meta.get("app_id") or app_payload.get("app_id") or "apps_rg"),
+        validated_input_digest=payload_digest,
         validation_timestamp=datetime.now(timezone.utc).isoformat(),
         validator_version="W6.0",
         forbidden_fields_checked=(
@@ -510,6 +571,10 @@ def u0_validate_apps_rg(
             "model_endpoint",
         ),
         validation_passed=True,
+    )
+    receipt = replace(
+        receipt,
+        authority_receipt_digest=apps_rg_u0_authority_receipt_digest(receipt),
     )
     from agentic_core.runtime.u0.reflection_receipt import AppsRgU0ReflectionReceipt
 

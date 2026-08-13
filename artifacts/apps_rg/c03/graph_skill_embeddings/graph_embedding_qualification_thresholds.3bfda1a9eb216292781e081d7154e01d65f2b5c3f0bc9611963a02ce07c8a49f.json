@@ -1,0 +1,23 @@
+{
+  "schema_version": "apps_rg.c03_graph_embedding_qualification_thresholds.v1",
+  "thresholds": {
+    "retrieval_k": 100,
+    "rrf_rank_constant": 60,
+    "exact_macro_recall_at_k_min": 0.75,
+    "exact_micro_recall_at_k_min": 0.75,
+    "fact_vector_macro_recall_at_k_min": 0.65,
+    "fact_vector_micro_recall_at_k_min": 0.65,
+    "dense_macro_recall_at_k_min": 0.85,
+    "dense_micro_recall_at_k_min": 0.9,
+    "hybrid_macro_recall_at_k_min": 0.9,
+    "hybrid_micro_recall_at_k_min": 0.9,
+    "authority_eligibility_accuracy_min": 1.0,
+    "exact_path_accuracy_min": 1.0,
+    "assertion_vector_parity_min": 1.0,
+    "stale_candidate_count_max": 0,
+    "orphan_candidate_count_max": 0,
+    "unauthorized_candidate_count_max": 0,
+    "authority_bypass_count_max": 0
+  },
+  "thresholds_sha256": "3bfda1a9eb216292781e081d7154e01d65f2b5c3f0bc9611963a02ce07c8a49f"
+}

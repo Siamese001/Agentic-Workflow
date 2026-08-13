@@ -1,0 +1,12 @@
+{
+  "run_id": "SR0-IMPLEMENTATION-PREFLIGHT-20260719-001",
+  "contract": "ActiveConfigSnapshotProviderV1",
+  "status": "NOT_RUN_BLOCKED",
+  "blocker": "SR0B_CANONICALIZATION_AUTHORITY_REQUIRED",
+  "reason": "The source contains no deterministic canonicalization utility actively used by manifest integrity; no provider was implemented.",
+  "provider_invoked": false,
+  "provider_calls": 0,
+  "network_attempts": 0,
+  "filesystem_writes": 0,
+  "result": "No read-purity claim is made before canonicalization authority is supplied."
+}

@@ -1,6 +1,7 @@
 """apps_research bridge for apps_rg managed R3R4 resume briefing delegation."""
 from __future__ import annotations
 
+import os
 import time
 import uuid
 from dataclasses import dataclass
@@ -161,8 +162,12 @@ class AppsResearchBridge:
         job_description_text: str = "",
     ) -> Any:
         from apps_research.integrations.governed_research_run import GovernedResearchRun
+        from apps_research.integrations.searxng_readiness import runtime_base_url
         from apps_research.integrations.spine_handoff import run_research_via_spine
         from apps_research.types.research_types import ResearchRequest
+
+        if not os.environ.get("SEARXNG_BASE_URL", "").strip():
+            os.environ["SEARXNG_BASE_URL"] = runtime_base_url()
         jd_text = _resolve_jd_text(
             job_description_ref=job_description_ref,
             job_description_text=job_description_text,
@@ -178,6 +183,11 @@ class AppsResearchBridge:
             jd_payload["jd_text"] = jd_text
         if job_description_ref:
             jd_payload["jd_ref"] = job_description_ref
+        retrieval_receipt_path = ""
+        if self._artifact_runs_root is not None:
+            retrieval_receipt_path = str(
+                (self._artifact_runs_root.resolve().parent / "retrieval_receipt.json").resolve()
+            )
         research_request = ResearchRequest(
             topic=company_name,
             mode="brief",
@@ -196,6 +206,7 @@ class AppsResearchBridge:
                 "content": jd_text,
                 "jd_text": jd_text,
                 "jd_ref": job_description_ref,
+                "_retrieval_receipt_path": retrieval_receipt_path,
                 # JD relevance context only — never used to identify the company.
                 "jd_context": jd_payload,
             },

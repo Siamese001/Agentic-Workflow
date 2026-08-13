@@ -54,7 +54,6 @@ def _get_guardian_decision():
 
 
 from agentic_core.agents.types.agent_registry import get_profile, registry_digest
-from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
 from agentic_core.L0_routing.types.determinism_contracts_types import (
     create_boundary_snapshot,
@@ -148,8 +147,9 @@ class V15ExecutionGateway:
         result = gateway.execute(manifest, heal_fn, state_hash_fn)
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, active_config_snapshot: Any | None = None) -> None:
         self._clock = SemanticClock()
+        self._active_config_snapshot = active_config_snapshot
         self._seen_signals: set[str] = set()
         self._pipe_violations: list[dict[str, object]] = []
         self._policy_violations: list[dict[str, object]] = []
@@ -245,7 +245,9 @@ class V15ExecutionGateway:
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
-        from agentic_core.utils.runners.providers import get_clock  # noqa: PLC0415  # guardian: shared clock provider used at routing execution boundary
+        from agentic_core.utils.runners.providers import (
+            get_clock,  # noqa: PLC0415  # guardian: shared clock provider used at routing execution boundary
+        )
 
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, state_hash_fn=state_hash_fn, **kwargs)
@@ -277,7 +279,7 @@ class V15ExecutionGateway:
         validate_manifest_emission(manifest)
         _HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
         if any(hasattr(manifest, f) and getattr(manifest, f) is not None for f in _HASH_FIELDS):
-            _get_manifest_hash_validator()(manifest)
+            _get_manifest_hash_validator()(manifest, self._active_config_snapshot)
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
         dedupe_hit = signal_hash in self._seen_signals
         self._seen_signals.add(signal_hash)

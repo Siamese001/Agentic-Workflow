@@ -911,6 +911,16 @@ def _role_axis_coverage(
         [
             " ".join(_unique_strs(plan.get("selected_skill_ids") or [])),
             " ".join(str(row.get("skill_id") or "") for row in plan.get("selected_skills") or [] if isinstance(row, dict)),
+            " ".join(_unique_strs(plan.get("selected_nodes") or [])),
+            " ".join(
+                str(value or "")
+                for row in plan.get("facts") or []
+                if isinstance(row, dict)
+                for value in (
+                    row.get("role_episode_bundle_id"),
+                    *(row.get("graph_skill_node_ids") or []),
+                )
+            ),
             " ".join(_unique_strs(rendered_skill_ids or [])),
         ]
     ).lower()

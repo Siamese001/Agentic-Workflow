@@ -7,9 +7,9 @@ instance enables the ``json`` format.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
-import json
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -48,6 +48,11 @@ class RetrievedDoc:
     title: str
     snippet: str
     score: float
+    engines: tuple[str, ...] = ()
+
+
+class RetryableRetrievalTransportError(RuntimeError):
+    """SearXNG transport failed in a way that permits one bounded retry."""
 
 
 def _require_base_url() -> str:
@@ -126,6 +131,25 @@ def _coerce_score(hit: dict[str, Any], fallback: float) -> float:
         return fallback
 
 
+def _normalize_engines(hit: dict[str, Any]) -> tuple[str, ...]:
+    raw_engines = hit.get("engines")
+    if isinstance(raw_engines, str):
+        candidates = [raw_engines]
+    elif isinstance(raw_engines, (list, tuple, set)):
+        candidates = list(raw_engines)
+    else:
+        candidates = []
+    if not candidates and hit.get("engine"):
+        candidates = [hit["engine"]]
+    return tuple(
+        dict.fromkeys(
+            str(engine).strip()
+            for engine in candidates
+            if str(engine).strip()
+        )
+    )
+
+
 def _normalize_results(payload: Any, *, top_k: int) -> list[RetrievedDoc]:
     results = payload.get("results", []) if isinstance(payload, dict) else []
     docs: list[RetrievedDoc] = []
@@ -144,6 +168,7 @@ def _normalize_results(payload: Any, *, top_k: int) -> list[RetrievedDoc]:
                 title=title,
                 snippet=snippet,
                 score=_coerce_score(hit, fallback_score),
+                engines=_normalize_engines(hit),
             )
         )
         if len(docs) >= top_k:
@@ -199,7 +224,9 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
             ) from exc
         raise RuntimeError(f"SearXNG search failed with HTTP status {status_code}") from exc
     except (TimeoutError, OSError) as exc:
-        raise RuntimeError(f"SearXNG search request failed: {exc}") from exc
+        raise RetryableRetrievalTransportError(
+            f"SearXNG search request failed: {exc}"
+        ) from exc
     except (json.JSONDecodeError, ValueError) as exc:
         raise RuntimeError("SearXNG search response was not valid JSON") from exc
 
@@ -210,6 +237,7 @@ def retrieve(sub_query: str, top_k: int = 10) -> list[RetrievedDoc]:
 
 __all__ = [
     "RetrievedDoc",
+    "RetryableRetrievalTransportError",
     "apply_contextual_prefix",
     "retrieve",
     "retrieval_config_snapshot",

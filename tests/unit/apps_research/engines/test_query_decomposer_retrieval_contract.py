@@ -9,6 +9,13 @@ from apps_research.engines.query_decomposer import (
 )
 from apps_research.integrations.search_retrieval import retrieval_config_snapshot
 
+_S2_COMPANY = "Unify Consulting"
+_S2_ROLE = "SVP Technical Pre-Sales, Enterprise Cloud & AI Solutions"
+_S2_JD = (
+    "Lead partnership co-sell motions, platform architecture, enterprise sales, "
+    "and applied AI solutions."
+)
+
 
 def test_v2_decompose_standard_stays_neutral_without_jd_context() -> None:
     queries = decompose("Acme Health", depth="standard")
@@ -54,6 +61,30 @@ def test_partnership_jd_promotes_explicit_partner_retrieval_families() -> None:
             "tech_stack_and_tools",
         }
     )
+
+
+def test_role_context_query_uses_only_company_role_and_deterministic_intents() -> None:
+    plans = decompose_coverage_families(
+        _S2_COMPANY,
+        "COMPANY_BRIEF_STANDARD",
+        {
+            "company_name": _S2_COMPANY,
+            "job_title": _S2_ROLE,
+            "content": _S2_JD,
+        },
+    )
+
+    role_plan = next(plan for plan in plans if plan.family == "role_context")
+    assert role_plan.query == (
+        "Unify Consulting "
+        "SVP Technical Pre-Sales, Enterprise Cloud & AI Solutions "
+        "partnerships platform engineering sales gtm applied ai"
+    )
+    assert role_plan.jd_boosted is True
+    assert role_plan.supplemental_queries == (
+        "Unify Consulting partners alliances cloud partnerships co-sell GSI ISV ecosystem",
+    )
+    assert "Lead partnership" not in role_plan.query
 
 
 def test_platform_jd_promotes_platform_relevant_families_without_partner_bias() -> None:

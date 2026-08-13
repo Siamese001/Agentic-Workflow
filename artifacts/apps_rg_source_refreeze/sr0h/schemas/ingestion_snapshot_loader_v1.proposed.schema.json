@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:apps-rg:sr0h:ingestion-snapshot-loader-v1:proposed",
+  "title": "IngestionSnapshotLoaderV1 proposed contract",
+  "status": "APPROVED_NEW_ARCHITECTURE_CONTRACT_DRAFT",
+  "authority_origin": "USER_SUPPLIED_ARCHITECTURE_OWNER_DECISION",
+  "approval_timestamp": "2026-07-19T16:57:20-04:00",
+  "type": "object",
+  "oneOf": [
+    { "$ref": "#/$defs/IngestionSnapshotV1" },
+    { "$ref": "#/$defs/IngestionLoadFailureV1" }
+  ],
+  "$defs": {
+    "IngestionLoadRequestV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canonical_input_reference",
+        "canonical_input_digest",
+        "expected_input_schema_version",
+        "active_config_snapshot_reference",
+        "expected_configuration_digest",
+        "expected_ingestion_schema_version",
+        "expected_builder_version",
+        "execution_mode",
+        "run_id",
+        "trace_id"
+      ],
+      "properties": {
+        "canonical_input_reference": { "type": "string", "minLength": 1 },
+        "canonical_input_digest": { "type": "string", "minLength": 1 },
+        "expected_input_schema_version": { "type": "string", "minLength": 1 },
+        "active_config_snapshot_reference": { "type": "string", "minLength": 1 },
+        "expected_configuration_digest": { "type": "string", "minLength": 1 },
+        "expected_ingestion_schema_version": { "type": "string", "minLength": 1 },
+        "expected_builder_version": { "type": "string", "minLength": 1 },
+        "execution_mode": { "type": "string", "minLength": 1 },
+        "run_id": { "type": "string", "minLength": 1 },
+        "trace_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "IngestionSnapshotV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "snapshot_id",
+        "schema_version",
+        "builder_version",
+        "canonical_input_digest",
+        "active_configuration_digest",
+        "canonical_serialized_payload",
+        "payload_digest",
+        "generation_id",
+        "creation_provenance",
+        "immutable_artifact_reference",
+        "validation_receipt"
+      ],
+      "properties": {
+        "snapshot_id": { "type": "string", "minLength": 1 },
+        "schema_version": { "type": "string", "minLength": 1 },
+        "builder_version": { "type": "string", "minLength": 1 },
+        "canonical_input_digest": { "type": "string", "minLength": 1 },
+        "active_configuration_digest": { "type": "string", "minLength": 1 },
+        "canonical_serialized_payload": { "type": "string", "minLength": 1 },
+        "payload_digest": { "type": "string", "minLength": 1 },
+        "generation_id": { "type": "string", "minLength": 1 },
+        "creation_provenance": { "type": "object" },
+        "immutable_artifact_reference": { "type": "string", "minLength": 1 },
+        "validation_receipt": { "type": "object" }
+      }
+    },
+    "IngestionLoadFailureV1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason_code"],
+      "properties": {
+        "reason_code": {
+          "type": "string",
+          "enum": [
+            "SNAPSHOT_MISSING",
+            "SNAPSHOT_STALE",
+            "SNAPSHOT_MALFORMED",
+            "INPUT_DIGEST_MISMATCH",
+            "CONFIG_DIGEST_MISMATCH",
+            "SCHEMA_VERSION_MISMATCH",
+            "BUILDER_VERSION_MISMATCH",
+            "SNAPSHOT_VALIDATION_FAILED",
+            "SNAPSHOT_PUBLICATION_INCOMPLETE",
+            "REBUILD_REQUIRED",
+            "REBUILD_NOT_AUTHORIZED"
+          ]
+        }
+      }
+    }
+  }
+}

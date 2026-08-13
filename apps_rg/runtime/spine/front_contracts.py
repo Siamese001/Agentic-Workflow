@@ -13,7 +13,6 @@ from contextvars import ContextVar
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 from apps_rg.runtime.section_spine_terminology import (
@@ -26,6 +25,12 @@ from apps_rg.runtime.spine.section_contract_bundles import (
     OBSERVED_CHAIN_WITH_FRONT_BRIDGE,
     SectionFrontSpineBridge,
     SectionRunContractBundle,
+)
+from apps_rg.runtime.spine.validated_request_contract import (
+    CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME,
+    ValidatedRequestContractError,
+    load_validated_request_contract,
+    write_validated_request_contract,
 )
 
 _FIXTURE_DEV_BYPASS_CTX: ContextVar[bool] = ContextVar(
@@ -171,8 +176,41 @@ def build_section_front_spine_from_args(
             "source_channel": "apps_rg_section_cli",
         },
     }
-    envelope = apps_rg_parse(thin)
-    validated_request = u0_validate_apps_rg(envelope, allow_missing_profiles=False)
+    whole_run = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+    )
+    if whole_run:
+        from apps_rg.runtime.runtime_proof_layout import MODULAR_R4_SECTIONS_ROOT_ENV
+
+        sections_root_raw = os.environ.get(MODULAR_R4_SECTIONS_ROOT_ENV, "").strip()
+        if not sections_root_raw:
+            raise SectionFrontSpinePreconditionError(
+                "whole-run section dispatch requires MODULAR_R4_SECTIONS_ROOT"
+            )
+        canonical_path = (
+            Path(sections_root_raw).expanduser().resolve().parent.parent
+            / CANONICAL_APPS_RG_VALIDATED_REQUEST_FILENAME
+        )
+        try:
+            validated_request = load_validated_request_contract(canonical_path)
+        except ValidatedRequestContractError as exc:
+            raise SectionFrontSpinePreconditionError(
+                f"whole-run canonical ValidatedRequest is unavailable: {exc}"
+            ) from exc
+        canonical_payload = dict(validated_request.app_payload or {})
+        targeting = (
+            str(canonical_payload.get("target_company") or "").strip(),
+            str(canonical_payload.get("target_role") or "").strip(),
+        )
+        if targeting != (target_company, target_role):
+            raise SectionFrontSpinePreconditionError(
+                "whole-run canonical ValidatedRequest targeting does not match section dispatch"
+            )
+    else:
+        envelope = apps_rg_parse(thin)
+        validated_request = u0_validate_apps_rg(envelope, allow_missing_profiles=False)
     ap = dict(validated_request.app_payload or {})
     if not ap.get("runtime_customization_package"):
         raise SectionFrontSpinePreconditionError(
@@ -181,11 +219,6 @@ def build_section_front_spine_from_args(
         )
     l1_plan = l1_plan_apps_rg(validated_request)
     route = l0_route_apps_rg(l1_plan)
-    whole_run = os.environ.get("APPS_RG_WHOLE_RUN_ENVELOPE", "").strip().lower() in (
-        "1",
-        "true",
-        "yes",
-    )
     return SectionFrontSpineBridge(
         section_id=section_id,
         validated_request=validated_request,
@@ -213,13 +246,6 @@ def _serialize_value(val: Any) -> Any:
         except TypeError:  # guardian: allow-silent-swallow -- P2 burndown: fail-soft optional boundary
             pass
     return repr(val)
-
-
-def _validation_status_from_vr(validated_request: Any) -> str:
-    receipt = getattr(validated_request, "authority_validation_receipt", None)
-    if receipt is not None and getattr(receipt, "validation_passed", False):
-        return "PASS"
-    return "PASS" if validated_request is not None else "FAIL"
 
 
 def build_section_front_spine_receipt(bridge: SectionFrontSpineBridge) -> dict[str, Any]:
@@ -297,18 +323,12 @@ def emit_section_front_spine_receipts(
     vr_payload = bridge.validated_request
     request_id = str(getattr(vr_payload, "request_id", "") or "")
     run_id = str(getattr(vr_payload, "run_id", "") or "")
-    vr_doc = {
-        "contract_type": "ValidatedRequest",
-        "contract_version": "apps_rg_spine_front_contracts_v1",
-        "producer_stage": "U0",
-        "consumer_stage": "L1",
-        "request_id": request_id,
-        "run_id": run_id,
-        "validation_status": _validation_status_from_vr(vr_payload),
-        "payload": _serialize_value(bridge.validated_request),
-    }
     p_vr = artifact_dir / "validated_request.json"
-    p_vr.write_text(json.dumps(vr_doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    write_validated_request_contract(
+        p_vr,
+        bridge.validated_request,
+        consumer_stage="L1",
+    )
     paths["validated_request"] = p_vr
 
     l1_doc = {

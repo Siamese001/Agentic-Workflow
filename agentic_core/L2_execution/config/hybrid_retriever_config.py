@@ -12,31 +12,21 @@ HybridRetriever - Dense + Sparse Retrieval with Reranking
 import ast
 import asyncio
 import hashlib
-import json
-import os
 import re
-import tempfile
-import uuid
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    LayerSegment,
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-    _emit_snapshots_state,
-)
 from tqdm import tqdm
-from agentic_core.L0_routing.config.pipeline_constants import (  # guardian: allow-layer-violation -- pipeline_constants SSOT at L0 config; L2 reads generic numeric defaults only
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
+
+from agentic_core.L2_execution.config.ingestion_snapshot import (
+    IngestionLoadRequestV1,
+    IngestionSnapshotError,
+    IngestionSnapshotFailureReason,
+    IngestionSnapshotLoaderV1,
+)
+from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+    _emit_applies_guardrail,
+    _emit_snapshots_state,
 )
 
 try:
@@ -201,68 +191,38 @@ class HybridRetriever:
     Hybrid retrieval combining semantic search with BM25 sparse retrieval
     """
 
-    def __init__(self, vector_store, guardrail):
+    def __init__(
+        self,
+        vector_store,
+        guardrail,
+        *,
+        ingestion_snapshot_request: IngestionLoadRequestV1 | None = None,
+    ):
         self.vector_store = vector_store
         self.guardrail = guardrail
+        self.ingestion_snapshot_request = ingestion_snapshot_request
         self.bm25_index: BM25Okapi | None = None
         self.local_chunks: list[dict] = []
         self.index_ready = asyncio.Event()
         self.tokenizer = ASTAwareTokenizer()
         self._index_initialized = False  # Lazy init: no asyncio.create_task at construction
 
-    async def _load_or_rebuild_local_index(self):
-        """Thread-safe loading of the sovereign index"""
-        cache_path = Path("agentic_core/L4_state/memory/.sovereign_local_index.json")
-        if cache_path.exists():
-            try:
-                data = await asyncio.to_thread(lambda: json.loads(cache_path.read_text(encoding="utf-8")))
-                self.local_chunks = data["chunks"]
-
-                def _build_bm25():
-                    tokenized = [self.tokenizer.tokenize_code(c["text"]) for c in self.local_chunks]
-                    return BM25Okapi(tokenized)
-
-                self.bm25_index = await asyncio.to_thread(_build_bm25)
-                self.index_ready.set()
-                print("   [OK] Sovereign local BM25 index loaded")
-                return
-            except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
-                print(f"   [!] Local index cache corrupt — rebuilding: {e}")
-        await self.rebuild_from_ingestion()
-
-    async def rebuild_from_ingestion(self) -> Any:
-        """Rebuild local index from latest ingestion artifacts"""
-
-        _emit_records_execution_trace(
-            str(uuid.uuid4()),
-            LayerSegment.L3_ORCHESTRATION,
-            "HybridRetrieverConfig.rebuild_from_ingestion",
+    async def _load_local_index(self) -> None:
+        """Load the explicitly selected immutable snapshot without writes."""
+        if self.ingestion_snapshot_request is None:
+            raise IngestionSnapshotError(IngestionSnapshotFailureReason.REBUILD_REQUIRED)
+        snapshot = await asyncio.to_thread(
+            IngestionSnapshotLoaderV1().load,
+            self.ingestion_snapshot_request,
         )
-        try:
-            from ops_scripts.dev_tools.L0_routing_scripts.sovereign_ingestion_mission import (
-                load_latest_ingested_chunks,
-            )
+        self.local_chunks = snapshot.payload["chunks"]
 
-            chunks: Any = await asyncio.to_thread(load_latest_ingested_chunks)
-            self.local_chunks = chunks
-            if chunks:
+        def _build_bm25():
+            tokenized = [self.tokenizer.tokenize_code(chunk["text"]) for chunk in self.local_chunks]
+            return BM25Okapi(tokenized)
 
-                def _sync():
-                    tokenized = [self.tokenizer.tokenize_code(c["text"]) for c in chunks]
-                    idx = BM25Okapi(tokenized)
-                    cache_path = Path("agentic_core/L4_state/memory/.sovereign_local_index.json")
-                    cache_path.parent.mkdir(parents=True, exist_ok=True)
-                    with tempfile.NamedTemporaryFile("w", delete=False, dir=cache_path.parent) as tf:
-                        json.dump({"chunks": chunks}, tf, ensure_ascii=False)
-                        temp_name = tf.name
-                    os.replace(temp_name, cache_path)
-                    return idx
-
-                self.bm25_index = await asyncio.to_thread(_sync)
-                self.index_ready.set()
-            print("   [OK] Sovereign local index synchronized")
-        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
-            print(f"   [X] Local index rebuild failed: {e}")
+        self.bm25_index = await asyncio.to_thread(_build_bm25)
+        self.index_ready.set()
 
     async def dense_search(self, query: str, top_k: int = 15) -> list[RetrievalResult]:
         """Dense semantic search via vector store"""
@@ -351,7 +311,7 @@ class HybridRetriever:
         """Lazy index init: called on first hybrid_search invocation."""
         if not self._index_initialized:
             self._index_initialized = True
-            await self._load_or_rebuild_local_index()
+            await self._load_local_index()
 
     # P4-4C: default context budget (tokens; 4 chars ≈ 1 token)
     MAX_CONTEXT_TOKENS: int = 4096
