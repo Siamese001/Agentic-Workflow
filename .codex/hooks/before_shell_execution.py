@@ -1,10 +1,17 @@
 import re
-import sys
 import shlex
 import subprocess
+import sys
 from pathlib import Path
 
-from lib.codex_hook_common import allow, block, contains_legacy_execution_token, read_payload, text_from_payload, write_receipt
+from lib.codex_hook_common import (
+    allow,
+    block,
+    contains_legacy_execution_token,
+    read_payload,
+    text_from_payload,
+    write_receipt,
+)
 
 # Wire the turn-hanging command guards (python -c quote-hazard + interactive/pager) from the
 # governance gate into this live PreToolUse Bash hook. Previously pre_run_gate.py implemented
@@ -154,11 +161,11 @@ def _has_main_closeout_chain(command: str) -> bool:
         "&&" in normalized
         and normalized.count("codex_main_closeout.py") >= 2
         and re.search(
-            r"codex_main_closeout\.py\b[^&|;]*--apply\b[^&|;]*--fetch\b[^&|;]*--publication-only\b",
+            r"codex_main_closeout\.py\b[^&|;]*--apply\b[^&|;]*--fetch\b[^&|;]*--publication-only\b[^&|;]*--require-governance-health\b",
             normalized,
         )
         and re.search(
-            r"codex_main_closeout\.py\b[^&|;]*--check\b[^&|;]*--fetch\b[^&|;]*--publication-only\b",
+            r"codex_main_closeout\.py\b[^&|;]*--check\b[^&|;]*--fetch\b[^&|;]*--publication-only\b[^&|;]*--require-governance-health\b",
             normalized,
         )
     )
@@ -171,8 +178,8 @@ def pr_completion_block_reason(command: str) -> str | None:
         return None
     return (
         "PR/main completion commands must chain publication closeout proof in the same command: "
-        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && "
-        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only"
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only --require-governance-health && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only --require-governance-health"
     )
 
 

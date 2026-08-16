@@ -146,6 +146,8 @@ jobs:
           install-mode: minimal
       - name: Verify Codex primary adapter
         run: python scripts/governance/verify_codex_primary.py --repo-only
+      - name: Validate Codex governance surface manifest
+        run: python ops_scripts/ci/check_governance_surface_manifest.py
 
   adg-report-mece:
     name: adg-report-mece

@@ -7,7 +7,9 @@ Codex is the primary local execution surface for this repository. The repo-owned
 | Concern | Source |
 | --- | --- |
 | Local run state, readiness, verification, and closeout evidence | Codex primary execution surface |
-| Shared governance rules | `AGENTS.md`, `docs/codex-primary-execution.md`, `.codex/**`, `scripts/governance/**`, root `.mcp.json` |
+| Always-on instruction surface | `AGENTS.md` plus every `.codex/rules/*.md` |
+| On-demand governance procedure | This document, `.codex/skills/**`, and `scripts/governance/**` |
+| Rule/hook ownership and lifecycle | `.codex/governance/governance_surface_manifest.json`, validated by `ops_scripts/ci/check_governance_surface_manifest.py` |
 | Agentic Workflow project memory | `memory/MEMORY.md` plus Codex-specific project memory under `memory/codex/` |
 | MCP configured-server truth | `.mcp.json` |
 | Optional Codex live route evidence | `docs/reports/codex/` snapshots such as `codex_primary_mcp_live_snapshot.md` |
@@ -92,8 +94,8 @@ clean.
 The local closeout authority reports two surfaces:
 
 ```bash
-python scripts/governance/codex_main_closeout.py --check --json
-python scripts/governance/codex_main_closeout.py --apply --json
+python scripts/governance/codex_main_closeout.py --check --json --require-governance-health
+python scripts/governance/codex_main_closeout.py --apply --json --require-governance-health
 ```
 
 `publication_closeout` proves local `main` equals `origin/main` and the root worktree has no
@@ -106,12 +108,16 @@ it may fast-forward clean local `main` and remove clean ancestor-contained non-m
 branches/worktrees, but it never resets, force-pushes, deletes dirty worktrees, or deletes unmerged
 branches.
 
+When `--require-governance-health` is present, closeout also runs the critical hook fail-open release
+gate. Any count above its acknowledged baseline blocks publication rather than being reported as an
+advisory warning.
+
 The shell hook enforces this for local PR completion commands. A direct `gh pr merge` or push to
 `main` must chain both closeout commands in the same shell command, normally after switching back to
 `main`:
 
 ```bash
-gh pr merge <number> --merge && git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only
+gh pr merge <number> --merge && git switch main && python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only --require-governance-health && python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only --require-governance-health
 ```
 
 Run the strict `codex_main_closeout.py --check --fetch --json` afterward as workspace-topology
@@ -270,6 +276,8 @@ If a process-identity tool is absent, the live MCP child is still serving older 
 ## Native Hook Contract
 
 Codex primary enforcement uses the native Codex hook registry at `.codex/hooks.json`. Hook entrypoints live under `.codex/hooks/**`, and delegated governance scripts live under `.codex/governance/scripts/**`. Legacy non-Codex governance directories are forbidden.
+
+`scripts/governance/verify_codex_hook_runtime.py` validates the repository hook schema and matcher syntax. Run it with `--runtime-config "$env:USERPROFILE\.codex\config.toml"` to verify that local Codex has hooks enabled, the workspace-required avatar selected, and a recorded trust-state entry for every registered repository handler. That registration proof does not imply every specialized tool path dispatches through hooks; use direct workload evidence for a specific tool-path claim.
 
 Workspace-specific avatar enforcement lives in `.codex/hooks/selected_avatar_guard.py` and is registered on `SessionStart`, `UserPromptSubmit`, and `PreToolUse` so the workspace blocks before startup, prompt submission, or tool execution when the active Codex avatar is not `patch-fox`.
 

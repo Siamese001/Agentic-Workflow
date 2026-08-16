@@ -101,7 +101,7 @@ Pytest runs with plugin **autoload ON** (CI default); `addopts` carries `--timeo
 
 ## Core vs apps (summary)
 
-Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without migration receipt. **Multi-provider X1D proof panels:** `agentic_core/runtime/judges/panel/` (`JudgePanelRunner`, transport preflight); `apps_rg` wires adapters via `x1d_panel_bridge` (see plan [core-judge-panel-harness-f3c8d1](plans/core-judge-panel-harness-f3c8d1.md)). Detail: [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.codex/rules/agentic-core-static.md` (legacy reference only).
+Apps customize inputs; core enforces contracts. No app leakage in `agentic_core` without a migration receipt. All app work follows [`apps_shared/APP_AGENT_CONTRACT.md`](apps_shared/APP_AGENT_CONTRACT.md) plus its local `apps_<name>/AGENTS.md`; `apps_rg` proof-panel details remain in its local contract. Detail: [`agentic_core/AGENTS.md`](agentic_core/AGENTS.md) · `.codex/rules/agentic-core-static.md`.
 
 ## Rules & Skills SSOT
 
@@ -109,16 +109,17 @@ Procedural MCP / Notion / ledgers: `scripts/governance/**`, `.codex/**`, and `do
 
 | Layer | Path | Notes |
 |-------|------|-------|
-| Always-on rules | `AGENTS.md` + `docs/codex-primary-execution.md` | Active Codex governance contract and rule floor |
-| On-demand rules | `.codex/rules/*.md` + `scripts/governance/**` | Load by task surface and file scope |
+| Always-on instructions | `AGENTS.md` + `.codex/rules/*.md` | The native project-instruction surface; every rule file is budgeted and governed as always-on. |
+| On-demand procedures | `docs/codex-primary-execution.md` + `scripts/governance/**` | Procedural reference and executable verification, not additional instruction authority. |
 | Skills | `.codex/skills/*/SKILL.md` | Repo-owned Codex procedural adapters |
 | Hooks | `.codex/hooks.json` + `.codex/hooks/**` | Native Codex hook registry and hook entrypoints |
+| Surface manifest | `.codex/governance/governance_surface_manifest.json` | Canonical owner, scope, loading, enforcement, lifecycle, and legacy-reference classification for every rule and hook. |
 | Index | `docs/reports/codex/` + historical rule-index references | Generated route evidence and historical references only |
 | Deprecated compatibility shims | docs/archive and `_legacy_*` shims | Non-authoritative compatibility/archive only; edit Codex-owned files |
 
 **Dedup:** Do not restate always-on invariants in compatibility stubs or hook reminders. Active procedure lives in `AGENTS.md` and `docs/codex-primary-execution.md`; retired rule and skill names remain historical only.
 
-Governance inventory: [`governance_tier_inventory.json`](docs/reports/cursor/governance_tier_inventory.json) · dedup audit: [`governance_dedup_audit_20260526.md`](docs/reports/cursor/governance_dedup_audit_20260526.md) · closeout plan: [`governance-dedup-closeout-e8a4c2.md`](plans/governance-dedup-closeout-e8a4c2.md).
+Governance inventory: [`governance_surface_manifest.json`](.codex/governance/governance_surface_manifest.json) · validate read-only with `python ops_scripts/ci/check_governance_surface_manifest.py --json` · legacy compatibility references are classified there, never treated as active policy by implication.
 
 ## Codex primary execution adapter
 
@@ -127,13 +128,14 @@ Codex is the primary local execution surface for this repo. Repo-owned governanc
 - Primary contract: [`docs/codex-primary-execution.md`](docs/codex-primary-execution.md).
 - Repo-specific Codex enforcement files, including cadence automation contracts, live under `.codex/automations/`. The user profile at `C:\Users\amita\.codex\automations` may contain only generated launcher mirrors with repo path and digest metadata. Mirrors may carry UI/runtime fields copied from the repo contract (`prompt`, `model`, `reasoning_effort`, `execution_environment`, `cwds`) so Codex Desktop can display and run them, but they must validate exactly against the repo-owned contract and must not carry hand-edited or stale payloads, handoff metadata, runtime optimization metadata, or other independent contract authority.
 - Before long Codex-primary runs, execute `python scripts/governance/codex_readiness.py --json`; add `--require-clean-worktree --fail-duplicate-processes` for strict proof/eval preflight.
-- For post-publication closeout, use `python scripts/governance/codex_main_closeout.py --check --json --publication-only`; local cleanup may use `--apply` only for clean, ancestor-contained branches/worktrees.
-- Direct PR completion commands (`gh pr merge` or push-to-main) must chain `codex_main_closeout.py --apply --fetch --json --publication-only` and `codex_main_closeout.py --check --fetch --json --publication-only` in the same shell command, then run strict topology closeout as evidence.
+- For post-publication closeout, use `python scripts/governance/codex_main_closeout.py --check --json --publication-only --require-governance-health`; local cleanup may use `--apply` only for clean, ancestor-contained branches/worktrees.
+- Direct PR completion commands (`gh pr merge` or push-to-main) must chain `codex_main_closeout.py --apply --fetch --json --publication-only --require-governance-health` and `codex_main_closeout.py --check --fetch --json --publication-only --require-governance-health` in the same shell command, then run strict topology closeout as evidence.
 - Validate the repo-owned enforcement home with `python scripts/governance/verify_codex_enforcement_home.py --json`.
 - Validate and run Codex preflights with `python scripts/governance/codex_readiness.py --json`; primary enforcement must not depend on any legacy non-Codex governance directory or hook parity path.
 - Codex must ask a plain-text clarifying question directly in the assistant response before editing whenever a turn cannot proceed safely without a user choice; do not assume a branch or defer to a missing prompt surface.
 - Substantial Codex runs should emit a JSON run receipt and validate it with `python scripts/governance/verify_codex_run_receipt.py <receipt.json>`.
 - Validate this primary adapter with `python scripts/governance/verify_codex_primary.py` after changing Codex execution docs or scripts.
+- Validate the documented hook schema with `python scripts/governance/verify_codex_hook_runtime.py`; for a local registration proof, add `--runtime-config "$env:USERPROFILE\.codex\config.toml"`. It also verifies the workspace-required avatar before claiming hook readiness. This confirms enabled hooks and recorded trust-state entries for registered handlers, but does not turn hooks into a complete boundary for specialized tool paths.
 - Do not create a second rule or MCP registry. Codex consumes repo-owned rules under `.codex` and records live route evidence under `docs/reports/codex/`.
 
 ## Codex-Only Enforcement

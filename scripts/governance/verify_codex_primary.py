@@ -29,8 +29,10 @@ REQUIRED_FILES = [
     "scripts/governance/svp_docs_review.py",
     "scripts/governance/verify_codex_enforcement_home.py",
     "scripts/governance/verify_codex_enforcement_home_portable.py",
+    "scripts/governance/verify_codex_hook_runtime.py",
     "scripts/governance/verify_codex_run_receipt.py",
     "scripts/governance/verify_codex_primary.py",
+    "ops_scripts/ci/check_governance_surface_manifest.py",
     ".codex/config.toml",
     ".codex/automations/on-demand-pr-main-publisher/automation.toml",
     ".codex/automations/on-demand-svp-documentation-refresh/automation.toml",
@@ -45,6 +47,7 @@ REQUIRED_FILES = [
     ".codex/schemas/svp_docs_x3_v1.schema.json",
     ".codex/schemas/svp_docs_run_v1.schema.json",
     ".codex/hooks.json",
+    ".codex/governance/governance_surface_manifest.json",
     ".codex/hooks/selected_avatar_guard.py",
     ".codex/skills/agentic-workflow-governance/SKILL.md",
     ".codex/skills/agentic-workflow-verification/SKILL.md",
@@ -196,6 +199,12 @@ def validate(root: Path = REPO_ROOT, *, repo_only: bool = False) -> list[str]:
         return failures
     failures.extend(missing_anchors(REQUIRED_ANCHORS, root))
     failures.extend(hook_target_failures(root / ".codex" / "hooks.json", root))
+    try:
+        from verify_codex_hook_runtime import validate_contract
+
+        failures.extend(f"hook runtime contract: {error}" for error in validate_contract(root)["errors"])
+    except (ImportError, OSError, ValueError) as exc:
+        failures.append(f"hook runtime contract could not run: {exc}")
     failures.extend(codex_only_failures(root))
     if not repo_only:
         failures.extend(
@@ -224,8 +233,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         for failure in failures:
             print(f"- {failure}")
         return 1
-    print("Codex primary execution verification passed")
+    print("Codex primary static contract verification passed")
     print(f"- repo: {args.root}")
+    print("- limitation: local hook trust/registration requires verify_codex_hook_runtime.py --runtime-config <user-config>")
     return 0
 
 

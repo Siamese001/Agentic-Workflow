@@ -1,0 +1,2449 @@
+{
+  "schema_version": "apps_rg.mandatory_run_output.v1",
+  "generated_at_utc": "2026-08-04T23:44:07Z",
+  "run_root_abs": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d",
+  "run_root": ".runtime/owner_solo_final_output/brown_brown/fresh_e2e_retry2/e2e_20260804T234403Z_1903ea1d",
+  "result_summary": {
+    "exit_status": "error",
+    "execution_status": "failed",
+    "outcome_authorized": false,
+    "decisive_status": "",
+    "all_lanes_authorized": null,
+    "x3_disposition": "PRE_RUN:PREFLIGHT",
+    "completion_disposition": "PRE_RUN:PREFLIGHT",
+    "completion_status": "BLOCKED",
+    "completion_fault": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+    "fault": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+    "run_id": "e2e_20260804T234403Z_1903ea1d",
+    "request_id": "",
+    "proof_gate_status": "",
+    "proof_classification": "",
+    "decisive_reason": "",
+    "operational_failure": {
+      "stage_id": "PREFLIGHT",
+      "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+      "failure_code": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+      "failure_detail": "No module named 'tools.ingestion'",
+      "missing_environment_variables": [],
+      "preflight_receipt": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_continuation_receipt.json",
+      "baseline_ref": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\e2e_baselines\\anthropic_partnership.v1.json",
+      "retry_policy": "NON_RETRIABLE_CONFIGURATION",
+      "research_attempt_count": 0,
+      "generation_attempt_count": 0,
+      "judge_attempt_count": 0,
+      "research_artifact_dir": "NOT_REACHED:PREFLIGHT",
+      "research_briefing_path": "NOT_REACHED:PREFLIGHT",
+      "research_company_brief_path": "NOT_REACHED:PREFLIGHT",
+      "research_handoff_v2_path": "NOT_REACHED:PREFLIGHT",
+      "apps_eval_record_ref": "NOT_REACHED:PREFLIGHT",
+      "l6_shadow_bridge_ref": "NOT_REACHED:PREFLIGHT",
+      "l7_audit_status": "NOT_REACHED:PREFLIGHT"
+    },
+    "research_artifact_dir": "NOT_REACHED:PREFLIGHT",
+    "research_briefing_path": "NOT_REACHED:PREFLIGHT",
+    "research_company_brief_path": "NOT_REACHED:PREFLIGHT",
+    "research_handoff_v2_path": "NOT_REACHED:PREFLIGHT",
+    "apps_eval_record_ref": "NOT_REACHED:PREFLIGHT",
+    "l6_shadow_bridge_ref": "NOT_REACHED:PREFLIGHT",
+    "l7_audit_status": "NOT_REACHED:PREFLIGHT"
+  },
+  "section_counts": {
+    "total": 1,
+    "ran_real_llm": 0,
+    "allowed": 0,
+    "blocked": 0,
+    "pre_run_blocked": 1,
+    "not_run": 0,
+    "unknown": 0
+  },
+  "sections": [
+    {
+      "section": "run_preflight",
+      "status_bucket": "pre_run_blocked",
+      "executed": false,
+      "lane_dir": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d",
+      "display_txt_relpath": "",
+      "display_txt_path": "",
+      "x3_code": "PRE_RUN:PREFLIGHT",
+      "x2_pass": "NOT_REACHED",
+      "product_quality_status": "BLOCKED",
+      "runtime_generation_status": "NOT_RUN",
+      "failed_gates": [
+        {
+          "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+          "failure_reason": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+        }
+      ],
+      "failure_classification": "Route-signing configuration ingestion failure",
+      "pre_run_failure": {
+        "stage_id": "PREFLIGHT",
+        "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+        "failure_code": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "failure_detail": "No module named 'tools.ingestion'",
+        "missing_environment_variables": [],
+        "preflight_receipt": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_continuation_receipt.json",
+        "baseline_ref": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\e2e_baselines\\anthropic_partnership.v1.json",
+        "retry_policy": "NON_RETRIABLE_CONFIGURATION",
+        "research_attempt_count": 0,
+        "generation_attempt_count": 0,
+        "judge_attempt_count": 0,
+        "research_artifact_dir": "NOT_REACHED:PREFLIGHT",
+        "research_briefing_path": "NOT_REACHED:PREFLIGHT",
+        "research_company_brief_path": "NOT_REACHED:PREFLIGHT",
+        "research_handoff_v2_path": "NOT_REACHED:PREFLIGHT",
+        "apps_eval_record_ref": "NOT_REACHED:PREFLIGHT",
+        "l6_shadow_bridge_ref": "NOT_REACHED:PREFLIGHT",
+        "l7_audit_status": "NOT_REACHED:PREFLIGHT"
+      },
+      "judges": [],
+      "judge_summary": "JUDGES_NOT_REACHED",
+      "judge_issue_summary": {
+        "blocked_judges": [],
+        "decisive_judge_failures": []
+      },
+      "l6": {
+        "file_count": 0,
+        "files": [],
+        "product_authority": "not_reached"
+      }
+    }
+  ],
+  "section_lane_table": [
+    {
+      "order": 0,
+      "section": "research_briefing_input",
+      "research_source_class": "NOT_OBSERVED",
+      "r1a": "NOT_OBSERVED",
+      "r1b": "NOT_OBSERVED",
+      "lane_record": "NO",
+      "provider_call_attempted": "NOT_OBSERVED",
+      "primary_provider": "NOT_OBSERVED",
+      "primary_model_observed": "NOT_OBSERVED",
+      "pooling_selector_llm": "N/A",
+      "secondary_provider": "N/A",
+      "secondary_model_observed": "N/A",
+      "generation_status": "MISSING_BRIEFING",
+      "judges_run": "N/A",
+      "judge_models_scores": "N/A",
+      "judge_retry_fallback": "N/A",
+      "x2": "NOT_OBSERVED; blocker=no_apps_research_handoff_present",
+      "x3": "FAIL",
+      "past_fail_blocker": "auto_research_internal=None; research_delegation_executed=NOT_OBSERVED; source=NOT_OBSERVED; briefing missing",
+      "display_output": "MISSING",
+      "l6_evidence": "N/A"
+    },
+    {
+      "order": 1,
+      "section": "run_preflight",
+      "research_source_class": "N/A",
+      "r1a": "NOT_OBSERVED",
+      "r1b": "NOT_OBSERVED",
+      "lane_record": "YES",
+      "provider_call_attempted": "NOT_OBSERVED",
+      "primary_provider": "NOT_OBSERVED",
+      "primary_model_observed": "NOT_OBSERVED",
+      "pooling_selector_llm": "N/A",
+      "secondary_provider": "NOT_OBSERVED",
+      "secondary_model_observed": "NOT_OBSERVED",
+      "generation_status": "NOT_RUN",
+      "judges_run": "NO",
+      "judge_models_scores": "NOT_OBSERVED",
+      "judge_retry_fallback": "NOT_OBSERVED",
+      "x2": "NOT_REACHED",
+      "x3": "PRE_RUN:PREFLIGHT",
+      "past_fail_blocker": "Route-signing configuration ingestion failure",
+      "display_output": "MISSING",
+      "l6_evidence": "not_reached"
+    }
+  ],
+  "final_resume_output": {
+    "schema_version": "apps_rg.final_resume_output.v1",
+    "generated_at_utc": "2026-08-04T23:44:07Z",
+    "required": true,
+    "status": "FAIL",
+    "failed_gate_ids": [
+      "final_resume_no_gap_markers"
+    ],
+    "run_root": ".runtime/owner_solo_final_output/brown_brown/fresh_e2e_retry2/e2e_20260804T234403Z_1903ea1d",
+    "final_resume_json": {
+      "relpath": "modular_r4/final_resume_assembly/final_resume.json",
+      "exists": true,
+      "bytes": 7046,
+      "sha256": "7a10b6d1cf66516412f3b5f814fb48d7348974db59d992a81da5850734f1c92f"
+    },
+    "rendered_resume_text": {
+      "relpath": "FINAL_RESUME_OUTPUT.txt",
+      "exists": true,
+      "bytes": 2110,
+      "sha256": "989b0c7ae07795cd5d9c68ed50875f5f37c714b0d0c5c856eeb858fbfcdbe82b"
+    },
+    "resume_docx": {
+      "relpath": "outputs/resume.docx",
+      "exists": true,
+      "bytes": 37799,
+      "sha256": "4e7f0024ec47c4e36c00a24d638fa248653f4a779d73cd7c6024a163f81550fc"
+    },
+    "rendered_order": [
+      "candidate_header",
+      "headline",
+      "executive_summary",
+      "competencies",
+      "professional_experience",
+      "education",
+      "certifications"
+    ],
+    "base_resume_role_facts": [
+      {
+        "role_key": "unify",
+        "employer": "Unify Consulting",
+        "title": "SVP Engineering, Agentic AI Platforms",
+        "location": "Boca Raton, FL",
+        "start_date": "2023-02",
+        "end_date": "present",
+        "is_current": true
+      },
+      {
+        "role_key": "ibm",
+        "employer": "IBM",
+        "title": "Partner",
+        "location": "Edgewater, NJ",
+        "start_date": "2017-04",
+        "end_date": "2022-10",
+        "is_current": false
+      },
+      {
+        "role_key": "insurtech",
+        "employer": "InsurTech Cloud Solutions",
+        "title": "Chief Technology Officer",
+        "location": "New York, NY",
+        "start_date": "2014-04",
+        "end_date": "2017-03",
+        "is_current": false
+      },
+      {
+        "role_key": "ey",
+        "employer": "Ernst & Young",
+        "title": "Principal",
+        "location": "New York, NY",
+        "start_date": "2009-10",
+        "end_date": "2014-03",
+        "is_current": false
+      },
+      {
+        "role_key": "early_career",
+        "employer": "Early Career Roles",
+        "title": "Actuarial Consultant and Quantitative Roles",
+        "location": "Philadelphia, PA",
+        "start_date": "2002-10",
+        "end_date": "2009-09",
+        "is_current": false
+      }
+    ],
+    "content_sources": {
+      "identity_contact_source": "base_resume_locked_profile",
+      "role_header_source": "final_resume.locked_copy_invariants",
+      "generated_content_source": "final_resume.sections[].l2_output_snapshot",
+      "education_certification_source": "final_resume.sections[].copied_text_exact",
+      "locked_copy_source": "final_resume.sections[].copied_text_exact"
+    },
+    "gates": [
+      {
+        "gate_id": "final_resume_json_spine_present",
+        "pass": true,
+        "observed_value": ".runtime/owner_solo_final_output/brown_brown/fresh_e2e_retry2/e2e_20260804T234403Z_1903ea1d/modular_r4/final_resume_assembly/final_resume.json",
+        "threshold": "modular_r4/final_resume_assembly/final_resume.json",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_rendered_text_present",
+        "pass": true,
+        "observed_value": {
+          "relpath": "FINAL_RESUME_OUTPUT.txt",
+          "exists": true,
+          "bytes": 2110,
+          "sha256": "989b0c7ae07795cd5d9c68ed50875f5f37c714b0d0c5c856eeb858fbfcdbe82b"
+        },
+        "threshold": "nonempty text output",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_docx_present_nonempty",
+        "pass": true,
+        "observed_value": {
+          "relpath": "outputs/resume.docx",
+          "exists": true,
+          "bytes": 37799,
+          "sha256": "4e7f0024ec47c4e36c00a24d638fa248653f4a779d73cd7c6024a163f81550fc"
+        },
+        "threshold": "nonempty DOCX output",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_rendered_order_valid",
+        "pass": true,
+        "observed_value": {
+          "EXECUTIVE SUMMARY": 182,
+          "ENGINEERING & PLATFORM COMPETENCIES": 273,
+          "PROFESSIONAL EXPERIENCE": 392,
+          "EDUCATION": 1575,
+          "CERTIFICATIONS": 1739
+        },
+        "threshold": [
+          "candidate_header",
+          "headline",
+          "executive_summary",
+          "competencies",
+          "professional_experience",
+          "education",
+          "certifications"
+        ],
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_docx_order_valid",
+        "pass": true,
+        "observed_value": {
+          "EXECUTIVE SUMMARY": 187,
+          "ENGINEERING & PLATFORM COMPETENCIES": 284,
+          "PROFESSIONAL EXPERIENCE": 409,
+          "EDUCATION": 1606,
+          "CERTIFICATIONS": 1769
+        },
+        "threshold": [
+          "candidate_header",
+          "headline",
+          "executive_summary",
+          "competencies",
+          "professional_experience",
+          "education",
+          "certifications"
+        ],
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_base_role_headers_preserved",
+        "pass": true,
+        "observed_value": {
+          "role_headers": {
+            "unify": [
+              "Unify Consulting \u2014 SVP Engineering, Agentic AI Platforms",
+              "Boca Raton, FL | Feb 2023 \u2013 Present"
+            ],
+            "ibm": [
+              "IBM \u2014 Partner",
+              "Edgewater, NJ | Apr 2017 \u2013 Oct 2022"
+            ],
+            "insurtech": [
+              "InsurTech Cloud Solutions \u2014 Chief Technology Officer",
+              "New York, NY | Apr 2014 \u2013 Mar 2017"
+            ],
+            "ey": [
+              "Ernst & Young \u2014 Principal",
+              "New York, NY | Oct 2009 \u2013 Mar 2014"
+            ],
+            "early_career": [
+              "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
+              "Philadelphia, PA | Oct 2002 \u2013 Sep 2009"
+            ]
+          },
+          "positions": {
+            "unify": [
+              417,
+              474
+            ],
+            "ibm": [
+              604,
+              618
+            ],
+            "insurtech": [
+              742,
+              795
+            ],
+            "ey": [
+              922,
+              948
+            ],
+            "early_career": [
+              1068,
+              1133
+            ]
+          }
+        },
+        "threshold": "base resume employer/title/location/date headers in order",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_docx_base_role_headers_preserved",
+        "pass": true,
+        "observed_value": {
+          "role_headers": {
+            "unify": [
+              "Unify Consulting \u2014 SVP Engineering, Agentic AI Platforms",
+              "Boca Raton, FL | Feb 2023 \u2013 Present"
+            ],
+            "ibm": [
+              "IBM \u2014 Partner",
+              "Edgewater, NJ | Apr 2017 \u2013 Oct 2022"
+            ],
+            "insurtech": [
+              "InsurTech Cloud Solutions \u2014 Chief Technology Officer",
+              "New York, NY | Apr 2014 \u2013 Mar 2017"
+            ],
+            "ey": [
+              "Ernst & Young \u2014 Principal",
+              "New York, NY | Oct 2009 \u2013 Mar 2014"
+            ],
+            "early_career": [
+              "Early Career Roles \u2014 Actuarial Consultant and Quantitative Roles",
+              "Philadelphia, PA | Oct 2002 \u2013 Sep 2009"
+            ]
+          },
+          "positions": {
+            "unify": [
+              433,
+              490
+            ],
+            "ibm": [
+              620,
+              634
+            ],
+            "insurtech": [
+              762,
+              815
+            ],
+            "ey": [
+              948,
+              974
+            ],
+            "early_career": [
+              1100,
+              1165
+            ]
+          }
+        },
+        "threshold": "base resume employer/title/location/date headers in order",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_education_copied_from_base",
+        "pass": true,
+        "observed_value": {
+          "section_id": "education",
+          "expected_lines": [
+            "Master of Science in Biostatistics, Columbia University (Graduated with Distinction)",
+            "Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)"
+          ],
+          "positions": {
+            "Master of Science in Biostatistics, Columbia University (Graduated with Distinction)": 1585,
+            "Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)": 1670
+          }
+        },
+        "threshold": "base resume education lines",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_docx_education_copied_from_base",
+        "pass": true,
+        "observed_value": {
+          "section_id": "education",
+          "expected_lines": [
+            "Master of Science in Biostatistics, Columbia University (Graduated with Distinction)",
+            "Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)"
+          ],
+          "positions": {
+            "Master of Science in Biostatistics, Columbia University (Graduated with Distinction)": 1616,
+            "Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)": 1701
+          }
+        },
+        "threshold": "base resume education lines",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_certifications_copied_from_base",
+        "pass": true,
+        "observed_value": {
+          "section_id": "certifications",
+          "expected_lines": [
+            "Certified Machine Learning Engineer \u2013 Associate, AWS, 2025",
+            "Databricks Lakehouse Fundamentals Accreditation, 2023",
+            "Certified Solutions Architect \u2013 Professional, AWS, 2023",
+            "Fellow of the Society of Actuaries, 2010"
+          ],
+          "positions": {
+            "Certified Machine Learning Engineer \u2013 Associate, AWS, 2025": 1768,
+            "Databricks Lakehouse Fundamentals Accreditation, 2023": 1827,
+            "Certified Solutions Architect \u2013 Professional, AWS, 2023": 1881,
+            "Fellow of the Society of Actuaries, 2010": 1937
+          }
+        },
+        "threshold": "base resume certification lines",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_docx_certifications_copied_from_base",
+        "pass": true,
+        "observed_value": {
+          "section_id": "certifications",
+          "expected_lines": [
+            "Certified Machine Learning Engineer \u2013 Associate, AWS, 2025",
+            "Databricks Lakehouse Fundamentals Accreditation, 2023",
+            "Certified Solutions Architect \u2013 Professional, AWS, 2023",
+            "Fellow of the Society of Actuaries, 2010"
+          ],
+          "positions": {
+            "Certified Machine Learning Engineer \u2013 Associate, AWS, 2025": 1798,
+            "Databricks Lakehouse Fundamentals Accreditation, 2023": 1857,
+            "Certified Solutions Architect \u2013 Professional, AWS, 2023": 1911,
+            "Fellow of the Society of Actuaries, 2010": 1967
+          }
+        },
+        "threshold": "base resume certification lines",
+        "failure_reason": ""
+      },
+      {
+        "gate_id": "final_resume_no_gap_markers",
+        "pass": false,
+        "observed_value": {
+          "not_completed": true,
+          "not_generated_by_run": true
+        },
+        "threshold": false,
+        "failure_reason": "rendered resume contains generated-content gap markers"
+      }
+    ]
+  },
+  "rca_findings": [
+    {
+      "section": "run_preflight",
+      "classification": "Route-signing configuration ingestion failure",
+      "root_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+      "evidence": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+      "implementation_plan": [
+        "Provision the route-signing secret and its non-secret key identifier in the launcher process environment.",
+        "Keep signing readiness as the first hash-chained E2E stage before research or provider dispatch.",
+        "Emit and validate the operational RCA, prior-pass bisect, retry accounting, BCG, and L7 output before returning nonzero.",
+        "Retain regression coverage proving blocked preflight performs zero research, generation, and judge calls and never writes a secret value."
+      ],
+      "causal_allocation": {
+        "dominant_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+        "retry_recoverability": "NONE_WITHIN_CURRENT_PROCESS",
+        "retry_recoverability_reason": "Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached.",
+        "allocation": [
+          {
+            "domain": "External configuration ingestion",
+            "causal_role": "ROOT_CAUSE",
+            "root_cause_link": "The launcher process did not receive both required route-signing environment variables before canonical E2E preflight.",
+            "work_share": "100%",
+            "evidence_refs": [
+              "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+            ],
+            "required_work": "Inject the secret and key identifier through the approved local environment boundary without persisting or printing the secret."
+          }
+        ]
+      }
+    }
+  ],
+  "section_failure_forensics": {
+    "gate_id": "E2E_FAIL_WITHOUT_SECTION_FORENSICS",
+    "pass": true,
+    "required": false,
+    "failed_section_count": 0,
+    "artifact_dir": "",
+    "artifacts": [],
+    "missing_or_incomplete": [],
+    "failure_reason": "",
+    "baseline_confidence": "pinned_baseline_unavailable",
+    "baseline_run_dir": ""
+  },
+  "operational_failure_forensics": {
+    "gate_id": "APPS_RG_OPERATIONAL_FAILURE_RCA_INCOMPLETE",
+    "required": true,
+    "pass": true,
+    "comparison_complete": true,
+    "baseline": {
+      "baseline_id": "anthropic_partnership_20260630_094000",
+      "baseline_ref": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\e2e_baselines\\anthropic_partnership.v1.json",
+      "baseline_run_dir": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+      "mandatory_output_sha256": "3270158fd4c3bf52d8c97b24254d2c3d0365956ef416b50d6936090f5e6cd128",
+      "git_commit": "20015c3fbd8e3929eec67a2f1d22d6f69078051d",
+      "target_company": "Anthropic",
+      "target_role": "Manager of Applied AI Architecture, Partnerships"
+    },
+    "baseline_error": "",
+    "layperson_explanation": [
+      "The earlier passing run had the private signing configuration needed to prove where work was routed, and its first section attempts cleared their gates and judges without a retry.",
+      "This run stopped at its first recorded check because that configuration was missing when the process started; research, resume generation, and judges never ran.",
+      "Retries did not fail one after another: zero retries were scheduled because repeating the same process with the same missing configuration could not change the result."
+    ],
+    "root_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+    "underlying_root_cause": {
+      "environment_ingestion_root_cause": {
+        "status": "ISOLATED",
+        "conclusion": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+        "code_surface": "apps_rg/runtime/e2e_preflight.py::run_fresh_e2e_preflight"
+      }
+    },
+    "first_observed_divergence": {
+      "order": 1,
+      "stage": "PREFLIGHT",
+      "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+      "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+      "match": false,
+      "classification": "CAUSAL",
+      "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+      "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+      "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+    },
+    "first_causally_relevant_divergence": {
+      "order": 1,
+      "stage": "PREFLIGHT",
+      "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+      "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+      "match": false,
+      "classification": "CAUSAL",
+      "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+      "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+      "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+    },
+    "prior_attempt_timeline": [
+      {
+        "sequence": 1,
+        "phase": "preflight",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Required signing configuration was available to the passing run.",
+        "repair_or_action": "validate route signing and pinned baseline",
+        "gate_scope": "PREFLIGHT",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "NOT_APPLICABLE",
+        "disposition": "ADVANCED_TO_RESEARCH",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+        "complete": true
+      },
+      {
+        "sequence": 2,
+        "phase": "retry_accounting",
+        "attempt": 0,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "The passing baseline recorded authorized section and judge outcomes without a retry cycle.",
+        "repair_or_action": "continue with first accepted attempts",
+        "gate_scope": "RETRY_ACCOUNTING",
+        "gate_result": "NOT_REQUIRED",
+        "failed_gate_ids": [],
+        "judge_result": "NO_JUDGE_RETRY_REQUIRED",
+        "disposition": "FIRST_ATTEMPTS_ACCEPTED",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 3,
+        "phase": "section:competencies",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:COMPETENCIES",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.1/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 4,
+        "phase": "section:unify_bullets",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:UNIFY_BULLETS",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 5,
+        "phase": "section:ibm_bullets",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:IBM_BULLETS",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 6,
+        "phase": "section:insurtech_bullets",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:INSURTECH_BULLETS",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 7,
+        "phase": "section:ey_bullets",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:EY_BULLETS",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 8,
+        "phase": "section:unify_narrative",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:UNIFY_NARRATIVE",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 9,
+        "phase": "section:ibm_narrative",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:IBM_NARRATIVE",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 10,
+        "phase": "section:insurtech_narrative",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:INSURTECH_NARRATIVE",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 11,
+        "phase": "section:ey_narrative",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:EY_NARRATIVE",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 12,
+        "phase": "section:executive_summary",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:EXECUTIVE_SUMMARY",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 13,
+        "phase": "section:headline",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:HEADLINE",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 4.5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.2/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      },
+      {
+        "sequence": 14,
+        "phase": "section:final_resume_aggregation",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "Pinned passing run section execution.",
+        "repair_or_action": "generate, gate, and judge section",
+        "gate_scope": "SECTION:FINAL_RESUME_AGGREGATION",
+        "gate_result": "PASS",
+        "failed_gate_ids": [],
+        "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+        "disposition": "X3_ALLOW",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+        "complete": true
+      }
+    ],
+    "current_attempt_timeline": [
+      {
+        "sequence": 1,
+        "phase": "preflight",
+        "attempt": 1,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "repair_or_action": "stop without retry because configuration is non-retriable",
+        "gate_scope": "PREFLIGHT",
+        "gate_result": "FAIL",
+        "failed_gate_ids": [],
+        "judge_result": "JUDGES_NOT_REACHED",
+        "disposition": "BLOCKED_BEFORE_RESEARCH",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+        "complete": true
+      },
+      {
+        "sequence": 2,
+        "phase": "retry_decision",
+        "attempt": 0,
+        "candidate_digest": "",
+        "word_count": 0,
+        "trigger_or_input": "The missing process configuration would be identical on every in-process retry.",
+        "repair_or_action": "require external configuration injection before a new run",
+        "gate_scope": "RETRY_DECISION",
+        "gate_result": "NOT_RUN",
+        "failed_gate_ids": [],
+        "judge_result": "JUDGES_NOT_REACHED",
+        "disposition": "NO_RETRY_SCHEDULED",
+        "acceptance_scope": "RUN_CONTROL",
+        "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+        "complete": true
+      }
+    ],
+    "gate_matrix": [
+      {
+        "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+        "prior": "PASS",
+        "current": "FAIL",
+        "changed": true,
+        "current_reason": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+      }
+    ],
+    "judge_matrix": [
+      {
+        "judge": "gemini_pro",
+        "prior": "5.0/4.0 PASS",
+        "current": "JUDGES_NOT_REACHED",
+        "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+      },
+      {
+        "judge": "openai_chatgpt",
+        "prior": "4.5/4.0 PASS",
+        "current": "JUDGES_NOT_REACHED",
+        "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+      }
+    ],
+    "ingestion_to_outcome_lineage": [
+      {
+        "order": 1,
+        "stage": "PREFLIGHT",
+        "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+        "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "match": false,
+        "classification": "CAUSAL",
+        "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 2,
+        "stage": "RESEARCH",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "RESEARCH could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 3,
+        "stage": "U0",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "U0 could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 4,
+        "stage": "L1",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "L1 could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 5,
+        "stage": "L0",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "L0 could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 6,
+        "stage": "L2",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "L2 could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 7,
+        "stage": "X1-X3",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "X1-X3 could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 8,
+        "stage": "APPS_EVAL",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "APPS_EVAL could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      {
+        "order": 9,
+        "stage": "L6_SHADOW",
+        "prior_value": "REACHED",
+        "current_value": "NOT_REACHED",
+        "match": false,
+        "classification": "DOWNSTREAM_EFFECT",
+        "reason": "L6_SHADOW could not run after the causal preflight block.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      }
+    ],
+    "retry_analysis": {
+      "prior_retry_count": 0,
+      "current_retry_count": 0,
+      "why_retries_did_not_run": "Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached."
+    },
+    "causal_allocation": {
+      "dominant_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+      "retry_recoverability": "NONE_WITHIN_CURRENT_PROCESS",
+      "retry_recoverability_reason": "Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached.",
+      "allocation": [
+        {
+          "domain": "External configuration ingestion",
+          "causal_role": "ROOT_CAUSE",
+          "root_cause_link": "The launcher process did not receive both required route-signing environment variables before canonical E2E preflight.",
+          "work_share": "100%",
+          "evidence_refs": [
+            "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          ],
+          "required_work": "Inject the secret and key identifier through the approved local environment boundary without persisting or printing the secret."
+        }
+      ]
+    },
+    "implementation_plan": [
+      "Provision the route-signing secret and its non-secret key identifier in the launcher process environment.",
+      "Keep signing readiness as the first hash-chained E2E stage before research or provider dispatch.",
+      "Emit and validate the operational RCA, prior-pass bisect, retry accounting, BCG, and L7 output before returning nonzero.",
+      "Retain regression coverage proving blocked preflight performs zero research, generation, and judge calls and never writes a secret value."
+    ],
+    "revision_comparison": {
+      "baseline_git_commit": "20015c3fbd8e3929eec67a2f1d22d6f69078051d",
+      "current_git_commit": "cba1303f044f24af364b888122971cab7a972457"
+    },
+    "output_bisect": {
+      "schema_version": "apps_rg.output_bisect.v1",
+      "section_id": "run_preflight",
+      "scope": "OPERATIONAL_PREFLIGHT_CAUSAL_BISECT",
+      "first_observed_divergence": {
+        "order": 1,
+        "stage": "PREFLIGHT",
+        "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+        "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "match": false,
+        "classification": "CAUSAL",
+        "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      "first_causally_relevant_divergence": {
+        "order": 1,
+        "stage": "PREFLIGHT",
+        "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+        "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "match": false,
+        "classification": "CAUSAL",
+        "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+        "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+        "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+      },
+      "ingestion_to_outcome_lineage": [
+        {
+          "order": 1,
+          "stage": "PREFLIGHT",
+          "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+          "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+          "match": false,
+          "classification": "CAUSAL",
+          "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 2,
+          "stage": "RESEARCH",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "RESEARCH could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 3,
+          "stage": "U0",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "U0 could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 4,
+          "stage": "L1",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "L1 could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 5,
+          "stage": "L0",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "L0 could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 6,
+          "stage": "L2",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "L2 could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 7,
+          "stage": "X1-X3",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "X1-X3 could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 8,
+          "stage": "APPS_EVAL",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "APPS_EVAL could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        {
+          "order": 9,
+          "stage": "L6_SHADOW",
+          "prior_value": "REACHED",
+          "current_value": "NOT_REACHED",
+          "match": false,
+          "classification": "DOWNSTREAM_EFFECT",
+          "reason": "L6_SHADOW could not run after the causal preflight block.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        }
+      ],
+      "prior_attempt_timeline": [
+        {
+          "sequence": 1,
+          "phase": "preflight",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Required signing configuration was available to the passing run.",
+          "repair_or_action": "validate route signing and pinned baseline",
+          "gate_scope": "PREFLIGHT",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "NOT_APPLICABLE",
+          "disposition": "ADVANCED_TO_RESEARCH",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+          "complete": true
+        },
+        {
+          "sequence": 2,
+          "phase": "retry_accounting",
+          "attempt": 0,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "The passing baseline recorded authorized section and judge outcomes without a retry cycle.",
+          "repair_or_action": "continue with first accepted attempts",
+          "gate_scope": "RETRY_ACCOUNTING",
+          "gate_result": "NOT_REQUIRED",
+          "failed_gate_ids": [],
+          "judge_result": "NO_JUDGE_RETRY_REQUIRED",
+          "disposition": "FIRST_ATTEMPTS_ACCEPTED",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 3,
+          "phase": "section:competencies",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:COMPETENCIES",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.1/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 4,
+          "phase": "section:unify_bullets",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:UNIFY_BULLETS",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 5,
+          "phase": "section:ibm_bullets",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:IBM_BULLETS",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 6,
+          "phase": "section:insurtech_bullets",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:INSURTECH_BULLETS",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 7,
+          "phase": "section:ey_bullets",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:EY_BULLETS",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 8,
+          "phase": "section:unify_narrative",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:UNIFY_NARRATIVE",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 9,
+          "phase": "section:ibm_narrative",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:IBM_NARRATIVE",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 10,
+          "phase": "section:insurtech_narrative",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:INSURTECH_NARRATIVE",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 11,
+          "phase": "section:ey_narrative",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:EY_NARRATIVE",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 12,
+          "phase": "section:executive_summary",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:EXECUTIVE_SUMMARY",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 13,
+          "phase": "section:headline",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:HEADLINE",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 4.5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.2/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        },
+        {
+          "sequence": 14,
+          "phase": "section:final_resume_aggregation",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "Pinned passing run section execution.",
+          "repair_or_action": "generate, gate, and judge section",
+          "gate_scope": "SECTION:FINAL_RESUME_AGGREGATION",
+          "gate_result": "PASS",
+          "failed_gate_ids": [],
+          "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+          "disposition": "X3_ALLOW",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+          "complete": true
+        }
+      ],
+      "current_attempt_timeline": [
+        {
+          "sequence": 1,
+          "phase": "preflight",
+          "attempt": 1,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+          "repair_or_action": "stop without retry because configuration is non-retriable",
+          "gate_scope": "PREFLIGHT",
+          "gate_result": "FAIL",
+          "failed_gate_ids": [],
+          "judge_result": "JUDGES_NOT_REACHED",
+          "disposition": "BLOCKED_BEFORE_RESEARCH",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+          "complete": true
+        },
+        {
+          "sequence": 2,
+          "phase": "retry_decision",
+          "attempt": 0,
+          "candidate_digest": "",
+          "word_count": 0,
+          "trigger_or_input": "The missing process configuration would be identical on every in-process retry.",
+          "repair_or_action": "require external configuration injection before a new run",
+          "gate_scope": "RETRY_DECISION",
+          "gate_result": "NOT_RUN",
+          "failed_gate_ids": [],
+          "judge_result": "JUDGES_NOT_REACHED",
+          "disposition": "NO_RETRY_SCHEDULED",
+          "acceptance_scope": "RUN_CONTROL",
+          "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+          "complete": true
+        }
+      ],
+      "gate_matrix": [
+        {
+          "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+          "prior": "PASS",
+          "current": "FAIL",
+          "changed": true,
+          "current_reason": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+        }
+      ],
+      "judge_matrix": [
+        {
+          "judge": "gemini_pro",
+          "prior": "5.0/4.0 PASS",
+          "current": "JUDGES_NOT_REACHED",
+          "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+        },
+        {
+          "judge": "openai_chatgpt",
+          "prior": "4.5/4.0 PASS",
+          "current": "JUDGES_NOT_REACHED",
+          "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+        }
+      ],
+      "code_cause_status": "EXTERNAL_CONFIGURATION_CAUSE_ISOLATED",
+      "code_bindings": [
+        {
+          "role": "configuration ingestion and fail-fast evidence",
+          "file": "apps_rg/runtime/e2e_preflight.py",
+          "symbol": "run_fresh_e2e_preflight",
+          "changed_between_revisions": true,
+          "status": "RUNTIME_GATE"
+        }
+      ],
+      "underlying_root_cause": {
+        "environment_ingestion_root_cause": {
+          "status": "ISOLATED",
+          "conclusion": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+          "code_surface": "apps_rg/runtime/e2e_preflight.py::run_fresh_e2e_preflight"
+        }
+      },
+      "layperson_explanation": [
+        "The earlier passing run had the private signing configuration needed to prove where work was routed, and its first section attempts cleared their gates and judges without a retry.",
+        "This run stopped at its first recorded check because that configuration was missing when the process started; research, resume generation, and judges never ran.",
+        "Retries did not fail one after another: zero retries were scheduled because repeating the same process with the same missing configuration could not change the result."
+      ]
+    },
+    "rca_finding": {
+      "section": "run_preflight",
+      "classification": "Route-signing configuration ingestion failure",
+      "root_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+      "evidence": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+      "implementation_plan": [
+        "Provision the route-signing secret and its non-secret key identifier in the launcher process environment.",
+        "Keep signing readiness as the first hash-chained E2E stage before research or provider dispatch.",
+        "Emit and validate the operational RCA, prior-pass bisect, retry accounting, BCG, and L7 output before returning nonzero.",
+        "Retain regression coverage proving blocked preflight performs zero research, generation, and judge calls and never writes a secret value."
+      ],
+      "causal_allocation": {
+        "dominant_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+        "retry_recoverability": "NONE_WITHIN_CURRENT_PROCESS",
+        "retry_recoverability_reason": "Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached.",
+        "allocation": [
+          {
+            "domain": "External configuration ingestion",
+            "causal_role": "ROOT_CAUSE",
+            "root_cause_link": "The launcher process did not receive both required route-signing environment variables before canonical E2E preflight.",
+            "work_share": "100%",
+            "evidence_refs": [
+              "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+            ],
+            "required_work": "Inject the secret and key identifier through the approved local environment boundary without persisting or printing the secret."
+          }
+        ]
+      }
+    },
+    "section_record": {
+      "section": "run_preflight",
+      "status_bucket": "pre_run_blocked",
+      "executed": false,
+      "lane_dir": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d",
+      "display_txt_relpath": "",
+      "display_txt_path": "",
+      "x3_code": "PRE_RUN:PREFLIGHT",
+      "x2_pass": "NOT_REACHED",
+      "product_quality_status": "BLOCKED",
+      "runtime_generation_status": "NOT_RUN",
+      "failed_gates": [
+        {
+          "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+          "failure_reason": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+        }
+      ],
+      "failure_classification": "Route-signing configuration ingestion failure",
+      "pre_run_failure": {
+        "stage_id": "PREFLIGHT",
+        "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+        "failure_code": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+        "failure_detail": "No module named 'tools.ingestion'",
+        "missing_environment_variables": [],
+        "preflight_receipt": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_continuation_receipt.json",
+        "baseline_ref": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\e2e_baselines\\anthropic_partnership.v1.json",
+        "retry_policy": "NON_RETRIABLE_CONFIGURATION",
+        "research_attempt_count": 0,
+        "generation_attempt_count": 0,
+        "judge_attempt_count": 0,
+        "research_artifact_dir": "NOT_REACHED:PREFLIGHT",
+        "research_briefing_path": "NOT_REACHED:PREFLIGHT",
+        "research_company_brief_path": "NOT_REACHED:PREFLIGHT",
+        "research_handoff_v2_path": "NOT_REACHED:PREFLIGHT",
+        "apps_eval_record_ref": "NOT_REACHED:PREFLIGHT",
+        "l6_shadow_bridge_ref": "NOT_REACHED:PREFLIGHT",
+        "l7_audit_status": "NOT_REACHED:PREFLIGHT"
+      },
+      "judges": [],
+      "judge_summary": "JUDGES_NOT_REACHED",
+      "judge_issue_summary": {
+        "blocked_judges": [],
+        "decisive_judge_failures": []
+      },
+      "l6": {
+        "file_count": 0,
+        "files": [],
+        "product_authority": "not_reached"
+      }
+    },
+    "errors": []
+  },
+  "output_bisect": {
+    "required": true,
+    "sections": [
+      {
+        "schema_version": "apps_rg.output_bisect.v1",
+        "section_id": "run_preflight",
+        "scope": "OPERATIONAL_PREFLIGHT_CAUSAL_BISECT",
+        "first_observed_divergence": {
+          "order": 1,
+          "stage": "PREFLIGHT",
+          "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+          "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+          "match": false,
+          "classification": "CAUSAL",
+          "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        "first_causally_relevant_divergence": {
+          "order": 1,
+          "stage": "PREFLIGHT",
+          "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+          "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+          "match": false,
+          "classification": "CAUSAL",
+          "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+          "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+          "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+        },
+        "ingestion_to_outcome_lineage": [
+          {
+            "order": 1,
+            "stage": "PREFLIGHT",
+            "prior_value": "SIGNING_CONFIGURATION_AVAILABLE",
+            "current_value": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+            "match": false,
+            "classification": "CAUSAL",
+            "reason": "The first divergence is the process-ingestion boundary: the passing run could sign route evidence, while the current process lacked required signing configuration.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 2,
+            "stage": "RESEARCH",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "RESEARCH could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 3,
+            "stage": "U0",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "U0 could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 4,
+            "stage": "L1",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "L1 could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 5,
+            "stage": "L0",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "L0 could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 6,
+            "stage": "L2",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "L2 could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 7,
+            "stage": "X1-X3",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "X1-X3 could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 8,
+            "stage": "APPS_EVAL",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "APPS_EVAL could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          },
+          {
+            "order": 9,
+            "stage": "L6_SHADOW",
+            "prior_value": "REACHED",
+            "current_value": "NOT_REACHED",
+            "match": false,
+            "classification": "DOWNSTREAM_EFFECT",
+            "reason": "L6_SHADOW could not run after the causal preflight block.",
+            "prior_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000",
+            "current_evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          }
+        ],
+        "prior_attempt_timeline": [
+          {
+            "sequence": 1,
+            "phase": "preflight",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Required signing configuration was available to the passing run.",
+            "repair_or_action": "validate route signing and pinned baseline",
+            "gate_scope": "PREFLIGHT",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "NOT_APPLICABLE",
+            "disposition": "ADVANCED_TO_RESEARCH",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\route_contract.json",
+            "complete": true
+          },
+          {
+            "sequence": 2,
+            "phase": "retry_accounting",
+            "attempt": 0,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "The passing baseline recorded authorized section and judge outcomes without a retry cycle.",
+            "repair_or_action": "continue with first accepted attempts",
+            "gate_scope": "RETRY_ACCOUNTING",
+            "gate_result": "NOT_REQUIRED",
+            "failed_gate_ids": [],
+            "judge_result": "NO_JUDGE_RETRY_REQUIRED",
+            "disposition": "FIRST_ATTEMPTS_ACCEPTED",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 3,
+            "phase": "section:competencies",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:COMPETENCIES",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.1/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 4,
+            "phase": "section:unify_bullets",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:UNIFY_BULLETS",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 5,
+            "phase": "section:ibm_bullets",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:IBM_BULLETS",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 6,
+            "phase": "section:insurtech_bullets",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:INSURTECH_BULLETS",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 7,
+            "phase": "section:ey_bullets",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:EY_BULLETS",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 8,
+            "phase": "section:unify_narrative",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:UNIFY_NARRATIVE",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 9,
+            "phase": "section:ibm_narrative",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:IBM_NARRATIVE",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 10,
+            "phase": "section:insurtech_narrative",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:INSURTECH_NARRATIVE",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 11,
+            "phase": "section:ey_narrative",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:EY_NARRATIVE",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 12,
+            "phase": "section:executive_summary",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:EXECUTIVE_SUMMARY",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 13,
+            "phase": "section:headline",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:HEADLINE",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 4.5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.2/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          },
+          {
+            "sequence": 14,
+            "phase": "section:final_resume_aggregation",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "Pinned passing run section execution.",
+            "repair_or_action": "generate, gate, and judge section",
+            "gate_scope": "SECTION:FINAL_RESUME_AGGREGATION",
+            "gate_result": "PASS",
+            "failed_gate_ids": [],
+            "judge_result": "Google Gemini 3.1 Pro Preview `gemini-3.1-pro-preview`: 5/5 vs 4 PASS; OpenAI ChatGPT `gpt-5.5`: 4.5/5 vs 4 PASS",
+            "disposition": "X3_ALLOW",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\artifacts\\apps_rg\\runs\\anthropic_partnership_fresh_s2e_20260630_094000\\APPS_RG_MANDATORY_RUN_OUTPUT.json",
+            "complete": true
+          }
+        ],
+        "current_attempt_timeline": [
+          {
+            "sequence": 1,
+            "phase": "preflight",
+            "attempt": 1,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+            "repair_or_action": "stop without retry because configuration is non-retriable",
+            "gate_scope": "PREFLIGHT",
+            "gate_result": "FAIL",
+            "failed_gate_ids": [],
+            "judge_result": "JUDGES_NOT_REACHED",
+            "disposition": "BLOCKED_BEFORE_RESEARCH",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+            "complete": true
+          },
+          {
+            "sequence": 2,
+            "phase": "retry_decision",
+            "attempt": 0,
+            "candidate_digest": "",
+            "word_count": 0,
+            "trigger_or_input": "The missing process configuration would be identical on every in-process retry.",
+            "repair_or_action": "require external configuration injection before a new run",
+            "gate_scope": "RETRY_DECISION",
+            "gate_result": "NOT_RUN",
+            "failed_gate_ids": [],
+            "judge_result": "JUDGES_NOT_REACHED",
+            "disposition": "NO_RETRY_SCHEDULED",
+            "acceptance_scope": "RUN_CONTROL",
+            "evidence_ref": "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json",
+            "complete": true
+          }
+        ],
+        "gate_matrix": [
+          {
+            "gate_id": "APPS_RG_ROUTE_SIGNING_PREFLIGHT",
+            "prior": "PASS",
+            "current": "FAIL",
+            "changed": true,
+            "current_reason": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+          }
+        ],
+        "judge_matrix": [
+          {
+            "judge": "gemini_pro",
+            "prior": "5.0/4.0 PASS",
+            "current": "JUDGES_NOT_REACHED",
+            "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+          },
+          {
+            "judge": "openai_chatgpt",
+            "prior": "4.5/4.0 PASS",
+            "current": "JUDGES_NOT_REACHED",
+            "reason": "Current run stopped at signing preflight before research, generation, or judge dispatch."
+          }
+        ],
+        "code_cause_status": "EXTERNAL_CONFIGURATION_CAUSE_ISOLATED",
+        "code_bindings": [
+          {
+            "role": "configuration ingestion and fail-fast evidence",
+            "file": "apps_rg/runtime/e2e_preflight.py",
+            "symbol": "run_fresh_e2e_preflight",
+            "changed_between_revisions": true,
+            "status": "RUNTIME_GATE"
+          }
+        ],
+        "underlying_root_cause": {
+          "environment_ingestion_root_cause": {
+            "status": "ISOLATED",
+            "conclusion": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+            "code_surface": "apps_rg/runtime/e2e_preflight.py::run_fresh_e2e_preflight"
+          }
+        },
+        "layperson_explanation": [
+          "The earlier passing run had the private signing configuration needed to prove where work was routed, and its first section attempts cleared their gates and judges without a retry.",
+          "This run stopped at its first recorded check because that configuration was missing when the process started; research, resume generation, and judges never ran.",
+          "Retries did not fail one after another: zero retries were scheduled because repeating the same process with the same missing configuration could not change the result."
+        ]
+      }
+    ]
+  },
+  "mandatory_artifacts": {
+    "bcg_executive_output_md": "01_BCG_executive_output.md",
+    "output_bisect_md": "02_output_bisect.md",
+    "mandatory_run_output_md": "02_section_lane_summary_table.md",
+    "mandatory_run_output_json": "APPS_RG_MANDATORY_RUN_OUTPUT.json",
+    "section_failure_forensics_dir": "section_failure_forensics",
+    "final_resume_output_txt": "FINAL_RESUME_OUTPUT.txt",
+    "final_resume_output_json": "FINAL_RESUME_OUTPUT.json",
+    "final_resume_docx": "outputs/resume.docx",
+    "canonical_final_resume_json": "modular_r4/final_resume_assembly/final_resume.json"
+  },
+  "inline_required_output": {
+    "schema_version": "apps_rg.inline_required_output.v1",
+    "immutable_section_order": [
+      "bcg",
+      "section_lane_summary_table",
+      "resume_docx_full_version_inline"
+    ],
+    "bcg": {
+      "title": "BCG Executive Output - apps_rg Run",
+      "section_order": [
+        "executive_answer",
+        "p0_p1_px_recommendations",
+        "board_level_readout",
+        "issue_tree",
+        "recommended_next_move",
+        "evidence_map"
+      ],
+      "executive_answer": "The run is blocked and must not authorize a final resume. Required generation and/or final product gates did not clear. The source X3 decision was PRE_RUN:PREFLIGHT, but completion ended BLOCKED because FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED. Use the P0/P1/PX recommendations below as the repair order.",
+      "p0_p1_px_recommendations": {
+        "columns": [
+          "priority",
+          "recommendation",
+          "evidence",
+          "gate_outcome"
+        ],
+        "rows": [
+          {
+            "priority": "P0",
+            "recommendation": "Restore the missing external preflight configuration before starting a new E2E run.",
+            "evidence": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+            "gate_outcome": "Blocked at PREFLIGHT before research, generation, judges, and final assembly."
+          },
+          {
+            "priority": "P1",
+            "recommendation": "Keep the canonical preflight RCA and zero-retry accounting mandatory on every blocked run.",
+            "evidence": "{'prior_retry_count': 0, 'current_retry_count': 0, 'why_retries_did_not_run': 'Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached.'}",
+            "gate_outcome": "Do not replace the recorded failure with a bare launcher exception or post-run backfill."
+          }
+        ]
+      },
+      "board_level_readout": {
+        "columns": [
+          "question",
+          "answer"
+        ],
+        "rows": [
+          {
+            "question": "Did apps_research run?",
+            "answer": "No"
+          },
+          {
+            "question": "Research source class",
+            "answer": "NOT_OBSERVED"
+          },
+          {
+            "question": "Research input used",
+            "answer": "NOT_OBSERVED"
+          },
+          {
+            "question": "Briefing evidence",
+            "answer": "auto_research_internal=None; research_delegation_executed=NOT_OBSERVED; source=NOT_OBSERVED; briefing missing"
+          },
+          {
+            "question": "Did resume generation run?",
+            "answer": "0 REAL_LLM section(s)"
+          },
+          {
+            "question": "Source X3 decision",
+            "answer": "PRE_RUN:PREFLIGHT"
+          },
+          {
+            "question": "Completion status",
+            "answer": "BLOCKED"
+          },
+          {
+            "question": "Completion fault",
+            "answer": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED"
+          },
+          {
+            "question": "Final product authorized?",
+            "answer": "False"
+          },
+          {
+            "question": "Primary blocker",
+            "answer": "Restore the missing external preflight configuration before starting a new E2E run. Evidence: Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence."
+          },
+          {
+            "question": "Decision",
+            "answer": "Do not authorize; fix P0 gates first."
+          }
+        ]
+      },
+      "issue_tree": [
+        {
+          "section": "run_preflight",
+          "classification": "Route-signing configuration ingestion failure",
+          "root_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+          "evidence": [
+            "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+          ],
+          "causal_allocation": {
+            "dominant_cause": "Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence.",
+            "retry_recoverability": "NONE_WITHIN_CURRENT_PROCESS",
+            "retry_recoverability_reason": "Every judge or generation retry would reuse the same missing environment configuration and would fail before those systems were reached.",
+            "allocation": [
+              {
+                "domain": "External configuration ingestion",
+                "causal_role": "ROOT_CAUSE",
+                "root_cause_link": "The launcher process did not receive both required route-signing environment variables before canonical E2E preflight.",
+                "work_share": "100%",
+                "evidence_refs": [
+                  "C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\e2e_preflight_receipt.json"
+                ],
+                "required_work": "Inject the secret and key identifier through the approved local environment boundary without persisting or printing the secret."
+              }
+            ]
+          },
+          "required_implementation_plan": [
+            "Provision the route-signing secret and its non-secret key identifier in the launcher process environment.",
+            "Keep signing readiness as the first hash-chained E2E stage before research or provider dispatch.",
+            "Emit and validate the operational RCA, prior-pass bisect, retry accounting, BCG, and L7 output before returning nonzero.",
+            "Retain regression coverage proving blocked preflight performs zero research, generation, and judge calls and never writes a secret value."
+          ]
+        }
+      ],
+      "recommended_next_move": [
+        "Resolve P0: Restore the missing external preflight configuration before starting a new E2E run. Evidence: Required route-signing configuration was absent at process ingestion, so the run could not create signed L0 route evidence..",
+        "Rerun the integrated apps_rg path only after the listed P0 evidence clears.",
+        "Treat final assembly as valid only when every required section and product output is product-authorized."
+      ],
+      "evidence_map": [
+        {
+          "label": "Mandatory run ledger",
+          "path": "@C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\02_section_lane_summary_table.md"
+        },
+        {
+          "label": "Machine-readable ledger",
+          "path": "@C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\APPS_RG_MANDATORY_RUN_OUTPUT.json"
+        },
+        {
+          "label": "Final resume text",
+          "path": "@C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\FINAL_RESUME_OUTPUT.txt"
+        },
+        {
+          "label": "Final resume output contract",
+          "path": "@C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\FINAL_RESUME_OUTPUT.json"
+        },
+        {
+          "label": "Resume DOCX",
+          "path": "@C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\\outputs/resume.docx"
+        }
+      ]
+    },
+    "section_lane_summary_table": {
+      "title": "Section Lane Summary Table",
+      "columns": [
+        "order",
+        "section",
+        "research_source_class",
+        "r1a",
+        "r1b",
+        "lane_record",
+        "provider_call_attempted",
+        "primary_provider",
+        "primary_model_observed",
+        "pooling_selector_llm",
+        "secondary_provider",
+        "secondary_model_observed",
+        "generation_status",
+        "judges_run",
+        "judge_models_scores",
+        "judge_retry_fallback",
+        "x2",
+        "x3",
+        "past_fail_blocker",
+        "display_output",
+        "l6_evidence"
+      ],
+      "rows": [
+        {
+          "order": 0,
+          "section": "research_briefing_input",
+          "research_source_class": "NOT_OBSERVED",
+          "r1a": "NOT_OBSERVED",
+          "r1b": "NOT_OBSERVED",
+          "lane_record": "NO",
+          "provider_call_attempted": "NOT_OBSERVED",
+          "primary_provider": "NOT_OBSERVED",
+          "primary_model_observed": "NOT_OBSERVED",
+          "pooling_selector_llm": "N/A",
+          "secondary_provider": "N/A",
+          "secondary_model_observed": "N/A",
+          "generation_status": "MISSING_BRIEFING",
+          "judges_run": "N/A",
+          "judge_models_scores": "N/A",
+          "judge_retry_fallback": "N/A",
+          "x2": "NOT_OBSERVED; blocker=no_apps_research_handoff_present",
+          "x3": "FAIL",
+          "past_fail_blocker": "auto_research_internal=None; research_delegation_executed=NOT_OBSERVED; source=NOT_OBSERVED; briefing missing",
+          "display_output": "MISSING",
+          "l6_evidence": "N/A"
+        },
+        {
+          "order": 1,
+          "section": "run_preflight",
+          "research_source_class": "N/A",
+          "r1a": "NOT_OBSERVED",
+          "r1b": "NOT_OBSERVED",
+          "lane_record": "YES",
+          "provider_call_attempted": "NOT_OBSERVED",
+          "primary_provider": "NOT_OBSERVED",
+          "primary_model_observed": "NOT_OBSERVED",
+          "pooling_selector_llm": "N/A",
+          "secondary_provider": "NOT_OBSERVED",
+          "secondary_model_observed": "NOT_OBSERVED",
+          "generation_status": "NOT_RUN",
+          "judges_run": "NO",
+          "judge_models_scores": "NOT_OBSERVED",
+          "judge_retry_fallback": "NOT_OBSERVED",
+          "x2": "NOT_REACHED",
+          "x3": "PRE_RUN:PREFLIGHT",
+          "past_fail_blocker": "Route-signing configuration ingestion failure",
+          "display_output": "MISSING",
+          "l6_evidence": "not_reached"
+        }
+      ]
+    },
+    "resume_docx_full_version_inline": {
+      "title": "Resume DOCX Full Version Inline",
+      "source": "No authorized resume text emitted; this block is derived only from the current E2E run ledger and final-resume output contract.",
+      "text": "NO_AUTHORIZED_RESUME_OUTPUT\nsource_of_truth=current_e2e_run_artifacts_only\nrun_root=C:\\Git\\Agentic-Workflow-FRESH\\.runtime\\owner_solo_final_output\\brown_brown\\fresh_e2e_retry2\\e2e_20260804T234403Z_1903ea1d\nstatus=BLOCKED\nreason=outcome_authorized_false; final_resume_output_status=FAIL; failed_final_resume_gates=final_resume_no_gap_markers; pre_run_blocked=run_preflight\npolicy=do_not_inline_FINAL_RESUME_OUTPUT_txt_unless_current_run_authorized"
+    }
+  },
+  "mandatory_inline_output_gates": [
+    {
+      "gate_id": "mandatory_bcg_inline_output_present",
+      "pass": true,
+      "observed_value": "01_BCG_executive_output.md",
+      "threshold": "BCG executive markdown rendered inline",
+      "failure_reason": ""
+    },
+    {
+      "gate_id": "mandatory_section_lane_table_inline_present",
+      "pass": true,
+      "observed_value": 2,
+      "threshold": ">=1 lane table row",
+      "failure_reason": ""
+    },
+    {
+      "gate_id": "mandatory_resume_text_inline_present",
+      "pass": false,
+      "observed_value": {
+        "artifact": {
+          "relpath": "FINAL_RESUME_OUTPUT.txt",
+          "exists": true,
+          "bytes": 2110,
+          "sha256": "989b0c7ae07795cd5d9c68ed50875f5f37c714b0d0c5c856eeb858fbfcdbe82b"
+        },
+        "current_run_authorized": false,
+        "blockers": [
+          "outcome_authorized_false",
+          "final_resume_output_status=FAIL",
+          "failed_final_resume_gates=final_resume_no_gap_markers",
+          "pre_run_blocked=run_preflight"
+        ]
+      },
+      "threshold": "current-run authorized nonempty FINAL_RESUME_OUTPUT.txt",
+      "failure_reason": "mandatory post-run inline output missing"
+    },
+    {
+      "gate_id": "mandatory_final_resume_json_present",
+      "pass": false,
+      "observed_value": {
+        "artifact": {
+          "relpath": "modular_r4/final_resume_assembly/final_resume.json",
+          "exists": true,
+          "bytes": 7046,
+          "sha256": "7a10b6d1cf66516412f3b5f814fb48d7348974db59d992a81da5850734f1c92f"
+        },
+        "current_run_authorized": false,
+        "blockers": [
+          "outcome_authorized_false",
+          "final_resume_output_status=FAIL",
+          "failed_final_resume_gates=final_resume_no_gap_markers",
+          "pre_run_blocked=run_preflight"
+        ]
+      },
+      "threshold": "current-run authorized modular_r4/final_resume_assembly/final_resume.json",
+      "failure_reason": "mandatory post-run inline output missing"
+    },
+    {
+      "gate_id": "mandatory_resume_docx_present",
+      "pass": false,
+      "observed_value": {
+        "artifact": {
+          "relpath": "outputs/resume.docx",
+          "exists": true,
+          "bytes": 37799,
+          "sha256": "4e7f0024ec47c4e36c00a24d638fa248653f4a779d73cd7c6024a163f81550fc"
+        },
+        "current_run_authorized": false,
+        "blockers": [
+          "outcome_authorized_false",
+          "final_resume_output_status=FAIL",
+          "failed_final_resume_gates=final_resume_no_gap_markers",
+          "pre_run_blocked=run_preflight"
+        ]
+      },
+      "threshold": "current-run authorized outputs/resume.docx",
+      "failure_reason": "mandatory post-run inline output missing"
+    },
+    {
+      "gate_id": "mandatory_inline_required_json_shape_locked",
+      "pass": true,
+      "observed_value": {
+        "schema_version": "apps_rg.inline_required_output.v1",
+        "immutable_section_order": [
+          "bcg",
+          "section_lane_summary_table",
+          "resume_docx_full_version_inline"
+        ],
+        "shape_errors": []
+      },
+      "threshold": {
+        "schema_version": "apps_rg.inline_required_output.v1",
+        "immutable_section_order": [
+          "bcg",
+          "section_lane_summary_table",
+          "resume_docx_full_version_inline"
+        ],
+        "top_level_keys": [
+          "schema_version",
+          "immutable_section_order",
+          "bcg",
+          "section_lane_summary_table",
+          "resume_docx_full_version_inline"
+        ]
+      },
+      "failure_reason": ""
+    },
+    {
+      "gate_id": "mandatory_bcg_p0_p1_px_recommendations_locked",
+      "pass": true,
+      "observed_value": {
+        "title": "BCG Executive Output - apps_rg Run",
+        "section_order": [
+          "executive_answer",
+          "p0_p1_px_recommendations",
+          "board_level_readout",
+          "issue_tree",
+          "recommended_next_move",
+          "evidence_map"
+        ],
+        "priorities": [
+          "P0",
+          "P1"
+        ],
+        "truth_errors": []
+      },
+      "threshold": "BCG title + section order + evidence-backed recommendations and next moves",
+      "failure_reason": ""
+    },
+    {
+      "gate_id": "mandatory_research_briefing_input_row0_locked",
+      "pass": true,
+      "observed_value": {
+        "order": 0,
+        "section": "research_briefing_input",
+        "generation_status": "MISSING_BRIEFING"
+      },
+      "threshold": "row 0 research_briefing_input",
+      "failure_reason": ""
+    },
+    {
+      "gate_id": "mandatory_apps_research_row0_x1_x2_x3_gates_locked",
+      "pass": false,
+      "observed_value": {
+        "research_source_class": "NOT_OBSERVED",
+        "x2": "NOT_OBSERVED; blocker=no_apps_research_handoff_present",
+        "x3": "FAIL"
+      },
+      "threshold": "row 0 research_source_class plus compact X2/X3 handoff cells",
+      "failure_reason": "mandatory post-run inline output missing"
+    },
+    {
+      "gate_id": "mandatory_resume_docx_inline_json_present",
+      "pass": false,
+      "observed_value": {
+        "title": "Resume DOCX Full Version Inline",
+        "text_chars": 446,
+        "current_run_authorized": false,
+        "blockers": [
+          "outcome_authorized_false",
+          "final_resume_output_status=FAIL",
+          "failed_final_resume_gates=final_resume_no_gap_markers",
+          "pre_run_blocked=run_preflight"
+        ]
+      },
+      "threshold": "resume_docx_full_version_inline.text is current-run authorized resume content",
+      "failure_reason": "mandatory post-run inline output missing"
+    },
+    {
+      "gate_id": "E2E_FAIL_WITHOUT_SECTION_FORENSICS",
+      "pass": true,
+      "observed_value": {
+        "required": false,
+        "failed_section_count": 0,
+        "artifact_dir": "",
+        "missing_or_incomplete": []
+      },
+      "threshold": "every non-X3_ALLOW, cascaded, or aggregation-failed section has complete section_failure_forensics/<section>.json and .md",
+      "failure_reason": ""
+    }
+  ]
+}

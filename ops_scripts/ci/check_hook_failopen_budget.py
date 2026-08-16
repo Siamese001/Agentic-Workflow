@@ -28,6 +28,7 @@ Usage
 -----
   python ops_scripts/ci/check_hook_failopen_budget.py            # advisory report
   python ops_scripts/ci/check_hook_failopen_budget.py --json     # machine-readable
+  python ops_scripts/ci/check_hook_failopen_budget.py --release  # fail release checks on ERROR
   python ops_scripts/ci/check_hook_failopen_budget.py --init     # write/refresh the ratchet baseline
 """
 from __future__ import annotations
@@ -181,6 +182,11 @@ def _write_baseline(result: dict[str, Any]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Hook fail-open budget gate")
     parser.add_argument("--json", action="store_true", help="emit JSON")
+    parser.add_argument(
+        "--release",
+        action="store_true",
+        help="Fail when unacknowledged critical hook fail-opens are present.",
+    )
     parser.add_argument("--init", action="store_true", help="write/refresh the ratchet baseline from current counts")
     args = parser.parse_args(argv)
 
@@ -197,7 +203,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"HOOK_FAILOPEN_BUDGET: baseline written -> {BASELINE}")
         return 0
 
-    fail_closed = _fail_closed()
+    fail_closed = args.release or _fail_closed()
     verdict = "FAIL" if (result["errors"] and fail_closed) else ("ERROR_ADVISORY" if result["errors"] else "OK")
 
     if args.json:

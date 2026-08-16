@@ -1,0 +1,74 @@
+{
+  "schema_version": "codex-governance-surface/v1",
+  "rule_defaults": {
+    "owner": "platform-governance",
+    "scope": "repo_global",
+    "load_mode": "always_on",
+    "enforcement_mode": "instruction",
+    "lifecycle": "active",
+    "canonical_source": "self"
+  },
+  "rule_overrides": {
+    "indie-engineering-guardian.md": {
+      "canonical_source": "docs/governance/indie-engineering-guardian.md"
+    },
+    "000-agentic-core-operating-contract.md": {"owner": "agentic-core", "scope": "agentic_core"},
+    "001-runtime-seam-execution.md": {"owner": "agentic-core", "scope": "agentic_core"},
+    "agentic-core-glob-lock.md": {"owner": "agentic-core", "scope": "agentic_core"},
+    "agentic-core-static.md": {"owner": "agentic-core", "scope": "agentic_core"},
+    "apps-customization.md": {"owner": "apps-platform", "scope": "apps"},
+    "apps-folder-taxonomy.md": {"owner": "apps-platform", "scope": "apps"},
+    "apps-rg-execution-bias.md": {"owner": "apps-rg", "scope": "apps_rg"},
+    "apps-rg-executive-summary-response.md": {"owner": "apps-rg", "scope": "apps_rg"},
+    "apps-rg-interactive-discipline.md": {"owner": "apps-rg", "scope": "apps_rg"},
+    "apps-rg-post-run-summary.md": {"owner": "apps-rg", "scope": "apps_rg"},
+    "apps-test-surface-taxonomy.md": {"owner": "apps-platform", "scope": "apps"},
+    "adg-analysis-procedures.md": {"owner": "adg-platform", "scope": "adg"},
+    "adg-canonical-invariants.md": {"owner": "adg-platform", "scope": "adg"},
+    "adg-p-band-burn-down-discipline.md": {"owner": "adg-platform", "scope": "adg"},
+    "adg-post-run-burndown.md": {"owner": "adg-platform", "scope": "adg"},
+    "mcp-config-ssot.md": {"owner": "mcp-platform", "scope": "mcp"},
+    "mcp-pytest-enforcement.md": {"owner": "mcp-platform", "scope": "mcp"}
+  },
+  "hook_defaults": {
+    "owner": "platform-governance",
+    "scope": "repo_global",
+    "load_mode": "event_driven",
+    "enforcement_mode": "runtime_hook",
+    "lifecycle": "active",
+    "canonical_source": "self"
+  },
+  "hook_overrides": {
+    "auto_deliver_on_scope_complete.py": {
+      "lifecycle": "manual_utility",
+      "enforcement_mode": "manual_utility"
+    },
+    "prune_merged_chat_worktrees.py": {
+      "lifecycle": "delegated",
+      "enforcement_mode": "maintenance_delegate"
+    },
+    "stop_apps_rg_inline_evidence_gate.py": {
+      "owner": "apps-rg",
+      "scope": "apps_rg"
+    }
+  },
+  "legacy_reference_policy": {
+    "scan_roots": [
+      ".codex/rules",
+      ".codex/hooks",
+      ".codex/governance/scripts"
+    ],
+    "historical_prefixes": [
+      "docs/archive/",
+      ".codex/plans/_archive/"
+    ],
+    "compatibility_prefixes": [
+      ".codex/hooks/",
+      ".codex/governance/scripts/"
+    ],
+    "remediation_required_paths": [],
+    "active_terms": ["GitKraken"],
+    "legacy_terms": ["Claude", "Cursor", "Windsurf"],
+    "policy": "Legacy terms are historical only under historical prefixes or compatibility-only under compatibility prefixes. No active rule or unclassified legacy reference is permitted."
+  }
+}

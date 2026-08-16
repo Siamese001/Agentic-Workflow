@@ -4,7 +4,7 @@
 
 ## Scope
 
-`apps_rg` owns app-specific prompt assembly, runtime sections, contracts, profiles, tests, and evidence artifacts under `apps_rg/`.
+`apps_rg` owns app-specific prompt assembly, runtime sections, contracts, profiles, tests, and evidence artifacts under `apps_rg/`. Follow the shared [App Agent Contract](../apps_shared/APP_AGENT_CONTRACT.md) for universal app ownership and core-boundary controls.
 
 `agentic_core` provides generic enforcement. App-specific behavior must not be added to `agentic_core` without a migration receipt.
 
@@ -21,6 +21,10 @@
 - Build and verify section seams before broad integration.
 - Keep whole-run `R1A`/`R1B` state separate from per-section payloads.
 - Show exact section output, prompt/profile, provider or model status, artifact path, judge result, X2 gate result, and X3 disposition when making implementation claims.
+
+## X1D proof-panel boundary
+
+Multi-provider X1D proof panels are app-specific integration: `agentic_core/runtime/judges/panel/` provides `JudgePanelRunner` and transport preflight, while `apps_rg` supplies adapters through `x1d_panel_bridge`. Keep provider-specific wiring in `apps_rg`; a change to the core boundary requires a migration receipt.
 
 ## References
 

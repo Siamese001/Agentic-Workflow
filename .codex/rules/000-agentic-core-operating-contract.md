@@ -1,5 +1,5 @@
 
-# Agentic Core Operating Contract for Claude Code
+# Agentic Core Operating Contract for Codex
 
 ## Non-negotiable spine laws
 

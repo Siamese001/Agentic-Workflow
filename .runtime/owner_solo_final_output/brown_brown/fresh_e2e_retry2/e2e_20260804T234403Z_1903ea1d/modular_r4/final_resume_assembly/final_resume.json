@@ -1,0 +1,150 @@
+{
+  "schema_version": "apps_rg.final_resume_assembly.v1",
+  "assembly_mode": "mandatory_fallback_from_base_resume_and_run_artifacts",
+  "generated_at_utc": "2026-08-04T23:44:07Z",
+  "candidate_identity": {
+    "candidate_name": "Amit Ayer",
+    "header_contact": {
+      "phone": "+1-917-239-3830",
+      "email": "amitayer1@gmail.com",
+      "linkedin": "linkedin.com/in/amitayer1",
+      "github": "github.com/Siamese001/Agentic-Workflow",
+      "location": "Boca Raton, FL"
+    }
+  },
+  "sections": [
+    {
+      "assemble_order": 0,
+      "section_id": "headline",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 1,
+      "section_id": "executive_summary",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 2,
+      "section_id": "competencies",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 3,
+      "section_id": "unify_bullets",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 4,
+      "section_id": "unify_narrative",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 5,
+      "section_id": "ibm_bullets",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 6,
+      "section_id": "ibm_narrative",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 7,
+      "section_id": "insurtech_bullets",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 8,
+      "section_id": "insurtech_narrative",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 9,
+      "section_id": "ey_bullets",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 10,
+      "section_id": "ey_narrative",
+      "section_kind": "generated_lane",
+      "l2_output_snapshot": {},
+      "generated_content_observed": false,
+      "source_artifact_refs": {},
+      "disposition_refs": {}
+    },
+    {
+      "assemble_order": 11,
+      "section_id": "early_career",
+      "section_kind": "locked_copy_inline",
+      "copied_text_exact": "{\"fact_id\":\"exp_early_career_001\",\"employer\":\"Early Career Roles\",\"title\":\"Actuarial Consultant and Quantitative Roles\",\"location\":\"Philadelphia, PA\",\"start_date\":\"2002-10\",\"end_date\":\"2009-09\",\"is_current\":false,\"bullets\":[{\"bullet_id\":\"bul_early_career_001\",\"text\":\"Actuarial & Quantitative Foundation: As a Fellow of the Society of Actuaries (FSA), priced exotic derivatives and structured multi-Greek hedging strategies, built stochastic capital models, and supported HPC-based valuation frameworks for scenario testing and capital adequacy — the quantitative rigor and risk discipline that now underpin my work in AI platform architecture and runtime governance.\",\"has_metric\":false,\"technologies\":[\"derivatives pricing\",\"multi-Greek hedging\",\"stochastic modeling\",\"capital modeling\",\"HPC valuation\"],\"domain\":\"actuarial & quantitative finance\"}]}"
+    },
+    {
+      "assemble_order": 12,
+      "section_id": "education",
+      "section_kind": "locked_copy_inline",
+      "copied_text_exact": "[{\"fact_id\":\"edu_columbia_ms_001\",\"degree\":\"Master of Science in Biostatistics\",\"institution\":\"Columbia University\",\"year\":null,\"honors\":\"Graduated with Distinction\",\"evidence_confidence\":1.0},{\"fact_id\":\"edu_brown_ba_001\",\"degree\":\"Bachelor of Arts in Biology\",\"institution\":\"Brown University\",\"year\":null,\"honors\":\"Graduated Cum Laude\",\"evidence_confidence\":1.0}]"
+    },
+    {
+      "assemble_order": 13,
+      "section_id": "certifications",
+      "section_kind": "locked_copy_inline",
+      "copied_text_exact": "[{\"fact_id\":\"cert_aws_cml_001\",\"name\":\"Certified Machine Learning Engineer – Associate\",\"issuing_organization\":\"AWS\",\"year\":\"2025\",\"evidence_confidence\":1.0},{\"fact_id\":\"cert_databricks_lakehouse_001\",\"name\":\"Databricks Lakehouse Fundamentals Accreditation\",\"year\":\"2023\",\"evidence_confidence\":1.0},{\"fact_id\":\"cert_aws_sa_pro_001\",\"name\":\"Certified Solutions Architect – Professional\",\"issuing_organization\":\"AWS\",\"year\":\"2023\",\"evidence_confidence\":1.0},{\"fact_id\":\"cert_fsa_001\",\"name\":\"Fellow of the Society of Actuaries\",\"year\":\"2010\",\"evidence_confidence\":1.0}]"
+    }
+  ],
+  "locked_copy_invariants": {
+    "company_names": {
+      "copied_text_exact": "[\"Unify Consulting\",\"IBM\",\"InsurTech Cloud Solutions\",\"Ernst & Young\",\"Early Career Roles\"]"
+    },
+    "titles": {
+      "copied_text_exact": "[\"SVP Engineering, Agentic AI Platforms\",\"Partner\",\"Chief Technology Officer\",\"Principal\",\"Actuarial Consultant and Quantitative Roles\"]"
+    },
+    "locations": {
+      "copied_text_exact": "[\"Boca Raton, FL\",\"Edgewater, NJ\",\"New York, NY\",\"New York, NY\",\"Philadelphia, PA\"]"
+    },
+    "dates": {
+      "copied_text_exact": "[{\"start_date\":\"2023-02\",\"end_date\":\"present\",\"is_current\":true},{\"start_date\":\"2017-04\",\"end_date\":\"2022-10\",\"is_current\":false},{\"start_date\":\"2014-04\",\"end_date\":\"2017-03\",\"is_current\":false},{\"start_date\":\"2009-10\",\"end_date\":\"2014-03\",\"is_current\":false},{\"start_date\":\"2002-10\",\"end_date\":\"2009-09\",\"is_current\":false}]"
+    }
+  },
+  "source_base_resume": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\resume\\base\\amit_ayer_base_resume_v1.json",
+  "generated_content_source": "run_artifacts_when_present_else_NOT_GENERATED_BY_RUN_markers"
+}

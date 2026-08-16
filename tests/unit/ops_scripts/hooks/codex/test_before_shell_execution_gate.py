@@ -107,8 +107,8 @@ def test_hook_allows_pr_merge_when_publication_closeout_is_chained():
     proc = _run_hook(
         "gh pr merge 123 --merge && "
         "git switch main && "
-        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only && "
-        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only"
+        "python scripts/governance/codex_main_closeout.py --apply --fetch --json --publication-only --require-governance-health && "
+        "python scripts/governance/codex_main_closeout.py --check --fetch --json --publication-only --require-governance-health"
     )
 
     assert proc.returncode == 0

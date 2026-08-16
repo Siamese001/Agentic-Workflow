@@ -13,12 +13,12 @@
 | `ENHANCEMENT_MINOR` | T0/T1 | In-scope, ≤20 lines | Fix if in scope; `spawn_task` if deferred |
 | `ENHANCEMENT_BACKLOG` | T2 | Out-of-scope improvement | `spawn_task` chip |
 | `ENHANCEMENT_ROADMAP` | T3 | Multi-session strategic | Backlog Item |
-| `PLAN_MICRO` | T1/T2 | <2 waves AND ≤~3 files | Native plan mode only — no disk file |
+| `PLAN_MICRO` | T1/T2 | <2 waves AND ≤~3 files | Native planning workflow only — no disk file |
 | `PLAN_MULTI_WAVE` | T2/T3 | ≥2 waves OR ≥~10 files / cross-layer (single-session does NOT exempt) | `plans/<slug>-<6hex>.md` disk SSOT, minted at the start |
 
 ## Plan-FIRST ≠ plan-PERSISTENCE
 
-Native plan mode (`EnterPlanMode`/`ExitPlanMode`) satisfies think-before-editing but writes to `~/.codex/plans/` — **it persists nothing to the repo SSOT**. Complexity, not session-span, decides persistence: a big change done in ONE session still deserves a durable `plans/<slug>-<6hex>.md` (RCA 2026-06-14 / ADR-104). Plans are **disk-only** (no Notion). Mint the disk plan for ≥2-wave or large/cross-layer work (request `PLAN_MINT_OK=1`); keep native plan mode for small work.
+Native planning satisfies think-before-editing but writes no durable plan to the repo SSOT. Complexity, not session-span, decides persistence: a big change done in ONE session still deserves a durable `plans/<slug>-<6hex>.md` (RCA 2026-06-14 / ADR-104). Plans are **disk-only** (no Notion). Mint the disk plan for ≥2-wave or large/cross-layer work (request `PLAN_MINT_OK=1`); keep native planning for small work.
 
 ## The Four Anti-Reflex Rules
 

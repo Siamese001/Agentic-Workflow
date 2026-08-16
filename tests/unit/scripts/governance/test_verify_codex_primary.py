@@ -97,6 +97,7 @@ def _valid_root(tmp_path: Path) -> Path:
     )
 
     _write(tmp_path / ".codex" / "hooks.json", json.dumps({"hooks": {}}))
+    _write(tmp_path / ".codex" / "config.toml", "[features]\nhooks = true\n")
     _write(
         tmp_path / "AGENTS.md",
         "\n".join(mod.REQUIRED_ANCHORS["AGENTS.md"]),
@@ -133,6 +134,14 @@ def test_parse_args_accepts_repo_only_flag() -> None:
     assert args.root == mod.REPO_ROOT
 
 
+def test_main_labels_the_result_as_static_and_discloses_hook_runtime_limit(tmp_path: Path, capsys) -> None:
+    assert mod.main(["--root", str(_valid_root(tmp_path)), "--repo-only"]) == 0
+
+    output = capsys.readouterr().out
+    assert "static contract verification passed" in output
+    assert "local hook trust/registration" in output
+
+
 def test_repo_only_skips_enforcement_home_checks(tmp_path: Path, monkeypatch) -> None:
     root = _valid_root(tmp_path)
     monkeypatch.setattr(
@@ -160,3 +169,11 @@ def test_missing_svp_schema_fails(tmp_path: Path) -> None:
 
     failures = mod.validate(root, repo_only=True)
     assert any("svp_docs_x3_v1.schema.json" in failure for failure in failures)
+
+
+def test_missing_governance_surface_manifest_fails(tmp_path: Path) -> None:
+    root = _valid_root(tmp_path)
+    (root / ".codex/governance/governance_surface_manifest.json").unlink()
+
+    failures = mod.validate(root, repo_only=True)
+    assert any("governance_surface_manifest.json" in failure for failure in failures)

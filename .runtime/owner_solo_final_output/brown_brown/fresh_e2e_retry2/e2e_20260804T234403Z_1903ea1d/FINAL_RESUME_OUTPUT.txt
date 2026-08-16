@@ -1,0 +1,44 @@
+Amit Ayer
++1-917-239-3830 | amitayer1@gmail.com | linkedin.com/in/amitayer1 | github.com/Siamese001/Agentic-Workflow
+
+HEADLINE
+[NOT COMPLETED: headline — missing_or_empty_headline]
+
+EXECUTIVE SUMMARY
+[NOT COMPLETED: executive_summary — missing_or_empty_executive_summary]
+
+ENGINEERING & PLATFORM COMPETENCIES
+[NOT COMPLETED: competencies — missing_competencies_or_empty_graph_skills_signal]
+
+PROFESSIONAL EXPERIENCE
+
+Unify Consulting — SVP Engineering, Agentic AI Platforms
+Boca Raton, FL | Feb 2023 – Present
+[NOT COMPLETED: unify — unify_bullets and unify_narrative did not produce finalized content]
+
+IBM — Partner
+Edgewater, NJ | Apr 2017 – Oct 2022
+[NOT COMPLETED: ibm — ibm_bullets and ibm_narrative did not produce finalized content]
+
+InsurTech Cloud Solutions — Chief Technology Officer
+New York, NY | Apr 2014 – Mar 2017
+[NOT COMPLETED: insurtech — generated narrative and bullets were not produced in this run]
+
+Ernst & Young — Principal
+New York, NY | Oct 2009 – Mar 2014
+[NOT COMPLETED: ey — generated narrative and bullets were not produced in this run]
+
+Early Career Roles — Actuarial Consultant and Quantitative Roles
+Philadelphia, PA | Oct 2002 – Sep 2009
+• Actuarial & Quantitative Foundation: As a Fellow of the Society of Actuaries (FSA), priced exotic derivatives and structured multi-Greek hedging strategies, built stochastic capital models, and supported HPC-based valuation frameworks for scenario testing and capital adequacy — the quantitative rigor and risk discipline that now underpin my work in AI platform architecture and runtime governance.
+
+EDUCATION
+Master of Science in Biostatistics, Columbia University (Graduated with Distinction)
+Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)
+
+CERTIFICATIONS & CREDENTIALS
+Certified Machine Learning Engineer – Associate, AWS, 2025
+Databricks Lakehouse Fundamentals Accreditation, 2023
+Certified Solutions Architect – Professional, AWS, 2023
+Fellow of the Society of Actuaries, 2010
+[NOT_GENERATED_BY_RUN: fallback_final_resume]

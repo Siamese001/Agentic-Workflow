@@ -87,7 +87,7 @@ class TestAskUserQuestionInlineReceipt:
         assert mod.main() == 0  # fail-open
         rows = _rows(mod._FAILOPEN_RECEIPT_LOG)
         assert len(rows) == 1
-        assert rows[0]["hook"] == "beforeAskUserQuestion"
+        assert rows[0]["hook"] == "beforeRequestUserInput"
         assert rows[0]["failure_class"] == "ask_rec_gate_script_missing"
         assert rows[0]["criticality"] == "CRITICAL_PRETOOL"
         assert rows[0]["session_id"] == "aq1"
@@ -161,6 +161,10 @@ class TestBudgetGate:
         self._write_ledger(gate, {"hook": "beforeGrep", "criticality": "CRITICAL_PRETOOL", "failure_class": "x"})
         monkeypatch.setenv("HOOK_FAILOPEN_BUDGET_FAIL_CLOSED", "1")
         assert gate.main([]) == 1
+
+    def test_main_release_exit_one_without_environment_override(self, gate) -> None:
+        self._write_ledger(gate, {"hook": "beforeGrep", "criticality": "CRITICAL_PRETOOL", "failure_class": "x"})
+        assert gate.main(["--release"]) == 1
 
     def test_main_bypass_exit_zero(self, gate, monkeypatch) -> None:
         self._write_ledger(gate, {"hook": "beforeGrep", "criticality": "CRITICAL_PRETOOL", "failure_class": "x"})

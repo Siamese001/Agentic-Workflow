@@ -42,6 +42,23 @@ def test_closeout_check_passes_for_clean_single_main(monkeypatch, tmp_path: Path
     assert staging_root.exists()
 
 
+def test_release_closeout_blocks_critical_hook_failopen(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(
+        mod,
+        "_critical_hook_failopen_issues",
+        lambda _root: [mod.CloseoutIssue("critical_hook_failopen", "beforeSubmitPrompt: 1")],
+    )
+    monkeypatch.setattr(mod, "_publication_closeout_issues", lambda _root, base_ref: [])
+    monkeypatch.setattr(mod, "_workspace_topology_issues", lambda _root, expected_path, base_ref: [])
+    monkeypatch.setattr(mod, "_extra_local_branch_issues", lambda _root: [])
+
+    report = mod.build_closeout_report(tmp_path, require_governance_health=True)
+
+    assert report["publication_closeout"]["status"] == "FAIL"
+    assert report["governance_health"]["status"] == "FAIL"
+    assert {"code": "critical_hook_failopen", "detail": "beforeSubmitPrompt: 1"} in report["issues"]
+
+
 def test_closeout_check_fails_on_extra_local_branch(monkeypatch, tmp_path: Path) -> None:
     def fake_git(*args: str, cwd: Path):
         command = tuple(args)

@@ -1,0 +1,35 @@
+{
+  "created_at_utc": "2026-08-04T23:44:04.084149+00:00",
+  "e2e_run_id": "e2e_20260804T234403Z_1903ea1d",
+  "entries": [
+    {
+      "artifact_bindings": [],
+      "attempt": 1,
+      "authoritative_receipt_byte_length": 2869,
+      "authoritative_receipt_ref": "e2e_preflight_continuation_receipt.json",
+      "authoritative_receipt_schema_version": "apps_rg.e2e_preflight.v1",
+      "authoritative_receipt_sha256": "sha256:340caaa0c2b44f1c6406cfc08f37d8f2236f1914a55f512ffd290039bde8cc06",
+      "child_run_id": "",
+      "e2e_run_id": "e2e_20260804T234403Z_1903ea1d",
+      "finished_at_utc": "2026-08-04T23:44:07.131265+00:00",
+      "input_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "input_refs": {},
+      "output_digest": "sha256:a545b6e2cdf5198c6faa5cd342ed8347725e967d0dac30847a63a9e6d2da92dc",
+      "output_refs": {
+        "authoritative_receipt": "e2e_preflight_continuation_receipt.json",
+        "preflight_receipt": "e2e_preflight_continuation_receipt.json"
+      },
+      "previous_receipt_digest": "",
+      "reason_code": "FACT_VECTOR_BOOTSTRAP_PREFLIGHT_FAILED",
+      "receipt_digest": "sha256:74660cd6dd314d4a7b682444ebfd55269adb0c6cb70f2745b400165cc4137a26",
+      "stage_id": "PREFLIGHT",
+      "started_at_utc": "2026-08-04T23:44:07.131265+00:00",
+      "status": "BLOCKED",
+      "status_derivation": "AUTHORITATIVE_RECEIPT_BYTES"
+    }
+  ],
+  "ledger_digest": "sha256:59cb3c080bd64848b86378b024aced3112a3f93e9facdcfde74f33bc2b405b8e",
+  "schema_version": "apps_rg.e2e_stage_ledger.v1",
+  "stage_graph_digest": "sha256:e09deb3da710f1dc007b73ee8d1786fe0e7a4c276ad3331061991cad3b810566",
+  "stage_graph_ref": "C:\\Git\\Agentic-Workflow-FRESH\\apps_rg\\config\\domain_contract\\e2e_stage_graph.resume_generation.v1.yaml"
+}

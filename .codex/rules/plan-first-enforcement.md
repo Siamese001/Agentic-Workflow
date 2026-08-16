@@ -18,8 +18,9 @@ refactors spanning files, ADG / dependency analysis, test-strategy design. NOT r
 
 ## Contract
 
-- T2/T3 ⇒ `EnterPlanMode`, gather evidence (reads only), present the plan via `ExitPlanMode`, and make
-  **no edits until the plan is approved**.
+- T2/T3 ⇒ use the native planning workflow when available, gather evidence (reads only), present the
+  plan, and make **no edits until the plan is approved**. When no native planning workflow is available,
+  present an equivalent read-only plan in the response or required disk plan before editing.
 - One explicit approval for the presented plan authorizes execution of that unchanged scope through
   implementation, verification, and requested local git closeout. Do **not** ask for separate
   "design approval", "implementation approval", "refactor approval", or "commit/merge approval" unless

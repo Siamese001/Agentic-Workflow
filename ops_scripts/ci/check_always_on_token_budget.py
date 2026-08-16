@@ -1,4 +1,4 @@
-"""CI gate — Anthropic two-tier Tier-1 budget (repo-native SSOT).
+"""CI gate — Codex always-on instruction budget.
 
 Measures and enforces the retired Tier-1 compatibility surface:
 - historical ``.codex/rules/*.mdc`` files with ``alwaysApply: true`` if any remain
@@ -7,20 +7,21 @@ Measures and enforces the retired Tier-1 compatibility surface:
 Reports separately (not summed into Tier-1 fail threshold):
 - ``.codex/rules/*.md`` with ``trigger: always_on`` (legacy mirror)
 
-Writes: ``docs/reports/cursor/governance_tier_inventory.json``
+The default check is read-only. Pass ``--write-inventory`` only when an operator
+explicitly wants to refresh ``docs/reports/cursor/governance_tier_inventory.json``.
 
 Threshold: 51,200 bytes (~12,800 tokens). Bypass: ``ALWAYS_ON_BUDGET_BYPASS=1``.
 """
 
 from __future__ import annotations
 
+import argparse
 import os
 import sys
 from pathlib import Path
 
 from governance_tier_measurement import (
     THRESHOLD_BYTES,
-    build_inventory,
     claude_always_on_total,
     scan_windsurf_always_on_md,
     tier1_cursor_total,
@@ -34,7 +35,23 @@ from governance_tier_measurement import (
 REAL_SURFACE_THRESHOLD = 86_016
 
 
-def main() -> int:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--write-inventory",
+        action="store_true",
+        help="Refresh the versioned governance inventory instead of running read-only.",
+    )
+    parser.add_argument(
+        "--inventory-wave",
+        default=os.environ.get("GOVERNANCE_INVENTORY_WAVE", "W0"),
+        help="Wave label written only with --write-inventory.",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
     if os.environ.get("ALWAYS_ON_BUDGET_BYPASS") == "1":
         print(
             "[always-on-budget] BYPASS via ALWAYS_ON_BUDGET_BYPASS=1",
@@ -46,8 +63,11 @@ def main() -> int:
     windsurf_rows = scan_windsurf_always_on_md()
     windsurf_total = sum(r.bytes for r in windsurf_rows)
 
-    inventory_path = write_inventory(wave=os.environ.get("GOVERNANCE_INVENTORY_WAVE", "W0"))
-    print(f"[always-on-budget] inventory: {inventory_path}")
+    if args.write_inventory:
+        inventory_path = write_inventory(wave=args.inventory_wave)
+        print(f"[always-on-budget] inventory refreshed: {inventory_path}")
+    else:
+        print("[always-on-budget] inventory not written (pass --write-inventory to refresh it)")
 
     print("tier_1_legacy_compat (historical alwaysApply .mdc + AGENTS.md):")
     for row in tier1_rows:

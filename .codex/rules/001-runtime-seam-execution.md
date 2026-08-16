@@ -1,6 +1,6 @@
 # Runtime Seam Execution Contract
 
-Claude Code must behave like a bounded L2 executor, not a project manager.
+Codex must behave like a bounded L2 executor, not a project manager.
 
 ## Default execution shape
 

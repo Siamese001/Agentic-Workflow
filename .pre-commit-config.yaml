@@ -543,17 +543,23 @@ repos:
         always_run: false
         require_serial: true
 
-      # -- T7r: Always-On Token Budget (Anthropic two-tier compliance) -----------
-      # Sums bytes of all .codex/rules/*.md with `trigger: always_on` and
-      # fails when total exceeds 51,200 bytes / 12,800 tokens. Per Anthropic
-      # "Architecture of Agentic RAG" (Apr 2026): always-on rules >50 KB
-      # trigger autonomous context compaction, where the model arbitrarily
-      # discards instructions to free space.
+      # -- T7r: Always-On Token Budget --------------------------------------------
+      # Measures the real always-on project-instruction surface: AGENTS.md plus
+      # every .codex/rules/*.md. The active ceiling is 86,016 bytes / 21,504
+      # approximate tokens; the checker is read-only unless --write-inventory is
+      # explicitly requested.
       # Bypass: ALWAYS_ON_BUDGET_BYPASS=1
       # Rule SSOT: docs/reference/_notes/Claude RAG Rules and Skills.pdf
       - id: always-on-token-budget
-        name: "T7r: Always-On Token Budget (Anthropic 50 KB)"
+        name: "T7r: Always-On Instruction Budget"
         entry: py ops_scripts/ci/check_always_on_token_budget.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+      - id: governance-surface-manifest
+        name: "T7r.1: Codex Governance Surface Manifest"
+        entry: py ops_scripts/ci/check_governance_surface_manifest.py
         language: system
         pass_filenames: false
         always_run: true

@@ -1,0 +1,16 @@
+{
+  "schema_version": "apps_rg_output_manifest.v1",
+  "canonical_final_resume_json_relpath": "modular_r4/final_resume_assembly/final_resume.json",
+  "rendered_resume_text_relpath": "FINAL_RESUME_OUTPUT.txt",
+  "final_resume_output_json_relpath": "FINAL_RESUME_OUTPUT.json",
+  "resume_docx_relpath": "outputs/resume.docx",
+  "docx_output_required": true,
+  "docx_verified": false,
+  "required_artifacts": {
+    "canonical_final_resume_json": "verified",
+    "rendered_resume_text": "verified",
+    "resume_docx": "verified",
+    "final_resume_output_json": "verified",
+    "docx_verified": false
+  }
+}

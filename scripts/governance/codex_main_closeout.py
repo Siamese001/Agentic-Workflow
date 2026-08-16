@@ -159,6 +159,40 @@ def _publication_closeout_issues(root: Path, *, base_ref: str) -> list[CloseoutI
     return issues
 
 
+def _critical_hook_failopen_issues(root: Path) -> list[CloseoutIssue]:
+    """Return release-blocking unacknowledged critical hook fail-opens.
+
+    The budget gate remains advisory for ordinary development checks. Publication
+    closeout opts into its explicit ``--release`` mode so broken critical hooks
+    cannot be hidden by an advisory exit code.
+    """
+    gate = root / "ops_scripts" / "ci" / "check_hook_failopen_budget.py"
+    if not gate.is_file():
+        return [CloseoutIssue("hook_failopen_gate_missing", str(gate))]
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(gate), "--release", "--json"],
+            cwd=str(root),
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return [CloseoutIssue("hook_failopen_gate_unavailable", str(exc))]
+    try:
+        payload = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        detail = proc.stderr.strip() or proc.stdout.strip() or f"exit={proc.returncode}"
+        return [CloseoutIssue("hook_failopen_gate_invalid_output", detail)]
+    errors = payload.get("errors") if isinstance(payload, dict) else None
+    if isinstance(errors, list) and errors:
+        return [CloseoutIssue("critical_hook_failopen", "\n".join(str(error) for error in errors))]
+    if proc.returncode != 0:
+        return [CloseoutIssue("hook_failopen_gate_failed", proc.stderr.strip() or f"exit={proc.returncode}")]
+    return []
+
+
 def _workspace_topology_issues(
     root: Path,
     *,
@@ -352,6 +386,7 @@ def build_closeout_report(
     base_ref: str = "origin/main",
     fetch: bool = False,
     apply: bool = False,
+    require_governance_health: bool = False,
 ) -> dict:
     root = root.resolve()
     expected = (expected_path or root).resolve()
@@ -365,8 +400,10 @@ def build_closeout_report(
         if rc_fetch != 0:
             apply_issues = [CloseoutIssue("fetch_failed", stderr)]
 
+    governance_issues = _critical_hook_failopen_issues(root) if require_governance_health else []
     publication_issues = [
         *_publication_closeout_issues(root, base_ref=base_ref),
+        *governance_issues,
         *(issue for issue in apply_issues if issue.code == "fetch_failed"),
     ]
     workspace_topology_issues = [
@@ -392,6 +429,14 @@ def build_closeout_report(
             "and no non-main local branches."
         ),
     )
+    governance_health = _section(
+        "governance_health",
+        governance_issues,
+        required=require_governance_health,
+        rule=(
+            "Release closeout requires no unacknowledged critical hook fail-opens."
+        ),
+    )
     issues = [*publication_issues, *workspace_topology_issues]
     return {
         "schema_version": "codex-main-closeout/v1",
@@ -402,6 +447,7 @@ def build_closeout_report(
         "base_ref": base_ref,
         "publication_closeout": publication_closeout,
         "workspace_topology_closeout": workspace_topology_closeout,
+        "governance_health": governance_health,
         "issues": [asdict(issue) for issue in issues],
         "actions": [asdict(action) for action in actions],
         "rule": (
@@ -434,6 +480,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Use publication_closeout, not strict topology closeout, for the process exit code.",
     )
+    parser.add_argument(
+        "--require-governance-health",
+        action="store_true",
+        help="Block closeout when the critical hook fail-open release gate reports an error.",
+    )
     return parser.parse_args(argv)
 
 
@@ -445,6 +496,7 @@ def main(argv: list[str] | None = None) -> int:
         base_ref=args.base_ref,
         fetch=args.fetch,
         apply=args.apply,
+        require_governance_health=args.require_governance_health,
     )
     if args.json:
         print(json.dumps(report, indent=2, sort_keys=True))
